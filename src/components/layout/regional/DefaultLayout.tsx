@@ -5,12 +5,11 @@
 
 import { WhatsAppContact } from '@/components/contact/WhatsAppContact';
 import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
-import { isRTL } from '@/lib/i18n';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import ConditionalNavbar from '../ConditionalNavbar';
 import Footer from '../Footer';
+import MarketplaceFooter from '@/components/used-machines/MarketplaceFooter';
 
 interface DefaultLayoutProps {
   children: React.ReactNode;
@@ -22,19 +21,14 @@ interface DefaultLayoutProps {
 export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
   children,
   config: _config,
-  onRegionChange,
+  onRegionChange: _onRegionChange,
   enableRegionSwitching: _enableRegionSwitching
 }) => {
-  const { i18n } = useTranslation();
   const location = useLocation();
   const isFabricatorRoute = location.pathname.startsWith('/fabricator') || location.pathname.startsWith('/fabricator-workflow');
   const isBatchCutListDemo = location.pathname === '/demo/batch-cut-list' || location.pathname === '/batch-cut-list-demo';
   const isAdminRoute = location.pathname === '/admin';
-  const _rtl = isRTL(i18n.language);
-  
-  const _handleRegionChange = (region: RegionCode) => {
-    onRegionChange(region);
-  };
+  const isMarketplaceRoute = location.pathname.startsWith('/used-machines') || location.pathname.startsWith('/usedmachines');
 
   return (
     <div className="min-h-screen bg-almona-dark text-white">
@@ -48,14 +42,17 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
       </div>
 
       {/* Footer - Hidden for fabricator routes and batch cut list demo */}
-      {!isFabricatorRoute && !isBatchCutListDemo && !isAdminRoute && <Footer />}
+      {!isFabricatorRoute && !isBatchCutListDemo && !isAdminRoute && !isMarketplaceRoute && <Footer />}
+      {isMarketplaceRoute && <MarketplaceFooter />}
 
-      {/* WhatsApp Contact */}
-      <WhatsAppContact 
-        phoneNumber="+201234567890"
-        businessHours="8AM - 6PM (GMT+2)"
-        position="bottom-right"
-      />
+      {/* WhatsApp Contact - hidden on the neutral marketplace */}
+      {!isMarketplaceRoute && (
+        <WhatsAppContact 
+          phoneNumber="+201000355135"
+          businessHours="8AM - 6PM (GMT+2)"
+          position="bottom-right"
+        />
+      )}
     </div>
   );
 };

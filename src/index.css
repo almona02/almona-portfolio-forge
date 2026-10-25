@@ -507,3 +507,15 @@ a[aria-label] {
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Used-machines marketplace listing entrance (respect reduced motion) */
+@keyframes marketplace-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.marketplace-fade-in {
+  animation: marketplace-fade-in 0.4s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marketplace-fade-in { animation: none; }
+}

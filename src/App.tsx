@@ -31,13 +31,13 @@ import { lazyRetry } from "./utils/lazyImport";
 const PerformanceDashboard = lazy(() => import("./components/dev/PerformanceDashboard").then(m => ({ default: m.PerformanceDashboard })));
 
 // Core pages (essential) - loaded immediately (lightweight)
-const Index = lazy(() => import("./pages/Index.tsx"));
-const Products = lazy(() => import("./pages/Products.tsx"));
+const Index = lazyRetry(() => import("./pages/Index.tsx"), "Index");
+const Products = lazyRetry(() => import("./pages/Products.tsx"), "Products");
 const Services = lazyRetry(() => import("./pages/Services.tsx"), "Services"); // Heavy page
-const Contact = lazy(() => import("./pages/Contact.tsx"));
-const PolicyPage = lazy(() => import("./pages/PolicyPage.tsx"));
-const About = lazy(() => import("./pages/About.tsx"));
-const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const Contact = lazyRetry(() => import("./pages/Contact.tsx"), "Contact");
+const PolicyPage = lazyRetry(() => import("./pages/PolicyPage.tsx"), "PolicyPage");
+const About = lazyRetry(() => import("./pages/About.tsx"), "About");
+const NotFound = lazyRetry(() => import("./pages/NotFound.tsx"), "NotFound");
 
 // 3D Gallery - lazy loaded
 const Model3DGallery = lazy(() => import("./pages/Model3DGallery.tsx"));
@@ -55,20 +55,20 @@ const UsedMachineDetailPage = lazyRetry(() => import("./pages/UsedMachineDetail.
 const SpareParts = lazyRetry(() => import("./pages/SpareParts.tsx"), "SpareParts");
 
 // Product details - lazy loaded
-const MachineDetail = lazy(() => import("./pages/machines/MachineDetail.tsx"));
-const ProfileDetail = lazy(() => import("./pages/profiles/ProfileDetail.tsx"));
+const MachineDetail = lazyRetry(() => import("./pages/machines/MachineDetail.tsx"), "MachineDetail");
+const ProfileDetail = lazyRetry(() => import("./pages/profiles/ProfileDetail.tsx"), "ProfileDetail");
 
 // New Yilmaz Dealer Pages - lazy loaded
-const YilmazDealer = lazy(() => import("./pages/YilmazDealer.tsx"));
+const YilmazDealer = lazyRetry(() => import("./pages/YilmazDealer.tsx"), "YilmazDealer");
 const DigitalTwinDashboard = lazy(() => import("./pages/machines/DigitalTwinDashboard.tsx"));
-const YilmazService = lazy(() => import("./pages/YilmazService.tsx"));
-const YilmazTraining = lazy(() => import("./pages/YilmazTraining.tsx"));
+const YilmazService = lazyRetry(() => import("./pages/YilmazService.tsx"), "YilmazService");
+const YilmazTraining = lazyRetry(() => import("./pages/YilmazTraining.tsx"), "YilmazTraining");
 const YilmazMachineDashboard = lazy(() => import("./pages/YilmazMachineDashboard.tsx"));
 const YilmazExportPage = lazy(() => import("./pages/YilmazExportPage.tsx"));
 const YilmazAnalytics = lazy(() => import("./components/predictive/YilmazAnalytics.tsx").then(m => ({ default: m.YilmazAnalytics })));
 
 // Digital Egypt Initiative - lazy loaded
-const DigitalEgypt = lazy(() => import("./pages/DigitalEgypt.tsx"));
+const DigitalEgypt = lazyRetry(() => import("./pages/DigitalEgypt.tsx"), "DigitalEgypt");
 
 // Workflow and fabrication - lazy loaded with retry (HEAVY ROUTES)
 const WorkflowDetail = lazyRetry(() => import("./pages/workflows/WorkflowDetail.tsx"), "WorkflowDetail");

@@ -42,12 +42,16 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       'tests/e2e/**',
+      // Browser-backed HTTP fixtures have their own Node configuration.
+      'scripts/visibility/**',
       'fabricator-mobile/**',
       '.tmp-pr-assess/**',
       '**/.tmp-pr-assess/**',
       'src/pages/Services.test.tsx',
       'src/integration/presets/Phase1Integration.test.ts',
       'src/tests/e2e/SpecialPresets.e2e.test.ts',
+      // Node test-runner files (run via `node --test`, not vitest)
+      'scripts/**',
       // Vitest worker teardown flake: EnvironmentTeardownError onUserConsoleLog pending
       'tests/integration/stress.test.ts',
     ],

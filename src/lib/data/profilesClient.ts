@@ -141,6 +141,8 @@ export async function ensureOwnProfile(
       id,
       full_name: extras?.full_name || 'User',
       sector: 'GENERAL' as SectorType,
+      role: 'customer',
+      is_verified: false,
     })
     .select('*')
     .maybeSingle();

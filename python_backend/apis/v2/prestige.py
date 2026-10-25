@@ -32,9 +32,9 @@ class DiagnosisRequest(BaseModel):
 
 class GCodeRequest(BaseModel):
     gcode_program: str = Field(min_length=1, max_length=200000)
-    operation_type: str = Field(min_length=1, max_length=80)
-    material: str = Field(default="aluminum", max_length=80)
     language: LanguageCode = "en"
+    operation_type: str | None = Field(default=None, max_length=80)
+    material: str = Field(default="aluminum", max_length=80)
 
 
 @lru_cache(maxsize=1)
@@ -96,11 +96,34 @@ async def diagnose(request: DiagnosisRequest):
     }}
 
 
+@router.post("/gcode/explain")
+async def explain_gcode(request: GCodeRequest):
+    """Line-by-line explanation of a G/M-code program against the manual's tables."""
+    engine = await run_in_threadpool(get_engine)
+    result = await run_in_threadpool(engine.explain_gcode, request.gcode_program, request.language)
+    if result is None:
+        raise HTTPException(503, "G-code knowledge is unavailable")
+    return {"success": True, "data": result}
+
+
 @router.post("/gcode/validate")
 async def validate_gcode(request: GCodeRequest):
-    # The legacy handler validated hard-coded parameters and returned valid=true
-    # when its engine was absent. Never expose that as program validation.
-    raise HTTPException(501, "Authoritative G-code program validation is not available. Use the reviewed manufacturing validation workflow.")
+    """Advisory syntax/consistency checks. Never presented as machine validation."""
+    engine = await run_in_threadpool(get_engine)
+    result = await run_in_threadpool(engine.validate_gcode, request.gcode_program)
+    if result is None:
+        raise HTTPException(503, "G-code knowledge is unavailable")
+    return {"success": True, "data": result}
+
+
+@router.get("/gcode/sample")
+async def gcode_sample(operation: str = "drill", material: str = "aluminum"):
+    """A short, machine-accurate example program (advisory draft, not for execution)."""
+    engine = await run_in_threadpool(get_engine)
+    result = await run_in_threadpool(engine.gcode_sample, operation, material)
+    if result is None:
+        raise HTTPException(503, "G-code knowledge is unavailable")
+    return {"success": True, "data": result}
 
 
 @router.get("/learn/modules")

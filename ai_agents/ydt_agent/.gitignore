@@ -42,3 +42,5 @@ knowledge/processed/aim-7510/*
 !knowledge/processed/aim-7510/spare_parts.json
 !knowledge/processed/aim-7510/specifications_gold_tier.json
 !knowledge/processed/aim-7510/wiring_diagram_analysis.json
+!knowledge/processed/aim-7510/gcode_reference.json
+!knowledge/processed/aim-7510/alarm_codes.json

@@ -26,7 +26,7 @@ export const PackageCalculator = ({ onPackageRecommend, className = '' }: Packag
       {recommendation && <div className="rounded-xl border border-amber-500/30 p-5 space-y-4">
         <h3 className="text-xl font-semibold">{packages[recommendation].title}</h3>
         <p>{packages[recommendation].price}</p>
-        <p>{label('ALMONA will confirm machine models, site location, scope, response times and written pricing before you commit.', 'ستؤكد ألمونا طرازات الماكينات وموقع العمل والنطاق وأوقات الاستجابة والسعر كتابةً قبل التعاقد.')}</p>
+        <p>{label('ALMONA will confirm machine models, site location, scope, response times and written pricing before you commit.', 'ستؤكد المُنى طرازات الماكينات وموقع العمل والنطاق وأوقات الاستجابة والسعر كتابةً قبل التعاقد.')}</p>
         <Button onClick={() => onPackageRecommend?.(recommendation)}>{label('Discuss', 'ناقش')} {packages[recommendation].title}</Button>
       </div>}
     </CardContent>

@@ -4,11 +4,14 @@ Combines: Nervous System + Professor + Doctor + Tour Guide
 """
 
 import json
+import re
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
 import logging
+
+from .guided_content import build_guide, guide_as_text
 
 # Import new modules
 try:
@@ -41,10 +44,9 @@ except ImportError:
 
 
 try:
-    from .gcode_ydt_integration import YDTGCodeEnhancer, GCodeYDTValidator
+    from .gcode_ydt_integration import GCodeKnowledge
 except ImportError:
-    YDTGCodeEnhancer = None
-    GCodeYDTValidator = None
+    GCodeKnowledge = None
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -67,6 +69,60 @@ class Language(Enum):
     ENGLISH = "en"
     RUSSIAN = "ru"
     ARABIC = "ar"  # NEW: Arabic support
+
+
+_TUTORIALS = {'en': {'title': 'AIM 7510 OPERATION TUTORIAL',
+        'modules': [{'title': 'Safety First',
+                     'steps': [{'title': 'Personal Protective Equipment', 'points': []},
+                               {'title': 'Work Area & Emergency Stop', 'points': []}]},
+                    {'title': 'Machine Startup',
+                     'steps': [{'title': 'Power On', 'points': []},
+                               {'title': 'System Initialization', 'points': []}]},
+                    {'title': 'Tool Setup',
+                     'steps': [{'title': 'Load Tools', 'points': []},
+                               {'title': 'Set Offsets', 'points': []}]},
+                    {'title': 'Cutting Operation',
+                     'steps': [{'title': 'Load Program', 'points': []},
+                               {'title': 'Run Cutting', 'points': []}]}]},
+ 'ar': {'title': 'دليل تشغيل AIM 7510',
+        'modules': [{'title': 'السلامة أولاً',
+                     'steps': [{'title': 'معدات الحماية الشخصية', 'points': []},
+                               {'title': 'منطقة العمل والتوقف الطارئ', 'points': []}]},
+                    {'title': 'تشغيل الماكينة',
+                     'steps': [{'title': 'تشغيل الطاقة', 'points': []},
+                               {'title': 'تهيئة النظام', 'points': []}]},
+                    {'title': 'إعداد الأدوات',
+                     'steps': [{'title': 'تحميل الأدوات', 'points': []},
+                               {'title': 'ضبط الإزاحات', 'points': []}]},
+                    {'title': 'التشغيل والقطع',
+                     'steps': [{'title': 'تحميل البرنامج', 'points': []},
+                               {'title': 'تنفيذ القطع', 'points': []}]}]},
+ 'tr': {'title': 'AIM 7510 İŞLETME EĞİTİMİ',
+        'modules': [{'title': 'Önce Güvenlik',
+                     'steps': [{'title': 'Kişisel Koruyucu Donanım', 'points': []},
+                               {'title': 'Çalışma Alanı ve Acil Durdurma', 'points': []}]},
+                    {'title': 'Makine Başlatma',
+                     'steps': [{'title': 'Güç Açma', 'points': []},
+                               {'title': 'Sistem Başlatma', 'points': []}]},
+                    {'title': 'Takım Kurulumu',
+                     'steps': [{'title': 'Takımları Yükle', 'points': []},
+                               {'title': 'Ofsetleri Ayarla', 'points': []}]},
+                    {'title': 'Kesim İşlemi',
+                     'steps': [{'title': 'Programı Yükle', 'points': []},
+                               {'title': 'Kesimi Çalıştır', 'points': []}]}]},
+ 'ru': {'title': 'ОБУЧЕНИЕ ПО РАБОТЕ С AIM 7510',
+        'modules': [{'title': 'Безопасность прежде всего',
+                     'steps': [{'title': 'Средства индивидуальной защиты', 'points': []},
+                               {'title': 'Рабочая зона и аварийная остановка', 'points': []}]},
+                    {'title': 'Запуск станка',
+                     'steps': [{'title': 'Включение питания', 'points': []},
+                               {'title': 'Инициализация системы', 'points': []}]},
+                    {'title': 'Настройка инструмента',
+                     'steps': [{'title': 'Загрузка инструментов', 'points': []},
+                               {'title': 'Установка смещений', 'points': []}]},
+                    {'title': 'Операция резки',
+                     'steps': [{'title': 'Загрузка программы', 'points': []},
+                               {'title': 'Выполнение резки', 'points': []}]}]}}
 
 
 @dataclass
@@ -137,6 +193,26 @@ class YDTChatbotEngine:
                 self.specs_data = json.load(f)
         else:
             self.specs_data = {}
+
+        # Load machine-specific, multi-language G/M-code reference
+        self.gcode_knowledge = None
+        if GCodeKnowledge is not None:
+            try:
+                self.gcode_knowledge = GCodeKnowledge(processed_dir)
+                if not self.gcode_knowledge.commands:
+                    logger.warning("[YDT CHATBOT] G/M-code reference is empty")
+            except Exception as e:  # noqa: BLE001
+                logger.warning(f"[YDT CHATBOT] Failed to load G/M-code reference: {e}")
+
+        # Load alarm-code index (multi-language, manual sec. 18)
+        self.alarm_codes = {}
+        alarm_file = processed_dir / "alarm_codes.json"
+        if alarm_file.exists():
+            try:
+                with open(alarm_file, "r", encoding="utf-8") as f:
+                    self.alarm_codes = {a["code"]: a for a in json.load(f).get("alarms", [])}
+            except Exception as e:  # noqa: BLE001
+                logger.warning(f"[YDT CHATBOT] Failed to load alarm codes: {e}")
 
         # Load component graph
         graph_file = processed_dir / "wiring_diagram_analysis.json"
@@ -242,18 +318,29 @@ class YDTChatbotEngine:
             return self._tour_guide_response(query, intent, context)
         elif context.persona == Persona.NERVOUS_SYSTEM:
             return self._nervous_system_response(query, intent, context)
+        elif context.persona == Persona.CODE_MASTER:
+            return self._code_master_response(query, intent, context)
         else:
             return self._general_response(query, intent, context)
 
     def _detect_intent(self, query: str, language: Language) -> str:
         """Detect user intent from query"""
         query_lower = query.lower()
+        if any(term in query_lower for term in (
+            "explore applications", "application", "uygulama", "применени", "تطبيقات", "استخدامات"
+        )):
+            return "applications"
+        if any(term in query_lower for term in ("diagnos", "teşhis", "диагност", "تشخيص")):
+            return "diagnosis"
+        if any(term in query_lower for term in ("обучи", "işletim", "kullanmayı")):
+            return "teaching"
+
 
         # Arabic detection
         if language == Language.ARABIC or detect_arabic(query):
             arabic_patterns = {
-                "teaching": ["علم", "تعلم", "كيف", "شرح", "دليل"],
-                "diagnosis": ["خطأ", "مشكلة", "عطل", "عطل", "تشخيص"],
+                "teaching": ["علم", "علّم", "علّمني", "تعلم", "كيف", "شرح", "دليل", "تشغيل", "شغّل", "تعليم"],
+                "diagnosis": ["خطأ", "مشكلة", "عطل", "تشخيص", "لا يعمل", "لا يدور", "توقف", "معطل", "إنذار"],
                 "location": ["أين", "موقع", "مكان"],
                 "information": ["ما هو", "معلومات", "مواصفات"],
                 "parts": ["قطعة", "جزء", "غيار"],
@@ -284,9 +371,20 @@ class YDTChatbotEngine:
                 "fault",
                 "error",
                 "problem",
+                "alarm",
+                "not rotating",
+                "not working",
+                "does not work",
+                "doesn't work",
+                "won't",
+                "stopped",
+                "fails",
+                "failure",
                 "arıza",
                 "hata",
+                "çalışmıyor",
                 "неисправность",
+                "не работает",
             ]
         ):
             return "diagnosis"
@@ -341,46 +439,94 @@ class YDTChatbotEngine:
         self, query: str, intent: str, context: ChatContext
     ) -> ChatResponse:
         """Professor persona - Teaching mode"""
-        if intent == "teaching":
-            # Generate step-by-step tutorial
-            response = self._generate_tutorial(query, context)
-            return ChatResponse(
-                content=response,
-                confidence=0.95,
-                sources=["user_manual", "chapters"],
-                suggested_actions=[
-                    "Continue tutorial",
-                    "Ask question",
-                    "Switch to practice mode",
-                ],
-            )
+        if intent == "teaching" or query.casefold().startswith(("explain:", "اشرح:", "açıkla:", "объясните:")):
+            return self._guided_response("operation", context, topic=query)
         else:
             return self._general_response(query, intent, context)
 
     def _doctor_response(
         self, query: str, intent: str, context: ChatContext
     ) -> ChatResponse:
-        """Doctor persona - Diagnosis mode"""
-        if intent == "diagnosis":
-            # Generate diagnosis
-            response = self._generate_diagnosis(query, context)
+        """Doctor persona - Diagnosis mode (alarm codes first)."""
+        code = self._extract_alarm_code(query)
+        if code:
+            return self._alarm_response(code, context)
+        return self._guided_response("diagnosis", context, symptom=query.strip())
+
+    @staticmethod
+    def _extract_alarm_code(query: str) -> Optional[str]:
+        """Return a normalized 0xCODE (e.g. 0xA00C) if the query contains one."""
+        m = re.search(r"0x[0-9A-Fa-f]{4}", query)
+        if not m:
+            return None
+        return "0x" + m.group(0)[2:].upper()
+
+    def _lookup_alarm_code(self, code: str, language: str) -> Optional[Dict[str, Any]]:
+        entry = self.alarm_codes.get(code)
+        if not entry:
+            return None
+
+        def pick(field: str) -> Optional[str]:
+            for lang in (language, "en"):
+                value = entry.get(lang, {}).get(field)
+                if value:
+                    return value
+            return None
+
+        detail = entry.get(language, {}).get("detail") or entry.get("en", {}).get("detail") or []
+        return {
+            "code": entry["code"],
+            "title": pick("title") or "",
+            "detail": detail,
+            "translations": {
+                lang: entry[lang]["title"]
+                for lang in ("en", "tr", "ru")
+                if entry[lang].get("title")
+            },
+            "source_section": "18. Alarm List",
+            "source_document": "MKK.028_1ET089000-0122_AIM_7510_(20.07.2020)_REV.07.pdf",
+        }
+
+    def _alarm_response(self, code: str, context: ChatContext) -> ChatResponse:
+        lang = (
+            context.language.value
+            if isinstance(context.language, Language)
+            else str(context.language)
+        )
+        result = self._lookup_alarm_code(code, lang)
+        if not result:
             return ChatResponse(
-                content=response,
-                confidence=0.85,
-                sources=["wiring_diagram", "component_graph", "manual"],
-                suggested_actions=[
-                    "Check component",
-                    "View wiring diagram",
-                    "Order spare part",
-                ],
+                content=(
+                    f"{code} is not in the AIM-7510 manual alarm list (sec. 18). "
+                    "Check the alarm on the operator panel and contact YILMAZ "
+                    "service if it persists."
+                ),
+                confidence=0.3,
+                sources=[],
+                suggested_actions=["Check the operator panel", "Contact service"],
             )
-        else:
-            return self._general_response(query, intent, context)
+        title = result["title"]
+        detail = "\n".join(f"• {d}" for d in result["detail"])
+        tr = result["translations"].get("tr")
+        ru = result["translations"].get("ru")
+        trs = f"\nTR: {tr}" if tr and lang != "tr" else ""
+        rus = f"\nRU: {ru}" if ru and lang != "ru" else ""
+        return ChatResponse(
+            content=(
+                f"{code} — {title}\n{detail}{trs}{rus}\n\n"
+                f"Source: {result['source_section']} — {result['source_document']}"
+            ),
+            confidence=1.0,
+            sources=[result["source_document"], "18. Alarm List"],
+            suggested_actions=["Describe symptoms", "Check wiring diagram", "Contact service"],
+        )
 
     def _tour_guide_response(
         self, query: str, intent: str, context: ChatContext
     ) -> ChatResponse:
         """Tour Guide persona - Navigation mode"""
+        if intent == "applications" or query.casefold().startswith(("explain:", "اشرح:", "açıkla:", "объясните:")):
+            return self._guided_response("applications", context, topic=query)
         if intent == "location":
             # Find component location
             response = self._find_component_location(query, context)
@@ -410,6 +556,167 @@ class YDTChatbotEngine:
             sources=["component_status", "performance_metrics"],
             suggested_actions=["View details", "Check history", "Set alert"],
         )
+
+    # ---------------------------------------------------------------- G-code
+    def _code_master_response(self, query: str, intent: str, context: ChatContext) -> ChatResponse:
+        """Code Master persona: explain / validate / sample G/M-code (advisory)."""
+        lang = (
+            context.language.value
+            if isinstance(context.language, Language)
+            else str(context.language)
+        )
+        if self.gcode_knowledge is None:
+            return ChatResponse(
+                content=(
+                    "G-code guidance is currently unavailable: the AIM-7510 G/M-code "
+                    "reference did not load. This is reported as a missing-knowledge "
+                    "failure, not a fallback answer."
+                ),
+                confidence=0.0,
+                sources=[],
+                suggested_actions=["Recheck the knowledge package"],
+            )
+
+        gk = self.gcode_knowledge
+        text = query.strip()
+        low = text.lower()
+
+        tokens = re.findall(r"\b[GM]\d+(?:\.\d+)?[A-Za-z]?\b", text.upper())
+        wants_sample = any(
+            w in low
+            for w in ("sample", "example", "generate", "örnek", "oluştur", "пример", "создать", "مثال", "أنشئ")
+        )
+        wants_validate = any(
+            w in low
+            for w in ("validate", "check", "verify", "doğrula", "kontrol", "провер", "تحقق", "فحص")
+        )
+
+        # Pasted program -> explain line by line.
+        if "\n" in text and len(tokens) >= 2:
+            result = gk.explain_program(text, lang)
+            return ChatResponse(
+                content=self._format_explain_program(result),
+                confidence=0.95 if not result["unknown_commands"] else 0.7,
+                sources=[result["source_document"], "13. G code functions", "14. M code functions"],
+                suggested_actions=["Validate this program", "Show a sample program", "Explain one command"],
+                visual_aids={"gcode": result},
+            )
+
+        # Single-command question ("what is G71?" / "M3").
+        if len(tokens) == 1 and len(text.split()) <= 6 and not wants_validate:
+            result = gk.explain_command(tokens[0], lang)
+            return ChatResponse(
+                content=self._format_explain_command(result),
+                confidence=1.0 if result.get("known") else 0.3,
+                sources=[result.get("source_document")] if result.get("source_document") else [],
+                suggested_actions=["Show a sample program", "Explain a program"],
+            )
+
+        if wants_validate and tokens:
+            result = gk.validate_program(text)
+            return ChatResponse(
+                content=self._format_validate_program(result),
+                confidence=0.8,
+                sources=[result["source_document"], "13. G code functions", "14. M code functions"],
+                suggested_actions=["Explain this program", "Show a sample program"],
+                visual_aids={"gcode_validation": result},
+            )
+
+        if wants_sample:
+            result = gk.sample_program()
+            return ChatResponse(
+                content=self._format_sample_program(result),
+                confidence=0.9,
+                sources=[result["source_document"], "13. G code functions", "14. M code functions"],
+                suggested_actions=["Explain a command", "Validate a program"],
+                visual_aids={"gcode_sample": result},
+            )
+
+        # Default: a sample + how to use.
+        sample = gk.sample_program()
+        return ChatResponse(
+            content=(
+                self._format_sample_program(sample)
+                + "\n\nPaste a G-code program and I'll explain it line by line, or ask "
+                "'validate <program>' for advisory checks. Every answer cites the "
+                "AIM-7510 manual (13. G code functions / 14. M code functions)."
+            ),
+            confidence=0.9,
+            sources=[sample["source_document"]],
+            suggested_actions=["Explain a command", "Validate a program"],
+        )
+
+    @staticmethod
+    def _format_explain_command(result: Dict[str, Any]) -> str:
+        if not result.get("known"):
+            return result.get("description", "")
+        parts = [f"{result['code']} ({result.get('category', '')})", result.get("description", "")]
+        translations = result.get("translations", {})
+        if translations.get("tr"):
+            parts.append(f"TR: {translations['tr']}")
+        if translations.get("ru"):
+            parts.append(f"RU: {translations['ru']}")
+        parts.append(f"Source: {result.get('source_section')} — {result.get('source_document')}")
+        return "\n".join(parts)
+
+    @staticmethod
+    def _format_explain_program(result: Dict[str, Any]) -> str:
+        lines_out = []
+        for line in result["lines"]:
+            if not line["commands"]:
+                continue
+            descs = []
+            for c in line["commands"]:
+                if c.get("known"):
+                    descs.append(f"{c['code']} = {c['description']}")
+                else:
+                    descs.append(f"{c['code']} = (not in AIM-7510 manual tables)")
+            lines_out.append(f"{line['raw']}\n   -> {'; '.join(descs)}")
+        header = "Line-by-line explanation (advisory — not machine validation):\n"
+        if result.get("unknown_commands"):
+            header += f"Unknown commands to verify: {', '.join(result['unknown_commands'])}\n"
+        header += f"Source: {result['source_document']}\n"
+        return header + "\n".join(lines_out)
+
+    @staticmethod
+    def _format_validate_program(result: Dict[str, Any]) -> str:
+        if not result["findings"]:
+            lines = ["No advisory findings."]
+        else:
+            lines = [f"- [{f['severity']}] {f['message']}" for f in result["findings"]]
+        known = ", ".join(f"{v['label']}: {v['value']}" for v in result["known_limits"].values())
+        unverified = ", ".join(v["label"] for v in result["unverified_limits"])
+        return (
+            "Advisory G-code checks (NOT machine validation):\n"
+            + "\n".join(lines)
+            + f"\n\nKnown limits: {known or 'none extracted'}"
+            + f"\nNot extracted (see manual): {unverified}"
+            + f"\n\n{result['limits_note']}"
+            + f"\nSource: {result['source_document']}"
+        )
+
+    @staticmethod
+    def _format_sample_program(result: Dict[str, Any]) -> str:
+        notes = "\n".join(f"- {n}" for n in result["notes"])
+        return (
+            f"Sample {result['operation']} program for {result['machine_id']}:\n"
+            f"{result['program']}\n\nNotes:\n{notes}"
+        )
+
+    def explain_gcode(self, gcode: str, language: str = "en") -> Optional[Dict[str, Any]]:
+        if self.gcode_knowledge is None:
+            return None
+        return self.gcode_knowledge.explain_program(gcode, language)
+
+    def validate_gcode(self, gcode: str) -> Optional[Dict[str, Any]]:
+        if self.gcode_knowledge is None:
+            return None
+        return self.gcode_knowledge.validate_program(gcode)
+
+    def gcode_sample(self, operation: str = "drill", material: str = "aluminum") -> Optional[Dict[str, Any]]:
+        if self.gcode_knowledge is None:
+            return None
+        return self.gcode_knowledge.sample_program(operation, material)
 
     def _query_parsed_knowledge(self, query: str) -> Optional[str]:
         """Query parsed documentation knowledge base for Egyptian/fabrication"""
@@ -610,141 +917,28 @@ class YDTChatbotEngine:
                 ],
             )
 
+    def _guided_response(self, kind: str, context: ChatContext, symptom=None, topic=None) -> ChatResponse:
+        lang = context.language.value if isinstance(context.language, Language) else str(context.language)
+        guide = build_guide(kind, lang, _TUTORIALS, symptom)
+        if topic:
+            focused = []
+            for module in guide["modules"]:
+                steps = [step for step in module["steps"] if step["title"].casefold() in topic.casefold()]
+                if steps:
+                    focused.append({"title": module["title"], "steps": steps})
+            if focused:
+                guide["modules"] = focused
+        return ChatResponse(
+            content=guide_as_text(guide), confidence=0.0,
+            sources=["editorial_learning_outline", "AIM_7510_manual_reading_references"],
+            suggested_actions=[], visual_aids={"guided_content": guide},
+        )
+
     def _generate_tutorial(self, query: str, context: ChatContext) -> str:
-        """Generate step-by-step tutorial using knowledge base"""
-        # Search knowledge base for relevant content
-        query_lower = query.lower()
-
-        # Try to find relevant chapters from manual
-        relevant_content = []
-        if hasattr(self, "manual_data") and self.manual_data:
-            chapters = self.manual_data.get("chapters", [])
-            for chapter in chapters:
-                title = chapter.get("title", "").lower()
-                content = chapter.get("content", "").lower()
-                if any(
-                    word in title or word in content for word in query_lower.split()
-                ):
-                    relevant_content.append(chapter)
-
-        # If we found relevant content, use it
-        if relevant_content:
-            first_chapter = relevant_content[0]
-            chapter_title = first_chapter.get("title", "Operation Guide")
-            chapter_content = first_chapter.get("content", "")
-
-            if context.language == Language.ENGLISH:
-                return f"""📚 AIM 7510 OPERATION TUTORIAL
-
-{chapter_title}
-{'=' * len(chapter_title)}
-
-{chapter_content[:1000]}{'...' if len(chapter_content) > 1000 else ''}
-
-For complete details, refer to the AIM 7510 user manual."""
-
-        # Fallback to structured tutorial if no specific content found
-        if context.language == Language.ENGLISH:
-            return """📚 AIM 7510 OPERATION TUTORIAL
-
-MODULE 1: Machine Startup
-==========================
-
-Step 1: Power On
-- Check main power supply (380V, 3-phase)
-- Verify air pressure (6 bar minimum)
-- Press main power button
-
-Step 2: System Initialization
-- Wait for CNC controller to boot
-- Check for error messages on screen
-- Verify all axes are at home position
-
-Step 3: Tool Setup
-- Load tools into magazine (12+1 capacity)
-- Set tool offsets
-- Verify tool cooling system
-
-For detailed procedures, refer to the AIM 7510 user manual.
-"""
-        elif context.language == Language.TURKISH:
-            return """📚 AIM 7510 İŞLETME EĞİTİMİ
-
-MODÜL 1: Makine Başlatma
-==========================
-
-Adım 1: Güç Açma
-- Ana güç kaynağını kontrol edin (380V, 3 fazlı)
-- Hava basıncını doğrulayın (minimum 6 bar)
-- Ana güç düğmesine basın
-
-Adım 2: Sistem Başlatma
-- CNC kontrolcüsünün açılmasını bekleyin
-- Ekranda hata mesajlarını kontrol edin
-- Tüm eksenlerin sıfır konumunda olduğunu doğrulayın
-
-Adım 3: Takım Kurulumu
-- Takımları dergiye yükleyin (12+1 kapasite)
-- Takım ofsetlerini ayarlayın
-- Takım soğutma sistemini doğrulayın
-
-Detaylı prosedürler için AIM 7510 kullanım kılavuzuna bakın.
-"""
-        elif context.language == Language.RUSSIAN:
-            return """📚 ОБУЧЕНИЕ ПО РАБОТЕ С AIM 7510
-
-МОДУЛЬ 1: Запуск станка
-==========================
-
-Шаг 1: Включение питания
-- Проверьте основное питание (380В, 3-фазное)
-- Проверьте давление воздуха (минимум 6 бар)
-- Нажмите кнопку основного питания
-
-Шаг 2: Инициализация системы
-- Дождитесь загрузки ЧПУ контроллера
-- Проверьте наличие сообщений об ошибках на экране
-- Убедитесь, что все оси находятся в исходном положении
-
-Шаг 3: Настройка инструмента
-- Загрузите инструменты в магазин (емкость 12+1)
-- Установите смещения инструмента
-- Проверьте систему охлаждения инструмента
-
-Для подробных процедур см. руководство пользователя AIM 7510.
-"""
-        else:  # Arabic
-            return """📚 دليل تشغيل AIM 7510
-
-الوحدة 1: تشغيل الماكينة
-==========================
-
-الخطوة 1: تشغيل الطاقة
-- تحقق من مصدر الطاقة الرئيسي (380 فولت، 3 مراحل)
-- تحقق من ضغط الهواء (6 بار كحد أدنى)
-- اضغط زر الطاقة الرئيسي
-
-الخطوة 2: تهيئة النظام
-- انتظر تحميل وحدة التحكم CNC
-- تحقق من رسائل الخطأ على الشاشة
-- تأكد من أن جميع المحاور في موضع الصفر
-
-الخطوة 3: إعداد الأدوات
-- قم بتحميل الأدوات في المجلة (سعة 12+1)
-- اضبط إزاحة الأدوات
-- تحقق من نظام تبريد الأدوات
-
-للإجراءات التفصيلية، راجع دليل المستخدم AIM 7510.
-"""
+        return self._guided_response("operation", context).content
 
     def _generate_diagnosis(self, query: str, context: ChatContext) -> str:
-        """Generate machine diagnosis"""
-        # This would use knowledge graph to diagnose issues
-        return (
-            "Based on the symptoms described, I recommend checking "
-            "the electrical connections and component status. "
-            "Please refer to the wiring diagram for component locations."
-        )
+        return self._guided_response("diagnosis", context, symptom=query.strip()).content
 
     def _find_component_location(self, query: str, context: ChatContext) -> str:
         """Find component location in machine"""

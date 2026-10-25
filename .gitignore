@@ -30,6 +30,7 @@ htmlcov/
 *.json
 # Exception: YDT knowledge base must be tracked for production
 !src/lib/ydt/knowledge-base.json
+!ai_agents/ydt_agent/operator_question_set.json
 !src/core/authority/version_lock.json
 !src/lib/ticketing/sla_policy.json
 !docs/ci/typecheck-app-baseline.json
@@ -138,3 +139,18 @@ batch1-release*/
 !ai_agents/ydt_agent/knowledge/processed/aim-7510/spare_parts.json
 !ai_agents/ydt_agent/knowledge/processed/aim-7510/specifications_gold_tier.json
 !ai_agents/ydt_agent/knowledge/processed/aim-7510/wiring_diagram_analysis.json
+!ai_agents/ydt_agent/knowledge/processed/aim-7510/gcode_reference.json
+!ai_agents/ydt_agent/knowledge/processed/aim-7510/alarm_codes.json
+
+# Exception: crawlable public SEO pages (operator references + fabricator content)
+!public/gcode-reference.html
+!public/alarm-codes.html
+!public/production-line.html
+!public/cost-roi.html
+!public/machine-comparison.html
+!public/products/machines/*.html
+
+# Technical visibility audit output and tracked route contract
+/artifacts/visibility*/
+!scripts/visibility/routes.json
+!scripts/visibility/tsconfig.json

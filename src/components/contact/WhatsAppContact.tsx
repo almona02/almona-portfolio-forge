@@ -24,7 +24,7 @@ interface QuickMessage {
 export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
   className = '',
   position = 'bottom-right',
-  phoneNumber = '+201234567890', // Default Egyptian number
+  phoneNumber = '+201000355135', // WhatsApp Business (Almona)
   businessHours = '8AM - 6PM (GMT+2)',
   autoOpen = false
 }) => {
