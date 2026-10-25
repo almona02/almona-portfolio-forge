@@ -1,6 +1,9 @@
-﻿import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
+import type { Database } from '@/types/database'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { TicketStatus } from '@/types/tickets'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -26,8 +29,20 @@ interface TicketRow {
   created_at: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = supabase as any
+type TicketUpdate = Database['public']['Tables']['service_tickets']['Update']
+type TicketDatabase = {
+  public: {
+    Tables: {
+      service_tickets: Database['public']['Tables']['service_tickets'] & { Relationships: [] }
+    }
+    Views: Record<never, never>
+    Functions: Record<never, never>
+  }
+}
+
+// The legacy shared schema omits relationship metadata required by the SDK.
+// Scope its compatibility type to this table; retain the shared row/write contracts.
+const ticketDb = supabase as unknown as SupabaseClient<TicketDatabase>
 
 const TechnicianDashboard: React.FC = () => {
   const { user } = useAuth()
@@ -41,16 +56,18 @@ const TechnicianDashboard: React.FC = () => {
     if (!user?.id) return
     setLoading(true)
     try {
-      const { data } = await supabase.from('service_tickets').select('*').eq('assigned_to', user.id).order('updated_at', { ascending: false })
-      setTickets((data ?? []) as TicketRow[])
+      const { data, error } = await supabase.from('service_tickets').select('*').eq('assigned_to', user.id).order('updated_at', { ascending: false })
+      if (error) throw error
+      setTickets(data ?? [])
     } catch (e) { console.error(e) } finally { setLoading(false) }
   }, [user?.id])
 
   useEffect(() => { void refresh() }, [refresh])
 
-  const updateStatus = async (t: TicketRow, status: string, extra: Record<string, unknown> = {}) => {
+  const updateStatus = async (t: TicketRow, status: TicketStatus, extra: Pick<TicketUpdate, 'assigned_to'> = {}) => {
     try {
-      await db.from('service_tickets').update({ status, updated_at: new Date().toISOString(), ...extra }).eq('id', t.id)
+      const { error } = await ticketDb.from('service_tickets').update({ status, updated_at: new Date().toISOString(), ...extra }).eq('id', t.id)
+      if (error) throw error
       toast({ title: `Ticket ${status.replace(/_/g, ' ')}` })
       await refresh()
     } catch (e) { toast({ title: 'Update failed', description: (e as Error)?.message ?? 'Unknown error', variant: 'destructive' }) }
@@ -60,7 +77,8 @@ const TechnicianDashboard: React.FC = () => {
     try {
       const { url } = await ticketMessageApi.createShare(t.id)
       await navigator.clipboard.writeText(url).catch(() => {})
-      await db.from('service_tickets').update({ escalated: true, escalated_at: new Date().toISOString() }).eq('id', t.id)
+      const { error } = await ticketDb.from('service_tickets').update({ escalated: true, escalated_at: new Date().toISOString() }).eq('id', t.id)
+      if (error) throw error
       toast({ title: 'Escalation report link copied for the Turkish team' })
       await refresh()
     } catch (e) { toast({ title: 'Escalation failed', description: (e as Error)?.message ?? 'Unknown error', variant: 'destructive' }) }
@@ -85,7 +103,7 @@ const TechnicianDashboard: React.FC = () => {
           {tickets.map((t) => (
             <Card key={t.id}>
               <CardContent className="flex flex-wrap items-center gap-3 py-3">
-                <button className="flex-1 min-w-[240px] text-left" onClick={() => void navigate(`/support/tickets/${t.id}`)}>
+                <button className="flex-1 min-w-[240px] text-left" onClick={() => { void Promise.resolve(navigate(`/support/tickets/${t.id}`)).catch(() => toast({ title: 'Navigation failed', variant: 'destructive' })) }}>
                   <div className="font-mono text-xs text-muted-foreground">{t.ticket_number}</div>
                   <div className="font-medium">{t.title}</div>
                   <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">

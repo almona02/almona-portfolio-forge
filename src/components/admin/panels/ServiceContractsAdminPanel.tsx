@@ -254,7 +254,7 @@ export const ServiceContractsAdminPanel: React.FC = () => {
       <VisitTicketDialog
         ticket={visitDialog}
         onClose={() => setVisitDialog(null)}
-        onSaved={() => { setVisitDialog(null); if (selected) void loadVisits(selected); }}
+        onSaved={() => { setVisitDialog(null); if (selected) void loadVisits(selected) }}
       />
 
       {/* Delete confirm */}

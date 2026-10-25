@@ -1,4 +1,4 @@
-﻿import { csvCell } from '@/lib/csv'
+import { csvCell } from '@/lib/csv'
 import React, { useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ColumnDef } from '@tanstack/react-table'
@@ -95,8 +95,8 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       console.log('Real-time ticket update:', payload)
       
       // Invalidate queries to refetch data
-      void queryClient.invalidateQueries({ queryKey: ['admin-tickets'] })
-      void queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-tickets'] }).catch(() => toast.error('Unable to refresh tickets'))
+      queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] }).catch(() => toast.error('Unable to refresh ticket metrics'))
       
       // Show toast notification for updates
       if (payload.eventType === 'INSERT') {
@@ -107,7 +107,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
     })
 
     return () => {
-      void subscription.unsubscribe()
+      subscription.unsubscribe().catch(() => console.error('Unable to unsubscribe from ticket updates'))
     }
   }, [queryClient])
 
@@ -132,15 +132,15 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       accessorKey: 'ticket_number',
       header: 'Ticket #',
       cell: ({ row }) => (
-        <div className="font-medium">{row.getValue('ticket_number')}</div>
+        <div className="font-medium">{row.original.ticket_number}</div>
       ),
     },
     {
       accessorKey: 'title',
       header: 'Title',
       cell: ({ row }) => (
-        <div className="max-w-[200px] truncate" title={row.getValue('title')}>
-          {row.getValue('title')}
+        <div className="max-w-[200px] truncate" title={row.original.title}>
+          {row.original.title}
         </div>
       ),
     },
@@ -148,7 +148,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       accessorKey: 'user_profile',
       header: 'Customer',
       cell: ({ row }) => {
-        const profile = row.getValue('user_profile')
+        const profile = row.original.user_profile
         return (
           <div className="text-sm">
             <div className="font-medium">{profile?.full_name || 'Unknown'}</div>
@@ -160,13 +160,13 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <TicketStatusBadge status={row.getValue('status')} />,
+      cell: ({ row }) => <TicketStatusBadge status={row.original.status} />,
     },
     {
       accessorKey: 'priority',
       header: 'Priority',
       cell: ({ row }) => {
-        const priority = row.getValue('priority')
+        const priority = row.original.priority
         return (
           <Badge 
             variant="outline" 
@@ -189,7 +189,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       accessorKey: 'type',
       header: 'Type',
       cell: ({ row }) => {
-        const type = row.getValue('type')
+        const type = row.original.type
         return (
           <Badge variant="secondary">
             {type.replace('_', ' ').charAt(0).toUpperCase() + type.replace('_', ' ').slice(1)}
@@ -201,7 +201,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       accessorKey: 'assigned_user',
       header: 'Assigned To',
       cell: ({ row }) => {
-        const assignedUser = row.getValue('assigned_user')
+        const assignedUser = row.original.assigned_user
         return assignedUser ? (
           <div className="text-sm">
             <div className="font-medium">{assignedUser.full_name}</div>
@@ -218,7 +218,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       accessorKey: 'created_at',
       header: 'Created',
       cell: ({ row }) => {
-        const date = new Date(row.getValue('created_at'))
+        const date = new Date(row.original.created_at)
         return (
           <div className="text-sm">
             <div>{format(date, 'MMM dd, yyyy')}</div>
@@ -279,8 +279,8 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
   ]
 
   const handleRefresh = () => {
-    void refetch()
-    void queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] })
+    refetch().catch(() => toast.error('Unable to refresh tickets'))
+    queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] }).catch(() => toast.error('Unable to refresh ticket metrics'))
     toast.success('Data refreshed')
   }
 
