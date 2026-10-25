@@ -1,4 +1,5 @@
-﻿import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { isChunkLoadError } from '../../utils/moduleRecovery';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -17,10 +18,7 @@ export class ChunkLoadingErrorBoundary extends Component<Props, State> {
 
   public static getDerivedStateFromError(error: Error): State {
     // Check if it's a chunk loading error
-    if (error.message.includes('Loading chunk') || 
-        error.message.includes('Loading CSS chunk') ||
-        error.message.includes('ChunkLoadError') ||
-        error.message.includes('Loading module')) {
+    if (isChunkLoadError(error)) {
       return { hasChunkError: true, retryCount: 0 };
     }
     return { hasChunkError: false, retryCount: 0 };

@@ -1,4 +1,4 @@
-﻿import { loadReviewSnapshot, type VerifiedReview } from '@/lib/fabricator/reviewSnapshot';
+import { loadReviewSnapshot, type VerifiedReview } from '@/lib/fabricator/reviewSnapshot';
 import { loadSavedOptimizationEvidence } from '@/lib/fabricator/commercial/loadSavedOptimizationEvidence';
 /**
  * Fabricator v2 Supabase client: canonical read/write for fabricator_projects_v2 and fabricator_positions_v2.
@@ -116,7 +116,7 @@ export function persistenceErrorMessage(err: unknown): string {
     try {
       return JSON.stringify(err);
     } catch {
-      return (err as string);
+      return String(err);
     }
   }
   return String(err);
