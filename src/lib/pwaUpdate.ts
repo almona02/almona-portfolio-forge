@@ -1,3 +1,4 @@
+import { canActivateWorker, waitForWorker } from './serviceWorkerLifecycle';
 import { toast } from 'sonner';
 
 const UPDATE_TOAST_ID = 'app-update';
@@ -6,13 +7,13 @@ const UPDATE_TOAST_ID = 'app-update';
 export function showAppUpdate(updateApp: () => Promise<void>) {
   toast.info('An app update is ready', {
     id: UPDATE_TOAST_ID,
-    description: 'Save your current work before reloading. New releases stay blocked until you reload.',
+    description: 'Save your current work before reloading. Close other Almona tabs before applying the update.',
     duration: Infinity,
     action: {
       label: 'Reload after saving',
       onClick: () => {
         void updateApp().catch(() => {
-          toast.error('The update could not be activated. Save your work and try reloading again.');
+          toast.error('Save your work and close other Almona tabs, then try updating again.');
         });
       },
     },
@@ -61,4 +62,21 @@ export function watchServiceWorkerUpdates(
     document.removeEventListener('visibilitychange', onVisibility);
     window.clearInterval(intervalId);
   };
+}
+
+/** Only the initiating tab reloads; never subscribe all tabs to controllerchange. */
+export async function activateAppUpdate(registration: ServiceWorkerRegistration): Promise<void> {
+  const worker = registration.waiting;
+  if (worker) {
+    if (!(await canActivateWorker(worker))) throw new Error('Close other Almona tabs before updating.');
+    worker.postMessage({ type: 'SKIP_WAITING' });
+    await waitForWorker(worker, 'activated');
+    if (worker.state !== 'activated') throw new Error('The update did not activate.');
+  }
+  window.location.reload();
+}
+
+export async function registerAppServiceWorker(): Promise<() => void> {
+  const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' });
+  return watchServiceWorkerUpdates(registration, () => showAppUpdate(() => activateAppUpdate(registration)));
 }

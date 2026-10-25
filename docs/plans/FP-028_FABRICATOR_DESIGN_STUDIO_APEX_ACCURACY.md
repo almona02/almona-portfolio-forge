@@ -3,6 +3,7 @@
 **Plan ID:** FP-028  
 **Status:** IN PROGRESS  
 **Created:** 2026-10-04  
+**Last reassessed:** 2026-10-19 at `797e102b`  
 **Primary rule:** No output is manufacturing-ready unless system data, geometry, formula provenance, and piece reconciliation pass.
 
 ## Objective
@@ -252,7 +253,7 @@ Scorecard:
 
 | Slice | Score | Status |
 | --- | ---: | --- |
-| P6.1 Automated gates (focused suite, TS, lint, build) | 40 | Complete — focused FP-028 acceptance/engine/preview/layout tests; TypeScript; lint 0 errors; production build |
+| P6.1 Automated gates (focused suite, TS, lint, build) | 30 | Revalidation partial — 33 files / 165 tests pass, 4 expected failures; lint 0 errors; build passes; baseline TypeScript gate fails on current `src/components/SEO.tsx:TS2345` worktree change |
 | P6.2 Live Measure→QC scaffold (runbook, A→B identity test, golden length pending fixture) | 20 | Complete — runbook + identitySwitch + ROCK60 length fixture fail-closed (`PENDING_EXTERNAL_FIXTURE`) |
 | P6.2 Live operator gates (F1 Measure→QC, hard reload, 2nd account, golden compare) | 0 | Open — requires approved ROCK60 authority seed + operator execution of runbook |
 
@@ -363,6 +364,7 @@ Windows fallback:
 | 2026-10-04 | Phase 5 exit | COMPLETE — physics claims, conversion guards, save identity, late preview, estimate chrome, canvas-primary layout | Phase 5 = 100/100; commit: none |
 | 2026-10-04 | Phase 6 / P6.1 automated | COMPLETE — focused FP-028 acceptance + Phase 5 regressions green; TypeScript; lint 0 errors; production build | Live Measure→QC still open; no manufacturing-ready claim |
 | 2026-10-04 | Phase 6 / P6.2 scaffold | COMPLETE — live runbook; A→B identitySwitch tests; ROCK60 physical-length golden fixture pending external evidence | Operator gates + authority seed still open; commit: `72180d4` |
+| 2026-10-19 | Current-tree reassessment | PARTIAL — Phases 0–5 remain implemented; Phase 6 automated gate is not currently releasable | FP-028: 33 files passed, 165 tests passed, 4 expected failures; lint 0 errors / 16,266 warnings; production build passed; baseline-delta TypeScript failed only on `src/components/SEO.tsx:TS2345`; strict TypeScript remains non-clean with 1,684 errors; production Supabase is healthy, authority and evidence RPCs exist, and ROCK60 authority rows remain 0 |
 
 ### Scorecard (updated after each phase / major slice)
 
@@ -376,8 +378,8 @@ Scoring rules: manufacturing-ready = 100 only when Phases 0–6 exit gates pass.
 | **Phase 3** | **100 / 100** | Exit gate met: canonical mm geometry, spans, closure and metadata continuity |
 | **Phase 4** | **100 / 100** | Exit gate met: contract Apex path, batch fail-closed, live authority RPC + 6 SQL cases |
 | **Phase 5** | **100 / 100** | Exit gate met: D1/P5.2–P5.5 correctness + canvas-primary usability |
-| **Phase 6** | **60 / 100** | P6.1 + P6.2 scaffold complete; operator live gates open |
-| **FP-028 overall** | **94 / 100** | Phases 0–5 complete; Phase 6 at 60/100; no manufacturing-ready claim |
+| **Phase 6** | **50 / 100** | Focused suite, lint, build and P6.2 scaffold pass; current baseline TypeScript gate and operator live gates are open |
+| **FP-028 overall** | **92 / 100** | `(6 × 100 + 50) / 7`, floored; no manufacturing-ready claim |
 
 #### Phase 0 defect board
 
@@ -407,7 +409,8 @@ See `docs/plans/FP-028_APEX_CALLERS.md`. V6 production: ProjectStudio, BatchOpti
 
 ### Remaining risk after Phase 6 / P6.2 scaffold
 
-- Automated suite + fail-closed live scaffold are green; manufacturing-ready still blocked by operator live gates.
+- Focused suite, lint, build and fail-closed live scaffold are green; the current release gate is also blocked by the baseline TypeScript regression in `src/components/SEO.tsx`.
+- True strict TypeScript is not clean (1,684 current errors); `npm run type-check` remains the repository's baseline-delta release gate.
 - See `docs/plans/FP-028_P6.2_LIVE_MEASURE_QC_RUNBOOK.md`.
 - Pack conversion proposes catalog `defaultGrid` (illustrative) — still not manufacturing authority without approved evidence.
 - No approved ROCK 60 authority revision rows seeded — RPC fails closed until an approved payload exists.

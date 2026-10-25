@@ -1,6 +1,6 @@
 
 import { usePrestigeAgent } from '@/hooks/usePrestigeAgent';
-import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { ReactNode, createContext, useCallback, useContext, useEffect } from 'react';
 
 // --- Types ---
 
@@ -61,15 +61,12 @@ const MOCK_KNOWLEDGE_BASE: Record<string, MachineKnowledge> = {
 const YDTContext = createContext<YDTContextType | undefined>(undefined);
 
 export function YDTProvider({ children }: { children: ReactNode }) {
-  const { sendMessage, isLoading: agentLoading } = usePrestigeAgent();
-  const [isConnected, setIsConnected] = useState(false);
+  const { sendMessage, getKnowledgeStats, connectionStatus, isLoading: agentLoading } = usePrestigeAgent();
+  const isConnected = connectionStatus === 'connected';
 
-  // Initial handshake check
   useEffect(() => {
-    // Simulate connection to "Brain"
-    const timer = setTimeout(() => setIsConnected(true), 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    void getKnowledgeStats();
+  }, [getKnowledgeStats]);
 
   const askAssistant = useCallback(async (query: string, context?: string) => {
     try {
@@ -79,7 +76,7 @@ export function YDTProvider({ children }: { children: ReactNode }) {
       return response.data?.response || "I'm having trouble accessing my knowledge base right now.";
     } catch (err) {
       console.error("YDT Chat Error:", err);
-      return "Connection to YDT Brain interrupted.";
+      return "The YDT service could not be reached. Please try again.";
     }
   }, [sendMessage]);
 

@@ -1,3 +1,4 @@
+import { browserAuthStorage } from './marketplace/browserAuthStorage';
 // NOTE: This file has been slimmed; domain-specific helpers live under src/lib/data/* and
 // pricing helpers under src/lib/pricing.ts. Remaining helpers here are legacy/general.
 import { Database } from '@/types/database'
@@ -41,7 +42,7 @@ const supabaseOptions = {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    storage: typeof window !== 'undefined' ? browserAuthStorage : undefined,
     flowType: 'pkce' as const,
     debug: false, // Disable debug logging to reduce console noise
     // Reduce refresh frequency to improve performance
