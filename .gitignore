@@ -48,6 +48,14 @@ test_report.html
 test_report.json
 load_test_results.png
 
+# Generated reports, development PWA output and local config snapshots
+/coverage/
+/dev-dist/
+/vite.config.backup.ts
+/vite.config.current-backup.ts
+/vite
+/vite_react_shadcn_ts@0.0.5
+
 # Logs
 *.log
 api.log
