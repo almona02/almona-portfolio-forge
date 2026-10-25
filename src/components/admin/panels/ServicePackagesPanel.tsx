@@ -5,12 +5,30 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { Loader2, RefreshCw } from 'lucide-react'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = supabase as any
+type ServicePackage = { id: string; package_id: string; title_en: string; title_ar: string; price: number; currency: string; is_active: boolean }
 
-interface ServicePackage { id: string; package_id: string; title_en: string; title_ar: string; price: number; currency: string; is_active: boolean }
+// Contract from 20261018250000_service_packages.sql until generated types include this table.
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue }
+type ServicePackageRow = ServicePackage & { features: JsonValue; updated_at: string }
+type ServicePackageDatabase = {
+  public: {
+    Tables: {
+      service_packages: {
+        Row: ServicePackageRow
+        Insert: Pick<ServicePackageRow, 'package_id' | 'title_en' | 'title_ar'> & Partial<ServicePackageRow>
+        Update: Partial<ServicePackageRow>
+        Relationships: []
+      }
+    }
+    Views: Record<never, never>
+    Functions: Record<never, never>
+  }
+}
+const db = supabase as unknown as SupabaseClient<ServicePackageDatabase>
+
 
 export const ServicePackagesPanel: React.FC = () => {
   const { toast } = useToast()
@@ -21,8 +39,8 @@ export const ServicePackagesPanel: React.FC = () => {
   const refresh = useCallback(async () => {
     setLoading(true)
     try {
-      const { data } = await supabase.from('service_packages').select('*').order('package_id')
-      setPackages((data ?? []) as ServicePackage[])
+      const { data } = await db.from('service_packages').select('*').order('package_id')
+      setPackages(data ?? [])
     } catch (e) { console.error(e) } finally { setLoading(false) }
   }, [])
 
