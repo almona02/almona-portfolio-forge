@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ReportGenerator Component
  * 
  * Phase 4 Implementation - Report Generation UI
@@ -116,7 +116,8 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
             return;
         }
 
-        const interval = setInterval(async () => {
+        const interval = setInterval(() => {
+            void (async () => {
             try {
                 const job = await getReportJob(activeJob.id);
                 setActiveJob(job);
@@ -132,6 +133,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
             } catch (error) {
                 console.error('Failed to poll job status:', error);
             }
+        })();
         }, 2000);  // Poll every 2 seconds
 
         setPollingInterval(interval);

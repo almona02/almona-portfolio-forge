@@ -1,4 +1,4 @@
-﻿import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from '@/hooks/useTranslation';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -82,7 +82,7 @@ export const YilmazMachineRegistration: React.FC<Props> = ({ onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4 bg-almona-darker/50 p-6 rounded-lg">
+    <form onSubmit={(e) => { void handleSubmit(onFormSubmit)(e); }} className="space-y-4 bg-almona-darker/50 p-6 rounded-lg">
   <h3 className="typography-h3">{t('yilmazRegistration.title')}</h3>
       <div className="flex items-center gap-2">
         <input
