@@ -96,7 +96,11 @@ export default defineConfig(({ mode }) => {
             eagerJavascript.add(name);
             if (/vendor-3d/.test(name)) this.error(`3D code leaked into the application entry: ${name}`);
             const chunk = bundle[name];
-            if (chunk?.type === 'chunk') queue.push(...chunk.imports.filter((dependency) => dependency in bundle));
+            if (chunk?.type === 'chunk') {
+              queue.push(...chunk.imports.filter((dependency) => dependency in bundle));
+              // The thin bootstrap imports main dynamically; it is still app-shell code.
+              if (chunk.isEntry) queue.push(...chunk.dynamicImports.filter((dependency) => dependency in bundle));
+            }
           }
         },
       },
