@@ -141,3 +141,8 @@ batch1-release*/
 !public/cost-roi.html
 !public/machine-comparison.html
 !public/products/machines/*.html
+
+# Technical visibility audit output and tracked route contract
+/artifacts/visibility*/
+!scripts/visibility/routes.json
+!scripts/visibility/tsconfig.json

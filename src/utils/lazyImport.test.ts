@@ -53,6 +53,16 @@ describe('lazy route recovery', () => {
     expect(reload).toHaveBeenCalledTimes(1);
   });
 
+
+  it('shares the reload budget across different public routes', async () => {
+    void loadLazyModule(vi.fn().mockRejectedValue(failure), 'Index');
+    await vi.runAllTimersAsync();
+    const rejected = expect(loadLazyModule(vi.fn().mockRejectedValue(failure), 'Products')).rejects.toBe(failure);
+    await vi.runAllTimersAsync();
+    await rejected;
+    expect(reload).toHaveBeenCalledTimes(1);
+  });
+
   it('does not retry or reload application errors', async () => {
     const error = new Error('Cannot read properties of undefined');
     const importer = vi.fn().mockRejectedValue(error);
@@ -67,7 +77,7 @@ describe('lazy route recovery', () => {
       vi.stubGlobal('window', { get sessionStorage() { throw new Error('SecurityError'); } });
     }
     if (mode === 'malformed marker') {
-      sessionStorage.setItem('page-refreshed-UsedMachines', 'invalid-json');
+      sessionStorage.setItem('almona-module-reload', 'invalid-json');
     }
     const result = loadLazyModule(vi.fn().mockRejectedValue(failure), 'UsedMachines');
     if (mode === 'malformed marker') {

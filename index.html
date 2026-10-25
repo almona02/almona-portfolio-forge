@@ -33,7 +33,8 @@
     <meta property="og:site_name" content="Almona" />
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://www.almona02.com/" />
+    <!-- Helmet owns this fallback so route updates replace it instead of duplicating it. -->
+    <link rel="canonical" href="https://www.almona02.com/" data-rh="true" />
 
     <!-- Hreflang alternates (client-side i18n via ?lng=) -->
     <link rel="alternate" hreflang="ar" href="https://www.almona02.com/?lng=ar" />
@@ -573,7 +574,7 @@
     <script>
       // This observer can report an entry-bundle failure before React loads.
       (function () {
-        if (!/^\/(?:used-machines|usedmachines)(?:\/|$)/.test(location.pathname)) return;
+        var marketplace = /^\/(?:used-machines|usedmachines)(?:\/|$)/.test(location.pathname);
         var reported = false;
         function startupFailure(category) {
           var root = document.getElementById('root');
@@ -581,7 +582,7 @@
           reported = true;
           var route = /\/sell$/.test(location.pathname) || new URLSearchParams(location.search).get('tab') === 'sell' ? 'sell' : /^\/(?:used-machines|usedmachines)\/?$/.test(location.pathname) ? 'browse' : 'detail';
           try {
-            fetch('/api/marketplace-events', { method: 'POST', credentials: 'omit', keepalive: true,
+            if (marketplace) fetch('/api/marketplace-events', { method: 'POST', credentials: 'omit', keepalive: true,
               headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ event: 'page_failure', route: route, category: category,
                 browser: /android/i.test(navigator.userAgent) ? 'android' : /iphone|ipad/i.test(navigator.userAgent) ? 'ios' : 'desktop',
                 worker: navigator.serviceWorker && navigator.serviceWorker.controller ? 'controlled' : 'none', release: 'unknown' }) }).catch(function () {});
@@ -602,7 +603,7 @@
         setTimeout(function () { startupFailure('network'); }, 20000);
       })();
     </script>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/src/bootstrap.ts"></script>
     <!-- PWA: VitePWA only - no custom service-worker.js (was causing double SW / stale cache) -->
     <script>
       // Prevent service worker registration errors in preview mode
