@@ -1,5 +1,6 @@
 import { lazy, Suspense, memo } from 'react';
 import Hero from "@/components/home/Hero";
+import { DeferredSection } from "@/components/home/DeferredSection";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 
 // Lazy load non-critical sections to improve initial page load
@@ -23,25 +24,35 @@ const Index = memo(() => {
       <Hero />
       
       {/* Non-critical: Lazy load sections below the fold */}
-      <Suspense fallback={<SectionPlaceholder />}>
-        <NationalImpactSection />
-      </Suspense>
+      <DeferredSection label="Machinery, maintenance and training" href="/services">
+        <Suspense fallback={<SectionPlaceholder />}>
+          <NationalImpactSection />
+        </Suspense>
+      </DeferredSection>
       
-      <Suspense fallback={<SectionPlaceholder />}>
-        <EgyptVision2030Section />
-      </Suspense>
+      <DeferredSection label="Digital manufacturing proposal" href="/digital-egypt">
+        <Suspense fallback={<SectionPlaceholder />}>
+          <EgyptVision2030Section />
+        </Suspense>
+      </DeferredSection>
       
-      <Suspense fallback={<SectionPlaceholder />}>
-        <AboutSection />
-      </Suspense>
+      <DeferredSection label="About ALMONA" href="/about">
+        <Suspense fallback={<SectionPlaceholder />}>
+          <AboutSection />
+        </Suspense>
+      </DeferredSection>
       
-      <Suspense fallback={<SectionPlaceholder />}>
-        <ServicesSection />
-      </Suspense>
+      <DeferredSection label="Machinery services" href="/services">
+        <Suspense fallback={<SectionPlaceholder />}>
+          <ServicesSection />
+        </Suspense>
+      </DeferredSection>
       
-      <Suspense fallback={<SectionPlaceholder />}>
-        <FeaturedProducts />
-      </Suspense>
+      <DeferredSection label="YILMAZ machine catalogue" href="/products/machines">
+        <Suspense fallback={<SectionPlaceholder />}>
+          <FeaturedProducts />
+        </Suspense>
+      </DeferredSection>
     </main>
   );
 });

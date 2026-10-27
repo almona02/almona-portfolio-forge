@@ -37,7 +37,9 @@ jobs:
       - run: npm run visibility:test
       - name: Build PR preview
         if: github.event_name == 'pull_request'
-        run: npm run build
+        run: |
+          node --test scripts/render-public-catalogue.test.mjs
+          npm run build
       - name: Audit PR preview
         if: github.event_name == 'pull_request'
         shell: bash
@@ -54,6 +56,7 @@ jobs:
             cat /tmp/visibility-preview.log
             exit 2
           fi
+          PUBLIC_SITE_BASE=http://localhost:4173 npm run test:public-site
           npm run visibility:check -- --base http://localhost:4173
       - name: Audit production
         if: github.event_name != 'pull_request'
@@ -68,6 +71,8 @@ jobs:
         if: always()
         with:
           name: visibility-${{ github.run_id }}-${{ github.run_attempt }}
-          path: artifacts/visibility/
+          path: |
+            artifacts/visibility/
+            artifacts/public-refinement/
           retention-days: 30
           if-no-files-found: warn

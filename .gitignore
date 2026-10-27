@@ -157,3 +157,5 @@ batch1-release*/
 /artifacts/visibility*/
 !scripts/visibility/routes.json
 !scripts/visibility/tsconfig.json
+!src/lib/publicImageVariants.json
+/artifacts/public-refinement/

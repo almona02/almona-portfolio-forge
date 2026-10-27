@@ -34,6 +34,7 @@ describe('startup before React is available', () => {
   });
 
   it.each(['offline', 'blocked storage', 'application error'])('provides a manual retry for %s', async mode => {
+    document.getElementById('root')!.classList.add('app-fade-enter');
     if (mode === 'offline') vi.stubGlobal('navigator', { onLine: false });
     if (mode === 'blocked storage') {
       vi.stubGlobal('window', { get sessionStorage() { throw new Error('SecurityError'); } });
@@ -41,5 +42,15 @@ describe('startup before React is available', () => {
     await startApplication(vi.fn().mockRejectedValue(mode === 'application error' ? new Error('bad code') : failure));
     expect(reload).not.toHaveBeenCalled();
     expect(document.querySelector('button')).not.toBeNull();
+    expect(document.getElementById('root')!.classList.contains('app-fade-enter')).toBe(false);
+    expect(document.getElementById('root')!.getAttribute('role')).toBe('alert');
+  });
+
+  it('preserves public product HTML when application startup fails', async () => {
+    document.body.innerHTML = '<div id="root" data-public-catalogue="true"><h1>ALM 6510</h1><p>Machine specifications</p></div>';
+    await startApplication(vi.fn().mockRejectedValue(new Error('Application unavailable')));
+    expect(document.querySelector('h1')?.textContent).toBe('ALM 6510');
+    expect(document.body.textContent).toContain('Machine specifications');
+    expect(document.querySelector('button')?.textContent).toBe('Try again');
   });
 });

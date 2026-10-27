@@ -10,6 +10,12 @@ afterEach(() => {
 });
 
 describe('canonical ownership', () => {
+  it('marks missing pages as noindex while keeping normal pages indexable', async () => {
+    const view = render(<HelmetProvider><SEO noindex /></HelmetProvider>);
+    await waitFor(() => expect(document.head.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('noindex, follow'));
+    view.rerender(<HelmetProvider><SEO /></HelmetProvider>);
+    await waitFor(() => expect(document.head.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('index, follow'));
+  });
   it('replaces the shipped HTML fallback on route changes, leaving exactly one canonical', async () => {
     const source = readFileSync('index.html', 'utf8');
     const fallback = source.match(/<link[^>]*rel="canonical"[^>]*>/)?.[0];

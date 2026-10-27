@@ -10,8 +10,18 @@ export const saveComparison = (machines: Machine[]) => {
 };
 
 export const loadComparisons = (): Machine[][] => {
-  const data = localStorage.getItem(COMPARISON_KEY);
-  return data ? JSON.parse(data) : [];
+  // Optional browser state must not take down the public catalogue.
+  try {
+    const data = localStorage.getItem(COMPARISON_KEY);
+    const parsed: unknown = data ? JSON.parse(data) : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((group): group is Machine[] => Array.isArray(group) && group.every(machine =>
+      machine && typeof machine === 'object' && typeof machine.id === 'string' && typeof machine.name === 'string'
+    ));
+  } catch {
+    // Preserve the stored value: a read failure is not permission to delete it.
+    return [];
+  }
 };
 
 export const deleteComparison = (index: number) => {

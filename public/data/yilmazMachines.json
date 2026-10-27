@@ -1614,50 +1614,6 @@
     "material": "pvc"
   },
   {
-    "id": "ym-019",
-    "name": "MK 450",
-    "description": "Single Head Cutting Machine with versatile angle options",
-    "imageUrl": "/images/machines/MK-450.jpg",
-    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24153638/MK-420-420-PS-450.pdf",
-    "youtubeUrl": "https://www.youtube.com/watch?v=H6jls_GuVBc",
-    "category": "cutting-machines",
-    "featured": true,
-    "releaseDate": "2021-01-01",
-    "type": "Cutting Machine",
-    "powerSpec": {
-      "voltage": "230V",
-      "frequency": "50Hz",
-      "phase": "1",
-      "consumption": "2.2 kW"
-    },
-    "airSpec": {
-      "consumption": "160 L/min",
-      "pressure": "4 bar"
-    },
-    "dimensions": {
-      "length": "1500mm",
-      "width": "800mm",
-      "height": "1200mm"
-    },
-    "tags": [
-      "Versatile",
-      "Precision"
-    ],
-    "specifications": [
-      "Location points at 60°, 45°, 30°, 22.5°, 15°, 0°",
-      "Pivoting range from 45° left to 45° right",
-      "Aluminium construction body",
-      "Strong spring system and protective shield"
-    ],
-    "certifications": [
-      "CE"
-    ],
-    "safetyFeatures": [
-      "EmergencyStop"
-    ],
-    "material": "aluminium"
-  },
-  {
     "id": "ym-020",
     "name": "RYK-420-W",
     "description": "Radial Saw Machine with ergonomic design",
@@ -2063,7 +2019,7 @@
     "id": "ym-026",
     "name": "KD-350-PS",
     "description": "Mitre Saw Machine with pneumatic system",
-    "imageUrl": "/images/machines/KD-350-PS.jpg",
+    "imageUrl": "/images/machines/KD-400-D.jpg",
     "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24143522/KD-350-D-350-PS.pdf",
     "youtubeUrl": "https://www.youtube.com/watch?v=rXQjfMppzE4",
     "category": "cutting-machines",
@@ -2329,7 +2285,7 @@
   },
   {
     "id": "ym-034",
-    "name": "KD 400 D / KD 400 PS",
+    "name": "KD 400 D",
     "description": "Single Head Mitre Saw Machine - Location points at 45° - 30° - 22.5° - 15° - 0° both left and right",
     "imageUrl": "/images/machines/KD-400-D.jpg",
     "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24150554/KD-400-D-PS.pdf",
@@ -2383,19 +2339,92 @@
     "standardAccessories": [
       "Ø400 mm saw blade",
       "Machine stand",
-      "2x manual horizontal clamps (KD 400 D)",
-      "2x pneumatic horizontal clamps (KD 400 PS)",
-      "Air gun (KD 400 PS)",
-      "Spray saw blade lubrication system (KD 400 PS)"
+      "2x manual horizontal clamps"
     ],
     "optionalAccessories": [
-      "2 x pneumatic vertical clamps (KD 400 PS)",
+      "MKN 300 length stop-right (3m)",
+      "MKN 300 length stop-left (3m)",
+      "DKN 302 length stop (3m)",
+      "DKN 602 length stop (6m)",
+      "Spare saw blade, Ø 400 mm"
+    ],
+    "certifications": [
+      "CE",
+      "ISO9001"
+    ],
+    "safetyFeatures": [
+      "TwoHandOperation",
+      "EmergencyStop"
+    ],
+    "material": "aluminium"
+  },
+  {
+    "id": "ym-093",
+    "name": "KD 400 PS",
+    "description": "Single Head Mitre Saw Machine (pneumatic clamping) - Location points at 45° - 30° - 22.5° - 15° - 0° both left and right",
+    "imageUrl": "/images/machines/KD-400-D.jpg",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24150554/KD-400-D-PS.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=XpgCgbeIA2E",
+    "category": "cutting-machines",
+    "featured": false,
+    "releaseDate": "2020-01-01",
+    "type": "Single Head Mitre Saw (Pneumatic)",
+    "powerSpec": {
+      "voltage": "400V AC",
+      "frequency": "50-60Hz",
+      "phase": "3",
+      "consumption": "2.2 kW"
+    },
+    "airSpec": {
+      "consumption": "24 L/min",
+      "pressure": "6-8 bar"
+    },
+    "dimensions": {
+      "width": "860mm",
+      "length": "760mm",
+      "height": "1600mm"
+    },
+    "weight": {
+      "net": "110 kg",
+      "gross": "137 kg"
+    },
+    "sawBlade": {
+      "diameter": "Ø400 mm",
+      "bore": "Ø30/32 mm",
+      "speed": "2,900 RPM",
+      "motorPower": "2.2 kW"
+    },
+    "angularCapacity": {
+      "presetAngles": "45°, 30°, 22.5°, 15°, 0° (both left and right)",
+      "pivotingRange": "45° left to 45° right infinitely adjustable"
+    },
+    "tags": [
+      "Single Head",
+      "Mitre Saw",
+      "Pneumatic"
+    ],
+    "specifications": [
+      "Location points at 45° - 30° - 22.5° - 15° - 0° both left and right",
+      "Pivoting range from 45° left to 45° right infinitely adjustable",
+      "Aluminium construction of the body and machine stand made of steel sheet",
+      "Robust mechanical construction enables the ease of adjustment for the requested cutting angles",
+      "Strong spring system and protective shield"
+    ],
+    "standardAccessories": [
+      "Ø400 mm saw blade",
+      "Machine stand",
+      "2x pneumatic horizontal clamps",
+      "Air gun",
+      "Spray saw blade lubrication system"
+    ],
+    "optionalAccessories": [
+      "2 x pneumatic vertical clamps",
       "MKN 300 length stop-right (3m)",
       "MKN 300 length stop-left (3m)",
       "DKN 302 length stop (3m)",
       "DKN 602 length stop (6m)",
       "Spare saw blade, Ø 400 mm",
-      "Brake unit working with motor stop button (KD 400 PS)"
+      "Brake unit working with motor stop button"
     ],
     "certifications": [
       "CE",
@@ -2409,8 +2438,8 @@
   },
   {
     "id": "ym-035",
-    "name": "MK 420 / MK 420 PS / MK 450",
-    "description": "Manual Up-Cutting Saw Machine - Manual upward saw stroke for wide and flat profiles",
+    "name": "MK 420",
+    "description": "Manual Up-Cutting Saw Machine (17\") - Manual upward saw stroke for wide and flat profiles",
     "imageUrl": "/images/machines/MK-420.jpg",
     "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24153638/MK-420-420-PS-450.pdf",
     "youtubeUrl": "https://www.youtube.com/watch?v=H6jls_GuVBc",
@@ -2464,22 +2493,173 @@
     ],
     "standardAccessories": [
       "Equipped with saw blade Ø420 mm",
-      "Equipped with saw blade Ø 450 mm (MK 450)",
       "Miter stop",
       "Profile length stop",
-      "Pneumatically working spray saw blade lubrication system (MK 420 PS)",
-      "Electrically working spray saw blade lubrication system (MK 420- MK 450)",
-      "2x mechanic top clamps (MK 420)",
-      "2x pneumatic top clamps (MK 420 PS)",
-      "Safety guard for lateral cutting operations (MK 420 PS)"
+      "Electrically working spray saw blade lubrication system",
+      "2x mechanic top clamps"
     ],
     "optionalAccessories": [
-      "Safety guard for longitudinal cutting operations (MK 420 PS)",
       "2 x vertical clamps",
       "MKN 300 length stop (3m)",
       "Connection kit for MKN and DKN length stops",
-      "Spare saw blade, Ø420 mm",
-      "Spare saw blade, Ø450 mm (MK 450)"
+      "Spare saw blade, Ø420 mm"
+    ],
+    "certifications": [
+      "CE",
+      "ISO9001"
+    ],
+    "safetyFeatures": [
+      "TwoHandOperation",
+      "EmergencyStop"
+    ],
+    "material": "aluminium"
+  },
+  {
+    "id": "ym-094",
+    "name": "MK 450",
+    "description": "Manual Single Head Cutting Machine (18\")",
+    "imageUrl": "/images/machines/MK-450.jpg",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24153638/MK-420-420-PS-450.pdf",
+    "youtubeUrl": "https://www.youtube.com/watch?v=H6jls_GuVBc",
+    "category": "cutting-machines",
+    "featured": true,
+    "releaseDate": "2021-01-01",
+    "type": "Manual Up-Cutting Saw",
+    "powerSpec": {
+      "voltage": "230V AC",
+      "frequency": "50-60Hz",
+      "phase": "1",
+      "consumption": "2.2 kW"
+    },
+    "airSpec": {
+      "consumption": "7 L/min",
+      "pressure": "6-8 bar"
+    },
+    "dimensions": {
+      "width": "725mm",
+      "length": "865mm",
+      "height": "1350mm"
+    },
+    "weight": {
+      "net": "115 kg",
+      "gross": "142 kg"
+    },
+    "sawBlade": {
+      "diameter": "Ø450 mm",
+      "bore": "Ø30/32 mm",
+      "speed": "2,900 RPM",
+      "motorPower": "2.2 kW"
+    },
+    "angularCapacity": {
+      "presetAngles": "60°, 45°, 30°, 22.5°, 15°, 0° (both left and right)",
+      "pivotingRange": "60° to the right and 60° to the left"
+    },
+    "tags": [
+      "Up-Cutting",
+      "Manual",
+      "Wide Angle",
+      "Portable"
+    ],
+    "specifications": [
+      "Manual upward saw stroke",
+      "The back fence is adjustable to allow the most effective use of the saw blade capacity for wide and flat profiles",
+      "Location points at 60°, 45°, 30°, 22.5°, 15°, 0° for both left and right",
+      "Wide angle cutting range up to 60° to the right and 60° to the left",
+      "Adjustable machine working direction by means of rotatable (360°) platform via foot pedal",
+      "Easy saw blade change",
+      "It has the ability of lateral and longitudinal cutting operations"
+    ],
+    "standardAccessories": [
+      "Equipped with saw blade Ø450 mm",
+      "Miter stop",
+      "Profile length stop",
+      "Electrically working spray saw blade lubrication system",
+      "2x mechanic top clamps"
+    ],
+    "optionalAccessories": [
+      "2 x vertical clamps",
+      "MKN 300 length stop (3m)",
+      "Connection kit for MKN and DKN length stops",
+      "Spare saw blade, Ø450 mm"
+    ],
+    "certifications": [
+      "CE",
+      "ISO9001"
+    ],
+    "safetyFeatures": [
+      "TwoHandOperation",
+      "EmergencyStop"
+    ],
+    "material": "aluminium"
+  },
+  {
+    "id": "ym-095",
+    "name": "MK 450 PS",
+    "description": "Pneumatic Up-Cutting Saw Machine (18\") - Fully pneumatic upward saw stroke for wide and flat profiles",
+    "imageUrl": "/images/machines/MK-450.jpg",
+    "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24153638/MK-420-420-PS-450.pdf",
+    "category": "cutting-machines",
+    "featured": false,
+    "releaseDate": "2021-01-01",
+    "type": "Pneumatic Up-Cutting Saw",
+    "powerSpec": {
+      "voltage": "230V AC",
+      "frequency": "50-60Hz",
+      "phase": "1",
+      "consumption": "2.2 kW"
+    },
+    "airSpec": {
+      "consumption": "7 L/min",
+      "pressure": "6-8 bar"
+    },
+    "dimensions": {
+      "width": "725mm",
+      "length": "865mm",
+      "height": "1350mm"
+    },
+    "weight": {
+      "net": "115 kg",
+      "gross": "142 kg"
+    },
+    "sawBlade": {
+      "diameter": "Ø450 mm",
+      "bore": "Ø30/32 mm",
+      "speed": "2,900 RPM",
+      "motorPower": "2.2 kW"
+    },
+    "angularCapacity": {
+      "presetAngles": "60°, 45°, 30°, 22.5°, 15°, 0° (both left and right)",
+      "pivotingRange": "60° to the right and 60° to the left"
+    },
+    "tags": [
+      "Up-Cutting",
+      "Pneumatic",
+      "Wide Angle",
+      "Portable"
+    ],
+    "specifications": [
+      "Pneumatic upward saw stroke",
+      "The back fence is adjustable to allow the most effective use of the saw blade capacity for wide and flat profiles",
+      "Location points at 60°, 45°, 30°, 22.5°, 15°, 0° for both left and right",
+      "Wide angle cutting range up to 60° to the right and 60° to the left",
+      "Adjustable machine working direction by means of rotatable (360°) platform via foot pedal",
+      "Easy saw blade change",
+      "It has the ability of lateral and longitudinal cutting operations"
+    ],
+    "standardAccessories": [
+      "Equipped with saw blade Ø450 mm",
+      "Miter stop",
+      "Profile length stop",
+      "Pneumatically working spray saw blade lubrication system",
+      "2x pneumatic top clamps",
+      "Safety guard for lateral cutting operations"
+    ],
+    "optionalAccessories": [
+      "Safety guard for longitudinal cutting operations",
+      "2 x vertical clamps",
+      "MKN 300 length stop (3m)",
+      "Connection kit for MKN and DKN length stops",
+      "Spare saw blade, Ø450 mm"
     ],
     "certifications": [
       "CE",
@@ -4320,7 +4500,7 @@
     "id": "ym-081",
     "name": "KD 400 M",
     "description": "Cutting Machine for aluminium profile fabrication. (YILMAZ model KD 400 M — specifications on request.)",
-    "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115555/TCAT01000002251.jpg",
+    "imageUrl": "/images/machines/KD-350-M.jpg",
     "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24151432/KD-400-M-1.pdf",
     "category": "cutting",
     "material": "aluminium",
@@ -4357,7 +4537,7 @@
     "id": "ym-082",
     "name": "KD 350 D",
     "description": "Cutting Machine for PVC profile fabrication. (YILMAZ model KD 350 D — specifications on request.)",
-    "imageUrl": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2025/07/25115431/0063226062025144112IMG.png",
+    "imageUrl": "/images/machines/KD-400-D.jpg",
     "specPdf": "https://di33l1fv68t4r.cloudfront.net/wp-content/uploads/2021/03/24143522/KD-350-D-350-PS.pdf",
     "category": "cutting",
     "material": "pvc",
