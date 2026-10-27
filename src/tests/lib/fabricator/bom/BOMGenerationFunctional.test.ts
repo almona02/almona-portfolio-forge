@@ -14,13 +14,17 @@ import { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS, type SystemPack as DataSystemPack } from '@/data/systemPacks';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import type { SystemPack, WindowUnit } from '@/types/fabricator';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('BOM Generation Functional Tests', () => {
   let bomGenerator: PresetAwareBOMGenerator;
   let testWindowUnit: WindowUnit;
   let testPattern: EgyptianPattern;
   let testSystemPack: SystemPack;
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
   beforeEach(() => {
     bomGenerator = new PresetAwareBOMGenerator();
@@ -148,6 +152,7 @@ describe('BOM Generation Functional Tests', () => {
   }, 30000);
 
   it('should cache results for identical inputs', async () => {
+    const generateBOM = vi.spyOn(bomGenerator, 'generateCompleteBOM');
     const firstResult = await bomGenerator.generateCompleteBOMWithPerformance(
       testWindowUnit,
       testPattern,
@@ -162,8 +167,14 @@ describe('BOM Generation Functional Tests', () => {
       true // Enable cache
     );
 
+    expect(firstResult.cached).toBe(false);
     expect(secondResult.cached).toBe(true);
-    expect(secondResult.performanceMs).toBeLessThan(firstResult.performanceMs);
+    // Cache correctness is reuse without regeneration, not a wall-clock race
+    // between two millisecond operations on a shared CI runner.
+    expect(generateBOM).toHaveBeenCalledTimes(1);
+    expect(secondResult.bom).toBe(firstResult.bom);
+    expect(Number.isFinite(secondResult.performanceMs)).toBe(true);
+    expect(secondResult.performanceMs).toBeGreaterThanOrEqual(0);
     
     // Cached result should have identical metadata
     expect(firstResult.bom.metadata.patternUsed).toBe(secondResult.bom.metadata.patternUsed);
