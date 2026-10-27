@@ -1,5 +1,6 @@
 import { marketplaceNavigationPattern, marketplaceNavigationRule } from './src/lib/marketplaceCachePolicy';
 import react from "@vitejs/plugin-react";
+import { publicResourceBoundary } from "./vite.publicResources";
 import path from "path";
 import { defineConfig, loadEnv } from "vite";
 /// <reference types="vitest" />
@@ -78,6 +79,7 @@ export default defineConfig(({ mode }) => {
       sourcemapIgnoreList: true,
     },
     plugins: [
+      publicResourceBoundary(),
       {
         name: 'protect-public-environment',
         configResolved(config) {
@@ -397,6 +399,7 @@ export default defineConfig(({ mode }) => {
         input: "index.html",
         external: [],
         plugins: [
+      publicResourceBoundary(),
           {
             name: 'exclude-md-editor-css',
             generateBundle(_options, bundle) {
@@ -462,6 +465,10 @@ export default defineConfig(({ mode }) => {
               return 'vendor-3d-react';
             }
  
+             // Keep optional search and date utilities out of the eager shared UI/state chunks.
+             if (id.includes('node_modules/cmdk')) return 'vendor-command';
+             if (id.includes('node_modules/date-fns')) return 'vendor-dates';
+
              // 3. UI Libraries (Shadcn/Radix/Antd/Lucide)
              if (
                id.includes('node_modules/@radix-ui') ||

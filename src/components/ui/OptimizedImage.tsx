@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import { publicImage, publicImageSrcSet } from '@/lib/publicImages';
 import { generateSrcSet, optimizeImage, supportsWebP, supportsAVIF } from '@/lib/imageOptimization';
 import type { OptimizedImageOptions } from '@/lib/imageOptimization';
 
@@ -32,6 +33,8 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   onError,
   sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
 }) => {
+  const localImage = publicImage(src);
+  const isLocal = src.startsWith('/');
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [hasError, setHasError] = React.useState(false);
   const [supportsWebPFormat, setSupportsWebPFormat] = React.useState<boolean | null>(null);
@@ -39,9 +42,10 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   // Detect browser support for modern formats
   React.useEffect(() => {
+    if (isLocal) return;
     void supportsWebP().then(setSupportsWebPFormat);
     void supportsAVIF().then(setSupportsAVIFFormat);
-  }, []);
+  }, [isLocal]);
 
   const handleLoad = React.useCallback(() => {
     setIsLoaded(true);
@@ -55,23 +59,26 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   // Generate optimized URLs
   const optimizedData = React.useMemo(() => {
+    if (isLocal) return { src, fallbackSrc: src, srcSet: undefined };
     return optimizeImage(src, { width, height, quality, format, lazy });
-  }, [src, width, height, quality, format, lazy]);
+  }, [src, width, height, quality, format, lazy, isLocal]);
 
   // Generate srcSet with format variants
   const webpSrcSet = React.useMemo(() => {
+    if (isLocal) return publicImageSrcSet(src) || '';
     if (format === 'auto' || format === 'webp') {
       return generateSrcSet(src, { width, height, quality, format: 'webp', lazy });
     }
     return '';
-  }, [src, width, height, quality, format, lazy]);
+  }, [src, width, height, quality, format, lazy, isLocal]);
 
   const avifSrcSet = React.useMemo(() => {
+    if (isLocal) return '';
     if (format === 'auto' || format === 'avif') {
       return generateSrcSet(src, { width, height, quality, format: 'avif', lazy });
     }
     return '';
-  }, [src, width, height, quality, format, lazy]);
+  }, [src, width, height, quality, format, lazy, isLocal]);
 
   if (hasError) {
     return (
@@ -98,13 +105,12 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
         src={optimizedData.fallbackSrc}
         srcSet={optimizedData.srcSet}
         alt={alt}
-        width={width}
-        height={height}
+        width={width || localImage?.width}
+        height={height || localImage?.height}
         loading={priority ? 'eager' : (lazy ? 'lazy' : 'eager')}
         decoding="async"
-        className={`transition-opacity duration-300 ${
-          isLoaded ? 'opacity-100' : 'opacity-0'
-        } ${className}`}
+        className={`${priority || isLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300 ${className}`}
+        fetchPriority={priority ? 'high' : 'auto'}
         onLoad={handleLoad}
         onError={handleError}
         sizes={sizes}

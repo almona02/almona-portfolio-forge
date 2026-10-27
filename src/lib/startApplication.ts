@@ -18,7 +18,14 @@ export async function startApplication(load: () => Promise<unknown>): Promise<vo
     const retry = document.createElement('button');
     retry.textContent = 'Try again';
     retry.onclick = () => window.location.reload();
-    root.replaceChildren(message, retry);
+    root.classList.remove('app-fade-enter');
+    if (root.hasAttribute('data-public-catalogue')) {
+      message.setAttribute('role', 'alert');
+      root.append(message, retry);
+    } else {
+      root.setAttribute('role', 'alert');
+      root.replaceChildren(message, retry);
+    }
   }
 }
 

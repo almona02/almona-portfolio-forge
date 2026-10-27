@@ -111,6 +111,7 @@ const NotFound = () => {
   return (
     <>
       <SEO 
+        noindex
         title="404 - Page Not Found"
         description="The page you're looking for doesn't exist. Return to ALMONA's homepage or explore our products and services."
       />

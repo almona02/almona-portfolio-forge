@@ -1,3 +1,4 @@
+import SEO from "@/components/SEO";
 import { usePublicCopy } from '@/hooks/usePublicCopy';
 import React, { useState, useEffect } from "react";
 import { ReviewForm } from "@/components/shop/ReviewForm";
@@ -46,7 +47,7 @@ const MachineDetail: React.FC = () => {
   useEffect(() => {
     if (machineId) {
       void getReviewsByProductId(machineId).then((apiReviews: ApiReview[]) => {
-        const adaptedReviews: ViewReview[] = apiReviews.map(r => ({
+        const adaptedReviews: ViewReview[] = (Array.isArray(apiReviews) ? apiReviews : []).map(r => ({
           id: r.id,
           rating: r.rating,
           comment: r.comment,
@@ -54,7 +55,7 @@ const MachineDetail: React.FC = () => {
           date: r.date || r.createdAt || new Date().toISOString(),
         }));
         setReviews(adaptedReviews);
-      });
+      }).catch(() => setReviews([]));
       addRecentlyViewed(machineId);
     }
   }, [machineId, addRecentlyViewed]);
@@ -80,6 +81,7 @@ const MachineDetail: React.FC = () => {
   if (!machine) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <SEO noindex title="Machine not found" />
         <h1 className="typography-h1 mb-4">{copy("Machine Not Found")}</h1>
         <p className="mb-4">{copy("The machine you are looking for does not exist.")}</p>
         <Link to="/products/machines" className="text-blue-600 underline">{copy("Back to Machines")}</Link>
@@ -101,6 +103,9 @@ const MachineDetail: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
+      <SEO title={`${machine.name} | YILMAZ Machinery Egypt | Almona`} description={machine.description}
+        url={`https://www.almona02.com/products/machines/${encodeURIComponent(machine.id)}`}
+        productData={{ name: machine.name, description: machine.description, sku: machine.id, brand: 'YILMAZ', image: machine.imageUrl }} />
       <h1 className="typography-h1 mb-4">{machine.name}</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">

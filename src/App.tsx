@@ -17,7 +17,7 @@ import { ChunkLoadingErrorBoundary } from "./components/ui/ChunkLoadingErrorBoun
 import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { KeyboardInitializer } from "./components/ui/KeyboardInitializer";
 import { PageLoadingWrapper } from "./components/ui/PageLoadingWrapper";
-import { CommandPalette } from "./components/ui/command-palette";
+import { CommandPaletteEntry } from "./components/ui/CommandPaletteEntry";
 import { Prestige3DLoader } from "./components/ui/loading/Prestige3DLoader";
 import { AuthProvider } from "./context/AuthContext.tsx";
 import { FabricatorWorkspaceProvider } from "./context/FabricatorWorkspaceContext";
@@ -362,7 +362,7 @@ const App = memo(() => {
                               <ConstitutionalStatusListener />
                               {/* Phase 2: Global Keyboard Shortcuts Handler - Replaced with KeyboardManager */}
                               <KeyboardInitializer />
-                              <CommandPalette />
+                              <CommandPaletteEntry />
                               {/* Defer analytics to avoid blocking initial render - only on Vercel */}
                               {isProd && isVercel && (
                                 <Suspense fallback={null}>

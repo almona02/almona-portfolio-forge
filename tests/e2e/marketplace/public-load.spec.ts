@@ -27,7 +27,14 @@ for (const scenario of ['healthy', 'startup-once', 'homepage-once', 'startup-per
         // Observe beyond the automatic retry delay to detect a refresh loop.
         await page.waitForTimeout(1500);
       } else {
-        await expect(page.getByText('Learn More About Us', { exact: true })).toBeVisible({ timeout: 30000 });
+        await expect(page.locator('main h1').first()).toBeVisible({ timeout: 30000 });
+        const aboutContent = page.getByText('Learn More About Us', { exact: true });
+        const deferredAbout = page.getByRole('link', { name: 'About ALMONA', exact: true });
+        // Below-fold content mounts near the viewport. Exercise its public entry
+        // before checking that the recovered application loads the real section.
+        await expect(deferredAbout.or(aboutContent).first()).toBeAttached();
+        if (await deferredAbout.count()) await deferredAbout.scrollIntoViewIfNeeded();
+        await expect(aboutContent).toBeVisible({ timeout: 30000 });
       }
       expect(navigations).toBe(scenario === 'healthy' || scenario === 'entry-persistent' ? 1 : 2);
       expect(errors).toEqual([]);

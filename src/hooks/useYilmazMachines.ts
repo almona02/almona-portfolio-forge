@@ -5,6 +5,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import type { Machine } from '@/constants/yilmazMachines';
+import { parsePublicCatalogue, readCatalogueBootstrap } from '@/lib/publicCatalogue';
 
 // Cache key for React Query
 const MACHINES_QUERY_KEY = ['yilmazMachines'];
@@ -18,8 +19,8 @@ async function fetchMachines(): Promise<Machine[]> {
   try {
     const response = await fetch('/data/yilmazMachines.json');
     if (response.ok) {
-      const data = await response.json();
-      if (Array.isArray(data) && data.length > 0) {
+      const data = parsePublicCatalogue(await response.json());
+      if (data) {
         return data;
       }
       console.warn('JSON file returned empty or invalid data, falling back to dynamic import');
@@ -52,6 +53,8 @@ export function useYilmazMachines() {
   return useQuery<Machine[]>({
     queryKey: MACHINES_QUERY_KEY,
     queryFn: fetchMachines,
+    initialData: readCatalogueBootstrap,
+    initialDataUpdatedAt: 0,
     staleTime: 1000 * 60 * 60 * 24, // Cache for 24 hours
     gcTime: 1000 * 60 * 60 * 24 * 7, // Keep in cache for 7 days
     retry: 2, // Retry failed requests twice

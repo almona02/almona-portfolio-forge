@@ -80,7 +80,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build --mode production && node scripts/retain-release-assets.mjs",
+    "build": "vite build --mode production && node scripts/render-public-catalogue.mjs && node scripts/retain-release-assets.mjs",
     "security:gate1": "node scripts/security/gate1-secret-scan.mjs",
     "verify:shipability": "npm run security:gate1 && npm run type-check && npm run build",
     "build:analyze": "cross-env ANALYZE=true vite build --mode production",
@@ -125,7 +125,7 @@
     "upgrade:cutting": "tsx scripts/benchmark-almona-cut.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "build:ci": "vite build --mode production && node scripts/retain-release-assets.mjs",
+    "build:ci": "vite build --mode production && node scripts/render-public-catalogue.mjs && node scripts/retain-release-assets.mjs",
     "analyze": "cross-env ANALYZE=true vite build --mode production",
     "debug:forms": "node scripts/debug-utils-forms.cjs",
     "analyze:bundle": "npm run build && node scripts/analyze-bundle.js",
@@ -187,7 +187,9 @@
     "visibility:compare": "tsx scripts/visibility/compare.ts",
     "visibility:test": "vitest run --config scripts/visibility/vitest.config.ts",
     "visibility:type-check": "tsc -p scripts/visibility/tsconfig.json",
-    "test:signup-default": "node scripts/verify-signup-default-db.mjs"
+    "test:signup-default": "node scripts/verify-signup-default-db.mjs",
+    "test:public-site": "node scripts/public-site-smoke.mjs",
+    "images:public": "node scripts/generate-public-image-variants.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
