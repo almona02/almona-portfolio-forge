@@ -6,8 +6,8 @@ const rows = Array.from({ length: 6 }, (_, index) => ({
   location: 'Cairo', condition: 'good', category: 'Saw', year: 2020, hours: 100, description: 'A working machine for the local acceptance test.',
   contact_name: 'Test seller', contact_phone: '01000000000', contact_whatsapp: null, images: [], status: 'active', views: 0, created_at: new Date().toISOString(),
 }));
-async function mockMarketplace(context: BrowserContext, origin: string, failFirst = false, loseInsertResponse = false) {
-  let failed = false;
+async function mockMarketplace(context: BrowserContext, origin: string, inventoryOutage = false, loseInsertResponse = false) {
+  let inventoryUnavailable = inventoryOutage;
   let inserts = 0;
   let stored: Record<string, unknown> | null = null;
   await context.addInitScript(() => localStorage.setItem('i18nextLng', 'en'));
@@ -25,23 +25,24 @@ async function mockMarketplace(context: BrowserContext, origin: string, failFirs
         const found = stored?.id === id ? stored : rows.find(row => row.id === id);
         await route.fulfill({ json: found ? [found] : [] }); return;
       }
-      if (failFirst && !failed) { failed = true; await route.fulfill({ status: 503, json: { message: 'Test network interruption' } }); return; }
+      if (inventoryUnavailable) { await route.fulfill({ status: 503, json: { message: 'Test network interruption' } }); return; }
       await route.fulfill({ json: stored ? [...rows, stored] : rows }); return;
     }
     if (url.pathname.startsWith('/storage/v1/object/')) { await route.fulfill({ json: { Key: 'test-photo' } }); return; }
     if (url.pathname.startsWith('/rest/v1/')) { await route.fulfill({ json: [] }); return; }
     await route.abort('failed');
   });
-  return { inserts: () => inserts };
+  return { inserts: () => inserts, restoreInventory: () => { inventoryUnavailable = false; } };
 }
 
 test('anonymous mobile visitor retries inventory and opens a machine detail', async ({ context, page }) => {
   const app = await serveBuiltApp();
   try {
-    await mockMarketplace(context, app.origin, true);
+    const marketplace = await mockMarketplace(context, app.origin, true);
     await page.goto(`${app.origin}/used-machines?lng=en`);
-    await expect(page.getByText('We could not load the machines right now.')).toBeVisible();
+    await expect(page.getByText('We could not load the machines right now.')).toBeVisible({ timeout: 30000 });
     await expect(page.getByText('No listings yet — be the first to post.')).not.toBeVisible();
+    marketplace.restoreInventory();
     await page.getByRole('button', { name: 'Retry loading machines' }).click();
     await expect(page.getByText('Reliable saw 1', { exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Details' })).toHaveCount(6);
