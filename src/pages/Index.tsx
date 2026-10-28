@@ -1,14 +1,15 @@
-import { lazy, Suspense, memo } from 'react';
+import { Suspense, memo } from 'react';
+import { lazyRetry } from '@/utils/lazyImport';
 import Hero from "@/components/home/Hero";
 import { DeferredSection } from "@/components/home/DeferredSection";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 
 // Lazy load non-critical sections to improve initial page load
-const NationalImpactSection = lazy(() => import("@/components/home/NationalImpactSection").then(m => ({ default: m.NationalImpactSection })));
-const EgyptVision2030Section = lazy(() => import("@/components/home/EgyptVision2030Section").then(m => ({ default: m.EgyptVision2030Section })));
-const AboutSection = lazy(() => import("@/components/home/AboutSection"));
-const ServicesSection = lazy(() => import("@/components/home/ServicesSection"));
-const FeaturedProducts = lazy(() => import("@/components/home/FeaturedProducts"));
+const NationalImpactSection = lazyRetry(() => import("@/components/home/NationalImpactSection").then(m => ({ default: m.NationalImpactSection })), 'NationalImpactSection');
+const EgyptVision2030Section = lazyRetry(() => import("@/components/home/EgyptVision2030Section").then(m => ({ default: m.EgyptVision2030Section })), 'EgyptVision2030Section');
+const AboutSection = lazyRetry(() => import("@/components/home/AboutSection"), 'AboutSection');
+const ServicesSection = lazyRetry(() => import("@/components/home/ServicesSection"), 'ServicesSection');
+const FeaturedProducts = lazyRetry(() => import("@/components/home/FeaturedProducts"), 'FeaturedProducts');
 
 // Lightweight loading placeholder
 const SectionPlaceholder = () => (
