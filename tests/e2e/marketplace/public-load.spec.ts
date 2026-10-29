@@ -3,6 +3,39 @@ import { serveBuiltApp } from './appFixture';
 
 test.use({ serviceWorkers: 'block' });
 
+for (const persistent of [false, true]) {
+  test(`optional homepage chunk stays recoverable: ${persistent ? 'persistent' : 'old release'}`, async ({ context, page }) => {
+    const app = await serveBuiltApp();
+    try {
+      await context.addInitScript(() => {
+        localStorage.setItem('i18nextLng', 'en');
+      });
+      let navigations = 0;
+      let failures = 0;
+      page.on('request', request => {
+        if (request.isNavigationRequest() && request.frame() === page.mainFrame()) navigations++;
+      });
+      await context.route('**/*', route => new URL(route.request().url()).origin === app.origin ? route.continue() : route.abort());
+      await page.route(/\/assets\/NationalImpactSection-[^/]+\.js$/, route => {
+        if (persistent || navigations === 1) { failures++; return route.abort('failed'); }
+        return route.continue();
+      });
+      await page.goto(app.origin);
+      if (persistent) {
+        await expect(page.getByText('This section is temporarily unavailable.')).toBeVisible({ timeout: 30000 });
+        await expect(page.getByRole('link', { name: 'Machinery, maintenance and training', exact: true })).toHaveAttribute('href', '/services');
+        await page.waitForTimeout(1500);
+      } else {
+        await expect(page.getByRole('heading', { name: /support for your workshop/i })).toBeVisible({ timeout: 30000 });
+      }
+      await expect(page.locator('main h1').first()).toBeVisible();
+      await expect(page.getByText('Something went wrong', { exact: true })).not.toBeVisible();
+      expect(failures).toBeGreaterThan(0);
+      expect(navigations).toBe(2);
+    } finally { await app.close(); }
+  });
+}
+
 for (const scenario of ['healthy', 'startup-once', 'homepage-once', 'startup-persistent', 'entry-persistent']) {
   test(`public homepage module recovery: ${scenario}`, async ({ context, page }) => {
     const app = await serveBuiltApp();

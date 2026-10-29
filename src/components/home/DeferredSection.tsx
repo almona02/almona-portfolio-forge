@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 /** Keep optional section imports out of the initial render, with a crawlable destination. */
 export function DeferredSection({ children, label, href }: { children: ReactNode; label: string; href: string }) {
@@ -22,7 +23,12 @@ export function DeferredSection({ children, label, href }: { children: ReactNode
 
   return (
     <div ref={element}>
-      {ready ? children : (
+      {ready ? <ErrorBoundary fallback={
+        <div className="min-h-[400px] flex flex-col items-center justify-center bg-almona-dark/50 p-4">
+          <p>This section is temporarily unavailable.</p>
+          <a href={href} className="text-amber-300 underline p-4">{label}</a>
+        </div>
+      }>{children}</ErrorBoundary> : (
         <div className="min-h-[400px] flex items-center justify-center bg-almona-dark/50">
           <a href={href} className="text-amber-300 underline p-4">{label}</a>
         </div>
