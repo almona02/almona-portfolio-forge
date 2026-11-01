@@ -293,6 +293,8 @@ describe('YilmazExportPipeline', () => {
       expect(result.success).toBe(true);
       expect(result.files.gcode).not.toBeNull();
       expect(result.files.csv).toBeNull();
+      expect(result.files.mdb).toBeNull();
+      expect(result.files.gcode!.filename.endsWith('.cnc')).toBe(true);
     });
 
     it('should produce csv-only when format is csv', async () => {
@@ -302,6 +304,31 @@ describe('YilmazExportPipeline', () => {
       expect(result.success).toBe(true);
       expect(result.files.csv).not.toBeNull();
       expect(result.files.gcode).toBeNull();
+      expect(result.files.mdb).toBeNull();
+    });
+
+    it('should produce mdb-only when format is mdb', async () => {
+      const mdbPipeline = new YilmazExportPipeline({ machineModel: 'AIM-3410', format: 'mdb' });
+      const result = await mdbPipeline.execute(project, optimization);
+
+      expect(result.success).toBe(true);
+      expect(result.files.mdb).not.toBeNull();
+      expect(result.files.gcode).toBeNull();
+      expect(result.files.csv).toBeNull();
+      expect(result.files.mdb!.filename.endsWith('.mdb')).toBe(true);
+      expect(() => JSON.parse(result.files.mdb!.content)).not.toThrow();
+    });
+
+    it('should include cnc, csv, and mdb when format is all', async () => {
+      const result = await pipeline.execute(project, optimization);
+
+      expect(result.success).toBe(true);
+      expect(result.files.gcode).not.toBeNull();
+      expect(result.files.csv).not.toBeNull();
+      expect(result.files.mdb).not.toBeNull();
+      expect(result.files.gcode!.filename.endsWith('.cnc')).toBe(true);
+      expect(result.files.csv!.filename.endsWith('.csv')).toBe(true);
+      expect(result.files.mdb!.filename.endsWith('.mdb')).toBe(true);
     });
   });
 
@@ -363,6 +390,7 @@ describe('YilmazFileFormats', () => {
       const bundle = YilmazFileFormats.createBundle({
         gcode: 'G21\nG90\nM30',
         csv: 'Length,Angle\n1200,45',
+        mdb: '{"tableName":"CNCCutList","rows":[]}',
         manifest: { version: '1.0.0' },
         machineModel: 'AIM-3410',
         orderNumber: 'ORD-001',
@@ -370,12 +398,14 @@ describe('YilmazFileFormats', () => {
 
       expect(bundle.gcode).not.toBeNull();
       expect(bundle.csv).not.toBeNull();
+      expect(bundle.mdb).not.toBeNull();
       expect(bundle.manifest).not.toBeNull();
 
       expect(bundle.gcode!.filename).toContain('AIM-3410');
-      expect(bundle.gcode!.filename.endsWith('.nc')).toBe(true);
+      expect(bundle.gcode!.filename.endsWith('.cnc')).toBe(true);
       expect(bundle.csv!.filename).toContain('cutlist');
       expect(bundle.csv!.filename.endsWith('.csv')).toBe(true);
+      expect(bundle.mdb!.filename.endsWith('.mdb')).toBe(true);
       expect(bundle.manifest!.filename).toContain('manifest');
       expect(bundle.manifest!.filename.endsWith('.json')).toBe(true);
     });
@@ -384,6 +414,7 @@ describe('YilmazFileFormats', () => {
       const bundle = YilmazFileFormats.createBundle({
         gcode: null,
         csv: 'Length,Angle\n1200,45',
+        mdb: null,
         manifest: null,
         machineModel: 'AIM-3410',
         orderNumber: 'ORD-001',
@@ -391,6 +422,7 @@ describe('YilmazFileFormats', () => {
 
       expect(bundle.gcode).toBeNull();
       expect(bundle.csv).not.toBeNull();
+      expect(bundle.mdb).toBeNull();
       expect(bundle.manifest).toBeNull();
     });
   });

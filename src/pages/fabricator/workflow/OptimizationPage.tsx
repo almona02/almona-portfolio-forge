@@ -1,4 +1,5 @@
 import { ManufacturingApprovalPanel } from '@/components/fabricator/workflow/ManufacturingApprovalPanel';
+import { YilmazExportActionPanel } from '@/components/fabricator/export/YilmazExportActionPanel';
 import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import type { CuttingJob } from '@/algorithms/adaptiveSolver';
 import { AdaptiveSolver } from '@/algorithms/adaptiveSolver';
@@ -221,37 +222,40 @@ export const OptimizationPage: React.FC = () => {
                 </OptimizationCockpit>
 
                 {validOptimization && projectId && poseId && (
-                    <div className="p-3 flex flex-wrap justify-end gap-3">
-                        <button type="button" disabled={isOptimizing || isExporting} className="px-4 py-2 border border-amber-600 text-amber-200 text-sm rounded disabled:opacity-50"
-                            onClick={async () => {
-                                if (!currentProject || !optimizationResult) return;
-                                setIsExporting(true);
-                                try {
-                                    const { PDFExportService } = await import('@/modules/reporting/PDFExportService');
-                                    const branding = { companyName: 'ALMONA' };
-                                    const blob = await new PDFExportService(branding).generateCuttingListPDF(currentProject, optimizationResult, { branding });
-                                    const url = URL.createObjectURL(blob);
-                                    const link = document.createElement('a');
-                                    link.href = url;
-                                    link.download = `cut-list-${currentProject.posNumber || currentProject.id}.pdf`;
-                                    link.click();
-                                    setTimeout(() => URL.revokeObjectURL(url), 1000);
-                                } catch (error) {
-                                    setOptimizationError(error instanceof Error ? error.message : 'Cut-list PDF export failed.');
-                                } finally { setIsExporting(false); }
-                            }}>
-                            {isExporting ? 'Generating PDF…' : 'Download cut-list PDF'}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => {
-                                if (completeStep('optimization')) void navigate(fabricatorRoutes.poseCommercial(projectId, poseId));
-                            }}
-                            disabled={isOptimizing}
-                            className="px-4 py-2 bg-amber-700 hover:bg-amber-600 text-white text-sm rounded"
-                        >
-                            Continue to Quote
-                        </button>
+                    <div className="p-3 space-y-3">
+                        <YilmazExportActionPanel positionId={poseId} />
+                        <div className="flex flex-wrap justify-end gap-3">
+                            <button type="button" disabled={isOptimizing || isExporting} className="px-4 py-2 border border-amber-600 text-amber-200 text-sm rounded disabled:opacity-50"
+                                onClick={async () => {
+                                    if (!currentProject || !optimizationResult) return;
+                                    setIsExporting(true);
+                                    try {
+                                        const { PDFExportService } = await import('@/modules/reporting/PDFExportService');
+                                        const branding = { companyName: 'ALMONA' };
+                                        const blob = await new PDFExportService(branding).generateCuttingListPDF(currentProject, optimizationResult, { branding });
+                                        const url = URL.createObjectURL(blob);
+                                        const link = document.createElement('a');
+                                        link.href = url;
+                                        link.download = `cut-list-${currentProject.posNumber || currentProject.id}.pdf`;
+                                        link.click();
+                                        setTimeout(() => URL.revokeObjectURL(url), 1000);
+                                    } catch (error) {
+                                        setOptimizationError(error instanceof Error ? error.message : 'Cut-list PDF export failed.');
+                                    } finally { setIsExporting(false); }
+                                }}>
+                                {isExporting ? 'Generating PDF…' : 'Download cut-list PDF'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (completeStep('optimization')) void navigate(fabricatorRoutes.poseCommercial(projectId, poseId));
+                                }}
+                                disabled={isOptimizing}
+                                className="px-4 py-2 bg-amber-700 hover:bg-amber-600 text-white text-sm rounded"
+                            >
+                                Continue to Quote
+                            </button>
+                        </div>
                     </div>
                 )}
             </Suspense>
