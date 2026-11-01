@@ -12,7 +12,7 @@ import {
   SheetTitle,
 } from '@/shared/ui/ui/sheet';
 import { PanelLeft, PanelRight } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DesktopWorkspaceNotice } from './DesktopWorkspaceNotice';
 import { EngineeringInspector, type InspectorSelectionKind } from './EngineeringInspector';
@@ -48,6 +48,7 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
   hideOuterInspector = false,
 }) => {
   const { ref, size } = useContainerSize<HTMLDivElement>();
+  const retainedWorkspaceRef = useRef<HTMLDivElement | null>(null);
   const viewportBp = useStudioBreakpoint();
   // Prefer measured shell width so nested rails do not compound with the viewport;
   // fall back to viewport breakpoint only while ResizeObserver is unmeasured.
@@ -58,6 +59,20 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
   const cadOk = isCadDesktopLayout(bp);
   const [navOpen, setNavOpen] = useState(false);
   const [inspectorOpen, setInspectorOpen] = useState(false);
+
+  // React 18: set inert via DOM so retained CAD workspace cannot receive keyboard focus.
+  useEffect(() => {
+    const el = retainedWorkspaceRef.current;
+    if (!el) return;
+    if (!cadOk) {
+      el.setAttribute('inert', '');
+      if (el.contains(document.activeElement)) {
+        (document.activeElement as HTMLElement).blur?.();
+      }
+    } else {
+      el.removeAttribute('inert');
+    }
+  }, [cadOk]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -131,11 +146,14 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
       )}
 
       <div className={cn('relative flex-1 min-w-0 min-h-0', !cadOk && 'overflow-auto')}>
-        {/* Keep workspace children mounted across CAD-threshold resizes so 3D state survives. */}
+        {/* Keep workspace children mounted across CAD-threshold resizes so 3D state survives.
+            `inert` removes the subtree from sequential focus / input while retained. */}
         <div
-          className={cn('h-full min-h-0', !cadOk && 'pointer-events-none absolute inset-0 opacity-0')}
+          ref={retainedWorkspaceRef}
+          className={cn('h-full min-h-0', !cadOk && 'absolute inset-0 opacity-0')}
           aria-hidden={!cadOk}
           data-cad-workspace={cadOk ? 'active' : 'retained'}
+          data-inert={!cadOk ? 'true' : undefined}
         >
           {children}
         </div>
