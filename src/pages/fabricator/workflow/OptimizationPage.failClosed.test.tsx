@@ -176,6 +176,8 @@ describe('OptimizationPage fail-closed execution', () => {
     expect(useWorkflowStore.getState().optimizationResult).toBeNull();
     expect(useWorkflowStore.getState().completedSteps.has('optimization')).toBe(false);
     expect(screen.queryByRole('button', { name: 'Continue to Quote' })).toBeNull();
+    // Yilmaz export reads the store result only — a simulation can never become CNC input.
+    expect(screen.queryByTestId('yilmaz-export-action-panel')).toBeNull();
   });
 
   it('prevents duplicate submissions and ignores a late result after the position changes', async () => {

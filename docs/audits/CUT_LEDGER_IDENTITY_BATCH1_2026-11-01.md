@@ -158,6 +158,30 @@ Limitations (explicit):
   placements on them. Remnant controls are informational until the authority
   model admits remnant lengths; they are labelled as such.
 
+## Batch 6 — gates and Yilmaz export fail-closed recheck
+
+- Full Vitest run: 330 files / 2082 tests passed (4 expected-fail, 14 skipped).
+  `npm run type-check`: node project clean; app 1642 errors vs 1791 baseline,
+  0 new signatures. ESLint on `src/`: 0 errors. `vite build --mode production`
+  succeeds; the post-build `render-public-catalogue.mjs` imports a `.ts` module
+  and needs Node ≥ 22.18 (or `node --experimental-strip-types`) on Node 22.17 —
+  pre-existing, verified to run with the flag; no machine settings changed.
+- Yilmaz export: `YilmazExportPipeline.preFlight` now reconciles the cut list to
+  the saved design (`validateOptimizationReconciliation`) and emits
+  `INCOMPLETE_CUT_LEDGER:<code>` errors for missing / duplicated / foreign /
+  wrongly sized occurrences; `execute()` produces no files when invalid.
+  `useYilmazExport.isReady` requires the same reconciliation on the stored
+  result. Missing evidence and stale revision are covered by construction: the
+  export reads only the workflow-store result, which is set from recorded
+  evidence (or hydrated per revision from `fabricator_optimization_evidence`),
+  and simulation results never enter the store. Tests:
+  `YilmazExportPipeline.failClosed.test.ts`, `OptimizationPage.failClosed`
+  (no export panel after simulation). Browser E2E was not run in this session.
+- Batches 3–5 (drafting workbench repair, revision-bound assembly manifest,
+  customer exploded view) were **not started** beyond the retained 3D/inspector
+  groundwork commit; the inspector remains role-level and the drafting adapter
+  still builds `components: []`.
+
 ## Live limitation (explicit)
 
 R9 has **not** been re-recorded live. Re-recording requires the owner's

@@ -44,23 +44,33 @@ const createMockCut = (length: number, angle = 90) => ({
   waste: 5,
 });
 
+// Plans and totals reconcile to the physical stock ledger (fail-closed pre-flight
+// rejects plans whose waste/utilization do not add up to their bar).
 const createMockCuttingPlan = (
   cuts: Array<{ length: number; angle?: number }>,
   stockLength = 6000
-): CuttingPlan => ({
-  profile: createMockProfile(),
-  stockLength,
-  cuts: cuts.map((c) => createMockCut(c.length, c.angle ?? 90)),
-  totalWaste: 150,
-  utilization: 92.5,
-});
+): CuttingPlan => {
+  const physicalCuts = cuts.map((c) => createMockCut(c.length, c.angle ?? 90));
+  const used = physicalCuts.reduce((sum, cut) => sum + cut.length, 0);
+  return {
+    profile: createMockProfile(),
+    stockLength,
+    cuts: physicalCuts,
+    totalWaste: stockLength - used,
+    utilization: (used / stockLength) * 100,
+  };
+};
 
-const createMockOptimization = (plans: CuttingPlan[]): OptimizationResult => ({
+const createMockOptimization = (plans: CuttingPlan[]): OptimizationResult => {
+  const stock = plans.reduce((sum, plan) => sum + plan.stockLength, 0);
+  const waste = plans.reduce((sum, plan) => sum + plan.totalWaste, 0);
+  const wastePercentage = stock > 0 ? (waste / stock) * 100 : 0;
+  return {
   materialUsage: 85.5,
-  wastePercentage: 14.5,
+  wastePercentage,
   estimatedProductionTime: 4.5,
   cuttingPlan: plans,
-  nestingEfficiency: 91.2,
+  nestingEfficiency: 100 - wastePercentage,
   costBreakdown: {
     materialCost: 450,
     laborCost: 200,
@@ -68,7 +78,27 @@ const createMockOptimization = (plans: CuttingPlan[]): OptimizationResult => ({
     glazingCost: 300,
     totalCost: 1100,
   },
-});
+  };
+};
+
+/**
+ * Saved-design components that the plan's cuts belong to. Pre-flight now reconciles
+ * the cut list to the design ledger (every occurrence once), so the fixture must be
+ * design-backed: raw length = physical cut length minus the profile allowance (2 mm),
+ * applied exactly once by physicalCutForOccurrence.
+ */
+const componentsForPlans = (plans: CuttingPlan[]): WindowUnit['components'] =>
+  plans.flatMap((plan) => plan.cuts.map((cut) => ({
+    id: cut.componentId,
+    type: 'frame',
+    profile: plan.profile,
+    quantity: 1,
+    cuttingLengths: [cut.length - (plan.profile.cuttingAllowance ?? 0)],
+    angles: [cut.angle],
+    machiningOperations: [],
+    glazingType: 'none',
+    hardware: [],
+  }))) as unknown as WindowUnit['components'];
 
 const createMockProject = (overrides?: Partial<WindowUnit>): WindowUnit => ({
   id: 'project-001',
@@ -97,7 +127,6 @@ describe('YilmazExportPipeline', () => {
 
   beforeEach(() => {
     pipeline = new YilmazExportPipeline({ machineModel: 'AIM-3410', format: 'all' });
-    project = createMockProject();
     optimization = createMockOptimization([
       createMockCuttingPlan([
         { length: 1200, angle: 45 },
@@ -110,6 +139,7 @@ describe('YilmazExportPipeline', () => {
         { length: 600, angle: 45 },
       ]),
     ]);
+    project = createMockProject({ components: componentsForPlans(optimization.cuttingPlan) });
   });
 
   // ─── Pre-Flight Validation ─────────────────────────────────────────────
@@ -208,7 +238,10 @@ describe('YilmazExportPipeline', () => {
         ];
         const safeOptimization = createMockOptimization([createMockCuttingPlan(safeCuts)]);
 
-        const result = modelPipeline.preFlight(project, safeOptimization);
+        const result = modelPipeline.preFlight(
+          createMockProject({ components: componentsForPlans(safeOptimization.cuttingPlan) }),
+          safeOptimization,
+        );
 
         expect(result.machineSpecs.model).toBe(model);
         expect(result.summary.totalCuts).toBe(2);

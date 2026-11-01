@@ -20,6 +20,7 @@ import {
 import { YilmazFileFormats, type ExportFile } from '@/services/export/YilmazFileFormats';
 import type { YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
 import { recordYilmazExportJob } from '@/lib/fabricator/export/recordYilmazExportJob';
+import { validateOptimizationReconciliation } from '@/lib/fabricator/validation/WorkflowValidator';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -95,9 +96,12 @@ export function useYilmazExport(options: UseYilmazExportOptions = {}): UseYilmaz
     return pipelineRef.current;
   }, [machineModel, format]);
 
-  // Check if we have the required data
+  // Ready only when the stored (evidence-backed) result reconciles to the saved design:
+  // every occurrence placed once. Simulation results never enter the store, so they
+  // can never become export input.
   const isReady = useMemo(
-    () => !!(currentProject && optimizationResult && optimizationResult.cuttingPlan.length > 0),
+    () => !!(currentProject && optimizationResult && optimizationResult.cuttingPlan.length > 0
+      && validateOptimizationReconciliation(optimizationResult, currentProject).valid),
     [currentProject, optimizationResult]
   );
 

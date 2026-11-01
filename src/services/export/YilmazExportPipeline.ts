@@ -9,6 +9,7 @@
  */
 
 import type { CuttingPlan, OptimizationResult, WindowUnit } from '@/types/fabricator';
+import { validateOptimizationReconciliation } from '@/lib/fabricator/validation/WorkflowValidator';
 import {
   YilmazGCodeGenerator,
   MACHINE_SPECS,
@@ -217,6 +218,21 @@ export class YilmazExportPipeline {
         message: 'No cutting plans found in optimization result',
         messageAr: 'لم يتم العثور على خطط قطع في نتيجة التحسين',
       });
+    }
+
+    // Design ledger completeness (AICS-001 Tier 3): every component occurrence of the
+    // saved design must be placed exactly once with its physical length/angle. An
+    // incomplete, duplicated or foreign cut list must never reach the machine.
+    const reconciliation = validateOptimizationReconciliation(optimization, project);
+    if (!reconciliation.valid) {
+      for (const error of reconciliation.errors) {
+        issues.push({
+          severity: 'error',
+          code: `INCOMPLETE_CUT_LEDGER:${error.code}`,
+          message: `Cut list does not reconcile to the saved design: ${error.message}`,
+          messageAr: `قائمة القطع لا تطابق التصميم المحفوظ: ${error.message}`,
+        });
+      }
     }
 
     // Tool magazine capacity warning
