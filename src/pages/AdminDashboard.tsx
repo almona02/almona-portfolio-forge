@@ -62,6 +62,7 @@ const MachinesAdminPanel = lazyRetry(() => import('@/components/admin/panels/Mac
 const ServiceContractsAdminPanel = lazyRetry(() => import('@/components/admin/panels/ServiceContractsAdminPanel'), 'ServiceContractsAdminPanel')
 const AdminSettingsPanel = lazyRetry(() => import('@/components/admin/panels/AdminSettingsPanel'), 'AdminSettingsPanel')
 const ServicePackagesPanel = lazyRetry(() => import('@/components/admin/panels/ServicePackagesPanel'), 'ServicePackagesPanel')
+const ManufacturingConfigPanel = lazyRetry(() => import('@/components/admin/panels/ManufacturingConfigPanel'), 'ManufacturingConfigPanel')
 
 type Notification = { id: string; title: string; message: string; created_at: string }
 
@@ -348,6 +349,12 @@ const AdminDashboard: React.FC = () => {
         return (
           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading configuration…</div>}>
             <AdminSettingsPanel />
+          </React.Suspense>
+        )
+      case 'manufacturing':
+        return (
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading manufacturing configurators…</div>}>
+            <ManufacturingConfigPanel />
           </React.Suspense>
         )
       case 'analytics':
