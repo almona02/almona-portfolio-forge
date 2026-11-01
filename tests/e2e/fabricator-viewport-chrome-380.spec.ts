@@ -7,6 +7,8 @@
 import { expect, test } from '@playwright/test';
 
 const POSE_URL = (process.env.E2E_FABRICATOR_POSE_URL || process.env.E2E_POSE_DESIGN_URL || '').trim();
+/** Known assembly list entry label when the CALUMINIUM PS fixture is loaded. */
+const KNOWN_PART_NAME = process.env.E2E_FABRICATOR_KNOWN_PART || 'Frame';
 
 test.describe('Fabricator 380px preview-rail chrome', () => {
   test.beforeEach(({ }, testInfo) => {
@@ -31,7 +33,6 @@ test.describe('Fabricator 380px preview-rail chrome', () => {
     const previewHost = page.locator('[data-testid="engineering-bay-preview-host"]');
     await expect(previewHost).toBeVisible();
 
-    // Expand right rail if collapsed.
     const rightToggle = page.locator(
       '[data-testid="engineering-bay-preview-host"] [aria-expanded="false"]',
     ).first();
@@ -56,12 +57,10 @@ test.describe('Fabricator 380px preview-rail chrome', () => {
     const parts = page.locator('[data-testid="window-3d-part-list-slot"]');
     await expect(parts).toBeVisible();
 
-    // Select first real list entry when present.
-    const firstPart = parts.locator('button, [role="button"], li').first();
-    await expect(firstPart).toBeVisible();
-    await firstPart.click();
+    const knownPart = parts.getByText(KNOWN_PART_NAME, { exact: false }).first();
+    await expect(knownPart, `known manifest entry "${KNOWN_PART_NAME}" required`).toBeVisible();
+    await knownPart.click();
 
-    // Compact exclusive: details deferred while Parts open.
     await expect(page.locator('[data-testid="window-3d-details-deferred"]')).toBeVisible();
     await expect(page.locator('[data-testid="window-3d-details-slot"]')).toHaveCount(0);
 
@@ -78,13 +77,37 @@ test.describe('Fabricator 380px preview-rail chrome', () => {
     expect(partsBox!.y + partsBox!.height).toBeLessThanOrEqual(statusBox!.y + 2);
     expect(hitBox!.width).toBeGreaterThanOrEqual(100);
 
-    // Close Parts → details become accessible for the selection.
+    // Pointer access: centre of the reserved strip must reach the canvas (or hit itself),
+    // not a chrome overlay. Fail if an intercepting element sits above the strip.
+    const hitCenter = {
+      x: hitBox!.x + hitBox!.width / 2,
+      y: hitBox!.y + hitBox!.height / 2,
+    };
+    const topAtHit = await page.evaluate(({ x, y }) => {
+      const el = document.elementFromPoint(x, y);
+      if (!el) return null;
+      const canvas = el.closest('canvas');
+      const hit = el.closest('[data-testid="window-3d-canvas-hit"]');
+      const chromeOverlay = el.closest('[data-testid="window-3d-panel-stack"], [data-testid="window-3d-status-slot"], [data-testid="window-3d-toolbar-slot"]');
+      return {
+        tag: el.tagName,
+        testId: (el as HTMLElement).dataset?.testid ?? null,
+        isCanvas: Boolean(canvas),
+        isHitStrip: Boolean(hit),
+        isChromeOverlay: Boolean(chromeOverlay),
+      };
+    }, hitCenter);
+    expect(topAtHit, 'elementFromPoint must resolve inside the preview').toBeTruthy();
+    expect(topAtHit!.isChromeOverlay, 'chrome overlay must not intercept the canvas hit strip').toBe(false);
+    expect(
+      topAtHit!.isCanvas || topAtHit!.isHitStrip,
+      'reserved strip centre must hit canvas or the pass-through hit region',
+    ).toBe(true);
+
     await partsToggle.click();
     await expect(page.locator('[data-testid="window-3d-part-list-slot"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="window-3d-details-slot"]')).toBeVisible();
 
-    // Canvas hit should still accept pointer events.
-    await canvasHit.click({ trial: true }).catch(() => undefined);
     await page.screenshot({ path: testInfo.outputPath('chrome-380-rail.png') });
   });
 });

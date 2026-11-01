@@ -39,6 +39,7 @@ const ack = (overrides: Partial<StockReservationEvidence> = {}): StockReservatio
   availabilityOk: true, bomFingerprint: fingerprintBom(bom), stockVersionByProfile: { 'owned-1': 1 },
   physicalBarBinding: 'physical',
   barsByCatalogueLength: { 'PS-6601-FRAME|6500': 4, 'owned-1|6500': 4 },
+  physicalStockVersionFingerprint: 'owned-1:1',
   ...overrides,
 });
 

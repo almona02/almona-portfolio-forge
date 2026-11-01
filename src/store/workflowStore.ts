@@ -120,6 +120,11 @@ export interface StockReservationEvidence {
   barsByCatalogueLength?: Record<string, number>;
   /** How bar counts were established at acknowledgement. */
   physicalBarBinding?: 'physical' | 'unbound' | 'metres_only';
+  /**
+   * Verified stock_version fingerprint from the physical-bar snapshot used at ack.
+   * Production readiness revalidates against current owned versions.
+   */
+  physicalStockVersionFingerprint?: string;
 }
 
 /** UP-18: frozen release fingerprint acknowledgement. */

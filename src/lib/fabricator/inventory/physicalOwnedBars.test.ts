@@ -147,6 +147,84 @@ describe('netPhysicalBarsFromMovements reconciliation', () => {
     expect(result.lots).toEqual([]);
   });
 
+  it('invalidates metres-only adjustment after physical intake (does not keep 10 bars)', () => {
+    const result = netPhysicalBarsFromMovements([
+      mv({
+        movementType: 'intake',
+        barCount: 10,
+        barLengthM: 6,
+        lotId: 'A',
+        createdAt: '2026-01-01T00:00:00Z',
+      }),
+      mv({
+        movementType: 'adjustment',
+        barCount: null,
+        barLengthM: null,
+        canonicalMetres: -12,
+        createdAt: '2026-01-02T00:00:00Z',
+      }),
+    ]);
+    expect(result.invalidatedProfileIds).toContain('owned-f60');
+    expect(result.lots).toEqual([]);
+  });
+
+  it('invalidates incomplete/fractional adjustment after intake', () => {
+    const result = netPhysicalBarsFromMovements([
+      mv({ movementType: 'intake', barCount: 4, barLengthM: 6, createdAt: '2026-01-01T00:00:00Z' }),
+      mv({
+        movementType: 'adjustment',
+        barCount: 1.5,
+        barLengthM: 6,
+        createdAt: '2026-01-02T00:00:00Z',
+      }),
+    ]);
+    expect(result.invalidatedProfileIds).toContain('owned-f60');
+    expect(result.lots).toEqual([]);
+  });
+
+  it('invalidates positive incomplete adjustment with unknown physical composition', () => {
+    const result = netPhysicalBarsFromMovements([
+      mv({ movementType: 'intake', barCount: 2, barLengthM: 6, createdAt: '2026-01-01T00:00:00Z' }),
+      mv({
+        movementType: 'adjustment',
+        barCount: null,
+        barLengthM: null,
+        canonicalMetres: 6,
+        createdAt: '2026-01-02T00:00:00Z',
+      }),
+    ]);
+    expect(result.invalidatedProfileIds).toContain('owned-f60');
+    expect(result.lots).toEqual([]);
+  });
+
+  it('allows proven same-scope transfer as a no-op; invalidates ambiguous transfer', () => {
+    const harmless = netPhysicalBarsFromMovements([
+      mv({ movementType: 'intake', barCount: 5, barLengthM: 6, createdAt: '2026-01-01T00:00:00Z' }),
+      mv({
+        movementType: 'transfer',
+        barCount: 2,
+        barLengthM: 6,
+        transferPeerProfileId: 'owned-f60',
+        createdAt: '2026-01-02T00:00:00Z',
+      }),
+    ]);
+    expect(harmless.invalidatedProfileIds).toEqual([]);
+    expect(availableLotsByProfileLength(harmless.lots)[0].availableBars).toBe(5);
+
+    const ambiguous = netPhysicalBarsFromMovements([
+      mv({ movementType: 'intake', barCount: 5, barLengthM: 6, createdAt: '2026-01-01T00:00:00Z' }),
+      mv({
+        movementType: 'transfer',
+        barCount: 2,
+        barLengthM: 6,
+        // no peer
+        createdAt: '2026-01-02T00:00:00Z',
+      }),
+    ]);
+    expect(ambiguous.invalidatedProfileIds).toContain('owned-f60');
+    expect(ambiguous.lots).toEqual([]);
+  });
+
   it('preserves lot provenance on detailed lots after netting', () => {
     const result = netPhysicalBarsFromMovements([
       mv({ movementType: 'intake', barCount: 2, barLengthM: 6, lotId: 'A', createdAt: '2026-01-01T00:00:00Z' }),

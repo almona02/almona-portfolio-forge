@@ -7,7 +7,10 @@ import {
   buildBomDemandReport,
   isStockAcknowledgementStale,
 } from '@/lib/fabricator/inventory/bomStockAvailability';
-import { loadOwnedPhysicalBarLots } from '@/lib/fabricator/inventory/loadOwnedPhysicalBarLots';
+import {
+  fingerprintStockVersions,
+  loadOwnedPhysicalBarLots,
+} from '@/lib/fabricator/inventory/loadOwnedPhysicalBarLots';
 import { bindPhysicalBarsForDemand } from '@/lib/fabricator/inventory/physicalOwnedBars';
 import { loadOwnedWorkshopInventory } from '@/lib/fabricator/inventory/ProfileInventoryAdapter';
 import { fingerprintBom } from '@/lib/fabricator/positionRelease';
@@ -53,6 +56,8 @@ export const StudioStockPage: React.FC = () => {
           physicalInvalidated: [] as string[],
           physicalComplete: false,
           physicalError: null as string | null,
+          physicalStockVersionFingerprint: '',
+          physicalStockVersionByProfile: {} as Record<string, number>,
           error: null as string | null,
         };
       }
@@ -64,13 +69,20 @@ export const StudioStockPage: React.FC = () => {
         userId: user.id,
         ownedProfiles: result.profiles,
       });
+      const verifiedVersions = lotsResult.stockVersionByProfile;
+      const profiles = result.profiles.map((p) => ({
+        ...p,
+        stockVersion: verifiedVersions[p.id] ?? p.stockVersion,
+      }));
       return {
-        profiles: result.profiles,
+        profiles,
         totalValue: result.totalValue,
         physicalLots: lotsResult.lots,
         physicalInvalidated: lotsResult.invalidatedProfileIds,
         physicalComplete: lotsResult.ok && lotsResult.complete,
         physicalError: lotsResult.ok ? null : lotsResult.error,
+        physicalStockVersionFingerprint: lotsResult.stockVersionFingerprint,
+        physicalStockVersionByProfile: verifiedVersions,
         error: result.ok
           ? (lotsResult.ok ? null : lotsResult.error)
           : result.error,
@@ -144,6 +156,22 @@ export const StudioStockPage: React.FC = () => {
       return;
     }
 
+    // Revalidate verified snapshot fingerprint against current owned versions before ack.
+    const liveVersions: Record<string, number> = {};
+    for (const p of data.profiles) {
+      liveVersions[p.id] = typeof p.stockVersion === 'number' ? p.stockVersion : 0;
+    }
+    const liveFingerprint = fingerprintStockVersions(liveVersions);
+    if (
+      !data.physicalStockVersionFingerprint
+      || liveFingerprint !== data.physicalStockVersionFingerprint
+    ) {
+      toast.error(
+        'Owned stock versions drifted since the physical-bar snapshot — refresh inventory and re-acknowledge.',
+      );
+      return;
+    }
+
     const metersByProfile: Record<string, number> = {};
     for (const row of report.rows) {
       if (row.ownedProfileId) {
@@ -167,10 +195,11 @@ export const StudioStockPage: React.FC = () => {
       reservedAt: new Date().toISOString(),
       availabilityOk: report.availabilityOk,
       bomFingerprint,
-      stockVersionByProfile: { ...report.stockVersionByProfile },
+      stockVersionByProfile: { ...data.physicalStockVersionByProfile },
       // Physical bars only — never floor(metres / length); never from partial history.
       barsByCatalogueLength: physical.barsByCatalogueLength,
       physicalBarBinding: physical.binding,
+      physicalStockVersionFingerprint: data.physicalStockVersionFingerprint,
     });
 
     if (physical.binding !== 'physical') {

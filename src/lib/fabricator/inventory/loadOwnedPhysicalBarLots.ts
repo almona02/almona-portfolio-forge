@@ -1,10 +1,11 @@
 /**
  * Load net physical bar lots (profile × length) from stock_movements.
  *
- * Completeness contract:
- * - Pages until a short page or explicit count match.
- * - Any page error / partial history → ok:false (never physical bind).
- * - stockVersionFingerprint ties acknowledgement to the owned-profile versions used.
+ * Consistency contract:
+ * - Read authoritative stock versions before and after paging; mismatch → fail.
+ * - Pages until a short page; exact count match when count is available.
+ * - Any page error / partial history / version drift → ok:false (never physical bind).
+ * - Returned stockVersionFingerprint is the verified post-read snapshot, not stale input.
  */
 
 import { supabase } from '@/lib/supabase';
@@ -26,7 +27,9 @@ export type LoadOwnedPhysicalBarLotsResult =
       reasons: string[];
       complete: true;
       movementCount: number;
+      /** Verified fingerprint from post-collection stock_version read. */
       stockVersionFingerprint: string;
+      stockVersionByProfile: Record<string, number>;
     }
   | {
       ok: false;
@@ -37,6 +40,7 @@ export type LoadOwnedPhysicalBarLotsResult =
       complete: false;
       movementCount: number;
       stockVersionFingerprint: string;
+      stockVersionByProfile: Record<string, number>;
     };
 
 export interface StockMovementPageRow {
@@ -44,6 +48,7 @@ export interface StockMovementPageRow {
   movement_type: string;
   bar_count: number | string | null;
   bar_length_m: number | string | null;
+  canonical_metres?: number | string | null;
   lot_metadata: Record<string, unknown> | null;
   unit: string | null;
   quantity: number | string | null;
@@ -51,21 +56,31 @@ export interface StockMovementPageRow {
 }
 
 export interface LoadOwnedPhysicalBarLotsDeps {
-  /** Fetch one page [offset, offset+limit). Must return exact rows for that window. */
   fetchPage: (args: {
     userId: string;
     offset: number;
     limit: number;
   }) => Promise<{ rows: StockMovementPageRow[]; error: string | null }>;
-  /** Optional total count for completeness check. */
   fetchCount?: (userId: string) => Promise<{ count: number | null; error: string | null }>;
+  /** Authoritative owned-profile stock_version map (DB read). */
+  fetchStockVersions: (userId: string) => Promise<{
+    versions: Record<string, number>;
+    error: string | null;
+  }>;
 }
 
-function stockVersionFingerprint(profiles: readonly Profile[]): string {
-  const parts = profiles
-    .map((p) => `${p.id}:${typeof p.stockVersion === 'number' ? p.stockVersion : 0}`)
-    .sort();
-  return parts.join('|');
+export function fingerprintStockVersions(versions: Readonly<Record<string, number>>): string {
+  return Object.keys(versions)
+    .sort()
+    .map((id) => `${id}:${versions[id] ?? 0}`)
+    .join('|');
+}
+
+export function stockVersionsEqual(
+  a: Readonly<Record<string, number>>,
+  b: Readonly<Record<string, number>>,
+): boolean {
+  return fingerprintStockVersions(a) === fingerprintStockVersions(b);
 }
 
 function mapRow(
@@ -80,6 +95,8 @@ function mapRow(
       ? lotMeta.lotId
       : null;
   const status = typeof lotMeta.status === 'string' ? lotMeta.status : null;
+  const peerRaw = lotMeta.transfer_peer_profile_id ?? lotMeta.transferPeerProfileId ?? lotMeta.peer_profile_id;
+  const transferPeerProfileId = typeof peerRaw === 'string' ? peerRaw : null;
   let barCount = row.bar_count == null ? null : Number(row.bar_count);
   let barLengthM = row.bar_length_m == null ? null : Number(row.bar_length_m);
   const unit = String(row.unit || '').toLowerCase();
@@ -91,15 +108,18 @@ function mapRow(
   ) {
     barCount = Number(row.quantity);
   }
+  const canonicalMetres = row.canonical_metres == null ? null : Number(row.canonical_metres);
   return {
     profileId,
     movementType: String(row.movement_type || ''),
     barCount: barCount != null && Number.isFinite(barCount) ? barCount : null,
     barLengthM: barLengthM != null && Number.isFinite(barLengthM) ? barLengthM : null,
+    canonicalMetres: canonicalMetres != null && Number.isFinite(canonicalMetres) ? canonicalMetres : null,
     lotId,
     status,
     isTestStock: testIds.has(profileId),
     createdAt: row.created_at,
+    transferPeerProfileId,
   };
 }
 
@@ -113,7 +133,7 @@ async function defaultFetchPage(args: {
   const { data, error } = await db
     .from('stock_movements')
     .select(
-      'profile_id, movement_type, bar_count, bar_length_m, lot_metadata, unit, quantity, created_at',
+      'profile_id, movement_type, bar_count, bar_length_m, canonical_metres, lot_metadata, unit, quantity, created_at',
     )
     .eq('user_id', args.userId)
     .order('created_at', { ascending: true })
@@ -140,6 +160,26 @@ async function defaultFetchCount(
   return { count: typeof count === 'number' ? count : null, error: null };
 }
 
+async function defaultFetchStockVersions(
+  userId: string,
+): Promise<{ versions: Record<string, number>; error: string | null }> {
+  const db = supabase as { from: (t: string) => any };
+  const { data, error } = await db
+    .from('fabricator_profiles')
+    .select('id, stock_version')
+    .eq('user_id', userId);
+  if (error) {
+    return { versions: {}, error: error.message || 'Failed to load stock versions.' };
+  }
+  const versions: Record<string, number> = {};
+  for (const row of data || []) {
+    const id = String((row as { id: string }).id);
+    const v = Number((row as { stock_version: number | null }).stock_version ?? 0);
+    versions[id] = Number.isFinite(v) ? v : 0;
+  }
+  return { versions, error: null };
+}
+
 /**
  * Pure pagination + reconcile helper (injectable for tests).
  */
@@ -152,16 +192,20 @@ export async function loadOwnedPhysicalBarLotsWithDeps(
   deps: LoadOwnedPhysicalBarLotsDeps,
 ): Promise<LoadOwnedPhysicalBarLotsResult> {
   const { userId, ownedProfiles = [], pageSize = PHYSICAL_BAR_MOVEMENT_PAGE_SIZE } = options;
-  const fingerprint = stockVersionFingerprint(ownedProfiles);
-  const emptyFail = (error: string): LoadOwnedPhysicalBarLotsResult => ({
+  const emptyFail = (
+    error: string,
+    versions: Record<string, number> = {},
+    movementCount = 0,
+  ): LoadOwnedPhysicalBarLotsResult => ({
     ok: false,
     error,
     lots: [],
     invalidatedProfileIds: [],
     reasons: [error],
     complete: false,
-    movementCount: 0,
-    stockVersionFingerprint: fingerprint,
+    movementCount,
+    stockVersionFingerprint: fingerprintStockVersions(versions),
+    stockVersionByProfile: versions,
   });
 
   if (!userId) {
@@ -175,11 +219,17 @@ export async function loadOwnedPhysicalBarLotsWithDeps(
     ownedProfiles.filter((p) => isTestStockProfile(p)).map((p) => p.id),
   );
 
+  const before = await deps.fetchStockVersions(userId);
+  if (before.error) {
+    return emptyFail(before.error);
+  }
+  const versionsBefore = before.versions;
+
   let expectedCount: number | null = null;
   if (deps.fetchCount) {
     const counted = await deps.fetchCount(userId);
     if (counted.error) {
-      return emptyFail(counted.error);
+      return emptyFail(counted.error, versionsBefore);
     }
     expectedCount = counted.count;
   }
@@ -189,25 +239,58 @@ export async function loadOwnedPhysicalBarLotsWithDeps(
   for (;;) {
     const page = await deps.fetchPage({ userId, offset, limit: pageSize });
     if (page.error) {
-      return emptyFail(page.error);
+      return emptyFail(page.error, versionsBefore, allRows.length);
     }
     allRows.push(...page.rows);
     if (page.rows.length < pageSize) break;
     offset += pageSize;
-    // Safety cap: refuse unbounded loops; treat as incomplete.
     if (offset > 100_000) {
-      return emptyFail('stock_movements pagination exceeded safety cap — refusing partial physical bind.');
+      return emptyFail(
+        'stock_movements pagination exceeded safety cap — refusing partial physical bind.',
+        versionsBefore,
+        allRows.length,
+      );
     }
   }
 
   if (expectedCount != null && allRows.length !== expectedCount) {
     return emptyFail(
       `Incomplete stock_movements snapshot: loaded ${allRows.length} of ${expectedCount} rows.`,
+      versionsBefore,
+      allRows.length,
     );
+  }
+
+  const after = await deps.fetchStockVersions(userId);
+  if (after.error) {
+    return emptyFail(after.error, versionsBefore, allRows.length);
+  }
+  if (!stockVersionsEqual(versionsBefore, after.versions)) {
+    return emptyFail(
+      'Stock versions changed during physical-bar collection — retry acknowledgement.',
+      after.versions,
+      allRows.length,
+    );
+  }
+
+  // Optional: count must still match after collection (append during paging).
+  if (deps.fetchCount) {
+    const recounted = await deps.fetchCount(userId);
+    if (recounted.error) {
+      return emptyFail(recounted.error, after.versions, allRows.length);
+    }
+    if (recounted.count != null && recounted.count !== allRows.length) {
+      return emptyFail(
+        `stock_movements grew during collection (${allRows.length} → ${recounted.count}) — refusing stale bind.`,
+        after.versions,
+        allRows.length,
+      );
+    }
   }
 
   const movements = allRows.map((row) => mapRow(row, testIds));
   const net = netPhysicalBarsFromMovements(movements);
+  const verifiedFingerprint = fingerprintStockVersions(after.versions);
 
   return {
     ok: true,
@@ -216,7 +299,8 @@ export async function loadOwnedPhysicalBarLotsWithDeps(
     reasons: net.reasons,
     complete: true,
     movementCount: allRows.length,
-    stockVersionFingerprint: fingerprint,
+    stockVersionFingerprint: verifiedFingerprint,
+    stockVersionByProfile: after.versions,
   };
 }
 
@@ -228,5 +312,6 @@ export async function loadOwnedPhysicalBarLots(options: {
   return loadOwnedPhysicalBarLotsWithDeps(options, {
     fetchPage: defaultFetchPage,
     fetchCount: defaultFetchCount,
+    fetchStockVersions: defaultFetchStockVersions,
   });
 }

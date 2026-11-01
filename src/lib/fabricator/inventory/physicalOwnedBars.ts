@@ -34,6 +34,11 @@ export interface PhysicalBarMovement {
   barCount: number | null;
   /** Bar length in metres when known. */
   barLengthM: number | null;
+  /**
+   * Optional signed canonical metres (loader may retain for audit). Incomplete
+   * adjustments still invalidate physical bindings — metres do not allocate bars.
+   */
+  canonicalMetres?: number | null;
   lotId?: string | null;
   /**
    * Optional annotation on the row. Must NOT gate whether the transaction applies.
@@ -43,6 +48,11 @@ export interface PhysicalBarMovement {
   isTestStock?: boolean;
   /** ISO timestamp — used for FIFO when present. */
   createdAt?: string | null;
+  /**
+   * For transfer events: peer profile id. Same-profile + known length is a
+   * proven no-op; missing peer or cross-profile without paired evidence is ambiguous.
+   */
+  transferPeerProfileId?: string | null;
 }
 
 export interface PhysicalBarNetResult {
@@ -178,14 +188,21 @@ export function netPhysicalBarsFromMovements(
       && m.barLengthM != null
       && m.barLengthM > 0;
 
-    // Metres-only (or non-integer bar) event
+    // Metres-only (or non-integer bar) event — composition cannot be allocated by length.
     if (!hasBars) {
-      if (kind === 'outbound' || kind === 'reserve' || kind === 'unknown') {
+      if (
+        kind === 'outbound'
+        || kind === 'reserve'
+        || kind === 'unknown'
+        || kind === 'adjustment'
+        || kind === 'transfer'
+        || kind === 'release'
+      ) {
         invalidate(
           invalidated,
           reasons,
           m.profileId,
-          `${m.profileId}: metres-only or incomplete ${m.movementType || 'event'} after/with physical lots — physical binding invalidated.`,
+          `${m.profileId}: metres-only or incomplete ${m.movementType || 'event'} (canonicalMetres=${m.canonicalMetres ?? 'n/a'}) — physical binding invalidated.`,
         );
         clearProfileLots(m.profileId);
       }
@@ -223,7 +240,20 @@ export function netPhysicalBarsFromMovements(
     }
 
     if (kind === 'transfer') {
-      // Same-profile transfer is a no-op for net bars; cross-profile needs paired rows.
+      const peer = m.transferPeerProfileId ?? null;
+      // Proven harmless: same-profile transfer with known physical length (no net change).
+      if (peer && peer === m.profileId) {
+        continue;
+      }
+      invalidate(
+        invalidated,
+        reasons,
+        m.profileId,
+        peer
+          ? `${m.profileId}: cross-profile transfer to ${peer} without paired same-length evidence — physical binding invalidated.`
+          : `${m.profileId}: ambiguous transfer without same-scope peer — physical binding invalidated.`,
+      );
+      clearProfileLots(m.profileId);
       continue;
     }
 

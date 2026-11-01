@@ -14,6 +14,7 @@
  */
 
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
+import { fingerprintStockVersions } from '@/lib/fabricator/inventory/loadOwnedPhysicalBarLots';
 import { availableBarsForSelectedLength } from '@/lib/fabricator/inventory/physicalOwnedBars';
 import { fingerprintBom } from '@/lib/fabricator/positionRelease';
 import type { StockReservationEvidence, WorkflowIdentity } from '@/store/workflowStore';
@@ -240,6 +241,14 @@ export function assessStockReadiness(input: {
       code: 'STOCK_BARS_UNBOUND',
       message: 'Physical bar binding is marked but no profile×length counts are present. Re-acknowledge owned stock.',
     });
+  } else {
+    const expectedFp = fingerprintStockVersions(ack.stockVersionByProfile || {});
+    if (!ack.physicalStockVersionFingerprint || ack.physicalStockVersionFingerprint !== expectedFp) {
+      issues.push({
+        code: 'STOCK_BARS_UNBOUND',
+        message: 'Physical bar acknowledgement is missing a verified stock-version fingerprint for its snapshot. Re-acknowledge owned stock.',
+      });
+    }
   }
   return { ready: issues.length === 0, issues };
 }
