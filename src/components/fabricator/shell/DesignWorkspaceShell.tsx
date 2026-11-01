@@ -130,8 +130,16 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
         </button>
       )}
 
-      <div className={cn('flex-1 min-w-0 min-h-0', !cadOk && 'overflow-auto')}>
-        {cadOk ? children : (
+      <div className={cn('relative flex-1 min-w-0 min-h-0', !cadOk && 'overflow-auto')}>
+        {/* Keep workspace children mounted across CAD-threshold resizes so 3D state survives. */}
+        <div
+          className={cn('h-full min-h-0', !cadOk && 'pointer-events-none absolute inset-0 opacity-0')}
+          aria-hidden={!cadOk}
+          data-cad-workspace={cadOk ? 'active' : 'retained'}
+        >
+          {children}
+        </div>
+        {!cadOk ? (
           <div className="p-3 space-y-3">
             {project && (
               <section aria-label="Position design summary" className="rounded border border-amber-600/30 p-4 text-sm text-amber-100 break-words">
@@ -146,7 +154,7 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
             )}
             <DesktopWorkspaceNotice />
           </div>
-        )}
+        ) : null}
       </div>
 
       {!hideOuterInspector && showInlineRails && (

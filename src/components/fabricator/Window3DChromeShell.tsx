@@ -7,8 +7,9 @@ import {
 
 /**
  * Non-overlapping chrome slots for the 3D viewport.
- * Toolbar and disclaimer sit in a top column; Parts / details dock by container policy.
- * At ~380px (Engineering Bay rail), Parts + details stack — never two overlapping absolute cards.
+ * Toolbar / disclaimer / status are flex rows outside the panel column so they
+ * never sit under an absolute Parts stack. Panels reserve width and leave a
+ * usable canvas hit strip (minUsableCanvasPx).
  */
 export function Window3DChromeShell({
   toolbar,
@@ -22,30 +23,31 @@ export function Window3DChromeShell({
   toolbar?: ReactNode;
   disclaimer?: ReactNode;
   partList?: ReactNode;
-  /** Selected-part details — stacked with Parts under compact container width. */
   details?: ReactNode;
   status?: ReactNode;
-  /** Measured content-box width of the 3D host. Null = unmeasured. */
   containerWidthPx?: number | null;
   containerHeightPx?: number | null;
 }) {
-  const partsOpen = Boolean(partList);
-  const detailsOpen = Boolean(details);
   const policy = resolveViewportChromePolicy({
     widthPx: containerWidthPx,
     heightPx: containerHeightPx,
-    partsOpen,
-    detailsOpen,
+    partsOpen: Boolean(partList),
+    detailsOpen: Boolean(details),
+    hasStatus: Boolean(status),
   });
 
-  const stack = policy.stackPartsAndDetails && (partsOpen || detailsOpen);
+  const showParts = policy.showParts && partList;
+  const showDetails = policy.showDetails && details;
+  const panelOpen = Boolean(showParts || showDetails);
 
   return (
     <div
       data-testid="window-3d-chrome"
       data-chrome-mode={policy.mode}
       data-panel-placement={policy.panelPlacement}
+      data-inspection-mode={policy.inspectionMode}
       data-container-width={containerWidthPx ?? undefined}
+      data-min-usable-canvas={policy.minUsableCanvasPx}
       className="pointer-events-none absolute inset-0 z-10 flex flex-col gap-2 p-2"
       style={{ zIndex: VIEWPORT_CHROME_Z.controls }}
     >
@@ -67,77 +69,77 @@ export function Window3DChromeShell({
           {disclaimer}
         </div>
       ) : null}
-      <div className="relative min-h-0 flex-1" data-chrome-slot="panels">
-        {stack ? (
+
+      {/* Middle: reserved panel column + canvas flex remainder (never covered by status). */}
+      <div
+        className="relative flex min-h-0 flex-1 gap-2"
+        data-chrome-slot="panels"
+        data-short-container={policy.shortContainer ? 'true' : undefined}
+      >
+        {panelOpen ? (
           <div
             data-testid="window-3d-panel-stack"
-            data-chrome-stack="parts-details"
+            data-chrome-stack={showParts && showDetails ? 'parts-details' : showParts ? 'parts' : 'details'}
             className={cn(
-              'pointer-events-none absolute inset-y-0 left-0 z-20 flex max-h-full flex-col gap-2',
-              policy.mode === 'compact'
-                ? 'w-[min(100%,calc(100%-0.25rem))]'
-                : 'w-[min(20rem,calc(100%-0.5rem))]',
+              'pointer-events-auto flex min-h-0 shrink-0 flex-col gap-2 overflow-hidden',
+              policy.mode === 'compact' && 'max-w-full',
             )}
-            style={{ zIndex: VIEWPORT_CHROME_Z.panels }}
+            style={{
+              zIndex: VIEWPORT_CHROME_Z.panels,
+              width: policy.panelMaxWidthPx,
+              maxWidth: `calc(100% - ${policy.minUsableCanvasPx}px)`,
+            }}
           >
-            {partList ? (
+            {showParts ? (
               <div
                 data-testid="window-3d-part-list-slot"
-                className="pointer-events-auto min-h-0 flex-1 overflow-y-auto overflow-x-hidden"
+                className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden"
               >
                 {partList}
               </div>
             ) : null}
-            {details ? (
+            {showDetails ? (
               <div
                 data-testid="window-3d-details-slot"
-                className="pointer-events-auto min-h-0 flex-1 overflow-y-auto overflow-x-hidden"
+                className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden"
               >
                 {details}
               </div>
             ) : null}
-          </div>
-        ) : (
-          <>
-            {partList ? (
-              <div
-                data-testid="window-3d-part-list-slot"
-                className="pointer-events-auto absolute inset-y-0 left-0 z-20 w-[min(20rem,calc(100%-0.5rem))] overflow-y-auto overflow-x-hidden"
-                style={{ zIndex: VIEWPORT_CHROME_Z.panels }}
+            {policy.inspectionMode === 'exclusive-parts' && details ? (
+              <p
+                data-testid="window-3d-details-deferred"
+                className="shrink-0 rounded border border-amber-500/40 bg-slate-950/90 px-2 py-1 text-[10px] text-amber-100"
               >
-                {partList}
-              </div>
+                Close Parts to inspect the selected part details in this narrow rail.
+              </p>
             ) : null}
-            {details ? (
-              <div
-                data-testid="window-3d-details-slot"
-                className={cn(
-                  'pointer-events-auto absolute z-20 overflow-y-auto overflow-x-hidden',
-                  partList
-                    ? 'inset-y-0 left-[min(20rem,calc(100%-0.5rem))] ml-2 w-[min(18rem,calc(100%-20.5rem))]'
-                    : 'bottom-0 right-0 max-h-[min(60%,20rem)] w-[min(22rem,calc(100%-0.5rem))]',
-                )}
-                style={{ zIndex: VIEWPORT_CHROME_Z.panels }}
-              >
-                {details}
-              </div>
-            ) : null}
-          </>
-        )}
-        {status ? (
-          <div
-            data-testid="window-3d-status-slot"
-            data-chrome-slot="status"
-            className={cn(
-              'pointer-events-auto absolute bottom-0 z-10 max-w-[min(20rem,calc(100%-0.5rem))]',
-              partList || stack ? 'right-0' : 'left-0',
-            )}
-            style={{ zIndex: VIEWPORT_CHROME_Z.status }}
-          >
-            {status}
           </div>
         ) : null}
+
+        {/* Usable canvas hit region — empty flex remainder; Canvas sits underneath chrome. */}
+        <div
+          data-testid="window-3d-canvas-hit"
+          className="min-h-[3rem] min-w-0 flex-1"
+          style={{ minWidth: policy.minUsableCanvasPx }}
+          aria-hidden
+        />
       </div>
+
+      {/* Status is a real flex row under panels — never absolute over the stack. */}
+      {status ? (
+        <div
+          data-testid="window-3d-status-slot"
+          data-chrome-slot="status"
+          className="pointer-events-auto w-full shrink-0 overflow-x-auto"
+          style={{
+            zIndex: VIEWPORT_CHROME_Z.status,
+            maxHeight: policy.shortContainer ? 56 : policy.statusRowPx,
+          }}
+        >
+          {status}
+        </div>
+      ) : null}
     </div>
   );
 }

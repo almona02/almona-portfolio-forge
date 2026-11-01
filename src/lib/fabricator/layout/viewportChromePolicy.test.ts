@@ -4,6 +4,7 @@ import {
   resolveShellRailMode,
   resolveViewportChromePolicy,
   VIEWPORT_COMPACT_WIDTH_PX,
+  VIEWPORT_MIN_USABLE_CANVAS_PX,
 } from './viewportChromePolicy';
 
 describe('resolveViewportChromePolicy', () => {
@@ -13,12 +14,13 @@ describe('resolveViewportChromePolicy', () => {
       heightPx: null,
       partsOpen: true,
       detailsOpen: true,
+      hasStatus: true,
     });
     expect(p.mode).toBe('docked');
-    expect(p.stackPartsAndDetails).toBe(true);
+    expect(p.showParts).toBe(true);
   });
 
-  it('stacks Parts + details at Engineering Bay 380px rail — never side-by-side cards', () => {
+  it('at 380px with Parts+details: exclusive Parts drawer — details deferred, canvas reserved', () => {
     expect(ENGINEERING_BAY_PREVIEW_RAIL_PX).toBe(380);
     expect(ENGINEERING_BAY_PREVIEW_RAIL_PX).toBeLessThan(VIEWPORT_COMPACT_WIDTH_PX);
 
@@ -27,21 +29,25 @@ describe('resolveViewportChromePolicy', () => {
       heightPx: 720,
       partsOpen: true,
       detailsOpen: true,
+      hasStatus: true,
     });
     expect(p.mode).toBe('compact');
-    expect(p.stackPartsAndDetails).toBe(true);
-    expect(p.panelPlacement).toBe('parts-left-details-stack');
+    expect(p.inspectionMode).toBe('exclusive-parts');
+    expect(p.showParts).toBe(true);
+    expect(p.showDetails).toBe(false);
+    expect(p.panelMaxWidthPx).toBeLessThanOrEqual(380 - VIEWPORT_MIN_USABLE_CANVAS_PX);
+    expect(p.statusRowPx).toBeGreaterThan(0);
   });
 
-  it('keeps exclusive Parts when details closed', () => {
+  it('marks short containers', () => {
     const p = resolveViewportChromePolicy({
       widthPx: 380,
-      heightPx: 600,
+      heightPx: 120,
       partsOpen: true,
       detailsOpen: false,
+      hasStatus: true,
     });
-    expect(p.panelPlacement).toBe('parts-exclusive');
-    expect(p.stackPartsAndDetails).toBe(false);
+    expect(p.shortContainer).toBe(true);
   });
 
   it('details-exclusive when Parts closed', () => {
@@ -50,9 +56,11 @@ describe('resolveViewportChromePolicy', () => {
       heightPx: 800,
       partsOpen: false,
       detailsOpen: true,
+      hasStatus: false,
     });
     expect(p.mode).toBe('docked');
     expect(p.panelPlacement).toBe('details-exclusive');
+    expect(p.showDetails).toBe(true);
   });
 });
 

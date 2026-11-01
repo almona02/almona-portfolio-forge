@@ -4,7 +4,7 @@ import { Window3DChromeShell } from './Window3DChromeShell';
 import { ENGINEERING_BAY_PREVIEW_RAIL_PX } from '@/lib/fabricator/layout/viewportChromePolicy';
 
 describe('Window3DChromeShell', () => {
-  it('stacks toolbar and disclaimer above a left-docked parts slot', () => {
+  it('stacks toolbar and disclaimer above panels; status is a flex row not absolute over Parts', () => {
     render(
       <div className="relative h-96 w-96">
         <Window3DChromeShell
@@ -21,15 +21,17 @@ describe('Window3DChromeShell', () => {
     const disclaimer = screen.getByTestId('window-3d-disclaimer-slot');
     const parts = screen.getByTestId('window-3d-part-list-slot');
     const status = screen.getByTestId('window-3d-status-slot');
+    const canvasHit = screen.getByTestId('window-3d-canvas-hit');
 
     expect(chrome.className).toContain('flex-col');
     expect(toolbar.compareDocumentPosition(disclaimer) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(disclaimer.compareDocumentPosition(parts) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(parts.className).toMatch(/absolute|overflow-y-auto/);
-    expect(status.className).toMatch(/right-0/);
+    expect(parts.compareDocumentPosition(status) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(status.className).not.toMatch(/absolute/);
+    expect(canvasHit).toBeInTheDocument();
   });
 
-  it('stacks Parts + details in one column at 380px — never two overlapping absolute cards', () => {
+  it('at 380px with Parts+details: Parts drawer + deferred details + status below + canvas hit', () => {
     render(
       <div className="relative h-[720px] w-[380px]">
         <Window3DChromeShell
@@ -37,18 +39,18 @@ describe('Window3DChromeShell', () => {
           containerHeightPx={720}
           partList={<section aria-label="Part list">parts</section>}
           details={<section aria-label="Selected window part">details</section>}
-          status={<div>status</div>}
+          status={<div aria-label="Preview source">status</div>}
         />
       </div>,
     );
 
     const chrome = screen.getByTestId('window-3d-chrome');
     expect(chrome).toHaveAttribute('data-chrome-mode', 'compact');
-    expect(chrome).toHaveAttribute('data-panel-placement', 'parts-left-details-stack');
-
-    const stack = screen.getByTestId('window-3d-panel-stack');
-    expect(stack).toHaveAttribute('data-chrome-stack', 'parts-details');
-    expect(screen.getByTestId('window-3d-part-list-slot').className).not.toMatch(/absolute/);
-    expect(screen.getByTestId('window-3d-details-slot').className).not.toMatch(/absolute/);
+    expect(chrome).toHaveAttribute('data-inspection-mode', 'exclusive-parts');
+    expect(screen.getByTestId('window-3d-part-list-slot')).toBeInTheDocument();
+    expect(screen.queryByTestId('window-3d-details-slot')).not.toBeInTheDocument();
+    expect(screen.getByTestId('window-3d-details-deferred')).toBeInTheDocument();
+    expect(screen.getByTestId('window-3d-status-slot')).toBeInTheDocument();
+    expect(screen.getByTestId('window-3d-canvas-hit')).toBeInTheDocument();
   });
 });
