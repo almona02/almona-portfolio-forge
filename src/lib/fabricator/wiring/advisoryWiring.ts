@@ -70,7 +70,7 @@ export const ADVISORY_WIRING = {
 
   /** Zoom Control - Presentation only */
   ZoomControl: AdvisoryGate.presentation(
-    () => import('@/future/ui-experiments/ZoomPresets').then(m => ({ default: m.ZoomPresets  }))
+    () => import('@/components/fabricator/ui/ZoomPresets').then(m => ({ default: m.ZoomPresets  }))
   ),
 
   /** Context Menu - Presentation only */

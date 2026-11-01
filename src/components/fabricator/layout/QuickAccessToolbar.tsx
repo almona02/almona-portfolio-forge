@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Undo2, Redo2, Save, Home, Pin, PinOff } from 'lucide-react';
 import { useFabricatorUIStore } from '@/stores/fabricatorUIStore';
-import { ZoomPresets } from '@/future/ui-experiments/ZoomPresets';
+import { ZoomPresets } from '../ui/ZoomPresets';
 
 interface ToolbarItem {
   icon: React.ReactNode;
