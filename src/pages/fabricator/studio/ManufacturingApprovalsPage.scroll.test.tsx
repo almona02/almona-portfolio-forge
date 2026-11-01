@@ -14,7 +14,19 @@ vi.mock('@/context/AuthContext', () => ({
 }));
 
 vi.mock('@/lib/supabase', () => ({
-  supabase: { rpc: mocks.rpc },
+  supabase: {
+    rpc: mocks.rpc,
+    auth: {
+      getUser: async () => ({ data: { user: { id: 'admin-1' } }, error: null }),
+      onAuthStateChange: () => ({
+        data: { subscription: { unsubscribe: vi.fn() } },
+      }),
+    },
+  },
+}));
+
+vi.mock('@/hooks/fabricator/useEngineeringSystemPacks', () => ({
+  useEngineeringSystemPacks: () => [],
 }));
 
 vi.mock('@/components/fabricator/hardener/HardenerApprovalsPanel', () => ({

@@ -70,6 +70,11 @@ export function useEngineeringSystemPacks() {
   useEffect(() => {
     let generation = 0;
     let disposed = false;
+    const auth = supabase?.auth;
+    // Tests (and degraded clients) often stub supabase without auth — fail closed to built-ins.
+    if (!auth?.onAuthStateChange || typeof auth.getUser !== 'function') {
+      return;
+    }
     const refresh = async (ownerId?: string) => {
       const request = ++generation;
       setOwned([]);
@@ -77,13 +82,13 @@ export function useEngineeringSystemPacks() {
       const packs = await loadEngineeringSystemPacksCached(ownerId);
       if (!disposed && request === generation) setOwned(packs);
     };
-    const listener = supabase.auth.onAuthStateChange((event, session) => {
+    const listener = auth.onAuthStateChange((event, session) => {
       // An owner-scoped cache must never outlive the session that populated it.
       if (event === 'SIGNED_OUT') invalidateEngineeringSystemPacks();
       void refresh(session?.user.id).catch(() => { if (!disposed) setOwned([]); });
     });
     const reload = () => {
-      void supabase.auth.getUser().then(({ data }) => refresh(data.user?.id)).catch(() => {});
+      void auth.getUser().then(({ data }) => refresh(data.user?.id)).catch(() => {});
     };
     const onProfileAdded = () => {
       invalidateEngineeringSystemPacks();
