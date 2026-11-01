@@ -88,7 +88,7 @@ describe('CollapsiblePanel', () => {
       return collapsedState;
     });
 
-    render(
+    const { container } = render(
       <CollapsiblePanel
         position="left"
         sectionId="fabrication"
@@ -99,9 +99,9 @@ describe('CollapsiblePanel', () => {
     );
 
     // Children stay mounted (preview state survives) but are marked hidden/inaccessible.
-    const content = screen.getByText('Panel Content', { hidden: true });
-    expect(content.closest('[hidden]')).not.toBeNull();
-    expect(content.closest('[aria-hidden="true"]')).not.toBeNull();
+    const contentHost = container.querySelector('[aria-hidden="true"][hidden]');
+    expect(contentHost).not.toBeNull();
+    expect(contentHost).toHaveTextContent('Panel Content');
     // Title is only shown when expanded; collapsed shows the chevron/icon control.
     expect(screen.queryByText('Test Panel')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /expand test panel panel/i })).toHaveAttribute(
