@@ -773,6 +773,11 @@ const Window3DModelComponent = (props: {
         }
     }, [modelData, isAnimating, physicsEnabled]);
 
+    // Generate hardware placeholders (ALWAYS call hooks before conditional returns)
+    const hardwarePlaceholders = useMemo(() => {
+        return generateHardwarePlaceholders(windowUnit);
+    }, [windowUnit]);
+
     // ✅ CRITICAL PERFORMANCE FIX: Memoize exploded transforms to avoid recalculating EVERY FRAME
     // This saves 20-50ms per frame by calculating only when dependencies change
     const explodedTransforms = useMemo(() => {
@@ -792,15 +797,23 @@ const Window3DModelComponent = (props: {
         };
 
         try {
-            return calculateExplodedTransforms(modelData, explodedConfig);
+            return calculateExplodedTransforms(modelData, explodedConfig, {
+                hardware: hardwarePlaceholders.map((hw, i) => ({ key: `hardware-${hw.type}-${i}`, position: hw.position })),
+            });
         } catch (error) {
             const err = error instanceof Error ? error : new Error(String(error));
             trackError('Window3DGenerator', 'exploded_transforms_calc', err.message);
             return null;
         }
-    }, [explodedView, modelData]);
+    }, [explodedView, modelData, hardwarePlaceholders]);
 
+    // A fresh controller per generated model: assembled transforms are captured from the
+    // newly mounted meshes, so regenerating while exploded never inherits stale bases.
     const applyExplodedTransforms = useMemo(() => createExplodedTransformController(), [modelData]);
+
+    // frameloop="demand": toggling explode changes no R3F props, so request a frame explicitly
+    // or the restore pass inside useFrame would wait for the next camera move.
+    useEffect(() => { invalidate(); }, [explodedView, explodedTransforms, invalidate]);
 
     // --- Animation Frame Logic ---
     useFrame((_state, delta) => {
@@ -1165,11 +1178,6 @@ const Window3DModelComponent = (props: {
             });
         }
     });
-
-    // Generate hardware placeholders (ALWAYS call hooks before conditional returns)
-    const hardwarePlaceholders = useMemo(() => {
-        return generateHardwarePlaceholders(windowUnit);
-    }, [windowUnit]);
 
     // ✅ ENHANCED: Load detailed hardware models
     // ✅ PERFORMANCE: Memoize hardware models state
@@ -2291,7 +2299,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                     </Suspense>
 
                     {/* --- CONTROLS --- */}
-                    <OrbitControls makeDefault enableDamping dampingFactor={0.1} />
+                    <OrbitControls ref={controlsRef} makeDefault enableDamping dampingFactor={0.1} />
 
                 </Canvas>
             </div>
@@ -2318,9 +2326,41 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
             {showControls && (
                 <>
                     {!controlsVisible && (
-                        <div className="absolute top-4 right-4 z-10">
+                        <div
+                            role="toolbar"
+                            aria-label={t('window_3d_generator.view_toolbar', '3D view tools')}
+                            className="absolute top-4 right-4 z-10 flex max-w-[calc(100%-2rem)] flex-wrap items-center justify-end gap-2"
+                        >
+                            {setExplodedView && (
+                                <Toggle
+                                    pressed={initialExplodedView}
+                                    onPressedChange={setExplodedView}
+                                    aria-label={initialExplodedView
+                                        ? t('window_3d_generator.assemble', 'Assemble')
+                                        : t('window_3d_generator.explode', 'Explode')}
+                                    className="btn-primary h-9 min-w-[7rem] px-3 text-xs"
+                                >
+                                    <Layers className="h-4 w-4 mr-2" />
+                                    {initialExplodedView
+                                        ? t('window_3d_generator.assemble', 'Assemble')
+                                        : t('window_3d_generator.explode', 'Explode')}
+                                </Toggle>
+                            )}
                             <button
-                                className="px-3 py-1 rounded bg-gray-900/80 border border-gray-700 text-xs text-gray-200 hover:border-amber-500"
+                                type="button"
+                                className="h-9 rounded border border-gray-700 bg-gray-900/80 px-3 text-xs text-gray-200 hover:border-amber-500"
+                                onClick={() => {
+                                    controlsRef.current?.reset?.();
+                                    setInspectedPart(null);
+                                    setExplodedView?.(false);
+                                }}
+                            >
+                                <RotateCcw className="mr-1 inline h-3.5 w-3.5" />
+                                {t('window_3d_generator.reset_view', 'Reset View')}
+                            </button>
+                            <button
+                                type="button"
+                                className="h-9 rounded border border-gray-700 bg-gray-900/80 px-3 text-xs text-gray-200 hover:border-amber-500"
                                 onClick={() => setControlsVisible(true)}
                             >
                                 {t('window_3d_generator.3d_controls', '3D Controls')}
@@ -2392,19 +2432,6 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
             )}
 
             {showControls && inspectedPart && <WindowPartDetails part={inspectedPart} unit={windowUnit} onClose={() => setInspectedPart(null)} />}
-
-            {/* Exploded View Toggle */}
-            {showControls && setExplodedView && (
-                <div className="absolute top-4 right-4 z-10">
-                    <Toggle
-                        pressed={initialExplodedView}
-                        onPressedChange={setExplodedView}
-                        className="btn-primary"
-                    >
-                        <Layers className="h-4 w-4 mr-2" /> {t('window_3d_generator.explode', 'Explode')}
-                    </Toggle>
-                </div>
-            )}
         </div>
     );
 });

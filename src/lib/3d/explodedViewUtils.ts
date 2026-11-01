@@ -35,14 +35,37 @@ export interface ComponentTransform {
  * 
  * ✅ HARDENED: Added validation, error handling, and performance optimizations
  */
+/** Extra scene objects (hardware, accessories) that are not part of FrameGeometry. */
+export interface ExplodedViewExtras {
+  /** Hardware placeholders / models keyed by their scene `componentKey`. */
+  hardware?: Array<{ key: string; position: Vector3 }>;
+}
+
+function geometryCenter(geometry: unknown, target: Vector3): boolean {
+  const geom = geometry as { boundingBox?: { getCenter: (v: Vector3) => Vector3 } | null; computeBoundingBox?: () => void } | null;
+  if (!geom || typeof geom.computeBoundingBox !== 'function') return false;
+  if (!geom.boundingBox) geom.computeBoundingBox();
+  if (!geom.boundingBox) return false;
+  geom.boundingBox.getCenter(target);
+  return true;
+}
+
+function planarDirection(from: Vector3, target: Vector3): Vector3 {
+  target.set(from.x, from.y, 0);
+  if (target.length() < 0.001) target.set(1, 0, 0);
+  return target.normalize();
+}
+
 export function calculateExplodedTransforms(
   modelData: {
     frame: { parts: any[] };
     sashes: SashData[];
     fixedGlass: any[];
+    fixedSpacers?: any[];
     muntins?: any;
   },
-  config: ExplodedViewConfig
+  config: ExplodedViewConfig,
+  extras?: ExplodedViewExtras,
 ): Map<string, ComponentTransform> {
   // ✅ HARDENED: Input validation
   if (!modelData) {
@@ -194,9 +217,65 @@ export function calculateExplodedTransforms(
     }
   }
   
-  // Hardware: separate outward from their attachment points
-  // This will be handled in the component that renders hardware
-  
+  // Glazing beads / spacers / gaskets inside sashes: lift slightly further forward than
+  // the glass so bead frames read as separate pieces (keys match Window3DGenerator).
+  if (config.componentGroups?.glass && Array.isArray(modelData.sashes)) {
+    const beadOffset = new Vector3(0, 0, separationDistance * 0.6);
+    modelData.sashes.forEach((sash, i) => {
+      (sash.spacers ?? []).forEach((_, spacerIndex) => transforms.set(`spacer-${i}-${spacerIndex}`, {
+        position: beadOffset.clone(),
+        rotation: new Euler(0, 0, 0),
+        scale: new Vector3(1, 1, 1),
+      }));
+    });
+  }
+
+  // Fixed spacers (tracks, guides, fixed beads, manual mullions): outward in-plane
+  // from the window centre plus a small forward lift so they clear the frame.
+  if (config.componentGroups?.mullions && Array.isArray(modelData.fixedSpacers)) {
+    const centerTarget = new Vector3();
+    modelData.fixedSpacers.forEach((geometry, i) => {
+      if (!geometryCenter(geometry, centerTarget)) return;
+      const direction = planarDirection(centerTarget, tempVector);
+      const offset = direction.clone().multiplyScalar(separationDistance * 0.35);
+      offset.z += separationDistance * 0.25;
+      transforms.set(`fixed-spacer-${i}`, {
+        position: offset,
+        rotation: new Euler(0, 0, 0),
+        scale: new Vector3(1, 1, 1),
+      });
+    });
+  }
+
+  // Muntins / mullions / transoms: outward in-plane only (they stay in the frame plane).
+  if (config.componentGroups?.mullions && Array.isArray(modelData.muntins)) {
+    const centerTarget = new Vector3();
+    modelData.muntins.forEach((geometry, i) => {
+      if (!geometryCenter(geometry, centerTarget)) return;
+      const direction = planarDirection(centerTarget, tempVector);
+      transforms.set(`muntin-${i}`, {
+        position: direction.clone().multiplyScalar(separationDistance * 0.45),
+        rotation: new Euler(0, 0, 0),
+        scale: new Vector3(1, 1, 1),
+      });
+    });
+  }
+
+  // Hardware: separate outward from their attachment points and forward of the sash.
+  if (config.componentGroups?.hardware && Array.isArray(extras?.hardware)) {
+    extras.hardware.forEach(({ key, position }) => {
+      if (!key || !(position instanceof Vector3)) return;
+      const direction = planarDirection(position, tempVector);
+      const offset = direction.clone().multiplyScalar(separationDistance * 0.3);
+      offset.z += separationDistance * 0.9;
+      transforms.set(key, {
+        position: offset,
+        rotation: new Euler(0, 0, 0),
+        scale: new Vector3(1, 1, 1),
+      });
+    });
+  }
+
   return transforms;
 }
 

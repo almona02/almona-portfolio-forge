@@ -327,6 +327,7 @@ export const DraftingWorkbench: React.FC<{
               collaboration={collaboration}
               onMoveToNext={onMoveToNext}
               onOpenPoseQuickEdit={onOpenPoseQuickEdit}
+              project={project}
               handlers={{
                 handleCursorMove: handlers.handleCursorMove,
                 handleGridToggle: handlers.handleGridToggle,

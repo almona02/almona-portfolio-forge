@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { DraftingPreview3D } from './DraftingPreview3D';
 
 vi.mock('./DraftingContext', () => ({ useDraftingContext: () => ({ getGeometry: () => ({ rectangles: [{}] }) }) }));
-vi.mock('./utils/draftingToWindowUnit', () => ({ draftingToWindowUnit: () => ({ id: 'pose', color: 'white', grid: { cells: [{}] } }) }));
+vi.mock('./utils/draftingToWindowUnit', () => ({ draftingToWindowUnit: () => ({ id: 'pose', color: 'white', grid: { cells: [{}] }, previewLedgerBinding: 'no_authority', overallWidth: 1200, overallHeight: 1500 }) }));
 vi.mock('./canvas/DraftingCanvas3D', () => ({ DraftingCanvas3D: () => null }));
 vi.mock('./components/DraftingErrorBoundary', () => ({ DraftingErrorBoundary: ({ children }: { children: React.ReactNode }) => children }));
 vi.mock('../Window3DGenerator', () => ({ Window3DGenerator: (props: { showControls: boolean; explodedView: boolean; setExplodedView: (value: boolean) => void; profiles: { id: string }[]; windowUnit: { color: string } }) => (
