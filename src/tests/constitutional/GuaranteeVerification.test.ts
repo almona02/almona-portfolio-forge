@@ -549,4 +549,31 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
       ).toBe('const-casement/r1/sash/cell:0');
     });
   });
+
+  describe('AICS-001 Object BOM Phase 2: assembly manifest is a read model with exact identities', () => {
+    test('manifest ids are BOM cut ids, codes are never invented, and building it mutates nothing', async () => {
+      const { buildAssemblyManifest, UNKNOWN_CODE } = await import('@/lib/fabricator/assembly/assemblyManifest');
+      const unit = {
+        id: 'const-pose', revision: 4, type: 'sliding', overallWidth: 1500, overallHeight: 1800, color: 'white',
+        grid: { rows: 1, cols: 2, cells: [{ id: '0-0', row: 0, col: 0, type: 'sash' }, { id: '0-1', row: 0, col: 1, type: 'sash' }] },
+        components: [
+          { id: 'frame_top_1', type: 'frame', profile: { id: 'PS-6601-FRAME' }, quantity: 1, cuttingLengths: [1500], angles: [45, 45] },
+          { id: 'sash_0-0_top', type: 'sash', profile: { id: '' }, quantity: 1, cuttingLengths: [650], angles: [45, 45] },
+        ],
+        glazing: {}, hardware: [],
+      } as any;
+      const before = JSON.stringify(unit);
+      const manifest = buildAssemblyManifest(unit, { visualPartKeys: ['frame||top|'] });
+      expect(JSON.stringify(unit)).toBe(before);
+      const frame = manifest.entries.find((e) => e.componentId === 'frame_top_1')!;
+      expect(frame.id).toBe('frame_top_1:0');
+      expect(frame.cutId).toBe('frame_top_1:0');
+      expect(frame.modelling).toBe('mapped');
+      const sash = manifest.entries.find((e) => e.componentId === 'sash_0-0_top')!;
+      expect(sash.catalogueCode).toBe(UNKNOWN_CODE);
+      // No entry id is derived from scene objects; every id is reproducible from saved data alone.
+      const again = buildAssemblyManifest(JSON.parse(before), { visualPartKeys: ['frame||top|'] });
+      expect(again.entries.map((e) => e.id)).toEqual(manifest.entries.map((e) => e.id));
+    });
+  });
 });

@@ -8,4 +8,12 @@ describe('workshop requirements', () => {
     it('calculates perimeter gasket quantities and replaces the standard category', () => { const result = applyWorkshopBOMRules(pack([rule]), pose, [], [{ id: 'old', name: 'Old seal', category: 'seal', quantity: 1, unitPrice: 1, totalCost: 1, supplier: '' }]); expect(result.accessories).toHaveLength(1); expect(result.accessories[0].quantity).toBe(5.2); expect(result.accessories[0].totalCost).toBe(52); expect(result.accessories[0].unit).toBe('metre'); });
     it('counts operating sashes and permits explicitly disabling a category', () => { const hardware = [{ id: 'old', category: 'hinge', name: 'Hinge', quantity: 9 }] as never; const r = { ...rule, kind: 'hardware' as const, category: 'hinge', basis: 'sash' as const, quantity: 2 }; expect(applyWorkshopBOMRules(pack([r]), pose, hardware, []).hardware[0].quantity).toBe(4); expect(applyWorkshopBOMRules(pack([{ ...r, enabled: false }]), pose, hardware, []).hardware).toHaveLength(0); });
     it('rejects invalid and ambiguous requirements', () => { expect(() => workshopBOMRules(pack([{ ...rule, quantity: NaN }]))).toThrow(); expect(() => workshopBOMRules(pack([rule, { ...rule, id: 'another' }]))).toThrow(); });
+    it('scopes requirements to pattern ids when set', () => {
+        const scoped = { ...rule, id: 'seal-sliding', patternIds: ['sliding-2s'] };
+        const matching = { ...pose, presetId: 'sliding-2s' } as WindowUnit;
+        const other = { ...pose, presetId: 'fixed' } as WindowUnit;
+        expect(applyWorkshopBOMRules(pack([scoped]), matching, [], []).accessories).toHaveLength(1);
+        expect(applyWorkshopBOMRules(pack([scoped]), other, [], []).accessories).toHaveLength(0);
+        expect(applyWorkshopBOMRules(pack([scoped, { ...rule, id: 'seal-all' }]), other, [], []).accessories).toHaveLength(1);
+    });
 });

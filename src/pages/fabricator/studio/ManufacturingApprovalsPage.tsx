@@ -35,13 +35,15 @@ import {
   VENDOR_AUTHORITY_DEFAULT_SETTINGS,
   VENDOR_CATALOGUE_PACKS,
 } from '@/lib/fabricator/manufacturing/vendorCataloguePacks';
+import { buildAuthorityPayloadFromPack } from '@/lib/fabricator/manufacturing/buildAuthorityFromPack';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { fabricatorConfigApi } from '@/lib/fabricatorConfigApi';
+import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Button } from '@/shared/ui/ui/button';
 import { Loader2, ShieldAlert, ShieldCheck } from 'lucide-react';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -75,7 +77,12 @@ type RpcClient = {
 };
 const rpc = supabase as unknown as RpcClient;
 
-type VendorRow = { id: string; label: string };
+type CatalogueRow = {
+  id: string;
+  label: string;
+  path: 'vendor' | 'pack_profiles';
+  profileCount: number;
+};
 
 type RequestSettingsState = {
   draft: ApprovalSettingsDraft;
@@ -157,6 +164,7 @@ function isAdminDenied(message: string | undefined): boolean {
 
 export default function ManufacturingApprovalsPage() {
   const { user, loading } = useAuth();
+  const engineeringPacks = useEngineeringSystemPacks();
   const [adminGate, setAdminGate] = useState<boolean | null>(null);
   const [rows, setRows] = useState<ApprovalRequest[]>([]);
   const [active, setActive] = useState<ActiveAuthority[]>([]);
@@ -168,12 +176,43 @@ export default function ManufacturingApprovalsPage() {
   const stickyChromeRef = useRef<HTMLDivElement>(null);
   const fixture = import.meta.env.DEV && isApprovalsReachabilityFixtureActive();
 
-  const vendorRows: VendorRow[] = fixture
-    ? [
-        ...VENDOR_CATALOGUE_PACKS.map((p) => ({ id: p.id, label: p.label })),
-        ...REACHABILITY_VENDOR_EXTRA,
-      ]
-    : VENDOR_CATALOGUE_PACKS.map((p) => ({ id: p.id, label: p.label }));
+  const catalogueRows: CatalogueRow[] = useMemo(() => {
+    const byId = new Map<string, CatalogueRow>();
+    for (const pack of VENDOR_CATALOGUE_PACKS) {
+      byId.set(pack.id, {
+        id: pack.id,
+        label: pack.label,
+        path: 'vendor',
+        profileCount: 2 + (pack.extraProfiles?.length ?? 0),
+      });
+    }
+    for (const pack of engineeringPacks) {
+      const id = pack.meta.id;
+      if (byId.has(id)) continue;
+      byId.set(id, {
+        id,
+        label: pack.meta.name || id,
+        path: 'pack_profiles',
+        profileCount: pack.profiles?.length ?? 0,
+      });
+    }
+    if (fixture) {
+      for (const extra of REACHABILITY_VENDOR_EXTRA) {
+        if (!byId.has(extra.id)) {
+          byId.set(extra.id, {
+            id: extra.id,
+            label: extra.label,
+            path: 'vendor',
+            profileCount: 0,
+          });
+        }
+      }
+    }
+    return Array.from(byId.values()).sort((a, b) => a.label.localeCompare(b.label));
+  }, [engineeringPacks, fixture]);
+
+  const vendorRows = catalogueRows.filter((r) => r.path === 'vendor');
+  const otherPackRows = catalogueRows.filter((r) => r.path === 'pack_profiles');
 
   const measureStickyChrome = useCallback(() => {
     const el = stickyChromeRef.current;
@@ -382,7 +421,21 @@ export default function ManufacturingApprovalsPage() {
     setBusyId(row.id);
     try {
       const placeholderApproval = crypto.randomUUID();
-      const payload = buildRequestAuthorityPayload(row.system_pack_id, placeholderApproval, validation.value);
+      const vendor = VENDOR_CATALOGUE_PACKS.find((p) => p.id === row.system_pack_id);
+      let payload: Record<string, unknown>;
+      if (vendor) {
+        payload = buildRequestAuthorityPayload(row.system_pack_id, placeholderApproval, validation.value);
+      } else {
+        const live = engineeringPacks.find((p) => p.meta.id === row.system_pack_id);
+        if (!live) {
+          throw new Error(
+            `Unknown system pack ${row.system_pack_id} — open Tuning / Profiles and ensure the pack is loaded before approving.`,
+          );
+        }
+        const built = buildAuthorityPayloadFromPack(live, placeholderApproval, 1, validation.value);
+        if (!built.ok) throw new Error(built.error);
+        payload = built.payload;
+      }
       const { data, error } = await rpc.rpc('admin_approve_fabricator_manufacturing_approval', {
         p_request_id: row.id,
         p_authority_payload: payload,
@@ -421,6 +474,33 @@ export default function ManufacturingApprovalsPage() {
     }
   };
 
+  const approvePackFromProfiles = async (packId: string) => {
+    if (fixture) {
+      setMessage(`Pack authority approved for ${packId} → fixture`);
+      return;
+    }
+    setBusyId(`pack:${packId}`);
+    try {
+      const live = engineeringPacks.find((p) => p.meta.id === packId);
+      if (!live) throw new Error(`Pack ${packId} is not loaded in the engineering catalogue.`);
+      const approvalId = crypto.randomUUID();
+      const built = buildAuthorityPayloadFromPack(live, approvalId, 1);
+      if (!built.ok) throw new Error(built.error);
+      const { data, error } = await rpc.rpc('admin_approve_pack_authority', {
+        p_system_pack_id: packId,
+        p_authority_payload: built.payload,
+      });
+      if (error) throw new Error(error.message);
+      if (!z.string().uuid().safeParse(data).success) throw new Error('No approval id returned');
+      setMessage(`Pack authority approved for ${packId} → ${String(data)}`);
+      await refresh();
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Pack authority approve failed');
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   const revoke = async (approvalId: string) => {
     if (fixture) {
       setMessage(`Revoked ${approvalId}`);
@@ -445,6 +525,7 @@ export default function ManufacturingApprovalsPage() {
 
   const jumpLinks = [
     { id: 'approvals-vendor', label: 'Vendor', count: vendorRows.length },
+    { id: 'approvals-catalogue', label: 'Packs', count: otherPackRows.length },
     { id: 'approvals-pending', label: 'Pending', count: rows.length },
     { id: 'approvals-active', label: 'Revoke', count: active.length },
     { id: 'approvals-hardener', label: 'Hardener', count: null as number | null },
@@ -523,8 +604,8 @@ export default function ManufacturingApprovalsPage() {
         >
           <h2 className="font-semibold text-amber-100">Approve vendor catalogue</h2>
           <p className="text-xs text-slate-400">
-            One-click approval for built-in packs. Writes provenance=vendor, an audit row, and supersedes
-            any prior active revision. Revoke anytime below.
+            Closed vendor allowlist ({vendorRows.length}). Writes provenance=vendor, an audit row, and
+            supersedes any prior active revision. Revoke anytime below.
           </p>
           <p className="text-xs text-slate-500" data-testid="vendor-catalogue-settings-note">
             Vendor payloads are built server-side with fixed settings (kerf {VENDOR_AUTHORITY_DEFAULT_SETTINGS.sawKerfMm} mm ·
@@ -553,6 +634,49 @@ export default function ManufacturingApprovalsPage() {
               </li>
             ))}
           </ul>
+        </section>
+
+        <section
+          id="approvals-catalogue"
+          style={sectionStyle}
+          className="rounded-lg border border-slate-700 bg-slate-900/50 p-3 sm:p-4 space-y-3"
+          data-testid="full-catalogue-section"
+        >
+          <h2 className="font-semibold text-amber-100">All other system packs</h2>
+          <p className="text-xs text-slate-400">
+            Remaining engineering catalogue ({otherPackRows.length}), including rock/jumbo/ASAS/UPVC and
+            owned workshop copies. Approves from live pack profiles (provenance=admin_review). Requires
+            frame + sash profiles on the pack.
+          </p>
+          {otherPackRows.length === 0 ? (
+            <p className="text-sm text-slate-400">No additional packs beyond the vendor allowlist.</p>
+          ) : (
+            <ul className="grid gap-2 sm:grid-cols-2" data-testid="full-catalogue-list">
+              {otherPackRows.map((pack) => (
+                <li
+                  key={pack.id}
+                  className="flex flex-col gap-2 rounded border border-slate-700 px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <span className="text-slate-200 min-w-0">
+                    <span className="text-amber-200 font-medium">{pack.label}</span>
+                    <span className="block text-xs text-slate-500 truncate">
+                      {pack.id} · {pack.profileCount} profiles
+                    </span>
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={busyId === `pack:${pack.id}` || pack.profileCount < 2}
+                    onClick={() => void approvePackFromProfiles(pack.id)}
+                    className="w-full sm:w-auto shrink-0 min-h-9"
+                    data-testid={`approve-pack-${pack.id}`}
+                  >
+                    Approve from pack profiles
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         <section

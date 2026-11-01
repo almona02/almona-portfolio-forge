@@ -31,6 +31,30 @@ describe('optimization rejects physically invalid results', () => {
     expect(validateOptimizationReconciliation(solved, design).valid).toBe(true);
   });
 
+  it('packs the design ledger × pose quantity with repeated cut identities', async () => {
+    const ownedProfile = { ...profile, cuttingAllowance: 0, costPerMeter: 12, specifications: { stockLengthMm: 6000 } } as Profile;
+    const design = {
+      ...project,
+      quantity: 3,
+      components: [{ ...project.components[0], profile: ownedProfile, angles: [90] }],
+    } as WindowUnit;
+    const solved = await new AdaptiveSolver({ maxSolvingTime: 30, complexityThresholds: { simple: 50, medium: 500 } }).solve(
+      {
+        components: design.components,
+        profiles: [ownedProfile],
+        defaultStockLength: 6000,
+        systemPackId: design.systemPackId,
+        poseQuantity: 3,
+      },
+      [ownedProfile],
+    );
+    const cuts = solved.cuttingPlan.flatMap((plan) => plan.cuts);
+    expect(cuts).toHaveLength(3);
+    expect(cuts.every((cut) => cut.cutId === 'audit-component:0')).toBe(true);
+    expect(validateOptimizationReconciliation(solved, design).valid).toBe(true);
+    expect(validateOptimizationReconciliation(solved, { ...design, quantity: 1 }).valid).toBe(false);
+  });
+
   it('rejects an altered cut angle', () => {
     const changed = structuredClone(result);
     changed.cuttingPlan[0].cuts[0].angle = 45;

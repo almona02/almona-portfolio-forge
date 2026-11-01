@@ -41,19 +41,80 @@ function countCuts(result: OptimizationResult): number {
   return (result.cuttingPlan ?? []).reduce((sum, plan) => sum + (plan.cuts?.length ?? 0), 0);
 }
 
-/** BOM ? requiredCuts using physicalCutForOccurrence identity (`id:index`). */
-export function requiredCutsFromBom(bom: CompleteBOM | null): EvidenceCutSpec[] {
-  if (!bom?.profiles?.length) return [];
-  return bom.profiles.flatMap((profile) => {
+export const BOM_IDENTITY_REBUILD_HINT =
+  'Rebuild the BOM from the saved design for this revision (BOM Review → Generate), then retry optimization.';
+
+export type RequiredCutsFromBom =
+  | { ok: true; cuts: EvidenceCutSpec[] }
+  | { ok: false; error: string };
+
+/**
+ * BOM → requiredCuts using the preserved physicalCutForOccurrence identities
+ * (`componentId:index`) carried on each grouped row.
+ *
+ * Fail-closed: a row without aligned `cutIds` (BOM cached before identities were
+ * recorded, or produced by a path that does not know the design) cannot be turned
+ * into a ledger. Identities are never reconstructed from the aggregate row ID and
+ * never taken from solver placements — the operator must rebuild the BOM from the
+ * saved design instead.
+ */
+export function requiredCutsFromBom(bom: CompleteBOM | null): RequiredCutsFromBom {
+  if (!bom?.profiles?.length) {
+    return { ok: false, error: 'Design ledger required: BOM cuttingLengths are missing.' };
+  }
+  const cuts: EvidenceCutSpec[] = [];
+  const seen = new Set<string>();
+  for (const profile of bom.profiles) {
     const profileId = profile.profileCode ?? profile.id ?? '';
     const lengths = profile.cuttingLengths ?? [];
     const angles = profile.angles ?? [];
-    return lengths.map((length, index) => ({
-      cutId: `${profile.id ?? profileId}:${index}`,
-      profileId,
-      length: Number(length),
-      angle: Number.isFinite(angles[index]) ? Number(angles[index]) : 0,
-    }));
+    const rowLabel = profile.id ?? profileId;
+    if (!lengths.length) continue;
+    if (!Array.isArray(profile.cutIds) || profile.cutIds.length !== lengths.length) {
+      return {
+        ok: false,
+        error: `BOM row ${rowLabel} has no cut occurrence identities (${lengths.length} cuts, ${profile.cutIds?.length ?? 0} ids). ${BOM_IDENTITY_REBUILD_HINT}`,
+      };
+    }
+    for (let index = 0; index < lengths.length; index += 1) {
+      const cutId = String(profile.cutIds[index] ?? '').trim();
+      if (!cutId) {
+        return { ok: false, error: `BOM row ${rowLabel} cut ${index} has an empty occurrence identity. ${BOM_IDENTITY_REBUILD_HINT}` };
+      }
+      if (seen.has(cutId)) {
+        return { ok: false, error: `BOM lists cut occurrence ${cutId} more than once. ${BOM_IDENTITY_REBUILD_HINT}` };
+      }
+      seen.add(cutId);
+      cuts.push({
+        cutId,
+        profileId,
+        length: Number(lengths[index]),
+        angle: Number.isFinite(angles[index]) ? Number(angles[index]) : 0,
+      });
+    }
+  }
+  if (cuts.length === 0) {
+    return { ok: false, error: 'Design ledger required: BOM cuttingLengths are missing.' };
+  }
+  return { ok: true, cuts };
+}
+
+/**
+ * The solver runs with the approved kerf/trim bound onto each profile's
+ * specifications (Batch 2). The evidence contract carries kerf/trim once, at the
+ * payload level, and rejects plan/profile overrides — so strip those keys here
+ * while keeping everything the reload path needs (waste, utilization, cut identity).
+ */
+export function cuttingPlanForEvidence(
+  plans: OptimizationResult['cuttingPlan'],
+): OptimizationEvidencePayload['cuttingPlan'] {
+  return plans.map((plan) => {
+    const { kerfMm: _planKerf, trimMm: _planTrim, ...rest } = plan as typeof plan & { kerfMm?: unknown; trimMm?: unknown };
+    const { sawKerf: _kerf, barEndTrim: _trim, ...specifications } = (plan.profile?.specifications ?? {}) as Record<string, unknown>;
+    return {
+      ...rest,
+      profile: { ...plan.profile, specifications },
+    } as OptimizationEvidencePayload['cuttingPlan'][number];
   });
 }
 
@@ -75,7 +136,7 @@ function buildEvidencePayload(
     kerfMm,
     trimMm,
     requiredCuts,
-    cuttingPlan: result.cuttingPlan as OptimizationEvidencePayload['cuttingPlan'],
+    cuttingPlan: cuttingPlanForEvidence(result.cuttingPlan),
   };
 }
 
@@ -101,10 +162,11 @@ export async function recordOptimizationEvidence(
     return { ok: false, error: 'Optimization produced no cuts to validate.' };
   }
 
-  const requiredCuts = requiredCutsFromBom(input.bom);
-  if (requiredCuts.length === 0) {
-    return { ok: false, error: 'Design ledger required: BOM cuttingLengths are missing.' };
+  const ledger = requiredCutsFromBom(input.bom);
+  if (!ledger.ok) {
+    return { ok: false, error: ledger.error };
   }
+  const requiredCuts = ledger.cuts;
 
   let systemPackRevision: number;
   let ruleVersion: string;
@@ -187,7 +249,9 @@ export async function recordOptimizationEvidence(
   );
   const structural = validateOptimizationEvidencePayload(evidencePayload, cutCount);
   if (!structural.ok) {
-    return { ok: false, error: structural.error };
+    return { ok: false, error: structural.error.startsWith('design ledger')
+      ? `BOM ${structural.error}. The optimized cuts do not match the reviewed BOM ledger. ${BOM_IDENTITY_REBUILD_HINT}`
+      : structural.error };
   }
 
   // Prefer server-derived ledger fingerprint when RPC is available.
@@ -205,7 +269,12 @@ export async function recordOptimizationEvidence(
         cutCount,
       );
       if (!serverValidate.ok) {
-        return { ok: false, error: serverValidate.error };
+        // The reviewed BOM agreed with the placement but the server's ledger for this
+        // saved revision does not. Say so explicitly — this is not a BOM rebuild case.
+        return {
+          ok: false,
+          error: `Server ${serverValidate.error}. The saved position revision ${input.expectedRevision} on the server disagrees with the optimized cuts; reload the position and confirm the saved design (raw lengths, quantity) and server ledger derivation before retrying.`,
+        };
       }
       designFingerprint = await sha256Hex(serverValidate.designCanonical);
     }

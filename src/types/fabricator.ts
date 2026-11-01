@@ -1057,6 +1057,8 @@ export interface FabricationData {
     length: number;          // mm ±0.1mm
     quantity: number;
     cuttingLengths: number[]; // With kerf compensation
+    /** Original component occurrence IDs, aligned with cuttingLengths after grouping. */
+    cutIds?: string[];
     angles: number[];        // Miter angles
     rawStockLength: number;  // 5800mm, 6000mm, etc.
     wasteLength: number;     // For remnant marketplace

@@ -13,12 +13,32 @@ const mocks = vi.hoisted(() => ({ rpc: vi.fn(), listTuningForOwner: vi.fn(), aut
 vi.mock('@/context/AuthContext', () => ({
   useAuth: () => mocks.auth,
 }));
-vi.mock('@/lib/supabase', () => ({ supabase: { rpc: mocks.rpc } }));
+vi.mock('@/lib/supabase', () => ({
+  supabase: {
+    rpc: mocks.rpc,
+    auth: {
+      getUser: async () => ({ data: { user: { id: 'admin-1' } }, error: null }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: vi.fn() } } }),
+    },
+  },
+}));
 vi.mock('@/lib/fabricatorConfigApi', () => ({
   fabricatorConfigApi: { listTuningForOwner: mocks.listTuningForOwner },
 }));
 vi.mock('@/components/fabricator/hardener/HardenerApprovalsPanel', () => ({
   HardenerApprovalsPanel: () => <div>Hardener</div>,
+}));
+// AICS-001: non-vendor approve binds live pack profiles — never invent codes in the test.
+vi.mock('@/hooks/fabricator/useEngineeringSystemPacks', () => ({
+  useEngineeringSystemPacks: () => [
+    {
+      meta: { id: 'my-pack', name: 'My Pack' },
+      profiles: [
+        { id: 'MY-FRAME', type: 'frame', barLength: 6000, specifications: { profileRole: 'frame' } },
+        { id: 'MY-SASH', type: 'sash', barLength: 6000, specifications: { profileRole: 'sash' } },
+      ],
+    },
+  ],
 }));
 
 const REQUEST = {
