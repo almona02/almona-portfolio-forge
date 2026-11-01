@@ -129,34 +129,41 @@ export class HardwareBOMCalculator {
     await Promise.resolve(); // Satisfy require-await; calculation is sync
     const hardware: FabricationData['hardware'] = [];
 
-    /** Extended pattern with accessories array (objects with hardware fields) */
-    type PatternWithAccessories = EgyptianPattern & {
-      accessories?: Array<{
-        id?: string;
-        supplierCode?: string;
-        name?: string;
-        category?: string;
-        type?: string;
-        position?: string;
-        installationNotes?: string | string[];
-        torqueSpec?: unknown;
-        alternatives?: string[];
-        estimatedInstallationTime?: number;
-        purchaseLink?: string;
-      }>;
+    /**
+     * Catalogue patterns store accessories as string labels; runtime/system packs
+     * may supply structured accessory objects. Intersection with EgyptianPattern
+     * (`accessories?: string[]`) collapses to string — narrow explicitly.
+     */
+    type HardwareAccessorySpec = {
+      id?: string;
+      supplierCode?: string;
+      name?: string;
+      category?: string;
+      type?: string;
+      position?: string;
+      installationNotes?: string | string[];
+      torqueSpec?: number;
+      alternatives?: string[];
+      estimatedInstallationTime?: number;
+      purchaseLink?: string;
+      quantity?: number;
     };
-    const patternWithAccessories = pattern as PatternWithAccessories;
+    const rawAccessories = (pattern as { accessories?: Array<string | HardwareAccessorySpec> })
+      .accessories;
 
     const width = windowUnit.overallWidth;
     const height = windowUnit.overallHeight;
 
     // Get hardware from pattern.accessories
-    if (patternWithAccessories.accessories && Array.isArray(patternWithAccessories.accessories)) {
-      for (const [index, accessory] of patternWithAccessories.accessories.entries()) {
+    if (rawAccessories && Array.isArray(rawAccessories)) {
+      for (const [index, entry] of rawAccessories.entries()) {
+        const accessory: HardwareAccessorySpec =
+          typeof entry === 'string'
+            ? { id: `accessory-${index}`, name: entry, category: 'other' }
+            : entry;
         const quantity = ProductionUtils.calculateHardwareQuantity(accessory, windowUnit, pattern);
 
         const cat = String(accessory.category ?? accessory.type ?? '');
-        /* eslint-disable @typescript-eslint/no-unsafe-assignment -- accessory from extended EgyptianPattern; fields validated at runtime */
         const item: FabricationData['hardware'][0] = {
           id: String(accessory.id ?? `hardware-${pattern.id ?? 'pattern'}-${index}`),
           supplierCode: String(accessory.supplierCode ?? accessory.id ?? 'UNKNOWN'),
@@ -164,13 +171,16 @@ export class HardwareBOMCalculator {
           category: this.mapCategory(cat),
           quantity: typeof quantity === 'number' ? quantity : 0,
           positionSpec: String(accessory.position ?? this.getDefaultPosition(cat)),
-          installationNotes: accessory.installationNotes ?? this.getDefaultInstallationNotes(cat),
-          torqueSpec: accessory.torqueSpec ?? undefined,
-          alternatives: Array.isArray(accessory.alternatives) ? (accessory.alternatives as string[]) : [],
+          installationNotes: Array.isArray(accessory.installationNotes)
+            ? accessory.installationNotes
+            : typeof accessory.installationNotes === 'string'
+              ? [accessory.installationNotes]
+              : this.getDefaultInstallationNotes(cat),
+          torqueSpec: typeof accessory.torqueSpec === 'number' ? accessory.torqueSpec : undefined,
+          alternatives: Array.isArray(accessory.alternatives) ? accessory.alternatives : [],
           estimatedTime: typeof accessory.estimatedInstallationTime === 'number' ? accessory.estimatedInstallationTime : this.getDefaultInstallationTime(cat),
-          supplierLink: accessory.purchaseLink as string | undefined
+          supplierLink: accessory.purchaseLink
         };
-        /* eslint-enable @typescript-eslint/no-unsafe-assignment */
         hardware.push(item);
       }
     }

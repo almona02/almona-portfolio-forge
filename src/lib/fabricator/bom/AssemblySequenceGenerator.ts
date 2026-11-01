@@ -22,8 +22,8 @@ export class AssemblySequenceGenerator {
    * Generate assembly sequence from pattern and BOM
    */
   generateAssemblySequence(
-    windowUnit: WindowUnit,
-    pattern: EgyptianPattern,
+    _windowUnit: WindowUnit,
+    _pattern: EgyptianPattern,
     bom: {
       profiles: FabricationData['profiles'];
       hardware: FabricationData['hardware'];

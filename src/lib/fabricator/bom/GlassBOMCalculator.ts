@@ -47,9 +47,9 @@ export class GlassBOMCalculator {
 
     // Supports per-cell (Record<cellId, {type, color?}>) from drafting or flat GlazingSpec
     const rawGlazing: GlazingSpec = windowUnit.glazing || {};
-    const getCellGlazingType = (cell: { id?: string }): 'single' | 'double' | 'triple' => {
-      if (cell.id && typeof rawGlazing === 'object' && rawGlazing !== null && !('thickness' in rawGlazing)) {
-        const cellSpec = (rawGlazing as GlazingSpecPerCell)[cell.id];
+    const getCellGlazingType = (cellId?: string): 'single' | 'double' | 'triple' => {
+      if (cellId && typeof rawGlazing === 'object' && rawGlazing !== null && !('thickness' in rawGlazing)) {
+        const cellSpec = (rawGlazing as GlazingSpecPerCell)[cellId];
         if (cellSpec?.type === 'single' || cellSpec?.type === 'double' || cellSpec?.type === 'triple') {
           return cellSpec.type;
         }
@@ -72,7 +72,7 @@ export class GlassBOMCalculator {
         const glassHeight = Math.max(0, rowHeight - edgeClearance * 2);
 
         // Get glass thickness from user selection or default (per-cell or flat)
-        const glazingType = getCellGlazingType(cell);
+        const glazingType = getCellGlazingType((cell as { id?: string }).id);
         const glazingSpec = rawGlazing as GlazingSpecFlat;
         const defaultThickness = glazingType === 'single'
           ? GLASS_THICKNESS.SINGLE_GLAZING_MM
