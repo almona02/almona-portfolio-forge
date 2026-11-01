@@ -1,6 +1,7 @@
 # PR 122 follow-up — completion matrix
 
 Baseline tip before follow-up: `df41eba3` (PR 122 merge). Branch: `cursor-nov-qty-evidence-layout`.
+Current tip: `43bb6913` (fresh ack + production version re-read; canvas-only 380 fixture).
 
 **Status:** materially improved; **not production-certified.**
 
