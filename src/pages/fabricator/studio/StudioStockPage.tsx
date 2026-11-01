@@ -46,7 +46,15 @@ export const StudioStockPage: React.FC = () => {
     refetchOnWindowFocus: false,
     queryFn: async () => {
       if (!user?.id) {
-        return { profiles: [], totalValue: 0, physicalLots: [], error: null as string | null };
+        return {
+          profiles: [],
+          totalValue: 0,
+          physicalLots: [],
+          physicalInvalidated: [] as string[],
+          physicalComplete: false,
+          physicalError: null as string | null,
+          error: null as string | null,
+        };
       }
       const result = await loadOwnedWorkshopInventory({
         userId: user.id,
@@ -60,6 +68,9 @@ export const StudioStockPage: React.FC = () => {
         profiles: result.profiles,
         totalValue: result.totalValue,
         physicalLots: lotsResult.lots,
+        physicalInvalidated: lotsResult.invalidatedProfileIds,
+        physicalComplete: lotsResult.ok && lotsResult.complete,
+        physicalError: lotsResult.ok ? null : lotsResult.error,
         error: result.ok
           ? (lotsResult.ok ? null : lotsResult.error)
           : result.error,
@@ -125,6 +136,13 @@ export const StudioStockPage: React.FC = () => {
       toast.error('Map missing catalogue profiles to owned stock before acknowledging.');
       return;
     }
+    if (!data.physicalComplete) {
+      toast.error(
+        data.physicalError
+          || 'Physical bar movement history is incomplete — cannot acknowledge production stock.',
+      );
+      return;
+    }
 
     const metersByProfile: Record<string, number> = {};
     for (const row of report.rows) {
@@ -137,8 +155,9 @@ export const StudioStockPage: React.FC = () => {
     const ownedById = new Map((data?.profiles ?? []).map((p) => [p.id, p]));
     const physical = bindPhysicalBarsForDemand(
       report,
-      data?.physicalLots ?? [],
+      data.physicalLots,
       ownedById,
+      { invalidatedProfileIds: data.physicalInvalidated },
     );
 
     setStockReservation({
@@ -149,7 +168,7 @@ export const StudioStockPage: React.FC = () => {
       availabilityOk: report.availabilityOk,
       bomFingerprint,
       stockVersionByProfile: { ...report.stockVersionByProfile },
-      // Physical bars only — never floor(metres / length).
+      // Physical bars only — never floor(metres / length); never from partial history.
       barsByCatalogueLength: physical.barsByCatalogueLength,
       physicalBarBinding: physical.binding,
     });
