@@ -166,7 +166,7 @@ psycopg2-binary==2.9.11
 py-cpuinfo==9.0.0
 py-serializable==2.1.0
 pyarrow==25.0.1
-pyasn1==0.6.4
+pyasn1==0.6.5
 pyasn1-modules==0.4.2
 pyclipper==1.4.0
 pycparser==2.22
