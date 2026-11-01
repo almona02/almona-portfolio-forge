@@ -200,6 +200,31 @@ describe('assembly manifest — binding to the generated 3D model', () => {
     expect(hardware.filter((hw) => hw.type === 'roller')).toHaveLength(4);
   });
 
+  it('CALUMINIUM PS 2-sash sliding coverage: every listed part is either drawn or explicitly unmodelled (Batch 5 audit)', () => {
+    const unit = savedR9Unit();
+    const geometry = generateModelGeometries(unit, null, { forceRegenerate: true });
+    const visual = collectVisualPartKeys(geometry, generateHardwarePlaceholders(unit));
+    const manifest = buildAssemblyManifest(unit, { visualPartKeys: visual, systemPack: PACK });
+    const byRole = (role: string) => manifest.entries.filter((e) => e.role === role);
+    const allMapped = (role: string) => byRole(role).length > 0 && byRole(role).every((e) => e.modelling === 'mapped');
+    // Profiles from the saved design are all drawn: frame, sash members, interlock, 2 tracks, beads.
+    for (const role of ['frame', 'sash', 'interlock', 'track', 'glazing_bead']) expect(allMapped(role)).toBe(true);
+    expect(byRole('track')).toHaveLength(2); // PS is a two-track system; no third track is invented
+    // Glass and spacer/gasket sets per sash are drawn; their codes are UNKNOWN until saved.
+    expect(allMapped('glass')).toBe(true);
+    expect(allMapped('spacer')).toBe(true);
+    // Hardware specified by the system pack is listed, unquantified and not placed (no BOM yet).
+    const system = manifest.entries.filter((e) => e.source === 'system_pack');
+    expect(system.map((e) => e.role).sort()).toEqual(['accessory', 'corner_key', 'corner_key', 'handle', 'lock', 'roller']);
+    expect(system.every((e) => e.modelling === 'unmodelled' && e.quantity === null)).toBe(true);
+    // Drawn pieces without a saved record are named as visual only: corner plates, top guide rails, hardware placeholders.
+    const visualOnly = manifest.unmappedVisualParts.map((p) => p.partRef.kind);
+    expect(new Set(visualOnly)).toEqual(new Set(['corner', 'track_guide', 'hardware']));
+    expect(manifest.entries.filter((e) => e.modelling === 'pending')).toHaveLength(0);
+    // Nothing in the manifest is priced: no cost fields exist on any record.
+    expect(manifest.entries.every((e) => !('cost' in e) && !('unitPrice' in e))).toBe(true);
+  });
+
   it('search finds parts by name, code and cell label', () => {
     const manifest = buildAssemblyManifest(savedR9Unit());
     expect(searchManifest(manifest, 'PS-6601-BEAD')).toHaveLength(8);

@@ -1779,8 +1779,14 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                 const glassZ = clampWithinFrameDepth(sashZ - glassRecess, glassThickness, frameProfile.depth);
                 const spacerZ = clampWithinFrameDepth(sashZ, spacerThickness, frameProfile.depth);
 
+                // Sash geometry is LOCAL to the sash group: the renderer places the group at
+                // openingPath.position (cell centre) and animates/explodes it as one unit, so
+                // nothing inside may carry the cell offset a second time.
+                const localGlassX = glassBounds.x - cellX;
+                const localGlassY = glassBounds.y - cellY;
+
                 const glassGeom = new BoxGeometry(glassBounds.width, glassBounds.height, glassThickness);
-                glassGeom.translate(glassBounds.x, glassBounds.y, glassZ);
+                glassGeom.translate(localGlassX, localGlassY, glassZ);
                 tagPart(glassGeom, partRefKey({ kind: 'glass', cellId: cell.id, placement: null, index: null }));
                 
                 const spacerGeom = new BoxGeometry(
@@ -1788,7 +1794,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                   Math.max(0.01, glassBounds.height - 0.01), 
                   spacerThickness
                 );
-                spacerGeom.translate(glassBounds.x, glassBounds.y, spacerZ);
+                spacerGeom.translate(localGlassX, localGlassY, spacerZ);
                 tagPart(spacerGeom, partRefKey({ kind: 'spacer', cellId: cell.id, placement: null, index: null }));
 
                 const extraSashSpacers: BufferGeometry[] = [];
@@ -1805,8 +1811,8 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     frameProfile.depth
                   );
                   const beadFrames = createBorderFrameGeometries(
-                    glassBounds.x,
-                    glassBounds.y,
+                    localGlassX,
+                    localGlassY,
                     glassBounds.width,
                     glassBounds.height,
                     beadWidth,
@@ -1825,8 +1831,8 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     frameProfile.depth
                   );
                   const gasketFrames = createBorderFrameGeometries(
-                    glassBounds.x,
-                    glassBounds.y,
+                    localGlassX,
+                    localGlassY,
                     glassBounds.width,
                     glassBounds.height,
                     gasketWidth,
@@ -1836,13 +1842,11 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                   extraSashSpacers.push(...tagBorder(gasketFrames, 'gasket', cell.id));
                 }
 
-                // Transform sash frame parts to be positioned at cell center
+                // Sash frame parts stay centred on the sash group origin; only the track depth is baked in.
                 const transformedSashParts = sashFrameParts.map(part => {
                     const newMatrix = new Matrix4();
-                    // Clone the original matrix
                     newMatrix.copy(part.matrix);
-                    // Translate to cell position
-                    const translation = new Matrix4().makeTranslation(cellX, cellY, sashZ);
+                    const translation = new Matrix4().makeTranslation(0, 0, sashZ);
                     newMatrix.multiplyMatrices(translation, newMatrix);
                     return {
                         ...part,
@@ -1850,13 +1854,13 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     };
                 });
 
-                // Add sash-level mullions if any
+                // Add sash-level mullions if any (local to the sash group → cell centre at 0,0)
                 const sashMullions = renderSashLevelMullions(
                     windowUnit,
                     sashProfile,
                     cell.id,
-                    cellX,
-                    cellY,
+                    0,
+                    0,
                     sashW,
                     sashH
                 );

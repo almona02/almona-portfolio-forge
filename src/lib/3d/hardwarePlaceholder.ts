@@ -238,13 +238,14 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
         userData: { cellId: cell.id, partRef: refFor(cell.id, 'roller', 1) }
       });
       
-      // Handle on right side, middle height
+      // Handle on the meeting-stile side (towards the window centre), middle height
       const handleGeom = new BoxGeometry(
         HARDWARE_DIMENSIONS.handle.width,
         HARDWARE_DIMENSIONS.handle.height,
         HARDWARE_DIMENSIONS.handle.depth
       );
-      const handleX = cellX + cellW / 2 - HARDWARE_DIMENSIONS.handle.depth / 2;
+      const towardsCentre = cellX <= 0 ? 1 : -1;
+      const handleX = cellX + towardsCentre * (cellW / 2 - HARDWARE_DIMENSIONS.handle.depth / 2 - HARDWARE_DIMENSIONS.handle.width);
       const handleY = cellY;
       const handleZ = 0.01;
       

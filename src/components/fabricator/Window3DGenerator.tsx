@@ -126,6 +126,8 @@ import { getPatternById } from '@/lib/fabricator/presetUtils';
 import { calculateExplodedTransforms } from '@/lib/3d/explodedViewUtils';
 import { createExplodedTransformController } from '@/lib/3d/applyExplodedTransforms';
 import { geometryPartRef } from '@/lib/3d/visualPartRefs';
+import { orientExtrudedPart } from '@/lib/3d/profileExtrusion';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { hardwareModelLibrary } from '@/lib/3d/hardware/HardwareModelLibrary';
 import { generateHardwarePlaceholders, getHardwareColor } from '@/lib/3d/hardwarePlaceholder';
 import { track } from '@/lib/analytics';
@@ -181,6 +183,7 @@ function MiteredFramePart({ part, material, enableShadows, userData }: { part: M
                 metadata: part.metadata as any
             };
             const geom = createChamberedProfileGeometry(profileData, part.length);
+            orientExtrudedPart(geom, part);
             geom.applyMatrix4(part.matrix);
             return geom;
         }
@@ -197,6 +200,7 @@ function MiteredFramePart({ part, material, enableShadows, userData }: { part: M
             bevelEnabled: false,
         };
         const geom = new ExtrudeGeometry(shape, extrudeSettings);
+        orientExtrudedPart(geom, part);
         geom.applyMatrix4(part.matrix);
         return geom;
     }, [part]);
@@ -1539,6 +1543,7 @@ export const Window3DModel = React.memo(Window3DModelComponent, (prevProps, next
         prevProps.isAnimating === nextProps.isAnimating &&
         prevProps.animationProgress === nextProps.animationProgress &&
         prevProps.explodedView === nextProps.explodedView &&
+        prevProps.validationResult === nextProps.validationResult &&
         prevProps.enableShadows === nextProps.enableShadows &&
         prevProps.clippingPlanes === nextProps.clippingPlanes &&
         prevProps.lightingPreset === nextProps.lightingPreset &&
@@ -1987,10 +1992,14 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     setExplodedView,
     mode: _mode = 'pro',
     showDimensions = false,
-    viewMode = 'manufacturing',
+    viewMode: initialViewMode = 'manufacturing',
     bom = null,
     showPartList,
 }, ref) => {
+    // Customer view: assemble/explode, parts, highlight and plain-language cards only —
+    // cut/machine data, gates and advanced render controls stay in the workshop view.
+    const [viewMode, setViewMode] = useState<PartViewMode>(initialViewMode);
+    useEffect(() => setViewMode(initialViewMode), [initialViewMode]);
     const { t } = useTranslation('fabricator');
     // --- State Management ---
     const [isAnimating, setIsAnimating] = useState(false);
@@ -2017,9 +2026,14 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     const [visualPartKeys, setVisualPartKeys] = useState<Set<string>>(() => new Set());
     const [partListOpen, setPartListOpen] = useState(false);
     useEffect(() => setSelectedKey(null), [windowUnit.id, windowUnit.revision]);
+    // System pack only lists system-specified hardware when no BOM / saved hardware exists.
+    const systemPack = useMemo(
+        () => SYSTEM_PACKS.find(pack => pack.meta?.id === windowUnit.systemPackId || pack.id === windowUnit.systemPackId) ?? null,
+        [windowUnit.systemPackId],
+    );
     const manifest = useMemo(
-        () => buildAssemblyManifest(windowUnit, { bom, visualPartKeys }),
-        [windowUnit, bom, visualPartKeys],
+        () => buildAssemblyManifest(windowUnit, { bom, visualPartKeys, systemPack }),
+        [windowUnit, bom, visualPartKeys, systemPack],
     );
     const partListAvailable = showPartList ?? showControls;
 
@@ -2301,7 +2315,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                                 enableShadows={enableShadows}
                                 clippingPlanes={sectionViewEnabled ? [clippingPlane] : null}
                                 explodedView={initialExplodedView}
-                                validationResult={validation}
+                                validationResult={viewMode === 'manufacturing' ? validation : undefined}
                                 lightingPreset={lightingPreset}
                                 shadowQuality={shadowQuality}
                                 onLightingChange={(preset, shadow) => {
@@ -2344,7 +2358,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                     {t('window_3d_generator.customer_preview_note', 'Visual preview of your window. Colours and proportions are indicative; part names and codes come from the saved order.')}
                     {manifest.summary.unmodelled > 0 && (
                         <span className="block text-amber-200">
-                            {t('window_3d_generator.customer_unmodelled_note', '{count} listed parts are not drawn in 3D — see the Parts list.', { count: manifest.summary.unmodelled })}
+                            {`${manifest.summary.unmodelled} ${t('window_3d_generator.customer_unmodelled_note', 'listed parts are not drawn in 3D — see the Parts list.')}`}
                         </span>
                     )}
                 </div>
@@ -2375,6 +2389,22 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                             aria-label={t('window_3d_generator.view_toolbar', '3D view tools')}
                             className="absolute top-4 right-4 z-10 flex max-w-[calc(100%-2rem)] flex-wrap items-center justify-end gap-2"
                         >
+                            <div role="radiogroup" aria-label={t('window_3d_generator.view_mode', 'View mode')} className="flex h-9 overflow-hidden rounded border border-gray-700 bg-gray-900/80 text-xs">
+                                {(['customer', 'manufacturing'] as PartViewMode[]).map(modeOption => (
+                                    <button
+                                        key={modeOption}
+                                        type="button"
+                                        role="radio"
+                                        aria-checked={viewMode === modeOption}
+                                        onClick={() => setViewMode(modeOption)}
+                                        className={`px-3 ${viewMode === modeOption ? 'bg-amber-500/20 text-amber-100' : 'text-gray-300 hover:text-white'}`}
+                                    >
+                                        {modeOption === 'customer'
+                                            ? t('window_3d_generator.view_customer', 'Customer')
+                                            : t('window_3d_generator.view_workshop', 'Workshop')}
+                                    </button>
+                                ))}
+                            </div>
                             {setExplodedView && (
                                 <Toggle
                                     pressed={initialExplodedView}

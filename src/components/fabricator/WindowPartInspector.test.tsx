@@ -1,9 +1,10 @@
+import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { Object3D } from 'three';
 import type { WindowComponent, WindowUnit } from '@/types/fabricator';
 import { buildAssemblyManifest } from '@/lib/fabricator/assembly/assemblyManifest';
 import { selectionKeyOf } from '@/lib/3d/visualPartRefs';
-import { describeSelection, findInspectablePart } from './WindowPartInspector';
+import { describeSelection, findInspectablePart, WindowPartDetails } from './WindowPartInspector';
 
 vi.mock('@react-three/fiber', () => ({ useFrame: () => undefined, useThree: () => null }));
 
@@ -44,6 +45,22 @@ describe('customer part information', () => {
     expect(sashTop).toMatchObject({ unmodelled: true, visualOnly: false });
     expect(describeSelection('view:frame-7', manifest, u)!.visualOnly).toBe(true);
     expect(describeSelection(null, manifest, u)).toBeNull();
+  });
+
+  it('customer card shows name, material, finish, code and purpose but no cut or machine data', () => {
+    const u = unit();
+    const manifest = buildAssemblyManifest(u, { visualPartKeys: ['frame||top|'] });
+    const { rerender } = render(<WindowPartDetails selectionKey="frame||top|" manifest={manifest} unit={u} mode="customer" onClose={() => undefined} />);
+    const card = screen.getByRole('region', { name: /selected window part/i });
+    expect(card.textContent).toMatch(/Outer frame \(top\)/);
+    expect(card.textContent).toMatch(/PS-6601-FRAME/);
+    expect(card.textContent).toMatch(/aluminum/);
+    expect(card.textContent).toMatch(/white/);
+    expect(card.textContent).toMatch(/anchored to the wall/);
+    expect(card.textContent).not.toMatch(/Cut id|Design length|Angles|BOM/);
+    rerender(<WindowPartDetails selectionKey="frame||top|" manifest={manifest} unit={u} mode="manufacturing" onClose={() => undefined} />);
+    expect(screen.getByRole('region', { name: /selected window part/i }).textContent).toMatch(/Cut idframe_top_1:0/);
+    expect(screen.getByRole('region', { name: /selected window part/i }).textContent).toMatch(/1500\.00 mm/);
   });
 
   it('resolves nested meshes to their tagged part and never uses the mesh uuid as identity', () => {
