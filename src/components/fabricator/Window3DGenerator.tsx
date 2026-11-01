@@ -34,6 +34,7 @@ const DEBOUNCE_CONFIG = {
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { findInspectablePart, WindowPartDetails, WindowPartOutline, type PartViewMode } from './WindowPartInspector';
 import { AssemblyPartList } from './AssemblyPartList';
+import { Window3DChromeShell } from './Window3DChromeShell';
 import { buildAssemblyManifest, type AssemblyManifestOptions } from '@/lib/fabricator/assembly/assemblyManifest';
 import { collectVisualPartKeys, selectionKeyOf } from '@/lib/3d/visualPartRefs';
 import { useWindowPhysics } from '@/lib/3d/hooks';
@@ -2351,148 +2352,117 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                 </Canvas>
             </div>
 
-            {/* --- BETA VISUALIZATION DISCLAIMER --- */}
-            {/* --- CONSTITUTIONAL DISCLAIMER OVERLAY --- */}
-            {viewMode === 'customer' ? (
-                <div className="absolute top-2 left-2 z-10 max-w-sm rounded border border-slate-700 bg-slate-950/80 px-3 py-2 text-[11px] text-slate-300 backdrop-blur-sm">
-                    {t('window_3d_generator.customer_preview_note', 'Visual preview of your window. Colours and proportions are indicative; part names and codes come from the saved order.')}
-                    {manifest.summary.unmodelled > 0 && (
-                        <span className="block text-amber-200">
-                            {`${manifest.summary.unmodelled} ${t('window_3d_generator.customer_unmodelled_note', 'listed parts are not drawn in 3D — see the Parts list.')}`}
-                        </span>
-                    )}
-                </div>
-            ) : (
-            <div className="absolute top-2 left-2 z-10 max-w-md">
-                <div className="bg-gray-900/80 border border-amber-500/50 rounded px-3 py-2 text-xs backdrop-blur-sm shadow-xl">
-                    <div className="flex items-center gap-2 mb-1">
-                        <AlertTriangle className="w-3 h-3 text-amber-500" />
-                        <span className="font-bold text-amber-500">CONSTITUTIONAL DISCLAIMER</span>
-                    </div>
-                    <p className="text-gray-300 leading-tight mb-1">
-                        Visualization for manufacturability check only. Not a substitute for engineering structural analysis.
-                    </p>
-                    <div className="flex items-center justify-between text-[10px] text-gray-500 border-t border-gray-700 pt-1 mt-1">
-                        <span>Accuracy: 99.8% (Tier 3 Protected)</span>
-                        <span>Requires Human Validation</span>
-                    </div>
-                </div>
-            </div>
-            )}
-
-            {/* --- UI OVERLAYS --- */}
-            {showControls && (
-                <>
-                    {!controlsVisible && (
-                        <div
-                            role="toolbar"
-                            aria-label={t('window_3d_generator.view_toolbar', '3D view tools')}
-                            className="absolute top-4 right-4 z-10 flex max-w-[calc(100%-2rem)] flex-wrap items-center justify-end gap-2"
-                        >
-                            <div role="radiogroup" aria-label={t('window_3d_generator.view_mode', 'View mode')} className="flex h-9 overflow-hidden rounded border border-gray-700 bg-gray-900/80 text-xs">
-                                {(['customer', 'manufacturing'] as PartViewMode[]).map(modeOption => (
-                                    <button
-                                        key={modeOption}
-                                        type="button"
-                                        role="radio"
-                                        aria-checked={viewMode === modeOption}
-                                        onClick={() => setViewMode(modeOption)}
-                                        className={`px-3 ${viewMode === modeOption ? 'bg-amber-500/20 text-amber-100' : 'text-gray-300 hover:text-white'}`}
-                                    >
-                                        {modeOption === 'customer'
-                                            ? t('window_3d_generator.view_customer', 'Customer')
-                                            : t('window_3d_generator.view_workshop', 'Workshop')}
-                                    </button>
-                                ))}
-                            </div>
-                            {setExplodedView && (
-                                <Toggle
-                                    pressed={initialExplodedView}
-                                    onPressedChange={setExplodedView}
-                                    aria-label={initialExplodedView
-                                        ? t('window_3d_generator.assemble', 'Assemble')
-                                        : t('window_3d_generator.explode', 'Explode')}
-                                    className="btn-primary h-9 min-w-[7rem] px-3 text-xs"
+            {/* Chrome: one toolbar strip, disclaimer pinned below it, Parts docked in remaining left band */}
+            <Window3DChromeShell
+                toolbar={showControls && !controlsVisible ? (
+                    <div
+                        role="toolbar"
+                        aria-label={t('window_3d_generator.view_toolbar', '3D view tools')}
+                        className="flex w-full items-center justify-end gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                    >
+                        <div role="radiogroup" aria-label={t('window_3d_generator.view_mode', 'View mode')} className="flex h-9 shrink-0 overflow-hidden rounded border border-gray-700 bg-gray-900/80 text-xs">
+                            {(['customer', 'manufacturing'] as PartViewMode[]).map(modeOption => (
+                                <button
+                                    key={modeOption}
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={viewMode === modeOption}
+                                    onClick={() => setViewMode(modeOption)}
+                                    className={`px-2.5 sm:px-3 ${viewMode === modeOption ? 'bg-amber-500/20 text-amber-100' : 'text-gray-300 hover:text-white'}`}
                                 >
-                                    <Layers className="h-4 w-4 mr-2" />
+                                    {modeOption === 'customer'
+                                        ? t('window_3d_generator.view_customer', 'Customer')
+                                        : t('window_3d_generator.view_workshop', 'Workshop')}
+                                </button>
+                            ))}
+                        </div>
+                        {setExplodedView && (
+                            <Toggle
+                                pressed={initialExplodedView}
+                                onPressedChange={setExplodedView}
+                                aria-label={initialExplodedView
+                                    ? t('window_3d_generator.assemble', 'Assemble')
+                                    : t('window_3d_generator.explode', 'Explode')}
+                                className="btn-primary h-9 shrink-0 px-2.5 text-xs sm:min-w-[7rem] sm:px-3"
+                            >
+                                <Layers className="h-4 w-4 sm:mr-2" />
+                                <span className="hidden sm:inline">
                                     {initialExplodedView
                                         ? t('window_3d_generator.assemble', 'Assemble')
                                         : t('window_3d_generator.explode', 'Explode')}
-                                </Toggle>
-                            )}
+                                </span>
+                            </Toggle>
+                        )}
+                        <button
+                            type="button"
+                            className="h-9 shrink-0 rounded border border-gray-700 bg-gray-900/80 px-2.5 text-xs text-gray-200 hover:border-amber-500 sm:px-3"
+                            onClick={() => {
+                                controlsRef.current?.reset?.();
+                                setSelectedKey(null);
+                                setExplodedView?.(false);
+                            }}
+                        >
+                            <RotateCcw className="inline h-3.5 w-3.5 sm:mr-1" />
+                            <span className="hidden sm:inline">{t('window_3d_generator.reset_view', 'Reset View')}</span>
+                        </button>
+                        {partListAvailable && (
                             <button
                                 type="button"
-                                className="h-9 rounded border border-gray-700 bg-gray-900/80 px-3 text-xs text-gray-200 hover:border-amber-500"
-                                onClick={() => {
-                                    controlsRef.current?.reset?.();
-                                    setSelectedKey(null);
-                                    setExplodedView?.(false);
-                                }}
+                                aria-pressed={partListOpen}
+                                aria-controls="window-3d-part-list"
+                                className={`h-9 shrink-0 rounded border px-2.5 text-xs hover:border-amber-500 sm:px-3 ${partListOpen ? 'border-amber-500 bg-amber-500/20 text-amber-100' : 'border-gray-700 bg-gray-900/80 text-gray-200'}`}
+                                onClick={() => setPartListOpen(open => !open)}
                             >
-                                <RotateCcw className="mr-1 inline h-3.5 w-3.5" />
-                                {t('window_3d_generator.reset_view', 'Reset View')}
+                                <ListTree className="inline h-3.5 w-3.5 sm:mr-1" />
+                                <span className="sm:hidden">{manifest.summary.total}</span>
+                                <span className="hidden sm:inline">{t('window_3d_generator.parts', 'Parts')} ({manifest.summary.total})</span>
                             </button>
-                            {partListAvailable && (
-                                <button
-                                    type="button"
-                                    aria-pressed={partListOpen}
-                                    aria-controls="window-3d-part-list"
-                                    className={`h-9 rounded border px-3 text-xs hover:border-amber-500 ${partListOpen ? 'border-amber-500 bg-amber-500/20 text-amber-100' : 'border-gray-700 bg-gray-900/80 text-gray-200'}`}
-                                    onClick={() => setPartListOpen(open => !open)}
-                                >
-                                    <ListTree className="mr-1 inline h-3.5 w-3.5" />
-                                    {t('window_3d_generator.parts', 'Parts')} ({manifest.summary.total})
-                                </button>
-                            )}
-                            {viewMode === 'manufacturing' && (
-                                <button
-                                    type="button"
-                                    className="h-9 rounded border border-gray-700 bg-gray-900/80 px-3 text-xs text-gray-200 hover:border-amber-500"
-                                    onClick={() => setControlsVisible(true)}
-                                >
-                                    {t('window_3d_generator.3d_controls', '3D Controls')}
-                                </button>
-                            )}
+                        )}
+                        {viewMode === 'manufacturing' && (
+                            <button
+                                type="button"
+                                className="h-9 shrink-0 rounded border border-gray-700 bg-gray-900/80 px-2.5 text-xs text-gray-200 hover:border-amber-500 sm:px-3"
+                                onClick={() => setControlsVisible(true)}
+                            >
+                                <span className="sm:hidden">{t('window_3d_generator.3d_controls_short', 'Controls')}</span>
+                                <span className="hidden sm:inline">{t('window_3d_generator.3d_controls', '3D Controls')}</span>
+                            </button>
+                        )}
+                    </div>
+                ) : undefined}
+                disclaimer={viewMode === 'customer' ? (
+                    <div className="rounded border border-slate-700 bg-slate-950/80 px-3 py-2 text-[11px] text-slate-300 backdrop-blur-sm">
+                        {t('window_3d_generator.customer_preview_note', 'Visual preview of your window. Colours and proportions are indicative; part names and codes come from the saved order.')}
+                        {manifest.summary.unmodelled > 0 && (
+                            <span className="block text-amber-200">
+                                {`${manifest.summary.unmodelled} ${t('window_3d_generator.customer_unmodelled_note', 'listed parts are not drawn in 3D — see the Parts list.')}`}
+                            </span>
+                        )}
+                    </div>
+                ) : (
+                    <div className="rounded border border-amber-500/50 bg-gray-900/80 px-3 py-2 text-xs shadow-xl backdrop-blur-sm">
+                        <div className="mb-1 flex items-center gap-2">
+                            <AlertTriangle className="h-3 w-3 text-amber-500" />
+                            <span className="font-bold text-amber-500">CONSTITUTIONAL DISCLAIMER</span>
                         </div>
-                    )}
-                    {controlsVisible && (
-                        <div ref={controlsCardRef}>
-                            <WindowControls
-                                isAnimating={isAnimating}
-                                setIsAnimating={setIsAnimating}
-                                animationProgress={animationProgress}
-                                setAnimationProgress={setAnimationProgress}
-                                showMeasurements={showMeasurements}
-                                setShowMeasurements={setShowMeasurements}
-                                exportFormat={exportFormat}
-                                setExportFormat={setExportFormat}
-                                exportModel={exportModel}
-                                toggleFullscreen={toggleFullscreen}
-                                windowUnit={windowUnit}
-                                controlsRef={controlsRef}
-                                quality={quality}
-                                setQuality={setQuality}
-                                enableShadows={enableShadows}
-                                setEnableShadows={setEnableShadows}
-                                isExporting={isExporting}
-                                sectionViewEnabled={sectionViewEnabled}
-                                setSectionViewEnabled={setSectionViewEnabled}
-                                lightingPreset={lightingPreset}
-                                setLightingPreset={setLightingPreset}
-                                shadowQuality={shadowQuality}
-                                setShadowQuality={setShadowQuality}
-                                detailConfig={detailConfig}
-                                setDetailConfig={setDetailConfig}
-                            />
+                        <p className="mb-1 leading-tight text-gray-300">
+                            Visualization for manufacturability check only. Not a substitute for engineering structural analysis.
+                        </p>
+                        <div className="mt-1 flex items-center justify-between border-t border-gray-700 pt-1 text-[10px] text-gray-500">
+                            <span>Accuracy: 99.8% (Tier 3 Protected)</span>
+                            <span>Requires Human Validation</span>
                         </div>
-                    )}
-                </>
-            )}
-            {showControls && viewMode === 'manufacturing' && !partListOpen && (
-                <div className="absolute bottom-4 left-4 z-10">
-                    <Card className="bg-gray-900/90 border-gray-600 card-dark">
+                    </div>
+                )}
+                partList={partListAvailable && partListOpen ? (
+                    <div id="window-3d-part-list" className="h-full min-h-0">
+                        <AssemblyPartList manifest={manifest} selectedKey={selectedKey} onSelect={setSelectedKey} mode={viewMode} />
+                    </div>
+                ) : undefined}
+                status={showControls && viewMode === 'manufacturing' && !partListOpen ? (
+                    <Card className="border-gray-600 bg-gray-900/90 card-dark">
                         <CardContent className="p-3">
-                            <div className="flex items-center gap-4 text-xs text-gray-400">
+                            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
                                 <div className="flex items-center gap-1">
                                     <Layers className="h-3 w-3" />
                                     <span>{t('window_3d_generator.quality_label', '{quality} Quality', { quality: quality.charAt(0).toUpperCase() + quality.slice(1) })}</span>
@@ -2516,17 +2486,43 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                             </div>
                         </CardContent>
                     </Card>
+                ) : undefined}
+            />
+
+            {showControls && controlsVisible && (
+                <div ref={controlsCardRef}>
+                    <WindowControls
+                        isAnimating={isAnimating}
+                        setIsAnimating={setIsAnimating}
+                        animationProgress={animationProgress}
+                        setAnimationProgress={setAnimationProgress}
+                        showMeasurements={showMeasurements}
+                        setShowMeasurements={setShowMeasurements}
+                        exportFormat={exportFormat}
+                        setExportFormat={setExportFormat}
+                        exportModel={exportModel}
+                        toggleFullscreen={toggleFullscreen}
+                        windowUnit={windowUnit}
+                        controlsRef={controlsRef}
+                        quality={quality}
+                        setQuality={setQuality}
+                        enableShadows={enableShadows}
+                        setEnableShadows={setEnableShadows}
+                        isExporting={isExporting}
+                        sectionViewEnabled={sectionViewEnabled}
+                        setSectionViewEnabled={setSectionViewEnabled}
+                        lightingPreset={lightingPreset}
+                        setLightingPreset={setLightingPreset}
+                        shadowQuality={shadowQuality}
+                        setShadowQuality={setShadowQuality}
+                        detailConfig={detailConfig}
+                        setDetailConfig={setDetailConfig}
+                    />
                 </div>
             )}
 
             {showControls && selectedKey && (
                 <WindowPartDetails selectionKey={selectedKey} manifest={manifest} unit={windowUnit} mode={viewMode} onClose={() => setSelectedKey(null)} />
-            )}
-
-            {partListAvailable && partListOpen && (
-                <div id="window-3d-part-list" className="absolute bottom-4 left-4 top-24 z-20 w-[min(20rem,calc(100%-2rem))]">
-                    <AssemblyPartList manifest={manifest} selectedKey={selectedKey} onSelect={setSelectedKey} mode={viewMode} />
-                </div>
             )}
         </div>
     );
