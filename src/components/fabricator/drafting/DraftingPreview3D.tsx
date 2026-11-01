@@ -104,7 +104,7 @@ export const DraftingPreview3D: React.FC<DraftingPreview3DProps> = ({
       }
     >
       {useFullFidelity && windowUnit ? (
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-full min-h-0">
           <Suspense fallback={<LoadingState message="Loading 3D Engine..." size="lg" overlay />}>
             <Window3DGenerator
               windowUnit={windowUnit}
@@ -113,18 +113,20 @@ export const DraftingPreview3D: React.FC<DraftingPreview3DProps> = ({
               explodedView={explodedView}
               setExplodedView={setExplodedView}
               bom={bom}
+              chromeStatus={
+                <dl
+                  aria-label="Preview source"
+                  className="grid max-w-xs grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 rounded border border-slate-700 bg-slate-950/85 px-3 py-2 text-[11px] text-slate-300"
+                >
+                  <dt className="text-slate-500">System</dt><dd>{windowUnit.systemPackId ?? 'Not set'}</dd>
+                  <dt className="text-slate-500">Finish</dt><dd>{windowUnit.color || 'Not set'}</dd>
+                  <dt className="text-slate-500">Size</dt><dd>{`${Math.round(windowUnit.overallWidth)} × ${Math.round(windowUnit.overallHeight)} mm`}</dd>
+                  {windowUnit.revision != null && <><dt className="text-slate-500">Revision</dt><dd>R{windowUnit.revision}</dd></>}
+                  <dt className="text-slate-500">Parts</dt><dd>{BINDING_LABEL[windowUnit.previewLedgerBinding]}</dd>
+                </dl>
+              }
             />
           </Suspense>
-          <dl
-            aria-label="Preview source"
-            className="pointer-events-none absolute bottom-4 right-4 z-10 grid max-w-xs grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 rounded border border-slate-700 bg-slate-950/85 px-3 py-2 text-[11px] text-slate-300"
-          >
-            <dt className="text-slate-500">System</dt><dd>{windowUnit.systemPackId ?? 'Not set'}</dd>
-            <dt className="text-slate-500">Finish</dt><dd>{windowUnit.color || 'Not set'}</dd>
-            <dt className="text-slate-500">Size</dt><dd>{`${Math.round(windowUnit.overallWidth)} × ${Math.round(windowUnit.overallHeight)} mm`}</dd>
-            {windowUnit.revision != null && <><dt className="text-slate-500">Revision</dt><dd>R{windowUnit.revision}</dd></>}
-            <dt className="text-slate-500">Parts</dt><dd>{BINDING_LABEL[windowUnit.previewLedgerBinding]}</dd>
-          </dl>
         </div>
       ) : (
         <DraftingCanvas3D
