@@ -11,9 +11,12 @@ Baseline tip before follow-up: `df41eba3` (PR 122 merge). Branch: `cursor-nov-qt
 | A qty multiset | `d4175978` |
 | B fail-closed derive + early bars | `33ae61f7` |
 | B length-keyed bars (review) | `4c647dba` |
-| B movement reconciliation + complete snapshot (this pass) | *(tip after land)* |
+| B movement reconciliation + complete snapshot | `7c1ab828` |
 | C–E chrome / shells | `286a56ea` … `14b25be1` |
-| F fixtures / matrix | `684cae14` … |
+| E inert retained workspace + strict 380 e2e | `5876e274` |
+| F matrix refresh | `6d60dd9e` |
+
+**Gates (author-run, 2026-11-02):** focused vitest **44/44**; `npm run type-check` exit 0; `npm run lint` exit 0; `npm run build` exit 0. Tip `6d60dd9e`.
 
 ## Matrix
 
