@@ -8,6 +8,8 @@
  * with correct positioning rather than detailed 3D models.
  */
 
+import { partRefKey } from '@/lib/fabricator/assembly/partRef';
+import { normalizeOpeningType } from '@/lib/fabricator/openingType';
 import { WindowUnit } from '@/types/fabricator';
 import { BoxGeometry, BufferGeometry, Vector3 } from 'three';
 
@@ -156,14 +158,20 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
   
   const width = windowUnit.overallWidth / 1000; // Convert mm to meters
   const height = windowUnit.overallHeight / 1000;
+  // Saved sliding designs often store operable cells as plain 'sash' (e.g. CALUMINIUM PS
+  // 2-sash saves); the opening type of the unit decides sliding vs casement hardware.
+  const unitIsSliding = normalizeOpeningType(windowUnit.type, windowUnit.grid) === 'sliding';
+  // Deterministic occurrence index per (cell, hardware type) → assembly part ref.
+  const refFor = (cellId: string, type: HardwarePlaceholder['type'], index: number) =>
+    partRefKey({ kind: 'hardware', cellId, placement: type, index });
   
   // Process each cell
   windowUnit.grid.cells.forEach((cell, _index) => {
     if (cell.type === 'empty') return;
     
-    const _isSash = cell.type === 'sash' || (cell as any).type === 'sliding';
-    const isSliding = cell.type === 'sliding' || (cell as any).type === 'sliding';
-    const isCasement = cell.type === 'sash' && !isSliding;
+    const isOperable = cell.type === 'sash' || (cell as any).type === 'sliding';
+    const isSliding = isOperable && ((cell as any).type === 'sliding' || unitIsSliding);
+    const isCasement = isOperable && !isSliding;
     
     // Calculate cell dimensions using proportional grid (colWidths/rowHeights)
     const cols = windowUnit.grid.cols || 1;
@@ -218,14 +226,16 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
         geometry: rollerGeom,
         position: new Vector3(rollerX1, rollerY, rollerZ),
         type: 'roller',
-        label: 'Roller'
+        label: 'Roller',
+        userData: { cellId: cell.id, partRef: refFor(cell.id, 'roller', 0) }
       });
       
       placeholders.push({
         geometry: rollerGeom.clone(),
         position: new Vector3(rollerX2, rollerY, rollerZ),
         type: 'roller',
-        label: 'Roller'
+        label: 'Roller',
+        userData: { cellId: cell.id, partRef: refFor(cell.id, 'roller', 1) }
       });
       
       // Handle on right side, middle height
@@ -242,7 +252,22 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
         geometry: handleGeom,
         position: new Vector3(handleX, handleY, handleZ),
         type: 'handle',
-        label: 'Handle'
+        label: 'Handle',
+        userData: { cellId: cell.id, partRef: refFor(cell.id, 'handle', 0) }
+      });
+
+      // Sliding lock sits on the meeting stile below the handle.
+      const slidingLockGeom = new BoxGeometry(
+        HARDWARE_DIMENSIONS.lock.width,
+        HARDWARE_DIMENSIONS.lock.height,
+        HARDWARE_DIMENSIONS.lock.depth
+      );
+      placeholders.push({
+        geometry: slidingLockGeom,
+        position: new Vector3(handleX, handleY - HARDWARE_DIMENSIONS.handle.height, handleZ),
+        type: 'lock',
+        label: 'Lock',
+        userData: { cellId: cell.id, partRef: refFor(cell.id, 'lock', 0) }
       });
       
     } else if (isCasement) {
@@ -280,7 +305,7 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
         position: new Vector3(hingeX, cellY + cellH / 2 - 0.15, hingeZ),
         type: 'hinge',
         label: `Hinge (Top) - ${openingDirection} opening`,
-        userData: { cellId: cell.id, openingDirection } // Store for animation reference
+        userData: { cellId: cell.id, openingDirection, partRef: refFor(cell.id, 'hinge', 0) } // Store for animation reference
       });
       
       // Bottom hinge (150mm from bottom)
@@ -289,7 +314,7 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
         position: new Vector3(hingeX, cellY - cellH / 2 + 0.15, hingeZ),
         type: 'hinge',
         label: `Hinge (Bottom) - ${openingDirection} opening`,
-        userData: { cellId: cell.id, openingDirection } // Store for animation reference
+        userData: { cellId: cell.id, openingDirection, partRef: refFor(cell.id, 'hinge', 1) } // Store for animation reference
       });
       
       // Handle on opposite side from hinges (where you grab to open)
@@ -313,7 +338,8 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
         geometry: handleGeom,
         position: new Vector3(handleX, handleY, handleZ),
         type: 'handle',
-        label: 'Handle'
+        label: 'Handle',
+        userData: { cellId: cell.id, partRef: refFor(cell.id, 'handle', 0) }
       });
       
       // Lock at center bottom
@@ -330,7 +356,8 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
         geometry: lockGeom,
         position: new Vector3(lockX, lockY, lockZ),
         type: 'lock',
-        label: 'Lock'
+        label: 'Lock',
+        userData: { cellId: cell.id, partRef: refFor(cell.id, 'lock', 0) }
       });
     }
   });

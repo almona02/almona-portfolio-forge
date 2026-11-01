@@ -18,6 +18,7 @@
 
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { getPatternById, type EgyptianPattern } from '@/lib/fabricator/presetUtils';
+import { BORDER_ORDER, partRefKey, placementFromBarType } from '@/lib/fabricator/assembly/partRef';
 import { FabricationData, Profile, WindowUnit } from '@/types/fabricator';
 import { FeatureFlagManager } from '../featureFlags';
 import { renderFrameLevelMullions, renderSashLevelMullions } from './manualMullionRenderer';
@@ -245,6 +246,8 @@ export interface MiteredFrameData {
     // Optional: Use BoxGeometry for simpler positioning (temporary fix)
     useBoxGeometry?: boolean;
     boxSize?: { width: number; height: number; depth: number };
+    /** Assembly part-ref key (see lib/fabricator/assembly/partRef) binding this piece to the manifest. */
+    partRef?: string;
     metadata?: {
         type?: string;
         hasMiter?: boolean;
@@ -270,6 +273,39 @@ export interface SashData {
         position: Vector3;
         rotation: Euler;
     };
+    /** Grid cell this sash was generated for (undefined for legacy/preset sashes). */
+    cellId?: string;
+    /** 'screen' for the fly-screen sash; undefined for glazed sashes. */
+    sashKind?: 'glazed' | 'screen';
+}
+
+/** Tag a BufferGeometry with its assembly part-ref key (read by Window3DGenerator). */
+function tagPart<T extends BufferGeometry>(geometry: T, partRef: string): T {
+    geometry.userData = { ...(geometry.userData ?? {}), partRef };
+    return geometry;
+}
+
+function tagFrameParts(parts: MiteredFrameData[], cellId: string | null, kind: 'frame' | 'sash' | 'screen_sash'): MiteredFrameData[] {
+    // createMiteredFrame carries no metadata but always emits top, bottom, left, right.
+    const untyped = parts.length === BORDER_ORDER.length && parts.every((part) => !part.metadata?.type);
+    return parts.map((part, i) => {
+        const placement = untyped ? BORDER_ORDER[i] : placementFromBarType(part.metadata?.type);
+        if (placement) {
+            return { ...part, partRef: partRefKey({ kind, cellId, placement, index: null }) };
+        }
+        const corner = part.metadata?.position;
+        if (part.metadata?.type?.startsWith('corner_reinforcement') && corner) {
+            return { ...part, partRef: partRefKey({ kind: 'corner', cellId, placement: corner, index: null }) };
+        }
+        return part;
+    });
+}
+
+/** The four bead/gasket border pieces come back in BORDER_ORDER (top, bottom, left, right). */
+function tagBorder(geometries: BufferGeometry[], kind: 'bead' | 'gasket', cellId: string): BufferGeometry[] {
+    return geometries.map((geometry, i) =>
+        BORDER_ORDER[i] ? tagPart(geometry, partRefKey({ kind, cellId, placement: BORDER_ORDER[i], index: null })) : geometry,
+    );
 }
 
 /** The complete specification for a 3D window model, ready for rendering. */
@@ -1589,7 +1625,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
       : null;
 
     // --- Main Frame ---
-    const frameParts = createGoldTierMiteredFrame(width, height, frameProfile, true);
+    const frameParts = tagFrameParts(createGoldTierMiteredFrame(width, height, frameProfile, true), null, 'frame');
     
     // Muntins accumulator
     const muntins: BufferGeometry[] = [];
@@ -1611,19 +1647,19 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
     if (slidingTrackLayout) {
         const trackWidth = Math.max(0.05, width - frameProfile.width * 2);
         const trackY = -height / 2 + frameProfile.width + slidingTrackLayout.trackHeight / 2;
-        slidingTrackLayout.trackPositions.forEach((z) => {
+        slidingTrackLayout.trackPositions.forEach((z, trackIndex) => {
           const track = new BoxGeometry(trackWidth, slidingTrackLayout.trackHeight, slidingTrackLayout.trackDepth);
           track.translate(0, trackY, z);
-          fixedSpacers.push(track);
+          fixedSpacers.push(tagPart(track, partRefKey({ kind: 'track', cellId: null, placement: null, index: trackIndex })));
         });
 
         const guideHeight = slidingTrackLayout.trackHeight * 0.6;
         const guideDepth = slidingTrackLayout.trackDepth * 0.6;
         const guideY = height / 2 - frameProfile.width - guideHeight / 2;
-        slidingTrackLayout.trackPositions.forEach((z) => {
+        slidingTrackLayout.trackPositions.forEach((z, trackIndex) => {
           const guide = new BoxGeometry(trackWidth, guideHeight, guideDepth);
           guide.translate(0, guideY, z);
-          fixedSpacers.push(guide);
+          fixedSpacers.push(tagPart(guide, partRefKey({ kind: 'track_guide', cellId: null, placement: null, index: trackIndex })));
         });
     }
 
@@ -1670,7 +1706,8 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     const mullionD = frameProfile.depth;
                     const bar = new BoxGeometry(mullionW, height - frameProfile.width * 2, mullionD);
                     bar.translate(x, 0, 0);
-                    muntins.push(bar);
+                    // Sliding panels meet at an interlock, not a mullion: name the piece by what the design ledger calls it.
+                    muntins.push(tagPart(bar, partRefKey({ kind: hasSlidingCells ? 'interlock' : 'mullion', cellId: null, placement: null, index: c - 1 })));
                 }
             }
             if (rows > 1 && rowStarts.length >= rows) {
@@ -1681,12 +1718,13 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     const transomD = frameProfile.depth;
                     const bar = new BoxGeometry(width - frameProfile.width * 2, transomH, transomD);
                     bar.translate(0, y, 0);
-                    muntins.push(bar);
+                    muntins.push(tagPart(bar, partRefKey({ kind: 'transom', cellId: null, placement: null, index: r - 1 })));
                 }
             }
         }
 
-        // 2. Manual Mullions (if any)
+        // 2. Manual Mullions (if any) — rendered once here (they used to be pushed a second
+        // time into fixedSpacers, which duplicated every frame-level manual bar).
         if (windowUnit.grid?.manualMullions && windowUnit.grid.manualMullions.length > 0) {
              const manualParts = renderFrameLevelMullions(windowUnit, frameProfile);
              muntins.push(...manualParts);
@@ -1717,7 +1755,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                 const sashH = Math.max(0.05, cellH - sashInset * 2);
                 
                 // Create 4-bar frame for this sash using createGoldTierMiteredFrame
-                const sashFrameParts = createGoldTierMiteredFrame(sashW, sashH, sashProfile, true);
+                const sashFrameParts = tagFrameParts(createGoldTierMiteredFrame(sashW, sashH, sashProfile, true), cell.id, 'sash');
                 
                 // Use centralized glass bounds calculation (handles transoms internally)
                 const glassBounds = calculateGlassBounds(
@@ -1743,6 +1781,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
 
                 const glassGeom = new BoxGeometry(glassBounds.width, glassBounds.height, glassThickness);
                 glassGeom.translate(glassBounds.x, glassBounds.y, glassZ);
+                tagPart(glassGeom, partRefKey({ kind: 'glass', cellId: cell.id, placement: null, index: null }));
                 
                 const spacerGeom = new BoxGeometry(
                   Math.max(0.01, glassBounds.width - 0.01), 
@@ -1750,6 +1789,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                   spacerThickness
                 );
                 spacerGeom.translate(glassBounds.x, glassBounds.y, spacerZ);
+                tagPart(spacerGeom, partRefKey({ kind: 'spacer', cellId: cell.id, placement: null, index: null }));
 
                 const extraSashSpacers: BufferGeometry[] = [];
 
@@ -1773,7 +1813,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     beadDepth,
                     beadZ
                   );
-                  extraSashSpacers.push(...beadFrames);
+                  extraSashSpacers.push(...tagBorder(beadFrames, 'bead', cell.id));
                 }
 
                 if (isKatraSystem) {
@@ -1793,7 +1833,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     gasketDepth,
                     gasketZ
                   );
-                  extraSashSpacers.push(...gasketFrames);
+                  extraSashSpacers.push(...tagBorder(gasketFrames, 'gasket', cell.id));
                 }
 
                 // Transform sash frame parts to be positioned at cell center
@@ -1828,7 +1868,9 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     openingPath: { 
                         position: new Vector3(cellX, cellY, 0),
                         rotation: new Euler(0, 0, 0),
-                    }
+                    },
+                    cellId: cell.id,
+                    sashKind: 'glazed',
                 };
                 sashes.push(sashEntry);
             } else if (cell.type === 'fixed' || cell.type === 'panel') {
@@ -1853,7 +1895,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
 
                 const glassGeom = new BoxGeometry(glassBounds.width, glassBounds.height, glassThickness);
                 glassGeom.translate(glassBounds.x, glassBounds.y, fixedGlassZ);
-                fixedGlass.push(glassGeom);
+                fixedGlass.push(tagPart(glassGeom, partRefKey({ kind: 'glass', cellId: cell.id, placement: null, index: null })));
                 
                 const spacerGeom = new BoxGeometry(
                     Math.max(0.01, glassBounds.width - 0.01), 
@@ -1861,7 +1903,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     spacerThickness
                 );
                 spacerGeom.translate(glassBounds.x, glassBounds.y, spacerZ);
-                fixedSpacers.push(spacerGeom);
+                fixedSpacers.push(tagPart(spacerGeom, partRefKey({ kind: 'spacer', cellId: cell.id, placement: null, index: null })));
 
                 if (isKatraSystem || resolvedProfiles.glazingBeadProfile) {
                   const beadWidth = Math.min(
@@ -1883,7 +1925,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     beadDepth,
                     beadZ
                   );
-                  fixedSpacers.push(...beadFrames);
+                  fixedSpacers.push(...tagBorder(beadFrames, 'bead', cell.id));
                 }
 
                 if (isKatraSystem) {
@@ -1903,7 +1945,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     gasketDepth,
                     gasketZ
                   );
-                  fixedSpacers.push(...gasketFrames);
+                  fixedSpacers.push(...tagBorder(gasketFrames, 'gasket', cell.id));
                 }
             }
             // 'empty' already skipped
@@ -1923,7 +1965,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
               frameProfile.depth
             );
 
-            const screenFrameParts = createMiteredFrame(screenSashW, screenSashH, screenSashProfile);
+            const screenFrameParts = tagFrameParts(createMiteredFrame(screenSashW, screenSashH, screenSashProfile), null, 'screen_sash');
             const transformedScreenParts = screenFrameParts.map(part => {
                 const newMatrix = new Matrix4();
                 newMatrix.copy(part.matrix);
@@ -1939,6 +1981,7 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
             const screenGlassHeight = Math.max(0.02, screenSashH - screenSashProfile.width * 2);
             const screenGlass = new BoxGeometry(screenGlassWidth, screenGlassHeight, screenGlassThickness);
             screenGlass.translate(0, 0, screenGlassZ);
+            tagPart(screenGlass, partRefKey({ kind: 'screen_mesh', cellId: null, placement: null, index: null }));
 
                 sashes.push({
                 parts: transformedScreenParts,
@@ -1947,15 +1990,11 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                 openingPath: {
                     position: new Vector3(0, 0, 0),
                     rotation: new Euler(0, 0, 0),
-                }
+                },
+                sashKind: 'screen',
             });
         }
-        
-        // Add frame-level manual mullions (user-drawn, not from presets)
-        if (windowUnit.grid?.manualMullions) {
-            const frameMullions = renderFrameLevelMullions(windowUnit, frameProfile);
-            fixedSpacers.push(...frameMullions);
-        }
+        // Frame-level manual mullions are already in `muntins` (see step 2 above).
 
     } else {
         // Handle Legacy Preset Mode - Check window type to determine if it's fixed or has sashes

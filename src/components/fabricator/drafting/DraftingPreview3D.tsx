@@ -10,6 +10,7 @@
  */
 
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { useWorkflowStore } from '@/store/workflowStore';
 import type { Profile, WindowUnit } from '@/types/fabricator';
 import { AlertCircle, Box } from 'lucide-react';
 import React, { Suspense, lazy, useMemo, useState } from 'react';
@@ -47,6 +48,9 @@ export const DraftingPreview3D: React.FC<DraftingPreview3DProps> = ({
 }) => {
   const [explodedView, setExplodedView] = useState(false);
   const drafting = useDraftingContext();
+  // Saved BOM for the same position (cut identities are cross-checked, never priced here).
+  const storeBom = useWorkflowStore((state) => state.bom);
+  const storePositionId = useWorkflowStore((state) => state.currentProject?.id ?? null);
   const geometry = drafting.getGeometry();
   const windowUnit = useMemo(() => {
     const unit = draftingToWindowUnit(drafting, authoritativeUnit);
@@ -56,6 +60,12 @@ export const DraftingPreview3D: React.FC<DraftingPreview3DProps> = ({
     const finish = unit.previewLedgerBinding === 'no_authority' ? (color ?? unit.color) : unit.color;
     return { ...unit, color: finish };
   }, [drafting, color, authoritativeUnit]);
+
+  const bom = useMemo(() => {
+    if (!windowUnit || windowUnit.previewLedgerBinding !== 'bound' || !storeBom) return null;
+    if (!authoritativeUnit || storePositionId !== authoritativeUnit.id) return null;
+    return { profiles: storeBom.profiles ?? [], hardware: storeBom.hardware ?? [] };
+  }, [windowUnit, storeBom, storePositionId, authoritativeUnit]);
 
   const hasGeometry = geometry.rectangles.length > 0;
   // Use Window3DGenerator only when we have a grid with cells (sashes/mullions).
@@ -102,6 +112,7 @@ export const DraftingPreview3D: React.FC<DraftingPreview3DProps> = ({
               showControls
               explodedView={explodedView}
               setExplodedView={setExplodedView}
+              bom={bom}
             />
           </Suspense>
           <dl

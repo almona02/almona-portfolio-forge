@@ -23,6 +23,8 @@ import type {
 import { normalizeOpeningType } from '@/lib/fabricator/openingType';
 import type { ProfileSpec } from '../productionUtils';
 import { physicalCutForOccurrence } from '../optimization/physicalCutContract';
+// Canonical ledger role shared by generated and saved paths (and the assembly manifest).
+import { componentHasLedgerRole, resolveLedgerRole } from './ledgerRole';
 import { requireBomProfileCostPerMeter } from './requirePricedCost';
 import {
     CUTTING_CONSTANTS,
@@ -49,30 +51,6 @@ function fillNumbers(length: number, value: number): number[] {
   return Array.from({ length }, () => value);
 }
 
-/** Canonical ledger role shared by generated and saved paths. */
-function resolveLedgerRole(profile: Profile, fallback: string): ProfileBOMRow['role'] {
-  const bomRole = profile.specifications?.bomRole;
-  if (typeof bomRole === 'string' && bomRole) {
-    return bomRole as ProfileBOMRow['role'];
-  }
-  const raw = String(profile.profileRole || fallback || 'unknown');
-  if (raw === 'sash_sliding' || raw.startsWith('sash_')) return 'sash';
-  if (raw === 'screen_track') return 'track';
-  if (raw === 'glazing_bead_inner' || raw === 'glazing_bead_outer' || raw === 'bead') {
-    return 'glazing_bead';
-  }
-  return raw as ProfileBOMRow['role'];
-}
-
-function componentHasLedgerRole(component: WindowComponent, role: string): boolean {
-  const resolved = resolveLedgerRole(component.profile, component.type);
-  if (resolved === role) return true;
-  if (role === 'track') return resolved === 'screen_track' || component.type === 'track';
-  if (role === 'glazing_bead') {
-    return resolved === 'glazing_bead' || component.type === 'glazing_bead' || component.type === 'bead';
-  }
-  return component.type === role;
-}
 
 /**
  * ProfileBOMCalculator - Profile quantity calculation engine

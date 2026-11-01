@@ -32,8 +32,10 @@ const DEBOUNCE_CONFIG = {
 } as const;
 
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { findInspectablePart, WindowPartDetails, WindowPartOutline } from './WindowPartInspector';
-import type { Object3D } from 'three';
+import { findInspectablePart, WindowPartDetails, WindowPartOutline, type PartViewMode } from './WindowPartInspector';
+import { AssemblyPartList } from './AssemblyPartList';
+import { buildAssemblyManifest, type AssemblyManifestOptions } from '@/lib/fabricator/assembly/assemblyManifest';
+import { collectVisualPartKeys, selectionKeyOf } from '@/lib/3d/visualPartRefs';
 import { useWindowPhysics } from '@/lib/3d/hooks';
 import { trackError } from '@/lib/performance-monitoring';
 import {
@@ -102,6 +104,7 @@ import {
     Download,
     Home,
     Layers,
+    ListTree,
     Maximize2,
     Moon,
     Pause,
@@ -122,6 +125,7 @@ import {
 import { getPatternById } from '@/lib/fabricator/presetUtils';
 import { calculateExplodedTransforms } from '@/lib/3d/explodedViewUtils';
 import { createExplodedTransformController } from '@/lib/3d/applyExplodedTransforms';
+import { geometryPartRef } from '@/lib/3d/visualPartRefs';
 import { hardwareModelLibrary } from '@/lib/3d/hardware/HardwareModelLibrary';
 import { generateHardwarePlaceholders, getHardwareColor } from '@/lib/3d/hardwarePlaceholder';
 import { track } from '@/lib/analytics';
@@ -325,6 +329,8 @@ const Window3DModelComponent = (props: {
     isAnimating: boolean;
     animationProgress: number;
     onModelReady?: (model: Group) => void;
+    /** Reports the assembly part-ref keys actually rendered (manifest mapped/unmodelled status). */
+    onVisualPartsChange?: (keys: Set<string>) => void;
     quality?: 'standard' | 'premium' | 'ultra';
     enableShadows?: boolean;
     clippingPlanes?: Plane[] | null;
@@ -356,7 +362,8 @@ const Window3DModelComponent = (props: {
         onLightingChange,
         onQualityAdjust,
         detailConfig, // Get raw prop possibly undefined
-        showDimensions = false
+        showDimensions = false,
+        onVisualPartsChange,
     } = props;
 
     // Stabilize detail config keys for dependency array
@@ -777,6 +784,11 @@ const Window3DModelComponent = (props: {
     const hardwarePlaceholders = useMemo(() => {
         return generateHardwarePlaceholders(windowUnit);
     }, [windowUnit]);
+
+    // Tell the inspector which assembly part refs exist in this generated model.
+    useEffect(() => {
+        onVisualPartsChange?.(collectVisualPartKeys(modelData, hardwarePlaceholders));
+    }, [modelData, hardwarePlaceholders, onVisualPartsChange]);
 
     // ✅ CRITICAL PERFORMANCE FIX: Memoize exploded transforms to avoid recalculating EVERY FRAME
     // This saves 20-50ms per frame by calculating only when dependencies change
@@ -1361,7 +1373,7 @@ const Window3DModelComponent = (props: {
                     part={part}
                     material={materials.frame}
                     enableShadows={enableShadows}
-                    userData={{ componentKey: `frame-${i}` }}
+                    userData={{ componentKey: `frame-${i}`, partRef: part.partRef }}
                 />
             ))}
 
@@ -1393,11 +1405,12 @@ const Window3DModelComponent = (props: {
                         openingPath: sash.openingPath,
                         restPosition: sash.openingPath.position.clone(), // Store initial closed state
                         restRotation: sash.openingPath.rotation ? sash.openingPath.rotation.clone() : new Euler(0, 0, 0),
-                        componentKey: `sash-${sashIndex}` // For exploded view
+                        componentKey: `sash-${sashIndex}`, // For exploded view
+                        cellId: sash.cellId,
                     }}
                 >
                     {sash.parts.map((part, i) => (
-                        <MiteredFramePart key={`sash-${sashIndex}-${i}`} userData={{ componentKey: `sash-${sashIndex}-${i}` }} part={part} material={materials.sash} enableShadows={enableShadows} />
+                        <MiteredFramePart key={`sash-${sashIndex}-${i}`} userData={{ componentKey: `sash-${sashIndex}-${i}`, partRef: part.partRef }} part={part} material={materials.sash} enableShadows={enableShadows} />
                     ))}
 
                     {/* Dimensions Overlay */}
@@ -1412,7 +1425,7 @@ const Window3DModelComponent = (props: {
                           key={`glass-${sashIndex}-${i}`}
                           geometry={glassGeom}
                           enableShadows={!!enableShadows}
-                          userData={{ componentKey: `glass-${sashIndex}-${i}` }}
+                          userData={{ componentKey: `glass-${sashIndex}-${i}`, partRef: geometryPartRef(glassGeom) }}
                         />
                       ) : (
                         <mesh
@@ -1420,7 +1433,7 @@ const Window3DModelComponent = (props: {
                             geometry={glassGeom}
                             material={materials.glass}
                             receiveShadow={enableShadows}
-                            userData={{ componentKey: `glass-${sashIndex}-${i}` }}
+                            userData={{ componentKey: `glass-${sashIndex}-${i}`, partRef: geometryPartRef(glassGeom) }}
                         />
                       ),
                     )}
@@ -1430,7 +1443,7 @@ const Window3DModelComponent = (props: {
                             geometry={spacerGeom}
                             material={materials.spacer}
                             castShadow={enableShadows}
-                            userData={{ componentKey: `spacer-${sashIndex}-${i}` }}
+                            userData={{ componentKey: `spacer-${sashIndex}-${i}`, partRef: geometryPartRef(spacerGeom) }}
                         />
                     ))}
                 </group>
@@ -1440,24 +1453,24 @@ const Window3DModelComponent = (props: {
             {modelData.fixedGlass.map((glassGeom, i) =>
               quality && quality !== 'standard' ? (
                 <GoldTransmissionGlass
-                  key={`fixed-glass-${i}`} userData={{ componentKey: `fixed-glass-${i}` }}
+                  key={`fixed-glass-${i}`} userData={{ componentKey: `fixed-glass-${i}`, partRef: geometryPartRef(glassGeom) }}
                   geometry={glassGeom}
                   enableShadows={!!enableShadows}
                 />
               ) : (
-                <mesh key={`fixed-glass-${i}`} userData={{ componentKey: `fixed-glass-${i}` }} geometry={glassGeom} material={materials.glass} receiveShadow={enableShadows} />
+                <mesh key={`fixed-glass-${i}`} userData={{ componentKey: `fixed-glass-${i}`, partRef: geometryPartRef(glassGeom) }} geometry={glassGeom} material={materials.glass} receiveShadow={enableShadows} />
               ),
             )}
 
             {/* Render Fixed Spacers (if any) */}
             {modelData.fixedSpacers.map((spacerGeom, i) => (
-                <mesh key={`fixed-spacer-${i}`} userData={{ componentKey: `fixed-spacer-${i}` }} geometry={spacerGeom} material={materials.spacer} castShadow={enableShadows} />
+                <mesh key={`fixed-spacer-${i}`} userData={{ componentKey: `fixed-spacer-${i}`, partRef: geometryPartRef(spacerGeom) }} geometry={spacerGeom} material={materials.spacer} castShadow={enableShadows} />
             ))}
 
             {/* Render Muntins */}
             {modelData.muntins && Array.isArray(modelData.muntins) ? (
                 modelData.muntins.map((muntinGeom, i) => (
-                    <mesh key={`muntin-${i}`} userData={{ componentKey: `muntin-${i}` }} geometry={muntinGeom} material={materials.frame} castShadow={enableShadows} />
+                    <mesh key={`muntin-${i}`} userData={{ componentKey: `muntin-${i}`, partRef: geometryPartRef(muntinGeom) }} geometry={muntinGeom} material={materials.frame} castShadow={enableShadows} />
                 ))
             ) : modelData.muntins && (
                 <mesh geometry={modelData.muntins} material={materials.frame} castShadow={enableShadows} />
@@ -1481,6 +1494,7 @@ const Window3DModelComponent = (props: {
                             castShadow={enableShadows}
                             userData={{
                                 componentKey: `hardware-${hw.type}-${i}`,
+                                partRef: hw.userData?.partRef,
                                 hardwareType: hw.type,
                                 sashIndex,
                                 restPosition: hw.position.clone()
@@ -1498,6 +1512,7 @@ const Window3DModelComponent = (props: {
                             castShadow={enableShadows}
                             userData={{
                                 componentKey: `hardware-${hw.type}-${i}`,
+                                partRef: hw.userData?.partRef,
                                 hardwareType: hw.type,
                                 sashIndex,
                                 restPosition: hw.position.clone()
@@ -1551,6 +1566,12 @@ interface Window3DGeneratorProps {
     highlightDimension?: 'width' | 'height' | null;
     mode?: 'standard' | 'pro';
     showDimensions?: boolean;
+    /** Customer view hides cut/machine data and internal gates; manufacturing shows them. */
+    viewMode?: PartViewMode;
+    /** Saved BOM for the same revision; used to cross-check cut identities (never to price). */
+    bom?: AssemblyManifestOptions['bom'];
+    /** Part list panel is available (defaults to showControls). */
+    showPartList?: boolean;
 }
 
 
@@ -1966,6 +1987,9 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     setExplodedView,
     mode: _mode = 'pro',
     showDimensions = false,
+    viewMode = 'manufacturing',
+    bom = null,
+    showPartList,
 }, ref) => {
     const { t } = useTranslation('fabricator');
     // --- State Management ---
@@ -1988,8 +2012,16 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     const [exportFormat, setExportFormat] = useState<'GLB' | 'STL' | 'OBJ'>('GLB');
     const [_isFullscreen, setIsFullscreen] = useState(false);
     const [controlsVisible, setControlsVisible] = useState(false);
-    const [inspectedPart, setInspectedPart] = useState<Object3D | null>(null);
-    useEffect(() => setInspectedPart(null), [windowUnit]);
+    // Selection is a manifest binding (assembly part ref / entry id), never a mesh UUID.
+    const [selectedKey, setSelectedKey] = useState<string | null>(null);
+    const [visualPartKeys, setVisualPartKeys] = useState<Set<string>>(() => new Set());
+    const [partListOpen, setPartListOpen] = useState(false);
+    useEffect(() => setSelectedKey(null), [windowUnit.id, windowUnit.revision]);
+    const manifest = useMemo(
+        () => buildAssemblyManifest(windowUnit, { bom, visualPartKeys }),
+        [windowUnit, bom, visualPartKeys],
+    );
+    const partListAvailable = showPartList ?? showControls;
 
     // Gold Tier Lighting State
     const [lightingPreset, setLightingPreset] = useState('cairoMidday');
@@ -2259,7 +2291,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
 
                         {/* --- MAIN MODEL --- */}
                         <Bounds fit clip observe margin={1.2}>
-                          <group onClick={event => { if (showControls) { event.stopPropagation(); setInspectedPart(findInspectablePart(event.object)); } }}>
+                          <group onClick={event => { if (showControls) { event.stopPropagation(); setSelectedKey(selectionKeyOf(findInspectablePart(event.object))); } }}>
                             <Window3DModel
                                 windowUnit={windowUnit}
                                 isAnimating={isAnimating}
@@ -2286,10 +2318,11 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                                 }}
                                 detailConfig={detailConfig}
                                 showDimensions={showDimensions}
+                                onVisualPartsChange={setVisualPartKeys}
                             />
                           </group>
                         </Bounds>
-                        {inspectedPart && <WindowPartOutline part={inspectedPart} />}
+                        {selectedKey && <WindowPartOutline selectionKey={selectedKey} />}
 
                         {/* --- HELPERS & GIZMOS --- */}
                         {showMeasurements && <Measurements width={width} height={height} />}
@@ -2306,6 +2339,16 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
 
             {/* --- BETA VISUALIZATION DISCLAIMER --- */}
             {/* --- CONSTITUTIONAL DISCLAIMER OVERLAY --- */}
+            {viewMode === 'customer' ? (
+                <div className="absolute top-2 left-2 z-10 max-w-sm rounded border border-slate-700 bg-slate-950/80 px-3 py-2 text-[11px] text-slate-300 backdrop-blur-sm">
+                    {t('window_3d_generator.customer_preview_note', 'Visual preview of your window. Colours and proportions are indicative; part names and codes come from the saved order.')}
+                    {manifest.summary.unmodelled > 0 && (
+                        <span className="block text-amber-200">
+                            {t('window_3d_generator.customer_unmodelled_note', '{count} listed parts are not drawn in 3D — see the Parts list.', { count: manifest.summary.unmodelled })}
+                        </span>
+                    )}
+                </div>
+            ) : (
             <div className="absolute top-2 left-2 z-10 max-w-md">
                 <div className="bg-gray-900/80 border border-amber-500/50 rounded px-3 py-2 text-xs backdrop-blur-sm shadow-xl">
                     <div className="flex items-center gap-2 mb-1">
@@ -2321,6 +2364,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                     </div>
                 </div>
             </div>
+            )}
 
             {/* --- UI OVERLAYS --- */}
             {showControls && (
@@ -2351,20 +2395,34 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                                 className="h-9 rounded border border-gray-700 bg-gray-900/80 px-3 text-xs text-gray-200 hover:border-amber-500"
                                 onClick={() => {
                                     controlsRef.current?.reset?.();
-                                    setInspectedPart(null);
+                                    setSelectedKey(null);
                                     setExplodedView?.(false);
                                 }}
                             >
                                 <RotateCcw className="mr-1 inline h-3.5 w-3.5" />
                                 {t('window_3d_generator.reset_view', 'Reset View')}
                             </button>
-                            <button
-                                type="button"
-                                className="h-9 rounded border border-gray-700 bg-gray-900/80 px-3 text-xs text-gray-200 hover:border-amber-500"
-                                onClick={() => setControlsVisible(true)}
-                            >
-                                {t('window_3d_generator.3d_controls', '3D Controls')}
-                            </button>
+                            {partListAvailable && (
+                                <button
+                                    type="button"
+                                    aria-pressed={partListOpen}
+                                    aria-controls="window-3d-part-list"
+                                    className={`h-9 rounded border px-3 text-xs hover:border-amber-500 ${partListOpen ? 'border-amber-500 bg-amber-500/20 text-amber-100' : 'border-gray-700 bg-gray-900/80 text-gray-200'}`}
+                                    onClick={() => setPartListOpen(open => !open)}
+                                >
+                                    <ListTree className="mr-1 inline h-3.5 w-3.5" />
+                                    {t('window_3d_generator.parts', 'Parts')} ({manifest.summary.total})
+                                </button>
+                            )}
+                            {viewMode === 'manufacturing' && (
+                                <button
+                                    type="button"
+                                    className="h-9 rounded border border-gray-700 bg-gray-900/80 px-3 text-xs text-gray-200 hover:border-amber-500"
+                                    onClick={() => setControlsVisible(true)}
+                                >
+                                    {t('window_3d_generator.3d_controls', '3D Controls')}
+                                </button>
+                            )}
                         </div>
                     )}
                     {controlsVisible && (
@@ -2400,7 +2458,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                     )}
                 </>
             )}
-            {showControls && (
+            {showControls && viewMode === 'manufacturing' && !partListOpen && (
                 <div className="absolute bottom-4 left-4 z-10">
                     <Card className="bg-gray-900/90 border-gray-600 card-dark">
                         <CardContent className="p-3">
@@ -2431,7 +2489,15 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                 </div>
             )}
 
-            {showControls && inspectedPart && <WindowPartDetails part={inspectedPart} unit={windowUnit} onClose={() => setInspectedPart(null)} />}
+            {showControls && selectedKey && (
+                <WindowPartDetails selectionKey={selectedKey} manifest={manifest} unit={windowUnit} mode={viewMode} onClose={() => setSelectedKey(null)} />
+            )}
+
+            {partListAvailable && partListOpen && (
+                <div id="window-3d-part-list" className="absolute bottom-4 left-4 top-24 z-20 w-[min(20rem,calc(100%-2rem))]">
+                    <AssemblyPartList manifest={manifest} selectedKey={selectedKey} onSelect={setSelectedKey} mode={viewMode} />
+                </div>
+            )}
         </div>
     );
 });
