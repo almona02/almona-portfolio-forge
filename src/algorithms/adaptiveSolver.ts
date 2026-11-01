@@ -7,7 +7,10 @@
  * Genetic optimization is advisory/search-only and is never selected for Tier-3 execution.
  */
 
-import { physicalCutForOccurrence } from '@/lib/fabricator/optimization/physicalCutContract';
+import {
+  expandPhysicalCutsForPoseQuantity,
+  poseQuantityOf,
+} from '@/lib/fabricator/optimization/physicalCutContract';
 import { validateOptimizationReconciliation } from '@/lib/fabricator/validation/WorkflowValidator';
 import {
   assertTier3ManufacturingAlgorithm,
@@ -50,6 +53,12 @@ export interface CuttingJob {
   profiles: Profile[];
   defaultStockLength?: number;
   systemPackId?: string; // Optional system pack ID for calibration lookup
+  /**
+   * How many identical windows this pose produces. The solver packs the design
+   * ledger × this quantity (multiset copies of `componentId:index`), matching
+   * server `derive_required_cuts_from_position`. Defaults to 1.
+   */
+  poseQuantity?: number;
   /**
    * Approved, revision-bound stock per profile (Batch 2). When present it is
    * authoritative: every profile in the job must have a binding (no silent
@@ -155,7 +164,11 @@ export class AdaptiveSolver {
       ...component,
       profile: profiles.find(profile => profile.id === component.profile.id) || component.profile,
     }));
-    const validation = validateOptimizationReconciliation(result, { components, systemPackId: job.systemPackId } as import('@/types/fabricator').WindowUnit);
+    const validation = validateOptimizationReconciliation(result, {
+      components,
+      systemPackId: job.systemPackId,
+      quantity: poseQuantityOf({ quantity: job.poseQuantity ?? 1 }),
+    } as import('@/types/fabricator').WindowUnit);
     if (!validation.valid) throw new Error(validation.errors[0]?.message || 'Invalid physical cutting result.');
   }
 
@@ -168,6 +181,7 @@ export class AdaptiveSolver {
     const profileMap = new Map<string, Profile>();
     const stockLengths = new Set<number>();
 
+    const poseQuantity = poseQuantityOf({ quantity: job.poseQuantity ?? 1 });
     for (const component of job.components) {
       const profile = profiles.find(p => p.id === component.profile.id);
       if (!profile) continue;
@@ -178,20 +192,22 @@ export class AdaptiveSolver {
       const stockLength = this.getStockLength(profile, job);
       stockLengths.add(stockLength);
 
-      // Create cuts from component cutting lengths
-      component.cuttingLengths.forEach((length, index) => {
-        const angle = component.angles[index] || 90;
-        const allowance = profile.cuttingAllowance || 0;
-        const rawLength = length + allowance;
+      // Create cuts from component cutting lengths × pose quantity
+      for (let copy = 0; copy < poseQuantity; copy += 1) {
+        component.cuttingLengths.forEach((length, index) => {
+          const angle = component.angles[index] || 90;
+          const allowance = profile.cuttingAllowance || 0;
+          const rawLength = length + allowance;
 
-        allCuts.push({
-          length: rawLength,
-          angle,
-          componentId: component.id,
-          componentType: component.type,
-          waste: allowance,
+          allCuts.push({
+            length: rawLength,
+            angle,
+            componentId: component.id,
+            componentType: component.type,
+            waste: allowance,
+          });
         });
-      });
+      }
     }
 
     const totalCuts = allCuts.length;
@@ -281,19 +297,15 @@ export class AdaptiveSolver {
       const profile = profiles.find(p => p.id === profileId);
       if (!profile) continue;
 
-      // Collect all cuts for this profile
-      // Calculate cuts with allowances and calibrations (matching generateCuttingPlan logic)
-      const cuts: Cut[] = [];
-      
-      // Get system pack ID from job or from profile
+      // Collect all cuts for this profile × pose quantity (server ledger multiset).
       const specs = profile.specifications as { systemPackId?: string } | undefined;
       const systemPackId = job.systemPackId || specs?.systemPackId || '';
-
-      for (const component of components) {
-        component.cuttingLengths.forEach((_, index) => {
-          cuts.push(physicalCutForOccurrence(component, index, profile, systemPackId));
-        });
-      }
+      const poseQuantity = poseQuantityOf({ quantity: job.poseQuantity ?? 1 });
+      const cuts: Cut[] = expandPhysicalCutsForPoseQuantity(
+        components.map((component) => ({ ...component, profile })),
+        poseQuantity,
+        systemPackId,
+      );
 
       if (cuts.length === 0) continue;
 

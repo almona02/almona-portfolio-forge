@@ -182,14 +182,26 @@ export const OptimizationPage: React.FC = () => {
                 if (!resolved.ok) throw new Error(resolved.issues.map(issue => issue.message).join(' '));
                 if (!readiness.ready) throw new Error(`Owned stock is not ready for production: ${readiness.issues.map(issue => issue.message).join(' ')}`);
                 solverProfiles = resolved.profiles;
-                job = { components, profiles: solverProfiles, stockByProfile: resolved.stockByProfile, systemPackId: currentProject.systemPackId ?? undefined };
+                job = {
+                    components,
+                    profiles: solverProfiles,
+                    stockByProfile: resolved.stockByProfile,
+                    systemPackId: currentProject.systemPackId ?? undefined,
+                    poseQuantity: currentProject.quantity ?? 1,
+                };
             } else {
                 // Explicit inventory-free simulation: approved machining/stock when resolvable,
                 // otherwise platform defaults + catalogue bar length, labelled as such in the UI.
                 const resolved = authority ? resolveApprovedSolverInputs(profiles, authority, stockSelection) : null;
                 if (resolved?.ok) {
                     solverProfiles = resolved.profiles;
-                    job = { components, profiles: solverProfiles, stockByProfile: resolved.stockByProfile, systemPackId: currentProject.systemPackId ?? undefined };
+                    job = {
+                        components,
+                        profiles: solverProfiles,
+                        stockByProfile: resolved.stockByProfile,
+                        systemPackId: currentProject.systemPackId ?? undefined,
+                        poseQuantity: currentProject.quantity ?? 1,
+                    };
                 } else {
                     solverProfiles = profiles.map(profile => ({
                         ...profile,
@@ -199,7 +211,13 @@ export const OptimizationPage: React.FC = () => {
                             barEndTrim: PLATFORM_MANUFACTURING_DEFAULTS.trimCutMm,
                         },
                     }));
-                    job = { components, profiles: solverProfiles, defaultStockLength: 6000, systemPackId: currentProject.systemPackId ?? undefined };
+                    job = {
+                        components,
+                        profiles: solverProfiles,
+                        defaultStockLength: 6000,
+                        systemPackId: currentProject.systemPackId ?? undefined,
+                        poseQuantity: currentProject.quantity ?? 1,
+                    };
                 }
             }
             // Algorithm selection stays rule-based inside the solver (AICS-001 / FP-025A): the
@@ -295,7 +313,9 @@ export const OptimizationPage: React.FC = () => {
 
     return (
         <div className="flex flex-col h-full bg-[#0a0a0a]">
-            <p className="px-3 py-2 text-xs text-slate-400">Cut plan per window · pose quantity {currentProject?.quantity ?? 1}. Use project optimization to pool repeated windows; verify inventory before production.</p>
+            <p className="px-3 py-2 text-xs text-slate-400">
+              Cut plan for pose quantity {currentProject?.quantity ?? 1} (design ledger × N). Project optimization still pools across positions; verify inventory before production.
+            </p>
             <Suspense fallback={LoadingFallback}>
                 <OptimizationCockpit
                     result={displayedResult}

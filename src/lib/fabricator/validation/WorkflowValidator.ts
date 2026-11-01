@@ -10,7 +10,7 @@
 
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { isQualifiedBOM } from '@/lib/fabricator/bom/bomQualification';
-import { physicalCutForOccurrence } from '@/lib/fabricator/optimization/physicalCutContract';
+import { physicalCutForOccurrence, poseQuantityOf } from '@/lib/fabricator/optimization/physicalCutContract';
 import type { MeasurementData, OptimizationResult, SystemPack, WindowComponent, WindowUnit } from '@/types/fabricator';
 import { ProfileBOMCalculator } from '@/lib/fabricator/bom/ProfileBOMCalculator';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
@@ -231,15 +231,34 @@ export function validateOptimizationReconciliation(
     return { valid: false, errors, warnings: [] };
   }
 
+  let poseQuantity: number;
+  try {
+    poseQuantity = poseQuantityOf(project);
+  } catch (error) {
+    errors.push({
+      type: 'error',
+      code: 'INVALID_POSE_QUANTITY',
+      message: error instanceof Error ? error.message : 'Pose quantity must be a positive integer.',
+      step: 'optimization',
+    });
+    return { valid: false, errors, warnings: [] };
+  }
+
   const expected = new Map(
     project.components.map(component => [
       component.id,
-      { count: component.cuttingLengths.length, profileId: component.profile.id,
-        cuts: component.cuttingLengths.map((_, index) => physicalCutForOccurrence(component, index, component.profile, project.systemPackId)), used: new Set<number>() },
+      {
+        unitCount: component.cuttingLengths.length,
+        count: component.cuttingLengths.length * poseQuantity,
+        profileId: component.profile.id,
+        cuts: component.cuttingLengths.map((_, index) =>
+          physicalCutForOccurrence(component, index, component.profile, project.systemPackId)),
+        usedCounts: new Map<number, number>(),
+      },
     ]),
   );
   const actualCounts = new Map<string, number>();
-  const physicalCutIds = new Set<string>();
+  const physicalCutIdCounts = new Map<string, number>();
 
   result.cuttingPlan.forEach((plan, planIndex) => {
     plan.cuts.forEach((cut, cutIndex) => {
@@ -253,31 +272,35 @@ export function validateOptimizationReconciliation(
       }
       actualCounts.set(cut.componentId, (actualCounts.get(cut.componentId) ?? 0) + 1);
       const occurrence = cut.occurrenceIndex ?? component.cuts.findIndex((expectedCut, index) =>
-        !component.used.has(index) && Math.abs(expectedCut.length - cut.length) <= 0.001 && expectedCut.angle === cut.angle);
+        (component.usedCounts.get(index) ?? 0) < poseQuantity
+        && Math.abs(expectedCut.length - cut.length) <= 0.001
+        && expectedCut.angle === cut.angle);
       const expectedCut = component.cuts[occurrence];
-      if (!expectedCut || !Number.isFinite(expectedCut.length) || Math.abs(expectedCut.length - cut.length) > 0.001 || expectedCut.angle !== cut.angle || component.used.has(occurrence)) {
+      const usedForOccurrence = component.usedCounts.get(occurrence) ?? 0;
+      if (!expectedCut || !Number.isFinite(expectedCut.length) || Math.abs(expectedCut.length - cut.length) > 0.001 || expectedCut.angle !== cut.angle || usedForOccurrence >= poseQuantity) {
         errors.push({ type: 'error', code: 'OPTIMIZED_CUT_GEOMETRY_MISMATCH', message: `Cut ${planIndex + 1}.${cutIndex + 1} does not match its manufacturing length and angle.`, step: 'optimization' });
       }
-      component.used.add(occurrence);
+      component.usedCounts.set(occurrence, usedForOccurrence + 1);
       if (cut.occurrenceIndex !== undefined) {
-        if (!Number.isInteger(cut.occurrenceIndex) || cut.occurrenceIndex < 0 || cut.occurrenceIndex >= component.count) {
+        if (!Number.isInteger(cut.occurrenceIndex) || cut.occurrenceIndex < 0 || cut.occurrenceIndex >= component.unitCount) {
           errors.push({ type: 'error', code: 'INVALID_CUT_OCCURRENCE', message: `Cut ${planIndex + 1}.${cutIndex + 1} has an invalid occurrence index.`, step: 'optimization' });
         }
         const expectedCutId = `${cut.componentId}:${cut.occurrenceIndex}`;
         if (cut.cutId !== undefined && cut.cutId !== expectedCutId) {
           errors.push({ type: 'error', code: 'INVALID_CUT_IDENTITY', message: `Cut ${planIndex + 1}.${cutIndex + 1} has inconsistent physical identity.`, step: 'optimization' });
         }
-        if (physicalCutIds.has(expectedCutId)) {
-          errors.push({ type: 'error', code: 'DUPLICATE_OPTIMIZED_PIECE', message: `Physical cut ${expectedCutId} appears more than once.`, step: 'optimization' });
+        const identityCount = (physicalCutIdCounts.get(expectedCutId) ?? 0) + 1;
+        if (identityCount > poseQuantity) {
+          errors.push({ type: 'error', code: 'DUPLICATE_OPTIMIZED_PIECE', message: `Physical cut ${expectedCutId} appears more than pose quantity ${poseQuantity}.`, step: 'optimization' });
         }
-        physicalCutIds.add(expectedCutId);
+        physicalCutIdCounts.set(expectedCutId, identityCount);
       }
     });
   });
 
   expected.forEach((component, componentId) => {
     if ((actualCounts.get(componentId) ?? 0) !== component.count) {
-      errors.push({ type: 'error', code: 'PIECE_RECONCILIATION_FAILED', message: `Component ${componentId} requires ${component.count} cuts but optimization produced ${actualCounts.get(componentId) ?? 0}.`, step: 'optimization' });
+      errors.push({ type: 'error', code: 'PIECE_RECONCILIATION_FAILED', message: `Component ${componentId} requires ${component.count} cuts (design × pose quantity ${poseQuantity}) but optimization produced ${actualCounts.get(componentId) ?? 0}.`, step: 'optimization' });
     }
   });
 
