@@ -3,7 +3,10 @@ import type { Cut, Profile, WindowUnit } from '@/types/fabricator';
 
 /**
  * Pose quantity multiplies the physical cut multiset (same `componentId:index`
- * identity repeated N times), matching `derive_required_cuts_from_position`.
+ * identity repeated N times), matching `derive_required_cuts_from_position` and
+ * `requiredCutsFromBom(..., poseQuantity)`. AICS-001: apply quantity exactly once
+ * on the demand side — never invent copy-suffixed cutIds; never derive required
+ * identities from solver placements.
  */
 export function poseQuantityOf(unit: Pick<WindowUnit, 'quantity'> | null | undefined): number {
   const quantity = unit?.quantity ?? 1;

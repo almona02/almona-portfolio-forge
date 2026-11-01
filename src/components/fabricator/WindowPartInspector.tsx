@@ -97,12 +97,15 @@ export function WindowPartDetails({
   unit,
   mode = 'manufacturing',
   onClose,
+  /** When embedded in Window3DChromeShell, drop absolute overlay positioning. */
+  variant = 'overlay',
 }: {
   selectionKey: string | null;
   manifest: AssemblyManifest | null;
   unit: WindowUnit;
   mode?: PartViewMode;
   onClose: () => void;
+  variant?: 'overlay' | 'embedded';
 }) {
   const description = describeSelection(selectionKey, manifest, unit);
   if (!description) return null;
@@ -110,7 +113,11 @@ export function WindowPartDetails({
     <section
       aria-label="Selected window part"
       aria-live="polite"
-      className="absolute bottom-4 right-4 z-20 max-h-[60%] w-[min(22rem,calc(100%-2rem))] overflow-y-auto rounded-lg border border-amber-400/60 bg-slate-950/95 p-4 text-sm text-slate-100 shadow-lg"
+      className={
+        variant === 'embedded'
+          ? 'max-h-full w-full overflow-y-auto rounded-lg border border-amber-400/60 bg-slate-950/95 p-4 text-sm text-slate-100 shadow-lg'
+          : 'absolute bottom-4 right-4 z-20 max-h-[60%] w-[min(22rem,calc(100%-2rem))] overflow-y-auto rounded-lg border border-amber-400/60 bg-slate-950/95 p-4 text-sm text-slate-100 shadow-lg'
+      }
     >
       <div className="mb-3 flex items-start justify-between gap-4">
         <h3 className="font-semibold">{description.title}</h3>

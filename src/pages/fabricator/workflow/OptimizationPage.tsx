@@ -10,6 +10,7 @@ import {
     resolveManufacturingAuthority,
     type ResolvedManufacturingAuthority,
 } from '@/lib/fabricator/manufacturing/ManufacturingAuthorityResolver';
+import { fetchOwnedStockVersions } from '@/lib/fabricator/inventory/loadOwnedPhysicalBarLots';
 import {
     approvedStockOptions,
     assessStockReadiness,
@@ -139,11 +140,26 @@ export const OptimizationPage: React.FC = () => {
         profiles.map(profile => [profile.id, authority ? approvedStockOptions(authority, profile.id) : []]),
     ) as Record<string, number[]>, [profiles, authority]);
 
+    /** Physical bars keyed by profile|lengthMm from stock acknowledgement (never metres quotient). */
+    const availableBarsByProfileLength = useMemo(
+        () => stockReservation?.barsByCatalogueLength ?? {},
+        [stockReservation?.barsByCatalogueLength],
+    );
+
     const resolvedInputs = useMemo(
-        () => (authority ? resolveApprovedSolverInputs(profiles, authority, stockSelection) : null),
-        [authority, profiles, stockSelection],
+        () => (authority
+            ? resolveApprovedSolverInputs(
+                profiles,
+                authority,
+                stockSelection,
+                availableBarsByProfileLength,
+                { requirePhysicalBars: mode === 'production' },
+            )
+            : null),
+        [authority, profiles, stockSelection, availableBarsByProfileLength, mode],
     );
     const inputIssues: SolverInputIssue[] = resolvedInputs && !resolvedInputs.ok ? resolvedInputs.issues : [];
+    // UI readiness preview (no live version yet — production path re-reads below).
     const readiness = useMemo(
         () => assessStockReadiness({ stockReservation, workflowIdentity, bom }),
         [stockReservation, workflowIdentity, bom],
@@ -178,9 +194,33 @@ export const OptimizationPage: React.FC = () => {
                     throw new Error('A saved, authenticated position revision is required for a production run. Use inventory-free simulation otherwise.');
                 }
                 if (!authority) throw new Error(authorityError ?? 'Approved manufacturing authority is still resolving for this revision; retry in a moment.');
-                const resolved = resolveApprovedSolverInputs(profiles, authority, stockSelection);
+                // Fresh stock versions at production boundary — fail closed on drift vs acknowledgement.
+                const liveVersions = await fetchOwnedStockVersions(user.id);
+                const productionReadiness = assessStockReadiness({
+                    stockReservation,
+                    workflowIdentity,
+                    bom,
+                    currentStockVersions: liveVersions.error ? null : liveVersions.versions,
+                    currentStockVersionsError: liveVersions.error,
+                    requireCurrentStockVersions: true,
+                });
+                if (!productionReadiness.ready) {
+                    throw new Error(`Owned stock is not ready for production: ${productionReadiness.issues.map(issue => issue.message).join(' ')}`);
+                }
+                const resolved = resolveApprovedSolverInputs(
+                    profiles,
+                    authority,
+                    stockSelection,
+                    availableBarsByProfileLength,
+                    { requirePhysicalBars: true },
+                );
                 if (!resolved.ok) throw new Error(resolved.issues.map(issue => issue.message).join(' '));
-                if (!readiness.ready) throw new Error(`Owned stock is not ready for production: ${readiness.issues.map(issue => issue.message).join(' ')}`);
+                // Fail closed: every production binding must carry an integer bar count for the selected length.
+                for (const [profileId, binding] of Object.entries(resolved.stockByProfile)) {
+                    if (!Number.isInteger(binding.availableBars) || (binding.availableBars as number) < 0) {
+                        throw new Error(`Profile ${profileId} has no physical bar count at ${binding.stockLengthMm} mm — production packing blocked.`);
+                    }
+                }
                 solverProfiles = resolved.profiles;
                 job = {
                     components,
@@ -192,6 +232,7 @@ export const OptimizationPage: React.FC = () => {
             } else {
                 // Explicit inventory-free simulation: approved machining/stock when resolvable,
                 // otherwise platform defaults + catalogue bar length, labelled as such in the UI.
+                // Simulation does not pass finite owned bar counts (inventory-free).
                 const resolved = authority ? resolveApprovedSolverInputs(profiles, authority, stockSelection) : null;
                 if (resolved?.ok) {
                     solverProfiles = resolved.profiles;
@@ -244,6 +285,8 @@ export const OptimizationPage: React.FC = () => {
                 bom,
                 optimizationResult,
                 ruleVersion: bom?.qualification?.ruleVersion ?? null,
+                // Design BOM is per-window; evidence ledger is design × pose quantity (multiset).
+                poseQuantity: currentProject.quantity ?? 1,
             });
             if (!recorded.ok) {
                 throw new Error(recorded.error);
@@ -265,7 +308,7 @@ export const OptimizationPage: React.FC = () => {
                 if (mountedRef.current) setIsOptimizing(false);
             }
         }
-    }, [currentProject, profiles, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, invalidateStep, projectIdentity, bom, systemPackForGate, mode, authority, authorityError, stockSelection, readiness, revision]);
+    }, [currentProject, profiles, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, invalidateStep, projectIdentity, bom, workflowIdentity, stockReservation, systemPackForGate, mode, authority, authorityError, stockSelection, availableBarsByProfileLength, revision]);
 
     const validOptimization = validateOptimizationReconciliation(optimizationResult, completedProject).valid;
     const displayedResult = mode === 'simulation' && simulationResult ? simulationResult : optimizationResult;
