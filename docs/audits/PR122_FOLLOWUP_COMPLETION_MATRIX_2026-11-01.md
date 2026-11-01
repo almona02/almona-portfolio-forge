@@ -2,44 +2,42 @@
 
 Baseline tip before follow-up: `df41eba3` (PR 122 merge). Branch: `cursor-nov-qty-evidence-layout`.
 
-Commits on branch (ahead of `origin/main`):
+**Review (2026-11-02):** A–F are **not** fully accepted until physical-stock length binding, chrome non-overlap, real 380 rail browser evidence, and remount preservation are verified. This matrix distinguishes source / automated / browser / live.
 
-| Batch | Commit |
-|-------|--------|
-| A | `d4175978` expand evidence ledger by pose quantity multiset |
-| B | `33ae61f7` fail-closed derive RPC and wire finite owned bars |
-| C | `286a56ea` container-measured 3D chrome policy with 380px stack rule |
-| D | `afa683ea` own 3D status and details under Window3DChromeShell |
-| E | `5e044618` measure outer shells and cover fixed/mixed part honesty |
-| F | `92a402df` (+ this matrix cite) completion matrix and chrome fixtures |
+## Commits (cite; tip advances with review fixes)
 
-| Batch | Scope | Implemented | Automated | Browser | Live | Remaining |
-|-------|--------|-------------|-----------|---------|------|-----------|
-| A | Quantity multiset evidence (`requiredCutsFromBom` × poseQuantity) | yes | qty 1/2/3 + negative multiplicity tests | n/a | n/a | none for local evidence |
-| B | Derive fail-closed + `availableBars` from owned stock | yes | stock gate / solver input tests; audit note | n/a | **R9 authenticated capture not run this session** | run controlled R9 on staging; reconcile raw vs allowance length if staging differs |
-| C | Container ResizeObserver + pure `viewportChromePolicy` + 380px stack rule | yes | `viewportChromePolicy.test.ts`, chrome 380 fixture | unit fixtures 380/768/1024/1440 | n/a | visual screenshot pass optional |
-| D | One chrome owner: status + embedded details; Preview source via `chromeStatus` | yes | chrome fixtures; DraftingPreview3D no absolute overlay | e2e shell overflow check | n/a | mocked full R3F remount proof optional |
-| E | Outer shells use measured width; fixed/mixed/legacy honesty | yes | EngineeringBay/DesignWorkspace + Batch E manifest tests | e2e shell | n/a | PS customer path remains prior PR122 work |
-| F | Acceptance matrix + fixtures | yes | focused unit + playwright fixture file | playwright widths | lint + baseline type-check passed locally | production `npm run build` optional; live R9 still open |
+| Batch | Earlier commit | Review-fix status |
+|-------|----------------|-------------------|
+| A | `d4175978` | Local qty multiset kept |
+| B | `33ae61f7` + review fix | Metres quotient **removed** from production path; physical `barsByCatalogueLength` + fail-closed unbound |
+| C–D | `286a56ea` / `afa683ea` + review fix | Status is a flex row; exclusive Parts at 380; canvas hit reserved |
+| E | `5e044618` + review fix | Persistent preview host; CollapsiblePanel keeps children; resize applies width |
+| F | `92a402df` / `69b7b7b8` + review fix | Browser fixture skips without auth pose URL; unit fixtures updated |
 
-## Contract reminders (AICS-001)
+## Matrix
 
-- Quantity applied **once** into required multiset (shared cut IDs × N).
-- Design BOM stays per-window; never invent required identities from placements.
-- Remnant packing controls stay disabled until packing + evidence support them.
-- Metres-only stock ack is insufficient; finite bar counts feed the solver.
+| Batch | Scope | Source | Automated | Browser | Live | Remaining |
+|-------|--------|--------|-----------|---------|------|-----------|
+| A | Quantity multiset evidence | yes | qty 1/2/3 + negatives | n/a | n/a | integrated page→solver→evidence record/reload when server fixture available |
+| B | Derive fail-closed + **physical** bars | yes (derive + length-keyed lots) | physicalOwnedBars + solver STOCK_BARS_UNBOUND | n/a | **R9 not run** | authenticated R9; server raw vs allowance parity still open |
+| C | Container policy + 380 rule | yes | policy + chrome unit/fixtures | unit only until e2e pose URL | n/a | visual screenshot on authenticated bay |
+| D | One chrome owner | yes | chrome slots + deferred details | same | n/a | full R3F remount proof optional once e2e green |
+| E | Outer shells + honesty | yes | layout + Batch E manifest + persistence host | e2e when configured | n/a | sync mobile 3d tab ↔ right panel expand |
+| F | Acceptance | partial | focused unit suite | **skips** without `E2E_FABRICATOR_POSE_URL` | lint/typecheck this session | production build + live R9 |
 
-## Commands run (Batch F gate)
+## Physical stock contract (review correction)
 
-See CI / local agent log for:
+- Production packing requires `physicalBarBinding === 'physical'` and `barsByCatalogueLength` keys `${id}|${stockLengthMm}`.
+- `barsByCatalogueProfileFromDemand` (metres ÷ length) is **estimate-only / deprecated** for solver input.
+- Missing length binding → `STOCK_BARS_UNBOUND` (never unlimited).
 
-- `npx vitest run` focused: evidence, chrome, policy, assembly Batch E, EngineeringBay layout
-- `npm run type-check` (baseline-aware)
-- `npm run lint` (errors must stay 0)
-- `npm run build` when time allows
+## Chrome contract (review correction)
 
-## Stale audit corrections
+- Status is a **flex row under** the panel region (not absolute over Parts).
+- At 380 px with Parts+details: exclusive Parts drawer; details deferred with return hint; canvas hit ≥ `minUsableCanvasPx`.
 
-- Do **not** claim “finished” without this matrix.
-- Server raw-length vs `physicalCutForOccurrence` allowance gap: still open for live parity (Batch B remaining).
-- Live R9 reload evidence: checklist only until authenticated run.
+## Explicitly open
+
+1. Server derive raw lengths vs client `physicalCutForOccurrence` allowance.
+2. Authenticated R9 capture (revision, expected/placed, reload).
+3. Browser 380 rail run when `E2E_FABRICATOR_POSE_URL` is set.
