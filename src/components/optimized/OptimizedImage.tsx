@@ -179,13 +179,22 @@ export const ResponsiveImage = memo<ResponsiveImageProps>(({
   breakpoints,
   ...props
 }) => {
-  const [, setBestFormat] = useState<'avif' | 'webp' | 'jpeg'>('jpeg');
+  const [bestFormat, setBestFormat] = useState<'avif' | 'webp' | 'jpeg'>('jpeg');
 
   useEffect(() => {
     void getBestImageFormat().then(format => {
       setBestFormat(format);
     });
   }, []);
+
+  // Generate responsive srcSet if breakpoints provided
+  const _responsiveSrcSet = breakpoints ? breakpoints
+    .map(({ width }) => `${getOptimizedImageUrl(src, { width, format: bestFormat === 'jpeg' ? 'auto' : bestFormat })} ${width}w`)
+    .join(', ') : srcSet;
+
+  const _responsiveSizes = breakpoints ? breakpoints
+    .map(({ media, width }) => media ? `${media} ${width}px` : `${width}px`)
+    .join(', ') : sizes;
 
   return (
     <OptimizedImage

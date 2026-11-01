@@ -49,8 +49,8 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
   profileHeight = 100, // Default 100mm
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [selectedZone, setSelectedZone] = useState<MachiningZone>(null);
-  const [editingZone, setEditingZone] = useState<MachiningZone>(null);
+  const [selectedZone, setSelectedZone] = useState<MachiningZone | null>(null);
+  const [editingZone, setEditingZone] = useState<MachiningZone | null>(null);
   const [joystickState, setJoystickState] = useState<JoystickState>({
     activeZoneId: null,
     isDragging: false,
