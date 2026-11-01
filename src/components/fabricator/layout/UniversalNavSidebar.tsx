@@ -196,21 +196,27 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
     },
     // Role-gated admin entry: one click from Fabricator Pro → admin hub.
     // Manufacturing config stays under Approvals / Data Studio; cut-ledger identity remains a hard gate.
-    ...(user?.role === 'admin'
-      ? [{
+    // Compare as string: DB may return fabricator_admin before UserRole union catches up (TS2367).
+    ...((() => {
+      const role = String(user?.role ?? '');
+      if (role === 'admin') {
+        return [{
           id: 'almona-admin',
           label: t('nav.almona_admin', 'Almona Admin'),
           icon: <Shield size={20} />,
           href: '/admin',
-        } satisfies NavItem]
-      : user?.role === 'fabricator_admin'
-        ? [{
-            id: 'factory-admin',
-            label: t('nav.factory_admin', 'Factory Admin'),
-            icon: <Shield size={20} />,
-            href: '/fabricator-admin',
-          } satisfies NavItem]
-        : []),
+        } satisfies NavItem];
+      }
+      if (role === 'fabricator_admin') {
+        return [{
+          id: 'factory-admin',
+          label: t('nav.factory_admin', 'Factory Admin'),
+          icon: <Shield size={20} />,
+          href: '/fabricator-admin',
+        } satisfies NavItem];
+      }
+      return [];
+    })()),
   ], [t, user?.role]);
 
   const isActive = useCallback((href: string, id: string, subItems?: Array<{ href: string }>) => {
