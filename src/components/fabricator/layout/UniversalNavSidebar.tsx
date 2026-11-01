@@ -17,7 +17,8 @@ import {
     ChevronRight,
     Folder,
     Home,
-    Settings
+    Settings,
+    Shield,
 } from 'lucide-react';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -139,7 +140,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
     {
       id: 'approvals',
       label: 'Approvals',
-      icon: <Box size={20} />,
+      icon: <Shield size={20} />,
       href: fabricatorRoutes.studioApprovals(),
     },
     {
@@ -193,7 +194,24 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       icon: <Settings size={20} />,
       href: '/settings',
     },
-  ], [t]);
+    // Role-gated admin entry: one click from Fabricator Pro → admin hub.
+    // Manufacturing config stays under Approvals / Data Studio; cut-ledger identity remains a hard gate.
+    ...(user?.role === 'admin'
+      ? [{
+          id: 'almona-admin',
+          label: t('nav.almona_admin', 'Almona Admin'),
+          icon: <Shield size={20} />,
+          href: '/admin',
+        } satisfies NavItem]
+      : user?.role === 'fabricator_admin'
+        ? [{
+            id: 'factory-admin',
+            label: t('nav.factory_admin', 'Factory Admin'),
+            icon: <Shield size={20} />,
+            href: '/fabricator-admin',
+          } satisfies NavItem]
+        : []),
+  ], [t, user?.role]);
 
   const isActive = useCallback((href: string, id: string, subItems?: Array<{ href: string }>) => {
     if (activeStudio && (id === activeStudio || (id === 'project' && activeStudio === 'projects'))) return true;
