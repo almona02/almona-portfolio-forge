@@ -14,6 +14,7 @@
  */
 
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
+import { availableBarsForSelectedLength } from '@/lib/fabricator/inventory/physicalOwnedBars';
 import { fingerprintBom } from '@/lib/fabricator/positionRelease';
 import type { StockReservationEvidence, WorkflowIdentity } from '@/store/workflowStore';
 import { workflowIdentityMatches } from '@/store/workflowStore';
@@ -34,7 +35,8 @@ export type SolverInputIssueCode =
   | 'SETTINGS_MISSING'
   | 'PROFILE_NOT_APPROVED'
   | 'STOCK_SELECTION_REQUIRED'
-  | 'STOCK_NOT_APPROVED';
+  | 'STOCK_NOT_APPROVED'
+  | 'STOCK_BARS_UNBOUND';
 
 export interface SolverInputIssue {
   code: SolverInputIssueCode;
@@ -46,8 +48,16 @@ export interface SolverInputIssue {
 
 export interface ApprovedStockBinding {
   stockLengthMm: number;
-  /** Finite number of bars known to be available for this run; undefined = not tracked (metres-only ack). */
+  /** Finite owned bars for this profile × selected length; required when requirePhysicalBars. */
   availableBars?: number;
+}
+
+export interface ResolveApprovedSolverOptions {
+  /**
+   * When true (production), every profile must resolve an integer bar count for the
+   * selected stock length. Missing bindings fail closed — never treat as unlimited.
+   */
+  requirePhysicalBars?: boolean;
 }
 
 export type ResolvedSolverInputs =
@@ -77,8 +87,14 @@ export function resolveApprovedSolverInputs(
   designProfiles: readonly Profile[],
   authority: ApprovedAuthorityLike,
   stockSelectionByProfile: Readonly<Record<string, number>> = {},
-  availableBarsByProfile: Readonly<Record<string, number>> = {},
+  /**
+   * Physical bars keyed by `${profileId}|${stockLengthMm}` (and optional catalogue aliases).
+   * Legacy profile-only maps are still accepted when requirePhysicalBars is false.
+   */
+  availableBarsByProfileOrLength: Readonly<Record<string, number>> = {},
+  options: ResolveApprovedSolverOptions = {},
 ): ResolvedSolverInputs {
+  const requirePhysicalBars = options.requirePhysicalBars === true;
   const issues: SolverInputIssue[] = [];
   const settings = authority.manufacturingSettings;
   const kerfMm = Number(settings?.sawKerfMm);
@@ -90,33 +106,61 @@ export function resolveApprovedSolverInputs(
   const stockByProfile: Record<string, ApprovedStockBinding> = {};
   const profiles: Profile[] = [];
   for (const profile of designProfiles) {
-    const options = approvedStockOptions(authority, profile.id);
-    if (options.length === 0) {
+    const optionsApproved = approvedStockOptions(authority, profile.id);
+    if (optionsApproved.length === 0) {
       issues.push({ code: 'PROFILE_NOT_APPROVED', profileId: profile.id, message: `Profile ${profile.id} has no approved catalogue stock length for this system pack revision.` });
       continue;
     }
     const selected = stockSelectionByProfile[profile.id];
     let stockLengthMm: number;
     if (selected !== undefined) {
-      if (!options.includes(selected)) {
-        issues.push({ code: 'STOCK_NOT_APPROVED', profileId: profile.id, options, message: `Stock length ${selected} mm is not approved for profile ${profile.id} (approved: ${options.join(', ')} mm).` });
+      if (!optionsApproved.includes(selected)) {
+        issues.push({ code: 'STOCK_NOT_APPROVED', profileId: profile.id, options: optionsApproved, message: `Stock length ${selected} mm is not approved for profile ${profile.id} (approved: ${optionsApproved.join(', ')} mm).` });
         continue;
       }
       stockLengthMm = selected;
-    } else if (options.length === 1) {
-      stockLengthMm = options[0];
+    } else if (optionsApproved.length === 1) {
+      stockLengthMm = optionsApproved[0];
     } else {
-      issues.push({ code: 'STOCK_SELECTION_REQUIRED', profileId: profile.id, options, message: `Choose the approved stock length for profile ${profile.id} (${options.join(', ')} mm).` });
+      issues.push({ code: 'STOCK_SELECTION_REQUIRED', profileId: profile.id, options: optionsApproved, message: `Choose the approved stock length for profile ${profile.id} (${optionsApproved.join(', ')} mm).` });
       continue;
     }
     if (trimMm * 2 >= stockLengthMm) {
-      issues.push({ code: 'STOCK_NOT_APPROVED', profileId: profile.id, options, message: `Approved bar-end trim ${trimMm} mm leaves no usable length on a ${stockLengthMm} mm bar for profile ${profile.id}.` });
+      issues.push({ code: 'STOCK_NOT_APPROVED', profileId: profile.id, options: optionsApproved, message: `Approved bar-end trim ${trimMm} mm leaves no usable length on a ${stockLengthMm} mm bar for profile ${profile.id}.` });
       continue;
     }
-    const availableBars = availableBarsByProfile[profile.id];
+
+    const supplier = String(
+      (profile.specifications as { supplierCode?: string } | undefined)?.supplierCode ?? '',
+    ).trim();
+    const lengthBound = availableBarsForSelectedLength(
+      availableBarsByProfileOrLength,
+      [profile.id, supplier].filter(Boolean),
+      stockLengthMm,
+    );
+    // Legacy profile-only count (no length in key) — never sufficient when requirePhysicalBars.
+    const legacyProfileOnly = availableBarsByProfileOrLength[profile.id];
+    const legacyOk = Number.isInteger(legacyProfileOnly) && (legacyProfileOnly as number) >= 0;
+    let availableBars: number | undefined;
+    if (lengthBound != null) {
+      availableBars = lengthBound;
+    } else if (!requirePhysicalBars && legacyOk) {
+      availableBars = legacyProfileOnly as number;
+    }
+
+    if (requirePhysicalBars && availableBars === undefined) {
+      issues.push({
+        code: 'STOCK_BARS_UNBOUND',
+        profileId: profile.id,
+        options: optionsApproved,
+        message: `No physical owned bar count for profile ${profile.id} at ${stockLengthMm} mm. Metres-only stock cannot authorize production packing; intake bars at this length or use inventory-free simulation.`,
+      });
+      continue;
+    }
+
     stockByProfile[profile.id] = {
       stockLengthMm,
-      ...(Number.isInteger(availableBars) && (availableBars as number) >= 0 ? { availableBars } : {}),
+      ...(availableBars !== undefined ? { availableBars } : {}),
     };
     profiles.push({
       ...profile,
@@ -139,7 +183,8 @@ export type StockReadinessIssueCode =
   | 'STOCK_ACK_STALE_REVISION'
   | 'STOCK_ACK_STALE_BOM'
   | 'STOCK_MAPPING_MISSING'
-  | 'STOCK_SHORTAGE';
+  | 'STOCK_SHORTAGE'
+  | 'STOCK_BARS_UNBOUND';
 
 export interface StockReadinessIssue {
   code: StockReadinessIssueCode;
@@ -181,6 +226,20 @@ export function assessStockReadiness(input: {
   }
   if (!ack.availabilityOk) {
     issues.push({ code: 'STOCK_SHORTAGE', message: 'Owned stock metres are short for this BOM. Resolve intake or run an inventory-free simulation (not production).' });
+  }
+  if (ack.physicalBarBinding !== 'physical') {
+    issues.push({
+      code: 'STOCK_BARS_UNBOUND',
+      message:
+        ack.physicalBarBinding === 'metres_only'
+          ? 'Stock acknowledgement is metres-only — physical bar counts by length are required before production packing.'
+          : 'Physical owned bars (profile × length) were not bound at acknowledgement. Re-acknowledge after piece/bar intake, or use inventory-free simulation.',
+    });
+  } else if (!ack.barsByCatalogueLength || Object.keys(ack.barsByCatalogueLength).length === 0) {
+    issues.push({
+      code: 'STOCK_BARS_UNBOUND',
+      message: 'Physical bar binding is marked but no profile×length counts are present. Re-acknowledge owned stock.',
+    });
   }
   return { ready: issues.length === 0, issues };
 }

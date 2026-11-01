@@ -17,9 +17,10 @@ server fingerprint uses raw lengths. Record RPC must keep re-deriving. Client no
 ## Client changes in this batch
 
 1. `recordOptimizationEvidence` requires a non-empty derive result before write.
-2. Stock acknowledgement stores `barsByCatalogueProfile` (finite bars from
-   available metres ÷ bar length) and OptimizationPage passes them into
-   `resolveApprovedSolverInputs` → AdaptiveSolver `assertStockAccounting`.
+2. Stock acknowledgement stores **physical** `barsByCatalogueLength` (profile ×
+   length from piece/bar movements). Metres ÷ length is **not** production
+   inventory. OptimizationPage passes length-keyed counts with
+   `requirePhysicalBars: true` → `STOCK_BARS_UNBOUND` when missing.
 3. Remnant packing controls remain informational / disabled for production
    authority (unchanged contract in `filterEligibleRemnants`).
 

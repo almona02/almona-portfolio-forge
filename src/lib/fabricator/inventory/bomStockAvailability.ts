@@ -265,9 +265,10 @@ export function buildBomDemandReport(
 }
 
 /**
- * Finite bar counts for the solver, keyed by catalogue code (and bom row id when
- * present). Uses floor(availableMetres / barLengthM); bars with no usable length
- * are omitted so metres-only soft ack remains possible.
+ * @deprecated Estimate-only. floor(availableMetres / barLength) is NOT physical
+ * inventory. Production must use bindPhysicalBarsForDemand / barsByCatalogueLength.
+ * Kept for analytics display — never pass into resolveApprovedSolverInputs with
+ * requirePhysicalBars.
  */
 export function barsByCatalogueProfileFromDemand(
   report: BomDemandReport,

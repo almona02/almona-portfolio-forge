@@ -4,10 +4,11 @@ import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { isQualifiedBOM } from '@/lib/fabricator/bom/bomQualification';
 import {
-  barsByCatalogueProfileFromDemand,
   buildBomDemandReport,
   isStockAcknowledgementStale,
 } from '@/lib/fabricator/inventory/bomStockAvailability';
+import { loadOwnedPhysicalBarLots } from '@/lib/fabricator/inventory/loadOwnedPhysicalBarLots';
+import { bindPhysicalBarsForDemand } from '@/lib/fabricator/inventory/physicalOwnedBars';
 import { loadOwnedWorkshopInventory } from '@/lib/fabricator/inventory/ProfileInventoryAdapter';
 import { fingerprintBom } from '@/lib/fabricator/positionRelease';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
@@ -45,16 +46,23 @@ export const StudioStockPage: React.FC = () => {
     refetchOnWindowFocus: false,
     queryFn: async () => {
       if (!user?.id) {
-        return { profiles: [], totalValue: 0, error: null as string | null };
+        return { profiles: [], totalValue: 0, physicalLots: [], error: null as string | null };
       }
       const result = await loadOwnedWorkshopInventory({
         userId: user.id,
         syncFromMovements: false,
       });
+      const lotsResult = await loadOwnedPhysicalBarLots({
+        userId: user.id,
+        ownedProfiles: result.profiles,
+      });
       return {
         profiles: result.profiles,
         totalValue: result.totalValue,
-        error: result.ok ? null : result.error,
+        physicalLots: lotsResult.lots,
+        error: result.ok
+          ? (lotsResult.ok ? null : lotsResult.error)
+          : result.error,
       };
     },
   });
@@ -126,6 +134,13 @@ export const StudioStockPage: React.FC = () => {
       }
     }
 
+    const ownedById = new Map((data?.profiles ?? []).map((p) => [p.id, p]));
+    const physical = bindPhysicalBarsForDemand(
+      report,
+      data?.physicalLots ?? [],
+      ownedById,
+    );
+
     setStockReservation({
       identity: workflowIdentity,
       profileIds: Array.from(new Set(Object.keys(metersByProfile))),
@@ -134,12 +149,17 @@ export const StudioStockPage: React.FC = () => {
       availabilityOk: report.availabilityOk,
       bomFingerprint,
       stockVersionByProfile: { ...report.stockVersionByProfile },
-      // Finite bar counts for AdaptiveSolver assertStockAccounting (profile × length).
-      barsByCatalogueProfile: barsByCatalogueProfileFromDemand(report),
+      // Physical bars only — never floor(metres / length).
+      barsByCatalogueLength: physical.barsByCatalogueLength,
+      physicalBarBinding: physical.binding,
     });
 
-    if (report.availabilityOk) {
-      toast.success(`Stock availability acknowledged for R${workflowIdentity.revision} (soft check only).`);
+    if (physical.binding !== 'physical') {
+      toast.warning(
+        `Stock acknowledgement for R${workflowIdentity.revision} is metres-only / unbound — production packing stays blocked until piece/bar intake establishes profile×length counts.`,
+      );
+    } else if (report.availabilityOk) {
+      toast.success(`Stock availability acknowledged for R${workflowIdentity.revision} with physical bar lots.`);
     } else {
       toast.warning(
         `Stock acknowledgement recorded for R${workflowIdentity.revision}, but metres are short — resolve intake before optimize.`,

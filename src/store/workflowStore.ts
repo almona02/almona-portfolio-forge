@@ -108,11 +108,18 @@ export interface StockReservationEvidence {
   /** Owned profile stock_version snapshot (stale after intake/consumption). */
   stockVersionByProfile: Record<string, number>;
   /**
-   * Finite owned bar counts keyed by catalogue / design profile id.
-   * Used by resolveApprovedSolverInputs → AdaptiveSolver assertStockAccounting.
-   * Metres-only acknowledgements omit this and remain soft.
+   * @deprecated Metres quotient — never treat as production inventory.
+   * Retained only for reading legacy acknowledgements; production must use
+   * barsByCatalogueLength + physicalBarBinding === 'physical'.
    */
   barsByCatalogueProfile?: Record<string, number>;
+  /**
+   * Physical owned bars keyed by `${catalogueOrProfileId}|${stockLengthMm}`.
+   * Established only from piece/bar intake lots — never floor(metres/length).
+   */
+  barsByCatalogueLength?: Record<string, number>;
+  /** How bar counts were established at acknowledgement. */
+  physicalBarBinding?: 'physical' | 'unbound' | 'metres_only';
 }
 
 /** UP-18: frozen release fingerprint acknowledgement. */

@@ -139,26 +139,23 @@ export const OptimizationPage: React.FC = () => {
         profiles.map(profile => [profile.id, authority ? approvedStockOptions(authority, profile.id) : []]),
     ) as Record<string, number[]>, [profiles, authority]);
 
-    /** Catalogue / design profile id → finite owned bars from stock acknowledgement. */
-    const availableBarsByProfile = useMemo(() => {
-        const bars = stockReservation?.barsByCatalogueProfile;
-        if (!bars) return {} as Record<string, number>;
-        const out: Record<string, number> = {};
-        for (const profile of profiles) {
-            const supplier = String(
-                (profile.specifications as { supplierCode?: string } | undefined)?.supplierCode ?? '',
-            ).trim();
-            const count = bars[profile.id] ?? (supplier ? bars[supplier] : undefined);
-            if (Number.isInteger(count) && (count as number) >= 0) out[profile.id] = count as number;
-        }
-        return out;
-    }, [profiles, stockReservation?.barsByCatalogueProfile]);
+    /** Physical bars keyed by profile|lengthMm from stock acknowledgement (never metres quotient). */
+    const availableBarsByProfileLength = useMemo(
+        () => stockReservation?.barsByCatalogueLength ?? {},
+        [stockReservation?.barsByCatalogueLength],
+    );
 
     const resolvedInputs = useMemo(
         () => (authority
-            ? resolveApprovedSolverInputs(profiles, authority, stockSelection, availableBarsByProfile)
+            ? resolveApprovedSolverInputs(
+                profiles,
+                authority,
+                stockSelection,
+                availableBarsByProfileLength,
+                { requirePhysicalBars: mode === 'production' },
+            )
             : null),
-        [authority, profiles, stockSelection, availableBarsByProfile],
+        [authority, profiles, stockSelection, availableBarsByProfileLength, mode],
     );
     const inputIssues: SolverInputIssue[] = resolvedInputs && !resolvedInputs.ok ? resolvedInputs.issues : [];
     const readiness = useMemo(
@@ -199,10 +196,17 @@ export const OptimizationPage: React.FC = () => {
                     profiles,
                     authority,
                     stockSelection,
-                    availableBarsByProfile,
+                    availableBarsByProfileLength,
+                    { requirePhysicalBars: true },
                 );
                 if (!resolved.ok) throw new Error(resolved.issues.map(issue => issue.message).join(' '));
                 if (!readiness.ready) throw new Error(`Owned stock is not ready for production: ${readiness.issues.map(issue => issue.message).join(' ')}`);
+                // Fail closed: every production binding must carry an integer bar count for the selected length.
+                for (const [profileId, binding] of Object.entries(resolved.stockByProfile)) {
+                    if (!Number.isInteger(binding.availableBars) || (binding.availableBars as number) < 0) {
+                        throw new Error(`Profile ${profileId} has no physical bar count at ${binding.stockLengthMm} mm — production packing blocked.`);
+                    }
+                }
                 solverProfiles = resolved.profiles;
                 job = {
                     components,
@@ -290,7 +294,7 @@ export const OptimizationPage: React.FC = () => {
                 if (mountedRef.current) setIsOptimizing(false);
             }
         }
-    }, [currentProject, profiles, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, invalidateStep, projectIdentity, bom, systemPackForGate, mode, authority, authorityError, stockSelection, availableBarsByProfile, readiness, revision]);
+    }, [currentProject, profiles, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, invalidateStep, projectIdentity, bom, systemPackForGate, mode, authority, authorityError, stockSelection, availableBarsByProfileLength, readiness, revision]);
 
     const validOptimization = validateOptimizationReconciliation(optimizationResult, completedProject).valid;
     const displayedResult = mode === 'simulation' && simulationResult ? simulationResult : optimizationResult;
