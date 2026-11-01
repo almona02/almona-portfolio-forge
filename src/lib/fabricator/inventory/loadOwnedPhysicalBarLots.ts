@@ -98,7 +98,7 @@ function mapRow(
   const peerRaw = lotMeta.transfer_peer_profile_id ?? lotMeta.transferPeerProfileId ?? lotMeta.peer_profile_id;
   const transferPeerProfileId = typeof peerRaw === 'string' ? peerRaw : null;
   let barCount = row.bar_count == null ? null : Number(row.bar_count);
-  let barLengthM = row.bar_length_m == null ? null : Number(row.bar_length_m);
+  const barLengthM = row.bar_length_m == null ? null : Number(row.bar_length_m);
   const unit = String(row.unit || '').toLowerCase();
   if (
     barCount == null
@@ -160,7 +160,8 @@ async function defaultFetchCount(
   return { count: typeof count === 'number' ? count : null, error: null };
 }
 
-async function defaultFetchStockVersions(
+/** Authoritative owned-profile stock_version map (DB read). */
+export async function fetchOwnedStockVersions(
   userId: string,
 ): Promise<{ versions: Record<string, number>; error: string | null }> {
   const db = supabase as { from: (t: string) => any };
@@ -178,6 +179,12 @@ async function defaultFetchStockVersions(
     versions[id] = Number.isFinite(v) ? v : 0;
   }
   return { versions, error: null };
+}
+
+async function defaultFetchStockVersions(
+  userId: string,
+): Promise<{ versions: Record<string, number>; error: string | null }> {
+  return fetchOwnedStockVersions(userId);
 }
 
 /**

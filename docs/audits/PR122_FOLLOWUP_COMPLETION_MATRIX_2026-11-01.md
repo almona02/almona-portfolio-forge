@@ -2,36 +2,41 @@
 
 Baseline tip before follow-up: `df41eba3` (PR 122 merge). Branch: `cursor-nov-qty-evidence-layout`.
 
-**Status:** materially improved; **not production-certified.** Source ≠ automated ≠ browser ≠ live.
+**Status:** materially improved; **not production-certified.**
 
-## Recent commits
+Columns stay separate: **Source** | **Automated (author-run)** | **Browser** | **Live**.
 
-| Theme | Commit |
+## Freshness (Batch 1) — current tip
+
+| Check | Status |
 |-------|--------|
-| Movement FIFO + complete paging | `7c1ab828` |
-| Inert CAD + strict 380 e2e (v1) | `5876e274` |
-| Incomplete adjustment/transfer invalidate + version snapshot + pointer assert | `496ab0d5` |
+| Ack acceptance uses a **fresh** inventory + physical-bar load (not React cache alone) | source: yes (`StudioStockPage` async ack) |
+| Drift vs displayed fingerprint → block + invalidate UI cache | source + UI flow tests |
+| Production optimize re-reads `stock_version` and fails on drift | source + UI fail-closed tests (`STOCK_ACK_STALE_STOCK`) |
+| Soft acknowledgement ≠ hard stock reservation / allocation RPC | still soft; allocation boundary remains open |
+
+The `445d901a` acknowledgement check was **cached self-consistency only**. That description is obsolete after this tip: acceptance now compares the displayed fingerprint against a freshly loaded authoritative snapshot, and production re-reads versions before packing.
 
 ## Matrix
 
 | Batch | Scope | Source | Automated | Browser | Live | Remaining |
 |-------|--------|--------|-----------|---------|------|-----------|
-| A | Qty multiset evidence | yes | unit | n/a | n/a | server record/reload fixture |
-| B | Physical stock | yes | FIFO; incomplete adjustment/transfer invalidate; before/after `stock_version`; ack fingerprint | n/a | **R9 open** | live R9; server raw vs allowance |
-| C–D | Chrome | yes | unit fixtures | strict e2e (URL skip / else fail); pointer via `elementFromPoint` | **380 run open** | authenticated execution |
-| E | Shells / inert | yes | persistence + inert | n/a | n/a | — |
-| F | Acceptance | partial | **49** focused tests | e2e gated | lint + typecheck + **build** | R9 + 380 auth |
+| A | Qty multiset | yes | unit | n/a | n/a | server record/reload |
+| B | Physical stock + freshness | yes | freshness helpers + StudioStock UI + Optimization UI + reconcile + loader | n/a | **R9 open** | hard allocation/versioned claim; live R9; raw vs allowance |
+| C–D | Chrome | yes | unit | strict e2e requires **canvas** at hit centre + negative intercept | **380 run open** | authenticated execution |
+| E | Shells / inert | yes | unit | n/a | n/a | — |
+| F | Acceptance | partial | focused suite (author-run) | skipped without URL ≠ evidence | lint/typecheck/build | R9 + 380 auth |
 
-## Physical stock notes
+## Explicit blockers (unchanged)
 
-- Incomplete `adjustment` / `transfer` / `release` without bar fields **invalidate** (metres sign retained for audit only).
-- Same-profile transfer with known length is a no-op; ambiguous/cross-profile transfer invalidates.
-- Loader reads stock versions before and after paging; drift or count growth → fail. Ack stores verified fingerprint and rechecks before write; readiness requires fingerprint match.
+1. Server derive raw vs `physicalCutForOccurrence` allowance (same occurrence inputs, including pose quantity).
+2. Authenticated R9: bead cut, ack verified stock, optimize, record/reload without missing-cut errors.
+3. Authenticated 380 px rail with Parts open (screenshot/trace). A skipped test is not browser evidence.
+4. Authoritative stock-allocation operation at consume boundary (ack remains soft).
 
-## Explicit blockers
+## Gates (author-run — cite tip after land)
 
-1. Server derive raw vs `physicalCutForOccurrence` allowance.
-2. Authenticated R9 record/reload.
-3. Authenticated 380 px browser run (`E2E_FABRICATOR_POSE_URL`).
-
-**Gates (author-run):** focused vitest 49/49; `npm run type-check` 0; `npm run lint` 0; `npm run build` 0.
+- Focused vitest: freshness helpers, StudioStock UI ack flow, Optimization fail-closed (incl. live version drift), inventory reconcile/physical bars, chrome policy/shell, pose-quantity evidence — **78 passed**.
+- `npm run type-check` — pass (win32 baseline delta; 0 new signatures).
+- `npm run lint` — 0 errors (warnings pre-existing).
+- `vite build` — pass; post-vite `render-public-catalogue.mjs` fails on this host with pre-existing `.ts` ESM load of `yilmazMachines.ts` (also at tip `445d901a`, unrelated to freshness).

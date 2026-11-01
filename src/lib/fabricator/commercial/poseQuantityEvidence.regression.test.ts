@@ -75,7 +75,6 @@ function payloadFrom(
     materialUsage: 1,
     wastePercentage: (wasteTotal / stockTotal) * 100,
     nestingEfficiency: 100 - (wasteTotal / stockTotal) * 100,
-    estimatedProductionTime: 1,
     displayResult: {
       estimatedProductionTime: 1,
       costBreakdown: {

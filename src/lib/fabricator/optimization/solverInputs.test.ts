@@ -181,6 +181,32 @@ describe('assessStockReadiness', () => {
     // Multiple failures are all reported, not collapsed into one.
     expect(codes(assessStockReadiness({ stockReservation: ack({ availabilityOk: false }), workflowIdentity: { ...identity, revision: 10 }, bom }))).toEqual(['STOCK_ACK_STALE_REVISION', 'STOCK_SHORTAGE']);
   });
+
+  it('requires live stock versions for production when requireCurrentStockVersions is set', () => {
+    const codes = (r: ReturnType<typeof assessStockReadiness>) => r.issues.map((issue) => issue.code);
+    expect(codes(assessStockReadiness({
+      stockReservation: ack(),
+      workflowIdentity: identity,
+      bom,
+      currentStockVersions: { 'owned-1': 1 },
+      requireCurrentStockVersions: true,
+    }))).toEqual([]);
+    expect(codes(assessStockReadiness({
+      stockReservation: ack(),
+      workflowIdentity: identity,
+      bom,
+      currentStockVersions: { 'owned-1': 2 },
+      requireCurrentStockVersions: true,
+    }))).toEqual(['STOCK_ACK_STALE_STOCK']);
+    expect(codes(assessStockReadiness({
+      stockReservation: ack(),
+      workflowIdentity: identity,
+      bom,
+      currentStockVersions: null,
+      currentStockVersionsError: 'unavailable',
+      requireCurrentStockVersions: true,
+    }))).toEqual(['STOCK_BARS_UNBOUND']);
+  });
 });
 
 describe('filterEligibleRemnants', () => {

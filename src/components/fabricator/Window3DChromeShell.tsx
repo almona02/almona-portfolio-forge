@@ -117,10 +117,10 @@ export function Window3DChromeShell({
           </div>
         ) : null}
 
-        {/* Usable canvas hit region — empty flex remainder; Canvas sits underneath chrome. */}
+        {/* Usable canvas hit region — must remain pointer-events-none so clicks reach R3F canvas. */}
         <div
           data-testid="window-3d-canvas-hit"
-          className="min-h-[3rem] min-w-0 flex-1"
+          className="pointer-events-none min-h-[3rem] min-w-0 flex-1"
           style={{ minWidth: policy.minUsableCanvasPx }}
           aria-hidden
         />

@@ -15,6 +15,7 @@
 
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { fingerprintStockVersions } from '@/lib/fabricator/inventory/loadOwnedPhysicalBarLots';
+import { decideProductionStockFreshness } from '@/lib/fabricator/inventory/stockAcknowledgementFreshness';
 import { availableBarsForSelectedLength } from '@/lib/fabricator/inventory/physicalOwnedBars';
 import { fingerprintBom } from '@/lib/fabricator/positionRelease';
 import type { StockReservationEvidence, WorkflowIdentity } from '@/store/workflowStore';
@@ -183,6 +184,7 @@ export type StockReadinessIssueCode =
   | 'STOCK_NOT_ACKNOWLEDGED'
   | 'STOCK_ACK_STALE_REVISION'
   | 'STOCK_ACK_STALE_BOM'
+  | 'STOCK_ACK_STALE_STOCK'
   | 'STOCK_MAPPING_MISSING'
   | 'STOCK_SHORTAGE'
   | 'STOCK_BARS_UNBOUND';
@@ -205,6 +207,14 @@ export function assessStockReadiness(input: {
   stockReservation: StockReservationEvidence | null | undefined;
   workflowIdentity: WorkflowIdentity | null | undefined;
   bom: CompleteBOM | null | undefined;
+  /**
+   * Fresh authoritative stock_version map (required for production readiness).
+   * When omitted, physical binding still checks self-consistency of the ack, but
+   * callers that gate production must supply a live read.
+   */
+  currentStockVersions?: Readonly<Record<string, number>> | null;
+  currentStockVersionsError?: string | null;
+  requireCurrentStockVersions?: boolean;
 }): StockReadiness {
   const issues: StockReadinessIssue[] = [];
   const ack = input.stockReservation;
@@ -250,6 +260,21 @@ export function assessStockReadiness(input: {
       });
     }
   }
+
+  if (input.requireCurrentStockVersions || input.currentStockVersions != null || input.currentStockVersionsError) {
+    const freshness = decideProductionStockFreshness({
+      acknowledgementFingerprint: ack.physicalStockVersionFingerprint,
+      currentVersions: input.currentStockVersions,
+      currentVersionsError: input.currentStockVersionsError,
+    });
+    if (!freshness.ok) {
+      issues.push({
+        code: freshness.action === 'block_refresh' ? 'STOCK_ACK_STALE_STOCK' : 'STOCK_BARS_UNBOUND',
+        message: freshness.reason,
+      });
+    }
+  }
+
   return { ready: issues.length === 0, issues };
 }
 

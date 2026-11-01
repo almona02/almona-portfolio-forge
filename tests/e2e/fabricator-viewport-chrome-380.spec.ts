@@ -21,7 +21,7 @@ test.describe('Fabricator 380px preview-rail chrome', () => {
     }
   });
 
-  test('Parts + deferred details + status non-overlap inside a 380px rail', async ({ page }, testInfo) => {
+  test('Parts + deferred details + canvas receiver at 380px rail', async ({ page }, testInfo) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(POSE_URL, { waitUntil: 'domcontentloaded' });
 
@@ -69,6 +69,8 @@ test.describe('Fabricator 380px preview-rail chrome', () => {
 
     const canvasHit = page.locator('[data-testid="window-3d-canvas-hit"]');
     await expect(canvasHit).toBeVisible();
+    const canvas = previewHost.locator('canvas').first();
+    await expect(canvas, 'R3F canvas required in preview host').toBeVisible();
 
     const partsBox = await parts.boundingBox();
     const statusBox = await status.boundingBox();
@@ -77,32 +79,61 @@ test.describe('Fabricator 380px preview-rail chrome', () => {
     expect(partsBox!.y + partsBox!.height).toBeLessThanOrEqual(statusBox!.y + 2);
     expect(hitBox!.width).toBeGreaterThanOrEqual(100);
 
-    // Pointer access: centre of the reserved strip must reach the canvas (or hit itself),
-    // not a chrome overlay. Fail if an intercepting element sits above the strip.
     const hitCenter = {
       x: hitBox!.x + hitBox!.width / 2,
       y: hitBox!.y + hitBox!.height / 2,
     };
+
+    // Positive: centre of reserved strip must resolve to the actual canvas receiver.
     const topAtHit = await page.evaluate(({ x, y }) => {
       const el = document.elementFromPoint(x, y);
       if (!el) return null;
-      const canvas = el.closest('canvas');
-      const hit = el.closest('[data-testid="window-3d-canvas-hit"]');
-      const chromeOverlay = el.closest('[data-testid="window-3d-panel-stack"], [data-testid="window-3d-status-slot"], [data-testid="window-3d-toolbar-slot"]');
       return {
         tag: el.tagName,
-        testId: (el as HTMLElement).dataset?.testid ?? null,
-        isCanvas: Boolean(canvas),
-        isHitStrip: Boolean(hit),
-        isChromeOverlay: Boolean(chromeOverlay),
+        isCanvas: el.tagName === 'CANVAS' || Boolean(el.closest('canvas')),
+        isHitStripOnly:
+          Boolean(el.closest('[data-testid="window-3d-canvas-hit"]'))
+          && el.tagName !== 'CANVAS'
+          && !el.closest('canvas'),
+        isChromeOverlay: Boolean(
+          el.closest('[data-testid="window-3d-panel-stack"], [data-testid="window-3d-status-slot"], [data-testid="window-3d-toolbar-slot"]'),
+        ),
       };
     }, hitCenter);
     expect(topAtHit, 'elementFromPoint must resolve inside the preview').toBeTruthy();
-    expect(topAtHit!.isChromeOverlay, 'chrome overlay must not intercept the canvas hit strip').toBe(false);
-    expect(
-      topAtHit!.isCanvas || topAtHit!.isHitStrip,
-      'reserved strip centre must hit canvas or the pass-through hit region',
-    ).toBe(true);
+    expect(topAtHit!.isChromeOverlay, 'chrome overlay must not intercept the canvas').toBe(false);
+    expect(topAtHit!.isCanvas, 'reserved strip centre must hit the canvas element').toBe(true);
+
+    // Negative: if the hit strip starts intercepting input, the canvas check must fail.
+    await canvasHit.evaluate((el) => {
+      (el as HTMLElement).style.pointerEvents = 'auto';
+      (el as HTMLElement).style.background = 'rgba(255,0,0,0.01)';
+    });
+    const blocked = await page.evaluate(({ x, y }) => {
+      const el = document.elementFromPoint(x, y);
+      if (!el) return null;
+      return {
+        isCanvas: el.tagName === 'CANVAS' || Boolean(el.closest('canvas')),
+        hitStripIntercepts:
+          (el as HTMLElement).dataset?.testid === 'window-3d-canvas-hit'
+          || Boolean(el.closest('[data-testid="window-3d-canvas-hit"]') && el.tagName !== 'CANVAS'),
+      };
+    }, hitCenter);
+    expect(blocked?.isCanvas, 'intercepting hit strip must not count as canvas access').toBe(false);
+    expect(blocked?.hitStripIntercepts).toBe(true);
+    // Restore pass-through for remaining interactions.
+    await canvasHit.evaluate((el) => {
+      (el as HTMLElement).style.pointerEvents = '';
+      (el as HTMLElement).style.background = '';
+    });
+
+    // Observable renderer gesture: click canvas after restore; canvas remains the target.
+    await canvas.click({ position: { x: 8, y: 8 }, force: false });
+    const afterClick = await page.evaluate(({ x, y }) => {
+      const el = document.elementFromPoint(x, y);
+      return el ? (el.tagName === 'CANVAS' || Boolean(el.closest('canvas'))) : false;
+    }, hitCenter);
+    expect(afterClick).toBe(true);
 
     await partsToggle.click();
     await expect(page.locator('[data-testid="window-3d-part-list-slot"]')).toHaveCount(0);

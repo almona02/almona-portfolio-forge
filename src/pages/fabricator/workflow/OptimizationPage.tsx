@@ -10,6 +10,7 @@ import {
     resolveManufacturingAuthority,
     type ResolvedManufacturingAuthority,
 } from '@/lib/fabricator/manufacturing/ManufacturingAuthorityResolver';
+import { fetchOwnedStockVersions } from '@/lib/fabricator/inventory/loadOwnedPhysicalBarLots';
 import {
     approvedStockOptions,
     assessStockReadiness,
@@ -158,6 +159,7 @@ export const OptimizationPage: React.FC = () => {
         [authority, profiles, stockSelection, availableBarsByProfileLength, mode],
     );
     const inputIssues: SolverInputIssue[] = resolvedInputs && !resolvedInputs.ok ? resolvedInputs.issues : [];
+    // UI readiness preview (no live version yet — production path re-reads below).
     const readiness = useMemo(
         () => assessStockReadiness({ stockReservation, workflowIdentity, bom }),
         [stockReservation, workflowIdentity, bom],
@@ -192,6 +194,19 @@ export const OptimizationPage: React.FC = () => {
                     throw new Error('A saved, authenticated position revision is required for a production run. Use inventory-free simulation otherwise.');
                 }
                 if (!authority) throw new Error(authorityError ?? 'Approved manufacturing authority is still resolving for this revision; retry in a moment.');
+                // Fresh stock versions at production boundary — fail closed on drift vs acknowledgement.
+                const liveVersions = await fetchOwnedStockVersions(user.id);
+                const productionReadiness = assessStockReadiness({
+                    stockReservation,
+                    workflowIdentity,
+                    bom,
+                    currentStockVersions: liveVersions.error ? null : liveVersions.versions,
+                    currentStockVersionsError: liveVersions.error,
+                    requireCurrentStockVersions: true,
+                });
+                if (!productionReadiness.ready) {
+                    throw new Error(`Owned stock is not ready for production: ${productionReadiness.issues.map(issue => issue.message).join(' ')}`);
+                }
                 const resolved = resolveApprovedSolverInputs(
                     profiles,
                     authority,
@@ -200,7 +215,6 @@ export const OptimizationPage: React.FC = () => {
                     { requirePhysicalBars: true },
                 );
                 if (!resolved.ok) throw new Error(resolved.issues.map(issue => issue.message).join(' '));
-                if (!readiness.ready) throw new Error(`Owned stock is not ready for production: ${readiness.issues.map(issue => issue.message).join(' ')}`);
                 // Fail closed: every production binding must carry an integer bar count for the selected length.
                 for (const [profileId, binding] of Object.entries(resolved.stockByProfile)) {
                     if (!Number.isInteger(binding.availableBars) || (binding.availableBars as number) < 0) {
@@ -294,7 +308,7 @@ export const OptimizationPage: React.FC = () => {
                 if (mountedRef.current) setIsOptimizing(false);
             }
         }
-    }, [currentProject, profiles, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, invalidateStep, projectIdentity, bom, systemPackForGate, mode, authority, authorityError, stockSelection, availableBarsByProfileLength, readiness, revision]);
+    }, [currentProject, profiles, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, invalidateStep, projectIdentity, bom, workflowIdentity, stockReservation, systemPackForGate, mode, authority, authorityError, stockSelection, availableBarsByProfileLength, revision]);
 
     const validOptimization = validateOptimizationReconciliation(optimizationResult, completedProject).valid;
     const displayedResult = mode === 'simulation' && simulationResult ? simulationResult : optimizationResult;

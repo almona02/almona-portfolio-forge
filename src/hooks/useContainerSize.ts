@@ -10,10 +10,11 @@ export interface ContainerSize {
  * Does not write styles that change the observed size (no feedback loop).
  */
 export function useContainerSize<T extends HTMLElement>(): {
-  ref: RefObject<T | null>;
+  /** Compatible with React DOM `ref={...}` (RefObject current is T | null). */
+  ref: RefObject<T>;
   size: ContainerSize;
 } {
-  const ref = useRef<T | null>(null);
+  const ref = useRef<T | null>(null) as RefObject<T>;
   const [size, setSize] = useState<ContainerSize>({ width: null, height: null });
 
   useLayoutEffect(() => {
