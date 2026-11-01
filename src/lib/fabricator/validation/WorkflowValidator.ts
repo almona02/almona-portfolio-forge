@@ -79,15 +79,47 @@ export function completeDesignLedger(
   );
 }
 
-export function bomMatchesPhysicalDesign(
+export type BomDesignParity =
+  | { ok: true }
+  | {
+      ok: false;
+      /** `missing_identity`: BOM rows predate occurrence identities — rebuild from the saved design. */
+      code: 'missing_identity' | 'cut_mismatch' | 'no_ledger';
+      message: string;
+    };
+
+/**
+ * Judge BOM rows against the physical design as one exact multiset of
+ * (occurrence identity, profile, length, angle). Identity is part of the key:
+ * two components with equal dimensions under one profile are different pieces,
+ * and the solver/server address them by `componentId:index`, so a BOM that only
+ * agrees on dimensions is not the same ledger.
+ */
+export function assessBomDesignParity(
   bom: CompleteBOM | null,
   project: WindowUnit | null,
   systemPack?: SystemPack | null,
-): boolean {
-  if (!bom?.profiles?.length || !project?.components?.length) return false;
+): BomDesignParity {
+  if (!bom?.profiles?.length || !project?.components?.length) {
+    return { ok: false, code: 'no_ledger', message: 'A reviewed BOM and a saved design ledger are both required.' };
+  }
   if (bom.profiles.some(profile => !Array.isArray(profile.cuttingLengths) || !Array.isArray(profile.angles)
-      || profile.cuttingLengths.length !== profile.angles.length || profile.cuttingLengths.some(length => !finitePositive(length)))) return false;
-  const key = (profileId: string, length: number, angle: number) => `${profileId}:${length.toFixed(3)}:${angle}`;
+      || profile.cuttingLengths.length !== profile.angles.length || profile.cuttingLengths.some(length => !finitePositive(length)))) {
+    return { ok: false, code: 'cut_mismatch', message: 'BOM rows have invalid or misaligned cut lengths/angles. Regenerate and review the BOM before continuing.' };
+  }
+  const withoutIdentity = bom.profiles.find(profile => profile.cuttingLengths.length > 0
+    && (!Array.isArray(profile.cutIds) || profile.cutIds.length !== profile.cuttingLengths.length
+      || profile.cutIds.some(id => typeof id !== 'string' || !id.trim())));
+  if (withoutIdentity) {
+    return {
+      ok: false,
+      code: 'missing_identity',
+      message: `BOM row ${withoutIdentity.id} has no cut occurrence identities (it was generated before identities were recorded). Rebuild the BOM from the saved design for this revision before continuing.`,
+    };
+  }
+  // Structured key: component IDs may contain ':' so never split this back apart.
+  const key = (cutId: string, profileId: string, length: number, angle: number) =>
+    JSON.stringify([cutId, profileId, length.toFixed(3), String(angle)]);
   // A saved ledger may predate (or bypass) the sliding-track completion that the BOM
   // path always applies. Complete it deterministically before comparing, otherwise a
   // short ledger blocks the workflow forever and regenerating the BOM cannot help.
@@ -95,11 +127,28 @@ export function bomMatchesPhysicalDesign(
   const designComponents = completeDesignLedger(project, systemPack);
   const expected = designComponents.flatMap(component => component.cuttingLengths.map((_, index) => {
     const cut = physicalCutForOccurrence(component, index, component.profile, project.systemPackId);
-    return key(component.profile.id, cut.length, cut.angle);
+    return key(cut.cutId!, component.profile.id, cut.length, cut.angle);
   })).sort();
   const actual = bom.profiles.flatMap(profile => profile.cuttingLengths.map((length, index) =>
-    key(profile.profileCode, length, profile.angles[index]))).sort();
-  return expected.length === actual.length && expected.every((cut, index) => cut === actual[index]);
+    key(profile.cutIds![index], profile.profileCode, length, profile.angles[index]))).sort();
+  if (expected.length !== actual.length) {
+    return { ok: false, code: 'cut_mismatch', message: `BOM lists ${actual.length} cuts but the physical design requires ${expected.length}. Regenerate and review the BOM before continuing.` };
+  }
+  const expectedSet = new Set(expected);
+  const extra = actual.find(cut => !expectedSet.has(cut));
+  if (extra || expected.some((cut, index) => cut !== actual[index])) {
+    const [cutId] = JSON.parse(extra ?? expected.find(cut => !new Set(actual).has(cut)) ?? '[""]') as [string];
+    return { ok: false, code: 'cut_mismatch', message: `BOM cut ${cutId} differs from the physical design (identity, profile, length or angle). Regenerate and review the BOM before continuing.` };
+  }
+  return { ok: true };
+}
+
+export function bomMatchesPhysicalDesign(
+  bom: CompleteBOM | null,
+  project: WindowUnit | null,
+  systemPack?: SystemPack | null,
+): boolean {
+  return assessBomDesignParity(bom, project, systemPack).ok;
 }
 
 export function validateOptimizationInputs(project: WindowUnit | null): WorkflowValidationResult {
@@ -335,10 +384,18 @@ export function validateStepTransition(
     errors.push(...validateOptimizationReconciliation(state.optimizationResult, state.currentProject).errors);
   }
 
-  if (['optimization', 'commercial', 'production', 'quality-control'].includes(targetStep)
-      && state.bom && !bomMatchesPhysicalDesign(state.bom, state.currentProject, state.systemPack)) {
-    errors.push({ type: 'error', code: 'BOM_CUT_GEOMETRY_MISMATCH',
-      message: 'BOM cuts differ from the physical design. Regenerate and review the BOM before continuing.', step: 'bom' });
+  if (['optimization', 'commercial', 'production', 'quality-control'].includes(targetStep) && state.bom) {
+    const parity = assessBomDesignParity(state.bom, state.currentProject, state.systemPack);
+    if (!parity.ok) {
+      errors.push({
+        type: 'error',
+        code: parity.code === 'missing_identity' ? 'BOM_CUT_IDENTITY_MISSING' : 'BOM_CUT_GEOMETRY_MISMATCH',
+        message: parity.code === 'missing_identity'
+          ? parity.message
+          : 'BOM cuts differ from the physical design. Regenerate and review the BOM before continuing.',
+        step: 'bom',
+      });
+    }
   }
 
   return {

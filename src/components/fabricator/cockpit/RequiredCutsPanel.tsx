@@ -25,7 +25,9 @@ export const RequiredCutsPanel: React.FC<RequiredCutsPanelProps> = ({ plans, pro
         componentId: cut.componentId,
       })),
     ) ?? profiles?.flatMap(profile => profile.cuttingLengths.map((length, index) => ({
-      key: profile.id + ':' + index, cutId: profile.id + ':' + index,
+      // Display the preserved design occurrence identity; never synthesise one from the row ID.
+      key: profile.cutIds?.[index] ?? `${profile.id}#${index}`,
+      cutId: profile.cutIds?.[index],
       profile: profile.profileCode, length, angle: profile.angles?.[index], componentId: profile.id,
     }))) ?? [];
 

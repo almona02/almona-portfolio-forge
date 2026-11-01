@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { approvedRuleContentFingerprint } from './validateOptimizationEvidencePayload';
-import { recordOptimizationEvidence } from './recordOptimizationEvidence';
+import { recordOptimizationEvidence, requiredCutsFromBom } from './recordOptimizationEvidence';
 
 const rpc = vi.fn();
 const resolveManufacturingAuthority = vi.fn();
@@ -30,9 +30,10 @@ const authorityRules = [
 const sampleBom = {
   profiles: [
     {
-      id: 'c1',
+      id: 'PS-FRAME:frame',
       profileCode: 'PS-FRAME',
       cuttingLengths: [1200, 1400],
+      cutIds: ['c1:0', 'c1:1'],
       angles: [45, 45],
       quantity: 1,
     },
@@ -93,6 +94,81 @@ describe('recordOptimizationEvidence (authoritative binding)', () => {
       }
       return Promise.resolve({ data: 'pos-1', error: null });
     });
+  });
+
+  it('records grouped BOM rows using original design occurrence IDs', async () => {
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1', expectedRevision: 1, designRevision: 1,
+      bom: { profiles: [{ ...sampleBom.profiles[0], id: 'PS-FRAME:frame', cutIds: ['c1:0', 'c1:1'] }] } as never,
+      optimizationResult: sampleResult as never,
+    });
+    expect(result.ok).toBe(true);
+    expect(rpc).toHaveBeenCalledWith('record_fabricator_optimization_evidence', expect.anything());
+  });
+
+  it('rejects a BOM cached without occurrence identities instead of inventing row-based IDs', async () => {
+    const legacy = { profiles: [{ ...sampleBom.profiles[0], cutIds: undefined }] };
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1', expectedRevision: 1, designRevision: 1,
+      bom: legacy as never,
+      optimizationResult: sampleResult as never,
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toMatch(/no cut occurrence identities/i);
+    expect(result.error).toMatch(/Rebuild the BOM from the saved design/i);
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('rejects misaligned or duplicated BOM occurrence identities', async () => {
+    const misaligned = { profiles: [{ ...sampleBom.profiles[0], cutIds: ['c1:0'] }] };
+    const duplicated = { profiles: [{ ...sampleBom.profiles[0], cutIds: ['c1:0', 'c1:0'] }] };
+    for (const bom of [misaligned, duplicated]) {
+      const result = await recordOptimizationEvidence({
+        positionId: 'pos-1', expectedRevision: 1, designRevision: 1,
+        bom: bom as never,
+        optimizationResult: sampleResult as never,
+      });
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.error).toMatch(/occurrence identit|more than once/i);
+    }
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('requiredCutsFromBom carries identity, profile, length and angle per occurrence', () => {
+    const ledger = requiredCutsFromBom(sampleBom as never);
+    expect(ledger.ok).toBe(true);
+    if (!ledger.ok) return;
+    expect(ledger.cuts).toEqual([
+      { cutId: 'c1:0', profileId: 'PS-FRAME', length: 1200, angle: 45 },
+      { cutId: 'c1:1', profileId: 'PS-FRAME', length: 1400, angle: 45 },
+    ]);
+  });
+
+  it('names the server ledger when the saved revision disagrees with a BOM-consistent placement', async () => {
+    rpc.mockImplementation((name: string) => {
+      if (name === 'derive_required_cuts_from_position') {
+        // Server returns raw design lengths (no cutting allowance) for the same identities.
+        return Promise.resolve({
+          data: [
+            { cutId: 'c1:0', profileId: 'PS-FRAME', length: 1197, angle: 45 },
+            { cutId: 'c1:1', profileId: 'PS-FRAME', length: 1397, angle: 45 },
+          ],
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: 'pos-1', error: null });
+    });
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1', expectedRevision: 1, designRevision: 1,
+      bom: sampleBom as never,
+      optimizationResult: sampleResult as never,
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toMatch(/^Server design ledger wrongly sized cut c1:0 \(required 1197\.000 mm, placed 1200\.000 mm\)/);
+    expect(result.error).toMatch(/saved position revision 1/);
+    expect(rpc).not.toHaveBeenCalledWith('record_fabricator_optimization_evidence', expect.anything());
   });
 
   it('rejects missing BOM design ledger without RPC write', async () => {
@@ -184,9 +260,10 @@ describe('recordOptimizationEvidence (authoritative binding)', () => {
     const bom = {
       profiles: [
         {
-          id: 'c1',
+          id: 'PS-FRAME:frame',
           profileCode: 'PS-FRAME',
           cuttingLengths: [3000, 2996],
+          cutIds: ['c1:0', 'c1:1'],
           angles: [0, 0],
         },
       ],

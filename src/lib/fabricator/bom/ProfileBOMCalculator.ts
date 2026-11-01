@@ -562,6 +562,7 @@ export class ProfileBOMCalculator {
         length: 0,
         quantity: 1,
         cuttingLengths: [] as number[],
+        cutIds: [] as string[],
         angles: [] as number[],
         rawStockLength: profile.barLength || Number(profile.specifications?.barLength) || 6000,
         wasteLength: 0,
@@ -570,6 +571,7 @@ export class ProfileBOMCalculator {
         cost: 0,
       };
       row.cuttingLengths.push(...cuts.map((cut) => cut.length));
+      row.cutIds!.push(...cuts.map((cut) => cut.cutId!));
       row.angles.push(...cuts.map((cut) => cut.angle));
       row.length = row.cuttingLengths.reduce((sum, length) => sum + length, 0);
       row.weight = (row.length / 1000) * (profile.weightPerMeter || 0);
@@ -693,6 +695,9 @@ export class ProfileBOMCalculator {
           physicalLengths,
           physicalAngles,
           utils,
+          // Enriched rows carry their synthetic occurrence identity explicitly so a
+          // ledger consumer can name the design gap instead of inventing an ID.
+          cuts.map((cut) => cut.cutId!),
         ),
       );
     };
@@ -769,7 +774,8 @@ export class ProfileBOMCalculator {
   private createProfileEntry(
     systemPackId: string, profile: Profile, role: string, 
     totalLength: number, quantity: number, cutLengths: number[], angles: number[],
-    prodUtils: Pick<ProdUtilsLike, 'calculateWaste' | 'calculateProfileWeight' | 'calculateMaterialCost'>
+    prodUtils: Pick<ProdUtilsLike, 'calculateWaste' | 'calculateProfileWeight' | 'calculateMaterialCost'>,
+    cutIds?: string[],
   ): ProfileBOMRow {
       return {
           id: `${role}-${systemPackId}`,
@@ -779,6 +785,7 @@ export class ProfileBOMCalculator {
           length: totalLength,
           quantity,
           cuttingLengths: cutLengths,
+          ...(cutIds ? { cutIds } : {}),
           angles,
           rawStockLength: CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
           wasteLength: prodUtils.calculateWaste(totalLength, CUTTING_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
