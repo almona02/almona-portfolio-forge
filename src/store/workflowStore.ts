@@ -107,6 +107,12 @@ export interface StockReservationEvidence {
   bomFingerprint: string;
   /** Owned profile stock_version snapshot (stale after intake/consumption). */
   stockVersionByProfile: Record<string, number>;
+  /**
+   * Finite owned bar counts keyed by catalogue / design profile id.
+   * Used by resolveApprovedSolverInputs → AdaptiveSolver assertStockAccounting.
+   * Metres-only acknowledgements omit this and remain soft.
+   */
+  barsByCatalogueProfile?: Record<string, number>;
 }
 
 /** UP-18: frozen release fingerprint acknowledgement. */

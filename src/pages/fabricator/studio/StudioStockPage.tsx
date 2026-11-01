@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { isQualifiedBOM } from '@/lib/fabricator/bom/bomQualification';
 import {
+  barsByCatalogueProfileFromDemand,
   buildBomDemandReport,
   isStockAcknowledgementStale,
 } from '@/lib/fabricator/inventory/bomStockAvailability';
@@ -133,6 +134,8 @@ export const StudioStockPage: React.FC = () => {
       availabilityOk: report.availabilityOk,
       bomFingerprint,
       stockVersionByProfile: { ...report.stockVersionByProfile },
+      // Finite bar counts for AdaptiveSolver assertStockAccounting (profile × length).
+      barsByCatalogueProfile: barsByCatalogueProfileFromDemand(report),
     });
 
     if (report.availabilityOk) {

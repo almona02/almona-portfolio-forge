@@ -282,33 +282,40 @@ export async function recordOptimizationEvidence(
       : structural.error };
   }
 
-  // Prefer server-derived ledger fingerprint when RPC is available.
+  // Fail-closed: production acceptance requires a usable server-derived ledger.
+  // Never silently downgrade to the client BOM when derive errors or returns empty.
   const rpc = supabase as unknown as RpcClient;
-  let designFingerprint = await sha256Hex(structural.designCanonical);
-  try {
-    const derived = await rpc.rpc('derive_required_cuts_from_position', {
-      p_position_id: input.positionId,
-      p_expected_revision: input.expectedRevision,
-    });
-    if (!derived.error && Array.isArray(derived.data) && derived.data.length > 0) {
-      const serverLedger = derived.data as EvidenceCutSpec[];
-      const serverValidate = validateOptimizationEvidencePayload(
-        { ...evidencePayload, requiredCuts: serverLedger },
-        cutCount,
-      );
-      if (!serverValidate.ok) {
-        // The reviewed BOM agreed with the placement but the server's ledger for this
-        // saved revision does not. Say so explicitly — this is not a BOM rebuild case.
-        return {
-          ok: false,
-          error: `Server ${serverValidate.error}. The saved position revision ${input.expectedRevision} on the server disagrees with the optimized cuts; reload the position and confirm the saved design (raw lengths, quantity) and server ledger derivation before retrying.`,
-        };
-      }
-      designFingerprint = await sha256Hex(serverValidate.designCanonical);
-    }
-  } catch {
-    // Local/unit tests without RPC: BOM ledger remains the client gate; server re-derives on write.
+  const derived = await rpc.rpc('derive_required_cuts_from_position', {
+    p_position_id: input.positionId,
+    p_expected_revision: input.expectedRevision,
+  });
+  if (derived.error) {
+    return {
+      ok: false,
+      error: `Server design ledger unavailable (${derived.error.message}). Production evidence cannot be recorded without derive_required_cuts_from_position.`,
+    };
   }
+  if (!Array.isArray(derived.data) || derived.data.length === 0) {
+    return {
+      ok: false,
+      error: 'Server design ledger is empty. Reload the saved position revision and confirm quantity and components before retrying.',
+    };
+  }
+  const serverLedger = derived.data as EvidenceCutSpec[];
+  const serverValidate = validateOptimizationEvidencePayload(
+    { ...evidencePayload, requiredCuts: serverLedger },
+    cutCount,
+  );
+  if (!serverValidate.ok) {
+    // The reviewed BOM agreed with the placement but the server's ledger for this
+    // saved revision does not. Say so explicitly — this is not a BOM rebuild case.
+    // Common cause: raw saved cuttingLengths vs allowance-calibrated BOM/solver lengths.
+    return {
+      ok: false,
+      error: `Server ${serverValidate.error}. The saved position revision ${input.expectedRevision} on the server disagrees with the optimized cuts; reload the position and confirm the saved design (raw lengths, quantity) and server ledger derivation before retrying.`,
+    };
+  }
+  const designFingerprint = await sha256Hex(serverValidate.designCanonical);
 
   const placementFingerprint = await sha256Hex(structural.placementCanonical);
   const ledgerFingerprint = `${designFingerprint}||${placementFingerprint}`;

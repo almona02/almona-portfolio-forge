@@ -139,9 +139,26 @@ export const OptimizationPage: React.FC = () => {
         profiles.map(profile => [profile.id, authority ? approvedStockOptions(authority, profile.id) : []]),
     ) as Record<string, number[]>, [profiles, authority]);
 
+    /** Catalogue / design profile id → finite owned bars from stock acknowledgement. */
+    const availableBarsByProfile = useMemo(() => {
+        const bars = stockReservation?.barsByCatalogueProfile;
+        if (!bars) return {} as Record<string, number>;
+        const out: Record<string, number> = {};
+        for (const profile of profiles) {
+            const supplier = String(
+                (profile.specifications as { supplierCode?: string } | undefined)?.supplierCode ?? '',
+            ).trim();
+            const count = bars[profile.id] ?? (supplier ? bars[supplier] : undefined);
+            if (Number.isInteger(count) && (count as number) >= 0) out[profile.id] = count as number;
+        }
+        return out;
+    }, [profiles, stockReservation?.barsByCatalogueProfile]);
+
     const resolvedInputs = useMemo(
-        () => (authority ? resolveApprovedSolverInputs(profiles, authority, stockSelection) : null),
-        [authority, profiles, stockSelection],
+        () => (authority
+            ? resolveApprovedSolverInputs(profiles, authority, stockSelection, availableBarsByProfile)
+            : null),
+        [authority, profiles, stockSelection, availableBarsByProfile],
     );
     const inputIssues: SolverInputIssue[] = resolvedInputs && !resolvedInputs.ok ? resolvedInputs.issues : [];
     const readiness = useMemo(
@@ -178,7 +195,12 @@ export const OptimizationPage: React.FC = () => {
                     throw new Error('A saved, authenticated position revision is required for a production run. Use inventory-free simulation otherwise.');
                 }
                 if (!authority) throw new Error(authorityError ?? 'Approved manufacturing authority is still resolving for this revision; retry in a moment.');
-                const resolved = resolveApprovedSolverInputs(profiles, authority, stockSelection);
+                const resolved = resolveApprovedSolverInputs(
+                    profiles,
+                    authority,
+                    stockSelection,
+                    availableBarsByProfile,
+                );
                 if (!resolved.ok) throw new Error(resolved.issues.map(issue => issue.message).join(' '));
                 if (!readiness.ready) throw new Error(`Owned stock is not ready for production: ${readiness.issues.map(issue => issue.message).join(' ')}`);
                 solverProfiles = resolved.profiles;
@@ -192,6 +214,7 @@ export const OptimizationPage: React.FC = () => {
             } else {
                 // Explicit inventory-free simulation: approved machining/stock when resolvable,
                 // otherwise platform defaults + catalogue bar length, labelled as such in the UI.
+                // Simulation does not pass finite owned bar counts (inventory-free).
                 const resolved = authority ? resolveApprovedSolverInputs(profiles, authority, stockSelection) : null;
                 if (resolved?.ok) {
                     solverProfiles = resolved.profiles;
@@ -267,7 +290,7 @@ export const OptimizationPage: React.FC = () => {
                 if (mountedRef.current) setIsOptimizing(false);
             }
         }
-    }, [currentProject, profiles, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, invalidateStep, projectIdentity, bom, systemPackForGate, mode, authority, authorityError, stockSelection, readiness, revision]);
+    }, [currentProject, profiles, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, invalidateStep, projectIdentity, bom, systemPackForGate, mode, authority, authorityError, stockSelection, availableBarsByProfile, readiness, revision]);
 
     const validOptimization = validateOptimizationReconciliation(optimizationResult, completedProject).valid;
     const displayedResult = mode === 'simulation' && simulationResult ? simulationResult : optimizationResult;

@@ -318,6 +318,44 @@ describe('recordOptimizationEvidence (authoritative binding)', () => {
     );
   });
 
+  it('fails closed when derive_required_cuts_from_position errors', async () => {
+    rpc.mockImplementation((name: string) => {
+      if (name === 'derive_required_cuts_from_position') {
+        return Promise.resolve({ data: null, error: { message: 'authentication required' } });
+      }
+      return Promise.resolve({ data: 'pos-1', error: null });
+    });
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: sampleBom as never,
+      optimizationResult: sampleResult as never,
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toMatch(/Server design ledger unavailable/i);
+    expect(rpc).not.toHaveBeenCalledWith('record_fabricator_optimization_evidence', expect.anything());
+  });
+
+  it('fails closed when derive_required_cuts_from_position returns an empty ledger', async () => {
+    rpc.mockImplementation((name: string) => {
+      if (name === 'derive_required_cuts_from_position') {
+        return Promise.resolve({ data: [], error: null });
+      }
+      return Promise.resolve({ data: 'pos-1', error: null });
+    });
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: sampleBom as never,
+      optimizationResult: sampleResult as never,
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toMatch(/empty/i);
+    expect(rpc).not.toHaveBeenCalledWith('record_fabricator_optimization_evidence', expect.anything());
+  });
+
   it('rejects fabricated but internally consistent ledger/placement that disagrees with server pose', async () => {
     rpc.mockImplementation((name: string) => {
       if (name === 'derive_required_cuts_from_position') {
