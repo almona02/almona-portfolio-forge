@@ -93,6 +93,71 @@ allowance exactly once (allowance must come from the authority payload, not the
 client-saved profile JSON) and decide whether evidence is per-window (current
 solver) or per-position-quantity before expanding copies.
 
+## Batch 2 — approved solver inputs and inventory readiness
+
+Confirmed before the change: `OptimizationPage.handleOptimizationComplete`
+ignored the equalizer payload, built `CuttingJob` with `defaultStockLength:
+6000`, and the solver read kerf/trim from pack profile specifications (which
+CALUMINIUM PS does not define → 0 mm kerf / 0 mm trim at pack time) while the
+evidence validated against the approved authority kerf/trim. Stock
+acknowledgement was a studio sidebar rule only; the page never checked it.
+
+Changes (AICS-001 Tier 3, deterministic only):
+
+- `lib/fabricator/optimization/solverInputs.ts`
+  - `resolveApprovedSolverInputs`: binds each design profile to approved
+    `manufacturingSettings.sawKerfMm/trimCutMm` and an approved stock length
+    for that profile. One approved length → bound; several → operator must
+    choose (`STOCK_SELECTION_REQUIRED`); none → `PROFILE_NOT_APPROVED`;
+    unapproved pick → `STOCK_NOT_APPROVED`. Allowance is left to
+    `physicalCutForOccurrence` (applied once).
+  - `assessStockReadiness`: revision-bound acknowledgement judged as separate
+    issues — `STOCK_NOT_ACKNOWLEDGED`, `STOCK_ACK_STALE_REVISION`,
+    `STOCK_ACK_STALE_BOM`, `STOCK_MAPPING_MISSING`, `STOCK_SHORTAGE`.
+  - `filterEligibleRemnants`: deterministic min-length / max-age / expiry /
+    status filter (informational; see limitation below).
+  - `barsByProfile`: actual bars per profile from the solved plan.
+- `AdaptiveSolver`: `CuttingJob.stockByProfile` is authoritative when present
+  (every profile must be bound — no default bar), plan stock must equal the
+  binding, and a finite `availableBars` fails closed with `StockBindingError`
+  (never retried through the greedy fallback).
+- `OptimizationPage`: resolves the authority for the saved revision up front;
+  **production run** requires authenticated saved revision + resolved authority
+  + bound inputs + ready stock acknowledgement, solves with the bound profiles
+  and `stockByProfile`, then records evidence. **Inventory-free simulation** is
+  an explicit mode: result is shown with a banner, kept in page state only,
+  never stored, never evidence, never completes the step. Supported controls:
+  run mode and approved stock length per profile (when several are approved).
+  Algorithm selection is not operator-tunable: it stays rule-based inside the
+  solver (AICS-001 / FP-016 / FP-025A — the page never sets `preferredAlgorithm`
+  or an authority label).
+- `OptimizationEqualizer` (Tier-3 path): weight sliders and remnant inputs are
+  disabled and labelled advisory; the slider-derived "estimated impact" is not
+  rendered as a result. Actual bars/waste come from the cockpit after the run.
+- `recordOptimizationEvidence.cuttingPlanForEvidence`: strips the solver-bound
+  `sawKerf/barEndTrim` from plan profiles so the payload carries approved
+  machining exactly once (server rejects plan-level overrides).
+
+Tests: `solverInputs.test.ts` (non-6000 stock, finite bar counts, unapproved
+mapping, insufficient stock, kerf/trim variation changing bar count, stale
+revision/BOM, shortage, expired remnants), `OptimizationPage.failClosed.test.tsx`
+(approved stock + kerf/trim reach the solver, no default bar; approved-stock
+control changes the job; no operator algorithm choice; missing/stale/short
+acknowledgement blocks without
+solving; unapproved profile blocks; simulation cannot unlock production or record
+evidence), `recordOptimizationEvidence.test.ts` (plan kerf/trim stripping).
+
+Limitations (explicit):
+
+- Owned inventory is acknowledged in metres (soft check). Finite bar counts
+  (`availableBars`) are supported by the solver and tests but are not yet fed
+  from the owned-stock ledger, because the ledger does not carry bar counts per
+  length; the page therefore passes approved stock lengths without counts.
+- Remnant bars are not approved catalogue stock lengths, so the evidence
+  contract (client and server `assert_evidence_against_authority`) rejects
+  placements on them. Remnant controls are informational until the authority
+  model admits remnant lengths; they are labelled as such.
+
 ## Live limitation (explicit)
 
 R9 has **not** been re-recorded live. Re-recording requires the owner's

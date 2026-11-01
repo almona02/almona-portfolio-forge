@@ -27,12 +27,27 @@ import {
   UI_DIMENSIONS,
 } from './optimizationEqualizerConstants';
 
+export interface OptimizationEqualizerCompletePayload {
+  strategy: OptimizationStrategy;
+  minRemnantLength: number;
+  maxRemnantAge: number;
+}
+
 interface OptimizationEqualizerProps {
   userId: string;
   profiles?: Profile[];
   onStrategyChange?: (strategy: OptimizationStrategy) => void;
   initialStrategy?: OptimizationStrategy;
-  onComplete?: (result?: any) => void; // Navigation callback when optimization is finalized
+  onComplete?: (result: OptimizationEqualizerCompletePayload) => void; // Runs the solver
+  /**
+   * Tier-3 manufacturing path (AICS-001): the deterministic solver does not consume
+   * the weight sliders or remnant constraints, so they are shown disabled with a
+   * label and the slider-derived "estimated impact" is not presented as a result.
+   */
+  tier3ManufacturingPath?: boolean;
+  /** Label for the run button when the parent decides production vs simulation. */
+  runLabel?: string;
+  runDisabled?: boolean;
 }
 
 interface ProfileOverride {
@@ -61,6 +76,9 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
   onStrategyChange,
   initialStrategy,
   onComplete,
+  tier3ManufacturingPath = false,
+  runLabel,
+  runDisabled = false,
 }) => {
   const { t } = useTranslation('fabricator');
   const [selectedPreset, setSelectedPreset] = useState<string>('balanced');
@@ -247,8 +265,17 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
           </Select>
         </div>
 
+        {tier3ManufacturingPath && (
+          <Alert className="bg-gray-900 border-amber-700/40" data-testid="advisory-controls-note">
+            <Info className="h-4 w-4 text-amber-400" />
+            <AlertDescription className="text-xs text-amber-200">
+              {t('optimization_equalizer.advisory_note', 'Strategy weights and remnant constraints are advisory and are not applied by the deterministic Tier-3 cut solver. Supported inputs (run mode, algorithm, approved stock length) are in the Solver inputs panel; actual bars and waste are shown in the cockpit after the run.')}
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Weight Sliders */}
-        <div className="space-y-4">
+        <div className="space-y-4" aria-disabled={tier3ManufacturingPath}>
           <div>
             <div className="flex items-center justify-between mb-2">
               <Label className="typography-label text-gray-300 flex items-center gap-2">
@@ -262,6 +289,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
             <Slider
               value={[strategy.wasteReductionWeight]}
               onValueChange={(value) => handleWeightChange('wasteReductionWeight', value)}
+              disabled={tier3ManufacturingPath}
               min={SLIDER_CONFIG.MIN_VALUE}
               max={SLIDER_CONFIG.MAX_VALUE}
               step={SLIDER_CONFIG.STEP}
@@ -285,6 +313,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
             <Slider
               value={[strategy.remnantUsageWeight]}
               onValueChange={(value) => handleWeightChange('remnantUsageWeight', value)}
+              disabled={tier3ManufacturingPath}
               min={SLIDER_CONFIG.MIN_VALUE}
               max={SLIDER_CONFIG.MAX_VALUE}
               step={SLIDER_CONFIG.STEP}
@@ -308,6 +337,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
             <Slider
               value={[strategy.cutComplexityWeight]}
               onValueChange={(value) => handleWeightChange('cutComplexityWeight', value)}
+              disabled={tier3ManufacturingPath}
               min={SLIDER_CONFIG.MIN_VALUE}
               max={SLIDER_CONFIG.MAX_VALUE}
               step={SLIDER_CONFIG.STEP}
@@ -331,6 +361,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
             <Slider
               value={[strategy.productionSpeedWeight]}
               onValueChange={(value) => handleWeightChange('productionSpeedWeight', value)}
+              disabled={tier3ManufacturingPath}
               min={SLIDER_CONFIG.MIN_VALUE}
               max={SLIDER_CONFIG.MAX_VALUE}
               step={SLIDER_CONFIG.STEP}
@@ -342,8 +373,8 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
           </div>
         </div>
 
-        {/* Real-Time Impact Preview */}
-        <Alert className="bg-gray-900 border-gray-700">
+        {/* Real-Time Impact Preview — slider model only, never the cut-plan result */}
+        {!tier3ManufacturingPath && <Alert className="bg-gray-900 border-gray-700">
           <Info className="h-4 w-4 text-blue-400" />
           <AlertDescription>
             <div className="grid grid-cols-3 gap-4 mt-2">
@@ -367,7 +398,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
               </div>
             </div>
           </AlertDescription>
-        </Alert>
+        </Alert>}
 
         {/* Material Constraints */}
         <div className="p-4 bg-gray-900 rounded-lg border border-gray-700">
@@ -380,6 +411,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
               <input
                 id="min-remnant"
                 type="number"
+                disabled={tier3ManufacturingPath}
                 value={minRemnantLength}
                 onChange={(e) => setMinRemnantLength(parseInt(e.target.value) || DEFAULT_OPTIMIZATION_PARAMS.DEFAULT_MIN_REMNANT_LENGTH_MM)}
                 className="mt-1 w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm"
@@ -397,6 +429,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
               <input
                 id="max-remnant-age"
                 type="number"
+                disabled={tier3ManufacturingPath}
                 value={maxRemnantAge}
                 onChange={(e) => setMaxRemnantAge(parseInt(e.target.value) || DEFAULT_OPTIMIZATION_PARAMS.DEFAULT_MAX_REMNANT_AGE_DAYS)}
                 className="mt-1 w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm"
@@ -436,9 +469,10 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
           <div className="pt-4 border-t border-gray-700">
             <Button
               onClick={() => onComplete({ strategy, minRemnantLength, maxRemnantAge })}
+              disabled={runDisabled}
               className="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 font-semibold"
             >
-              {t('optimization_equalizer.continue_to_production', 'Continue to Production')}
+              {runLabel ?? t('optimization_equalizer.continue_to_production', 'Continue to Production')}
               <ArrowRight className={`${UI_DIMENSIONS.ICON_MEDIUM} ml-2`} />
             </Button>
           </div>

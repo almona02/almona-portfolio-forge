@@ -4,13 +4,27 @@ import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSyst
 import type { CuttingJob } from '@/algorithms/adaptiveSolver';
 import { AdaptiveSolver } from '@/algorithms/adaptiveSolver';
 import { OptimizationCockpit } from '@/components/fabricator/cockpit/OptimizationCockpit';
+import { OptimizationSolverInputsPanel } from '@/components/fabricator/cockpit/OptimizationSolverInputsPanel';
+import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
+import {
+    resolveManufacturingAuthority,
+    type ResolvedManufacturingAuthority,
+} from '@/lib/fabricator/manufacturing/ManufacturingAuthorityResolver';
+import {
+    approvedStockOptions,
+    assessStockReadiness,
+    barsByProfile,
+    resolveApprovedSolverInputs,
+    type OptimizationMode,
+    type SolverInputIssue,
+} from '@/lib/fabricator/optimization/solverInputs';
 import { WorkflowValidationGate } from '@/components/fabricator/workflow/WorkflowValidationGate';
 import { useAuth } from '@/context/AuthContext';
 import { recordOptimizationEvidence } from '@/lib/fabricator/commercial/recordOptimizationEvidence';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { completeDesignLedger, validateOptimizationReconciliation, validateStepTransition } from '@/lib/fabricator/validation/WorkflowValidator';
 import { useWorkflowStore } from '@/store/workflowStore';
-import type { AdaptiveSolverConfig, OptimizationResult } from '@/types/fabricator';
+import type { AdaptiveSolverConfig, OptimizationResult, Profile } from '@/types/fabricator';
 import { lazyRetry } from '@/utils/lazyImport';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -26,8 +40,12 @@ const OptimizationEqualizer = lazyRetry(
 /**
  * GOLD-TIER OPTIMIZATION PAGE
  *
- * Solver path is unchanged. FP-025A only wraps the workspace in OptimizationCockpit
- * so results are displayed, not recalculated in the UI.
+ * FP-025A wraps the workspace in OptimizationCockpit so results are displayed, not
+ * recalculated in the UI. Batch 2 (AICS-001 Tier 3): the production run binds the
+ * solver to the approved, revision-bound manufacturing authority (kerf, trim, stock
+ * length per profile) and to the operator's owned-stock acknowledgement; there is no
+ * default 6000 mm bar. Inventory-free simulation is an explicit mode that never
+ * records evidence and never completes the optimization step.
  */
 export const OptimizationPage: React.FC = () => {
     const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
@@ -36,6 +54,12 @@ export const OptimizationPage: React.FC = () => {
     const [isOptimizing, setIsOptimizing] = useState(false);
     const [optimizationError, setOptimizationError] = useState<string | null>(null);
     const [isExporting, setIsExporting] = useState(false);
+    const [mode, setMode] = useState<OptimizationMode>('production');
+    const [stockSelection, setStockSelection] = useState<Record<string, number>>({});
+    const [authority, setAuthority] = useState<ResolvedManufacturingAuthority | null>(null);
+    const [authorityError, setAuthorityError] = useState<string | null>(null);
+    /** Simulation output lives here only — never in the workflow store, never evidence. */
+    const [simulationResult, setSimulationResult] = useState<OptimizationResult | null>(null);
     const activeRunRef = useRef(0);
     const submissionLockedRef = useRef(false);
     const projectIdentityRef = useRef<string | null>(null);
@@ -50,6 +74,7 @@ export const OptimizationPage: React.FC = () => {
         invalidateStep,
         alignShellProject,
         workflowIdentity,
+        stockReservation,
     } = useWorkflowStore();
     const activeProjectRef = useRef(currentProject);
 
@@ -92,6 +117,38 @@ export const OptimizationPage: React.FC = () => {
 
     const hasRequiredData = currentProject !== null;
 
+    // Authoritative revision for evidence + authority resolution.
+    const revision = workflowIdentity?.revision ?? (Number.isInteger(currentProject?.revision) ? Number(currentProject?.revision) : 0);
+
+    // Resolve the approved manufacturing authority for the saved revision before any run.
+    useEffect(() => {
+        let cancelled = false;
+        setAuthority(null);
+        setAuthorityError(null);
+        if (!user?.id || !poseId || revision < 1) return;
+        resolveManufacturingAuthority(poseId, revision)
+            .then((resolved) => { if (!cancelled) setAuthority(resolved); })
+            .catch((err: unknown) => { if (!cancelled) setAuthorityError(err instanceof Error ? err.message : 'Approved manufacturing authority is unavailable.'); });
+        return () => { cancelled = true; };
+    }, [user?.id, poseId, revision]);
+
+    // Simulation result is bound to one position identity; drop it when the pose changes.
+    useEffect(() => { setSimulationResult(null); setStockSelection({}); }, [projectIdentity]);
+
+    const stockOptionsByProfile = useMemo(() => Object.fromEntries(
+        profiles.map(profile => [profile.id, authority ? approvedStockOptions(authority, profile.id) : []]),
+    ) as Record<string, number[]>, [profiles, authority]);
+
+    const resolvedInputs = useMemo(
+        () => (authority ? resolveApprovedSolverInputs(profiles, authority, stockSelection) : null),
+        [authority, profiles, stockSelection],
+    );
+    const inputIssues: SolverInputIssue[] = resolvedInputs && !resolvedInputs.ok ? resolvedInputs.issues : [];
+    const readiness = useMemo(
+        () => assessStockReadiness({ stockReservation, workflowIdentity, bom }),
+        [stockReservation, workflowIdentity, bom],
+    );
+
     const handleOptimizationComplete = useCallback(async (_payload: { strategy?: unknown; minRemnantLength?: number; maxRemnantAge?: number }) => {
         if (submissionLockedRef.current) return;
         if (!currentProject || !profiles.length) {
@@ -102,8 +159,9 @@ export const OptimizationPage: React.FC = () => {
         const runId = ++activeRunRef.current;
         const runProjectIdentity = projectIdentity;
         const runProject = currentProject;
+        const runMode: OptimizationMode = mode;
         submissionLockedRef.current = true;
-        invalidateStep('optimization');
+        if (runMode === 'production') invalidateStep('optimization');
         setOptimizationError(null);
         setIsOptimizing(true);
         try {
@@ -111,43 +169,77 @@ export const OptimizationPage: React.FC = () => {
             // sliding-track completion existed would otherwise be cut without its track pair.
             const components = completeDesignLedger(currentProject, systemPackForGate);
             if (!components.length) throw new Error('No manufacturing components are available.');
-            const job: CuttingJob = { components, profiles, defaultStockLength: 6000, systemPackId: currentProject.systemPackId ?? undefined };
+
+            // Solver inputs: approved authority binding (kerf/trim/stock) — no default bar.
+            let solverProfiles: Profile[];
+            let job: CuttingJob;
+            if (runMode === 'production') {
+                if (!user?.id || !poseId || revision < 1) {
+                    throw new Error('A saved, authenticated position revision is required for a production run. Use inventory-free simulation otherwise.');
+                }
+                if (!authority) throw new Error(authorityError ?? 'Approved manufacturing authority is still resolving for this revision; retry in a moment.');
+                const resolved = resolveApprovedSolverInputs(profiles, authority, stockSelection);
+                if (!resolved.ok) throw new Error(resolved.issues.map(issue => issue.message).join(' '));
+                if (!readiness.ready) throw new Error(`Owned stock is not ready for production: ${readiness.issues.map(issue => issue.message).join(' ')}`);
+                solverProfiles = resolved.profiles;
+                job = { components, profiles: solverProfiles, stockByProfile: resolved.stockByProfile, systemPackId: currentProject.systemPackId ?? undefined };
+            } else {
+                // Explicit inventory-free simulation: approved machining/stock when resolvable,
+                // otherwise platform defaults + catalogue bar length, labelled as such in the UI.
+                const resolved = authority ? resolveApprovedSolverInputs(profiles, authority, stockSelection) : null;
+                if (resolved?.ok) {
+                    solverProfiles = resolved.profiles;
+                    job = { components, profiles: solverProfiles, stockByProfile: resolved.stockByProfile, systemPackId: currentProject.systemPackId ?? undefined };
+                } else {
+                    solverProfiles = profiles.map(profile => ({
+                        ...profile,
+                        specifications: {
+                            ...(profile.specifications ?? {}),
+                            sawKerf: PLATFORM_MANUFACTURING_DEFAULTS.sawKerfMm,
+                            barEndTrim: PLATFORM_MANUFACTURING_DEFAULTS.trimCutMm,
+                        },
+                    }));
+                    job = { components, profiles: solverProfiles, defaultStockLength: 6000, systemPackId: currentProject.systemPackId ?? undefined };
+                }
+            }
+            // Algorithm selection stays rule-based inside the solver (AICS-001 / FP-025A): the
+            // operator never picks it here, so nothing on this page can present a choice as authority.
             const solverConfig: AdaptiveSolverConfig = { maxSolvingTime: 30, complexityThresholds: { simple: 50, medium: 500 } };
-            const optimizationResult: OptimizationResult = await new AdaptiveSolver(solverConfig).solve(job, profiles);
+            const optimizationResult: OptimizationResult = await new AdaptiveSolver(solverConfig).solve(job, solverProfiles);
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
             const resultValidation = validateOptimizationReconciliation(optimizationResult, { ...runProject, components });
             if (!resultValidation.valid) throw new Error(resultValidation.errors[0]?.message ?? 'Optimization result is invalid.');
 
+            if (runMode === 'simulation') {
+                // Simulation is not manufacturing truth: local display only.
+                setSimulationResult(optimizationResult);
+                return;
+            }
+
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
 
             // Server-stamped evidence only — client JSON on positions_v2.optimization is not convert-eligible.
-            const revision =
-                workflowIdentity?.revision ??
-                (Number.isInteger(runProject.revision) ? Number(runProject.revision) : 0);
-            if (user?.id && poseId && revision >= 1) {
-                const recorded = await recordOptimizationEvidence({
-                    positionId: poseId,
-                    expectedRevision: revision,
-                    designRevision: revision,
-                    bom,
-                    optimizationResult,
-                    ruleVersion: bom?.qualification?.ruleVersion ?? null,
-                });
-                if (!recorded.ok) {
-                    throw new Error(recorded.error);
-                }
-            } else if (user?.id && poseId) {
-                throw new Error('Authoritative position revision is required before optimization can be recorded.');
+            const recorded = await recordOptimizationEvidence({
+                positionId: poseId!,
+                expectedRevision: revision,
+                designRevision: revision,
+                bom,
+                optimizationResult,
+                ruleVersion: bom?.qualification?.ruleVersion ?? null,
+            });
+            if (!recorded.ok) {
+                throw new Error(recorded.error);
             }
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current || runProject !== activeProjectRef.current) return;
             alignShellProject({ ...runProject, components, status: 'optimized', updatedAt: new Date() });
+            setSimulationResult(null);
             setOptimizationResult(optimizationResult);
             if (!completeStep('optimization')) throw new Error('Optimization evidence could not be verified.');
 
         } catch (err) {
             if (!mountedRef.current || runId !== activeRunRef.current || runProjectIdentity !== projectIdentityRef.current) return;
             console.error('[OptimizationPage] Optimization failed:', err);
-            invalidateStep('optimization');
+            if (mode === 'production') invalidateStep('optimization');
             setOptimizationError(err instanceof Error ? err.message : 'Optimization failed. Review the design and retry.');
         } finally {
             if (runId === activeRunRef.current) {
@@ -155,9 +247,12 @@ export const OptimizationPage: React.FC = () => {
                 if (mountedRef.current) setIsOptimizing(false);
             }
         }
-    }, [currentProject, profiles, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, invalidateStep, projectIdentity, bom, workflowIdentity, systemPackForGate]);
+    }, [currentProject, profiles, poseId, completeStep, setOptimizationResult, alignShellProject, user?.id, invalidateStep, projectIdentity, bom, systemPackForGate, mode, authority, authorityError, stockSelection, readiness, revision]);
 
     const validOptimization = validateOptimizationReconciliation(optimizationResult, completedProject).valid;
+    const displayedResult = mode === 'simulation' && simulationResult ? simulationResult : optimizationResult;
+    const actualBars = useMemo(() => (displayedResult ? barsByProfile(displayedResult.cuttingPlan) : null), [displayedResult]);
+    const productionBlocked = mode === 'production' && (!authority || inputIssues.length > 0 || !readiness.ready);
 
     const LoadingFallback = (
         <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900">
@@ -202,10 +297,37 @@ export const OptimizationPage: React.FC = () => {
         <div className="flex flex-col h-full bg-[#0a0a0a]">
             <p className="px-3 py-2 text-xs text-slate-400">Cut plan per window · pose quantity {currentProject?.quantity ?? 1}. Use project optimization to pool repeated windows; verify inventory before production.</p>
             <Suspense fallback={LoadingFallback}>
-                <OptimizationCockpit result={optimizationResult} requiredProfiles={bom?.profiles} stockProfiles={profiles} algorithmLabel={null} authority={null}>
+                <OptimizationCockpit
+                    result={displayedResult}
+                    requiredProfiles={bom?.profiles}
+                    stockProfiles={profiles}
+                    algorithmLabel={null}
+                    authority={null}
+                >
+                    {mode === 'simulation' && simulationResult && (
+                        <p role="status" data-testid="simulation-banner" className="mx-4 mb-2 rounded border border-sky-500/40 bg-sky-950/40 p-2 text-xs text-sky-200">
+                            Inventory-free simulation — not production or CNC authority. No evidence was recorded and the optimization step is not complete.
+                        </p>
+                    )}
+                    <OptimizationSolverInputsPanel
+                        mode={mode}
+                        onModeChange={setMode}
+                        stockOptionsByProfile={stockOptionsByProfile}
+                        stockSelectionByProfile={stockSelection}
+                        onStockSelectionChange={(profileId, mm) => setStockSelection(prev => ({ ...prev, [profileId]: mm }))}
+                        machining={authority ? { kerfMm: authority.manufacturingSettings.sawKerfMm, trimMm: authority.manufacturingSettings.trimCutMm } : null}
+                        authorityError={authorityError}
+                        inputIssues={inputIssues}
+                        readiness={mode === 'production' ? readiness : null}
+                        actualBarsByProfile={actualBars}
+                        disabled={isOptimizing}
+                    />
                     <OptimizationEqualizer
                         userId={user?.id || 'guest'}
                         profiles={profiles}
+                        tier3ManufacturingPath
+                        runLabel={mode === 'simulation' ? 'Run inventory-free simulation' : 'Run production optimization'}
+                        runDisabled={isOptimizing || productionBlocked}
                         onComplete={(e) => void handleOptimizationComplete(e)}
                     />
                     {isOptimizing && (

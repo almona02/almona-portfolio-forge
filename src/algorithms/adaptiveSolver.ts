@@ -27,6 +27,15 @@ import { LinearProgrammingOptimizer } from './linearProgramming';
 /** Tier-3 manufacturing algorithms only (deterministic). Genetic is excluded (FP-016 Option B). */
 export type Tier3CuttingAlgorithm = Tier3ManufacturingAlgorithm;
 
+/** Approved-stock binding or owned-inventory violation — fail closed, never retried. */
+export class StockBindingError extends Error {
+  readonly code = 'STOCK_BINDING_VIOLATION' as const;
+  constructor(message: string) {
+    super(message);
+    this.name = 'StockBindingError';
+  }
+}
+
 export interface JobComplexity {
   totalCuts: number;
   uniqueProfiles: number;
@@ -41,6 +50,13 @@ export interface CuttingJob {
   profiles: Profile[];
   defaultStockLength?: number;
   systemPackId?: string; // Optional system pack ID for calibration lookup
+  /**
+   * Approved, revision-bound stock per profile (Batch 2). When present it is
+   * authoritative: every profile in the job must have a binding (no silent
+   * default), and a finite `availableBars` makes the solver fail closed when the
+   * plan needs more bars than the owned inventory has.
+   */
+  stockByProfile?: Record<string, { stockLengthMm: number; availableBars?: number }>;
 }
 
 export class AdaptiveSolver {
@@ -93,13 +109,43 @@ export class AdaptiveSolver {
       );
 
       this.assertPhysicalResult(result, job, profiles);
+      this.assertStockAccounting(result, job);
       return result;
     } catch (error) {
+      // Stock binding / inventory errors are not algorithm failures — never retry around them.
+      if (error instanceof StockBindingError) throw error;
       // Fallback to greedy if primary algorithm fails
       console.warn('Primary algorithm failed, falling back to greedy:', error);
       const fallback = await this.fallbackToGreedy(job, profiles, performance.now() - startTime);
       this.assertPhysicalResult(fallback, job, profiles);
+      this.assertStockAccounting(fallback, job);
       return fallback;
+    }
+  }
+
+  /**
+   * Bars consumed per profile must fit the finite owned inventory supplied with the
+   * job (Batch 2). Metres-only acknowledgements leave `availableBars` undefined and
+   * are not checked here — that readiness is judged before solving.
+   */
+  private assertStockAccounting(result: OptimizationResult, job: CuttingJob): void {
+    if (!job.stockByProfile) return;
+    const bars = new Map<string, number>();
+    for (const plan of result.cuttingPlan) {
+      const binding = job.stockByProfile[plan.profile.id];
+      if (!binding) throw new StockBindingError(`No approved stock binding for profile ${plan.profile.id}.`);
+      if (plan.stockLength !== binding.stockLengthMm) {
+        throw new StockBindingError(`Plan for ${plan.profile.id} uses ${plan.stockLength} mm stock but the approved binding is ${binding.stockLengthMm} mm.`);
+      }
+      bars.set(plan.profile.id, (bars.get(plan.profile.id) ?? 0) + 1);
+    }
+    for (const [profileId, used] of bars) {
+      const available = job.stockByProfile[profileId]?.availableBars;
+      if (available !== undefined && used > available) {
+        throw new StockBindingError(
+          `Insufficient stock for ${profileId}: plan needs ${used} × ${job.stockByProfile[profileId].stockLengthMm} mm bars, ${available} available.`,
+        );
+      }
     }
   }
 
@@ -129,7 +175,7 @@ export class AdaptiveSolver {
       profileMap.set(profile.id, profile);
 
       // Get stock length for this profile
-      const stockLength = this.getStockLength(profile, job.defaultStockLength);
+      const stockLength = this.getStockLength(profile, job);
       stockLengths.add(stockLength);
 
       // Create cuts from component cutting lengths
@@ -251,7 +297,7 @@ export class AdaptiveSolver {
 
       if (cuts.length === 0) continue;
 
-      const stockLength = this.getStockLength(profile, job.defaultStockLength);
+      const stockLength = this.getStockLength(profile, job);
 
       // Execute selected algorithm (Tier-3: greedy | linear only — asserted above)
       const specsForCutting = profile.specifications || {};
@@ -368,9 +414,19 @@ export class AdaptiveSolver {
   /**
    * Get stock length for a profile
    */
-  private getStockLength(profile: Profile, defaultStockLength?: number): number {
+  private getStockLength(profile: Profile, job: Pick<CuttingJob, 'defaultStockLength' | 'stockByProfile'>): number {
     const MAX_STOCK_LENGTH_MM = 8000;
-    
+
+    // Approved revision-bound stock is authoritative and must cover every profile.
+    if (job.stockByProfile) {
+      const bound = job.stockByProfile[profile.id]?.stockLengthMm;
+      if (!(typeof bound === 'number' && Number.isFinite(bound) && bound > 0)) {
+        throw new StockBindingError(`No approved stock length for profile ${profile.id}; refusing to assume a default bar.`);
+      }
+      return bound;
+    }
+    const defaultStockLength = job.defaultStockLength;
+
     const specs = profile.specifications || {};
     const configured = specs.stockLengthMm ?? profile.barLength ?? specs.barLength;
     if (typeof configured === 'number' && Number.isFinite(configured) && configured > 0) {

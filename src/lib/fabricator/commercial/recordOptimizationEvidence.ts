@@ -99,6 +99,25 @@ export function requiredCutsFromBom(bom: CompleteBOM | null): RequiredCutsFromBo
   return { ok: true, cuts };
 }
 
+/**
+ * The solver runs with the approved kerf/trim bound onto each profile's
+ * specifications (Batch 2). The evidence contract carries kerf/trim once, at the
+ * payload level, and rejects plan/profile overrides — so strip those keys here
+ * while keeping everything the reload path needs (waste, utilization, cut identity).
+ */
+export function cuttingPlanForEvidence(
+  plans: OptimizationResult['cuttingPlan'],
+): OptimizationEvidencePayload['cuttingPlan'] {
+  return plans.map((plan) => {
+    const { kerfMm: _planKerf, trimMm: _planTrim, ...rest } = plan as typeof plan & { kerfMm?: unknown; trimMm?: unknown };
+    const { sawKerf: _kerf, barEndTrim: _trim, ...specifications } = (plan.profile?.specifications ?? {}) as Record<string, unknown>;
+    return {
+      ...rest,
+      profile: { ...plan.profile, specifications },
+    } as OptimizationEvidencePayload['cuttingPlan'][number];
+  });
+}
+
 function buildEvidencePayload(
   result: OptimizationResult,
   cutCount: number,
@@ -117,7 +136,7 @@ function buildEvidencePayload(
     kerfMm,
     trimMm,
     requiredCuts,
-    cuttingPlan: result.cuttingPlan as OptimizationEvidencePayload['cuttingPlan'],
+    cuttingPlan: cuttingPlanForEvidence(result.cuttingPlan),
   };
 }
 

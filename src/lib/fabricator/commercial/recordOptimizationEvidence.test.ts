@@ -135,6 +135,27 @@ describe('recordOptimizationEvidence (authoritative binding)', () => {
     expect(rpc).not.toHaveBeenCalled();
   });
 
+  it('strips solver-bound kerf/trim from plan profiles so the payload carries approved machining once', async () => {
+    const bound = {
+      ...sampleResult,
+      cuttingPlan: sampleResult.cuttingPlan.map((plan) => ({
+        ...plan,
+        totalWaste: 3400, utilization: 43.33,
+        profile: { id: 'PS-FRAME', name: 'Frame', specifications: { sawKerf: 4, barEndTrim: 0, stockLengthMm: 6000, supplierCode: 'PS-FRAME' } },
+      })),
+    };
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1', expectedRevision: 1, designRevision: 1,
+      bom: sampleBom as never, optimizationResult: bound as never,
+    });
+    expect(result.ok).toBe(true);
+    const call = rpc.mock.calls.find(([name]) => name === 'record_fabricator_optimization_evidence');
+    const payload = (call![1] as { p_evidence_payload: { kerfMm: number; cuttingPlan: Array<{ profile: { specifications: Record<string, unknown> }; totalWaste: number }> } }).p_evidence_payload;
+    expect(payload.kerfMm).toBe(4);
+    expect(payload.cuttingPlan[0].profile.specifications).toEqual({ stockLengthMm: 6000, supplierCode: 'PS-FRAME' });
+    expect(payload.cuttingPlan[0].totalWaste).toBe(3400);
+  });
+
   it('requiredCutsFromBom carries identity, profile, length and angle per occurrence', () => {
     const ledger = requiredCutsFromBom(sampleBom as never);
     expect(ledger.ok).toBe(true);
