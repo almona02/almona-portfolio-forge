@@ -44,13 +44,13 @@ structlog==23.2.0
 prometheus-client==0.19.0
 opentelemetry-api==1.45.1
 opentelemetry-sdk==1.45.1
-opentelemetry-instrumentation-fastapi==0.42b0
-opentelemetry-instrumentation-requests==0.42b0
-opentelemetry-instrumentation-psycopg2==0.42b0
+opentelemetry-instrumentation-fastapi==0.66b1
+opentelemetry-instrumentation-requests==0.66b1
+opentelemetry-instrumentation-psycopg2==0.66b1
 opentelemetry-exporter-jaeger==1.21.0
-# FIXED: Updated from yanked 1.12.0rc1 to SDK 1.21.0 compatible version
-opentelemetry-exporter-prometheus==0.42b0
-opentelemetry-instrumentation-logging==0.42b0
+# Keep deprecated Jaeger exporter; instrumentation/prometheus aligned to SDK 1.45.1 / semconv 0.66b1
+opentelemetry-exporter-prometheus==0.66b1
+opentelemetry-instrumentation-logging==0.66b1
 opentelemetry-semantic-conventions==0.66b1
 
 # Testing
