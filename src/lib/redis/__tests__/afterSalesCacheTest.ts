@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+﻿import { supabase } from '@/lib/supabase';
 import 'dotenv/config'; // Load .env file
 import { AfterSalesCache } from '../caches/afterSalesCache';
 import redis from '../client';
@@ -164,7 +164,7 @@ async function runAfterSalesTests() {
 
 // Run tests if executed directly
 if (require.main === module) {
-  runAfterSalesTests();
+  void runAfterSalesTests();
 }
 
 export { testAfterSalesCaching, testCachePerformance };

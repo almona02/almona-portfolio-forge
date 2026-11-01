@@ -73,7 +73,7 @@ export const IntelligentForm = ({
       }
     };
 
-    const debounceTimer = setTimeout(validateSerial, 500);
+    const debounceTimer = setTimeout(() => void validateSerial(), 500);
     return () => clearTimeout(debounceTimer);
   }, [machineSerial]);
 
@@ -114,7 +114,7 @@ const onSubmit = async (data: FormData) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-6">
       {emergencyMode && (
         <div className="bg-red-900/20 p-4 rounded-lg border border-red-900/50 flex items-center">
           <AlertTriangle className="text-red-500 mr-3" />

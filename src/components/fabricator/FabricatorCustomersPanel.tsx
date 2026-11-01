@@ -1,4 +1,4 @@
-import { CustomerAnalyticsDashboard } from '@/components/customers/CustomerAnalyticsDashboard';
+﻿import { CustomerAnalyticsDashboard } from '@/components/customers/CustomerAnalyticsDashboard';
 import { CustomerCommunicationsTimeline } from '@/components/customers/CustomerCommunicationsTimeline';
 import { CustomerRemindersManager } from '@/components/customers/CustomerRemindersManager';
 import { CustomerSegmentsManager } from '@/components/customers/CustomerSegmentsManager';
@@ -490,7 +490,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
                     disabled={!selectedCustomer}
                     onClick={() => {
                       if (!selectedCustomer) return;
-                      navigate('/fabricator-workflow', {
+                      void navigate('/fabricator-workflow', {
                         state: {
                           fromCustomer: {
                             id: selectedCustomer.id,
@@ -791,7 +791,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
                   className="btn-primary"
                   disabled={!canSave}
                   onClick={() => {
-                    handleUpdate();
+                    void handleUpdate();
                     setWizardOpen(false);
                   }}
                 >
@@ -812,7 +812,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
                   className="btn-primary"
                   disabled={!canSave}
                   onClick={() => {
-                    handleCreate();
+                    void handleCreate();
                     setWizardOpen(false);
                     setCurrentStep(1);
                   }}
@@ -875,7 +875,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
             </AlertDialogCancel>
             <AlertDialogAction
               className="bg-red-600 hover:bg-red-700 text-white"
-              onClick={handleDelete}
+              onClick={() => void handleDelete()}
               disabled={deleting}
             >
               {deleting ? 'Deleting...' : 'Delete Customer'}

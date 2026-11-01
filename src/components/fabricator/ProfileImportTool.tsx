@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { AluminumPricingCalculator } from '@/lib/pricing/AluminumPricingCalculator';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -1115,7 +1115,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                   type="file"
                   multiple
                   accept=".dxf,.dwg,.svg,.pdf,.png,.jpg,.jpeg"
-                  onChange={handleFileSelect}
+                  onChange={(e) => void handleFileSelect(e)}
                   className="hidden"
                 />
               </div>
@@ -1261,7 +1261,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
 
                 <div className="flex gap-2">
                   <Button
-                    onClick={handleImportProfiles}
+                    onClick={() => void handleImportProfiles()}
                     className="bg-green-600 hover:bg-green-700 flex-1"
                     disabled={selectedProfiles.size === 0 && extractedProfiles.length === 0}
                   >

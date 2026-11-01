@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Validation Sandbox
  * 
  * Stress testing component that runs EgyptianInterferenceEngine against
@@ -232,7 +232,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
 
       {/* Run Button */}
       <button
-        onClick={runValidation}
+        onClick={() => void runValidation()}
         disabled={isRunning}
         className={`w-full py-4 rounded-lg font-bold text-white transition-all ${
           isRunning

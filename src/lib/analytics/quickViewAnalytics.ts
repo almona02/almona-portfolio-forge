@@ -1,4 +1,4 @@
-// Analytics tracking for Enhanced ProductQuickView system
+﻿// Analytics tracking for Enhanced ProductQuickView system
 // Focused on industrial B2B machinery sales metrics
 
 interface QuickViewEvent {
@@ -135,7 +135,7 @@ class QuickViewAnalytics {
       }
     };
 
-    this.sendEvent(event);
+    void this.sendEvent(event);
   }
 
   trackQuickViewClose(product: any, duration: number, actions: string[]): void {
@@ -156,7 +156,7 @@ class QuickViewAnalytics {
       }
     };
 
-    this.sendEvent(event);
+    void this.sendEvent(event);
   }
 
   trackHoverPreview(product: any, duration: number, position: string, triggered: boolean): void {
@@ -179,7 +179,7 @@ class QuickViewAnalytics {
       }
     };
 
-    this.sendEvent(event);
+    void this.sendEvent(event);
   }
 
   trackQuickViewConversion(
@@ -207,7 +207,7 @@ class QuickViewAnalytics {
       }
     };
 
-    this.sendEvent(event);
+    void this.sendEvent(event);
   }
 
   trackTabSwitch(product: any, fromTab: string, toTab: string): void {
@@ -228,7 +228,7 @@ class QuickViewAnalytics {
       }
     };
 
-    this.sendEvent(event);
+    void this.sendEvent(event);
   }
 
   trackMobileInteraction(product: any, interaction: 'swipe' | 'tap' | 'long_press'): void {
@@ -249,7 +249,7 @@ class QuickViewAnalytics {
       }
     };
 
-    this.sendEvent(event);
+    void this.sendEvent(event);
   }
 
   private getPriceRange(price?: number): string {

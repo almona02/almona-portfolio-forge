@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PatternLibraryWizard - Tier 2: Pattern Library (5-10 clicks, 2-3 minutes)
  * 
  * For intermediate users (8% of projects):
@@ -198,7 +198,7 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
               </Button>
               {selectedPattern && (
                 <Button
-                  onClick={handleGenerate}
+                  onClick={() => void handleGenerate()}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   Generate Window

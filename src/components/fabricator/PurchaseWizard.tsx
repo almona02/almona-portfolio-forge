@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+﻿import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Dialog, 
   DialogContent, 
@@ -322,7 +322,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
       }
     } catch (error) {
       console.error('Purchase failed:', error);
-      const errorMessage = (error as any)?.message || (error as any)?.details || (error as any)?.error_description || 'Unknown error';
+      const errorMessage = (error as { message?: string; details?: string; error_description?: string })?.message || (error as { message?: string; details?: string; error_description?: string })?.details || (error as { message?: string; details?: string; error_description?: string })?.error_description || 'Unknown error';
       toast.error(`Failed to record stock intake: ${errorMessage}`);
     } finally {
       submitting.current = false;
@@ -719,7 +719,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                 <Button 
                   className="bg-green-600 hover:bg-green-700"
                   disabled={loading || !!validationError || !userId}
-                  onClick={handlePurchase}
+                  onClick={() => void handlePurchase()}
                 >
                   {loading ? 'Recording...' : 'Record stock intake'}
                   <Check className="ml-2 h-4 w-4" />

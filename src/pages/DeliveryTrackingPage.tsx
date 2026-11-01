@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Delivery Tracking Page - ALMONA Gold Tier
  * 
  * Delivery evidence preview (demo only) with:
@@ -112,7 +112,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
         setContextLoading(true);
         setContextError(null);
 
-        (async () => {
+        void (async () => {
             try {
                 if (!user?.id) {
                     throw new Error('Authenticated operator required for delivery recording.');
@@ -856,7 +856,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                                 </div>
                             </div>
                             <Button
-                                onClick={handleCaptureGPS}
+                                onClick={() => void handleCaptureGPS()}
                                 variant="outline"
                                 size="sm"
                                 className="w-full"
@@ -875,7 +875,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                                 </Alert>
                             )}
                             <Button
-                                onClick={handleCaptureGPS}
+                                onClick={() => void handleCaptureGPS()}
                                 disabled={isCapturingGPS}
                                 className="w-full bg-amber-700/30 hover:bg-amber-700/40 border-amber-600/50 text-amber-200"
                             >
@@ -915,7 +915,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                             />
                         )}
                         <Button
-                            onClick={handlePhotoCapture}
+                            onClick={() => void handlePhotoCapture()}
                             variant="outline"
                             className="w-full flex items-center gap-2"
                         >
@@ -950,7 +950,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                             )}
                         </div>
                         <Button
-                            onClick={handleQRScan}
+                            onClick={() => void handleQRScan()}
                             disabled={isScanning}
                             variant="outline"
                             className="w-full flex items-center gap-2"
@@ -985,8 +985,8 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                             ref={signatureCanvasRef}
                             onMouseDown={handleSignatureStart}
                             onMouseMove={handleSignatureMove}
-                            onMouseUp={handleSignatureEnd}
-                            onMouseLeave={handleSignatureEnd}
+                            onMouseUp={() => void handleSignatureEnd()}
+                            onMouseLeave={() => void handleSignatureEnd()}
                             className="w-full h-48 cursor-crosshair bg-white/5 rounded"
                         />
                     </div>

@@ -4,7 +4,11 @@
  */
 
 // Lazy import pdf-lib to reduce initial bundle size
-let PDFDocument: any, rgb: any, StandardFonts: any;
+import type { PDFDocument as PDFDocumentInstance, PDFPage, PDFFont } from 'pdf-lib';
+type PdfLibModule = typeof import('pdf-lib');
+let PDFDocument: PdfLibModule['PDFDocument'];
+let rgb: PdfLibModule['rgb'];
+let StandardFonts: PdfLibModule['StandardFonts'];
 import { generatePatternVisualization, generateWindowUnitsRow } from '@/lib/exports/windowSnapshotGenerator';
 import { supabase } from '@/lib/supabase';
 import { validateOptimizationReconciliation } from '@/lib/fabricator/validation/WorkflowValidator';
@@ -38,15 +42,15 @@ export interface PDFOptions {
 }
 
 export class PDFExportService {
-  private pdfDoc: any;
+  private pdfDoc!: PDFDocumentInstance;
   private branding: CompanyBranding;
   private pageWidth: number;
   private pageHeight: number;
   private margin: number;
   private currentY: number;
-  private currentPage: any;
-  private font: any;
-  private boldFont: any;
+  private currentPage!: PDFPage;
+  private font!: PDFFont;
+  private boldFont!: PDFFont;
   private pageNumber: number = 1;
 
   constructor(branding: CompanyBranding) {
@@ -130,7 +134,7 @@ export class PDFExportService {
               }
             }, 'image/png');
           } catch (error) {
-            reject(error);
+            reject(new Error(String(error)));
           }
         };
         img.onerror = () => reject(new Error('Failed to load SVG image'));
@@ -330,7 +334,7 @@ export class PDFExportService {
     await this.addFooter();
 
     const pdfBytes = await this.pdfDoc.save();
-    return new Blob([pdfBytes], { type: 'application/pdf' });
+    return new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
   }
 
   /**
@@ -434,7 +438,7 @@ export class PDFExportService {
     await this.addFooter();
 
     const pdfBytes = await this.pdfDoc.save();
-    return new Blob([pdfBytes], { type: 'application/pdf' });
+    return new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
   }
 
   /**
@@ -504,7 +508,7 @@ export class PDFExportService {
     await this.addFooter();
 
     const pdfBytes = await this.pdfDoc.save();
-    return new Blob([pdfBytes], { type: 'application/pdf' });
+    return new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
   }
 
   private async addHeader() {

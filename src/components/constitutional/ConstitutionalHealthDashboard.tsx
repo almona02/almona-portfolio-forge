@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Constitutional Health Dashboard
  * Real-time monitoring of AICS-001 compliance
  */
@@ -195,7 +195,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={loadData}
+                        onClick={() => void loadData()}
                         className="border-slate-600 text-slate-300"
                     >
                         <RefreshCw className="w-4 h-4 mr-2" />

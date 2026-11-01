@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CustomerRemindersManager Component
  * 
  * Priority 4: Customers Page Upgrade - Reminder Management UI
@@ -110,7 +110,7 @@ export const CustomerRemindersManager: React.FC<CustomerRemindersManagerProps> =
      * Initial load
      */
     useEffect(() => {
-        loadReminders();
+        void loadReminders();
     }, [loadReminders]);
 
     /**
@@ -316,7 +316,7 @@ export const CustomerRemindersManager: React.FC<CustomerRemindersManagerProps> =
                                             <div className="flex items-start gap-4">
                                                 <Checkbox
                                                     checked={reminder.is_completed}
-                                                    onCheckedChange={() => handleToggleComplete(reminder)}
+                                                    onCheckedChange={() => void handleToggleComplete(reminder)}
                                                     aria-label={`Mark "${reminder.title}" as ${reminder.is_completed ? 'incomplete' : 'complete'}`}
                                                 />
                                                 <div className="flex-1 min-w-0 space-y-2">
@@ -387,7 +387,7 @@ export const CustomerRemindersManager: React.FC<CustomerRemindersManagerProps> =
                                             <div className="flex items-start gap-4">
                                                 <Checkbox
                                                     checked={reminder.is_completed}
-                                                    onCheckedChange={() => handleToggleComplete(reminder)}
+                                                    onCheckedChange={() => void handleToggleComplete(reminder)}
                                                     aria-label={`Mark "${reminder.title}" as incomplete`}
                                                 />
                                                 <div className="flex-1 min-w-0 space-y-2">
@@ -491,7 +491,7 @@ export const CustomerRemindersManager: React.FC<CustomerRemindersManagerProps> =
                             Cancel
                         </Button>
                         <Button
-                            onClick={handleSave}
+                            onClick={() => void handleSave()}
                             disabled={isSaving || !reminderTitle.trim() || !reminderDate}
                         >
                             {isSaving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
@@ -514,7 +514,7 @@ export const CustomerRemindersManager: React.FC<CustomerRemindersManagerProps> =
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={isSaving}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={handleDelete}
+                            onClick={() => void handleDelete()}
                             disabled={isSaving}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >

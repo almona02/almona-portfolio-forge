@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Pricing Configuration Panel
  * 
  * In-app pricing settings for EngineeringBay
@@ -379,7 +379,7 @@ export const PricingConfigPanel: React.FC<PricingConfigPanelProps> = ({
               {onSave && (
                 <Button
                   size="sm"
-                  onClick={handleSave}
+                  onClick={() => void handleSave()}
                   disabled={saving}
                   className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white"
                 >

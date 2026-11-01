@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Design automation Suggestor
  * Analyzes drawn shapes in real-time and suggests best-fitting profiles from library
  */
@@ -120,7 +120,7 @@ export class DesignAISuggestor {
 
     if (analysis.spanLength && profile.specifications?.maxSpanMm) {
       if (analysis.spanLength <= profile.specifications.maxSpanMm) {
-        reasons.push(`Supports span up to ${profile.specifications.maxSpanMm}mm`);
+        reasons.push(`Supports span up to ${profile.specifications.maxSpanMm as string}mm`);
       }
     }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRegionDetection } from '../../hooks/useRegionDetection';
 import { useRegionalConfig } from '../../hooks/useRegionDetection';
@@ -9,7 +9,7 @@ const LocalizationTest: React.FC = () => {
   const { config } = useRegionalConfig();
 
   const handleLanguageChange = (language: string) => {
-    i18n.changeLanguage(language);
+    void i18n.changeLanguage(language);
   };
 
   const handleRegionChange = (region: 'TR' | 'EG' | 'DEFAULT') => {

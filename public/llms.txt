@@ -1,0 +1,20 @@
+# ALMONA
+
+> ALMONA provides YILMAZ machinery in Egypt, machinery services, and Fabricator Pro software for aluminium and UPVC fabrication workflows.
+
+## Machinery and company information
+
+- [Machinery in Egypt, Arabic](https://www.almona02.com/yilmaz-machines-egypt): Public machinery overview.
+- [Machinery in Egypt, English](https://www.almona02.com/yilmaz-machines-egypt-en): Public machinery overview in English.
+- [Dealer verification, Arabic](https://www.almona02.com/dealer-verification): Company and dealer information.
+- [Dealer verification, English](https://www.almona02.com/dealer-verification-en): Company and dealer information in English.
+- [Machine catalogue](https://www.almona02.com/products/machines): Models, specifications and documentation.
+- [Services](https://www.almona02.com/services): Maintenance, support and training enquiries.
+- [Contact ALMONA](https://www.almona02.com/contact): Contact and quotation enquiries.
+
+## Fabricator Pro
+
+- [Software overview, Arabic](https://www.almona02.com/fabricator-pro-software): Measurement, design, bills of materials, stock optimization and quoting workflows.
+- [Software overview, English](https://www.almona02.com/fabricator-pro-software-en): English software overview.
+
+Manufacturing output requires approved system data and operator review. Obtain a written quotation for current pricing, availability and service terms. This document is a public navigation summary; it does not grant access to accounts, private data or authenticated operations.

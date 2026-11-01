@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @tier Tier 1 Presentation (Mobile-Optimized Technician Interface)
  * @constitutional_compliance AICS-001 §7 (Presentation layer, no execution)
  * @authority None - Data collection only, triggers Tier 2 advisory
@@ -229,7 +229,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
 
       {/* Form */}
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form onSubmit={(e) => { void form.handleSubmit(handleSubmit)(e); }} className="space-y-4">
           {/* Machine Information */}
           <Card>
             <CardHeader>

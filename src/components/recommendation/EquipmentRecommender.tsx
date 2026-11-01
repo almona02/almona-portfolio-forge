@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRegionDetection } from '@/hooks/useRegionDetection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -67,7 +67,7 @@ export const EquipmentRecommender: React.FC<EquipmentRecommenderProps> = ({
     };
 
     if (customerProfile && machines.length > 0) {
-      fetchRecommendations();
+      void fetchRecommendations();
     }
   }, [customerProfile, machines, regionState.region]);
 

@@ -517,7 +517,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                             <div className="text-sm text-white font-semibold">Confirm logout?</div>
                             <div className="flex gap-2">
                               <button
-                                onClick={handleLogout}
+                                onClick={() => void handleLogout()}
                                 disabled={isLoggingOut}
                                 className="flex-1 px-3 py-2 text-sm font-semibold text-white rounded-lg bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                               >
@@ -675,7 +675,8 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                         <span className="text-sm sm:text-base">My Portal</span>
                       </Link>
                       <button
-                        onClick={async () => {
+                        onClick={() => {
+                          void (async () => {
                           try {
                             if (onLogout) {
                               onLogout();
@@ -685,6 +686,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                           } finally {
                             closeAllDropdowns();
                           }
+                          })();
                         }}
                         className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200 text-left"
                         aria-label="Logout"

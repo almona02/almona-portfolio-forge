@@ -121,7 +121,7 @@ export const ContractAgreement: React.FC<{ contract: ServiceContract; visits: Se
         {/* Header */}
         <div className="border-b-2 border-gray-900 pb-4 text-center">
           <h1 className="text-2xl font-bold tracking-tight">ALMONA SERVICE CONTRACT</h1>
-          <p className="text-sm text-gray-600 mt-1">عقد خدمة — شركة ألمونا</p>
+          <p className="text-sm text-gray-600 mt-1">عقد خدمة — شركة المُنى</p>
           <p className="text-xs text-gray-500 mt-2">Contract No. {contract.id.slice(0, 8).toUpperCase()} · Status: {contract.status}</p>
         </div>
 
@@ -213,7 +213,7 @@ export const ContractAgreement: React.FC<{ contract: ServiceContract; visits: Se
         {/* Signature + stamp */}
         <div className="mt-8 grid grid-cols-2 gap-6 text-sm">
           <div>
-            <div className="font-semibold">For ALMONA Co. · عن شركة ألمونا</div>
+            <div className="font-semibold">For ALMONA Co. · عن شركة المُنى</div>
             <div className="mt-8">Signature / التوقيع: ____________________</div>
             <div className="mt-3">Name / الاسم: __________________________</div>
             <div className="mt-3">Title / الصفة: __________________________</div>

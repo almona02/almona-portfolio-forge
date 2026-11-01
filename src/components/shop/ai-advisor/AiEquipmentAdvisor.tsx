@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/ui/ui/dialog';
 import { Input } from '@/shared/ui/ui/input';
 import { Button } from '@/shared/ui/ui/button';
@@ -383,7 +383,7 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
         </Tabs>
 
         <Button 
-          onClick={handleSubmit}
+          onClick={() => void handleSubmit()}
           disabled={isLoading || (!inputValue && !imagePreview)}
           className="w-full"
         >

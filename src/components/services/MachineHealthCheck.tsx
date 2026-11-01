@@ -1,4 +1,4 @@
-import { Button } from '@/shared/ui/ui/button';
+﻿import { Button } from '@/shared/ui/ui/button';
 import { useToast } from '@/shared/ui/ui/use-toast';
 import { useEffect, useState } from 'react';
 import { detectFaults } from '../../lib/ai/faultDetection';
@@ -156,7 +156,7 @@ export const MachineHealthCheck = () => {
             Record machine sound to detect blade wear and other issues
           </p>
           <Button 
-            onClick={handleAudioRecord} 
+            onClick={() => void handleAudioRecord()}
             disabled={isListening}
             className="w-full"
           >

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Automated Quote Generation Engine
  * Calculates pricing with profit margins and cost analysis
  */
@@ -211,7 +211,7 @@ export class QuotingEngine {
     const glazingPrice = this.applyMarkup(glazingCost, this.config.glazingMarkup);
     lineItems.push({
       id: 'glazing',
-      description: `${project.glazing.type} Glazing Unit`,
+      description: `${project.glazing.type as string} Glazing Unit`,
       quantity: 1,
       unitPrice: glazingPrice,
       totalPrice: glazingPrice,
@@ -290,7 +290,7 @@ export class QuotingEngine {
       technicalSummary: {
         systems: [project.type],
         glazingSummary: project.glazing
-          ? `${project.glazing.type} glazing`
+          ? `${project.glazing.type as string} glazing`
           : undefined,
         finishSummary: project.color ? `Profiles finished in ${project.color}` : undefined,
       },

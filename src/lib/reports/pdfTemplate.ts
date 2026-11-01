@@ -1,4 +1,7 @@
-let PDFDocument: any, rgb: any, StandardFonts: any;
+type PdfLibModule = typeof import('pdf-lib');
+let PDFDocument: PdfLibModule['PDFDocument'];
+let rgb: PdfLibModule['rgb'];
+let StandardFonts: PdfLibModule['StandardFonts'];
 import { FabricationCosts } from './costCalculator';
 import { MACHINE_SPECS } from './pricing';
 
@@ -19,9 +22,9 @@ export async function generatePDFReport(
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   
-  const title = isArabic ? 'تقرير التصنيع' : 'Fabrication Report';
-  const machineTitle = isArabic ? 'مواصفات الماكينة' : 'Machine Specifications';
-  const costTitle = isArabic ? 'تفاصيل التكاليف' : 'Cost Breakdown';
+  const title = isArabic ? '????? ???????' : 'Fabrication Report';
+  const machineTitle = isArabic ? '??????? ????????' : 'Machine Specifications';
+  const costTitle = isArabic ? '?????? ????????' : 'Cost Breakdown';
   
   // Draw title
   page.drawText(title, {
@@ -44,10 +47,10 @@ export async function generatePDFReport(
   
   const specsText = isArabic 
     ? [
-        `القوة: ${machine.power} كيلو واط`,
-        `أقصى طول قطع: ${machine.maxCutLength} متر`,
-        `الوزن: ${machine.weight} كجم`,
-        `السعر: ${machine.price.toLocaleString()} جنيه`
+        `?????: ${machine.power} ???? ???`,
+        `???? ??? ???: ${machine.maxCutLength} ???`,
+        `?????: ${machine.weight} ???`,
+        `?????: ${machine.price.toLocaleString()} ????`
       ]
     : [
         `Power: ${machine.power} kW`,
@@ -77,12 +80,12 @@ export async function generatePDFReport(
   
   const costText = isArabic
     ? [
-        `تكلفة المواد: ${costs.materialCost.toLocaleString()} جنيه`,
-        `تكلفة الملحقات: ${costs.accessoryCost.toLocaleString()} جنيه`,
-        `تكلفة الطاقة: ${costs.energyCost.toLocaleString()} جنيه`,
-        `تكلفة الشفرات: ${costs.bladeCost.toLocaleString()} جنيه`,
-        `تكلفة العمالة: ${costs.laborCost.toLocaleString()} جنيه`,
-        `إجمالي التكلفة: ${costs.totalCost.toLocaleString()} جنيه`
+        `????? ??????: ${costs.materialCost.toLocaleString()} ????`,
+        `????? ????????: ${costs.accessoryCost.toLocaleString()} ????`,
+        `????? ??????: ${costs.energyCost.toLocaleString()} ????`,
+        `????? ???????: ${costs.bladeCost.toLocaleString()} ????`,
+        `????? ???????: ${costs.laborCost.toLocaleString()} ????`,
+        `?????? ???????: ${costs.totalCost.toLocaleString()} ????`
       ]
     : [
         `Material cost: EGP ${costs.materialCost.toLocaleString()}`,
@@ -105,7 +108,7 @@ export async function generatePDFReport(
   
   // Add comparison section
   const comparisonTitle = isArabic 
-    ? 'مقارنة بين الماكينات' 
+    ? '?????? ??? ?????????' 
     : 'Machine Comparison';
   
   page.drawText(comparisonTitle, {

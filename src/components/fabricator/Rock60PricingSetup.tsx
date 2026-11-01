@@ -1,4 +1,4 @@
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+﻿import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useRegionalConfig } from '@/hooks/useRegionDetection';
 import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
@@ -95,7 +95,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   // AND create virtual profiles from system pack data for profiles not yet in inventory
   const systemProfiles = useMemo(() => {
     const inventoryProfiles = profiles.filter((p) => {
-      const specs = p.specifications as any;
+      const specs = p.specifications;
       const hasSystem = 
         p.systemBrand || 
         specs?.window_system || 
@@ -211,7 +211,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
     };
     
     systemProfiles.forEach((profile) => {
-      const specs = profile.specifications as any;
+      const specs = profile.specifications;
       const rawSystemName = 
         specs?.window_system || 
         profile.systemBrand || 
@@ -275,14 +275,14 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   // Get system name from profile
   const systemName = useMemo(() => {
     if (!selectedProfile) return null;
-    const specs = selectedProfile.specifications as any;
+    const specs = selectedProfile.specifications;
     return specs?.window_system || selectedProfile.systemBrand || specs?.systemPackId || 'Unknown';
   }, [selectedProfile]);
 
   // Use generic key: system_pricing (with fallback to rock60_pricing for backward compatibility)
   const existingPricing = useMemo(() => {
     if (!selectedProfile) return undefined;
-    const specs = selectedProfile.specifications as any;
+    const specs = selectedProfile.specifications;
     return (specs?.system_pricing || specs?.rock60_pricing) as
       | (Rock60PricingState & { initialized?: boolean })
       | undefined;
@@ -291,7 +291,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   // Get system pack profiles from specifications - includes ALL profiles from system pack data
   const systemPackProfiles = useMemo(() => {
     if (!selectedProfile) return [];
-    const specs = selectedProfile.specifications as any;
+    const specs = selectedProfile.specifications;
     const systemLabel = systemName || '';
     
     // Get profiles from system pack data
@@ -423,7 +423,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   // Update state when profile changes
   useEffect(() => {
     if (selectedProfile) {
-      const specs = selectedProfile.specifications as any;
+      const specs = selectedProfile.specifications;
       const pricing = (specs?.system_pricing || specs?.rock60_pricing) as
         | (Rock60PricingState & { initialized?: boolean })
         | undefined;
@@ -661,7 +661,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
               </SelectTrigger>
               <SelectContent className="max-h-[300px]">
                 {profilesBySystem[systemName || '']?.map((profile) => {
-                  const specs = profile.specifications as any;
+                  const specs = profile.specifications;
                   const code = specs?.supplierCode || specs?.internalCode || profile.name.replace('Profile ', '');
                   const role = specs?.profileRole || 'other';
                   const isVirtual = profile.id.startsWith('virtual-');
@@ -1043,7 +1043,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
         <div className="flex justify-end">
           <Button
             size="sm"
-            onClick={handleSave}
+            onClick={() => void handleSave()}
             disabled={saving || !userId}
             className="btn-primary"
           >

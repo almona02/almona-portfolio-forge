@@ -1,4 +1,4 @@
-import { MeasurementData, WindowComponent, Profile, WindowUnit } from '@/types/fabricator';
+﻿import { MeasurementData, WindowComponent, Profile, WindowUnit } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateEgyptianStandards } from './validation/egyptianValidator';
 import { enhanceValidationWithConsequences, type ValidationErrorWithConsequences } from '@/lib/authority/consequenceMapper';
@@ -288,7 +288,7 @@ export function validateProject(
 export function deriveSystemConstraintsFromProfiles(profiles: Profile[]): SystemConstraints | null {
   // 1) Prefer explicit constraints from profile.specifications (existing behaviour)
   for (const profile of profiles) {
-    const specs = profile.specifications as any;
+    const specs = profile.specifications;
     if (specs && typeof specs.constraints === 'object') {
       const c = specs.constraints;
       return {

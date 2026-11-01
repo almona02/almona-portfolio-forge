@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SwiftXR Integration Test Page
  * Test all SwiftXR features in browser
  */
@@ -180,7 +180,7 @@ export default function SwiftXRTestPage() {
             {/* Test Controls */}
             <div className="flex gap-2">
               <Button
-                onClick={runAllTests}
+                onClick={() => void runAllTests()}
                 disabled={isRunning}
                 className="swiftxr-launch-button"
               >
@@ -197,7 +197,7 @@ export default function SwiftXRTestPage() {
                 )}
               </Button>
               <Button
-                onClick={testLaunch}
+                onClick={() => void testLaunch()}
                 variant="outline"
                 className="btn-primary"
               >

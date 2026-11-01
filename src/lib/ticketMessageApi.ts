@@ -1,7 +1,34 @@
 import { supabase } from '@/lib/supabase'
+import type { Database } from '@/types/database'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = supabase as any
+// Local contract for 20261018200000_ticket_messaging_sharing.sql until schema types are regenerated.
+type TicketShareRow = {
+  id: string
+  ticket_id: string
+  token: string
+  created_by: string | null
+  expires_at: string | null
+  created_at: string
+}
+type TicketMessagingDatabase = {
+  public: {
+    Tables: {
+      ticket_messages: Database['public']['Tables']['ticket_messages'] & { Relationships: [] }
+      ticket_shares: {
+        Row: TicketShareRow
+        Insert: Pick<TicketShareRow, 'ticket_id' | 'token'> & Partial<Omit<TicketShareRow, 'ticket_id' | 'token'>>
+        Update: Partial<TicketShareRow>
+        Relationships: []
+      }
+    }
+    Views: Record<never, never>
+    Functions: {
+      get_shared_ticket: { Args: { p_token: string }; Returns: SharedTicket }
+    }
+  }
+}
+const db = supabase as unknown as SupabaseClient<TicketMessagingDatabase>
 
 export interface TicketAttachment {
   filename: string
@@ -86,6 +113,6 @@ export const ticketMessageApi = {
   async getSharedTicket(token: string): Promise<SharedTicket> {
     const { data, error } = await db.rpc('get_shared_ticket', { p_token: token })
     if (error) throw error
-    return data as SharedTicket
+    return data
   },
 }

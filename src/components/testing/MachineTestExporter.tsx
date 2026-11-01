@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MachineTestExporter - Export Test Windows for Machine Validation
  * 
  * UI component for generating and exporting test windows
@@ -123,7 +123,7 @@ export const MachineTestExporter: React.FC = () => {
             </div>
 
             <Button
-              onClick={handleExport}
+              onClick={() => void handleExport()}
               className="w-full bg-blue-600 hover:bg-blue-700"
               disabled={exported}
             >

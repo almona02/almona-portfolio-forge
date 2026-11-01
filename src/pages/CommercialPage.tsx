@@ -1,4 +1,4 @@
-import { InvoiceDetailDialog } from '@/components/commercial/InvoiceDetailDialog';
+﻿import { InvoiceDetailDialog } from '@/components/commercial/InvoiceDetailDialog';
 import { InvoiceManagementDashboard } from '@/components/commercial/InvoiceManagementDashboard';
 import { PaymentReconciliation } from '@/components/commercial/PaymentReconciliation';
 import { QuoteInvoiceTemplateLibrary } from '@/components/commercial/QuoteInvoiceTemplateLibrary';
@@ -728,7 +728,7 @@ const CommercialPageComponent: React.FC = () => {
       }
     };
 
-    loadExchangeRates();
+    void loadExchangeRates();
   }, [displayCurrency, availableCurrencies]);
 
   // Convert amount to display currency
@@ -1322,13 +1322,13 @@ const CommercialPageComponent: React.FC = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-[#0f0f0f] border-amber-600/30">
                     <DropdownMenuItem
-                      onClick={() => handleBulkExport('quotes', 'excel')}
+                      onClick={() => void handleBulkExport('quotes', 'excel')}
                       className="text-amber-200 hover:bg-amber-500/10 cursor-pointer"
                     >
                       Export to Excel
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => handleBulkExport('quotes', 'csv')}
+                      onClick={() => void handleBulkExport('quotes', 'csv')}
                       className="text-amber-200 hover:bg-amber-500/10 cursor-pointer"
                     >
                       Export to CSV
@@ -1428,7 +1428,7 @@ const CommercialPageComponent: React.FC = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handleDownloadQuotePDF(quote)}
+                          onClick={() => void handleDownloadQuotePDF(quote)}
                           disabled={downloadingPDF?.type === 'quote' && downloadingPDF?.id === quote.id}
                           className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10 text-xs"
                         >
@@ -1507,13 +1507,13 @@ const CommercialPageComponent: React.FC = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-[#0f0f0f] border-amber-600/30">
                     <DropdownMenuItem
-                      onClick={() => handleBulkExport('invoices', 'excel')}
+                      onClick={() => void handleBulkExport('invoices', 'excel')}
                       className="text-amber-200 hover:bg-amber-500/10 cursor-pointer"
                     >
                       Export to Excel
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => handleBulkExport('invoices', 'csv')}
+                      onClick={() => void handleBulkExport('invoices', 'csv')}
                       className="text-amber-200 hover:bg-amber-500/10 cursor-pointer"
                     >
                       Export to CSV
@@ -1643,7 +1643,7 @@ const CommercialPageComponent: React.FC = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleDownloadInvoicePDF(invoice)}
+                            onClick={() => void handleDownloadInvoicePDF(invoice)}
                             disabled={downloadingPDF?.type === 'invoice' && downloadingPDF?.id === invoice.id}
                             className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10 text-xs"
                           >
@@ -1758,7 +1758,7 @@ const CommercialPageComponent: React.FC = () => {
           <button
             onClick={() => {
               completeStep('commercial');
-              navigate(`/fabricator/studio/projects/${projectId}/positions/${poseId}/production`);
+              void navigate(`/fabricator/studio/projects/${projectId}/positions/${poseId}/production`);
             }}
             className="group relative px-8 py-4 bg-gradient-to-r from-green-500 via-green-600 to-green-500 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
           >
@@ -1805,7 +1805,7 @@ const CommercialPageComponent: React.FC = () => {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmBulkAction}
+              onClick={() => void confirmBulkAction()}
               className="bg-amber-500 hover:bg-amber-600 text-white"
             >
               Confirm

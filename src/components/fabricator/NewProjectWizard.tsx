@@ -1,4 +1,4 @@
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+﻿import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
 import { supabase } from '@/lib/supabase';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -101,7 +101,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
   );
   const [customSystems, setCustomSystems] = useState<any[]>(() => loadCustomSystems());
   const [showTuningStudio, setShowTuningStudio] = useState(false);
-  const [tuningInitialSystem, setTuningInitialSystem] = useState<any | null>(null);
+  const [tuningInitialSystem, setTuningInitialSystem] = useState<any>(null);
 
   const allSystems = useMemo(() => [...SYSTEM_PACKS, ...customSystems], [customSystems]);
 

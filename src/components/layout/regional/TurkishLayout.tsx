@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import ConditionalNavbar from '../ConditionalNavbar';
 import Footer from '../Footer';
+import MarketplaceFooter from '@/components/used-machines/MarketplaceFooter';
 
 interface TurkishLayoutProps {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ export const TurkishLayout: React.FC<TurkishLayoutProps> = ({
   const isFabricatorRoute = location.pathname.startsWith('/fabricator') || location.pathname.startsWith('/fabricator-workflow');
   const isBatchCutListDemo = location.pathname === '/demo/batch-cut-list' || location.pathname === '/batch-cut-list-demo';
   const isAdminRoute = location.pathname === '/admin';
+  const isMarketplaceRoute = location.pathname.startsWith('/used-machines') || location.pathname.startsWith('/usedmachines');
   const _rtl = isRTL(i18n.language);
   
   return (
@@ -43,7 +45,8 @@ export const TurkishLayout: React.FC<TurkishLayoutProps> = ({
       </div>
 
       {/* Footer - Hidden for fabricator routes and batch cut list demo */}
-      {!isFabricatorRoute && !isBatchCutListDemo && !isAdminRoute && <Footer />}
+      {!isFabricatorRoute && !isBatchCutListDemo && !isAdminRoute && !isMarketplaceRoute && <Footer />}
+      {isMarketplaceRoute && <MarketplaceFooter />}
     </div>
   );
 };

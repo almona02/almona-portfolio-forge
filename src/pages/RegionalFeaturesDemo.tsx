@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Regional Features Demo Page
  * Showcases all implemented regional features including:
  * - Dynamic region detection
@@ -66,7 +66,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={refreshRegion}
+                  onClick={() => void refreshRegion()}
                   className="border-gray-600 text-gray-300 hover:bg-gray-700"
                 >
                   {t('demo.regionStatus.refresh', 'Refresh')}

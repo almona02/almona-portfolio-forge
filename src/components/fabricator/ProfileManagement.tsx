@@ -181,7 +181,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
   const getTuningStatus = (profile: Profile): 'untuned' | 'in_progress' | 'tuned' => {
     const specs = profile.specifications || {};
-    const raw = (specs as any).tuningStatus as 'untuned' | 'in_progress' | 'tuned' | undefined;
+    const raw = specs.tuningStatus as 'untuned' | 'in_progress' | 'tuned' | undefined;
     if (raw === 'tuned' || raw === 'in_progress' || raw === 'untuned') return raw;
     if ((profile.calibrations && profile.calibrations.length > 0) || profile.machiningMacros?.length) {
       return 'in_progress';
@@ -209,7 +209,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       else if (status === 'in_progress') stats.inProgress += 1;
       else stats.untuned += 1;
 
-      const role = p.profileRole || (p.specifications as any)?.profileRole;
+      const role = p.profileRole || p.specifications?.profileRole;
       if (role && stats.byRole[role]) {
         stats.byRole[role].total += 1;
         if (status === 'tuned') stats.byRole[role].tuned += 1;
@@ -467,7 +467,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           profileRole: specs.profileRole as Profile['profileRole'],
           compatibleAccessories: specs.compatibleAccessories as string[] || [],
           machiningMacros: specs.machiningMacros as MachiningMacro[] || [],
-          technicalDrawings: specs.technicalDrawings as any[] || [],
+          technicalDrawings: specs.technicalDrawings || [],
           systemPackIds: specs.systemPackIds as string[] || [],
           specifications: specs,
           userId: p.user_id,
@@ -524,7 +524,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
             console.debug('[ProfileManagement] Profile change detected:', payload);
           }
           // Use ref to avoid dependency on loadProfiles
-          loadProfilesRef.current();
+          void loadProfilesRef.current();
         }
       )
       .subscribe();
@@ -547,7 +547,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       setHasLoadedOnce(true);
     } else if (userId && !hasLoadedOnce) {
       // Only load if we don't have initial profiles or skipInitialLoad is false
-      loadProfiles();
+      void loadProfiles();
     }
   }, [userId, skipInitialLoad, hasLoadedOnce, initialProfiles, loadProfiles]);
 
@@ -620,10 +620,10 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         const material = p.material?.toLowerCase() || '';
         const width = p.width?.toString() || '';
         const height = p.height?.toString() || '';
-        const code = (p.specifications as any)?.supplierCode?.toLowerCase() ||
-          (p.specifications as any)?.internalCode?.toLowerCase() || '';
-        const role = [p.profileRole, (p.specifications as any)?.profileRole, (p.specifications as any)?.role].filter(Boolean).join(' ').toLowerCase();
-        const identity = [p.id, ...(p.systemPackIds ?? []), (p.specifications as any)?.systemPackId, (p.specifications as any)?.profileCode].filter(Boolean).join(' ').toLowerCase();
+        const code = p.specifications?.supplierCode?.toLowerCase() ||
+          p.specifications?.internalCode?.toLowerCase() || '';
+        const role = [p.profileRole, p.specifications?.profileRole, p.specifications?.role].filter(Boolean).join(' ').toLowerCase();
+        const identity = [p.id, ...(p.systemPackIds ?? []), p.specifications?.systemPackId, p.specifications?.profileCode].filter(Boolean).join(' ').toLowerCase();
 
         return (
           name.includes(query) ||
@@ -749,10 +749,10 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       let effectiveCostPerMeter = formData.costPerMeter || 0;
       if (
         formData.material === 'aluminum' &&
-        typeof (specs as any).costPerKg === 'number' &&
+        typeof specs.costPerKg === 'number' &&
         typeof formData.weightPerMeter === 'number'
       ) {
-        effectiveCostPerMeter = (specs as any).costPerKg * formData.weightPerMeter;
+        effectiveCostPerMeter = specs.costPerKg * formData.weightPerMeter;
       }
 
 
@@ -788,7 +788,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       toast.success(t('profileManagement.profileSavedSuccess', 'Profile saved successfully'));
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
-      const detailedError = (err as any)?.message || (err as any)?.details || (err as any)?.error_description || 'Unknown error';
+      const detailedError = (err as { message?: string; details?: string; error_description?: string })?.message || (err as { message?: string; details?: string; error_description?: string })?.details || (err as { message?: string; details?: string; error_description?: string })?.error_description || 'Unknown error';
       trackError('ProfileManagement', 'add_profile', detailedError);
       setError(detailedError);
       toast.error(`Error saving profile: ${detailedError}`);
@@ -821,10 +821,10 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       let effectiveCostPerMeter = formData.costPerMeter || 0;
       if (
         formData.material === 'aluminum' &&
-        typeof (specs as any).costPerKg === 'number' &&
+        typeof specs.costPerKg === 'number' &&
         typeof formData.weightPerMeter === 'number'
       ) {
-        effectiveCostPerMeter = (specs as any).costPerKg * formData.weightPerMeter;
+        effectiveCostPerMeter = specs.costPerKg * formData.weightPerMeter;
       }
 
 
@@ -931,7 +931,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       profileRole: profile.profileRole || (specs.profileRole as Profile['profileRole']) || 'frame',
       compatibleAccessories: profile.compatibleAccessories || (specs.compatibleAccessories as string[]) || [],
       machiningMacros: profile.machiningMacros || (specs.machiningMacros as MachiningMacro[]) || [],
-      technicalDrawings: profile.technicalDrawings || (specs.technicalDrawings as any) || [],
+      technicalDrawings: profile.technicalDrawings || specs.technicalDrawings || [],
       systemPackIds: packIds,
       specifications: specs,
     });
@@ -1331,11 +1331,11 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       <input
                         type="file"
                         accept=".json"
-                        onChange={handleImportJSON}
+                        onChange={(e) => void handleImportJSON(e)}
                         className="hidden"
                       />
                     </Label>
-                    <Button variant="outline" size="sm" onClick={loadProfiles}>
+                    <Button variant="outline" size="sm" onClick={() => void loadProfiles()}>
                       <RefreshCw className="h-4 w-4 mr-2" />
                       {t('profileManagement.refreshProfiles', 'Refresh Profiles')}
                     </Button>
@@ -1424,7 +1424,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 </Select>
 
                 {/* Tuning Status Filter */}
-                <Select value={tuningFilter} onValueChange={(v) => setTuningFilter(v as any)}>
+                <Select value={tuningFilter} onValueChange={(v) => setTuningFilter(v as 'all' | 'tuned' | 'in_progress' | 'untuned')}>
                   <SelectTrigger>
                     <SelectValue placeholder="Tuning Status" />
                   </SelectTrigger>
@@ -1447,7 +1447,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       if (e.key === 'Enter') {
                         const value = parseFloat(e.currentTarget.value);
                         if (!isNaN(value)) {
-                          handleBulkUpdate('costPerMeter', value);
+                          void handleBulkUpdate('costPerMeter', value);
                           e.currentTarget.value = '';
                         }
                       }
@@ -1461,7 +1461,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       if (e.key === 'Enter') {
                         const value = parseFloat(e.currentTarget.value);
                         if (!isNaN(value)) {
-                          handleBulkUpdate('stockQuantity', value);
+                          void handleBulkUpdate('stockQuantity', value);
                           e.currentTarget.value = '';
                         }
                       }
@@ -1505,7 +1505,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       <input
                         type="file"
                         accept=".dxf"
-                        onChange={handleImportDXF}
+                        onChange={(e) => void handleImportDXF(e)}
                         className="hidden"
                       />
                     </Label>
@@ -1644,7 +1644,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                         <Input
                           type="number"
                           step="0.01"
-                          value={(formData.specifications as any)?.costPerKg ?? ''}
+                          value={formData.specifications?.costPerKg ?? ''}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
@@ -1720,7 +1720,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     <div>
                       <Label>Profile Role in System</Label>
                       <Select
-                        value={(formData.specifications as any)?.profileRole || 'frame'}
+                        value={formData.specifications?.profileRole || 'frame'}
                         onValueChange={(value) =>
                           setFormData({
                             ...formData,
@@ -1747,7 +1747,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     <div>
                       <Label>{t('profileManagement.supplierCode', 'Supplier Code')}</Label>
                       <Input
-                        value={(formData.specifications as any)?.supplierCode || ''}
+                        value={formData.specifications?.supplierCode || ''}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
@@ -1763,7 +1763,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     <div>
                       <Label>{t('profileManagement.internalCode', 'Internal Code')}</Label>
                       <Input
-                        value={(formData.specifications as any)?.internalCode || ''}
+                        value={formData.specifications?.internalCode || ''}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
@@ -1880,7 +1880,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     <div>
                       <Label>{t('profileManagement.series', 'Series')}</Label>
                       <Input
-                        value={(formData.specifications as any)?.series || ''}
+                        value={formData.specifications?.series || ''}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
@@ -1897,7 +1897,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       <Label>{t('profileManagement.year', 'Year')}</Label>
                       <Input
                         type="number"
-                        value={(formData.specifications as any)?.year || ''}
+                        value={formData.specifications?.year || ''}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
@@ -1915,7 +1915,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       <Input
                         type="number"
                         step="0.1"
-                        value={(formData.specifications as any)?.glazingMinMm || ''}
+                        value={formData.specifications?.glazingMinMm || ''}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
@@ -1933,7 +1933,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       <Input
                         type="number"
                         step="0.1"
-                        value={(formData.specifications as any)?.glazingMaxMm || ''}
+                        value={formData.specifications?.glazingMaxMm || ''}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
@@ -1951,7 +1951,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       <Input
                         type="number"
                         step="0.1"
-                        value={(formData.specifications as any)?.borderExtraAllowanceMm ?? ''}
+                        value={formData.specifications?.borderExtraAllowanceMm ?? ''}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
@@ -2067,7 +2067,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     {editingId ? (
                       <>
                         <Button
-                          onClick={handleUpdateProfile}
+                          onClick={() => void handleUpdateProfile()}
                           disabled={saving}
                           className="btn-primary"
                         >
@@ -2081,7 +2081,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     ) : (
                       <div className="flex gap-2">
                         <Button
-                          onClick={handleAddProfile}
+                          onClick={() => void handleAddProfile()}
                           disabled={saving}
                           className="btn-primary"
                         >
@@ -2289,7 +2289,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                                   onError={(e) => {
                                     // Fallback to previewImageUrl if thumbnail fails
                                     if (profile.thumbnailUrl && specs.previewImageUrl) {
-                                      (e.target as HTMLImageElement).src = specs.previewImageUrl as string;
+                                      (e.target as HTMLImageElement).src = specs.previewImageUrl;
                                     } else {
                                       (e.target as HTMLImageElement).style.display = 'none';
                                     }
@@ -2312,7 +2312,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                                   <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={(e) => handleUploadPreviewImage(e, profile)}
+                                    onChange={(e) => void handleUploadPreviewImage(e, profile)}
                                     className="hidden"
                                   />
                                 </Label>
@@ -2401,9 +2401,9 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               {/* Profile Preview */}
               <div className="flex items-start gap-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
                 {/* Thumbnail */}
-                {(profileToDelete.thumbnailUrl || (profileToDelete.specifications as any)?.previewImageUrl) && (
+                {(profileToDelete.thumbnailUrl || profileToDelete.specifications?.previewImageUrl) && (
                   <img
-                    src={profileToDelete.thumbnailUrl || (profileToDelete.specifications as any)?.previewImageUrl}
+                    src={profileToDelete.thumbnailUrl || profileToDelete.specifications?.previewImageUrl}
                     alt={profileToDelete.name}
                     className="w-16 h-16 rounded border border-gray-700 object-contain bg-white/5 flex-shrink-0"
                     onError={(e) => {
@@ -2472,7 +2472,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               {t('profileManagement.cancel', 'Cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmDeleteProfile}
+              onClick={() => void confirmDeleteProfile()}
               disabled={isDeleting}
               className="bg-red-600 hover:bg-red-700 text-white focus:ring-red-500"
             >
@@ -2500,7 +2500,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           userId={userId}
           onProfileCreated={(profile) => {
             // Refresh profiles list
-            loadProfiles();
+            void loadProfiles();
             setShowProfileDefinitionWizard(false);
             toast.success(`Profile "${profile.name}" created successfully`);
           }}
@@ -2513,7 +2513,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           profile={tuningProfile}
           userId={userId}
           onClose={() => setTuningProfile(null)}
-          onProfileUpdated={loadProfiles}
+          onProfileUpdated={() => void loadProfiles()}
         />
       )}
 
@@ -2534,7 +2534,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 profile={calibrationProfile}
                 systemPackId={calibrationProfile.systemPackIds?.[0] || 'generic'}
                 userId={userId}
-                onCalibrationComplete={async (calibration) => {
+                onCalibrationComplete={(calibration) => {
+                  void (async (calibration) => {
                   // Update profile immediately with calibration data
                   try {
                     const updatedProfile = {
@@ -2571,13 +2572,14 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       toast.success('Calibration saved and applied immediately');
                       setShowCalibrationDialog(false);
                       setCalibrationProfile(null);
-                      loadProfiles(); // Refresh to show updated data
+                      void loadProfiles(); // Refresh to show updated data
                     }
                   } catch (error) {
                     const err = error instanceof Error ? error : new Error(String(error));
                     trackError('ProfileManagement', 'save_calibration', err.message);
                     toast.error('Failed to save calibration');
                   }
+                })(calibration);
                 }}
               />
             </div>

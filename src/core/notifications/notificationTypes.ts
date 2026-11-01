@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Notification Types
  * 
  * Type definitions and constants for the notification system.
@@ -67,7 +67,7 @@ export interface Notification {
   id: string;
   userId: string;
   channel: NotificationChannel;
-  type: NotificationType | string;
+  type: string;
   title: string;
   message: string;
   metadata?: Record<string, any>;
@@ -81,7 +81,7 @@ export interface Notification {
  * Notification template interface
  */
 export interface NotificationTemplate {
-  type: NotificationType | string;
+  type: string;
   title: string;
   message: string;
   channels: NotificationChannel[];

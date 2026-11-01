@@ -1,4 +1,4 @@
-import ErrorBoundary from '@/components/ErrorBoundary';
+﻿import ErrorBoundary from '@/components/ErrorBoundary';
 import { useAuth } from '@/context/AuthContext';
 import { trackError } from '@/lib/performance-monitoring';
 import { systemPricingService } from '@/lib/pricing';
@@ -114,7 +114,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
       try {
         // Check if any profile in the system pack has system_pricing configured
         const systemPackProfiles = profiles.filter((profile) => {
-          const specs = profile.specifications as any;
+          const specs = profile.specifications;
           const systemName = specs?.window_system || profile.systemBrand || specs?.systemPackId;
           return systemName === project.systemPackId;
         });
@@ -314,7 +314,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
                 size="sm"
                 onClick={() => {
                   const systemPackProfile = profiles.find((p) => {
-                    const specs = p.specifications as any;
+                    const specs = p.specifications;
                     const systemName = specs?.window_system || p.systemBrand || specs?.systemPackId;
                     return systemName === project.systemPackId;
                   });
@@ -646,7 +646,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
           <Button
             size="sm"
             className="btn-primary"
-            onClick={handleGenerateOfferPdf}
+            onClick={() => void handleGenerateOfferPdf()}
             disabled={!quote || exportingPdf || thumbnailGenerating}
           >
             {exportingPdf ? (

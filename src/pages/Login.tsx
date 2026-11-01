@@ -1,4 +1,4 @@
-
+﻿
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button-gold-tier';
@@ -36,7 +36,7 @@ const Login = () => {
       requestAnimationFrame(() => {
         toast.success('Logged in successfully!');
         startTransition(() => {
-          navigate(postLoginPath, { replace: true });
+          void navigate(postLoginPath, { replace: true });
         });
       });
     }
@@ -69,7 +69,7 @@ const Login = () => {
       } catch {
         // ignore storage issues
       }
-      navigate(postLoginPath, { replace: true });
+      void navigate(postLoginPath, { replace: true });
     } catch (error: any) {
       const errorMessage = error?.message || error?.error?.message || 'We were unable to complete your login request. Please verify your credentials and try again.';
       setError(errorMessage);
@@ -127,7 +127,7 @@ const Login = () => {
                   </Alert>
                 </motion.div>
               )}
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
                 <motion.div variants={SLIDE_UP} custom={1}>
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-amber-100/80 font-medium">{t('auth.email', 'Email')}</Label>

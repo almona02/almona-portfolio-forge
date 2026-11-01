@@ -55,10 +55,10 @@ async function testRedisConnection() {
     // Test 8: GetOrSet pattern
     console.log('Test 8: GetOrSet pattern');
     let dbCallCount = 0;
-    const fetchFn = async () => {
+    const fetchFn = () => {
       dbCallCount++;
       console.log(`  📊 Fetching from "database" (call #${dbCallCount})`);
-      return { data: 'from database', timestamp: Date.now() };
+      return Promise.resolve({ data: 'from database', timestamp: Date.now() });
     };
 
     const result1 = await CacheHelper.getOrSet('test:getOrSet', fetchFn, { ttl: 60 });
@@ -150,7 +150,7 @@ async function runTests() {
 
 // Run tests if executed directly
 if (require.main === module) {
-  runTests();
+  void runTests();
 }
 
 export { testRedisConnection, testRedisInfo };

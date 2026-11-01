@@ -42,7 +42,7 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine, isCompact = false, o
       <div className="relative">
         <div className={`${imageHeight} overflow-hidden bg-almona-dark`}>
           {machine.images[0] ? (
-            <img src={machine.images[0]} alt={machine.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+            <img src={machine.images[0]} alt={machine.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-600">{copy('No photo')}</div>
           )}

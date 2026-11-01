@@ -9,8 +9,8 @@ import { useNavigate } from "react-router-dom"
 // We don't import Dialog from ui/dialog because cmdk has its own Dialog implementation
 // capable of global positioning and focus management.
 
-export function CommandPalette() {
-  const [open, setOpen] = React.useState(false)
+export function CommandPalette({ defaultOpen = false }: { defaultOpen?: boolean } = {}) {
+  const [open, setOpen] = React.useState(defaultOpen)
   const navigate = useNavigate()
 
   React.useEffect(() => {
@@ -46,7 +46,9 @@ export function CommandPalette() {
       open={open}
       onOpenChange={setOpen}
       label="Global Command Menu"
-      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[640px] w-full bg-slate-950/90 backdrop-blur-xl border border-slate-800 shadow-2xl rounded-xl z-[100] overflow-hidden animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95 duration-200"
+      overlayClassName="fixed inset-0 z-[1999] bg-black/50"
+      contentClassName="public-command-dialog fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[640px] w-[calc(100%-2rem)] bg-slate-950/95 border border-slate-800 shadow-2xl rounded-xl z-[2000] overflow-hidden"
+      className="w-full"
     >
       <div className="flex items-center border-b border-slate-800 px-3 h-14">
         <Search className="mr-2 h-4 w-4 shrink-0 text-amber-500" />

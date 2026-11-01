@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Email Templates
  * 
  * Gold-tier email template definitions for commercial communications.
@@ -309,7 +309,7 @@ export const getEmailTemplate = (
     case 'payment_confirmation':
       return getPaymentConfirmationTemplate(data);
     default:
-      throw new Error(`Unknown email template type: ${type}`);
+      throw new Error(`Unknown email template type: ${type as string}`);
   }
 };
 

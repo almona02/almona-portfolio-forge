@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GOLD TIER: Detail Integration with LOD Management
  * 
  * Manages performance-critical detail rendering:
@@ -204,7 +204,7 @@ export class DetailIntegrationSystem {
                 if (this.detailCount >= this.config.maxDetails) return;
                 
                 let fastenerMesh;
-                if (fastener.type === 'corner_plate') {
+                if ((fastener.type as string) === 'corner_plate') {
                     fastenerMesh = createCornerPlate(fastener.size);
                 } else {
                     fastenerMesh = createFlatHeadScrew(fastener.size);
@@ -228,9 +228,9 @@ export class DetailIntegrationSystem {
                 if (this.detailCount >= this.config.maxDetails) return;
                 
                 let drainMesh;
-                if (drain.type === 'drain_hole_round') {
+                if ((drain.type as string) === 'drain_hole_round') {
                     drainMesh = createDrainageHole(drain.size);
-                } else if (drain.type === 'drain_hole_slot') {
+                } else if ((drain.type as string) === 'drain_hole_slot') {
                     drainMesh = createDrainageSlot(drain.size, drain.size * 4);
                 } else {
                     // Skip other types for performance
@@ -277,7 +277,7 @@ export class DetailIntegrationSystem {
         if (this.config.enableFasteners) {
             const fasteners = generateFastenersForWindow(windowUnit, 'standard');
             const criticalFasteners = fasteners.filter(f => 
-                f.type === 'screw_flat_head' || f.type === 'corner_plate'
+                (f.type as string) === 'screw_flat_head' || (f.type as string) === 'corner_plate'
             );
             
             criticalFasteners.forEach(fastener => {
@@ -301,7 +301,7 @@ export class DetailIntegrationSystem {
     private generateLowLODDetails(windowUnit: any): void {
         // Only large corner plates for large windows
         const fasteners = generateFastenersForWindow(windowUnit, 'standard');
-        const plates = fasteners.filter(f => f.type === 'corner_plate');
+        const plates = fasteners.filter(f => (f.type as string) === 'corner_plate');
 
         plates.forEach(plate => {
             if (this.detailCount >= this.config.maxDetails / 4) return;

@@ -1,4 +1,4 @@
-import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
+﻿import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import { AlmonaNavbarLogo } from '@/components/ui/AlmonaNavbarLogo';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -597,7 +597,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                         <button
                           key={action.name}
                           onClick={() => {
-                            action.action();
+                            void action.action();
                             setActiveMenu(null);
                           }}
                           className="btn-primary"
@@ -641,7 +641,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                       <button
                         className="btn-primary"
                         onClick={() => {
-                          navigate('/fabricator/settings/branding');
+                          void navigate('/fabricator/settings/branding');
                           setActiveMenu(null);
                         }}
                       >
@@ -706,7 +706,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                   <button
                     key={action.name}
                     onClick={() => {
-                      action.action();
+                      void action.action();
                       setMobileOpen(false);
                     }}
                     className="flex items-center gap-2 p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:text-white hover:border-amber-500/30 transition-all"
@@ -815,7 +815,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                         onClick={() => {
                           if (item.path) {
                             setSearchQuery('');
-                            navigate(item.path);
+                            void navigate(item.path);
                           }
                         }}
                         className="w-full text-left px-4 py-3 hover:bg-white/5 transition-colors flex items-center gap-3"
@@ -848,7 +848,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                               onClick={() => {
                                 if (child.path) {
                                   setSearchQuery('');
-                                  navigate(child.path);
+                                  void navigate(child.path);
                                 }
                               }}
                               className="w-full text-left pl-12 pr-4 py-2 hover:bg-white/5 transition-colors flex items-center gap-3 text-xs"

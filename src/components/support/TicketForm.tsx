@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createTicketZodSchema, UnifiedTicketFormData } from '@/lib/validation/ticket';
@@ -171,7 +171,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
   );
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-6">
       {mode === 'page' && showAttachments && (
         <div className="flex gap-4 border-b border-almona-light/10 pb-2 text-sm">
           {(['details','attachments','preview'] as const).map(t => (

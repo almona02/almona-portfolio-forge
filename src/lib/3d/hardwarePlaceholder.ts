@@ -67,6 +67,58 @@ export const HARDWARE_COLORS = {
  * @param expr Expression like 'sash_right_edge-0.03' or 'sash_height/2'
  * @param context Context object with values like sashWidth, sashHeight, etc.
  */
+/**
+ * Safely evaluate a simple arithmetic expression (digits, + - * /, parentheses)
+ * without the Function constructor (avoids no-implied-eval).
+ */
+function _safeEvalArithmetic(expr: string): number {
+  let pos = 0;
+  const peek = () => expr[pos] ?? '';
+  const skipWs = () => { while (peek() === ' ') pos++; };
+  const parseNumber = (): number => {
+    skipWs();
+    const start = pos;
+    while (/[0-9.]/.test(peek())) pos++;
+    return parseFloat(expr.slice(start, pos));
+  };
+  const parseExpr = (): number => {
+    let v = parseTerm();
+    skipWs();
+    while (peek() === '+' || peek() === '-') {
+      const op = peek();
+      pos++;
+      const rhs = parseTerm();
+      v = op === '+' ? v + rhs : v - rhs;
+      skipWs();
+    }
+    return v;
+  };
+  const parseTerm = (): number => {
+    let v = parseFactor();
+    skipWs();
+    while (peek() === '*' || peek() === '/') {
+      const op = peek();
+      pos++;
+      const rhs = parseFactor();
+      v = op === '*' ? v * rhs : v / rhs;
+      skipWs();
+    }
+    return v;
+  };
+  const parseFactor = (): number => {
+    skipWs();
+    if (peek() === '(') {
+      pos++;
+      const v = parseExpr();
+      skipWs();
+      if (peek() === ')') pos++;
+      return v;
+    }
+    return parseNumber();
+  };
+  return parseExpr();
+}
+
 function _evaluatePosition(expr: string | number, context: Record<string, number>): number {
   if (typeof expr === 'number') return expr;
   
@@ -80,7 +132,7 @@ function _evaluatePosition(expr: string | number, context: Record<string, number
   try {
     // Only allow basic arithmetic operations
     if (/^[0-9+\-*/().\s]+$/.test(result)) {
-      return Function(`"use strict"; return (${result})`)();
+      return _safeEvalArithmetic(result);
     }
   } catch (e) {
     console.warn(`Failed to evaluate position expression: ${expr}`, e);

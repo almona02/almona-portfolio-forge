@@ -514,7 +514,8 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
       // Draw 3D render
       shareCtx.drawImage(threeCanvasRef.current, 0, 0, shareCanvas.width, shareCanvas.height);
 
-      shareCanvas.toBlob(async (blob) => {
+      shareCanvas.toBlob((blob) => {
+        void (async (blob) => {
         if (!blob) return;
 
         const file = new File([blob], 'almona-photo-match.png', { type: 'image/png' });
@@ -554,9 +555,10 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
             track('photo_match_shared', { method: 'clipboard', windowId: windowUnit?.id });
           } catch {
             // If clipboard fails, fall back to download
-            exportPresentation();
+            void exportPresentation();
           }
         }
+      })(blob);
       }, 'image/png');
     } catch (error) {
       console.error('Share error:', error);
@@ -571,10 +573,10 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
   // Toggle fullscreen
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.();
+      void document.documentElement.requestFullscreen?.();
       setIsFullscreen(true);
     } else {
-      document.exitFullscreen?.();
+      void document.exitFullscreen?.();
       setIsFullscreen(false);
     }
   }, []);
@@ -817,11 +819,11 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
 
             <TabsContent value="export" className="space-y-4">
               <div className="space-y-2">
-                <Button onClick={exportPresentation} className="w-full">
+                <Button onClick={() => void exportPresentation()} className="w-full">
                   <Download className="h-4 w-4 mr-2" />
                   Export Presentation
                 </Button>
-                <Button onClick={sharePresentation} variant="outline" className="w-full">
+                <Button onClick={() => void sharePresentation()} variant="outline" className="w-full">
                   <Share2 className="h-4 w-4 mr-2" />
                   Share Presentation
                 </Button>

@@ -174,7 +174,7 @@ export class ZeroDecisionGenerator {
         requiresSpecialTools: false,
         estimatedAssemblyTime: 30
       },
-      maalemAdvice: 'نافذة مستطيلة بسيطة - جاهزة للتصنيع'
+      maalemAdvice: '????? ??????? ????? - ????? ???????'
     };
     
     return this.generateFromNonSymmetricShape(inferredShape, workshopContext);
@@ -185,7 +185,7 @@ export class ZeroDecisionGenerator {
    */
   private mapMachineCapabilities(
     capabilities?: string[]
-  ): MaterialStrategyCalculator['MachineCapabilities'] | undefined {
+  ): MaterialStrategyCalculator['MachineCapabilities'] {
     if (!capabilities) return undefined;
     
     return {

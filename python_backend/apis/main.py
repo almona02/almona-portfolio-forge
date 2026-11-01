@@ -1,6 +1,7 @@
 from datetime import datetime
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from apis.v1 import router as v1_router
 from apis.v2 import business  # , assembly_intelligence
@@ -15,6 +16,7 @@ from core.middleware import (
 from core.connection_pool import get_connection_pool
 from core.monitoring import setup_monitoring, monitoring, get_structured_logger
 from core.health_checks import (
+    HealthStatus,
     get_health_status,
     get_liveness_status,
     get_readiness_status,
@@ -204,36 +206,36 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Comprehensive health check endpoint (Railway-compatible)."""
+    """Comprehensive diagnostic health check (never falsely healthy)."""
     try:
         # Try full health check first
         return await get_health_status()
     except Exception as e:
-        # If health checks fail, return basic status (service is running)
+        # A crashed health check must surface as unhealthy, never as healthy.
         logger = get_structured_logger(__name__)
-        logger.warning(f"Health check error (returning basic status): {e}")
+        logger.error(f"Health check crashed (returning unhealthy): {e}")
         return {
-            "status": "healthy",
+            "status": "unhealthy",
             "timestamp": datetime.utcnow().isoformat(),
-            "note": "Basic health check passed (detailed checks may be unavailable)",
+            "note": "Health check crashed; detailed checks are unavailable",
             "error": str(e) if getattr(settings, "DEBUG", False) else None,
         }
 
 
 @app.get("/health/live")
 async def liveness_probe():
-    """Kubernetes liveness probe endpoint (critical checks only)."""
-    try:
-        return await get_liveness_status()
-    except Exception:
-        # If health checks fail, return basic OK (service is running)
-        return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
+    """Kubernetes liveness probe endpoint (process liveness only)."""
+    return await get_liveness_status()
 
 
 @app.get("/health/ready")
 async def readiness_probe():
-    """Kubernetes readiness probe endpoint (all checks)."""
-    return await get_readiness_status()
+    """Kubernetes readiness probe endpoint (503 when a required dep failed)."""
+    result = await get_readiness_status()
+    status_code = (
+        503 if result.get("status") == HealthStatus.UNHEALTHY.value else 200
+    )
+    return JSONResponse(status_code=status_code, content=result)
 
 
 @app.get("/metrics")

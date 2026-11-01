@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Setup Checklist Widget
  * Shows onboarding progress and guides users through initial setup
  */
@@ -141,7 +141,7 @@ export const SetupChecklist: React.FC<SetupChecklistProps> = ({ userId }) => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate(item.link!)}
+                  onClick={() => void navigate(item.link!)}
                   className="text-xs"
                 >
                   Go

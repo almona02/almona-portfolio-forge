@@ -53,13 +53,13 @@ export function mapProfileRowFromDb(data: Record<string, unknown>): Profile {
   const updatedAtRaw = data.updatedAt ?? data.updated_at;
 
   return {
-    id: String(data.id ?? ''),
-    name: String(data.name ?? ''),
+    id: (data.id as string) ?? '',
+    name: (data.name as string) ?? '',
     material: (data.material as Profile['material']) || 'aluminum',
     width: finiteNumber(data.width, 0),
     height: data.height != null ? finiteNumber(data.height) : undefined,
     thickness: data.thickness != null ? finiteNumber(data.thickness) : undefined,
-    color: String(data.color ?? '#C0C0C0'),
+    color: (data.color as string) ?? '#C0C0C0',
     costPerMeter,
     cuttingAllowance: finiteNumber(
       data.cuttingAllowance ?? data.cutting_allowance,
@@ -83,8 +83,8 @@ export function mapProfileRowFromDb(data: Record<string, unknown>): Profile {
     specifications: specs,
     grainDirection: (data.grainDirection ?? data.grain_direction ?? null) as Profile['grainDirection'],
     userId: (data.userId as string) || (data.user_id as string) || undefined,
-    createdAt: createdAtRaw ? new Date(String(createdAtRaw)) : undefined,
-    updatedAt: updatedAtRaw ? new Date(String(updatedAtRaw)) : undefined,
+    createdAt: createdAtRaw ? new Date(createdAtRaw as string) : undefined,
+    updatedAt: updatedAtRaw ? new Date(updatedAtRaw as string) : undefined,
   };
 }
 

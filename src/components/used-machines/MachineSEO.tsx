@@ -138,7 +138,7 @@ const MachineSEO: React.FC<MachineSEOProps> = ({
         <meta property="og:description" content={machineDescription} />
         <meta property="og:image" content={`https://www.almona02.com${machine.images[0]}`} />
         <meta property="og:url" content={`https://www.almona02.com/used-machines/${machine.id}`} />
-        <meta property="og:site_name" content="Almona Industrial" />
+        <meta property="og:site_name" content="Machines Market" />
         <meta property="product:condition" content="used" />
         <meta property="product:price:amount" content={machine.price.replace(/[^\d]/g, '')} />
         <meta property="product:price:currency" content="EGP" />
@@ -165,24 +165,24 @@ const MachineSEO: React.FC<MachineSEOProps> = ({
   return (
     <Helmet>
       {/* Primary Meta Tags */}
-      <title>Used Machinery Enquiries in Egypt | Almona</title>
-      <meta name="description" content="Browse used aluminum and uPVC machinery in Egypt. CNC centers, cutting machines, welding equipment. Trusted sellers, secure transactions, technical inspections." />
+      <title>Used Machinery Marketplace - Egypt</title>
+      <meta name="description" content="Browse and post used industrial machinery across Egypt — every brand, free. CNC centers, cutting machines, welding equipment and more." />
       <meta name="keywords" content="used machinery Egypt, industrial equipment, aluminum machinery, CNC machines, cutting machines, welding equipment, manufacturing tools" />
       <link rel="canonical" href="https://www.almona02.com/used-machines" />
 
       {/* Open Graph */}
       <meta property="og:type" content="website" />
-      <meta property="og:title" content="Used Industrial Machinery Marketplace - Egypt" />
-      <meta property="og:description" content="Ask ALMONA about used industrial machinery. Availability and condition require confirmation." />
-      <meta property="og:image" content="https://www.almona02.com/images/machinery-marketplace-og.jpg" />
+      <meta property="og:title" content="Used Machinery Marketplace - Egypt" />
+      <meta property="og:description" content="Browse and post used industrial machinery across Egypt — every brand, free. Buyers and sellers deal directly." />
+      <meta property="og:image" content="https://www.almona02.com/images/og/almona-og-1200x630.jpg" />
       <meta property="og:url" content="https://www.almona02.com/used-machines" />
-      <meta property="og:site_name" content="Almona Industrial" />
+      <meta property="og:site_name" content="Machines Market" />
 
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content="Used Industrial Machinery Marketplace - Egypt" />
-      <meta name="twitter:description" content="Ask ALMONA about used machinery availability in Egypt." />
-      <meta name="twitter:image" content="https://www.almona02.com/images/machinery-marketplace-twitter.jpg" />
+      <meta name="twitter:title" content="Used Machinery Marketplace - Egypt" />
+      <meta name="twitter:description" content="Browse and post used industrial machinery across Egypt — every brand, free." />
+      <meta name="twitter:image" content="https://www.almona02.com/images/og/almona-og-1200x630.jpg" />
 
       {/* JSON-LD Structured Data */}
       <script type="application/ld+json">

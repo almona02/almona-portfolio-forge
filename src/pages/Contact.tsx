@@ -1,4 +1,4 @@
-import { usePublicCopy } from '@/hooks/usePublicCopy';
+﻿import { usePublicCopy } from '@/hooks/usePublicCopy';
 import SEO from "@/components/SEO";
 import { EmailDraftDownload } from '@/components/contact/EmailDraftDownload';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
@@ -85,7 +85,7 @@ const Contact = () => {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit(onSubmit)} onChange={() => setEmailDraft(null)} className="space-y-6" noValidate>
+              <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} onChange={() => void setEmailDraft(null)} className="space-y-6" noValidate>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="name" className="typography-label">{copy("Full Name")}</Label>

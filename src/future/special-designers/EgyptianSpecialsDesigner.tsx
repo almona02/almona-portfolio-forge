@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EgyptianSpecialsDesigner - UI Component for Egyptian Special Presets
  * 
  * Provides interface for:
@@ -190,7 +190,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button
-                  onClick={handleGenerateSandDust}
+                  onClick={() => void handleGenerateSandDust()}
                   disabled={isGenerating}
                   className="btn-primary"
                 >
@@ -266,7 +266,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button
-                  onClick={handleOptimizeThermalBreak}
+                  onClick={() => void handleOptimizeThermalBreak()}
                   disabled={isGenerating}
                   className="btn-primary"
                 >

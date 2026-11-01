@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cost Optimization Insights
  * software-assisted cost reduction suggestions and analysis
  */
@@ -37,7 +37,7 @@ export const CostOptimizationInsights: React.FC<CostOptimizationInsightsProps> =
       setLoading(false);
     };
 
-    analyze();
+    void analyze();
   }, [optimizationResult, profiles, userId]);
 
   if (loading) {

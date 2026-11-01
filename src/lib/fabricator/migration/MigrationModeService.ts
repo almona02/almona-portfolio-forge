@@ -62,7 +62,7 @@ export class MigrationModeService {
       }>;
     };
     const { data, error } = await rpc.rpc('get_fabricator_migration_mode_events');
-    if (error) throw error;
+    if (error) throw new Error(error.message);
     return data || [];
   }
 

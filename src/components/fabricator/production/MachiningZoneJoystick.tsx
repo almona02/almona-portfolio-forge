@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Machining Zone Joystick Calibration
  * Interactive joystick-style interface for adjusting machining zone positions and sizes
  * Inspired by joystick calibration with visual feedback and real-time adjustments
@@ -38,8 +38,8 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
   profileHeight = 100, // Default 100mm
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [selectedZone, setSelectedZone] = useState<MachiningZone | null>(null);
-  const [editingZone, setEditingZone] = useState<MachiningZone | null>(null);
+  const [selectedZone, setSelectedZone] = useState<MachiningZone>(null);
+  const [editingZone, setEditingZone] = useState<MachiningZone>(null);
   const [joystickState, setJoystickState] = useState<JoystickState>({
     activeZoneId: null,
     isDragging: false,

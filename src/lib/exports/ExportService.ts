@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ExportService - Main orchestrator for all export formats
  * Phase 2: Professional Report Generation System
  * Week 3: Enterprise Automation & Customization
@@ -294,7 +294,7 @@ export class ExportService {
       // Wait for at least one to complete before starting more
       if (activeCount >= maxConcurrent) {
         await Promise.race(processingPromises);
-        processingPromises.splice(
+        void processingPromises.splice(
           processingPromises.findIndex(p => p === Promise.race(processingPromises)),
           1
         );
@@ -516,7 +516,7 @@ export class ExportService {
     };
     
     this.exportQueue.set(id, queueItem);
-    this.processQueue();
+    void this.processQueue();
     
     return id;
   }
@@ -542,7 +542,7 @@ export class ExportService {
 
     for (let i = 0; i < Math.min(availableSlots, pendingItems.length); i++) {
       const item = pendingItems[i];
-      this.processQueueItem(item);
+      void this.processQueueItem(item);
     }
   }
 
@@ -562,7 +562,7 @@ export class ExportService {
       item.status = result.success ? 'completed' : 'failed';
       item.error = result.error;
       this.activeExports.delete(item.id);
-      this.processQueue(); // Process next in queue
+      void this.processQueue(); // Process next in queue
       return result;
     }).catch((error): ExportResult => {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -570,7 +570,7 @@ export class ExportService {
       item.error = errorMessage;
       item.retryCount = (item.retryCount || 0) + 1;
       this.activeExports.delete(item.id);
-      this.processQueue();
+      void this.processQueue();
       return {
         success: false,
         format: item.format,
@@ -601,7 +601,7 @@ export class ExportService {
     const item = this.exportQueue.get(exportId);
     if (item && item.status === 'paused') {
       item.status = 'pending';
-      this.processQueue();
+      void this.processQueue();
       return true;
     }
     return false;
@@ -842,7 +842,7 @@ export class ExportService {
       const delay = scheduledAt.getTime() - Date.now();
       if (delay > 0 && delay < 24 * 60 * 60 * 1000) { // Max 24 hours
         setTimeout(() => {
-          this.exportBatchAdvanced(config);
+          void this.exportBatchAdvanced(config);
         }, delay);
       }
     } catch (error) {

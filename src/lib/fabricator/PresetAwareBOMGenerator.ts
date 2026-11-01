@@ -201,24 +201,24 @@ export class PresetAwareBOMGenerator {
         };
         
         // Generate all BOM components in parallel for performance
-        const [profiles, defaultHardware, glazing, defaultAccessories] = await Promise.all([
+        const [profiles, defaultHardware, glazing] = await Promise.all([
           this.profileCalculator.calculateProfileBOM(wu, pat, sp),
           this.hardwareCalculator.calculateHardwareBOM(wu, pat, sp),
           this.glassCalculator.calculateGlassBOM(wu, pat),
-          this.accessoriesCalculator.calculateAccessoriesBOM(wu, pat, sp)
         ]);
+        const defaultAccessories = this.accessoriesCalculator.calculateAccessoriesBOM(wu, pat, sp);
 
         const { hardware, accessories } = applyWorkshopBOMRules(sp, wu, defaultHardware, defaultAccessories);
 
         // Generate assembly sequence
-        const assemblySequence = await this.assemblyGenerator.generateAssemblySequence(
+        const assemblySequence = this.assemblyGenerator.generateAssemblySequence(
           wu,
           pat,
           { profiles, hardware, glazing }
         );
 
         // Calculate costs
-        const cost = await this.costCalculator.calculateAccurateCost(
+        const cost = this.costCalculator.calculateAccurateCost(
           profiles,
           hardware,
           glazing,

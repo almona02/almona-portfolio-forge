@@ -1,4 +1,4 @@
-import { generateComponentsFromGrid } from '@/algorithms/smartDraw';
+﻿import { generateComponentsFromGrid } from '@/algorithms/smartDraw';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateDesign } from '@/lib/fabricator/ConstraintEngine';
 import type { DesignCompleteHandler } from '@/lib/fabricator/engineering/designCompletion';
@@ -179,7 +179,7 @@ export const useEngineeringEngine = ({
 
     // --- BOM Worker Integration (Phase 2) ---
     const { calculateBOM, isCalculating: isBOMCalculating } = useBOMCalculation();
-    const [bomData, setBOMData] = useState<any | null>(null); // Type 'any' temporarily to match BOMData interface complexity
+    const [bomData, setBOMData] = useState<any>(null); // Type 'any' temporarily to match BOMData interface complexity
     const bomRequestKeyRef = useRef<string | null>(null);
 
     /**

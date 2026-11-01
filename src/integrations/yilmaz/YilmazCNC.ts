@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Yilmaz CNC Controller
  * Complete implementation of CNCController for Yilmaz machines
  * Integrates G-code generation, network protocol, and machine validation

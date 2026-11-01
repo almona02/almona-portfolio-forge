@@ -71,7 +71,7 @@ describe('FP-024C.13 bounded parity golden replay closeout', () => {
   it('matches the accepted C.10 three-point evidence set', () => {
     expect(FP024C10_THREE_POINT_TABLE).toHaveLength(9);
     for (const row of FP024C10_THREE_POINT_TABLE) {
-      const family = row.profile as 'KASA' | 'KANAT' | 'CITA' | 'ORTA';
+      const family = row.profile;
       const code = FP024C13_PROFILE_CODES[family];
       const weldMap = [
         [0, row.weld0RequiredPartsMm],

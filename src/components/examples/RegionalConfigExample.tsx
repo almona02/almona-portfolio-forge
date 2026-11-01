@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Regional Configuration Example Component
  * 
  * Demonstrates the regional configuration system and how to use regional hooks.
@@ -77,7 +77,7 @@ export const RegionalConfigExample: React.FC = () => {
           <p>Last updated: {regionState.lastUpdated?.toLocaleString()}</p>
         </div>
         <button
-          onClick={refreshRegion}
+          onClick={() => void refreshRegion()}
           className="mt-2 px-3 py-1 bg-green-500 text-white rounded text-sm"
         >
           Refresh Detection

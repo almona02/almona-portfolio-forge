@@ -67,7 +67,7 @@ describe('Remaining public Arabic content', () => {
     fireEvent.change(screen.getByLabelText('العَرَض'), { target: { value: 'اهتزاز المغزل' } });
     fireEvent.click(screen.getByRole('button', { name: 'مراجعة العطل' }));
     await waitFor(() => expect(backend.send).toHaveBeenCalledWith('العَرَض: اهتزاز المغزل', 'doctor', 'ar'));
-    expect(await screen.findByText('تعذّر على المساعد الرد. حاول مرة أخرى أو تواصل مع ألمونا.')).toBeInTheDocument();
+    expect(await screen.findByText('تعذّر على المساعد الرد. حاول مرة أخرى أو تواصل مع المُنى.')).toBeInTheDocument();
     await act(() => instance.changeLanguage('en'));
     expect(screen.getByRole('button', { name: 'Diagnose a fault' })).toBeInTheDocument();
     expect(screen.getByText(/Welcome! I'm your YDT Agent/)).toBeInTheDocument();

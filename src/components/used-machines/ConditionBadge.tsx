@@ -93,7 +93,7 @@ const ConditionBadge: React.FC<ConditionBadgeProps> = ({
           'shadow-lg hover:shadow-xl transform hover:scale-105',
           className
         )}
-        title={config.description}
+        title={copy(config.description)}
       >
         {showIcon && (
           <span className="mr-1.5" role="img" aria-label={normalizedCondition}>
@@ -106,7 +106,7 @@ const ConditionBadge: React.FC<ConditionBadgeProps> = ({
       {/* Tooltip on hover */}
       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-almona-darker border border-almona-light/20 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
         <div className="text-xs text-almona-light font-medium">
-          {config.description}
+          {copy(config.description)}
         </div>
         {/* Arrow pointing down */}
         <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-almona-darker"></div>

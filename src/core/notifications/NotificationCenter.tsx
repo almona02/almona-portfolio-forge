@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Notification Center Component
  * 
  * Gold-tier notification center UI component for displaying and managing notifications.
@@ -98,8 +98,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   }, [userId]);
 
   useEffect(() => {
-    loadNotifications();
-    loadUnreadCount();
+    void loadNotifications();
+    void loadUnreadCount();
     
     // Set up real-time subscription
     const channel = supabase
@@ -113,8 +113,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           filter: `user_id=eq.${userId}`,
         },
         () => {
-          loadNotifications();
-          loadUnreadCount();
+          void loadNotifications();
+          void loadUnreadCount();
         }
       )
       .on(
@@ -126,20 +126,20 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           filter: `user_id=eq.${userId}`,
         },
         () => {
-          loadNotifications();
-          loadUnreadCount();
+          void loadNotifications();
+          void loadUnreadCount();
         }
       )
       .subscribe();
 
     // Poll for updates every 30 seconds as fallback
     const interval = setInterval(() => {
-      loadNotifications();
-      loadUnreadCount();
+      void loadNotifications();
+      void loadUnreadCount();
     }, 30000);
 
     return () => {
-      channel.unsubscribe();
+      void channel.unsubscribe();
       clearInterval(interval);
     };
   }, [userId, loadNotifications, loadUnreadCount]);
@@ -226,8 +226,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           <NotificationList
             notifications={filteredNotifications}
             loading={loading}
-            onMarkAsRead={handleMarkAsRead}
-            onMarkAllAsRead={handleMarkAllAsRead}
+            onMarkAsRead={(e) => void handleMarkAsRead(e)}
+            onMarkAllAsRead={() => void handleMarkAllAsRead()}
             unreadCount={unreadCount}
             filter={filter}
             channelFilter={channelFilter}
@@ -259,7 +259,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={handleMarkAllAsRead}
+              onClick={() => void handleMarkAllAsRead()}
               className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10 text-xs"
             >
               <CheckCheck className="w-3 h-3 mr-1" />
@@ -272,8 +272,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         <NotificationList
           notifications={filteredNotifications}
           loading={loading}
-          onMarkAsRead={handleMarkAsRead}
-          onMarkAllAsRead={handleMarkAllAsRead}
+          onMarkAsRead={(e) => void handleMarkAsRead(e)}
+          onMarkAllAsRead={() => void handleMarkAllAsRead()}
           unreadCount={unreadCount}
           filter={filter}
           channelFilter={channelFilter}

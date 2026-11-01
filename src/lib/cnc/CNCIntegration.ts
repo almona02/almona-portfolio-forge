@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Advanced CNC Integration
  * Features:
  * - Real-time machine monitoring (live feed from CNC controllers)

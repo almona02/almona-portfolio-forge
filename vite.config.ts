@@ -1,4 +1,6 @@
+import { marketplaceNavigationPattern, marketplaceNavigationRule } from './src/lib/marketplaceCachePolicy';
 import react from "@vitejs/plugin-react";
+import { publicResourceBoundary } from "./vite.publicResources";
 import path from "path";
 import { defineConfig, loadEnv } from "vite";
 /// <reference types="vitest" />
@@ -28,6 +30,7 @@ export default defineConfig(({ mode }) => {
       plugins: () => [],
     },
     define: {
+      'import.meta.env.VITE_RELEASE_ID': JSON.stringify(process.env.VERCEL_GIT_COMMIT_SHA || env.VITE_RELEASE_ID || 'local'),
       __APP_ENV__: JSON.stringify(env.APP_ENV),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
       __VERSION__: JSON.stringify(process.env.npm_package_version || "1.0.0"),
@@ -76,6 +79,7 @@ export default defineConfig(({ mode }) => {
       sourcemapIgnoreList: true,
     },
     plugins: [
+      publicResourceBoundary(),
       {
         name: 'protect-public-environment',
         configResolved(config) {
@@ -94,7 +98,11 @@ export default defineConfig(({ mode }) => {
             eagerJavascript.add(name);
             if (/vendor-3d/.test(name)) this.error(`3D code leaked into the application entry: ${name}`);
             const chunk = bundle[name];
-            if (chunk?.type === 'chunk') queue.push(...chunk.imports.filter((dependency) => dependency in bundle));
+            if (chunk?.type === 'chunk') {
+              queue.push(...chunk.imports.filter((dependency) => dependency in bundle));
+              // The thin bootstrap imports main dynamically; it is still app-shell code.
+              if (chunk.isEntry) queue.push(...chunk.dynamicImports.filter((dependency) => dependency in bundle));
+            }
           }
         },
       },
@@ -176,16 +184,21 @@ export default defineConfig(({ mode }) => {
       // Always include plugin to provide virtual module, but only enable SW in production
       VitePWA({
         registerType: "prompt", // Changed from "autoUpdate" to "prompt" - user must confirm before reload
-        injectRegister: "auto",
+        injectRegister: false, // Registration is owned by pwaUpdate; avoid plugin cross-tab reloads.
         devOptions: {
           enabled: false, // Disable service worker in development to avoid CacheStorage errors
           type: 'module', // Provide virtual module in dev mode
           navigateFallback: 'index.html',
         },
         workbox: {
+          // Marketplace visits must not boot an old offline app shell.
+          navigateFallbackDenylist: [marketplaceNavigationPattern],
+          navigateFallbackAllowlist: [/^\/fabricator(?:\/|$)/],
+          directoryIndex: '',
+          importScripts: ['/worker-recovery-guard.js'],
           // Cache the app shell first; lazy routes enter the runtime cache when visited.
           manifestTransforms: [async (entries) => ({
-            manifest: entries.filter((entry) => !entry.url.endsWith('.js') || eagerJavascript.has(entry.url.replace(/^\//, ''))),
+            manifest: entries.filter((entry) => (!entry.url.endsWith('.html') || entry.url === 'index.html') && (!entry.url.endsWith('.js') || eagerJavascript.has(entry.url.replace(/^\//, '')))),
             warnings: [],
           })],
           globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
@@ -203,6 +216,7 @@ export default defineConfig(({ mode }) => {
           maximumFileSizeToCacheInBytes: 12 * 1024 * 1024, // 12MB limit to handle large JS bundles
           // PHASE 6: Optimized cache strategy for better performance
           runtimeCaching: [
+            marketplaceNavigationRule,
             // Cache fonts with long expiration (fonts rarely change)
             {
               urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
@@ -385,6 +399,7 @@ export default defineConfig(({ mode }) => {
         input: "index.html",
         external: [],
         plugins: [
+      publicResourceBoundary(),
           {
             name: 'exclude-md-editor-css',
             generateBundle(_options, bundle) {
@@ -450,6 +465,10 @@ export default defineConfig(({ mode }) => {
               return 'vendor-3d-react';
             }
  
+             // Keep optional search and date utilities out of the eager shared UI/state chunks.
+             if (id.includes('node_modules/cmdk')) return 'vendor-command';
+             if (id.includes('node_modules/date-fns')) return 'vendor-dates';
+
              // 3. UI Libraries (Shadcn/Radix/Antd/Lucide)
              if (
                id.includes('node_modules/@radix-ui') ||

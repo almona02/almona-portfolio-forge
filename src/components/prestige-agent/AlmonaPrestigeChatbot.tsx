@@ -1,4 +1,4 @@
-import { usePublicCopy } from '@/hooks/usePublicCopy';
+﻿import { usePublicCopy } from '@/hooks/usePublicCopy';
 /**
  * YDT Prestige Agent: Interactive Chatbot with Almona Style
  * University-grade interface with animations and professional design
@@ -193,7 +193,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
       }
     };
 
-    loadInitialData();
+    void loadInitialData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -563,7 +563,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                 return (
                   <button
                     key={index}
-                    onClick={() => handleQuickAction(action)}
+                    onClick={() => void handleQuickAction(action)}
                     disabled={typing || backendLoading}
                     className="flex items-center justify-center space-x-2 px-4 py-3 bg-slate-800/70 hover:bg-slate-700 rounded-xl transition text-sm font-medium text-slate-200 border border-slate-700/60"
                   >

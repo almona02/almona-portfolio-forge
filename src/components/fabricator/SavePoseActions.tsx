@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useWorkflowStore } from '@/store/workflowStore';
@@ -36,7 +36,7 @@ export function SavePoseActions() {
             toast.success('Saved for this position revision.');
             if (close) {
                 publishActiveProject(null);
-                navigate('/fabricator/studio/projects');
+                void navigate('/fabricator/studio/projects');
             }
         }
         catch (error) {

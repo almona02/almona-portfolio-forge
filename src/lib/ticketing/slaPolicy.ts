@@ -21,7 +21,7 @@ export function resolveSlaPolicy(priority: string, ticketType: string): SlaPolic
     const fallback = POLICY.medium as Record<string, SlaPolicyRow>;
     return fallback?.general ?? DEFAULT_SLA;
   }
-  const typeMap = byPriority as Record<string, SlaPolicyRow>;
+  const typeMap = byPriority;
   return typeMap[ticketType] ?? typeMap.general ?? DEFAULT_SLA;
 }
 

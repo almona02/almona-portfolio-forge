@@ -339,16 +339,14 @@ describe('Hardener Error Boundary', () => {
 
 describe('harden.executeAsync', () => {
   it('should execute async function successfully', async () => {
-    const successFn = async () => 'success';
+    const successFn = () => Promise.resolve('success');
     
     const result = await harden.executeAsync(successFn, 'fallback');
     expect(result).toBe('success');
   });
 
   it('should handle errors in async function', async () => {
-    const errorFn = async () => {
-      throw new Error('Test error');
-    };
+    const errorFn = () => Promise.reject(new Error('Test error'));
     
     // Suppress console.error/warn for this test as Hardener logs errors
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});

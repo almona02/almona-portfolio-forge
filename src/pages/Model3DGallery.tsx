@@ -1,4 +1,4 @@
-import { usePublicCopy } from '@/hooks/usePublicCopy';
+﻿import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { Model3DGallery as Model3DGalleryComponent } from '@/components/3d-model/Model3DGallery';
 import { ModelMeasurementTool } from '@/components/3d-model/ModelMeasurementTool';
 import { SwiftXRIframe } from '@/components/swiftxr/SwiftXRIframe';
@@ -61,9 +61,9 @@ export default function Model3DGalleryPage() {
     };
 
     if (navigator.share) {
-      navigator.share(shareData);
+      void navigator.share(shareData);
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      void navigator.clipboard.writeText(window.location.href);
       toast({
         title: "Link Copied",
         description: "Model link copied to clipboard",

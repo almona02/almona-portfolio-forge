@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
@@ -79,7 +79,7 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
   }, [timeRange]);
 
   useEffect(() => {
-    fetchAnalyticsData();
+    void fetchAnalyticsData();
   }, [fetchAnalyticsData]);
 
   const getConversionRate = () => {
@@ -112,7 +112,7 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
     return (
       <div className="p-6 text-center">
         <p className="text-gray-400">Failed to load analytics data</p>
-        <Button onClick={fetchAnalyticsData} className="mt-4">
+        <Button onClick={() => void fetchAnalyticsData()} className="mt-4">
           Retry
         </Button>
       </div>

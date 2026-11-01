@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PatternLibraryPage - Tier 2: Pattern Library (UP-12)
  *
  * Applies selected pattern to the active Studio pose (or navigates to projects
@@ -30,7 +30,7 @@ export default function PatternLibraryPage() {
     const height = Number(params.height);
     if (!active?.projectId || !active.id) {
       toast.error('Open a project position first, then apply a pattern.');
-      navigate(fabricatorRoutes.studioProjects());
+      void navigate(fabricatorRoutes.studioProjects());
       return;
     }
     if (!Number.isFinite(width) || width <= 0 || !Number.isFinite(height) || height <= 0) {
@@ -53,15 +53,15 @@ export default function PatternLibraryPage() {
     invalidateStep('bom');
     invalidateStep('optimization');
     toast.success(`Applied pattern ${pattern.name || pattern.id} to this position.`);
-    navigate(fabricatorRoutes.poseDesign(active.projectId, active.id));
+    void navigate(fabricatorRoutes.poseDesign(active.projectId, active.id));
   };
 
   const handleCancel = () => {
     if (active?.projectId && active.id) {
-      navigate(fabricatorRoutes.poseMeasuring(active.projectId, active.id));
+      void navigate(fabricatorRoutes.poseMeasuring(active.projectId, active.id));
       return;
     }
-    navigate(fabricatorRoutes.studioProjects());
+    void navigate(fabricatorRoutes.studioProjects());
   };
 
   return (

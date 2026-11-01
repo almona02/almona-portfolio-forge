@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/AuthContext';
+﻿import { useAuth } from '@/context/AuthContext';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
@@ -25,7 +25,7 @@ const CreateTicketPage = () => {
   } : undefined;
 
   const handleSuccess = () => {
-    navigate('/portal', { state: { message: "Ticket created successfully! We'll get back to you soon." } });
+    void navigate('/portal', { state: { message: "Ticket created successfully! We'll get back to you soon." } });
   };
 
   if (!user) {

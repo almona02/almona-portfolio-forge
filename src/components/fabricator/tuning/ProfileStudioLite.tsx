@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Profile Studio Lite - Turkish Pilot Self-Onboarding
  * 
  * Emergency deployment for Turkish pilot to define custom profiles
@@ -135,7 +135,7 @@ export const ProfileStudioLite: React.FC = () => {
   // UP-07: load persisted custom packs (local + server) into library list — not create-only.
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    void (async () => {
       const packs = user?.id
         ? await loadCustomSystemsAsync(user.id)
         : loadCustomSystems();
@@ -435,7 +435,7 @@ export const ProfileStudioLite: React.FC = () => {
         return {
           id: data.id,
           name: data.name,
-          material: material as Profile['material'],
+          material: material,
           width: data.width as number,
           height: data.height as number,
           thickness: data.thickness,
@@ -622,7 +622,7 @@ export const ProfileStudioLite: React.FC = () => {
                 <Input
                   type="file"
                   accept=".dxf,.dwg"
-                  onChange={handleDXFUpload}
+                  onChange={(e) => void handleDXFUpload(e)}
                   ref={fileInputRef}
                   className="btn-primary"
                   disabled={isUploading}
@@ -1084,7 +1084,7 @@ export const ProfileStudioLite: React.FC = () => {
               </LazyAnimatePresence>
             </div>
             <Button
-              onClick={addImportedProfile}
+              onClick={() => void addImportedProfile()}
               disabled={!isFormValid || isSaving}
               size="lg"
               className="btn-primary-gradient"

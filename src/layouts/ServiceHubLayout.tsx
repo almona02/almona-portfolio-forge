@@ -1,4 +1,4 @@
-import { YDTAssistantFloating } from '@/components/services/YDTAssistantFloating';
+﻿import { YDTAssistantFloating } from '@/components/services/YDTAssistantFloating';
 import { cn } from '@/lib/utils';
 import {
     Activity,
@@ -81,7 +81,7 @@ export default function ServiceHubLayout() {
     localStorage.setItem('ydt-persona', persona);
     // Navigate to the first item of the new persona
     const firstPath = NAV_CONFIG[persona][0]?.path || '/service';
-    navigate(firstPath);
+    void navigate(firstPath);
   };
 
   const navItems = NAV_CONFIG[activePersona];
@@ -146,7 +146,7 @@ export default function ServiceHubLayout() {
             return (
               <button
                 key={item.id}
-                onClick={() => navigate(item.path)}
+                onClick={() => void navigate(item.path)}
                 className={cn(
                   "relative flex items-center w-full rounded-lg transition-all duration-200 group",
                   isSidebarCollapsed ? "justify-center p-3" : "px-3 py-2.5",

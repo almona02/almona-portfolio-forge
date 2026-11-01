@@ -26,7 +26,7 @@ interface ProductionPreviewDialogProps {
   components: WindowComponent[];
   profiles: Profile[];
   optimizationResult?: OptimizationResult;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void> | void;
   onAdjustCalibration?: () => void;
 }
 
@@ -403,7 +403,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
               </Button>
             )}
             <Button
-              onClick={handleConfirm}
+              onClick={() => void handleConfirm()}
               disabled={!canProceed || isProcessing}
               className="bg-green-500 hover:bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed min-w-[160px]"
             >

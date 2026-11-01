@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+﻿import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useAuth } from '@/context/AuthContext';
@@ -56,7 +56,7 @@ const SellUsedMachine = () => {
         owner_id: user.id
       });
       toast.success('Your machine has been listed for sale!');
-      navigate('/used-machines');
+      void navigate('/used-machines');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to list your machine.';
       toast.error(errorMessage);
@@ -82,7 +82,7 @@ const SellUsedMachine = () => {
                 <CardTitle className="text-almona-orange">Machine Details</CardTitle>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-6">
                   <div>
                     <label className="typography-label block text-sm font-medium mb-2">Machine Name</label>
                     <Input 
@@ -146,7 +146,7 @@ const SellUsedMachine = () => {
                     </Button>
                     <Button 
                       type="button" 
-                      onClick={() => navigate('/used-machines')}
+                      onClick={() => void navigate('/used-machines')}
                       className="bg-almona-light/20 hover:bg-almona-light/30 text-white border border-almona-light/30"
                     >
                       Cancel

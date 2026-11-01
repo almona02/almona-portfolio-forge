@@ -1,4 +1,4 @@
-/**
+﻿/**
  * QuoteBuilder - Fabricator workflow quote generation
  *
  * Displays BOM + optimization costs, applies markup, generates quote,
@@ -153,7 +153,7 @@ export const QuoteBuilder: React.FC = () => {
           ? `Order already exists for this revision (${result.orderId.slice(0, 8)}…).`
           : `Order created (${result.orderId.slice(0, 8)}…).`,
       );
-      navigate(fabricatorRoutes.studioOrders());
+      void navigate(fabricatorRoutes.studioOrders());
     } finally {
       setIsConverting(false);
     }
@@ -251,7 +251,7 @@ export const QuoteBuilder: React.FC = () => {
     const projId = projectId ?? currentProject?.id;
     const posId = poseId ?? projId;
     if (projId && posId) {
-      navigate(fabricatorRoutes.poseProduction(projId, posId));
+      void navigate(fabricatorRoutes.poseProduction(projId, posId));
     }
   }, [measurementData, currentProject, bom, optimizationResult, quote, setQuote, projectId, poseId, navigate, engineeringPacks]);
 
@@ -270,7 +270,7 @@ export const QuoteBuilder: React.FC = () => {
       <div className="flex flex-col items-center justify-center p-12 text-center text-slate-400">
         <Receipt className="h-16 w-16 mb-4 opacity-50" />
         <p>No cost data yet. Complete optimization to generate quote.</p>
-        <Button variant="outline" onClick={() => navigate(projectId && poseId ? fabricatorRoutes.poseOptimization(projectId, poseId) : fabricatorRoutes.studioProjects())}>Go to optimization</Button>
+        <Button variant="outline" onClick={() => void navigate(projectId && poseId ? fabricatorRoutes.poseOptimization(projectId, poseId) : fabricatorRoutes.studioProjects())}>Go to optimization</Button>
       </div>
     );
   }
@@ -397,7 +397,7 @@ export const QuoteBuilder: React.FC = () => {
             </Button>
             <Button
               variant="outline"
-              onClick={handleExportPDF}
+              onClick={() => void handleExportPDF()}
               disabled={isExporting}
               className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
             >

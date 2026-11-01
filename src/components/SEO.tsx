@@ -19,16 +19,18 @@ interface SEOProps {
   url?: string;
   type?: string;
   productData?: ProductData;
+  noindex?: boolean;
 }
 
 const SEO = ({
-  title = 'Almona — Precision at the Heart of Industry',
-  description = 'Smart fabrication. Egyptian excellence. Official authorized YILMAZ dealer in Egypt since 1991: CNC machining centres, aluminium & UPVC fabrication machines, and Fabricator Pro Industry 4.0 automation.',
+  title = 'YILMAZ Machinery Egypt & Fabricator Pro | Almona',
+  description = 'ALMONA supplies YILMAZ machinery in Egypt and Fabricator Pro for aluminium and UPVC fabrication, with machinery maintenance, training and support.',
   keywords = 'Yilmaz Egypt, Yilmaz authorized dealer, Yilmaz machines Egypt, Yilmaz CNC, industrial machinery Egypt, aluminium fabrication Egypt, smart manufacturing Egypt, Industry 4.0 Egypt, منشار, منشار طبلية, منشار طبليه, فريزة موبينه, فريزة موتور, فريزة, ماكينة سقاس, ماكينة لحام, لحام بي في سي, لحام upvc, لحام pvc, يلمز, يلماز, ديسك رأسي, ديسك يلمز, ديسك المز, مصنع الومنيوم, مكن الوميتال, مكن الومنيوم, خط انتاج, مصنع بي في سي, مكن بي في سي',
   image = '/logo.svg',
   url = String(import.meta.env.VITE_APP_URL || 'https://www.almona02.com'),
   type = 'website',
-  productData
+  productData,
+  noindex = false
 }: SEOProps) => {
   const siteTitle = 'Almona';
   const fullTitle = title.includes('Almona') ? title : `${title} | ${siteTitle}`;
@@ -49,7 +51,7 @@ const SEO = ({
       <meta name="description" content={description} />
       <meta name="keywords" content={finalKeywords} />
       <meta name="author" content="ALMONA Co." />
-      <meta name="robots" content="index, follow" />
+      <meta name="robots" content={noindex ? "noindex, follow" : "index, follow"} />
       <meta name="language" content="ar" />
       <meta name="revisit-after" content="7 days" />
 
@@ -98,7 +100,6 @@ const SEO = ({
               "@type": "ContactPoint",
               "telephone": "+201000355135",
               "contactType": "sales",
-              "contactOption": "TollFree",
               "areaServed": "EG",
               "availableLanguage": ["ar", "en"],
               "url": "https://wa.me/201000355135"
@@ -120,7 +121,6 @@ const SEO = ({
             "addressCountry": "EG"
           },
           "priceRange": "$$$",
-          "openingHours": "Sa-Th 10:00-20:00",
           "areaServed": {
             "@type": "Country",
             "name": "Egypt"
@@ -157,7 +157,7 @@ const SEO = ({
           "slogan": "Precision at the Heart of Industry",
           "description": description,
           "url": url,
-          "logo": image,
+          "logo": socialImage,
           "foundingDate": "1991",
           "address": {
             "@type": "PostalAddress",
@@ -197,15 +197,15 @@ const SEO = ({
             "@type": "Product",
             "name": productData.name,
             "description": productData.description,
-            "image": productData.image,
+            "image": socialImage,
             "sku": productData.sku,
             "brand": { "@type": "Brand", "name": productData.brand || "ALMONA" },
-            "offers": {
+            "offers": productData.price && productData.currency ? {
               "@type": "Offer",
               "price": productData.price,
               "priceCurrency": productData.currency || "EGP",
-              "availability": productData.availability ? `https://schema.org/${productData.availability}` : "https://schema.org/InStock"
-            }
+              "availability": productData.availability ? `https://schema.org/${productData.availability}` : undefined
+            } : undefined
           })}
         </script>
       ) : (

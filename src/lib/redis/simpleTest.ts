@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Simple Redis Connection Test
  * Run with: node --loader tsx src/lib/redis/simpleTest.ts
  * Or: npx tsx src/lib/redis/simpleTest.ts
@@ -87,4 +87,4 @@ async function testRedis() {
   }
 }
 
-testRedis();
+void testRedis();

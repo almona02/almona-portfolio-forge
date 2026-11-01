@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Constitutional Position State Sync Hook
  * 
  * Provides easy integration with Constitutional State Sync Service
@@ -25,7 +25,7 @@ export interface UsePoseSyncOptions {
 
 export interface UsePoseSyncReturn {
   saveState: (state?: any) => Promise<void>;
-  restoreState: () => Promise<any | null>;
+  restoreState: () => Promise<any>;
   clearState: () => Promise<void>;
   hasUnsavedChanges: boolean;
   isSyncing: boolean;
@@ -173,7 +173,7 @@ export function usePoseSync(options: UsePoseSyncOptions): UsePoseSyncReturn {
     
     // Set new timer
     debounceTimer.current = setTimeout(() => {
-      saveState(currentState);
+      void saveState(currentState);
     }, debounceMs);
     
     return () => {

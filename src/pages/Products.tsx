@@ -23,6 +23,7 @@ import { useAuth } from "@/context/AuthContext";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { useToast } from "@/hooks/useToast";
+import { useYilmazMachines } from '@/hooks/useYilmazMachines';
 import { useVirtualizedMachines } from "@/hooks/useVirtualizedMachines";
 import { loadComparisons, saveComparison } from "@/lib/comparisonStorage";
 
@@ -85,6 +86,7 @@ const Products = function ProductsPage() {
   const { user: _user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
+  const { data: publicMachines = [] } = useYilmazMachines();
 
   // SINGLE SOURCE OF TRUTH for filters
   const [filters, setFilters] = useState({
@@ -384,7 +386,7 @@ const Products = function ProductsPage() {
     { question: copy("What warranty and certificates are supplied?"), answer: copy("Request the applicable warranty terms and conformity documents for the exact machine before purchase.") },
   ];
 
-  const currentUrl = `https://www.almona02.com${location.pathname}${location.search}`;
+  const currentUrl = `https://www.almona02.com${location.pathname}`;
 
   return (
     <>
@@ -583,6 +585,15 @@ const Products = function ProductsPage() {
             </div>
 
         <Separator className="my-12 bg-almona-light/20" />
+
+        <details className="mb-8 rounded-lg border border-gray-700 p-4">
+          <summary className="cursor-pointer text-amber-300">{copy("All machine models")}</summary>
+          <nav aria-label={copy("All machine models")}>
+            <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-4">
+              {publicMachines.map(machine => <li key={machine.id}><a className="text-amber-300 underline" href={`/products/machines/${encodeURIComponent(machine.id)}`}>{machine.name}</a></li>)}
+            </ul>
+          </nav>
+        </details>
 
         {/* Industry 4.0 Technology Showcase */}
         <div

@@ -25,8 +25,11 @@ interface ProjectQuoteSummaryProps {
 }
 
 export const ProjectQuoteSummary: React.FC<ProjectQuoteSummaryProps> = ({ project, results }) => {
-  const units = project?.units ?? [];
-  const unitResults = results?.unitResults ?? new Map<string, ApexV6Output>();
+  const units = useMemo(() => project?.units ?? [], [project?.units]);
+  const unitResults = useMemo(
+    () => results?.unitResults ?? new Map<string, ApexV6Output>(),
+    [results?.unitResults]
+  );
 
   const { totalCost, totalProjectValue, margin } = useMemo(() => {
     const cost = Array.from(unitResults.values()).reduce(

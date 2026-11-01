@@ -34,7 +34,7 @@ class WorkerWrapper {
 
   public process(request: EgyptianPathRequest): Promise<EgyptianPathResponse> {
     if (this.busy) {
-      return Promise.reject('Worker is busy');
+      return Promise.reject(new Error('Worker is busy'));
     }
     this.busy = true;
     return new Promise((resolve, reject) => {

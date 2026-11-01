@@ -310,7 +310,7 @@ export const AITechnicalChatbot: React.FC = () => {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
-      sendMessage('تحديد قطعة الغيار من الصورة', 'parts', 'low', files);
+      void sendMessage('تحديد قطعة الغيار من الصورة', 'parts', 'low', files);
     }
   };
 
@@ -386,7 +386,7 @@ export const AITechnicalChatbot: React.FC = () => {
                         className={`text-xs border-almona-light/30 hover:bg-almona-orange/20 ${
                           response.severity === 'critical' ? 'border-red-500/50 text-red-400' : ''
                         }`}
-                        onClick={() => handleQuickResponse(response)}
+                        onClick={() => void handleQuickResponse(response)}
                       >
                         {response.label}
                       </Button>
@@ -475,7 +475,7 @@ export const AITechnicalChatbot: React.FC = () => {
                     onChange={(e) => setInputMessage(e.target.value)}
                     placeholder="اكتب مشكلتك التقنية..."
                     className="flex-1 bg-almona-dark/60 border-almona-light/30"
-                    onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+                    onKeyPress={(e) => { if (e.key === 'Enter' && !e.shiftKey) void sendMessage(); }}
                     disabled={isLoading}
                   />
                   <Button
@@ -488,7 +488,7 @@ export const AITechnicalChatbot: React.FC = () => {
                     📷
                   </Button>
                   <Button
-                    onClick={() => sendMessage()}
+                    onClick={() => void sendMessage()}
                     disabled={!inputMessage.trim() || isLoading}
                     className="bg-almona-orange/20 text-almona-orange hover:bg-almona-orange/30 border-almona-orange/30"
                   >

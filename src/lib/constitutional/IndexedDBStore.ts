@@ -1,4 +1,4 @@
-
+﻿
 import { DBSchema, IDBPDatabase, openDB } from 'idb';
 
 export interface ConstitutionalDB extends DBSchema {
@@ -56,7 +56,7 @@ export class IndexedDBStore {
     await this.db!.put('constitutional-states', data, key);
   }
   
-  async loadState(key: string): Promise<any | null> {
+  async loadState(key: string): Promise<any> {
     if (!this.db) await this.init();
     const result = await this.db!.get('constitutional-states', key);
     return result || null;

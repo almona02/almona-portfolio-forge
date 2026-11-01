@@ -1,4 +1,4 @@
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+﻿import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
 import { addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
 import { getSystemPackTuningStatus, saveReturnUrl } from '@/lib/fabricator/systemTuningUtils';
@@ -72,7 +72,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
   );
   const [showTuningStudio, setShowTuningStudio] = useState(false);
   const [customSystems, setCustomSystems] = useState<any[]>([]);
-  const [tuningInitialSystem, setTuningInitialSystem] = useState<any | null>(null);
+  const [tuningInitialSystem, setTuningInitialSystem] = useState<any>(null);
   const [showTuningPrompt, setShowTuningPrompt] = useState(false);
 
   // Load custom systems and tuned systems from localStorage
@@ -613,7 +613,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                             projectName,
                           });
                           // Navigate to no-DXF tuning studio
-                          navigate(`/fabricator/tuning-studio-no-dxf?systemPackId=${selectedSystemId}`);
+                          void navigate(`/fabricator/tuning-studio-no-dxf?systemPackId=${selectedSystemId}`);
                         }}
                       >
                         <Settings className="h-3.5 w-3.5 mr-2" />

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * automation Suggestion Panel
  * Displays ML-powered K-factor predictions with confidence and user feedback
  * The crown jewel feature that makes the system truly intelligent
@@ -41,7 +41,7 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
   } | null>(null);
 
   useEffect(() => {
-    loadPrediction();
+    void loadPrediction();
     checkModelStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile.id, jointType, cutAngle]);
@@ -213,14 +213,14 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
         {!feedbackGiven ? (
           <div className="flex gap-2">
             <Button
-              onClick={handleApply}
+              onClick={() => void handleApply()}
               className="flex-1 bg-green-500 hover:bg-green-600 text-white"
             >
               <CheckCircle2 className="h-4 w-4 mr-2" />
               Apply Suggestion
             </Button>
             <Button
-              onClick={handleIgnore}
+              onClick={() => void handleIgnore()}
               variant="outline"
               className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
             >

@@ -1,7 +1,24 @@
 import { supabase } from '@/lib/supabase'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = supabase as any
+// Local contract for 20261018240000_app_settings.sql until database types are regenerated.
+type AppSettingRow = { [Key in keyof AppSetting]: AppSetting[Key] } & { updated_at: string; updated_by: string | null }
+type AppSettingInsert = Pick<AppSettingRow, 'category' | 'key' | 'value'> & Partial<Omit<AppSettingRow, 'category' | 'key' | 'value'>>
+type AppSettingsDatabase = {
+  public: {
+    Tables: {
+      app_settings: {
+        Row: AppSettingRow
+        Insert: AppSettingInsert
+        Update: Partial<AppSettingRow>
+        Relationships: []
+      }
+    }
+    Views: Record<never, never>
+    Functions: Record<never, never>
+  }
+}
+const db = supabase as unknown as SupabaseClient<AppSettingsDatabase>
 
 export type SettingType = 'text' | 'number' | 'boolean'
 
@@ -16,9 +33,9 @@ export interface AppSetting {
 
 export const appSettingsApi = {
   async listSettings(): Promise<AppSetting[]> {
-    const { data, error } = await supabase.from('app_settings').select('*').order('category').order('key')
+    const { data, error } = await db.from('app_settings').select('*').order('category').order('key')
     if (error) throw error
-    return (data ?? []) as AppSetting[]
+    return data ?? []
   },
 
   async saveSetting(category: string, key: string, value: string, type: SettingType, description?: string | null): Promise<void> {

@@ -1,4 +1,4 @@
-import ErrorBoundary from "@/components/ErrorBoundary";
+﻿import ErrorBoundary from "@/components/ErrorBoundary";
 import { useAuth } from "@/context/AuthContext";
 import { trackError } from "@/lib/performance-monitoring";
 import {
@@ -396,7 +396,7 @@ export const SmartScanUploader: React.FC = () => {
       toast.success(`Profile imported successfully (ID: ${newId})`);
       tuningStore.setCurrentProfileId(newId);
       tuningStore.setActiveTab("geometry");
-      navigate(`/fabricator/profiles/${newId}/tune`, {
+      void navigate(`/fabricator/profiles/${newId}/tune`, {
         state: { profileId: newId, highlightGeometry: true, source: "smartscan" },
       });
       setImportWizardData({ isOpen: false });
@@ -578,7 +578,7 @@ export const SmartScanUploader: React.FC = () => {
 
           <div className="flex gap-2">
             <Button
-              onClick={processQueue}
+              onClick={() => void processQueue()}
               disabled={isProcessing || pendingJobs.length === 0}
               className="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-medium shadow-lg shadow-amber-500/20"
             >
@@ -1062,7 +1062,7 @@ export const SmartScanUploader: React.FC = () => {
                 toast.success("Profile imported and ready for tuning", {
                   description: "Opening tuning studio for geometry adjustments",
                 });
-                navigate(`/fabricator/profiles?tuning=studio&profileId=${profileId}`, {
+                void navigate(`/fabricator/profiles?tuning=studio&profileId=${profileId}`, {
                   state: { highlightGeometry: true, source: "smartscan" },
                 });
               }}

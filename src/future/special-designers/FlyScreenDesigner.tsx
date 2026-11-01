@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FlyScreenDesigner - UI Component for Fly Screen Design
  * 
  * Provides an intuitive interface for designing fly screens with:
@@ -180,7 +180,7 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
 
               {/* Generate Button */}
               <Button
-                onClick={handleGenerate}
+                onClick={() => void handleGenerate()}
                 disabled={isGenerating || !windowUnit.overallWidth || !windowUnit.overallHeight}
                 className="btn-primary"
               >

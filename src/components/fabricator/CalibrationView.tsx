@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Calibration View - Reality Check Loop
  * 
  * This is the CODE THAT SAVES THE BUSINESS.
@@ -316,7 +316,7 @@ export const CalibrationView: React.FC<CalibrationViewProps> = ({
                 ))}
               </ul>
               <Button
-                onClick={applyCorrection}
+                onClick={() => void applyCorrection()}
                 className="mt-4 w-full sm:w-auto h-12 text-base"
                 size="lg"
               >

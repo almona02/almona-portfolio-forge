@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
 import { useJobsStore } from "./store/jobsStore";
-import { showAppUpdate, watchServiceWorkerUpdates } from './lib/pwaUpdate';
+import { registerAppServiceWorker } from './lib/pwaUpdate';
 
 // [DEV/E2E] Ensure critical stores are available globally
 if (import.meta.env?.DEV) {
@@ -589,45 +589,10 @@ window.addEventListener('load', () => {
   }, 1000);
 });
 
-// PWA Service Worker Registration
-// VitePWA with injectRegister: "auto" handles registration automatically
-// This code provides user feedback and handles updates
+// Own registration so worker activation never automatically reloads other tabs.
 const isProdEnv = import.meta.env?.PROD || process.env.NODE_ENV === 'production';
 if ('serviceWorker' in navigator && isProdEnv) {
-  // Dynamic import with error handling - virtual module only exists in production
-  import('virtual:pwa-register').then(({ registerSW }) => {
-    let stopWatching: (() => void) | undefined;
-    const updateServiceWorker = registerSW({
-      immediate: true, // Register immediately
-      onNeedRefresh() {
-        showAppUpdate(() => updateServiceWorker(true));
-      },
-      onOfflineReady() {
-        console.log('✅ App is ready for offline use.');
-      },
-      onRegistered(registration) {
-        console.log('✅ Service Worker registered:', registration);
-        stopWatching?.();
-        stopWatching = watchServiceWorkerUpdates(registration, () => {
-          showAppUpdate(() => updateServiceWorker(true));
-        });
-      },
-      onRegisterError(error) {
-        // Suppress CacheStorage errors in development
-        if (error?.message?.includes('CacheStorage') || error?.name === 'UnknownError') {
-          console.warn('⚠️ Service Worker CacheStorage error (ignored in dev):', error.message);
-          return;
-        }
-        console.error('❌ Service Worker registration error:', error);
-      },
-    });
-  }).catch((error) => {
-    // Virtual module doesn't exist in dev mode - this is expected
-    const isDev = import.meta.env?.DEV || process.env.NODE_ENV === 'development';
-    if (isDev) {
-      // Silently ignore in dev mode
-    } else {
-      console.warn('[PWA] Failed to load service worker registration:', error);
-    }
+  void registerAppServiceWorker().catch(error => {
+    console.warn('[PWA] Registration unavailable:', error instanceof Error ? error.name : 'unknown');
   });
 }

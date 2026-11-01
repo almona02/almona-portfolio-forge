@@ -24,17 +24,17 @@ export function WorkshopBOMRulesEditor({ packId, ownerId }: {
     return <section className="my-4 rounded border border-amber-700/40 bg-slate-900 p-4 space-y-3">
   <h3 className="text-amber-200 font-semibold">Workshop BOM requirements</h3>
   <p className="text-xs text-slate-400">Set quantities for hinges, rollers, handles, gaskets or other components. Each configured category replaces its standard quantity. Hardware categories: hinge, lock, handle, roller, corner_key, gasket or hardener. Disable a category to omit it. Perimeter quantities use the overall window perimeter in metres. Saved configuration remains an estimate until reviewed.</p>
-  {!owned ? <Button disabled={saving} onClick={async () => { setSaving(true); try {
+  {!owned ? <Button disabled={saving} onClick={() => { void (async () => { setSaving(true); try {
             const copy = { ...pack, meta: { ...pack.meta, id: 'custom-pack-' + crypto.randomUUID(), name: pack.meta.name + ' workshop' } };
             await addCustomSystemAsync(copy, ownerId);
-            navigate('/fabricator/studio/data/tuning?systemPackId=' + encodeURIComponent(copy.meta.id));
+            void navigate('/fabricator/studio/data/tuning?systemPackId=' + encodeURIComponent(copy.meta.id));
         }
         catch {
             toast.error('Unable to save workshop copy.');
         }
         finally {
             setSaving(false);
-        } }}>Create an owned workshop copy</Button> : <>
+        } })(); }}>Create an owned workshop copy</Button> : <>
    <div className="space-y-3">{rules.map((r, index) => <div key={r.id} className="grid grid-cols-2 md:grid-cols-4 gap-2 border-b border-slate-700 pb-3">
     <Input aria-label={'Component name ' + index} value={r.name} onChange={e => update(index, { name: e.target.value })}/>
     <Input aria-label={'Component category ' + index} value={r.category} onChange={e => update(index, { category: e.target.value })}/>
@@ -46,7 +46,7 @@ export function WorkshopBOMRulesEditor({ packId, ownerId }: {
     <Button variant="outline" onClick={() => setRules(previous => previous.filter((_, i) => i !== index))}>Remove override</Button>
    </div>)}</div>
    <Button variant="outline" onClick={() => setRules(previous => [...previous, { id: 'workshop-' + crypto.randomUUID(), name: 'Gasket', kind: 'accessory', category: 'seal', basis: 'perimeter', quantity: 1, unitPrice: 0, enabled: true }])}>Add component requirement</Button>
-   <Button disabled={saving} onClick={async () => { setSaving(true); try {
+   <Button disabled={saving} onClick={() => { void (async () => { setSaving(true); try {
             const updated = { ...pack, windowSystemSpec: { ...pack.windowSystemSpec, workshop_bom_rules: rules } } as SystemPack;
             workshopBOMRules(updated);
             await addCustomSystemAsync(updated, ownerId);
@@ -60,7 +60,7 @@ export function WorkshopBOMRulesEditor({ packId, ownerId }: {
         }
         finally {
             setSaving(false);
-        } }}>Save requirements</Button>
+        } })(); }}>Save requirements</Button>
    {review && <details className="text-xs"><summary>Technical review reference</summary><p className="break-all">{review}</p><p>Include this value as workshopBomRulesFingerprint in the approved cutting rule applicability after reviewing this configuration.</p></details>}
   </>}
   <a className="text-xs underline text-amber-300" href="/fabricator/studio/approvals">Open catalogue, pattern and cutting-rule approvals</a>

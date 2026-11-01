@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Executive Trust Dashboard Component
  * 
  * Displays governance health, constitutional compliance, and RealityOS health metrics.
@@ -62,9 +62,9 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
   }, [timePeriod]);
 
   useEffect(() => {
-    loadMetrics();
+    void loadMetrics();
     // Refresh metrics every 5 minutes
-    const interval = setInterval(loadMetrics, 5 * 60 * 1000);
+    const interval = setInterval(() => void loadMetrics(), 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [loadMetrics]);
 
@@ -216,7 +216,7 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
               <div className="text-sm text-red-400/70 mt-1">{error}</div>
             </div>
           </div>
-          <Button onClick={loadMetrics} className="mt-4" variant="outline">
+          <Button onClick={() => void loadMetrics()} className="mt-4" variant="outline">
             Retry
           </Button>
         </CardContent>
@@ -355,7 +355,7 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
                   <option value="90d">Last 90 days</option>
                   <option value="all">All time</option>
                 </select>
-                <Button onClick={loadMetrics} variant="outline" size="sm">
+                <Button onClick={() => void loadMetrics()} variant="outline" size="sm">
                   <Activity className="h-4 w-4 mr-2" />
                   Refresh
                 </Button>

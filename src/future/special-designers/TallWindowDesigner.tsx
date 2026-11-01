@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TallWindowDesigner - UI Component for Tall Segmented Window Design
  * 
  * Provides interface for:
@@ -224,7 +224,7 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
 
                 {/* Generate Button */}
                 <Button
-                  onClick={handleGenerate}
+                  onClick={() => void handleGenerate()}
                   disabled={isGenerating || segmentHeight < 1800 || segmentHeight > 2400}
                   className="btn-primary"
                 >

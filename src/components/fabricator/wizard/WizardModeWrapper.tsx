@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WizardModeWrapper - Simplified 5-Step Workflow for Unskilled Fabricators
  * 
  * Linear progression: Type → System → Dimensions → Template → Review
@@ -163,10 +163,10 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
 
     const nextStep = (wizardState.currentStep + 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7;
     setWizardState((prev) => ({ ...prev, currentStep: nextStep }));
-    autoSave(nextStep, { currentStep: nextStep });
+    void autoSave(nextStep, { currentStep: nextStep });
 
     setWizardState((prev) => ({ ...prev, currentStep: nextStep }));
-    autoSave(nextStep, { currentStep: nextStep });
+    void autoSave(nextStep, { currentStep: nextStep });
 
     scrollToTop();
   }, [wizardState.currentStep, canProceed, autoSave]);
@@ -183,13 +183,13 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
   // Handle window type selection
   const handleWindowTypeSelect = useCallback((type: WizardState['windowType']) => {
     setWizardState((prev) => ({ ...prev, windowType: type }));
-    autoSave(1, { windowType: type });
+    void autoSave(1, { windowType: type });
   }, [autoSave]);
 
   // Handle system pack selection
   const handleSystemSelect = useCallback((systemId: string) => {
     setWizardState((prev) => ({ ...prev, systemPackId: systemId }));
-    autoSave(2, { systemPackId: systemId });
+    void autoSave(2, { systemPackId: systemId });
   }, [autoSave]);
 
   // Handle dimensions input
@@ -236,13 +236,13 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
     }
 
     setWizardState((prev) => ({ ...prev, dimensions: newDimensions, quantity: newQuantity, violations }));
-    autoSave(3, { dimensions: newDimensions, quantity: newQuantity, violations });
+    void autoSave(3, { dimensions: newDimensions, quantity: newQuantity, violations });
   }, [wizardState.systemPackId, autoSave, RECOMMENDED_SYSTEMS]);
 
   // Handle template selection
   const handleTemplateSelect = useCallback((templateId: string) => {
     setWizardState((prev) => ({ ...prev, templateId }));
-    autoSave(4, { templateId });
+    void autoSave(4, { templateId });
   }, [autoSave]);
 
   // Handle fix application

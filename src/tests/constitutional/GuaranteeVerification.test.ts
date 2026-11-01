@@ -133,7 +133,7 @@ async function generateCutList(project: WindowUnit, _bom: any, systemPackId: str
 async function runFullPipeline(input: WindowUnit, _profiles: Profile[], systemPackId: string) {
   const bom = await generateBOM(input);
   const cutList = await generateCutList(input, bom, systemPackId);
-  const baseOptimization = await simplifiedOptimizationEngine.optimize(cutList.cuts || []);
+  const baseOptimization = simplifiedOptimizationEngine.optimize(cutList.cuts || []);
   
   // Sanitize optimization: Replace non-deterministic IDs with deterministic ones
   const sanitizedBars = baseOptimization.bars?.map((bar: any, index: number) => ({
@@ -178,8 +178,8 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
       const { expectedCutList: _expectedCutList } = await loadGoldenMaster('facade-simple');
       // Mock cuts for optimization
       const cuts = [{ id: '1', plannedLength: 1000, quantity: 1, role: 'frame', profileId: 'p1', label: 'L1' }];
-      const o1 = await simplifiedOptimizationEngine.optimize(cuts as any);
-      const o2 = await simplifiedOptimizationEngine.optimize(cuts as any);
+      const o1 = simplifiedOptimizationEngine.optimize(cuts as any);
+      const o2 = simplifiedOptimizationEngine.optimize(cuts as any);
       
       // Normalize IDs for comparison (since optimization engine generates random IDs)
       const normalize = (opt: any) => ({

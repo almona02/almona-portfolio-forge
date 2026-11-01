@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+﻿import { supabase } from '@/lib/supabase'
 import { RealtimeChannel } from '@supabase/supabase-js'
 
 export interface CollaborationSession {
@@ -148,7 +148,7 @@ class Collaboration3DService {
         callbacks.onAnnotationRemove?.(payload.annotation_id)
       })
       .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
+        if ((status as string) === 'SUBSCRIBED') {
           // Track user presence
           await this.channel?.track({
             user_id: userId,
@@ -164,7 +164,7 @@ class Collaboration3DService {
 
   updateCursor(position: { x: number; y: number; z: number }): void {
     if (this.channel && this.userId) {
-      this.channel.send({
+      void this.channel.send({
         type: 'broadcast',
         event: 'cursor_update',
         payload: {
@@ -174,7 +174,7 @@ class Collaboration3DService {
       })
 
       // Update presence with pointer position
-      this.channel.track({
+      void this.channel.track({
         user_id: this.userId,
         cursor_position: position
       })
@@ -186,7 +186,7 @@ class Collaboration3DService {
     target: { x: number; y: number; z: number }
   }): void {
     if (this.channel && this.userId) {
-      this.channel.send({
+      void this.channel.send({
         type: 'broadcast',
         event: 'camera_update',
         payload: {
@@ -196,7 +196,7 @@ class Collaboration3DService {
       })
 
       // Update presence with camera position
-      this.channel.track({
+      void this.channel.track({
         user_id: this.userId,
         camera_position: camera
       })
@@ -205,7 +205,7 @@ class Collaboration3DService {
 
   addAnnotation(annotation: Omit<Annotation, 'id' | 'created_at'>): void {
     if (this.channel) {
-      this.channel.send({
+      void this.channel.send({
         type: 'broadcast',
         event: 'annotation_add',
         payload: {
@@ -221,7 +221,7 @@ class Collaboration3DService {
 
   updateAnnotation(annotation: Annotation): void {
     if (this.channel) {
-      this.channel.send({
+      void this.channel.send({
         type: 'broadcast',
         event: 'annotation_update',
         payload: { annotation }
@@ -231,7 +231,7 @@ class Collaboration3DService {
 
   removeAnnotation(annotationId: string): void {
     if (this.channel) {
-      this.channel.send({
+      void this.channel.send({
         type: 'broadcast',
         event: 'annotation_remove',
         payload: { annotation_id: annotationId }
@@ -241,7 +241,7 @@ class Collaboration3DService {
 
   disconnect(): void {
     if (this.channel) {
-      this.channel.unsubscribe()
+      void this.channel.unsubscribe()
       this.channel = null
     }
     this.sessionId = null

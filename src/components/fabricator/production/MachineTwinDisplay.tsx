@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
@@ -140,7 +140,7 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
       }
     };
     
-    fetchMachine();
+    void fetchMachine();
     
     // Subscribe to real-time updates
     const channel = supabase
@@ -167,11 +167,11 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
         }
       )
       .subscribe((status) => {
-        setIsConnected(status === 'SUBSCRIBED');
+        setIsConnected((status as string) === 'SUBSCRIBED');
       });
     
     return () => {
-      supabase.removeChannel(channel);
+      void supabase.removeChannel(channel);
     };
   }, [machineId]);
   

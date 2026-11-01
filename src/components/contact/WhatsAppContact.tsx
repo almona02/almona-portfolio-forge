@@ -117,7 +117,7 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
   }, [isOpen, autoOpen]);
 
   return (
-    <div className={`fixed ${getPositionClasses()} z-50 ${className}`}>
+    <div className={`fixed ${getPositionClasses()} z-[300] ${className}`}>
       <LazyAnimatePresence>
         {isOpen && (
           <LazyMotionDiv
@@ -146,6 +146,7 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
                     variant="ghost"
                     size="sm"
                     onClick={() => setIsOpen(false)}
+                    aria-label="Close ALMONA WhatsApp contact"
                     className="h-8 w-8 p-0"
                   >
                     <X className="h-4 w-4" />
@@ -174,6 +175,8 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
                       variant="ghost"
                       size="sm"
                       onClick={() => setIsExpanded(!isExpanded)}
+                      aria-label="Toggle WhatsApp quick messages"
+                      aria-expanded={isExpanded}
                       className="h-6 w-6 p-0"
                     >
                       {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
@@ -231,6 +234,7 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
                   </Button>
                   <Button
                     onClick={handleCall}
+                    aria-label="Call ALMONA support"
                     variant="outline"
                     className="px-3"
                   >
@@ -258,6 +262,8 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
       >
         <Button
           onClick={() => setIsOpen(!isOpen)}
+          aria-label={isOpen ? "Close ALMONA WhatsApp contact" : "Open ALMONA WhatsApp contact"}
+          aria-expanded={isOpen}
           className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
         >
           <MessageSquare className="h-6 w-6" />

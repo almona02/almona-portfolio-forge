@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PoseQuickEditModal — Inline metadata editing for a single pose.
  *
  * Allows rapid editing of position metadata (flat, floor, zone, remarks)
@@ -106,7 +106,7 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
       onSaved?.(updated);
       onOpenChange(false);
     } catch (err) {
-      toast.error(`Failed to save: ${err}`);
+      toast.error(`Failed to save: ${err as string}`);
     }
   }, [
     pose, status, quantity, color, systemPackId,
@@ -255,7 +255,7 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
             Cancel
           </Button>
           <Button
-            onClick={handleSave}
+            onClick={() => void handleSave()}
             disabled={upsertPose.isPending}
             className="bg-amber-500 hover:bg-amber-600 text-black"
           >
