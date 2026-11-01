@@ -10,7 +10,7 @@ Baseline tip before follow-up: `df41eba3` (PR 122 merge). Branch: `cursor-nov-qt
 |-------|--------|
 | Movement FIFO + complete paging | `7c1ab828` |
 | Inert CAD + strict 380 e2e (v1) | `5876e274` |
-| Incomplete adjustment/transfer invalidate + version snapshot + pointer assert | *(this tip)* |
+| Incomplete adjustment/transfer invalidate + version snapshot + pointer assert | `496ab0d5` |
 
 ## Matrix
 
