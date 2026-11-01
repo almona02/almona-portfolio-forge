@@ -14,6 +14,8 @@ import {
 } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { getConstraintsForSystemPack } from '@/lib/fabricatorValidation';
+import { packOwnsPatternCertification } from '@/lib/fabricator/packPatternConfig';
+import { loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
 
 export type PatternPackFitKind = 'certified' | 'layout_template' | 'incompatible';
 
@@ -27,15 +29,30 @@ export interface PatternPackFit {
   requiresConfirmation: boolean;
 }
 
+function resolvePackForCertification(systemPackId: string) {
+  return (
+    loadCustomSystems().find((p) => p.meta.id === systemPackId)
+    ?? SYSTEM_PACKS.find((p) => p.meta.id === systemPackId)
+    ?? null
+  );
+}
+
 /** Patterns listed directly on the pack (certified), excluding donor expansion. */
 export function getCertifiedPatternsForPack(systemPackId: string): EgyptianPattern[] {
-  return EGYPTIAN_PATTERNS.filter((p) => p.compatibleSystems.includes(systemPackId));
+  const pack = resolvePackForCertification(systemPackId);
+  return EGYPTIAN_PATTERNS.filter(
+    (p) =>
+      p.compatibleSystems.includes(systemPackId)
+      || packOwnsPatternCertification(pack, p.id),
+  );
 }
 
 /** True when the pattern certifies the pack id (not only a similar donor). */
 export function isPatternCertifiedForPack(patternId: string, systemPackId: string): boolean {
   const pattern = EGYPTIAN_PATTERNS.find((p) => p.id === patternId);
-  return Boolean(pattern?.compatibleSystems.includes(systemPackId));
+  if (!pattern) return false;
+  if (pattern.compatibleSystems.includes(systemPackId)) return true;
+  return packOwnsPatternCertification(resolvePackForCertification(systemPackId), patternId);
 }
 
 /**
