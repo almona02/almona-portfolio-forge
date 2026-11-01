@@ -6,13 +6,15 @@ Baseline tip before follow-up: `df41eba3` (PR 122 merge). Branch: `cursor-nov-qt
 
 ## Commits (cite; tip advances with review fixes)
 
-| Batch | Earlier commit | Review-fix status |
-|-------|----------------|-------------------|
-| A | `d4175978` | Local qty multiset kept |
-| B | `33ae61f7` + review fix | Metres quotient **removed** from production path; physical `barsByCatalogueLength` + fail-closed unbound |
-| C–D | `286a56ea` / `afa683ea` + review fix | Status is a flex row; exclusive Parts at 380; canvas hit reserved |
-| E | `5e044618` + review fix | Persistent preview host; CollapsiblePanel keeps children; resize applies width |
-| F | `92a402df` / `69b7b7b8` + review fix | Browser fixture skips without auth pose URL; unit fixtures updated |
+| Batch | Earlier commit | Review-fix commit |
+|-------|----------------|---------------------|
+| A | `d4175978` | (kept) |
+| B | `33ae61f7` | `4c647dba` physical `barsByCatalogueLength` + fail-closed unbound |
+| C–D | `286a56ea` / `afa683ea` | `14b25be1` status flex row; exclusive Parts; canvas hit |
+| E | `5e044618` | `14b25be1` persistent preview host; CollapsiblePanel width |
+| F | `92a402df` / `69b7b7b8` | `684cae14` auth-gated 380 e2e; matrix refresh |
+
+**Gates this session:** focused vitest 37/37; `npm run type-check` exit 0; `npm run lint` exit 0. Production `npm run build` not re-run in the review-fix pass.
 
 ## Matrix
 
