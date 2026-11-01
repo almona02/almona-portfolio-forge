@@ -69,31 +69,50 @@ export const VENDOR_CATALOGUE_PACKS: readonly VendorCataloguePack[] = [
   },
 ] as const;
 
+/**
+ * Defaults match the server-side `_vendor_catalogue_authority_payload`
+ * (one-click vendor approval). Admin-reviewed request approvals may pass
+ * validated overrides (see `approvals/approvalSettings.ts`).
+ */
+export const VENDOR_AUTHORITY_DEFAULT_SETTINGS = Object.freeze({
+  sawKerfMm: 4,
+  trimCutMm: 0,
+  stockLengthMm: 6000,
+});
+
+export type VendorAuthoritySettings = {
+  sawKerfMm: number;
+  trimCutMm: number;
+  stockLengthMm: number;
+};
+
 export function buildVendorAuthorityPayload(
   pack: VendorCataloguePack,
   approvalId: string,
   revision: number,
+  settings: VendorAuthoritySettings = VENDOR_AUTHORITY_DEFAULT_SETTINGS,
 ): Record<string, unknown> {
   const profileApproval = 'b1000000-0000-4000-8000-000000000001';
+  const stockLengthMm = settings.stockLengthMm;
   const profiles = [
     {
       role: 'frame',
       profileId: pack.frameProfileId,
-      stockLengthMm: 6000,
+      stockLengthMm,
       evidenceStatus: 'approved',
       approvalId: profileApproval,
     },
     {
       role: 'sash',
       profileId: pack.sashProfileId,
-      stockLengthMm: 6000,
+      stockLengthMm,
       evidenceStatus: 'approved',
       approvalId: 'b1000000-0000-4000-8000-000000000002',
     },
     ...(pack.extraProfiles ?? []).map((p, i) => ({
       role: p.role,
       profileId: p.profileId,
-      stockLengthMm: 6000,
+      stockLengthMm,
       evidenceStatus: 'approved' as const,
       approvalId: `b1000000-0000-4000-8000-${String(i + 10).padStart(12, '0')}`,
     })),
@@ -128,8 +147,8 @@ export function buildVendorAuthorityPayload(
       approvalId: 'c1000000-0000-4000-8000-000000000002',
     },
     manufacturingSettings: {
-      sawKerfMm: 4,
-      trimCutMm: 0,
+      sawKerfMm: settings.sawKerfMm,
+      trimCutMm: settings.trimCutMm,
     },
   };
 }

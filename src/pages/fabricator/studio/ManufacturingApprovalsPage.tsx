@@ -19,10 +19,24 @@ import {
   isApprovalsReachabilityFixtureActive,
 } from '@/lib/fabricator/approvals/approvalsReachabilityFixture';
 import {
+  APPROVAL_SETTING_KEYS,
+  APPROVAL_SETTING_LIMITS,
+  DEFAULT_APPROVAL_SETTINGS,
+  approvalSettingsFromTuning,
+  buildRequestAuthorityPayload,
+  draftFromSettings,
+  resolveApprovalSettings,
+  validateApprovalSettings,
+  type ApprovalSettingKey,
+  type ApprovalSettingsDraft,
+  type ApprovalSettingsSource,
+} from '@/lib/fabricator/approvals/approvalSettings';
+import {
+  VENDOR_AUTHORITY_DEFAULT_SETTINGS,
   VENDOR_CATALOGUE_PACKS,
-  buildVendorAuthorityPayload,
 } from '@/lib/fabricator/manufacturing/vendorCataloguePacks';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
+import { fabricatorConfigApi } from '@/lib/fabricatorConfigApi';
 import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Button } from '@/shared/ui/ui/button';
@@ -63,59 +77,77 @@ const rpc = supabase as unknown as RpcClient;
 
 type VendorRow = { id: string; label: string };
 
-function buildRequestPayload(packId: string, approvalId: string): Record<string, unknown> {
-  const pack = VENDOR_CATALOGUE_PACKS.find((p) => p.id === packId);
-  if (pack) {
-    return buildVendorAuthorityPayload(pack, approvalId, 1);
-  }
-  return {
-    schema: 'almona.manufacturing-authority',
-    schemaVersion: 1,
-    system: { id: packId },
-    systemPack: {
-      id: packId,
-      revision: 1,
-      evidenceStatus: 'approved',
-      approvalId,
-    },
-    profiles: [
-      {
-        role: 'frame',
-        profileId: `${packId}-FRAME`,
-        stockLengthMm: 6000,
-        evidenceStatus: 'approved',
-        approvalId: 'b1000000-0000-4000-8000-000000000001',
-      },
-      {
-        role: 'sash',
-        profileId: `${packId}-SASH`,
-        stockLengthMm: 6000,
-        evidenceStatus: 'approved',
-        approvalId: 'b1000000-0000-4000-8000-000000000002',
-      },
-    ],
-    cuttingRules: [
-      {
-        ruleId: `${packId}-cut`,
-        revision: 1,
-        evidenceStatus: 'approved',
-        approvalId: 'c1000000-0000-4000-8000-000000000001',
-        deductions: { endDeductionMm: 20 },
-        allowances: { weldMm: 3 },
-        applicability: { materials: ['aluminum'] },
-      },
-    ],
-    toleranceRule: {
-      ruleId: `${packId}-tolerance`,
-      revision: 1,
-      evidenceStatus: 'approved',
-      approvalId: 'c1000000-0000-4000-8000-000000000002',
-    },
-    manufacturingSettings: {
-      sawKerfMm: 4,
-      trimCutMm: 0,
-    },
-  };
+type RequestSettingsState = {
+  draft: ApprovalSettingsDraft;
+  source: Record<ApprovalSettingKey, ApprovalSettingsSource>;
+};
+
+const PLATFORM_SETTINGS_STATE: RequestSettingsState = {
+  draft: draftFromSettings(DEFAULT_APPROVAL_SETTINGS),
+  source: { sawKerfMm: 'platform', trimCutMm: 'platform', stockLengthMm: 'platform' },
+};
+
+/**
+ * Per-request manufacturing settings the admin confirms before approval.
+ * Pre-filled from the requesting workshop's tuning defaults when present,
+ * otherwise platform defaults; always validated client-side and again by the
+ * server (fail-closed) before becoming authority.
+ */
+function ApprovalSettingsFields({
+  requestId,
+  state,
+  disabled,
+  onChange,
+}: {
+  requestId: string;
+  state: RequestSettingsState;
+  disabled: boolean;
+  onChange: (key: ApprovalSettingKey, value: string) => void;
+}) {
+  const validation = validateApprovalSettings(state.draft);
+  return (
+    <fieldset
+      className="rounded border border-amber-600/30 bg-amber-500/5 p-2 space-y-2"
+      data-testid={`approval-settings-${requestId}`}
+      disabled={disabled}
+    >
+      <legend className="px-1 text-xs font-medium text-amber-200">Manufacturing settings for this approval</legend>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {APPROVAL_SETTING_KEYS.map((key) => {
+          const limit = APPROVAL_SETTING_LIMITS[key];
+          const id = `approval-${requestId}-${key}`;
+          const error = validation.errors[key];
+          return (
+            <label key={key} htmlFor={id} className="flex flex-col gap-1 text-xs text-slate-300">
+              <span>
+                {limit.label} ({limit.unit})
+                <span className="ml-1 text-slate-500">· {state.source[key] === 'workshop' ? 'workshop default' : 'platform default'}</span>
+              </span>
+              <input
+                id={id}
+                type="number"
+                inputMode="decimal"
+                step="0.1"
+                min={limit.min}
+                max={limit.max}
+                value={state.draft[key]}
+                onChange={(e) => onChange(key, e.target.value)}
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? `${id}-error` : undefined}
+                className="rounded border border-slate-600 bg-slate-950 px-2 py-1 text-sm text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                data-testid={`${id}-input`}
+              />
+              {error ? (
+                <span id={`${id}-error`} className="text-red-400">{error}</span>
+              ) : (
+                <span className="text-slate-500">{limit.min}–{limit.max} {limit.unit}</span>
+              )}
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
 }
 
 function isAdminDenied(message: string | undefined): boolean {
@@ -130,6 +162,7 @@ export default function ManufacturingApprovalsPage() {
   const [active, setActive] = useState<ActiveAuthority[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  const [requestSettings, setRequestSettings] = useState<Record<string, RequestSettingsState>>({});
   const [stickyOffsetPx, setStickyOffsetPx] = useState(56);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const stickyChromeRef = useRef<HTMLDivElement>(null);
@@ -217,14 +250,69 @@ export default function ManufacturingApprovalsPage() {
     }
   }, []);
 
+  // Depend on the user id, not the user object: a context that re-creates the
+  // user object per render would otherwise re-run refresh() on every render.
+  const userId = user?.id ?? null;
   useEffect(() => {
     if (loading) return;
-    if (!user) {
+    if (!userId) {
       setAdminGate(false);
       return;
     }
     void refresh();
-  }, [user, loading, refresh]);
+  }, [userId, loading, refresh]);
+
+  // Pre-fill approval settings per pending request from the requesting
+  // workshop's tuning defaults (admin RLS can read them). Never overwrite a
+  // draft the admin has already started editing.
+  useEffect(() => {
+    let cancelled = false;
+    const missing = rows.filter((r) => !requestSettings[r.id]);
+    if (missing.length === 0) return;
+    if (fixture) {
+      setRequestSettings((prev) => {
+        const next = { ...prev };
+        for (const r of missing) if (!next[r.id]) next[r.id] = PLATFORM_SETTINGS_STATE;
+        return next;
+      });
+      return;
+    }
+    const owners = [...new Set(missing.map((r) => r.owner_user_id))];
+    void Promise.all(
+      owners.map(async (ownerId) => {
+        try {
+          const tuning = await fabricatorConfigApi.listTuningForOwner(ownerId);
+          return [ownerId, resolveApprovalSettings(approvalSettingsFromTuning(tuning))] as const;
+        } catch {
+          return [ownerId, resolveApprovalSettings({})] as const;
+        }
+      }),
+    ).then((resolved) => {
+      if (cancelled) return;
+      const byOwner = new Map(resolved);
+      setRequestSettings((prev) => {
+        const next = { ...prev };
+        for (const r of missing) {
+          if (next[r.id]) continue;
+          const res = byOwner.get(r.owner_user_id);
+          next[r.id] = res
+            ? { draft: draftFromSettings(res.settings), source: res.source }
+            : PLATFORM_SETTINGS_STATE;
+        }
+        return next;
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [rows, requestSettings, fixture]);
+
+  const updateRequestSetting = useCallback((requestId: string, key: ApprovalSettingKey, value: string) => {
+    setRequestSettings((prev) => {
+      const current = prev[requestId] ?? PLATFORM_SETTINGS_STATE;
+      return { ...prev, [requestId]: { ...current, draft: { ...current.draft, [key]: value } } };
+    });
+  }, []);
 
   if (loading || adminGate === null) {
     return (
@@ -280,6 +368,12 @@ export default function ManufacturingApprovalsPage() {
   };
 
   const approve = async (row: ApprovalRequest) => {
+    const settingsState = requestSettings[row.id] ?? PLATFORM_SETTINGS_STATE;
+    const validation = validateApprovalSettings(settingsState.draft);
+    if (!validation.ok) {
+      setMessage(`Fix manufacturing settings before approving: ${Object.values(validation.errors).join(' ')}`);
+      return;
+    }
     if (fixture) {
       setMessage(`Approved request → fixture:${row.id}`);
       setRows((prev) => prev.filter((r) => r.id !== row.id));
@@ -288,14 +382,16 @@ export default function ManufacturingApprovalsPage() {
     setBusyId(row.id);
     try {
       const placeholderApproval = crypto.randomUUID();
-      const payload = buildRequestPayload(row.system_pack_id, placeholderApproval);
+      const payload = buildRequestAuthorityPayload(row.system_pack_id, placeholderApproval, validation.value);
       const { data, error } = await rpc.rpc('admin_approve_fabricator_manufacturing_approval', {
         p_request_id: row.id,
         p_authority_payload: payload,
       });
       if (error) throw new Error(error.message);
       if (!z.string().uuid().safeParse(data).success) throw new Error('No approval id returned');
-      setMessage(`Approved request → ${String(data)}`);
+      setMessage(
+        `Approved request → ${String(data)} (kerf ${validation.value.sawKerfMm} mm · trim ${validation.value.trimCutMm} mm · stock ${validation.value.stockLengthMm} mm)`,
+      );
       await refresh();
     } catch (err) {
       setMessage(err instanceof Error ? err.message : 'Approve failed');
@@ -430,6 +526,11 @@ export default function ManufacturingApprovalsPage() {
             One-click approval for built-in packs. Writes provenance=vendor, an audit row, and supersedes
             any prior active revision. Revoke anytime below.
           </p>
+          <p className="text-xs text-slate-500" data-testid="vendor-catalogue-settings-note">
+            Vendor payloads are built server-side with fixed settings (kerf {VENDOR_AUTHORITY_DEFAULT_SETTINGS.sawKerfMm} mm ·
+            trim {VENDOR_AUTHORITY_DEFAULT_SETTINGS.trimCutMm} mm · stock {VENDOR_AUTHORITY_DEFAULT_SETTINGS.stockLengthMm} mm).
+            To approve different values, review a pending request below.
+          </p>
           <ul className="grid gap-2 sm:grid-cols-2">
             {vendorRows.map((pack) => (
               <li
@@ -478,10 +579,16 @@ export default function ManufacturingApprovalsPage() {
                   </div>
                   <p className="text-slate-400 break-all">Catalogue: {row.catalogue_reference}</p>
                   <p className="text-slate-400 break-all">Rules: {row.rule_reference}</p>
+                  <ApprovalSettingsFields
+                    requestId={row.id}
+                    state={requestSettings[row.id] ?? PLATFORM_SETTINGS_STATE}
+                    disabled={busyId === row.id}
+                    onChange={(key, value) => updateRequestSetting(row.id, key, value)}
+                  />
                   <div className="sticky bottom-20 z-10 -mx-1 flex flex-wrap gap-2 rounded-md border border-amber-600/30 bg-[#0f0f0f]/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-[#0f0f0f]/80 sm:bottom-16">
                     <Button
                       size="sm"
-                      disabled={busyId === row.id}
+                      disabled={busyId === row.id || !validateApprovalSettings((requestSettings[row.id] ?? PLATFORM_SETTINGS_STATE).draft).ok}
                       onClick={() => void approve(row)}
                       className="bg-amber-500 hover:bg-amber-600 text-black flex-1 sm:flex-none min-h-9"
                       data-testid={`approve-request-${row.id}`}
