@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Almona Fabricator Pro: Window3DGenerator (v6.0 "Apex Engine")
  *
  * This component is the master real-time 3D visualization engine for Fabricator Pro.
@@ -32,6 +32,8 @@ const DEBOUNCE_CONFIG = {
 } as const;
 
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { findInspectablePart, WindowPartDetails, WindowPartOutline } from './WindowPartInspector';
+import type { Object3D } from 'three';
 import { useWindowPhysics } from '@/lib/3d/hooks';
 import { trackError } from '@/lib/performance-monitoring';
 import {
@@ -118,7 +120,8 @@ import {
     isPreviewCommitCurrent,
 } from '@/lib/fabricator/engineering/previewIdentity';
 import { getPatternById } from '@/lib/fabricator/presetUtils';
-import { calculateExplodedTransforms, interpolateExplodedTransform } from '@/lib/3d/explodedViewUtils';
+import { calculateExplodedTransforms } from '@/lib/3d/explodedViewUtils';
+import { createExplodedTransformController } from '@/lib/3d/applyExplodedTransforms';
 import { hardwareModelLibrary } from '@/lib/3d/hardware/HardwareModelLibrary';
 import { generateHardwarePlaceholders, getHardwareColor } from '@/lib/3d/hardwarePlaceholder';
 import { track } from '@/lib/analytics';
@@ -797,6 +800,8 @@ const Window3DModelComponent = (props: {
         }
     }, [explodedView, modelData]);
 
+    const applyExplodedTransforms = useMemo(() => createExplodedTransformController(), [modelData]);
+
     // --- Animation Frame Logic ---
     useFrame((_state, delta) => {
         // When physics is enabled, let Ammo.js drive the motion
@@ -806,45 +811,8 @@ const Window3DModelComponent = (props: {
             return;
         }
 
-        // ✅ PERFORMANCE FIX: Apply pre-calculated exploded transforms (no recalculation in render loop)
-        if (explodedTransforms && groupRef.current) {
-            // ✅ PERFORMANCE: Limit traversal depth and use early exit
-            let transformCount = 0;
-            const MAX_TRANSFORMS_PER_FRAME = 100; // Performance guard
-
-            groupRef.current.traverse((child) => {
-                if (transformCount >= MAX_TRANSFORMS_PER_FRAME) return;
-
-                const key = child.userData?.componentKey;
-                if (key && explodedTransforms.has(key)) {
-                    try {
-                        const transform = explodedTransforms.get(key);
-                        if (!transform) return;
-
-                        const baseTransform = {
-                            position: new Vector3(0, 0, 0),
-                            rotation: new Euler(0, 0, 0),
-                            scale: new Vector3(1, 1, 1),
-                        };
-                        const interpolated = interpolateExplodedTransform(baseTransform, transform, 1.0);
-
-                        // ✅ HARDENED: Validate before applying
-                        if (interpolated && interpolated.position && interpolated.rotation && interpolated.scale) {
-                            child.position.copy(interpolated.position);
-                            child.rotation.copy(interpolated.rotation);
-                            child.scale.copy(interpolated.scale);
-                            transformCount++;
-                        }
-                    } catch (error) {
-                        const err = error instanceof Error ? error : new Error(String(error));
-                        if (import.meta.env.DEV) {
-                            console.warn(`[Window3D] Error applying exploded transform to ${key}:`, err);
-                        }
-                        trackError('Window3DGenerator', 'exploded_transform', `Failed to apply transform to ${key}: ${err.message}`);
-                    }
-                }
-            });
-        }
+        applyExplodedTransforms(groupRef.current, explodedTransforms);
+        if (explodedView) { invalidate(); return; }
 
         if (!isAnimating && !explodedView) {
             return;
@@ -1421,7 +1389,7 @@ const Window3DModelComponent = (props: {
                     }}
                 >
                     {sash.parts.map((part, i) => (
-                        <MiteredFramePart key={`sash-${sashIndex}-${i}`} part={part} material={materials.sash} enableShadows={enableShadows} />
+                        <MiteredFramePart key={`sash-${sashIndex}-${i}`} userData={{ componentKey: `sash-${sashIndex}-${i}` }} part={part} material={materials.sash} enableShadows={enableShadows} />
                     ))}
 
                     {/* Dimensions Overlay */}
@@ -1464,24 +1432,24 @@ const Window3DModelComponent = (props: {
             {modelData.fixedGlass.map((glassGeom, i) =>
               quality && quality !== 'standard' ? (
                 <GoldTransmissionGlass
-                  key={`fixed-glass-${i}`}
+                  key={`fixed-glass-${i}`} userData={{ componentKey: `fixed-glass-${i}` }}
                   geometry={glassGeom}
                   enableShadows={!!enableShadows}
                 />
               ) : (
-                <mesh key={`fixed-glass-${i}`} geometry={glassGeom} material={materials.glass} receiveShadow={enableShadows} />
+                <mesh key={`fixed-glass-${i}`} userData={{ componentKey: `fixed-glass-${i}` }} geometry={glassGeom} material={materials.glass} receiveShadow={enableShadows} />
               ),
             )}
 
             {/* Render Fixed Spacers (if any) */}
             {modelData.fixedSpacers.map((spacerGeom, i) => (
-                <mesh key={`fixed-spacer-${i}`} geometry={spacerGeom} material={materials.spacer} castShadow={enableShadows} />
+                <mesh key={`fixed-spacer-${i}`} userData={{ componentKey: `fixed-spacer-${i}` }} geometry={spacerGeom} material={materials.spacer} castShadow={enableShadows} />
             ))}
 
             {/* Render Muntins */}
             {modelData.muntins && Array.isArray(modelData.muntins) ? (
                 modelData.muntins.map((muntinGeom, i) => (
-                    <mesh key={`muntin-${i}`} geometry={muntinGeom} material={materials.frame} castShadow={enableShadows} />
+                    <mesh key={`muntin-${i}`} userData={{ componentKey: `muntin-${i}` }} geometry={muntinGeom} material={materials.frame} castShadow={enableShadows} />
                 ))
             ) : modelData.muntins && (
                 <mesh geometry={modelData.muntins} material={materials.frame} castShadow={enableShadows} />
@@ -2012,6 +1980,8 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     const [exportFormat, setExportFormat] = useState<'GLB' | 'STL' | 'OBJ'>('GLB');
     const [_isFullscreen, setIsFullscreen] = useState(false);
     const [controlsVisible, setControlsVisible] = useState(false);
+    const [inspectedPart, setInspectedPart] = useState<Object3D | null>(null);
+    useEffect(() => setInspectedPart(null), [windowUnit]);
 
     // Gold Tier Lighting State
     const [lightingPreset, setLightingPreset] = useState('cairoMidday');
@@ -2281,6 +2251,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
 
                         {/* --- MAIN MODEL --- */}
                         <Bounds fit clip observe margin={1.2}>
+                          <group onClick={event => { if (showControls) { event.stopPropagation(); setInspectedPart(findInspectablePart(event.object)); } }}>
                             <Window3DModel
                                 windowUnit={windowUnit}
                                 isAnimating={isAnimating}
@@ -2308,7 +2279,9 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                                 detailConfig={detailConfig}
                                 showDimensions={showDimensions}
                             />
+                          </group>
                         </Bounds>
+                        {inspectedPart && <WindowPartOutline part={inspectedPart} />}
 
                         {/* --- HELPERS & GIZMOS --- */}
                         {showMeasurements && <Measurements width={width} height={height} />}
@@ -2418,9 +2391,11 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                 </div>
             )}
 
+            {showControls && inspectedPart && <WindowPartDetails part={inspectedPart} unit={windowUnit} onClose={() => setInspectedPart(null)} />}
+
             {/* Exploded View Toggle */}
             {showControls && setExplodedView && (
-                <div className="absolute top-4 left-4 z-10">
+                <div className="absolute top-4 right-4 z-10">
                     <Toggle
                         pressed={initialExplodedView}
                         onPressedChange={setExplodedView}

@@ -8,7 +8,7 @@
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import type { Profile } from '@/types/fabricator';
 import { AlertCircle, Box } from 'lucide-react';
-import React, { Suspense, lazy, useMemo } from 'react';
+import React, { Suspense, lazy, useMemo, useState } from 'react';
 import { useDraftingContext } from './DraftingContext';
 import { DraftingCanvas3D } from './canvas/DraftingCanvas3D';
 import { DraftingErrorBoundary } from './components/DraftingErrorBoundary';
@@ -28,10 +28,16 @@ export interface DraftingPreview3DProps {
 
 export const DraftingPreview3D: React.FC<DraftingPreview3DProps> = ({
   selectedSystemPackId = 'caluminium_ps_v3',
+  profiles = [],
+  color,
 }) => {
+  const [explodedView, setExplodedView] = useState(false);
   const drafting = useDraftingContext();
   const geometry = drafting.getGeometry();
-  const windowUnit = useMemo(() => draftingToWindowUnit(drafting), [drafting]);
+  const windowUnit = useMemo(() => {
+    const unit = draftingToWindowUnit(drafting);
+    return unit && { ...unit, color: color ?? unit.color };
+  }, [drafting, color]);
 
   const hasGeometry = geometry.rectangles.length > 0;
   // Use Window3DGenerator only when we have a grid with cells (sashes/mullions).
@@ -69,7 +75,13 @@ export const DraftingPreview3D: React.FC<DraftingPreview3DProps> = ({
     >
       {useFullFidelity && windowUnit ? (
         <Suspense fallback={<LoadingState message="Loading 3D Engine..." size="lg" overlay />}>
-          <Window3DGenerator windowUnit={windowUnit} showControls={false} />
+          <Window3DGenerator
+            windowUnit={windowUnit}
+            profiles={profiles}
+            showControls
+            explodedView={explodedView}
+            setExplodedView={setExplodedView}
+          />
         </Suspense>
       ) : (
         <DraftingCanvas3D

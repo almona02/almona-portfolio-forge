@@ -171,12 +171,12 @@ export function calculateExplodedTransforms(
       const fixedGlassOffset = new Vector3(0, 0, separationDistance * 0.2);
       
       if (Array.isArray(modelData.sashes)) {
-        modelData.sashes.forEach((_, i) => {
-          transforms.set(`glass-${i}`, {
+        modelData.sashes.forEach((sash, i) => {
+          sash.glass.forEach((_, paneIndex) => transforms.set(`glass-${i}-${paneIndex}`, {
             position: glassOffset.clone(),
             rotation: new Euler(0, 0, 0),
             scale: new Vector3(1, 1, 1),
-          });
+          }));
         });
       }
       
