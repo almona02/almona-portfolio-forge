@@ -1,4 +1,5 @@
-import { isCadDesktopLayout, useStudioBreakpoint } from '@/hooks/useStudioBreakpoint';
+import { isCadDesktopLayout, useStudioBreakpoint, type StudioBreakpoint } from '@/hooks/useStudioBreakpoint';
+import { useContainerSize } from '@/hooks/useContainerSize';
 import { isRTL } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { Link, useParams } from 'react-router-dom';
@@ -17,6 +18,14 @@ import { DesktopWorkspaceNotice } from './DesktopWorkspaceNotice';
 import { EngineeringInspector, type InspectorSelectionKind } from './EngineeringInspector';
 import { ProjectPositionNavigator } from './ProjectPositionNavigator';
 import type { WindowUnit } from '@/types/fabricator';
+
+/** Same bands as useStudioBreakpoint, but from measured shell width (not window). */
+function breakpointFromWidth(width: number): StudioBreakpoint {
+  if (width < 768) return 'mobile';
+  if (width < 1024) return 'tablet';
+  if (width < 1440) return 'laptop';
+  return 'desktop';
+}
 
 export interface DesignWorkspaceShellProps {
   positions: WindowUnit[];
@@ -38,7 +47,11 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
   children,
   hideOuterInspector = false,
 }) => {
-  const bp = useStudioBreakpoint();
+  const { ref, size } = useContainerSize<HTMLDivElement>();
+  const viewportBp = useStudioBreakpoint();
+  // Prefer measured shell width so nested rails do not compound with the viewport;
+  // fall back to viewport breakpoint only while ResizeObserver is unmeasured.
+  const bp = size.width != null && size.width > 0 ? breakpointFromWidth(size.width) : viewportBp;
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const { t, i18n } = useTranslation('fabricator');
   const rtl = isRTL(i18n.language);
@@ -81,9 +94,11 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
 
   return (
     <div
+      ref={ref}
       className="h-full w-full flex min-h-0 overflow-hidden"
       data-testid="design-workspace-shell"
       data-breakpoint={bp}
+      data-container-width={size.width ?? undefined}
     >
       {showInlineRails && (
         <div className="w-56 flex-shrink-0 border-e border-amber-600/20 min-h-0">
