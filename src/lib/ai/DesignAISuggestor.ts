@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Design automation Suggestor
  * Analyzes drawn shapes in real-time and suggests best-fitting profiles from library
  */

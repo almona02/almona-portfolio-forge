@@ -1,0 +1,14 @@
+{
+  "canonicalOrigin": "https://www.almona02.com",
+  "routes": [
+    { "id": "home", "path": "/", "critical": true },
+    { "id": "dealer-ar", "path": "/dealer-verification", "language": "ar", "critical": true },
+    { "id": "dealer-en", "path": "/dealer-verification-en", "language": "en", "critical": true },
+    { "id": "software-ar", "path": "/fabricator-pro-software", "language": "ar", "critical": true },
+    { "id": "software-en", "path": "/fabricator-pro-software-en", "language": "en", "critical": true },
+    { "id": "catalogue", "path": "/products/machines", "critical": true },
+    { "id": "marketplace", "path": "/used-machines?lng=ar", "language": "ar", "critical": true },
+    { "id": "marketplace-en", "path": "/used-machines?lng=en", "language": "en", "critical": true },
+    { "id": "missing-listing", "path": "/used-machines/00000000-0000-0000-0000-000000000000", "missing": true }
+  ]
+}

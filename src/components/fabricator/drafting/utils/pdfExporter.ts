@@ -18,7 +18,10 @@ import { sanitizeFilename } from './securityUtils';
 import { generateBezierSegments } from './splineUtils';
 
 // Lazy load pdf-lib to reduce initial bundle size
-let PDFDocument: any, rgb: any, StandardFonts: any;
+type PdfLibModule = typeof import('pdf-lib');
+let PDFDocument: PdfLibModule['PDFDocument'];
+let rgb: PdfLibModule['rgb'];
+let StandardFonts: PdfLibModule['StandardFonts'];
 
 /**
  * PDF export options

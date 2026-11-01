@@ -94,13 +94,13 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
 
   // Load existing calibration if available
   useEffect(() => {
-    loadExistingCalibration();
+    void loadExistingCalibration();
   }, [loadExistingCalibration]);
 
   // Load quick insight for this profile
   useEffect(() => {
     if (userId) {
-      loadQuickInsight();
+      void loadQuickInsight();
     }
   }, [loadQuickInsight, userId]);
 
@@ -178,7 +178,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
     setTestResults((prev) => [...prev, newResult]);
 
     // Learn from adjustment
-    enhancedCalibrationManager.learnFromUserAdjustments(
+    void enhancedCalibrationManager.learnFromUserAdjustments(
       expectedLength,
       actualLength,
       calibration as CuttingCalibration
@@ -203,7 +203,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
     }
   };
 
-  const saveCalibration = async () => {
+  const saveCalibration = () => {
     try {
       const fullCalibration: CuttingCalibration = {
         id: `cal_${Date.now()}`,
@@ -285,7 +285,8 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
 
               <KFactorCalculator
                 profile={profile}
-                onKFactorCalculated={async (kFactor, jointType) => {
+                onKFactorCalculated={(kFactor, jointType) => {
+                  void (async (kFactor, jointType) => {
                   // Save K-factor to profile calibration
                   try {
                     const userId = profile.userId || '';
@@ -319,6 +320,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   } catch (error) {
                     console.error('Error saving K-factor:', error);
                   }
+                })(kFactor, jointType);
                 }}
                 initialKFactor={(profile as any).default_k_factor_45}
                 initialJointType="miter_45"
@@ -578,7 +580,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                         (document.getElementById('testActual') as HTMLInputElement)?.value || '0'
                       );
                       if (expected && actual) {
-                        addTestResult(expected, actual);
+                        void addTestResult(expected, actual);
                         (document.getElementById('testExpected') as HTMLInputElement).value = '';
                         (document.getElementById('testActual') as HTMLInputElement).value = '';
                       }
@@ -617,7 +619,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
             <Button variant="outline" onClick={() => setStep(step - 1)} disabled={step === 1}>
               {t('calibration_wizard.actions.previous', 'Previous')}
             </Button>
-            <Button onClick={saveCalibration} className="btn-primary">
+            <Button onClick={() => void saveCalibration()} className="btn-primary">
               {t('calibration_wizard.actions.save', 'Save Calibration')}
             </Button>
           </div>

@@ -1,4 +1,4 @@
-import { Button } from '@/shared/ui/ui/button';
+﻿import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Eye, Pencil, RefreshCw, Ruler } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -114,7 +114,7 @@ export const UnifiedDesignPage: React.FC = () => {
 
         // Gold-tier navigation with smooth transition
         setTimeout(() => {
-            navigate('/fabricator/workflow/preview3d', {
+            void navigate('/fabricator/workflow/preview3d', {
                 state: {
                     transition: 'design_complete',
                     canonicalModel: canonicalModel,
@@ -137,7 +137,7 @@ export const UnifiedDesignPage: React.FC = () => {
         completeStep('design');
 
         // Navigate to 3D preview
-        navigate('/fabricator/workflow/preview3d');
+        void navigate('/fabricator/workflow/preview3d');
     }, [setCurrentProject, completeStep, navigate]);
 
     // Handle mode switch with data preservation
@@ -167,7 +167,7 @@ export const UnifiedDesignPage: React.FC = () => {
             // Update URL with mode
             const params = new URLSearchParams(location.search);
             params.set('mode', newMode);
-            navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+            void navigate(`${location.pathname}?${params.toString()}`, { replace: true });
 
         } catch (error) {
             console.error('Mode switch failed:', error);
@@ -225,7 +225,7 @@ export const UnifiedDesignPage: React.FC = () => {
 
         // Smooth navigation with progress indicator
         setTimeout(() => {
-            navigate('/fabricator/workflow/preview3d', {
+            void navigate('/fabricator/workflow/preview3d', {
                 state: {
                     transition: 'smooth',
                     preserveScroll: true,
@@ -256,7 +256,7 @@ export const UnifiedDesignPage: React.FC = () => {
                             {/* Mode switcher */}
                             <div className="flex rounded-lg border border-slate-300 p-1 bg-slate-100">
                                 <button
-                                    onClick={() => handleModeSwitch('wizard')}
+                                    onClick={() => void handleModeSwitch('wizard')}
                                     disabled={isConverting}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${designMode === 'wizard'
                                         ? 'bg-white text-slate-900 shadow-sm border border-slate-300'
@@ -270,7 +270,7 @@ export const UnifiedDesignPage: React.FC = () => {
                                 </button>
 
                                 <button
-                                    onClick={() => handleModeSwitch('drafting')}
+                                    onClick={() => void handleModeSwitch('drafting')}
                                     disabled={isConverting}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${designMode === 'drafting'
                                         ? 'bg-amber-100 text-amber-900 shadow-sm border border-amber-300'
@@ -289,14 +289,14 @@ export const UnifiedDesignPage: React.FC = () => {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => navigate('/fabricator/studio/projects')}
+                                    onClick={() => void navigate('/fabricator/studio/projects')}
                                 >
                                     Cancel
                                 </Button>
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => navigate('/fabricator/workflow/preview3d')}
+                                    onClick={() => void navigate('/fabricator/workflow/preview3d')}
                                     disabled={!canonicalModel}
                                 >
                                     <Eye className="w-4 h-4 mr-2" />
@@ -397,7 +397,7 @@ export const UnifiedDesignPage: React.FC = () => {
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => handleModeSwitch(designMode === 'wizard' ? 'drafting' : 'wizard')}
+                                            onClick={() => void handleModeSwitch(designMode === 'wizard' ? 'drafting' : 'wizard')}
                                             className="w-full"
                                         >
                                             <RefreshCw className="w-4 h-4 mr-2" />
@@ -482,7 +482,7 @@ export const UnifiedDesignPage: React.FC = () => {
                                             <div className="h-full">
                                                 <DraftingWorkbench
                                                     onDesignValidated={handleDraftingComplete}
-                                                    onExit={() => navigate('/fabricator/studio/projects')}
+                                                    onExit={() => void navigate('/fabricator/studio/projects')}
                                                 />
                                             </div>
                                         )}
@@ -512,7 +512,7 @@ export const UnifiedDesignPage: React.FC = () => {
                             variant="outline"
                             onClick={() => {
                                 if (window.confirm('Save draft and exit?')) {
-                                    navigate('/fabricator/studio/projects');
+                                    void navigate('/fabricator/studio/projects');
                                 }
                             }}
                         >

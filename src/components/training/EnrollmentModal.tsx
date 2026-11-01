@@ -1,4 +1,4 @@
-import { usePublicCopy } from '@/hooks/usePublicCopy';
+﻿import { usePublicCopy } from '@/hooks/usePublicCopy';
 import React, { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -82,7 +82,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
           <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-amber-300">{copy("Training enquiry")}</DialogTitle>
           <DialogDescription className="text-gray-400">{copy("Ask about fees, course scope and available dates. This enquiry does not confirm a booking or accredited certification.")}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-5">
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="enrollment-name" className="typography-label text-sm font-medium">{t('trainingPage.form.name')}</label>

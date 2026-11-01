@@ -7,12 +7,12 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/dealer-verification", "destination": "/dealer-verification.html" },
-    { "source": "/dealer-verification-en", "destination": "/dealer-verification-en.html" },
-    { "source": "/yilmaz-machines-egypt", "destination": "/yilmaz-machines-egypt.html" },
-    { "source": "/yilmaz-machines-egypt-en", "destination": "/yilmaz-machines-egypt-en.html" },
-    { "source": "/fabricator-pro-software", "destination": "/fabricator-pro-software.html" },
-    { "source": "/fabricator-pro-software-en", "destination": "/fabricator-pro-software-en.html" },
+    { "source": "/dealer-verification", "destination": "/dealer-verification" },
+    { "source": "/dealer-verification-en", "destination": "/dealer-verification-en" },
+    { "source": "/yilmaz-machines-egypt", "destination": "/yilmaz-machines-egypt" },
+    { "source": "/yilmaz-machines-egypt-en", "destination": "/yilmaz-machines-egypt-en" },
+    { "source": "/fabricator-pro-software", "destination": "/fabricator-pro-software" },
+    { "source": "/fabricator-pro-software-en", "destination": "/fabricator-pro-software-en" },
     { "source": "/prestige-agent", "destination": "/index" },
     { "source": "/prestige-agent/", "destination": "/index" },
     { "source": "/prestige-agent/(.*)", "destination": "/index" },
@@ -21,8 +21,9 @@
     { "source": "/ydt/(.*)", "destination": "/index" },
     { "source": "/machines", "destination": "/index" },
     { "source": "/machines/:path*", "destination": "/index" },
+    { "source": "/products/machines/:machineId", "destination": "/catalogue-models/:machineId" },
     { "source": "/products/machines/(.*)", "destination": "/index" },
-    { "source": "/products/machines", "destination": "/index" },
+    { "source": "/products/machines", "destination": "/catalogue-machines" },
     { "source": "/products/profiles/(.*)", "destination": "/index" },
     { "source": "/products/profiles", "destination": "/index" },
     { "source": "/products/3d-gallery", "destination": "/index" },
@@ -32,7 +33,7 @@
     { "source": "/products/upvc/doors", "destination": "/index" },
     { "source": "/products/aluminum/thermal-break", "destination": "/index" },
     { "source": "/products/(.*)", "destination": "/index" },
-    { "source": "/products", "destination": "/index" },
+    { "source": "/products", "destination": "/catalogue-products" },
     { "source": "/test-scanner", "destination": "/index" },
     { "source": "/test-scanner/(.*)", "destination": "/index" },
     { "source": "/fabricator-workflow", "destination": "/index" },
@@ -43,9 +44,48 @@
     { "source": "/egyptian-project-wizard", "destination": "/index" },
     { "source": "/used-machines", "destination": "/index" },
     { "source": "/used-machines/:path*", "destination": "/index" },
-    { "source": "/((?!api(?:/|$)|assets(?:/|$)|models(?:/|$)|images(?:/|$)|documents(?:/|$)|textures(?:/|$)|draco(?:/|$)|.*\\.(?:js|css|glb|gltf|jpg|jpeg|png|svg|webp|gif|ico|woff2?|pdf|bin|wasm|map)$).*)", "destination": "/index" }
+    { "source": "/((?!api(?:/|$)|\\.well-known(?:/|$)|assets(?:/|$)|models(?:/|$)|images(?:/|$)|documents(?:/|$)|textures(?:/|$)|draco(?:/|$)|.*\\.(?:txt|xml|json|webmanifest|html|avif|js|css|glb|gltf|jpg|jpeg|png|svg|webp|gif|ico|woff2?|pdf|bin|wasm|map)$).*)", "destination": "/index" }
   ],
   "headers": [
+    {
+      "source": "/sitemap.xml",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/xml; charset=utf-8"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    },
+    {
+      "source": "/llms.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    },
+    {
+      "source": "/robots.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    },
     {
       "source": "/manifest.webmanifest",
       "headers": [

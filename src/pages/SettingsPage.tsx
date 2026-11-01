@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/AuthContext';
+﻿import { useAuth } from '@/context/AuthContext';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
@@ -86,7 +86,7 @@ export const SettingsPage: React.FC = () => {
     };
 
     const handleLanguageChange = (lang: string) => {
-        i18n.changeLanguage(lang);
+        void i18n.changeLanguage(lang);
         toast.success(`Language switched to ${lang === 'en' ? 'English' : 'Arabic'}`);
     };
 
@@ -276,7 +276,7 @@ export const SettingsPage: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="flex justify-end">
-                                    <Button onClick={handleSaveProfile} disabled={isLoading} className="bg-amber-600 hover:bg-amber-700 text-white">
+                                    <Button onClick={() => void handleSaveProfile()} disabled={isLoading} className="bg-amber-600 hover:bg-amber-700 text-white">
                                         {isLoading ? 'Saving...' : 'Save Changes'}
                                     </Button>
                                 </div>
@@ -295,7 +295,7 @@ export const SettingsPage: React.FC = () => {
                                     <div className="font-medium text-slate-200">Sign Out</div>
                                     <div className="text-sm text-slate-400">Log out of your account on all devices</div>
                                 </div>
-                                <Button variant="destructive" onClick={() => signOut()}>
+                                <Button variant="destructive" onClick={() => void signOut()}>
                                     Sign Out
                                 </Button>
                             </CardContent>

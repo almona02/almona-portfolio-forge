@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Workspace Synchronizer
  * Supabase real-time subscriptions for workspace synchronization
  */
@@ -72,7 +72,7 @@ export class WorkspaceSynchronizer {
     return () => {
       this.listeners.get(channelName)?.delete(onUpdate);
       if (this.listeners.get(channelName)?.size === 0) {
-        channel.unsubscribe();
+        void channel.unsubscribe();
         this.channels.delete(channelName);
         this.listeners.delete(channelName);
       }
@@ -128,7 +128,7 @@ export class WorkspaceSynchronizer {
     return () => {
       this.listeners.get(channelName)?.delete(onUpdate);
       if (this.listeners.get(channelName)?.size === 0) {
-        channel.unsubscribe();
+        void channel.unsubscribe();
         this.channels.delete(channelName);
         this.listeners.delete(channelName);
       }

@@ -1,47 +1,27 @@
 import { Button } from "@/components/ui/button-gold-tier";
 import { FADE_IN, SLIDE_UP } from "@/lib/animations/motion";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Award, CheckCircle, Phone } from "lucide-react";
-import { Suspense, lazy, startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { AIAgentStatus } from "./AIAgentStatus";
 
-// Lazy load the heavy background component to improve LCP
-const EgyptianIndustrialHero = lazy(() => import("./EgyptianIndustrialHero").then(module => ({ default: module.EgyptianIndustrialHero })));
-
-// Component to handle lazy background loading with startTransition
-const LazyBackground = () => {
-  const [shouldLoad, setShouldLoad] = useState(false);
-
-  useEffect(() => {
-    // Defer loading until after initial render to avoid blocking LCP
-    const timer = setTimeout(() => {
-      startTransition(() => {
-        setShouldLoad(true);
-      });
-    }, 0);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!shouldLoad) return null;
-
-  return (
-    <div className="absolute inset-0 z-0">
-      <Suspense fallback={null}>
-        <EgyptianIndustrialHero>
-          {/* Empty - content already rendered above */}
-        </EgyptianIndustrialHero>
-      </Suspense>
-    </div>
-  );
-};
+// Static artwork keeps the homepage's identity without a continuously rendered canvas.
+const HeroBackground = () => (
+  <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <img src="/images/responsive/egyptian-industrial-hero-bg-v1-768w.webp" alt="" width={768} height={1360}
+      className="absolute inset-0 w-full h-full object-cover object-right opacity-40" decoding="async" />
+  </div>
+);
 
 const Hero = () => {
   const { t } = useTranslation('home');
+  const reducedMotion = useReducedMotion();
   const [activeSlide, setActiveSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(false);
   const [transitionProgress, setTransitionProgress] = useState(100);
   const [_isStatusVisible, setIsStatusVisible] = useState(true);
   const statusHideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -88,14 +68,14 @@ const Hero = () => {
 
   // Auto-advance slides with pause on hover
   useEffect(() => {
-    if (isTransitioning || isPaused) return;
+    if (!autoPlay || isTransitioning || isPaused || reducedMotion) return;
 
     const interval = setInterval(() => {
       goToSlide(activeSlide === slides.length - 1 ? 0 : activeSlide + 1);
     }, 6000);
 
     return () => clearInterval(interval);
-  }, [activeSlide, slides.length, isTransitioning, goToSlide, isPaused]);
+  }, [activeSlide, slides.length, isTransitioning, goToSlide, isPaused, reducedMotion, autoPlay]);
 
   // Animate micro progress bar during slide transitions for smoother feedback
   useEffect(() => {
@@ -132,19 +112,15 @@ const Hero = () => {
   }, [activeSlide, showStatusWithAutoHide]);
 
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') {
-        goToSlide(activeSlide === 0 ? slides.length - 1 : activeSlide - 1);
-      } else if (e.key === 'ArrowRight') {
-        goToSlide(activeSlide === slides.length - 1 ? 0 : activeSlide + 1);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeSlide, slides.length, goToSlide]);
+  // Arrow keys belong to the focused carousel, not forms or the command menu.
+  const handleCarouselKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    if (event.target instanceof HTMLElement && event.target.closest('input, textarea, select, [contenteditable]')) return;
+    event.preventDefault();
+    const next = (activeSlide + (event.key === 'ArrowRight' ? 1 : -1) + slides.length) % slides.length;
+    goToSlide(next);
+    event.currentTarget.querySelector<HTMLButtonElement>(`#hero-tab-${next}`)?.focus();
+  };
 
   // Touch/swipe support for mobile
   const [touchStart, setTouchStart] = useState(0);
@@ -200,7 +176,11 @@ const Hero = () => {
           {slides.map((slide, index) => (
             <motion.div
               key={slide.id}
-              initial="hidden"
+              id={`hero-slide-${index}`}
+              role="tabpanel"
+              aria-labelledby={`hero-tab-${index}`}
+              aria-hidden={activeSlide !== index}
+              initial={false}
               animate={activeSlide === index ? "visible" : "hidden"}
               variants={FADE_IN}
               className={`${activeSlide === index
@@ -305,6 +285,12 @@ const Hero = () => {
         <div className="relative z-[100] pb-2 sm:pb-4 md:pb-6 lg:pb-8">
           <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 md:gap-4">
+              {!reducedMotion && (
+                <button type="button" onClick={() => setAutoPlay(value => !value)} aria-pressed={autoPlay}
+                  className="text-sm text-amber-300 underline p-2">
+                  {autoPlay ? t('hero.pause', { defaultValue: 'Pause slideshow' }) : t('hero.play', { defaultValue: 'Play slideshow' })}
+                </button>
+              )}
               {/* Navigation Dots - Optimized for mobile */}
               <div className="flex flex-col items-start sm:items-center gap-2 sm:gap-3">
                 <div className="flex space-x-2 sm:space-x-3" role="tablist" aria-label="Slide navigation">
@@ -312,14 +298,16 @@ const Hero = () => {
                     <button
                       key={index}
                       onClick={() => goToSlide(index)}
-                      className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-background dark:focus:ring-offset-gray-900 ${activeSlide === index
-                          ? "bg-almona-orange w-6 sm:w-8 shadow-lg shadow-amber-500/25"
-                          : "bg-foreground/30 dark:bg-white/30 hover:bg-foreground/50 dark:hover:bg-white/50"
-                        }`}
+                      id={`hero-tab-${index}`}
+                      aria-controls={`hero-slide-${index}`}
+                      tabIndex={activeSlide === index ? 0 : -1}
+                      className="inline-flex w-10 h-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400"
                       aria-label={`Go to slide ${index + 1}`}
                       aria-selected={activeSlide === index}
                       role="tab"
-                    />
+                    >
+                      <span aria-hidden="true" className={`block w-2.5 h-2.5 rounded-full transition-transform duration-200 ${activeSlide === index ? 'bg-almona-orange scale-x-[2.4]' : 'bg-foreground/30 dark:bg-white/30'}`} />
+                    </button>
                   ))}
                 </div>
 
@@ -328,11 +316,12 @@ const Hero = () => {
                   <div
                     className="bg-almona-orange h-full rounded-full"
                     style={{
-                      width: isPaused ? '0%' : '100%',
-                      transition: isPaused ? 'none' : 'width 6s linear'
+                      transform: !autoPlay || isPaused ? 'scaleX(0)' : 'scaleX(1)',
+                      transformOrigin: 'left',
+                      transition: isPaused || reducedMotion ? 'none' : 'transform 6s linear'
                     }}
                     key={activeSlide}
-                    aria-label="Slide progress"
+                    aria-hidden="true"
                   />
                 </div>
               </div>
@@ -351,10 +340,13 @@ const Hero = () => {
       role="region"
       aria-label="Hero carousel"
       aria-roledescription="carousel"
-      aria-live="polite"
+      aria-live={autoPlay ? "off" : "polite"}
+      onKeyDown={handleCarouselKeyDown}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onFocusCapture={() => setIsPaused(true)}
+      onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setIsPaused(false); }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -366,8 +358,8 @@ const Hero = () => {
       {/* Render hero content immediately for LCP - no background blocking */}
       {heroContent}
 
-      {/* Lazy load heavy background component after initial render */}
-      <LazyBackground />
+      {/* Decorative artwork never delays the primary content. */}
+      <HeroBackground />
 
       {/* Loading indicator for transition states - Theme-aware */}
       {isTransitioning && (
@@ -380,8 +372,8 @@ const Hero = () => {
               <div className="w-28 h-1.5 bg-foreground/15 dark:bg-white/15 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 transition-all duration-500 ease-out"
-                  style={{ width: `${transitionProgress}%` }}
-                  aria-label="Slide transition in progress"
+                  style={{ transform: `scaleX(${transitionProgress / 100})`, transformOrigin: "left" }}
+                  aria-hidden="true"
                 />
               </div>
             </div>

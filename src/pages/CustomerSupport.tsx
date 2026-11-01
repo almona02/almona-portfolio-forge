@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/context/AuthContext'
 import { getUserTickets, getTicketStats } from '@/lib/ticketApi'
@@ -44,7 +44,7 @@ const CustomerSupport: React.FC = () => {
 
   const handleTicketCreated = () => {
     setIsCreateDialogOpen(false)
-    refetchTickets()
+    void refetchTickets()
   }
 
   const handleViewTicket = (ticketId: string) => {
@@ -53,7 +53,7 @@ const CustomerSupport: React.FC = () => {
 
   const handleBackToList = () => {
     setSelectedTicketId(null)
-    refetchTickets()
+    void refetchTickets()
   }
 
   const handleSearch = (value: string) => {

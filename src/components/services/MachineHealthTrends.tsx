@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+﻿import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { iotSensorService } from '@/lib/iot/sensorIntegration';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
@@ -61,7 +61,7 @@ export const MachineHealthTrends: React.FC<MachineHealthTrendsProps> = ({ machin
       }
       if (!cancelled) setData(next);
     };
-    load();
+    void load();
     return () => { cancelled = true; };
   }, [machineIds, days]);
 

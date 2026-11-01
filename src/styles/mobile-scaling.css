@@ -71,7 +71,8 @@
 
 @media screen and (max-width: 768px) {
   /* This dialog is already centred with translate; margins offset it off-screen. */
-  [role="dialog"].public-enquiry-dialog {
+  [role="dialog"].public-enquiry-dialog,
+  [role="dialog"].public-command-dialog {
     margin: 0 !important;
   }
 }

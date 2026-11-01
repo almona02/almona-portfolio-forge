@@ -176,7 +176,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
         {specPdf && (
           <Button asChild variant="outline" size="sm" className="w-full">
-            <a href={specPdf} download target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+            <a href={specPdf} aria-label={`Download ${title} specifications (PDF)`} download target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
               <Download size={16} />
               Download Specs
             </a>

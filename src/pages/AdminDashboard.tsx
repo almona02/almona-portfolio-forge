@@ -19,9 +19,11 @@ import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
+import { fabricatorRoutes } from '@/lib/fabricator/routes'
 import {
   AlertCircle,
   Bell,
+  Factory,
   LogOut,
   Menu,
   Settings,
@@ -29,7 +31,7 @@ import {
   Zap,
 } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
-import { Navigate, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useSearchParams } from 'react-router-dom'
 // Dashboard components
 import { YDTPerformanceDashboard } from '@/components/admin/YDTPerformanceDashboard'
 import { GovernanceHealthMini } from '@/components/governance/GovernanceHealthMini'
@@ -62,6 +64,7 @@ const MachinesAdminPanel = lazyRetry(() => import('@/components/admin/panels/Mac
 const ServiceContractsAdminPanel = lazyRetry(() => import('@/components/admin/panels/ServiceContractsAdminPanel'), 'ServiceContractsAdminPanel')
 const AdminSettingsPanel = lazyRetry(() => import('@/components/admin/panels/AdminSettingsPanel'), 'AdminSettingsPanel')
 const ServicePackagesPanel = lazyRetry(() => import('@/components/admin/panels/ServicePackagesPanel'), 'ServicePackagesPanel')
+const ManufacturingConfigPanel = lazyRetry(() => import('@/components/admin/panels/ManufacturingConfigPanel'), 'ManufacturingConfigPanel')
 
 type Notification = { id: string; title: string; message: string; created_at: string }
 
@@ -105,27 +108,27 @@ const AdminDashboard: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    fetchDashboardData()
-    fetchNotifications()
+    void fetchDashboardData()
+    void fetchNotifications()
 
     // realtime subscriptions
     const ordersSub = supabase
       .channel('orders-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
-        fetchDashboardData()
+        void fetchDashboardData()
       })
       .subscribe()
 
     const productsSub = supabase
       .channel('products-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
-        fetchDashboardData()
+        void fetchDashboardData()
       })
       .subscribe()
 
     return () => {
-      ordersSub.unsubscribe()
-      productsSub.unsubscribe()
+      void ordersSub.unsubscribe().catch((error: unknown) => console.error('Error unsubscribing from orders:', error))
+      void productsSub.unsubscribe().catch((error: unknown) => console.error('Error unsubscribing from products:', error))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -139,7 +142,7 @@ const AdminDashboard: React.FC = () => {
       const { data: revenueData } = await supabase
         .from('orders')
         .select('total_amount,status')
-        .eq('status', 'delivered' as any)
+        .eq('status', 'delivered')
 
       const rows = (revenueData ?? []) as Array<{ total_amount: number | null }>
       const totalRevenue = rows.reduce((sum: number, r) => sum + (r.total_amount ?? 0), 0)
@@ -150,7 +153,7 @@ const AdminDashboard: React.FC = () => {
       const { count: pendingOrders } = await supabase
         .from('orders')
         .select('*', { count: 'exact' })
-        .in('status', ['pending', 'confirmed', 'processing'] as any[])
+        .in('status', ['pending', 'confirmed', 'processing'])
 
       const { count: lowStockItems } = await supabase
         .from('products')
@@ -192,6 +195,40 @@ const AdminDashboard: React.FC = () => {
         return (
           <div className="space-y-6">
             <DashboardStats stats={stats} />
+
+            <Card data-testid="admin-fabricator-hub">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <Factory className="h-5 w-5 text-amber-500" aria-hidden />
+                  <CardTitle className="text-lg">Fabricator Pro · manufacturing</CardTitle>
+                </div>
+                <CardDescription>
+                  Jump to catalogue approvals and workshop configuration. Cut-ledger identity vs saved
+                  design stays a hard production gate — edit engineering inputs (packs, kerf/trim via
+                  approvals, templates), never bypass occurrence reconciliation.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                <Button asChild variant="secondary" className="justify-start">
+                  <Link to={fabricatorRoutes.studioCommand()}>Open Fabricator Pro</Link>
+                </Button>
+                <Button asChild variant="secondary" className="justify-start">
+                  <Link to={fabricatorRoutes.studioApprovals()}>Manufacturing approvals</Link>
+                </Button>
+                <Button asChild variant="secondary" className="justify-start">
+                  <Link to={fabricatorRoutes.studioDataProfiles()}>System packs / profiles</Link>
+                </Button>
+                <Button asChild variant="secondary" className="justify-start">
+                  <Link to={fabricatorRoutes.studioData('tuning')}>Operation templates</Link>
+                </Button>
+                <Button asChild variant="secondary" className="justify-start">
+                  <Link to={fabricatorRoutes.studioDataAccessories()}>Accessories kits</Link>
+                </Button>
+                <Button asChild variant="secondary" className="justify-start">
+                  <Link to={fabricatorRoutes.studioDataStock()}>Stock / remnants</Link>
+                </Button>
+              </CardContent>
+            </Card>
 
             {/* Constitutional automation Governance Section */}
             <div className="space-y-4">
@@ -350,6 +387,12 @@ const AdminDashboard: React.FC = () => {
             <AdminSettingsPanel />
           </React.Suspense>
         )
+      case 'manufacturing':
+        return (
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading manufacturing configurators…</div>}>
+            <ManufacturingConfigPanel />
+          </React.Suspense>
+        )
       case 'analytics':
         return (
           <div className="space-y-6">
@@ -427,7 +470,7 @@ const AdminDashboard: React.FC = () => {
             <p className="truncate text-sm font-medium">{user?.full_name || user?.email}</p>
             <p className="text-sm text-muted-foreground">Administrator</p>
           </div>
-          <Button variant="ghost" size="icon" onClick={signOut} aria-label="Sign out">
+          <Button variant="ghost" size="icon" onClick={() => void signOut().catch((error: unknown) => console.error('Error signing out:', error))} aria-label="Sign out">
             <LogOut aria-hidden="true" className="h-4 w-4" />
           </Button>
         </div>
@@ -530,7 +573,7 @@ const AdminDashboard: React.FC = () => {
                     <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={signOut}>
+                  <DropdownMenuItem onClick={() => void signOut().catch((error: unknown) => console.error('Error signing out:', error))}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>

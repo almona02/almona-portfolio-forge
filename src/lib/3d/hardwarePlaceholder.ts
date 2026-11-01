@@ -8,6 +8,8 @@
  * with correct positioning rather than detailed 3D models.
  */
 
+import { partRefKey } from '@/lib/fabricator/assembly/partRef';
+import { normalizeOpeningType } from '@/lib/fabricator/openingType';
 import { WindowUnit } from '@/types/fabricator';
 import { BoxGeometry, BufferGeometry, Vector3 } from 'three';
 
@@ -62,6 +64,86 @@ export const HARDWARE_COLORS = {
 };
 
 /**
+ * Calculate absolute position from expression
+ * 
+ * @param expr Expression like 'sash_right_edge-0.03' or 'sash_height/2'
+ * @param context Context object with values like sashWidth, sashHeight, etc.
+ */
+/**
+ * Safely evaluate a simple arithmetic expression (digits, + - * /, parentheses)
+ * without the Function constructor (avoids no-implied-eval).
+ */
+function _safeEvalArithmetic(expr: string): number {
+  let pos = 0;
+  const peek = () => expr[pos] ?? '';
+  const skipWs = () => { while (peek() === ' ') pos++; };
+  const parseNumber = (): number => {
+    skipWs();
+    const start = pos;
+    while (/[0-9.]/.test(peek())) pos++;
+    return parseFloat(expr.slice(start, pos));
+  };
+  const parseExpr = (): number => {
+    let v = parseTerm();
+    skipWs();
+    while (peek() === '+' || peek() === '-') {
+      const op = peek();
+      pos++;
+      const rhs = parseTerm();
+      v = op === '+' ? v + rhs : v - rhs;
+      skipWs();
+    }
+    return v;
+  };
+  const parseTerm = (): number => {
+    let v = parseFactor();
+    skipWs();
+    while (peek() === '*' || peek() === '/') {
+      const op = peek();
+      pos++;
+      const rhs = parseFactor();
+      v = op === '*' ? v * rhs : v / rhs;
+      skipWs();
+    }
+    return v;
+  };
+  const parseFactor = (): number => {
+    skipWs();
+    if (peek() === '(') {
+      pos++;
+      const v = parseExpr();
+      skipWs();
+      if (peek() === ')') pos++;
+      return v;
+    }
+    return parseNumber();
+  };
+  return parseExpr();
+}
+
+function _evaluatePosition(expr: string | number, context: Record<string, number>): number {
+  if (typeof expr === 'number') return expr;
+  
+  // Replace context variables
+  let result = expr;
+  for (const [key, value] of Object.entries(context)) {
+    result = result.replace(new RegExp(key, 'g'), value.toString());
+  }
+  
+  // Evaluate simple arithmetic (safe eval)
+  try {
+    // Only allow basic arithmetic operations
+    if (/^[0-9+\-*/().\s]+$/.test(result)) {
+      return _safeEvalArithmetic(result);
+    }
+  } catch (e) {
+    console.warn(`Failed to evaluate position expression: ${expr}`, e);
+  }
+  
+  return 0;
+}
+
+/**
  * Generate hardware placeholders for a window unit
  * 
  * @param windowUnit The window unit to generate hardware for
@@ -76,13 +158,20 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
   
   const width = windowUnit.overallWidth / 1000; // Convert mm to meters
   const height = windowUnit.overallHeight / 1000;
+  // Saved sliding designs often store operable cells as plain 'sash' (e.g. CALUMINIUM PS
+  // 2-sash saves); the opening type of the unit decides sliding vs casement hardware.
+  const unitIsSliding = normalizeOpeningType(windowUnit.type, windowUnit.grid) === 'sliding';
+  // Deterministic occurrence index per (cell, hardware type) → assembly part ref.
+  const refFor = (cellId: string, type: HardwarePlaceholder['type'], index: number) =>
+    partRefKey({ kind: 'hardware', cellId, placement: type, index });
   
   // Process each cell
   windowUnit.grid.cells.forEach((cell, _index) => {
     if (cell.type === 'empty') return;
     
-    const isSliding = cell.type === 'sliding' || (cell as any).type === 'sliding';
-    const isCasement = cell.type === 'sash' && !isSliding;
+    const isOperable = cell.type === 'sash' || (cell as any).type === 'sliding';
+    const isSliding = isOperable && ((cell as any).type === 'sliding' || unitIsSliding);
+    const isCasement = isOperable && !isSliding;
     
     // Calculate cell dimensions using proportional grid (colWidths/rowHeights)
     const grid = windowUnit.grid;
@@ -138,23 +227,26 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
         geometry: rollerGeom,
         position: new Vector3(rollerX1, rollerY, rollerZ),
         type: 'roller',
-        label: 'Roller'
+        label: 'Roller',
+        userData: { cellId: cell.id, partRef: refFor(cell.id, 'roller', 0) }
       });
       
       placeholders.push({
         geometry: rollerGeom.clone(),
         position: new Vector3(rollerX2, rollerY, rollerZ),
         type: 'roller',
-        label: 'Roller'
+        label: 'Roller',
+        userData: { cellId: cell.id, partRef: refFor(cell.id, 'roller', 1) }
       });
       
-      // Handle on right side, middle height
+      // Handle on the meeting-stile side (towards the window centre), middle height
       const handleGeom = new BoxGeometry(
         HARDWARE_DIMENSIONS.handle.width,
         HARDWARE_DIMENSIONS.handle.height,
         HARDWARE_DIMENSIONS.handle.depth
       );
-      const handleX = cellX + cellW / 2 - HARDWARE_DIMENSIONS.handle.depth / 2;
+      const towardsCentre = cellX <= 0 ? 1 : -1;
+      const handleX = cellX + towardsCentre * (cellW / 2 - HARDWARE_DIMENSIONS.handle.depth / 2 - HARDWARE_DIMENSIONS.handle.width);
       const handleY = cellY;
       const handleZ = 0.01;
       
@@ -162,7 +254,22 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
         geometry: handleGeom,
         position: new Vector3(handleX, handleY, handleZ),
         type: 'handle',
-        label: 'Handle'
+        label: 'Handle',
+        userData: { cellId: cell.id, partRef: refFor(cell.id, 'handle', 0) }
+      });
+
+      // Sliding lock sits on the meeting stile below the handle.
+      const slidingLockGeom = new BoxGeometry(
+        HARDWARE_DIMENSIONS.lock.width,
+        HARDWARE_DIMENSIONS.lock.height,
+        HARDWARE_DIMENSIONS.lock.depth
+      );
+      placeholders.push({
+        geometry: slidingLockGeom,
+        position: new Vector3(handleX, handleY - HARDWARE_DIMENSIONS.handle.height, handleZ),
+        type: 'lock',
+        label: 'Lock',
+        userData: { cellId: cell.id, partRef: refFor(cell.id, 'lock', 0) }
       });
       
     } else if (isCasement) {
@@ -200,7 +307,7 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
         position: new Vector3(hingeX, cellY + cellH / 2 - 0.15, hingeZ),
         type: 'hinge',
         label: `Hinge (Top) - ${openingDirection} opening`,
-        userData: { cellId: cell.id, openingDirection } // Store for animation reference
+        userData: { cellId: cell.id, openingDirection, partRef: refFor(cell.id, 'hinge', 0) } // Store for animation reference
       });
       
       // Bottom hinge (150mm from bottom)
@@ -209,7 +316,7 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
         position: new Vector3(hingeX, cellY - cellH / 2 + 0.15, hingeZ),
         type: 'hinge',
         label: `Hinge (Bottom) - ${openingDirection} opening`,
-        userData: { cellId: cell.id, openingDirection } // Store for animation reference
+        userData: { cellId: cell.id, openingDirection, partRef: refFor(cell.id, 'hinge', 1) } // Store for animation reference
       });
       
       // Handle on opposite side from hinges (where you grab to open)
@@ -233,7 +340,8 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
         geometry: handleGeom,
         position: new Vector3(handleX, handleY, handleZ),
         type: 'handle',
-        label: 'Handle'
+        label: 'Handle',
+        userData: { cellId: cell.id, partRef: refFor(cell.id, 'handle', 0) }
       });
       
       // Lock at center bottom
@@ -250,7 +358,8 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
         geometry: lockGeom,
         position: new Vector3(lockX, lockY, lockZ),
         type: 'lock',
-        label: 'Lock'
+        label: 'Lock',
+        userData: { cellId: cell.id, partRef: refFor(cell.id, 'lock', 0) }
       });
     }
   });

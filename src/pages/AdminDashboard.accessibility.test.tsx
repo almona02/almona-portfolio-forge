@@ -6,7 +6,7 @@ import AdminDashboard from './AdminDashboard'
 import { AdminNavDropdown } from '@/components/admin/AdminNavDropdown'
 import { adminNavigationItems, adminSectionHref } from '@/components/admin/adminNavigation'
 
-vi.mock('@/context/AuthContext', () => ({ useAuth: () => ({ user: { id: 'admin', role: 'admin', email: 'admin@example.test' }, signOut: vi.fn() }) }))
+vi.mock('@/context/AuthContext', () => ({ useAuth: () => ({ user: { id: 'admin', role: 'admin', email: 'admin@example.test' }, signOut: vi.fn().mockResolvedValue(undefined) }) }))
 vi.mock('@/hooks/use-toast', () => ({ useToast: () => ({ toast: vi.fn() }) }))
 vi.mock('@/lib/supabase', () => ({
   supabase: {
@@ -16,7 +16,7 @@ vi.mock('@/lib/supabase', () => ({
       query.then = (resolve: (value: unknown) => void) => resolve({ data: [], count: 0 })
       return query
     },
-    channel: () => { const channel = { on: () => channel, subscribe: () => channel, unsubscribe: vi.fn() }; return channel },
+    channel: () => { const channel = { on: () => channel, subscribe: () => channel, unsubscribe: vi.fn().mockResolvedValue('ok') }; return channel },
   },
 }))
 vi.mock('@/components/admin/SparePartsImportPanel', () => ({ SparePartsImportPanel: () => <div>SparePartsImportPanel</div> }))
@@ -34,7 +34,7 @@ afterEach(cleanup)
 function HistoryControls() {
   const location = useLocation()
   const navigate = useNavigate()
-  return <><output aria-label="Current URL">{location.search}</output><button onClick={() => navigate(-1)}>Back</button></>
+  return <><output aria-label="Current URL">{location.search}</output><button onClick={() => { void navigate(-1) }}>Back</button></>
 }
 function setup(url = '/admin') {
   return render(<MemoryRouter initialEntries={[url]}><AdminDashboard /><HistoryControls /></MemoryRouter>)
@@ -49,6 +49,15 @@ describe('Admin accessibility and navigation', () => {
     expect(screen.getByRole('button', { name: 'Notifications (0)' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Account menu' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Orders' })).toHaveAttribute('aria-current', 'page')
+  })
+
+  it('surfaces Fabricator Pro manufacturing shortcuts on overview', () => {
+    setup('/admin')
+    const hub = screen.getByTestId('admin-fabricator-hub')
+    expect(within(hub).getByText(/Fabricator Pro · manufacturing/i)).toBeInTheDocument()
+    expect(within(hub).getByRole('link', { name: 'Open Fabricator Pro' })).toHaveAttribute('href', '/fabricator/studio/command')
+    expect(within(hub).getByRole('link', { name: 'Manufacturing approvals' })).toHaveAttribute('href', '/fabricator/studio/approvals')
+    expect(within(hub).getByRole('link', { name: 'System packs / profiles' })).toHaveAttribute('href', '/fabricator/studio/data/profiles')
   })
 
   it('keeps section selection in browser history and focuses its heading', async () => {

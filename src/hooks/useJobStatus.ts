@@ -106,7 +106,7 @@ export function useJobStatus(jobId: string | null) {
       }
     };
 
-    fetchInitialStatus();
+    void fetchInitialStatus();
 
     // Cleanup subscription on unmount
     return () => {

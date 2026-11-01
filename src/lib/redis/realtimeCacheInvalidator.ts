@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+﻿import { supabase } from '@/lib/supabase';
 import 'dotenv/config'; // Load .env file
 import { AfterSalesCache } from './caches/afterSalesCache';
 import { EcommerceCache } from './caches/ecommerceCache';

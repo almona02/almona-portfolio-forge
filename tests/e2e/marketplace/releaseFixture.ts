@@ -70,7 +70,11 @@ export async function startReleaseFixture() {
     failChunks() { failChunks = true; },
     async bumpDocument() { const file = path.join(releases.B, 'index.html'); await writeFile(file, (await readFile(file, 'utf8')).replace('Document B', 'Fresh document B')); },
     async close() {
-      await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+      await new Promise<void>((resolve, reject) => {
+        server.close(error => error ? reject(error) : resolve());
+        // Browser/service-worker connections must not hold fixture teardown open.
+        server.closeAllConnections();
+      });
       if (!root.startsWith(path.join(os.tmpdir(), 'almona-release-'))) throw new Error('Unexpected fixture path');
       await rm(root, { recursive: true, force: true });
     },

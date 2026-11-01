@@ -154,7 +154,7 @@ export class AccuracyBaselineTracker {
    * Run all Golden Master tests
    */
   async runAllGoldenMasterTests(
-    executionFunction: (inputs: any) => Promise<any> | any
+    executionFunction: (inputs: any) => any
   ): Promise<AccuracyReport> {
     const results: AccuracyTestResult[] = [];
 
@@ -171,7 +171,7 @@ export class AccuracyBaselineTracker {
           expectedOutputHash: master.expectedOutputHash,
           duration: 0,
           timestamp: Date.now(),
-          errorDetails: `Execution error: ${error}`
+          errorDetails: `Execution error: ${error as string}`
         });
       }
     }

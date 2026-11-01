@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Client Communication Center
  * 
  * Gold-tier component for client-company communication.
@@ -50,10 +50,10 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
   });
 
   useEffect(() => {
-    loadMessages();
+    void loadMessages();
   }, [customerId]);
 
-  const loadMessages = async () => {
+  const loadMessages = () => {
     setLoading(true);
     try {
       // In a real implementation, this would fetch from a messages table
@@ -85,7 +85,7 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
     }
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (!newMessage.subject || !newMessage.content) {
       toast.error('Please fill in all fields');
       return;
@@ -172,7 +172,7 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
             </div>
             <div className="flex gap-2">
               <Button
-                onClick={handleSendMessage}
+                onClick={() => void handleSendMessage()}
                 className="bg-amber-600 hover:bg-amber-700 text-white"
               >
                 <Send className="w-4 h-4 mr-2" />

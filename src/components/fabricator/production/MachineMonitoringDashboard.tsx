@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Machine Monitoring Dashboard
  * Real-time monitoring for Yilmaz CNC machines
  * Displays machine status, production progress, and health metrics
@@ -90,7 +90,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
     // Cleanup on unmount
     return () => {
       controllers.forEach((cnc) => {
-        cnc.disconnect();
+        void cnc.disconnect();
       });
     };
   }, [machines]);
@@ -183,7 +183,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
           <p className="text-gray-400">Real-time status of all Yilmaz CNC machines</p>
         </div>
         <Button
-          onClick={handleRefresh}
+          onClick={() => void handleRefresh()}
           disabled={isRefreshing}
           variant="outline"
           size="sm"
@@ -288,7 +288,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
                 <div className="flex gap-2 pt-2">
                   {status.status === 'idle' && (
                     <Button
-                      onClick={() => handleMachineAction(machine.id, 'start')}
+                      onClick={() => void handleMachineAction(machine.id, 'start')}
                       size="sm"
                       className="flex-1 bg-green-500 hover:bg-green-600"
                     >
@@ -299,7 +299,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
                   {status.status === 'running' && (
                     <>
                       <Button
-                        onClick={() => handleMachineAction(machine.id, 'pause')}
+                        onClick={() => void handleMachineAction(machine.id, 'pause')}
                         size="sm"
                         variant="outline"
                         className="flex-1"
@@ -308,7 +308,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
                         Pause
                       </Button>
                       <Button
-                        onClick={() => handleMachineAction(machine.id, 'stop')}
+                        onClick={() => void handleMachineAction(machine.id, 'stop')}
                         size="sm"
                         variant="outline"
                         className="flex-1 border-red-500 text-red-400 hover:bg-red-500/10"
@@ -321,7 +321,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
                   {status.status === 'paused' && (
                     <>
                       <Button
-                        onClick={() => handleMachineAction(machine.id, 'resume')}
+                        onClick={() => void handleMachineAction(machine.id, 'resume')}
                         size="sm"
                         className="flex-1 bg-green-500 hover:bg-green-600"
                       >
@@ -329,7 +329,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
                         Resume
                       </Button>
                       <Button
-                        onClick={() => handleMachineAction(machine.id, 'stop')}
+                        onClick={() => void handleMachineAction(machine.id, 'stop')}
                         size="sm"
                         variant="outline"
                         className="flex-1 border-red-500 text-red-400 hover:bg-red-500/10"

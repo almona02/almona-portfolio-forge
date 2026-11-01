@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CuttingListReport - Enhanced cutting list report component
  * Phase 2: Professional Report Generation System
  * 
@@ -92,7 +92,7 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
       }
     };
 
-    generateQRCode();
+    void generateQRCode();
   }, [project]);
 
   const handleExport = async (format: ExportFormat) => {
@@ -179,7 +179,7 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
               <Button
                 variant="default"
                 size="sm"
-                onClick={() => handleExport('pdf')}
+                onClick={() => void handleExport('pdf')}
                 disabled={isExporting}
               >
                 {isExporting && exportProgress?.format === 'pdf' ? (
@@ -192,7 +192,7 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleExport('csv')}
+                onClick={() => void handleExport('csv')}
                 disabled={isExporting}
               >
                 {isExporting && exportProgress?.format === 'csv' ? (
@@ -205,7 +205,7 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handleExport('dxf')}
+                onClick={() => void handleExport('dxf')}
                 disabled={isExporting}
               >
                 {isExporting && exportProgress?.format === 'dxf' ? (

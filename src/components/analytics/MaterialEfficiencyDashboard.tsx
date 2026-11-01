@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Material Efficiency Dashboard
  * Data-driven insights for material optimization
  */
@@ -40,7 +40,7 @@ export const MaterialEfficiencyDashboard: React.FC<MaterialEfficiencyDashboardPr
     };
 
     if (profiles && profiles.length > 0) {
-      loadForecasts();
+      void loadForecasts();
     }
   }, [profiles, userId]);
 

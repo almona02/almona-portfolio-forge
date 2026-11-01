@@ -89,10 +89,10 @@ const Footer = () => {
 
         {/* Bottom Footer */}
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-500 text-sm mb-4 md:mb-0">
+          <p className="text-gray-300 text-sm mb-4 md:mb-0">
             <span dir="ltr">© {currentYear} ALMONA Co.</span> {copy('All rights reserved.')}
           </p>
-          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+          <div className="flex flex-wrap gap-4 text-sm text-gray-300">
             <Link to="/terms" className="hover:text-almona-orange transition-colors">{copy("Terms & Conditions")}</Link>
             <Link to="/privacy" className="hover:text-almona-orange transition-colors">{copy("Privacy Policy")}</Link>
           </div>

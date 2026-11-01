@@ -13,7 +13,7 @@ const getApiBase = (): string => {
   }
   // Production fallback - but this should not happen if VITE_API_URL is set
   console.error(
-    "⚠️ VITE_API_URL not set in production! API calls will fail. " +
+    "?? VITE_API_URL not set in production! API calls will fail. " +
     "Please set VITE_API_URL in your deployment environment variables."
   );
   // Try to infer from window.location if on same domain
@@ -27,7 +27,7 @@ export interface SmartScanDimensions {
   width_mm: number;
   height_mm: number;
   scale_mm_per_px: number;
-  scale_source: "user_input" | "heuristic" | "ocr" | "scale_detector" | string;
+  scale_source: string;
   enhanced_scale?: {
     method: string;
     scale_mm_per_px: number;
@@ -42,7 +42,7 @@ export interface SmartScanQuality {
   confidence_score: number;
   requires_verification: boolean;
   validation_errors: string[];
-  accuracy_tier?: "production" | "verified_required" | "review_required" | string;
+  accuracy_tier?: string;
   verification_notes?: string[];
 }
 

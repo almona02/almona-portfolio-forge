@@ -134,7 +134,7 @@ function placedCutsFromPlan(
       const cut = plan.cuts![j];
       const cutId = (cut.cutId ?? cut.componentId ?? '').trim();
       if (!cutId) {
-        return { error: `cuttingPlan[${i}].cuts[${j}] cutId required` };
+        return { error: `cuttingPlan[${i}].cuts[${j}] cutId required (placed cut has no occurrence identity)` };
       }
       const length = Number(cut.length ?? NaN);
       if (!Number.isFinite(length) || length <= 0) {
@@ -151,77 +151,82 @@ function placedCutsFromPlan(
   return placed;
 }
 
+function cutAngle(cut: EvidenceCutSpec): number {
+  return Number.isFinite(cut.angle) ? Number(cut.angle) : 0;
+}
+
+/**
+ * Structured occurrence key. Component IDs may themselves contain ':' (e.g.
+ * `PS-6601-BEAD:glazing_bead:0`), so this is never split back into fields —
+ * diagnostics below read the typed spec, not the key.
+ */
+function occurrenceKey(cut: EvidenceCutSpec): string {
+  return JSON.stringify([cut.cutId, cut.profileId, Number(cut.length).toFixed(3), String(cutAngle(cut))]);
+}
+
+function describeCut(cut: EvidenceCutSpec): string {
+  return `${cut.profileId} ${Number(cut.length).toFixed(3)} mm @ ${cutAngle(cut)}°`;
+}
+
+function groupByCutId(cuts: EvidenceCutSpec[]): Map<string, EvidenceCutSpec[]> {
+  const groups = new Map<string, EvidenceCutSpec[]>();
+  for (const cut of cuts) {
+    const group = groups.get(cut.cutId);
+    if (group) group.push(cut);
+    else groups.set(cut.cutId, [cut]);
+  }
+  return groups;
+}
+
+/**
+ * Exact multiset reconciliation of the design ledger against placed cuts.
+ * Identity (cutId), profile, length (3 dp), angle and multiplicity are judged
+ * together; the first failure names the occurrence and what differed so the
+ * operator can tell a missing identity from a wrong length or substituted profile.
+ */
 function reconcileDesignLedger(
   required: EvidenceCutSpec[],
   placed: EvidenceCutSpec[],
 ): string | null {
-  const requiredKeys = required.map(cutKey).sort();
-  const placedKeys = placed.map(cutKey).sort();
-
-  if (requiredKeys.length !== placedKeys.length) {
-    return `design ledger cut count mismatch (required ${requiredKeys.length}, placed ${placedKeys.length})`;
+  if (required.length !== placed.length) {
+    return `design ledger cut count mismatch (required ${required.length}, placed ${placed.length})`;
   }
 
-  const requiredCounts = new Map<string, number>();
-  for (const key of requiredKeys) {
-    requiredCounts.set(key, (requiredCounts.get(key) ?? 0) + 1);
-  }
-  const placedCounts = new Map<string, number>();
-  for (const key of placedKeys) {
-    placedCounts.set(key, (placedCounts.get(key) ?? 0) + 1);
-  }
+  const requiredById = groupByCutId(required);
+  const placedById = groupByCutId(placed);
 
-  for (const [key, count] of requiredCounts) {
-    const got = placedCounts.get(key) ?? 0;
-    if (got === 0) {
-      return `design ledger missing cut ${key}`;
+  for (const [cutId, requiredCuts] of requiredById) {
+    const placedCuts = placedById.get(cutId);
+    if (!placedCuts) {
+      return `design ledger missing cut ${cutId} (${describeCut(requiredCuts[0])})`;
     }
-    if (got > count) {
-      return `design ledger duplicate cut ${key}`;
+    if (placedCuts.length > requiredCuts.length) {
+      return `design ledger duplicate occurrence ${cutId} (placed ${placedCuts.length}, required ${requiredCuts.length})`;
     }
-    if (got < count) {
-      return `design ledger missing cut ${key}`;
+    if (placedCuts.length < requiredCuts.length) {
+      return `design ledger missing cut ${cutId} (placed ${placedCuts.length}, required ${requiredCuts.length})`;
     }
-  }
-  for (const [key, count] of placedCounts) {
-    if (!requiredCounts.has(key)) {
-      // Wrong size / substituted profile shows up as unknown placed key
-      const [cutId, profileId, length] = key.split(':');
-      const sameId = [...requiredCounts.keys()].find((r) => r.startsWith(`${cutId}:`));
-      if (sameId) {
-        const [, reqProfile, reqLength] = sameId.split(':');
-        if (reqProfile !== profileId) {
-          return `design ledger substituted profile for cut ${cutId}`;
-        }
-        if (reqLength !== length) {
-          return `design ledger wrongly sized cut ${cutId}`;
-        }
+    const requiredKeys = requiredCuts.map(occurrenceKey).sort();
+    const placedKeys = placedCuts.map(occurrenceKey).sort();
+    if (requiredKeys.some((key, index) => key !== placedKeys[index])) {
+      const req = requiredCuts[0];
+      const got = placedCuts.find((cut) => occurrenceKey(cut) !== occurrenceKey(req)) ?? placedCuts[0];
+      if (got.profileId !== req.profileId) {
+        return `design ledger substituted profile for cut ${cutId} (required ${req.profileId}, placed ${got.profileId})`;
       }
-      return `design ledger unexpected cut ${key}`;
-    }
-    if ((requiredCounts.get(key) ?? 0) !== count) {
-      return `design ledger duplicate cut ${key}`;
+      if (Math.abs(Number(got.length) - Number(req.length)) > LENGTH_TOLERANCE_MM) {
+        return `design ledger wrongly sized cut ${cutId} (required ${Number(req.length).toFixed(3)} mm, placed ${Number(got.length).toFixed(3)} mm)`;
+      }
+      if (cutAngle(got) !== cutAngle(req)) {
+        return `design ledger wrong angle for cut ${cutId} (required ${cutAngle(req)}°, placed ${cutAngle(got)}°)`;
+      }
+      return `design ledger mismatched cut ${cutId} (required ${describeCut(req)}, placed ${describeCut(got)})`;
     }
   }
 
-  // Length tolerance cross-check (multiset already exact via toFixed(3))
-  for (let i = 0; i < required.length; i += 1) {
-    const req = required[i];
-    const match = placed.find(
-      (p) =>
-        p.cutId === req.cutId &&
-        p.profileId === req.profileId &&
-        Math.abs(p.length - req.length) <= LENGTH_TOLERANCE_MM &&
-        (p.angle ?? 0) === (req.angle ?? 0),
-    );
-    if (!match) {
-      const sameId = placed.find((p) => p.cutId === req.cutId);
-      if (sameId && Math.abs(sameId.length - req.length) > LENGTH_TOLERANCE_MM) {
-        return `design ledger wrongly sized cut ${req.cutId}`;
-      }
-      if (sameId && sameId.profileId !== req.profileId) {
-        return `design ledger substituted profile for cut ${req.cutId}`;
-      }
+  for (const [cutId, placedCuts] of placedById) {
+    if (!requiredById.has(cutId)) {
+      return `design ledger unexpected cut ${cutId} (${describeCut(placedCuts[0])}) is not in the saved design`;
     }
   }
 

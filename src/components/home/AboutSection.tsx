@@ -1,4 +1,4 @@
-
+﻿
 import { ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ const AboutSection = () => {
 
   const handleAboutClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    navigate("/about");
+    void navigate("/about");
     // Scroll to top after navigation
     window.scrollTo({ top: 0, behavior: "smooth" });
   };

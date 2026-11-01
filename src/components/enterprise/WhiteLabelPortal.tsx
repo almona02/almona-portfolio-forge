@@ -1,4 +1,4 @@
-import { Alert, AlertDescription } from '@/components/ui/alert';
+﻿import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -370,7 +370,7 @@ export const WhiteLabelPortal: React.FC = () => {
             <div className="flex gap-2">
               <Button 
                 size="sm" 
-                onClick={saveConfiguration}
+                onClick={() => void saveConfiguration()}
                 disabled={saving}
                 className="flex items-center gap-1"
               >

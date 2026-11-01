@@ -65,6 +65,58 @@ export function buildExpectedProductQr(positionId: string, revision: number): st
   return `ALMONA_${positionId}_R${revision}`;
 }
 
+const RELEASE_SELECT_COLUMNS =
+  'id, project_id, position_id, position_source, revision, bom_fingerprint, stock_fingerprint, optimization_fingerprint, released_at';
+
+/**
+ * Deterministic idempotency key for a position release. The same release
+ * (position + source + revision) always yields the same key, so retries and
+ * concurrent duplicate requests collapse onto a single row.
+ */
+export function buildReleaseIdempotencyKey(identity: WorkflowIdentity): string {
+  return `release:${identity.positionId}:${identity.source}:${identity.revision}`;
+}
+
+function isUniqueViolation(error: { code?: string; message?: string } | null | undefined): boolean {
+  if (!error) return false;
+  if (error.code === '23505') return true;
+  return /duplicate key|unique constraint/i.test(error.message ?? '');
+}
+
+async function findExistingRelease(db: any, identity: WorkflowIdentity) {
+  const { data, error } = await db
+    .from('fabricator_position_releases')
+    .select(RELEASE_SELECT_COLUMNS)
+    .eq('position_id', identity.positionId)
+    .eq('position_source', identity.source)
+    .eq('revision', identity.revision)
+    .maybeSingle();
+  if (error) {
+    throw new Error(`Unable to check existing release: ${error.message}`);
+  }
+  return data;
+}
+
+function mapExistingRelease(
+  existing: Record<string, unknown>,
+  fingerprints: {
+    bomFingerprint: string;
+    stockFingerprint: string;
+    optimizationFingerprint: string;
+  },
+): PositionReleaseAcknowledgement {
+  if (
+    String(existing.bom_fingerprint) !== fingerprints.bomFingerprint ||
+    String(existing.stock_fingerprint) !== fingerprints.stockFingerprint ||
+    String(existing.optimization_fingerprint) !== fingerprints.optimizationFingerprint
+  ) {
+    throw new Error(
+      'A release already exists for this revision with different fingerprints. Bump revision before re-releasing.',
+    );
+  }
+  return mapReleaseRow(existing);
+}
+
 export async function freezePositionRelease(input: {
   identity: WorkflowIdentity;
   bom: CompleteBOM | null;
@@ -91,6 +143,7 @@ export async function freezePositionRelease(input: {
   if (!bomFingerprint || !optimizationFingerprint) {
     throw new Error('Qualified BOM and optimization are required to freeze a release.');
   }
+  const fingerprints = { bomFingerprint, stockFingerprint, optimizationFingerprint };
 
   const row = {
     owner_user_id: identity.ownerUserId,
@@ -98,6 +151,7 @@ export async function freezePositionRelease(input: {
     position_id: identity.positionId,
     position_source: identity.source,
     revision: identity.revision,
+    idempotency_key: buildReleaseIdempotencyKey(identity),
     bom_fingerprint: bomFingerprint,
     stock_fingerprint: stockFingerprint,
     optimization_fingerprint: optimizationFingerprint,
@@ -109,43 +163,33 @@ export async function freezePositionRelease(input: {
   };
 
   const db = supabase as any;
-  const { data: existing, error: existingError } = await db
-    .from('fabricator_position_releases')
-    .select(
-      'id, project_id, position_id, position_source, revision, bom_fingerprint, stock_fingerprint, optimization_fingerprint, released_at',
-    )
-    .eq('position_id', identity.positionId)
-    .eq('position_source', identity.source)
-    .eq('revision', identity.revision)
-    .maybeSingle();
 
-  if (existingError) {
-    throw new Error(`Unable to check existing release: ${existingError.message}`);
-  }
-
+  // Sequential replay: return the already-frozen row.
+  const existing = await findExistingRelease(db, identity);
   if (existing?.id) {
-    if (
-      String(existing.bom_fingerprint) !== bomFingerprint ||
-      String(existing.stock_fingerprint) !== stockFingerprint ||
-      String(existing.optimization_fingerprint) !== optimizationFingerprint
-    ) {
-      throw new Error(
-        'A release already exists for this revision with different fingerprints. Bump revision before re-releasing.',
-      );
-    }
-    return mapReleaseRow(existing);
+    return mapExistingRelease(existing, fingerprints);
   }
 
+  // Insert. Under concurrency the natural unique key lets exactly one request
+  // win; the loser hits a unique violation, which we treat as a successful
+  // replay of the winner's row rather than surfacing a spurious error.
   const { data, error } = await db
     .from('fabricator_position_releases')
     .insert(row)
-    .select(
-      'id, project_id, position_id, position_source, revision, bom_fingerprint, stock_fingerprint, optimization_fingerprint, released_at',
-    )
+    .select(RELEASE_SELECT_COLUMNS)
     .single();
 
-  if (error || !data?.id) {
+  if (error) {
+    if (isUniqueViolation(error)) {
+      const winner = await findExistingRelease(db, identity);
+      if (winner?.id) {
+        return mapExistingRelease(winner, fingerprints);
+      }
+    }
     throw new Error(error?.message ?? 'Release freeze failed.');
+  }
+  if (!data?.id) {
+    throw new Error('Release freeze failed.');
   }
 
   return mapReleaseRow(data);

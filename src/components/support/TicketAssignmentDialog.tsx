@@ -58,8 +58,8 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
     mutationFn: ({ ticketId, assigneeId }: { ticketId: string; assigneeId: string }) =>
       assignTicket(ticketId, assigneeId, currentUserId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-tickets'] })
-      queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-tickets'] }).catch(() => toast.error('Unable to refresh tickets'))
+      queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] }).catch(() => toast.error('Unable to refresh ticket metrics'))
       if (whatsappHref) {
         window.open(whatsappHref, '_blank', 'noopener,noreferrer')
         toast.success(`Ticket assigned — WhatsApp opened for ${selected?.full_name || 'technician'}`)

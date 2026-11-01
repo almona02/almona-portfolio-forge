@@ -1,4 +1,4 @@
-// Experimental streaming upload with progress via fetch + Supabase signed URL (placeholder implementation)
+﻿// Experimental streaming upload with progress via fetch + Supabase signed URL (placeholder implementation)
 // NOTE: This assumes you have a storage policy allowing authenticated uploads via standard signed URLs.
 // For production: implement a server function to create a signed upload URL, then use this client.
 
@@ -28,7 +28,7 @@ export async function uploadWithProgress(url: string, file: File, opts: StreamUp
       controller.enqueue(value);
     },
     cancel(reason) {
-      reader.cancel(reason);
+      void reader.cancel(reason);
     }
   });
 

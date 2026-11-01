@@ -211,7 +211,7 @@ export async function waitForOptimizationJobRealtime(
     }).catch(err => {
       clearTimeout(timeout);
       subscription.unsubscribe();
-      reject(err);
+      reject(new Error(String(err)));
     });
   });
 }

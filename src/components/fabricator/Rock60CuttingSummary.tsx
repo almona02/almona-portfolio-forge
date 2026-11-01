@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
 import type { Profile } from '@/types/fabricator';
@@ -19,7 +19,7 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
       (p.specifications && p.specifications.window_system === 'ROCK 60')
   );
 
-  const config = rockProfile?.specifications?.rock60_45_degree_config as any | undefined;
+  const config = rockProfile?.specifications?.rock60_45_degree_config as any;
 
   if (!rockProfile || !config) {
     return null;

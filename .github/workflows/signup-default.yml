@@ -1,0 +1,23 @@
+name: Signup Default Role
+on:
+  pull_request:
+    paths: ['supabase/migrations/**', 'supabase/tests/signup_customer_default_test.sql', 'scripts/verify-signup-default-db.mjs', 'src/lib/data/profilesClient*', 'src/context/AuthContext*', 'src/components/auth/**', 'package*.json', '.github/workflows/signup-default.yml']
+  push:
+    branches: [main]
+    paths: ['supabase/migrations/**', 'scripts/verify-signup-default-db.mjs', 'supabase/tests/signup_customer_default_test.sql', 'src/lib/data/profilesClient*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.2'
+          cache: npm
+      - run: npm ci
+      - run: npm run test:signup-default
+      - run: npx vitest run src/lib/data/profilesClient.registration.test.ts src/components/auth/ProtectedRoute.test.tsx src/context/AuthContext.ownerIsolation.test.tsx

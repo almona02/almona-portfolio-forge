@@ -17,7 +17,8 @@ import {
     ChevronRight,
     Folder,
     Home,
-    Settings
+    Settings,
+    Shield,
 } from 'lucide-react';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -139,7 +140,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
     {
       id: 'approvals',
       label: 'Approvals',
-      icon: <Box size={20} />,
+      icon: <Shield size={20} />,
       href: fabricatorRoutes.studioApprovals(),
     },
     {
@@ -193,7 +194,30 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
       icon: <Settings size={20} />,
       href: '/settings',
     },
-  ], [t]);
+    // Role-gated admin entry: one click from Fabricator Pro → admin hub.
+    // Manufacturing config stays under Approvals / Data Studio; cut-ledger identity remains a hard gate.
+    // Compare as string: DB may return fabricator_admin before UserRole union catches up (TS2367).
+    ...((() => {
+      const role = String(user?.role ?? '');
+      if (role === 'admin') {
+        return [{
+          id: 'almona-admin',
+          label: t('nav.almona_admin', 'Almona Admin'),
+          icon: <Shield size={20} />,
+          href: '/admin',
+        } satisfies NavItem];
+      }
+      if (role === 'fabricator_admin') {
+        return [{
+          id: 'factory-admin',
+          label: t('nav.factory_admin', 'Factory Admin'),
+          icon: <Shield size={20} />,
+          href: '/fabricator-admin',
+        } satisfies NavItem];
+      }
+      return [];
+    })()),
+  ], [t, user?.role]);
 
   const isActive = useCallback((href: string, id: string, subItems?: Array<{ href: string }>) => {
     if (activeStudio && (id === activeStudio || (id === 'project' && activeStudio === 'projects'))) return true;
@@ -353,10 +377,12 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
               <p className="text-xs text-gray-400 truncate" title={displayRole}>
                 {displayRole}
               </p>
-              <button type="button" className="mt-2 text-xs text-amber-300 underline" onClick={async () => {
+              <button type="button" className="mt-2 text-xs text-amber-300 underline" onClick={() => {
+                void (async () => {
                 if (draftDirty) { toast.error('Save the current position before changing user.'); return; }
-                try { await signOut(); publishActiveProject(null); useWorkflowStore.getState().clearWorkflow(); navigate('/login', { replace: true }); }
+                try { await signOut(); void publishActiveProject(null); useWorkflowStore.getState().clearWorkflow(); void navigate('/login', { replace: true }); }
                 catch { toast.error('Unable to sign out. Please retry.'); }
+                })();
               }}>Change user</button>
             </div>
             <Bell size={16} className="text-gray-400" aria-hidden />

@@ -2,11 +2,13 @@
  * YilmazFileFormats — Downloadable File Generators
  *
  * Creates browser-downloadable Blob files for:
- *   - G-Code (.nc)
+ *   - CNC program (.cnc) — G-code with Yilmaz-compatible naming
  *   - CSV Cut List (.csv)
+ *   - MDB cut-list interchange (.mdb) — JSON table structure used by existing ALM paths
  *   - JSON Manifest (.json)
  *
  * Includes checksum computation and file naming conventions.
+ * Real Jet/Access binary MDB and live-machine verification remain follow-ups.
  */
 
 import type { YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
@@ -24,12 +26,14 @@ export interface ExportFile {
 export interface ExportFileBundle {
   gcode: ExportFile | null;
   csv: ExportFile | null;
+  mdb: ExportFile | null;
   manifest: ExportFile | null;
 }
 
 export interface BundleInput {
   gcode: string | null;
   csv: string | null;
+  mdb: string | null;
   manifest: Record<string, unknown> | null;
   machineModel: YilmazMachineModel;
   orderNumber: string;
@@ -52,6 +56,9 @@ export class YilmazFileFormats {
       csv: input.csv
         ? YilmazFileFormats.createCSVFile(input.csv, prefix, timestamp)
         : null,
+      mdb: input.mdb
+        ? YilmazFileFormats.createMDBFile(input.mdb, prefix, input.machineModel, timestamp)
+        : null,
       manifest: input.manifest
         ? YilmazFileFormats.createManifestFile(input.manifest, prefix, timestamp)
         : null,
@@ -59,7 +66,8 @@ export class YilmazFileFormats {
   }
 
   /**
-   * Create a G-Code file (.nc) with Yilmaz-specific header.
+   * Create a CNC program file (.cnc) with Yilmaz-specific naming.
+   * Content is ISO G-code; extension matches USB-transfer naming used on shop floor.
    */
   static createGCodeFile(
     content: string,
@@ -67,7 +75,7 @@ export class YilmazFileFormats {
     machineModel: YilmazMachineModel,
     timestamp: string
   ): ExportFile {
-    const filename = `${prefix}_${machineModel}_${timestamp}.nc`;
+    const filename = `${prefix}_${machineModel}_${timestamp}.cnc`;
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
 
     return {
@@ -93,6 +101,29 @@ export class YilmazFileFormats {
       filename,
       content: fullContent,
       mimeType: 'text/csv',
+      size: blob.size,
+      blob,
+    };
+  }
+
+  /**
+   * Create an MDB cut-list interchange file.
+   * Payload is the structured table JSON already produced by CNC/DC generators
+   * (same interchange shape used by ALM 6510 export). Not a Jet binary engine file.
+   */
+  static createMDBFile(
+    content: string,
+    prefix: string,
+    machineModel: YilmazMachineModel,
+    timestamp: string
+  ): ExportFile {
+    const filename = `${prefix}_${machineModel}_${timestamp}.mdb`;
+    const blob = new Blob([content], { type: 'application/x-msaccess' });
+
+    return {
+      filename,
+      content,
+      mimeType: 'application/x-msaccess',
       size: blob.size,
       blob,
     };
@@ -142,7 +173,7 @@ export class YilmazFileFormats {
    * Download all files in a bundle.
    */
   static downloadBundle(bundle: ExportFileBundle): void {
-    const files = [bundle.gcode, bundle.csv, bundle.manifest].filter(
+    const files = [bundle.gcode, bundle.csv, bundle.mdb, bundle.manifest].filter(
       (f): f is ExportFile => f !== null
     );
 
@@ -175,6 +206,15 @@ export class YilmazFileFormats {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  }
+
+  /**
+   * Decode Buffer / Uint8Array / string payloads from cut-list generators.
+   */
+  static utf8FromBinary(data: string | Uint8Array | ArrayBuffer): string {
+    if (typeof data === 'string') return data;
+    const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
+    return new TextDecoder().decode(bytes);
   }
 
   // ─── Helpers ─────────────────────────────────────────────────────────────

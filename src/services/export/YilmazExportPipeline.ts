@@ -9,6 +9,7 @@
  */
 
 import type { CuttingPlan, OptimizationResult, WindowUnit } from '@/types/fabricator';
+import { validateOptimizationReconciliation } from '@/lib/fabricator/validation/WorkflowValidator';
 import {
   YilmazGCodeGenerator,
   MACHINE_SPECS,
@@ -20,11 +21,11 @@ import {
   type YilmazCutListData,
   type YilmazExportOptions,
 } from '@/integrations/yilmaz/YilmazCutListAdapter';
-import { YilmazFileFormats, type ExportFileBundle } from './YilmazFileFormats';
+import { YilmazFileFormats } from './YilmazFileFormats';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type ExportFormat = 'gcode' | 'csv' | 'all';
+export type ExportFormat = 'gcode' | 'csv' | 'mdb' | 'all';
 
 export interface ExportPipelineConfig {
   machineModel: YilmazMachineModel;
@@ -60,7 +61,7 @@ export interface PreFlightResult {
 
 export interface ExportResult {
   success: boolean;
-  files: ExportFileBundle;
+  files: import('./YilmazFileFormats').ExportFileBundle;
   checksum: string;
   metadata: {
     machineModel: YilmazMachineModel;
@@ -80,6 +81,7 @@ export type PipelineStage =
   | 'validating'
   | 'generating-gcode'
   | 'generating-cutlist'
+  | 'generating-mdb'
   | 'packaging'
   | 'complete'
   | 'error';
@@ -218,6 +220,21 @@ export class YilmazExportPipeline {
       });
     }
 
+    // Design ledger completeness (AICS-001 Tier 3): every component occurrence of the
+    // saved design must be placed exactly once with its physical length/angle. An
+    // incomplete, duplicated or foreign cut list must never reach the machine.
+    const reconciliation = validateOptimizationReconciliation(optimization, project);
+    if (!reconciliation.valid) {
+      for (const error of reconciliation.errors) {
+        issues.push({
+          severity: 'error',
+          code: `INCOMPLETE_CUT_LEDGER:${error.code}`,
+          message: `Cut list does not reconcile to the saved design: ${error.message}`,
+          messageAr: `قائمة القطع لا تطابق التصميم المحفوظ: ${error.message}`,
+        });
+      }
+    }
+
     // Tool magazine capacity warning
     const uniqueAnglesCount = anglesSet.size;
     if (specs.toolMagazine && specs.toolMagazineCapacity && uniqueAnglesCount > specs.toolMagazineCapacity) {
@@ -280,7 +297,7 @@ export class YilmazExportPipeline {
       this.emitProgress('error', 0, 'Validation failed', 'فشل التحقق');
       return {
         success: false,
-        files: { gcode: null, csv: null, manifest: null },
+        files: { gcode: null, csv: null, mdb: null, manifest: null },
         checksum: '',
         metadata: this.buildMetadata(project, optimization, 0),
         validation,
@@ -288,13 +305,16 @@ export class YilmazExportPipeline {
     }
 
     const cuttingPlans = optimization.cuttingPlan;
+    const wantsGcode = this.config.format === 'gcode' || this.config.format === 'all';
+    const wantsCsv = this.config.format === 'csv' || this.config.format === 'all';
+    const wantsMdb = this.config.format === 'mdb' || this.config.format === 'all';
 
-    // Stage 2: Generate G-Code
+    // Stage 2: Generate G-Code / .cnc
     let gcodeContent = '';
     let gcodeLinesCount = 0;
 
-    if (this.config.format === 'gcode' || this.config.format === 'all') {
-      this.emitProgress('generating-gcode', 30, 'Generating G-code program…', 'إنشاء برنامج G-code…');
+    if (wantsGcode) {
+      this.emitProgress('generating-gcode', 25, 'Generating CNC program (.cnc)…', 'إنشاء برنامج CNC…');
       const gcodeResult = this.generateGCode(cuttingPlans);
       gcodeContent = gcodeResult.content;
       gcodeLinesCount = gcodeResult.lineCount;
@@ -303,18 +323,27 @@ export class YilmazExportPipeline {
     // Stage 3: Generate Cut List CSV
     let csvContent = '';
 
-    if (this.config.format === 'csv' || this.config.format === 'all') {
-      this.emitProgress('generating-cutlist', 60, 'Generating cut list…', 'إنشاء قائمة القطع…');
+    if (wantsCsv) {
+      this.emitProgress('generating-cutlist', 50, 'Generating cut list CSV…', 'إنشاء قائمة القطع CSV…');
       csvContent = await this.generateCutListCSV(project, cuttingPlans);
     }
 
-    // Stage 4: Package files
+    // Stage 4: Generate MDB cut-list interchange
+    let mdbContent = '';
+
+    if (wantsMdb) {
+      this.emitProgress('generating-mdb', 70, 'Generating MDB cut list…', 'إنشاء قائمة القطع MDB…');
+      mdbContent = await this.generateCutListMDB(project, cuttingPlans);
+    }
+
+    // Stage 5: Package files
     this.emitProgress('packaging', 85, 'Packaging export files…', 'تجميع ملفات التصدير…');
 
     const manifest = this.buildManifest(project, optimization, validation, gcodeLinesCount);
     const files = YilmazFileFormats.createBundle({
       gcode: gcodeContent || null,
       csv: csvContent || null,
+      mdb: mdbContent || null,
       manifest,
       machineModel: this.config.machineModel,
       orderNumber: project.orderNumber,
@@ -322,7 +351,7 @@ export class YilmazExportPipeline {
 
     // Compute combined checksum
     const checksum = YilmazFileFormats.computeChecksum(
-      [gcodeContent, csvContent, JSON.stringify(manifest)].filter(Boolean).join('\n')
+      [gcodeContent, csvContent, mdbContent, JSON.stringify(manifest)].filter(Boolean).join('\n')
     );
 
     const elapsed = Date.now() - startTime;
@@ -356,15 +385,13 @@ export class YilmazExportPipeline {
     return { content, lineCount };
   }
 
-  // ─── Cut List CSV ──────────────────────────────────────────────────────
+  // ─── Cut List CSV / MDB ────────────────────────────────────────────────
 
-  private async generateCutListCSV(
+  private buildCutListData(
     project: WindowUnit,
     cuttingPlans: CuttingPlan[]
-  ): Promise<string> {
-    const adapter = new YilmazCutListAdapter();
-
-    const cutListData: YilmazCutListData = {
+  ): YilmazCutListData {
+    return {
       orderNumber: project.orderNumber,
       projectName: project.positionMeta?.remarks || project.orderNumber,
       date: new Date(),
@@ -375,7 +402,13 @@ export class YilmazExportPipeline {
         notes: `Generated by Fabricator Pro | Constitutional Tier 3`,
       },
     };
+  }
 
+  private async generateCutListCSV(
+    project: WindowUnit,
+    cuttingPlans: CuttingPlan[]
+  ): Promise<string> {
+    const adapter = new YilmazCutListAdapter();
     const exportOptions: YilmazExportOptions = {
       format: 'csv',
       machineSeries: 'cnc',
@@ -385,7 +418,25 @@ export class YilmazExportPipeline {
       decimalSeparator: '.',
     };
 
-    return adapter.exportToCSV(cutListData, exportOptions);
+    return adapter.exportToCSV(this.buildCutListData(project, cuttingPlans), exportOptions);
+  }
+
+  private async generateCutListMDB(
+    project: WindowUnit,
+    cuttingPlans: CuttingPlan[]
+  ): Promise<string> {
+    const adapter = new YilmazCutListAdapter();
+    const exportOptions: YilmazExportOptions = {
+      format: 'mdb',
+      machineSeries: 'cnc',
+      includeBarcodes: false,
+      includeMetadata: true,
+      encoding: this.config.encoding,
+      decimalSeparator: '.',
+    };
+
+    const raw = await adapter.exportToMDB(this.buildCutListData(project, cuttingPlans), exportOptions);
+    return YilmazFileFormats.utf8FromBinary(raw as string | Uint8Array | ArrayBuffer);
   }
 
   // ─── Manifest ──────────────────────────────────────────────────────────
@@ -431,6 +482,9 @@ export class YilmazExportPipeline {
         gcodeLinesCount,
         generatedAt: new Date().toISOString(),
         locale: this.config.locale,
+        downloadableFormats: ['.cnc', '.csv', '.mdb', '.json'],
+        mdbEncodingNote:
+          'MDB payload is structured cut-list interchange JSON (not Jet binary). Human validation required before machine load.',
       },
     };
   }

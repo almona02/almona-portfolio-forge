@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BOMSidebar Component
  * 
  * Extracted BOM rendering component from EngineeringBay with summary view support.
@@ -62,7 +62,7 @@ export interface BOMData {
     weight: number;
   };
   aggregatedByCategory: Record<string, Record<string, any>>;
-  systemPack?: SystemPackType | null;
+  systemPack?: SystemPackType;
   verifyProfileSpecs?: any;
 }
 
@@ -144,7 +144,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
       try {
         // Check if any profile in the system pack has system_pricing configured
         const systemPackProfiles = profiles.filter((profile) => {
-          const specs = profile.specifications as any;
+          const specs = profile.specifications;
           const systemName = specs?.window_system || profile.systemBrand || specs?.systemPackId;
           return systemName === liveProject.systemPackId;
         });
@@ -251,7 +251,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                   <GoldTierButton
                     onClick={() => {
                       const systemPackProfile = profiles.find((p) => {
-                        const specs = p.specifications as any;
+                        const specs = p.specifications;
                         const systemName = specs?.window_system || p.systemBrand || specs?.systemPackId;
                         return systemName === liveProject.systemPackId;
                       });

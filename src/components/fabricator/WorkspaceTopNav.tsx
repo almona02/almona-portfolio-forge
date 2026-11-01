@@ -1,4 +1,4 @@
-import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+﻿import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { isRTL } from '@/lib/i18n';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -52,7 +52,7 @@ export const WorkspaceTopNav: React.FC = () => {
     const tab = workspaceTabs.find((t) => t.id === tabId);
     if (!tab) return;
     dispatch({ type: 'SET_ACTIVE_TAB', payload: tabId as any });
-    navigate(tab.path());
+    void navigate(tab.path());
   };
 
   return (
@@ -111,7 +111,7 @@ export const WorkspaceTopNav: React.FC = () => {
                 {idx > 0 && <ChevronRight className="h-3 w-3 text-slate-600" />}
                 {crumb.path ? (
                   <button
-                    onClick={() => navigate(crumb.path!)}
+                    onClick={() => void navigate(crumb.path!)}
                     className="hover:text-amber-400 transition-colors"
                   >
                     {crumb.label}

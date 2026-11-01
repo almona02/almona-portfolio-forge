@@ -42,7 +42,7 @@ export default function ProductLocker({ machineId, machineModel = 'Unknown Model
 
   useEffect(() => {
     // Fetch enriched knowledge (manuals, parts) from YDT Brain
-    getMachineKnowledge(machineModel).then(setKnowledge);
+    void getMachineKnowledge(machineModel).then(setKnowledge);
   }, [machineModel, getMachineKnowledge]);
 
   return (

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Enhanced3DPreview - The Bridge Between 3D Visualization & Production Data
  * 
  * Revolutionary split-view component that displays:
@@ -65,7 +65,7 @@ interface State {
   status: 'idle' | 'loading' | 'success' | 'error' | 'fallback';
   geometry: FrameGeometry | null;
   fabrication: FabricationData | null;
-  existingCutList: any | null;
+  existingCutList: any;
   validation: ValidationResult | null;
   discrepancies: Array<{
     type: string;
@@ -365,7 +365,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
 
   useEffect(() => {
     if (windowUnit && windowUnit.overallWidth > 0 && windowUnit.overallHeight > 0) {
-      debouncedGenerateRef.current();
+      void debouncedGenerateRef.current();
     }
 
     return () => {
@@ -700,7 +700,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
             <div className="grid grid-cols-2 gap-2">
               <Button
                 className="flex items-center justify-center"
-                onClick={handleExportProductionFile}
+                onClick={() => void handleExportProductionFile()}
                 disabled={exportStatus === 'exporting' || !machineCheck?.anyCompatible}
               >
                 {exportStatus === 'exporting' ? (
@@ -719,7 +719,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
               <Button
                 variant="outline"
                 className="flex items-center justify-center"
-                onClick={handleSendToMachine}
+                onClick={() => void handleSendToMachine()}
                 disabled={!machineCheck?.anyCompatible || sendInProgress}
               >
                 {sendInProgress ? (
@@ -838,7 +838,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
 // ========== SUPPORTING COMPONENTS ==========
 
 interface CutListComparisonProps {
-  existing: any | null;
+  existing: any;
   enhanced: FabricationData['profiles'] | null;
   discrepancies: any[];
 }
@@ -1063,7 +1063,7 @@ const ValidationDashboard: React.FC<ValidationDashboardProps> = ({
 // Helper functions
 async function validateAgainstExisting(
   fabrication: FabricationData | null,
-  existingCutList: any | null
+  existingCutList: any
 ): Promise<any[]> {
   if (!fabrication || !existingCutList) return [];
 

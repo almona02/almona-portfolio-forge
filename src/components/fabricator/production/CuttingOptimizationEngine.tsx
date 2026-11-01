@@ -1,4 +1,4 @@
-
+﻿
 import { ConsequenceAlert } from '@/components/authority/ConsequenceAlert';
 import { MachineValidator } from '@/integrations/yilmaz/MachineValidator';
 import { YilmazGCodeGenerator, YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
@@ -453,7 +453,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
               profiles={profiles}
               projectName={project?.orderNumber}
               orderNumber={project?.orderNumber}
-              onExportPDF={handleExportCuttingReport}
+              onExportPDF={() => void handleExportCuttingReport()}
               onExportDXF={() => {
                 // TODO: Implement DXF export for bar drawings
                 console.log('Exporting bar drawings to DXF...');
@@ -727,7 +727,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
                   </Button>
 
                   <Button
-                    onClick={handleSendToMachine}
+                    onClick={() => void handleSendToMachine()}
                     disabled={isSendingToMachine}
                     variant="outline"
                     className="flex-1 border-green-500 text-green-400 hover:bg-green-500/10"
@@ -809,7 +809,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
             </div>
 
             <Button
-              onClick={handleDownloadALM6510MDB}
+              onClick={() => void handleDownloadALM6510MDB()}
               disabled={isGeneratingALM6510 || !project || !optimization}
               className="btn-primary-gradient"
             >

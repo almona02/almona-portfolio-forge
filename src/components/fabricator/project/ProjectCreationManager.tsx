@@ -1,4 +1,4 @@
-import { EgyptianProjectWizard } from '@/components/fabricator/EgyptianProjectWizard';
+﻿import { EgyptianProjectWizard } from '@/components/fabricator/EgyptianProjectWizard';
 import NewProjectWizard, { type ProjectHeaderMeta } from '@/components/fabricator/NewProjectWizard';
 import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
@@ -153,7 +153,7 @@ export const ProjectCreationManager: React.FC = () => {
             );
 
             // 6. Measuring first so each pose's W×H is captured before design
-            navigate(fabricatorRoutes.poseMeasuring(persistedProjectId, persistedPoseId));
+            void navigate(fabricatorRoutes.poseMeasuring(persistedProjectId, persistedPoseId));
 
         } catch (error) {
             console.error('Failed to create project:', error);
@@ -174,14 +174,14 @@ export const ProjectCreationManager: React.FC = () => {
                         // Keep the wizard open to switch views
                         setShowProjectWizard(true);
                     }}
-                    onSubmit={handleProjectCreate}
+                    onSubmit={(e) => void handleProjectCreate(e)}
                 />
             ) : (
                 <NewProjectWizard
                     open={showProjectWizard}
                     onOpenChange={setShowProjectWizard}
                     initialMeta={projectMeta || undefined}
-                    onSubmit={(meta) => handleProjectCreate({ ...meta })} // Adapt to compatible type
+                    onSubmit={(meta) => void handleProjectCreate({ ...meta })} // Adapt to compatible type
                 />
             )}
         </>

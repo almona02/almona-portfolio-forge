@@ -10,7 +10,18 @@ export interface WorkshopBOMRule {
     quantity: number;
     unitPrice: number;
     enabled: boolean;
+    /**
+     * When set (non-empty), this requirement applies only to those pattern ids
+     * (`pose.presetId`). Omitted / empty = all patterns for the pack.
+     */
+    patternIds?: string[];
 }
+
+function ruleCategoryKey(rule: Pick<WorkshopBOMRule, 'kind' | 'category' | 'patternIds'>): string {
+    const patterns = (rule.patternIds ?? []).slice().sort().join(',') || '*';
+    return `${rule.kind}:${rule.category}:${patterns}`;
+}
+
 export function workshopBOMRules(pack: SystemPack): WorkshopBOMRule[] {
     const raw = (pack.windowSystemSpec as unknown as Record<string, unknown>)?.workshop_bom_rules;
     if (raw == null)
@@ -21,19 +32,34 @@ export function workshopBOMRules(pack: SystemPack): WorkshopBOMRule[] {
     return raw.map((item: WorkshopBOMRule) => {
         if (!item || typeof item.id !== 'string' || !item.id.trim() || ids.has(item.id) || typeof item.name !== 'string' || !item.name.trim() || typeof item.category !== 'string' || !item.category.trim() || !['hardware', 'accessory'].includes(item.kind) || !['window', 'sash', 'perimeter'].includes(item.basis) || typeof item.enabled !== 'boolean' || !Number.isFinite(item.quantity) || item.quantity < 0 || !Number.isFinite(item.unitPrice) || item.unitPrice < 0)
             throw new Error('Invalid workshop BOM requirement.');
-        if (ids.has(item.kind + ':' + item.category))
-            throw new Error('Each category can have only one workshop override.');
+        let patternIds: string[] | undefined;
+        if (item.patternIds != null) {
+            if (!Array.isArray(item.patternIds) || item.patternIds.some((id) => typeof id !== 'string' || !id.trim()))
+                throw new Error('Workshop BOM patternIds must be a list of pattern ids.');
+            patternIds = [...new Set(item.patternIds.map((id) => id.trim()))];
+        }
+        const categoryKey = ruleCategoryKey({ ...item, patternIds });
+        if (ids.has(categoryKey))
+            throw new Error('Each category can have only one workshop override per pattern scope.');
         if (item.kind === 'hardware' && (!['hinge', 'lock', 'handle', 'roller', 'corner_key', 'gasket', 'hardener'].includes(item.category) || item.basis === 'perimeter' || !Number.isSafeInteger(item.quantity)))
             throw new Error('Hardware requires a supported category and whole quantities per window or sash.');
         ids.add(item.id);
-        ids.add(item.kind + ':' + item.category);
-        return { ...item };
+        ids.add(categoryKey);
+        return { ...item, ...(patternIds ? { patternIds } : {}) };
     });
 }
+
+function ruleAppliesToPose(rule: WorkshopBOMRule, pose: WindowUnit): boolean {
+    if (!rule.patternIds?.length) return true;
+    const presetId = typeof pose.presetId === 'string' ? pose.presetId.trim() : '';
+    return Boolean(presetId) && rule.patternIds.includes(presetId);
+}
+
 export function applyWorkshopBOMRules(pack: SystemPack, pose: WindowUnit, hardware: CompleteBOM['hardware'], accessories: CompleteBOM['accessories']) {
     const rules = workshopBOMRules(pack);
     let nextHardware = [...hardware], nextAccessories = [...accessories];
     for (const rule of rules) {
+        if (!ruleAppliesToPose(rule, pose)) continue;
         const sashCount = (pose.grid?.cells ?? []).filter(cell => ['side-hung', 'top-hung', 'tilt-turn', 'sliding'].includes(leafOpeningOp(cell))).length;
         const factor = rule.basis === 'sash' ? sashCount : rule.basis === 'perimeter' ? (pose.overallWidth + pose.overallHeight) * 2 / 1000 : 1;
         const quantity = rule.quantity * factor;

@@ -203,7 +203,7 @@ export class ProductionDXFParser {
       worker.onerror = (error) => {
         clearTimeout(timeout);
         this.releaseWorker(worker);
-        reject(error);
+        reject(new Error(error.message));
       };
 
       worker.postMessage({

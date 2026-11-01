@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Client Quote Viewer
  * 
  * Gold-tier component for clients to view and manage their quotes.
@@ -49,7 +49,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
   const requestId = useRef(0);
   const [loadedFor, setLoadedFor] = useState(customerId);
   const [loadError, setLoadError] = useState(false);
-  const [selectedQuote, setSelectedQuote] = useState<any | null>(null);
+  const [selectedQuote, setSelectedQuote] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const loadQuotes = async () => {
@@ -82,6 +82,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
 
   useEffect(() => {
     void loadQuotes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- requestId is a request token, not a DOM node ref
     return () => { ++requestId.current; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customerId]);
@@ -115,7 +116,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
 
       if (error) throw error;
       toast.success('Quote accepted');
-      loadQuotes();
+      void loadQuotes();
       setSelectedQuote(null);
     } catch (error) {
       console.error('Failed to accept quote:', error);
@@ -167,7 +168,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
               />
             </div>
             <Button
-              onClick={loadQuotes}
+              onClick={() => void loadQuotes()}
               variant="outline"
               className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
             >
@@ -241,7 +242,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handleDownloadPDF(quote)}
+                          onClick={() => void handleDownloadPDF(quote)}
                           className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
                         >
                           <Download className="w-4 h-4" />
@@ -249,7 +250,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
                         {quote.status === 'pending' && (
                           <Button
                             size="sm"
-                            onClick={() => handleAcceptQuote(quote.id)}
+                            onClick={() => void handleAcceptQuote(quote.id)}
                             className="bg-green-600 hover:bg-green-700 text-white"
                           >
                             <CheckCircle2 className="w-4 h-4" />
@@ -319,7 +320,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
               )}
               <div className="flex gap-2 pt-4">
                 <Button
-                  onClick={() => handleDownloadPDF(selectedQuote)}
+                  onClick={() => void handleDownloadPDF(selectedQuote)}
                   className="bg-amber-600 hover:bg-amber-700 text-white"
                 >
                   <Download className="w-4 h-4 mr-2" />
@@ -327,7 +328,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
                 </Button>
                 {selectedQuote.status === 'pending' && (
                   <Button
-                    onClick={() => handleAcceptQuote(selectedQuote.id)}
+                    onClick={() => void handleAcceptQuote(selectedQuote.id)}
                     className="bg-green-600 hover:bg-green-700 text-white"
                   >
                     <CheckCircle2 className="w-4 h-4 mr-2" />

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AccessoryManagement - Complete accessory management system with Supabase integration
  * 
  * Features:
@@ -268,7 +268,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
         },
         (payload) => {
           console.log('Accessory change detected:', payload);
-          loadAccessories();
+          void loadAccessories();
         }
       )
       .subscribe();
@@ -277,7 +277,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
     return () => {
       if (subscription) {
-        supabase.removeChannel(subscription);
+        void supabase.removeChannel(subscription);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -285,7 +285,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
   // Initial load
   useEffect(() => {
-    loadAccessories();
+    void loadAccessories();
   }, [loadAccessories]);
 
   // Filter accessories
@@ -753,11 +753,11 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                 <input
                   type="file"
                   accept=".json"
-                  onChange={handleImportJSON}
+                  onChange={(e) => void handleImportJSON(e)}
                   className="hidden"
                 />
               </Label>
-              <Button variant="outline" size="sm" onClick={loadAccessories}>
+              <Button variant="outline" size="sm" onClick={() => void loadAccessories()}>
                 <RefreshCw className="h-4 w-4 mr-2" />
                 {t('accessory_management.refresh', 'Refresh')}
               </Button>
@@ -995,7 +995,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
             {editingId ? (
               <>
                 <Button
-                  onClick={handleUpdateAccessory}
+                  onClick={() => void handleUpdateAccessory()}
                   disabled={saving}
                   className="btn-primary"
                 >
@@ -1008,7 +1008,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
               </>
             ) : (
               <Button
-                onClick={handleAddAccessory}
+                onClick={() => void handleAddAccessory()}
                 disabled={saving}
                 className="btn-primary"
               >
@@ -1066,7 +1066,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleToggleCompatibility(selectedProfileForCompatibility, accessory.id)}
+                            onClick={() => void handleToggleCompatibility(selectedProfileForCompatibility, accessory.id)}
                           >
                             <Link2 className="h-4 w-4 mr-2" />
                             Toggle Compatibility
@@ -1085,7 +1085,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDeleteAccessory(accessory.id)}
+                        onClick={() => void handleDeleteAccessory(accessory.id)}
                         className="text-red-400 hover:text-red-300"
                       >
                         <Trash2 className="h-4 w-4" />

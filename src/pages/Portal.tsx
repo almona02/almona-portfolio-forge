@@ -1,4 +1,4 @@
-import { ProtectedComponent } from '@/components/auth/ProtectedComponent';
+﻿import { ProtectedComponent } from '@/components/auth/ProtectedComponent';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/useToast';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -118,7 +118,7 @@ const Portal = () => {
       setLoading(false);
     };
 
-    fetchData();
+    void fetchData();
   }, []);
 
   const getStatusBadge = (status: string, type: 'quote' | 'order' | 'ticket') => {
@@ -167,7 +167,7 @@ const Portal = () => {
   };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
+    void navigator.clipboard.writeText(text).then(() => {
       toast({
         title: 'تم النسخ',
         description: 'تم نسخ النص إلى الحافظة',

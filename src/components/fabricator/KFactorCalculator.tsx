@@ -1,4 +1,4 @@
-/**
+﻿/**
  * K-Factor Calculator Component
  * Interactive tool for calculating and visualizing K-factors (cutting deductions)
  * HIGHEST UI/UX PRIORITY - Visual feedback loop is critical
@@ -49,9 +49,9 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
   const getWallThickness = (profile?: Profile): number => {
     if (profile?.specifications) {
       // Try different possible field names for wall thickness
-      const wallThickness = (profile.specifications as any).wallThicknessMm ||
-                           (profile.specifications as any).thicknessMm ||
-                           (profile.specifications as any).materialThicknessMm;
+      const wallThickness = (profile.specifications).wallThicknessMm ||
+                           (profile.specifications).thicknessMm ||
+                           (profile.specifications).materialThicknessMm;
       if (wallThickness && typeof wallThickness === 'number') {
         return wallThickness;
       }

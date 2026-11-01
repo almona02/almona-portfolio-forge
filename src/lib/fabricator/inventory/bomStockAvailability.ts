@@ -1,4 +1,4 @@
-/**
+﻿/**
  * PR2 — Active-revision BOM demand vs owned stock.
  * Separates missing catalogue→owned mapping from genuine metre shortages.
  * Match by owned UUID or catalogue key + pack + material + finish (not display name alone).
@@ -39,7 +39,7 @@ export interface BomDemandReport {
 
 function specString(specs: Record<string, unknown> | undefined, key: string): string {
   const v = specs?.[key];
-  return typeof v === 'string' ? v : v != null ? String(v) : '';
+  return typeof v === 'string' ? v : v != null ? (v as string) : '';
 }
 
 function ownedMatchKey(parts: {

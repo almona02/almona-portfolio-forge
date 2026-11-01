@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CustomMullionDesigner - UI Component for Custom Mullion Validation
  * 
  * Provides interface for:
@@ -198,7 +198,7 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
 
               {/* Validate Button */}
               <Button
-                onClick={handleValidate}
+                onClick={() => void handleValidate()}
                 disabled={isValidating || mullionPosition < 100 || mullionPosition > windowUnit.overallWidth - 100}
                 className="btn-primary"
               >

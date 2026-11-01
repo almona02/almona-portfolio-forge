@@ -24,7 +24,10 @@ interface ProjectBOMAggregateProps {
 
 export const ProjectBOMAggregate: React.FC<ProjectBOMAggregateProps> = ({ project, results }) => {
   const units = project?.units ?? [];
-  const unitResults = results?.unitResults ?? new Map<string, ApexV6Output>();
+  const unitResults = useMemo(
+    () => results?.unitResults ?? new Map<string, ApexV6Output>(),
+    [results?.unitResults]
+  );
 
   const { totalBars, totalWaste, totalCost, costBreakdown } = useMemo(() => {
     const bars = Array.from(unitResults.values()).reduce(

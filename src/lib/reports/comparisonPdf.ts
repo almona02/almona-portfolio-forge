@@ -1,5 +1,8 @@
 // Lazy import pdf-lib to reduce initial bundle size
-let PDFDocument: any, StandardFonts: any, rgb: any;
+type PdfLibModule = typeof import('pdf-lib');
+let PDFDocument: PdfLibModule['PDFDocument'];
+let StandardFonts: PdfLibModule['StandardFonts'];
+let rgb: PdfLibModule['rgb'];
 import type { Machine as YilmazMachine } from '@/constants/yilmazMachines';
 
 // Cache for PDF generation to avoid recreating fonts

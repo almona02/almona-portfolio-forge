@@ -338,7 +338,7 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }, [items, factoryW, factoryL, factoryH, totals]);
+  }, [items, factoryW, factoryL, factoryH, totals, i18n.language]);
 
   const selected = items.find((it) => it.id === selectedId) || null;
 

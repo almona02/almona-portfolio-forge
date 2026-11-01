@@ -28,9 +28,12 @@ vi.mock('@/lib/supabase', () => ({ supabase: {
 } }))
 
 // jsdom omits the scrolling API used by the real Radix listbox.
-const originalScroll = HTMLElement.prototype.scrollIntoView
+const originalScroll = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollIntoView')
 beforeAll(() => { HTMLElement.prototype.scrollIntoView = vi.fn() })
-afterAll(() => { HTMLElement.prototype.scrollIntoView = originalScroll })
+afterAll(() => {
+  if (originalScroll) Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', originalScroll)
+  else Reflect.deleteProperty(HTMLElement.prototype, 'scrollIntoView')
+})
 
 afterEach(() => { cleanup(); eq.mockClear() })
 

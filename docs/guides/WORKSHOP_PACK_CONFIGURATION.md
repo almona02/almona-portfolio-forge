@@ -9,4 +9,4 @@
 7. Profile and purchase searches include names, catalogue codes, roles and pack identifiers. Use Change user to sign out and authenticate another existing account; administrative rights follow that account's permissions.
 8. Measuring and Design have Save & close actions that save their actual form/design inputs. BOM and Optimization offer Save and Save & close. Review snapshots are scoped to owner, pose and revision, and are requalified against current approvals; optimization restoration uses current server evidence. Closing clears the active project header.
 
-The pose cutting plan is per window; use project optimization to pool repeated windows. BOM profile quantities and stock demand include the pose quantity.
+The pose cutting plan packs the saved design ledger × pose quantity (same cut identities repeated as a multiset). Use project optimization to pool across different positions. BOM profile quantities and stock demand also include the pose quantity.

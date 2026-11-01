@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SearchBar Component
  * 
  * Phase 3 Implementation - Enterprise Search Interface
@@ -201,7 +201,7 @@ export const SearchBar = React.forwardRef<SearchBarRef, SearchBarProps>(({
    */
   const debouncedSearch = useDebouncedCallback(
     (searchQuery: string) => {
-      executeSearch(searchQuery);
+      void executeSearch(searchQuery);
     },
     debounceMs
   );
@@ -278,7 +278,7 @@ export const SearchBar = React.forwardRef<SearchBarRef, SearchBarProps>(({
    */
   const handleRecentSearchClick = useCallback((recentQuery: string) => {
     setQuery(recentQuery);
-    executeSearch(recentQuery);
+    void executeSearch(recentQuery);
     inputRef.current?.focus();
   }, [executeSearch]);
 
@@ -320,7 +320,7 @@ export const SearchBar = React.forwardRef<SearchBarRef, SearchBarProps>(({
         if (selectedIndex >= 0 && selectedIndex < allResultItems.length) {
           handleSelect(allResultItems[selectedIndex]);
         } else if (query.trim() && !isLoading) {
-          executeSearch(query);
+          void executeSearch(query);
         }
         break;
       case 'Escape':

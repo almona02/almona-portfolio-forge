@@ -101,9 +101,9 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
   };
 
   useEffect(() => {
-    fetchBrief();
+    void fetchBrief();
     // Refresh every 5 minutes
-    const interval = setInterval(fetchBrief, 5 * 60 * 1000);
+    const interval = setInterval(() => void fetchBrief(), 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [workshopId]);
 
@@ -139,7 +139,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
-          <Button onClick={fetchBrief} className="mt-4" variant="outline" size="sm">
+          <Button onClick={() => void fetchBrief()} className="mt-4" variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
             Retry
           </Button>
@@ -169,7 +169,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
             </CardDescription>
           </div>
           <Button
-            onClick={fetchBrief}
+            onClick={() => void fetchBrief()}
             variant="ghost"
             size="sm"
             disabled={loading}
@@ -201,8 +201,8 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       variant="ghost"
                       size="sm"
                       className="h-6 w-6 p-0"
-                      onClick={async () => {
-                        await handleFeedback(`alert_${idx}`, 'useful');
+                      onClick={() => {
+                        void handleFeedback(`alert_${idx}`, 'useful');
                       }}
                       title="مفيد"
                       data-feedback-id={`alert_${idx}`}
@@ -213,8 +213,8 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       variant="ghost"
                       size="sm"
                       className="h-6 w-6 p-0"
-                      onClick={async () => {
-                        await handleFeedback(`alert_${idx}`, 'not_useful');
+                      onClick={() => {
+                        void handleFeedback(`alert_${idx}`, 'not_useful');
                       }}
                       title="مش مفيد"
                       data-feedback-id={`alert_${idx}`}
@@ -251,8 +251,8 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       variant="ghost"
                       size="sm"
                       className="h-5 w-5 p-0"
-                      onClick={async () => {
-                        await handleFeedback(`high_alert_${idx}`, 'useful');
+                      onClick={() => {
+                        void handleFeedback(`high_alert_${idx}`, 'useful');
                       }}
                       title="مفيد"
                       data-feedback-id={`high_alert_${idx}`}
@@ -264,8 +264,8 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       variant="ghost"
                       size="sm"
                       className="h-5 w-5 p-0"
-                      onClick={async () => {
-                        await handleFeedback(`high_alert_${idx}`, 'not_useful');
+                      onClick={() => {
+                        void handleFeedback(`high_alert_${idx}`, 'not_useful');
                       }}
                       title="مش مفيد"
                       data-feedback-id={`high_alert_${idx}`}

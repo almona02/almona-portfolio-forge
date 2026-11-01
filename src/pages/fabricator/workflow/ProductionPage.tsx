@@ -1,4 +1,4 @@
-import { ProductionCockpit } from '@/components/fabricator/cockpit/ProductionCockpit';
+﻿import { ProductionCockpit } from '@/components/fabricator/cockpit/ProductionCockpit';
 import { ProductionDocumentsPanel } from '@/components/fabricator/workflow/ProductionDocumentsPanel';
 import { WorkflowValidationGate } from '@/components/fabricator/workflow/WorkflowValidationGate';
 import { catalogProfilesOrEmpty } from '@/lib/fabricator/catalog/CatalogResolver';
@@ -144,13 +144,13 @@ export const ProductionPage: React.FC = () => {
                             const projId = projectId ?? currentProject?.id;
                             const posId = poseId ?? projId;
                             if (projId && posId) {
-                                navigate(
+                                void navigate(
                                     goBackTarget === 'design'
                                         ? fabricatorRoutes.poseDesign(projId, posId)
                                         : fabricatorRoutes.poseOptimization(projId, posId)
                                 );
                             } else {
-                                navigate(fabricatorRoutes.studioProjects());
+                                void navigate(fabricatorRoutes.studioProjects());
                             }
                         }}
                         backLabel={goBackTarget === 'design' ? 'Go to Design' : 'Go to Optimization'}

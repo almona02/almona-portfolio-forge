@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Email Tracking Dashboard
  * 
  * Gold-tier email analytics dashboard with open/click tracking,
@@ -185,7 +185,7 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
   }, [periodStart, periodEnd]);
 
   useEffect(() => {
-    loadEmailTracking();
+    void loadEmailTracking();
   }, [loadEmailTracking]);
 
   const handleExport = () => {
@@ -252,7 +252,7 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
             </div>
             <div className="flex gap-2">
               <Button
-                onClick={loadEmailTracking}
+                onClick={() => void loadEmailTracking()}
                 variant="outline"
                 size="sm"
                 className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AnalyticsQueryBuilder Component
  * 
  * Phase 4 Implementation - Analytics Query Builder UI
@@ -352,7 +352,7 @@ export const AnalyticsQueryBuilder: React.FC<AnalyticsQueryBuilderProps> = ({
 
                     {/* Execute Button */}
                     <Button
-                        onClick={handleExecute}
+                        onClick={() => void handleExecute()}
                         disabled={isExecuting}
                         className="w-full"
                     >
@@ -387,7 +387,7 @@ export const AnalyticsQueryBuilder: React.FC<AnalyticsQueryBuilderProps> = ({
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => handleExport('csv')}
+                                    onClick={() => void handleExport('csv')}
                                     disabled={isExporting}
                                 >
                                     <FileDown className="mr-2 h-4 w-4" />
@@ -396,7 +396,7 @@ export const AnalyticsQueryBuilder: React.FC<AnalyticsQueryBuilderProps> = ({
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => handleExport('excel')}
+                                    onClick={() => void handleExport('excel')}
                                     disabled={isExporting}
                                 >
                                     <FileDown className="mr-2 h-4 w-4" />
@@ -405,7 +405,7 @@ export const AnalyticsQueryBuilder: React.FC<AnalyticsQueryBuilderProps> = ({
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => handleExport('pdf')}
+                                    onClick={() => void handleExport('pdf')}
                                     disabled={isExporting}
                                 >
                                     <FileDown className="mr-2 h-4 w-4" />

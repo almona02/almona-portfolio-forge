@@ -210,7 +210,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
     // Restart camera with new facing mode
     stopCamera();
     setTimeout(() => {
-      initializeCamera();
+      void initializeCamera();
     }, 100);
   }, [state.facingMode, stopCamera, initializeCamera]);
 
@@ -224,7 +224,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
 
       navigator.geolocation.getCurrentPosition(
         (position) => resolve(position.coords),
-        (error) => reject(error),
+        (error) => reject(new Error(error.message)),
         {
           enableHighAccuracy: true,
           timeout: 10000,
@@ -351,7 +351,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
       clearInterval(scanIntervalRef.current);
     }
 
-    scanIntervalRef.current = setInterval(scanFrame, 200); // Scan every 200ms
+    scanIntervalRef.current = setInterval(() => void scanFrame(), 200); // Scan every 200ms
     setState(prev => ({ ...prev, isScanning: true }));
   }, [scanFrame]);
   startScanningRef.current = startScanning;
@@ -365,7 +365,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
 
   // Initialize on mount
   useEffect(() => {
-    initializeCamera();
+    void initializeCamera();
 
     return () => {
       stopCamera();
@@ -448,7 +448,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
           {state.torchSupported && (
             <button
               type="button"
-              onClick={toggleTorch}
+              onClick={() => void toggleTorch()}
               className={cn(
                 "p-3 rounded-full bg-black/50 backdrop-blur-sm border border-white/20",
                 "hover:bg-black/70 transition-colors",
@@ -468,7 +468,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
           {/* Switch camera button */}
           <button
             type="button"
-            onClick={switchCamera}
+            onClick={() => void switchCamera()}
             className="p-3 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-black/70 transition-colors"
             aria-label="Switch camera"
           >
@@ -508,7 +508,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
             </p>
             <button
               type="button"
-              onClick={initializeCamera}
+              onClick={() => void initializeCamera()}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Try Again

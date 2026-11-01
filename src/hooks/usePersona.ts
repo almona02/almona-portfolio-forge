@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file usePersona.ts
  * @description React hook for persona detection with caching and error handling.
  */
@@ -63,11 +63,11 @@ export const usePersona = (): UsePersonaResult => {
   }, [user?.id]);
 
   useEffect(() => {
-    fetchPersona();
+    void fetchPersona();
 
     // Subscribe to cache invalidation
     const unsubscribe = onPersonaCacheInvalidate(() => {
-      fetchPersona();
+      void fetchPersona();
     });
 
     return unsubscribe;

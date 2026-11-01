@@ -27,7 +27,7 @@ const UsedMachineDetailPage = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-white bg-almona-dark p-4">
         <h2 className="typography-h2 mb-4">Machine not found</h2>
-        <button className="btn-primary" onClick={() => navigate('/used-machines')}>Back to listings</button>
+        <button className="btn-primary" onClick={() => void navigate('/used-machines')}>Back to listings</button>
       </div>
     );
   }
@@ -36,7 +36,7 @@ const UsedMachineDetailPage = () => {
     <>
       <MachineSEO machine={machine} />
       <div className="min-h-screen bg-almona-dark pt-16 pb-8">
-        <UsedMachineDetails machine={machine} onBack={() => navigate('/used-machines')} />
+        <UsedMachineDetails machine={machine} onBack={() => void navigate('/used-machines')} />
       </div>
     </>
   );

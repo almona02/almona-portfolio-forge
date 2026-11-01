@@ -1,4 +1,4 @@
-import { Button } from '@/shared/ui/ui/button';
+﻿import { Button } from '@/shared/ui/ui/button';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import React from 'react';
@@ -12,7 +12,7 @@ export const Preview3DPage: React.FC = () => {
     const handleContinue = () => {
         const project = projectId ?? workflowIdentity?.projectId;
         const position = poseId ?? workflowIdentity?.positionId;
-        navigate(project && position ? fabricatorRoutes.poseBOM(project, position) : fabricatorRoutes.studioProjects());
+        void navigate(project && position ? fabricatorRoutes.poseBOM(project, position) : fabricatorRoutes.studioProjects());
     };
 
     return (
@@ -37,7 +37,7 @@ export const Preview3DPage: React.FC = () => {
                 <div className="flex justify-between">
                     <Button
                         variant="outline"
-                        onClick={() => navigate(projectId ? `/fabricator/workflow/design/${projectId}` : '/fabricator/workflow/design')}
+                        onClick={() => void navigate(projectId ? `/fabricator/workflow/design/${projectId}` : '/fabricator/workflow/design')}
                     >
                         ← Back to Design
                     </Button>

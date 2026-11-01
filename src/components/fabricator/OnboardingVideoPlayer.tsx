@@ -138,15 +138,13 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
     if (!video || !autoPlay) return;
 
     const playPromise = video.play();
-    if (playPromise) {
-      playPromise.then(() => {
-        setIsPlaying(true);
-        onPlay?.();
-      }).catch(() => {
-        // Auto-play was prevented (browser policy)
-        setIsPlaying(false);
-      });
-    }
+    void playPromise.then(() => {
+      setIsPlaying(true);
+      onPlay?.();
+    }).catch(() => {
+      // Auto-play was prevented (browser policy)
+      setIsPlaying(false);
+    });
   }, [autoPlay, videoUrl, onPlay]);
 
   // Sync playing state with video element
@@ -189,7 +187,7 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
     if (!video) return;
 
     if (video.requestFullscreen) {
-      video.requestFullscreen();
+      void video.requestFullscreen();
     } else if ((video as any).webkitRequestFullscreen) {
       (video as any).webkitRequestFullscreen();
     } else if ((video as any).mozRequestFullScreen) {

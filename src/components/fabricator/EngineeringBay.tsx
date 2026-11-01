@@ -325,7 +325,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             grid: result.windowGrid,
             recommendedSystem: result.recommendedSystem
         });
-    }, [project, actions, activeSystemPackId]);
+    }, [project, actions, activeSystemPackId, systemPacks]);
 
     // --- Event Handlers ---
     const handleSystemPackSelect = useCallback((systemPackId: string) => {
@@ -360,7 +360,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     /** Stable callback for Drafting Workbench "Save & Move to Next" (context menu / quick entry). */
     const handleMoveToNextForDrafting = useCallback(() => {
         if (onAddNewPose) {
-            onAddNewPose();
+            void onAddNewPose();
             toast.success(t('engineering_bay.save_and_next', 'Save & Next Pose'));
             return;
         }
@@ -546,7 +546,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                 <div className="hidden lg:flex items-center gap-2">
                                     <Button
                                         variant="outline"
-                                        onClick={() => switchMode('drafting')}
+                                        onClick={() => void switchMode('drafting')}
                                         disabled={isSwitching}
                                         className="border-blue-400 text-blue-200 hover:bg-blue-900/30 disabled:opacity-50"
                                         title="Switch to ALMONA Drafting Workbench"

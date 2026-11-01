@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ReportTemplateEditor Component
  * 
  * Phase 4 Implementation - Report Template Creation/Editing
@@ -95,7 +95,7 @@ export const ReportTemplateEditor: React.FC<ReportTemplateEditorProps> = ({
             }
         };
 
-        loadTemplate();
+        void loadTemplate();
     }, [templateId]);
 
     /**
@@ -310,7 +310,7 @@ export const ReportTemplateEditor: React.FC<ReportTemplateEditorProps> = ({
                         <X className="mr-2 h-4 w-4" />
                         Cancel
                     </Button>
-                    <Button onClick={handleSave} disabled={isSaving}>
+                    <Button onClick={() => void handleSave()} disabled={isSaving}>
                         {isSaving ? (
                             <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

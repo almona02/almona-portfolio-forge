@@ -117,6 +117,7 @@ docs/
 scripts/*
 !scripts/should-build.mjs
 !scripts/retain-release-assets.mjs
+!scripts/render-public-catalogue.mjs
 *.sh
 *.bat
 

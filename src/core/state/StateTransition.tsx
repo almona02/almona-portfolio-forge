@@ -1,4 +1,4 @@
-/**
+﻿/**
  * State Transition Component
  * 
  * Gold-tier state transition UI component for displaying and managing state changes.
@@ -358,7 +358,7 @@ export function StateTransition<TState extends string>({
                 Cancel
               </Button>
               <Button
-                onClick={handleConfirmTransition}
+                onClick={() => void handleConfirmTransition()}
                 disabled={isTransitioning}
                 className="bg-amber-600 hover:bg-amber-700 text-white"
               >

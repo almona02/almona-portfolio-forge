@@ -1,4 +1,4 @@
-/**
+﻿/**
  * YilmazExportPage — Gold-Tier CNC Export Interface
  *
  * @tier Tier 2 (Advisory Presentation)
@@ -11,7 +11,7 @@
  * - Machine model selector with specs preview
  * - Pre-flight validation with bilingual error/warning display
  * - Real-time progress indicator
- * - One-click download for G-Code, CSV, and manifest
+ * - One-click download for CNC (.cnc), CSV, MDB, and manifest
  * - Constitutional compliance badge
  */
 
@@ -185,7 +185,7 @@ const YilmazExportPage: React.FC = () => {
       {/* Header */}
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+          <Button variant="ghost" size="sm" onClick={() => void navigate(-1)}>
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back
           </Button>
@@ -318,24 +318,30 @@ const YilmazExportPage: React.FC = () => {
                       onValueChange={(v) => setFormat(v as ExportFormat)}
                       className="w-full"
                     >
-                      <TabsList className="grid w-full grid-cols-3">
+                      <TabsList className="grid w-full grid-cols-4">
                         <TabsTrigger value="all">All Files</TabsTrigger>
-                        <TabsTrigger value="gcode">G-Code Only</TabsTrigger>
+                        <TabsTrigger value="gcode">CNC Only</TabsTrigger>
                         <TabsTrigger value="csv">CSV Only</TabsTrigger>
+                        <TabsTrigger value="mdb">MDB Only</TabsTrigger>
                       </TabsList>
                       <TabsContent value="all" className="mt-3">
                         <p className="text-sm text-muted-foreground">
-                          Exports G-Code (.nc), CSV cut list, and JSON manifest with checksums.
+                          Exports CNC program (.cnc), CSV cut list, MDB interchange, and JSON manifest with checksums.
                         </p>
                       </TabsContent>
                       <TabsContent value="gcode" className="mt-3">
                         <p className="text-sm text-muted-foreground">
-                          Machine-ready G-Code program (.nc) for direct CNC upload.
+                          Machine-ready CNC program (.cnc) for USB / controller transfer.
                         </p>
                       </TabsContent>
                       <TabsContent value="csv" className="mt-3">
                         <p className="text-sm text-muted-foreground">
                           CSV cut list compatible with Yilmaz DC and CNC series software.
+                        </p>
+                      </TabsContent>
+                      <TabsContent value="mdb" className="mt-3">
+                        <p className="text-sm text-muted-foreground">
+                          MDB cut-list interchange for Yilmaz import paths (structured table payload; validate before load).
                         </p>
                       </TabsContent>
                     </Tabs>
@@ -465,7 +471,7 @@ const YilmazExportPage: React.FC = () => {
                         Re-validate
                       </Button>
                       <Button
-                        onClick={handleExport}
+                        onClick={() => void handleExport()}
                         disabled={!preFlight.valid || isExporting}
                         size="lg"
                       >
@@ -557,7 +563,7 @@ const YilmazExportPage: React.FC = () => {
                       <div className="space-y-2">
                         <FileCard
                           file={result.files.gcode}
-                          label="G-Code Program"
+                          label="CNC Program (.cnc)"
                           icon={<FileCode className="w-5 h-5 text-blue-600" />}
                           onDownload={handleDownloadFile}
                         />
@@ -565,6 +571,12 @@ const YilmazExportPage: React.FC = () => {
                           file={result.files.csv}
                           label="CSV Cut List"
                           icon={<Table2 className="w-5 h-5 text-green-600" />}
+                          onDownload={handleDownloadFile}
+                        />
+                        <FileCard
+                          file={result.files.mdb}
+                          label="MDB Cut List"
+                          icon={<FileText className="w-5 h-5 text-purple-600" />}
                           onDownload={handleDownloadFile}
                         />
                         <FileCard
@@ -684,7 +696,7 @@ const YilmazExportPage: React.FC = () => {
                 <Button
                   variant="outline"
                   className="w-full justify-start"
-                  onClick={() => navigate('/yilmaz-maintenance')}
+                  onClick={() => void navigate('/yilmaz-maintenance')}
                 >
                   <Gauge className="w-4 h-4 mr-2" />
                   Machine Dashboard
@@ -692,7 +704,7 @@ const YilmazExportPage: React.FC = () => {
                 <Button
                   variant="outline"
                   className="w-full justify-start"
-                  onClick={() => navigate('/yilmaz-analytics')}
+                  onClick={() => void navigate('/yilmaz-analytics')}
                 >
                   <FileText className="w-4 h-4 mr-2" />
                   Analytics

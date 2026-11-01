@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Constitutional Health Dashboard Component
  * 
  * Gold-tier constitutional compliance monitoring dashboard with metrics,
@@ -84,7 +84,7 @@ export const ConstitutionalHealthDashboard: React.FC<ConstitutionalHealthDashboa
   } | null>(null);
 
   useEffect(() => {
-    loadData();
+    void loadData();
   }, []);
 
   const loadData = async () => {

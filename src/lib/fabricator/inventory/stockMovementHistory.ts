@@ -111,16 +111,16 @@ export async function fetchStockMovementHistory(
       profileName: profile?.name || 'Unknown',
       movementType: String(movement.movement_type),
       quantity: Number(movement.quantity),
-      unit: String(movement.unit || 'meters'),
+      unit: (movement.unit as string) || 'meters',
       canonicalMetres:
         movement.canonical_metres == null ? null : Number(movement.canonical_metres),
       stockBefore: movement.stock_before == null ? null : Number(movement.stock_before),
       stockAfter: movement.stock_after == null ? null : Number(movement.stock_after),
-      projectId: movement.project_id ? String(movement.project_id) : undefined,
+      projectId: movement.project_id ? (movement.project_id as string) : undefined,
       referenceNumber: (movement.reference_number as string) || null,
       notes: (movement.notes as string) || null,
-      createdAt: new Date(String(movement.created_at)),
-      createdBy: movement.created_by ? String(movement.created_by) : undefined,
+      createdAt: new Date(movement.created_at as string),
+      createdBy: movement.created_by ? (movement.created_by as string) : undefined,
     };
   });
 
@@ -150,7 +150,7 @@ export function exportStockMovementsCsv(rows: StockMovementHistoryRow[]): string
     'notes',
   ];
   const escape = (v: unknown) => {
-    const s = v == null ? '' : String(v);
+    const s = v == null ? '' : (v as string);
     if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
     return s;
   };

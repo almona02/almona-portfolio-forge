@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
@@ -167,7 +167,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
         </div>
       </div>
 
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4 sm:space-y-6">
+      <form onSubmit={(e) => { void form.handleSubmit(handleFormSubmit)(e); }} className="space-y-4 sm:space-y-6">
         {currentStep === 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div>

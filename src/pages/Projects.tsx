@@ -1,4 +1,4 @@
-import SEO from '@/components/SEO';
+﻿import SEO from '@/components/SEO';
 import { ProjectCreationManager } from '@/components/fabricator/project/ProjectCreationManager';
 import {
   useDeleteProject as useDeleteProjectV2,
@@ -92,7 +92,7 @@ const ProjectsPage: React.FC = () => {
       });
       toast.success('Project updated');
     } catch (err) {
-      toast.error(`Update failed: ${err}`);
+      toast.error(`Update failed: ${err as string}`);
     }
     setEditingProjectKey(null);
   }, [editName, editClient, updateProjectMutation]);
@@ -325,7 +325,7 @@ const ProjectsPage: React.FC = () => {
                     </CardDescription>
                   </div>
                   <Button
-                    onClick={() => navigate(fabricatorRoutes.newProjectWizard())}
+                    onClick={() => void navigate(fabricatorRoutes.newProjectWizard())}
                     size="default"
                     className="btn-bronze text-sm px-6"
                   >
@@ -355,7 +355,7 @@ const ProjectsPage: React.FC = () => {
                       </p>
                     </div>
                     <Button
-                      onClick={() => navigate(fabricatorRoutes.newProjectWizard())}
+                      onClick={() => void navigate(fabricatorRoutes.newProjectWizard())}
                       size="default"
                       className="btn-bronze text-sm px-8 py-6 h-auto"
                     >
@@ -376,16 +376,16 @@ const ProjectsPage: React.FC = () => {
                     {filteredProjectsSummary.map((p) => {
                       const handleProjectClick = () => {
                         if (useV2 && p.projectId) {
-                          navigate(fabricatorRoutes.studioProject(p.projectId));
+                          void navigate(fabricatorRoutes.studioProject(p.projectId));
                           return;
                         }
                         if (useV2 && p.projectId && p.firstPoseId) {
-                          navigate(fabricatorRoutes.poseMeasuring(p.projectId, p.firstPoseId));
+                          void navigate(fabricatorRoutes.poseMeasuring(p.projectId, p.firstPoseId));
                           return;
                         }
                         const firstJob = jobs.find((job) => (job.projectCode || job.orderNumber) === p.key);
                         if (firstJob) {
-                          navigate(fabricatorRoutes.poseDesign(p.key, firstJob.id), {
+                          void navigate(fabricatorRoutes.poseDesign(p.key, firstJob.id), {
                             state: { jobId: firstJob.id, startTab: 'design' },
                           });
                         }
@@ -560,7 +560,7 @@ const ProjectsPage: React.FC = () => {
               </AlertDialogCancel>
               <AlertDialogAction
                 className="bg-red-600 hover:bg-red-700 text-white"
-                onClick={handleDeleteProject}
+                onClick={() => void handleDeleteProject()}
                 disabled={deleting}
               >
                 {deleting ? 'Deleting...' : 'Delete Project'}

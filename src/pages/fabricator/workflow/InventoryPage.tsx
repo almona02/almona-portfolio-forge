@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/AuthContext';
+﻿import { useAuth } from '@/context/AuthContext';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { lazyRetry } from '@/utils/lazyImport';
@@ -49,7 +49,7 @@ export const InventoryPage: React.FC = () => {
 
         // Smooth transition
         setTimeout(() => {
-            navigate(
+            void navigate(
                 projectId
                     ? `/fabricator/workflow/production/${projectId}`
                     : '/fabricator/workflow/production'
@@ -78,7 +78,7 @@ export const InventoryPage: React.FC = () => {
                         Please complete the design and optimization steps before checking inventory.
                     </p>
                     <button
-                        onClick={() => navigate('/fabricator/workflow/design')}
+                        onClick={() => void navigate('/fabricator/workflow/design')}
                         className="w-full px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-semibold hover:from-amber-600 hover:to-amber-700 transition-all duration-200 transform hover:scale-105"
                     >
                         Go to Design

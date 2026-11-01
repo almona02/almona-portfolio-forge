@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Performance Benchmark Chart
  * Visualizes algorithm performance over time
  * Migrated from Chart.js to Recharts (Phase 2.2)
@@ -36,7 +36,7 @@ export const PerformanceBenchmarkChart: React.FC<PerformanceBenchmarkChartProps>
       setLoading(false);
     };
 
-    loadTrends();
+    void loadTrends();
   }, [selectedAlgorithm, userId]);
 
   const chartData = trends.map((t) => ({

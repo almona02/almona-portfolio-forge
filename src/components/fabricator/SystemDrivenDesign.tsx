@@ -1,4 +1,4 @@
-/**
+﻿/**
  * System-Driven Design Mode - Fast & Accurate
  * For standard jobs: select system pack, enter dimensions, auto-generate window
  */
@@ -32,7 +32,7 @@ export const SystemDrivenDesign: React.FC<SystemDrivenDesignProps> = ({
 }) => {
   const [width, setWidth] = useState<number>(defaultWidth);
   const [height, setHeight] = useState<number>(defaultHeight);
-  const [selectedPack, setSelectedPack] = useState<SystemPack | null>(null);
+  const [selectedPack, setSelectedPack] = useState<SystemPack>(null);
 
   useEffect(() => {
     if (selectedSystemPackId) {

@@ -11,7 +11,7 @@ interface User {
 }
 
 export const useAuth = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User>(null);
 
   const login = (email: string, password: string) => {
     // This is a mock login. In a real application, you would make an API call

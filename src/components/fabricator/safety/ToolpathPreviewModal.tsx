@@ -57,7 +57,7 @@ export interface ToolpathPreviewModalProps {
   components: WindowComponent[];
   profiles: Profile[];
   optimizationResult?: OptimizationResult;
-  onProceed: (collisionCheck: CollisionCheckResult) => void;
+  onProceed: (collisionCheck: CollisionCheckResult) => Promise<void> | void;
   jobId?: string;
   machineType?: string;
 }
@@ -445,7 +445,7 @@ export const ToolpathPreviewModal: React.FC<ToolpathPreviewModalProps> = ({
               Reset View
             </Button>
             <Button
-              onClick={handleProceed}
+              onClick={() => void handleProceed()}
               disabled={!collisionCheck.passed || isProcessing}
               className="bg-blue-500 hover:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed min-w-[200px] font-semibold"
             >

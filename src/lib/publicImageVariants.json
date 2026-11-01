@@ -1,0 +1,78 @@
+{
+  "/images/egyptian-industrial-hero-bg.webp": {
+    "width": 1536,
+    "height": 2720,
+    "variants": [
+      {
+        "src": "/images/responsive/egyptian-industrial-hero-bg-v1-480w.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/responsive/egyptian-industrial-hero-bg-v1-768w.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/responsive/egyptian-industrial-hero-bg-v1-1280w.webp",
+        "width": 1280
+      },
+      {
+        "src": "/images/responsive/egyptian-industrial-hero-bg-v1-1536w.webp",
+        "width": 1536
+      }
+    ]
+  },
+  "/images/machines/cutting-machine.jpg": {
+    "width": 1152,
+    "height": 648,
+    "variants": [
+      {
+        "src": "/images/responsive/cutting-machine-v1-480w.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/responsive/cutting-machine-v1-768w.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/responsive/cutting-machine-v1-1152w.webp",
+        "width": 1152
+      }
+    ]
+  },
+  "/images/machines/CDC-600.jpg": {
+    "width": 877,
+    "height": 580,
+    "variants": [
+      {
+        "src": "/images/responsive/CDC-600-v1-480w.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/responsive/CDC-600-v1-768w.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/responsive/CDC-600-v1-877w.webp",
+        "width": 877
+      }
+    ]
+  },
+  "/images/machines/NCR-300.jpg": {
+    "width": 781,
+    "height": 502,
+    "variants": [
+      {
+        "src": "/images/responsive/NCR-300-v1-480w.webp",
+        "width": 480
+      },
+      {
+        "src": "/images/responsive/NCR-300-v1-768w.webp",
+        "width": 768
+      },
+      {
+        "src": "/images/responsive/NCR-300-v1-781w.webp",
+        "width": 781
+      }
+    ]
+  }
+}

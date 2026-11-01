@@ -49,8 +49,7 @@ html, body {
 }
 
 .app-fade-enter {
-  opacity: 0;
-  transition: opacity 0.25s ease-in;
+  opacity: 1;
 }
 
 .app-fade-enter.app-fade-enter-active {

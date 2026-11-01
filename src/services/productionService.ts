@@ -39,7 +39,7 @@ export interface ProductionReport {
   id: string;
   production_project_id: string;
   report_type: 'execution_plan' | 'cutting_list' | 'purchase_order' | 'labor_summary' | 'waste_summary';
-  payload_json: any;
+  payload_json: Record<string, unknown>;
   file_size_bytes?: number;
   page_count?: number;
   generated_by_user_id?: string;
@@ -230,7 +230,7 @@ export class ProductionService {
   async createReport(
     projectId: string,
     reportType: ProductionReport['report_type'],
-    payload: any,
+    payload: Record<string, unknown>,
     fileSizeBytes?: number,
     pageCount?: number
   ): Promise<ProductionReport> {

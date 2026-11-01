@@ -98,7 +98,8 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
    */
   useEffect(() => {
     if (activeJob && (activeJob.status === 'queued' || activeJob.status === 'running')) {
-      const interval = setInterval(async () => {
+      const interval = setInterval(() => {
+        void (async () => {
         try {
           const updatedJob = await service.getStatus(activeJob.jobId);
           setActiveJob(updatedJob);
@@ -130,6 +131,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
         } catch (error) {
           console.error('Failed to poll job status:', error);
         }
+      })();
       }, 1500); // Poll every 1.5 seconds
 
       setPollingInterval(interval);

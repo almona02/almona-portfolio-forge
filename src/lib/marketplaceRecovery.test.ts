@@ -22,6 +22,7 @@ describe('marketplace cache policy', () => {
     expect(route({ request: { mode: 'cors' }, url: new URL('https://example.com/used-machines/photo.jpg'), sameOrigin: true })).toBe(false);
     expect(route({ request: { mode: 'navigate' }, url: new URL('https://other.com/used-machines'), sameOrigin: false })).toBe(false);
     // A serialized Workbox callback must not depend on imported variables.
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval -- test asserts Workbox route serialization
     const serialized = new Function(`return (${route.toString()})`)() as typeof route;
     expect(serialized({ request: { mode: 'navigate' }, url: new URL('https://example.com/used-machines'), sameOrigin: true })).toBe(true);
   });

@@ -2,7 +2,7 @@
  * useYilmazExport — React Hook for Yilmaz CNC Export Pipeline
  *
  * Wraps YilmazExportPipeline with React state management,
- * progress tracking, and download triggers.
+ * progress tracking, download triggers, and best-effort Supabase job persistence.
  *
  * Reads from useWorkflowStore for project + optimization data.
  */
@@ -19,8 +19,17 @@ import {
 } from '@/services/export/YilmazExportPipeline';
 import { YilmazFileFormats, type ExportFile } from '@/services/export/YilmazFileFormats';
 import type { YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
+import { recordYilmazExportJob } from '@/lib/fabricator/export/recordYilmazExportJob';
+import { validateOptimizationReconciliation } from '@/lib/fabricator/validation/WorkflowValidator';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
+
+export interface UseYilmazExportOptions {
+  /** Optional fabricator position id for export job ledger. */
+  positionId?: string | null;
+  /** Persist job + artifacts to Supabase when authenticated (default true). */
+  persistJob?: boolean;
+}
 
 export interface UseYilmazExportReturn {
   // State
@@ -60,7 +69,8 @@ const INITIAL_PROGRESS: PipelineProgress = {
 
 // ─── Hook ────────────────────────────────────────────────────────────────────
 
-export function useYilmazExport(): UseYilmazExportReturn {
+export function useYilmazExport(options: UseYilmazExportOptions = {}): UseYilmazExportReturn {
+  const { positionId = null, persistJob = true } = options;
   const { currentProject, optimizationResult } = useWorkflowStore();
 
   const [machineModel, setMachineModel] = useState<YilmazMachineModel>('AIM-3410');
@@ -86,9 +96,12 @@ export function useYilmazExport(): UseYilmazExportReturn {
     return pipelineRef.current;
   }, [machineModel, format]);
 
-  // Check if we have the required data
+  // Ready only when the stored (evidence-backed) result reconciles to the saved design:
+  // every occurrence placed once. Simulation results never enter the store, so they
+  // can never become export input.
   const isReady = useMemo(
-    () => !!(currentProject && optimizationResult && optimizationResult.cuttingPlan.length > 0),
+    () => !!(currentProject && optimizationResult && optimizationResult.cuttingPlan.length > 0
+      && validateOptimizationReconciliation(optimizationResult, currentProject).valid),
     [currentProject, optimizationResult]
   );
 
@@ -131,6 +144,18 @@ export function useYilmazExport(): UseYilmazExportReturn {
 
       if (!exportResult.success) {
         setError('Export failed validation. Check pre-flight results.');
+      } else if (persistJob) {
+        void recordYilmazExportJob({
+          projectId: currentProject.id,
+          positionId,
+          orderNumber: currentProject.orderNumber,
+          machineModel,
+          exportFormat: format,
+          checksum: exportResult.checksum,
+          result: exportResult,
+        }).catch(() => {
+          // Persistence is best-effort; downloads still work offline.
+        });
       }
 
       return exportResult;
@@ -147,7 +172,15 @@ export function useYilmazExport(): UseYilmazExportReturn {
     } finally {
       setIsExporting(false);
     }
-  }, [currentProject, optimizationResult, getPipeline]);
+  }, [
+    currentProject,
+    optimizationResult,
+    getPipeline,
+    persistJob,
+    positionId,
+    machineModel,
+    format,
+  ]);
 
   // ─── Downloads ───────────────────────────────────────────────────────────
 

@@ -19,15 +19,31 @@ import {
   isApprovalsReachabilityFixtureActive,
 } from '@/lib/fabricator/approvals/approvalsReachabilityFixture';
 import {
+  APPROVAL_SETTING_KEYS,
+  APPROVAL_SETTING_LIMITS,
+  DEFAULT_APPROVAL_SETTINGS,
+  approvalSettingsFromTuning,
+  buildRequestAuthorityPayload,
+  draftFromSettings,
+  resolveApprovalSettings,
+  validateApprovalSettings,
+  type ApprovalSettingKey,
+  type ApprovalSettingsDraft,
+  type ApprovalSettingsSource,
+} from '@/lib/fabricator/approvals/approvalSettings';
+import {
+  VENDOR_AUTHORITY_DEFAULT_SETTINGS,
   VENDOR_CATALOGUE_PACKS,
-  buildVendorAuthorityPayload,
 } from '@/lib/fabricator/manufacturing/vendorCataloguePacks';
+import { buildAuthorityPayloadFromPack } from '@/lib/fabricator/manufacturing/buildAuthorityFromPack';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
+import { fabricatorConfigApi } from '@/lib/fabricatorConfigApi';
+import { useEngineeringSystemPacks } from '@/hooks/fabricator/useEngineeringSystemPacks';
 import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Button } from '@/shared/ui/ui/button';
 import { Loader2, ShieldAlert, ShieldCheck } from 'lucide-react';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -61,61 +77,84 @@ type RpcClient = {
 };
 const rpc = supabase as unknown as RpcClient;
 
-type VendorRow = { id: string; label: string };
+type CatalogueRow = {
+  id: string;
+  label: string;
+  path: 'vendor' | 'pack_profiles';
+  profileCount: number;
+};
 
-function buildRequestPayload(packId: string, approvalId: string): Record<string, unknown> {
-  const pack = VENDOR_CATALOGUE_PACKS.find((p) => p.id === packId);
-  if (pack) {
-    return buildVendorAuthorityPayload(pack, approvalId, 1);
-  }
-  return {
-    schema: 'almona.manufacturing-authority',
-    schemaVersion: 1,
-    system: { id: packId },
-    systemPack: {
-      id: packId,
-      revision: 1,
-      evidenceStatus: 'approved',
-      approvalId,
-    },
-    profiles: [
-      {
-        role: 'frame',
-        profileId: `${packId}-FRAME`,
-        stockLengthMm: 6000,
-        evidenceStatus: 'approved',
-        approvalId: 'b1000000-0000-4000-8000-000000000001',
-      },
-      {
-        role: 'sash',
-        profileId: `${packId}-SASH`,
-        stockLengthMm: 6000,
-        evidenceStatus: 'approved',
-        approvalId: 'b1000000-0000-4000-8000-000000000002',
-      },
-    ],
-    cuttingRules: [
-      {
-        ruleId: `${packId}-cut`,
-        revision: 1,
-        evidenceStatus: 'approved',
-        approvalId: 'c1000000-0000-4000-8000-000000000001',
-        deductions: { endDeductionMm: 20 },
-        allowances: { weldMm: 3 },
-        applicability: { materials: ['aluminum'] },
-      },
-    ],
-    toleranceRule: {
-      ruleId: `${packId}-tolerance`,
-      revision: 1,
-      evidenceStatus: 'approved',
-      approvalId: 'c1000000-0000-4000-8000-000000000002',
-    },
-    manufacturingSettings: {
-      sawKerfMm: 4,
-      trimCutMm: 0,
-    },
-  };
+type RequestSettingsState = {
+  draft: ApprovalSettingsDraft;
+  source: Record<ApprovalSettingKey, ApprovalSettingsSource>;
+};
+
+const PLATFORM_SETTINGS_STATE: RequestSettingsState = {
+  draft: draftFromSettings(DEFAULT_APPROVAL_SETTINGS),
+  source: { sawKerfMm: 'platform', trimCutMm: 'platform', stockLengthMm: 'platform' },
+};
+
+/**
+ * Per-request manufacturing settings the admin confirms before approval.
+ * Pre-filled from the requesting workshop's tuning defaults when present,
+ * otherwise platform defaults; always validated client-side and again by the
+ * server (fail-closed) before becoming authority.
+ */
+function ApprovalSettingsFields({
+  requestId,
+  state,
+  disabled,
+  onChange,
+}: {
+  requestId: string;
+  state: RequestSettingsState;
+  disabled: boolean;
+  onChange: (key: ApprovalSettingKey, value: string) => void;
+}) {
+  const validation = validateApprovalSettings(state.draft);
+  return (
+    <fieldset
+      className="rounded border border-amber-600/30 bg-amber-500/5 p-2 space-y-2"
+      data-testid={`approval-settings-${requestId}`}
+      disabled={disabled}
+    >
+      <legend className="px-1 text-xs font-medium text-amber-200">Manufacturing settings for this approval</legend>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {APPROVAL_SETTING_KEYS.map((key) => {
+          const limit = APPROVAL_SETTING_LIMITS[key];
+          const id = `approval-${requestId}-${key}`;
+          const error = validation.errors[key];
+          return (
+            <label key={key} htmlFor={id} className="flex flex-col gap-1 text-xs text-slate-300">
+              <span>
+                {limit.label} ({limit.unit})
+                <span className="ml-1 text-slate-500">· {state.source[key] === 'workshop' ? 'workshop default' : 'platform default'}</span>
+              </span>
+              <input
+                id={id}
+                type="number"
+                inputMode="decimal"
+                step="0.1"
+                min={limit.min}
+                max={limit.max}
+                value={state.draft[key]}
+                onChange={(e) => onChange(key, e.target.value)}
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? `${id}-error` : undefined}
+                className="rounded border border-slate-600 bg-slate-950 px-2 py-1 text-sm text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                data-testid={`${id}-input`}
+              />
+              {error ? (
+                <span id={`${id}-error`} className="text-red-400">{error}</span>
+              ) : (
+                <span className="text-slate-500">{limit.min}–{limit.max} {limit.unit}</span>
+              )}
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
 }
 
 function isAdminDenied(message: string | undefined): boolean {
@@ -125,22 +164,55 @@ function isAdminDenied(message: string | undefined): boolean {
 
 export default function ManufacturingApprovalsPage() {
   const { user, loading } = useAuth();
+  const engineeringPacks = useEngineeringSystemPacks();
   const [adminGate, setAdminGate] = useState<boolean | null>(null);
   const [rows, setRows] = useState<ApprovalRequest[]>([]);
   const [active, setActive] = useState<ActiveAuthority[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  const [requestSettings, setRequestSettings] = useState<Record<string, RequestSettingsState>>({});
   const [stickyOffsetPx, setStickyOffsetPx] = useState(56);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const stickyChromeRef = useRef<HTMLDivElement>(null);
   const fixture = import.meta.env.DEV && isApprovalsReachabilityFixtureActive();
 
-  const vendorRows: VendorRow[] = fixture
-    ? [
-        ...VENDOR_CATALOGUE_PACKS.map((p) => ({ id: p.id, label: p.label })),
-        ...REACHABILITY_VENDOR_EXTRA,
-      ]
-    : VENDOR_CATALOGUE_PACKS.map((p) => ({ id: p.id, label: p.label }));
+  const catalogueRows: CatalogueRow[] = useMemo(() => {
+    const byId = new Map<string, CatalogueRow>();
+    for (const pack of VENDOR_CATALOGUE_PACKS) {
+      byId.set(pack.id, {
+        id: pack.id,
+        label: pack.label,
+        path: 'vendor',
+        profileCount: 2 + (pack.extraProfiles?.length ?? 0),
+      });
+    }
+    for (const pack of engineeringPacks) {
+      const id = pack.meta.id;
+      if (byId.has(id)) continue;
+      byId.set(id, {
+        id,
+        label: pack.meta.name || id,
+        path: 'pack_profiles',
+        profileCount: pack.profiles?.length ?? 0,
+      });
+    }
+    if (fixture) {
+      for (const extra of REACHABILITY_VENDOR_EXTRA) {
+        if (!byId.has(extra.id)) {
+          byId.set(extra.id, {
+            id: extra.id,
+            label: extra.label,
+            path: 'vendor',
+            profileCount: 0,
+          });
+        }
+      }
+    }
+    return Array.from(byId.values()).sort((a, b) => a.label.localeCompare(b.label));
+  }, [engineeringPacks, fixture]);
+
+  const vendorRows = catalogueRows.filter((r) => r.path === 'vendor');
+  const otherPackRows = catalogueRows.filter((r) => r.path === 'pack_profiles');
 
   const measureStickyChrome = useCallback(() => {
     const el = stickyChromeRef.current;
@@ -217,14 +289,69 @@ export default function ManufacturingApprovalsPage() {
     }
   }, []);
 
+  // Depend on the user id, not the user object: a context that re-creates the
+  // user object per render would otherwise re-run refresh() on every render.
+  const userId = user?.id ?? null;
   useEffect(() => {
     if (loading) return;
-    if (!user) {
+    if (!userId) {
       setAdminGate(false);
       return;
     }
     void refresh();
-  }, [user, loading, refresh]);
+  }, [userId, loading, refresh]);
+
+  // Pre-fill approval settings per pending request from the requesting
+  // workshop's tuning defaults (admin RLS can read them). Never overwrite a
+  // draft the admin has already started editing.
+  useEffect(() => {
+    let cancelled = false;
+    const missing = rows.filter((r) => !requestSettings[r.id]);
+    if (missing.length === 0) return;
+    if (fixture) {
+      setRequestSettings((prev) => {
+        const next = { ...prev };
+        for (const r of missing) if (!next[r.id]) next[r.id] = PLATFORM_SETTINGS_STATE;
+        return next;
+      });
+      return;
+    }
+    const owners = [...new Set(missing.map((r) => r.owner_user_id))];
+    void Promise.all(
+      owners.map(async (ownerId) => {
+        try {
+          const tuning = await fabricatorConfigApi.listTuningForOwner(ownerId);
+          return [ownerId, resolveApprovalSettings(approvalSettingsFromTuning(tuning))] as const;
+        } catch {
+          return [ownerId, resolveApprovalSettings({})] as const;
+        }
+      }),
+    ).then((resolved) => {
+      if (cancelled) return;
+      const byOwner = new Map(resolved);
+      setRequestSettings((prev) => {
+        const next = { ...prev };
+        for (const r of missing) {
+          if (next[r.id]) continue;
+          const res = byOwner.get(r.owner_user_id);
+          next[r.id] = res
+            ? { draft: draftFromSettings(res.settings), source: res.source }
+            : PLATFORM_SETTINGS_STATE;
+        }
+        return next;
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [rows, requestSettings, fixture]);
+
+  const updateRequestSetting = useCallback((requestId: string, key: ApprovalSettingKey, value: string) => {
+    setRequestSettings((prev) => {
+      const current = prev[requestId] ?? PLATFORM_SETTINGS_STATE;
+      return { ...prev, [requestId]: { ...current, draft: { ...current.draft, [key]: value } } };
+    });
+  }, []);
 
   if (loading || adminGate === null) {
     return (
@@ -280,6 +407,12 @@ export default function ManufacturingApprovalsPage() {
   };
 
   const approve = async (row: ApprovalRequest) => {
+    const settingsState = requestSettings[row.id] ?? PLATFORM_SETTINGS_STATE;
+    const validation = validateApprovalSettings(settingsState.draft);
+    if (!validation.ok) {
+      setMessage(`Fix manufacturing settings before approving: ${Object.values(validation.errors).join(' ')}`);
+      return;
+    }
     if (fixture) {
       setMessage(`Approved request → fixture:${row.id}`);
       setRows((prev) => prev.filter((r) => r.id !== row.id));
@@ -288,14 +421,30 @@ export default function ManufacturingApprovalsPage() {
     setBusyId(row.id);
     try {
       const placeholderApproval = crypto.randomUUID();
-      const payload = buildRequestPayload(row.system_pack_id, placeholderApproval);
+      const vendor = VENDOR_CATALOGUE_PACKS.find((p) => p.id === row.system_pack_id);
+      let payload: Record<string, unknown>;
+      if (vendor) {
+        payload = buildRequestAuthorityPayload(row.system_pack_id, placeholderApproval, validation.value);
+      } else {
+        const live = engineeringPacks.find((p) => p.meta.id === row.system_pack_id);
+        if (!live) {
+          throw new Error(
+            `Unknown system pack ${row.system_pack_id} — open Tuning / Profiles and ensure the pack is loaded before approving.`,
+          );
+        }
+        const built = buildAuthorityPayloadFromPack(live, placeholderApproval, 1, validation.value);
+        if (!built.ok) throw new Error(built.error);
+        payload = built.payload;
+      }
       const { data, error } = await rpc.rpc('admin_approve_fabricator_manufacturing_approval', {
         p_request_id: row.id,
         p_authority_payload: payload,
       });
       if (error) throw new Error(error.message);
       if (!z.string().uuid().safeParse(data).success) throw new Error('No approval id returned');
-      setMessage(`Approved request → ${String(data)}`);
+      setMessage(
+        `Approved request → ${String(data)} (kerf ${validation.value.sawKerfMm} mm · trim ${validation.value.trimCutMm} mm · stock ${validation.value.stockLengthMm} mm)`,
+      );
       await refresh();
     } catch (err) {
       setMessage(err instanceof Error ? err.message : 'Approve failed');
@@ -325,6 +474,33 @@ export default function ManufacturingApprovalsPage() {
     }
   };
 
+  const approvePackFromProfiles = async (packId: string) => {
+    if (fixture) {
+      setMessage(`Pack authority approved for ${packId} → fixture`);
+      return;
+    }
+    setBusyId(`pack:${packId}`);
+    try {
+      const live = engineeringPacks.find((p) => p.meta.id === packId);
+      if (!live) throw new Error(`Pack ${packId} is not loaded in the engineering catalogue.`);
+      const approvalId = crypto.randomUUID();
+      const built = buildAuthorityPayloadFromPack(live, approvalId, 1);
+      if (!built.ok) throw new Error(built.error);
+      const { data, error } = await rpc.rpc('admin_approve_pack_authority', {
+        p_system_pack_id: packId,
+        p_authority_payload: built.payload,
+      });
+      if (error) throw new Error(error.message);
+      if (!z.string().uuid().safeParse(data).success) throw new Error('No approval id returned');
+      setMessage(`Pack authority approved for ${packId} → ${String(data)}`);
+      await refresh();
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Pack authority approve failed');
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   const revoke = async (approvalId: string) => {
     if (fixture) {
       setMessage(`Revoked ${approvalId}`);
@@ -349,6 +525,7 @@ export default function ManufacturingApprovalsPage() {
 
   const jumpLinks = [
     { id: 'approvals-vendor', label: 'Vendor', count: vendorRows.length },
+    { id: 'approvals-catalogue', label: 'Packs', count: otherPackRows.length },
     { id: 'approvals-pending', label: 'Pending', count: rows.length },
     { id: 'approvals-active', label: 'Revoke', count: active.length },
     { id: 'approvals-hardener', label: 'Hardener', count: null as number | null },
@@ -427,8 +604,13 @@ export default function ManufacturingApprovalsPage() {
         >
           <h2 className="font-semibold text-amber-100">Approve vendor catalogue</h2>
           <p className="text-xs text-slate-400">
-            One-click approval for built-in packs. Writes provenance=vendor, an audit row, and supersedes
-            any prior active revision. Revoke anytime below.
+            Closed vendor allowlist ({vendorRows.length}). Writes provenance=vendor, an audit row, and
+            supersedes any prior active revision. Revoke anytime below.
+          </p>
+          <p className="text-xs text-slate-500" data-testid="vendor-catalogue-settings-note">
+            Vendor payloads are built server-side with fixed settings (kerf {VENDOR_AUTHORITY_DEFAULT_SETTINGS.sawKerfMm} mm ·
+            trim {VENDOR_AUTHORITY_DEFAULT_SETTINGS.trimCutMm} mm · stock {VENDOR_AUTHORITY_DEFAULT_SETTINGS.stockLengthMm} mm).
+            To approve different values, review a pending request below.
           </p>
           <ul className="grid gap-2 sm:grid-cols-2">
             {vendorRows.map((pack) => (
@@ -455,6 +637,49 @@ export default function ManufacturingApprovalsPage() {
         </section>
 
         <section
+          id="approvals-catalogue"
+          style={sectionStyle}
+          className="rounded-lg border border-slate-700 bg-slate-900/50 p-3 sm:p-4 space-y-3"
+          data-testid="full-catalogue-section"
+        >
+          <h2 className="font-semibold text-amber-100">All other system packs</h2>
+          <p className="text-xs text-slate-400">
+            Remaining engineering catalogue ({otherPackRows.length}), including rock/jumbo/ASAS/UPVC and
+            owned workshop copies. Approves from live pack profiles (provenance=admin_review). Requires
+            frame + sash profiles on the pack.
+          </p>
+          {otherPackRows.length === 0 ? (
+            <p className="text-sm text-slate-400">No additional packs beyond the vendor allowlist.</p>
+          ) : (
+            <ul className="grid gap-2 sm:grid-cols-2" data-testid="full-catalogue-list">
+              {otherPackRows.map((pack) => (
+                <li
+                  key={pack.id}
+                  className="flex flex-col gap-2 rounded border border-slate-700 px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <span className="text-slate-200 min-w-0">
+                    <span className="text-amber-200 font-medium">{pack.label}</span>
+                    <span className="block text-xs text-slate-500 truncate">
+                      {pack.id} · {pack.profileCount} profiles
+                    </span>
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={busyId === `pack:${pack.id}` || pack.profileCount < 2}
+                    onClick={() => void approvePackFromProfiles(pack.id)}
+                    className="w-full sm:w-auto shrink-0 min-h-9"
+                    data-testid={`approve-pack-${pack.id}`}
+                  >
+                    Approve from pack profiles
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section
           id="approvals-pending"
           style={sectionStyle}
           className="rounded-lg border border-slate-700 bg-slate-900/50 p-3 sm:p-4 space-y-3"
@@ -478,10 +703,16 @@ export default function ManufacturingApprovalsPage() {
                   </div>
                   <p className="text-slate-400 break-all">Catalogue: {row.catalogue_reference}</p>
                   <p className="text-slate-400 break-all">Rules: {row.rule_reference}</p>
+                  <ApprovalSettingsFields
+                    requestId={row.id}
+                    state={requestSettings[row.id] ?? PLATFORM_SETTINGS_STATE}
+                    disabled={busyId === row.id}
+                    onChange={(key, value) => updateRequestSetting(row.id, key, value)}
+                  />
                   <div className="sticky bottom-20 z-10 -mx-1 flex flex-wrap gap-2 rounded-md border border-amber-600/30 bg-[#0f0f0f]/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-[#0f0f0f]/80 sm:bottom-16">
                     <Button
                       size="sm"
-                      disabled={busyId === row.id}
+                      disabled={busyId === row.id || !validateApprovalSettings((requestSettings[row.id] ?? PLATFORM_SETTINGS_STATE).draft).ok}
                       onClick={() => void approve(row)}
                       className="bg-amber-500 hover:bg-amber-600 text-black flex-1 sm:flex-none min-h-9"
                       data-testid={`approve-request-${row.id}`}

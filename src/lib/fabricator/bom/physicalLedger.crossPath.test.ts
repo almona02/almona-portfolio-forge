@@ -325,6 +325,12 @@ describe('physical ledger cross-path cut tuples', () => {
       const rebom = await calculator.calculateProfileBOM(hydrated, pattern, CALUMINIUM_PS_PACK);
       const rebomTuples = tuplesFromBomProfiles(rebom);
       expect(rebomTuples).toEqual(generatedTuples);
+      // Grouping rows must not replace the solver/server's component occurrence IDs.
+      const expectedIds = hydrated.components.flatMap(component =>
+        component.cuttingLengths.map((_, index) => `${component.id}:${index}`),
+      ).sort();
+      expect(rebom.flatMap(row => row.cutIds ?? []).sort()).toEqual(expectedIds);
+      for (const row of rebom) expect(row.cutIds).toHaveLength(row.cuttingLengths.length);
 
       // 5) Qualification consumes the same ledger
       const qualification = assessBOMQualification(hydrated, pattern, rebom, {

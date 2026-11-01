@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/AuthContext';
+﻿import { useAuth } from '@/context/AuthContext';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { supabase } from '@/lib/supabase';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -263,7 +263,7 @@ const InventoryPage: React.FC = () => {
               </div>
               <div className="flex gap-2">
                 <Button
-                  onClick={handleSaveAllEdits}
+                  onClick={() => void handleSaveAllEdits()}
                   className="btn-primary"
                 >
                   Save All
@@ -319,7 +319,7 @@ const InventoryPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 className="btn-primary"
-                onClick={() => navigate('/fabricator/profiles')}
+                onClick={() => void navigate('/fabricator/profiles')}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 {t('inventory.add_profile', 'Add Profile')}
@@ -458,7 +458,7 @@ const InventoryPage: React.FC = () => {
                   variant="outline"
                   size="sm"
                   className="btn-secondary"
-                  onClick={() => refetch()}
+                  onClick={() => void refetch()}
                 >
                   <Download className="h-4 w-4 mr-2" />
                   Refresh
@@ -489,7 +489,7 @@ const InventoryPage: React.FC = () => {
                 className="btn-primary"
                 onClick={() => {
                   dispatch({ type: 'SET_GLOBAL_SEARCH', payload: '' });
-                  navigate('/fabricator/profiles');
+                  void navigate('/fabricator/profiles');
                 }}
               >
                 Review Items
