@@ -44,7 +44,8 @@
     "typescript": "^5.5.3"
   },
   "overrides": {
-    "minimatch": "10.2.6",
+    "minimatch": "11.0.3",
+    "glob": "14.0.3",
     "tar": "7.5.22",
     "shell-quote": "1.12.0",
     "braces": "^3.0.3",
