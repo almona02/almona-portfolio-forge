@@ -28,7 +28,10 @@ export interface OptimizationEvidencePayload {
   kerfMm?: number;
   /** Bar-end trim mm (required for schemaVersion >= 2). */
   trimMm?: number;
-  /** Authoritative design ledger — every required piece exactly once. */
+  /**
+   * Authoritative design ledger — one-window cutIds, repeated poseQuantity times
+   * as a multiset (shared cutId copies). See requiredCutsFromBom.
+   */
   requiredCuts?: EvidenceCutSpec[];
   displayResult?: { costBreakdown: import('@/types/fabricator').OptimizationResult['costBreakdown']; estimatedProductionTime: number };
   cuttingPlan: Array<{

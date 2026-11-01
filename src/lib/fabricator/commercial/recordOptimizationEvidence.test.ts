@@ -166,6 +166,92 @@ describe('recordOptimizationEvidence (authoritative binding)', () => {
     ]);
   });
 
+  it('requiredCutsFromBom expands pose quantity as a multiset of shared cutIds', () => {
+    const ledger = requiredCutsFromBom(sampleBom as never, 3);
+    expect(ledger.ok).toBe(true);
+    if (!ledger.ok) return;
+    expect(ledger.cuts).toHaveLength(6);
+    expect(ledger.cuts.filter((c) => c.cutId === 'c1:0')).toHaveLength(3);
+    expect(ledger.cuts.filter((c) => c.cutId === 'c1:1')).toHaveLength(3);
+  });
+
+  it('records evidence with poseQuantity-expanded requiredCuts matching placements', async () => {
+    const qty2Result = {
+      ...sampleResult,
+      cuttingPlan: [
+        {
+          stockLength: 6000,
+          totalWaste: 2192,
+          utilization: 63.46666666666667,
+          profile: { id: 'PS-FRAME' },
+          cuts: [
+            { cutId: 'c1:0', componentId: 'c1', length: 1200, angle: 45, occurrenceIndex: 0 },
+            { cutId: 'c1:1', componentId: 'c1', length: 1400, angle: 45, occurrenceIndex: 1 },
+            { cutId: 'c1:0', componentId: 'c1', length: 1200, angle: 45, occurrenceIndex: 0 },
+            { cutId: 'c1:1', componentId: 'c1', length: 1400, angle: 45, occurrenceIndex: 1 },
+          ],
+        },
+      ],
+    };
+    rpc.mockImplementation((name: string) => {
+      if (name === 'derive_required_cuts_from_position') {
+        return Promise.resolve({
+          data: [
+            { cutId: 'c1:0', profileId: 'PS-FRAME', length: 1200, angle: 45 },
+            { cutId: 'c1:1', profileId: 'PS-FRAME', length: 1400, angle: 45 },
+            { cutId: 'c1:0', profileId: 'PS-FRAME', length: 1200, angle: 45 },
+            { cutId: 'c1:1', profileId: 'PS-FRAME', length: 1400, angle: 45 },
+          ],
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: 'pos-1', error: null });
+    });
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: sampleBom as never,
+      optimizationResult: qty2Result as never,
+      poseQuantity: 2,
+    });
+    expect(result.ok).toBe(true);
+    const call = rpc.mock.calls.find(([name]) => name === 'record_fabricator_optimization_evidence');
+    const payload = (call![1] as { p_evidence_payload: { requiredCuts: unknown[]; cutCount: number } }).p_evidence_payload;
+    expect(payload.cutCount).toBe(4);
+    expect(payload.requiredCuts).toHaveLength(4);
+  });
+
+  it('rejects poseQuantity that undershoots placed cut multiplicity', async () => {
+    const qty2Placed = {
+      ...sampleResult,
+      cuttingPlan: [
+        {
+          stockLength: 6000,
+          totalWaste: 2192,
+          utilization: 63.46666666666667,
+          profile: { id: 'PS-FRAME' },
+          cuts: [
+            { cutId: 'c1:0', componentId: 'c1', length: 1200, angle: 45, occurrenceIndex: 0 },
+            { cutId: 'c1:1', componentId: 'c1', length: 1400, angle: 45, occurrenceIndex: 1 },
+            { cutId: 'c1:0', componentId: 'c1', length: 1200, angle: 45, occurrenceIndex: 0 },
+            { cutId: 'c1:1', componentId: 'c1', length: 1400, angle: 45, occurrenceIndex: 1 },
+          ],
+        },
+      ],
+    };
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: sampleBom as never,
+      optimizationResult: qty2Placed as never,
+      poseQuantity: 1,
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toMatch(/cut count mismatch|duplicate occurrence/i);
+  });
+
   it('names the server ledger when the saved revision disagrees with a BOM-consistent placement', async () => {
     rpc.mockImplementation((name: string) => {
       if (name === 'derive_required_cuts_from_position') {

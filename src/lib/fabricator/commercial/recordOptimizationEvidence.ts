@@ -5,6 +5,7 @@
  */
 
 import { resolveManufacturingAuthority } from '@/lib/fabricator/manufacturing/ManufacturingAuthorityResolver';
+import { poseQuantityOf } from '@/lib/fabricator/optimization/physicalCutContract';
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { supabase } from '@/lib/supabase';
 import type { OptimizationResult } from '@/types/fabricator';
@@ -24,6 +25,11 @@ export interface RecordOptimizationEvidenceInput {
   bom: CompleteBOM | null;
   optimizationResult: OptimizationResult;
   ruleVersion?: string | null;
+  /**
+   * Pose / order quantity. Design BOM is always one window; evidence requiredCuts
+   * is the multiset design × poseQuantity (shared cutId copies). Default 1.
+   */
+  poseQuantity?: number;
 }
 
 export type RecordOptimizationEvidenceResult =
@@ -52,17 +58,32 @@ export type RequiredCutsFromBom =
  * BOM → requiredCuts using the preserved physicalCutForOccurrence identities
  * (`componentId:index`) carried on each grouped row.
  *
- * Fail-closed: a row without aligned `cutIds` (BOM cached before identities were
- * recorded, or produced by a path that does not know the design) cannot be turned
- * into a ledger. Identities are never reconstructed from the aggregate row ID and
- * never taken from solver placements — the operator must rebuild the BOM from the
- * saved design instead.
+ * AICS-001 quantity contract (multiset copies):
+ * - Design BOM is always one window (unique cutIds).
+ * - poseQuantity repeats each occurrence N times with the **same** cutId so
+ *   reconcileDesignLedger / derive_required_cuts_from_position stay aligned.
+ * - Quantity is applied exactly once here — never invent identities from placements.
+ *
+ * Fail-closed: a row without aligned `cutIds` cannot be turned into a ledger.
  */
-export function requiredCutsFromBom(bom: CompleteBOM | null): RequiredCutsFromBom {
+export function requiredCutsFromBom(
+  bom: CompleteBOM | null,
+  poseQuantity: number = 1,
+): RequiredCutsFromBom {
+  let quantity: number;
+  try {
+    quantity = poseQuantityOf({ quantity: poseQuantity });
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : 'Pose quantity must be a positive integer.',
+    };
+  }
+
   if (!bom?.profiles?.length) {
     return { ok: false, error: 'Design ledger required: BOM cuttingLengths are missing.' };
   }
-  const cuts: EvidenceCutSpec[] = [];
+  const designCuts: EvidenceCutSpec[] = [];
   const seen = new Set<string>();
   for (const profile of bom.profiles) {
     const profileId = profile.profileCode ?? profile.id ?? '';
@@ -85,7 +106,7 @@ export function requiredCutsFromBom(bom: CompleteBOM | null): RequiredCutsFromBo
         return { ok: false, error: `BOM lists cut occurrence ${cutId} more than once. ${BOM_IDENTITY_REBUILD_HINT}` };
       }
       seen.add(cutId);
-      cuts.push({
+      designCuts.push({
         cutId,
         profileId,
         length: Number(lengths[index]),
@@ -93,8 +114,15 @@ export function requiredCutsFromBom(bom: CompleteBOM | null): RequiredCutsFromBo
       });
     }
   }
-  if (cuts.length === 0) {
+  if (designCuts.length === 0) {
     return { ok: false, error: 'Design ledger required: BOM cuttingLengths are missing.' };
+  }
+
+  if (quantity === 1) return { ok: true, cuts: designCuts };
+
+  const cuts: EvidenceCutSpec[] = [];
+  for (let copy = 0; copy < quantity; copy += 1) {
+    for (const cut of designCuts) cuts.push({ ...cut });
   }
   return { ok: true, cuts };
 }
@@ -162,7 +190,7 @@ export async function recordOptimizationEvidence(
     return { ok: false, error: 'Optimization produced no cuts to validate.' };
   }
 
-  const ledger = requiredCutsFromBom(input.bom);
+  const ledger = requiredCutsFromBom(input.bom, input.poseQuantity ?? 1);
   if (!ledger.ok) {
     return { ok: false, error: ledger.error };
   }

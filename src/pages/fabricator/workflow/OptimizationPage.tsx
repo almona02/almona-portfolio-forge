@@ -244,6 +244,8 @@ export const OptimizationPage: React.FC = () => {
                 bom,
                 optimizationResult,
                 ruleVersion: bom?.qualification?.ruleVersion ?? null,
+                // Design BOM is per-window; evidence ledger is design × pose quantity (multiset).
+                poseQuantity: currentProject.quantity ?? 1,
             });
             if (!recorded.ok) {
                 throw new Error(recorded.error);
