@@ -21,7 +21,7 @@ const Footer = () => {
                 <a dir="ltr" href="tel:+201003097177" aria-label={copy("Call ALMONA")}><Phone className="h-5 w-5" /></a>
               </Button>
               <Button asChild size="icon" variant="outline" className="rounded-full border-almona-orange">
-                <a dir="ltr" href="mailto:almona02@yahoo.com" aria-label={copy("Email ALMONA")}><Mail className="h-5 w-5" /></a>
+                <a dir="ltr" href="mailto:info@almona02.com" aria-label={copy("Email ALMONA")}><Mail className="h-5 w-5" /></a>
               </Button>
             </div>
           </div>
@@ -81,7 +81,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center">
                 <Mail className="h-5 w-5 text-almona-orange me-2" />
-                <a className="text-muted-foreground hover:text-almona-orange" href="mailto:almona02@yahoo.com" dir="ltr">almona02@yahoo.com</a>
+                <a className="text-muted-foreground hover:text-almona-orange" href="mailto:info@almona02.com" dir="ltr">info@almona02.com</a>
               </li>
             </ul>
           </div>

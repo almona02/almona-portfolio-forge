@@ -70,7 +70,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
       onOpenChange(false);
     } catch {
       toast.error(t('trainingPage.form.error', {
-        defaultValue: 'Your enquiry could not be saved. Please try again or contact almona02@yahoo.com. Your form is still available.',
+        defaultValue: 'Your enquiry could not be saved. Please try again or contact info@almona02.com. Your form is still available.',
       }));
     }
   };

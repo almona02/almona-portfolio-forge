@@ -170,7 +170,7 @@ export const IndustrialProductCard = ({
             </div>
           </div>
         )}
-        <div className="text-lg sm:text-xl font-bold text-amber-500 mt-auto">{copy(price)}</div>
+        <div className="text-lg sm:text-xl font-bold text-brand mt-auto tracking-tight">{copy(price)}</div>
       </CardContent>
       <CardFooter className="p-3 sm:p-4 pt-0">
         <div className="flex flex-col gap-1.5 w-full">

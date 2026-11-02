@@ -165,7 +165,7 @@ const SEO = ({
           },
           "contactPoint": {
             "@type": "ContactPoint",
-            "email": import.meta.env.VITE_CONTACT_EMAIL || "info@almona.eg",
+            "email": import.meta.env.VITE_CONTACT_EMAIL || "info@almona02.com",
             "contactType": "customer service"
           },
           "sameAs": [

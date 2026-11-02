@@ -333,10 +333,10 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
       ref={navbarRef}
       dir="ltr"
       style={{ direction: "ltr" }}
-      className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-200 ${
+      className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-200 surface-metal ${
         isScrolled 
-          ? "bg-black/95 border-b border-amber-500/30 shadow-2xl" 
-          : "bg-gradient-to-b from-black/95 to-black/80"
+          ? "bg-background/95 border-b border-border shadow-lg backdrop-blur-md" 
+          : "bg-background/90 border-b border-border/70 backdrop-blur-sm"
       }`}
     >
       <div className="mx-auto px-3 sm:px-4 md:px-6 lg:px-6 xl:px-8 2xl:px-10 max-w-screen-2xl">
@@ -351,7 +351,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
             <div className="relative w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 xl:w-12 xl:h-12 2xl:w-14 2xl:h-14">
               <Logo />
             </div>
-            <span className="bg-gradient-to-r from-amber-200 to-red-200 bg-clip-text text-transparent text-base sm:text-lg md:text-xl lg:text-xl xl:text-xl 2xl:text-3xl font-extrabold whitespace-nowrap">
+            <span className="text-brand text-base sm:text-lg md:text-xl lg:text-xl xl:text-xl 2xl:text-3xl font-extrabold whitespace-nowrap tracking-wide">
               ALMONA
             </span>
           </Link>
@@ -409,7 +409,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
 
                   {activeDropdown === item.name && (
                       <div
-                        className="absolute top-full left-0 mt-2 w-72 xl:w-80 2xl:w-96 bg-background/95 border 500/30 rounded-xl shadow-2xl overflow-hidden navbar-dropdown-enter card-glass-dark"
+                        className="absolute top-full left-0 mt-2 w-72 xl:w-80 2xl:w-96 bg-popover text-popover-foreground border border-border rounded-xl shadow-2xl overflow-hidden navbar-dropdown-enter"
                         style={{ zIndex: 10000 }}
                         onMouseEnter={() => handleDropdownEnter(item.name)}
                         onMouseLeave={() => handleDropdownLeave(item.name)}
@@ -473,7 +473,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
 
                 {activeDropdown === "user" && (
                     <div
-                      className="absolute right-0 top-full mt-2 w-56 xl:w-64 2xl:w-72 bg-background/95 border 500/30 rounded-xl shadow-2xl overflow-hidden navbar-dropdown-enter card-glass-dark"
+                      className="absolute right-0 top-full mt-2 w-56 xl:w-64 2xl:w-72 bg-popover text-popover-foreground border border-border rounded-xl shadow-2xl overflow-hidden navbar-dropdown-enter"
                       style={{ zIndex: 10000 }}
                     >
                       <div className="p-3 border-b border-amber-500/20">
@@ -575,7 +575,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
             <div
-              className="lg:hidden border-t bg-black/98 -xl max-h-[calc(100vh-4rem)] overflow-y-auto mobile-menu-enter card-glass-dark"
+              className="lg:hidden border-t border-border bg-background/98 max-h-[calc(100vh-4rem)] overflow-y-auto mobile-menu-enter"
             >
               <div className="py-4 space-y-1 px-2">
                 {navItems.map((item) => (
@@ -647,7 +647,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                   <div className="px-2 mb-4">
                     <LanguageSwitcher 
                       variant="minimal" 
-                      className="w-full border-border/50 hover: text-foreground hover:text-foreground bg-transparent hover:bg-foreground/5 rounded-xl px-4 py-3 justify-center -sm transition-all duration-200 card-glass-dark"
+                      className="w-full border-border/50 text-foreground hover:text-foreground bg-transparent hover:bg-foreground/5 rounded-xl px-4 py-3 justify-center transition-all duration-200"
                     />
                   </div>
 

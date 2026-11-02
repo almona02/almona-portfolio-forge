@@ -59,7 +59,7 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine, isCompact = false, o
         <CardTitle className={`${isCompact ? 'text-lg' : 'text-xl'} line-clamp-2 group-hover:text-amber-400 transition-colors`}>
           {machine.title}
         </CardTitle>
-        <div className="text-amber-400 font-bold text-xl">{machine.price}</div>
+        <div className="text-brand font-bold text-xl tracking-tight">{machine.price}</div>
         <div className="text-xs text-muted-foreground">{copy('Posted')} {relativeDate}</div>
       </CardHeader>
 

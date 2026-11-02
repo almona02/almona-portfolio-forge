@@ -65,7 +65,7 @@ export const ProjectPositionNavigator: React.FC<ProjectPositionNavigatorProps> =
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t('industrial.positions.search', 'Search positions')}
-            className="w-full bg-black/40 border border-amber-900/40 rounded ps-7 pe-2 py-1.5 text-xs text-warning placeholder:text-amber-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500"
+            className="w-full bg-background border border-border rounded ps-7 pe-2 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
         </div>
         {onAdd && (
