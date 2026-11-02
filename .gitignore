@@ -121,6 +121,13 @@ supabase/.temp/
 playwright-report/
 test-results/
 tmp/
+# Root scratch artifacts (never re-commit investor-visible junk)
+/tmp_*.png
+/tmp_*.json
+/debug_pdf_image.png
+/www.pdf
+/debug_failures.txt
+/debug_layout.html
 git-status-push-review.txt
 
 # Reproducible deployment bundles
