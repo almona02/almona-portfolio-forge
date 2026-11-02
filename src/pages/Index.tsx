@@ -4,7 +4,8 @@ import Hero from "@/components/home/Hero";
 import { DeferredSection } from "@/components/home/DeferredSection";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 
-// Lazy load non-critical sections to improve initial page load
+// Optional homepage sections stay lazy so a stale deploy chunk can fail closed into DeferredSection,
+// then recover via lazyRetry (one guarded reload) without taking down the whole page.
 const NationalImpactSection = lazyRetry(() => import("@/components/home/NationalImpactSection").then(m => ({ default: m.NationalImpactSection })), 'NationalImpactSection');
 const EgyptVision2030Section = lazyRetry(() => import("@/components/home/EgyptVision2030Section").then(m => ({ default: m.EgyptVision2030Section })), 'EgyptVision2030Section');
 const AboutSection = lazyRetry(() => import("@/components/home/AboutSection"), 'AboutSection');
