@@ -7,6 +7,7 @@ on:
       - 'scripts/check-migration-version-format.mjs'
       - 'tests/sql/manufacturing_approval_migration_replay.sql'
       - 'tests/sql/marketplace_migration_replay.sql'
+      - 'tests/sql/admin_ticket_audit_migration.sql'
       - '.github/workflows/supabase-migrations.yml'
   push:
     branches: [main]
@@ -15,6 +16,7 @@ on:
       - 'scripts/check-migration-version-format.mjs'
       - 'tests/sql/manufacturing_approval_migration_replay.sql'
       - 'tests/sql/marketplace_migration_replay.sql'
+      - 'tests/sql/admin_ticket_audit_migration.sql'
       - '.github/workflows/supabase-migrations.yml'
   workflow_dispatch:
 
@@ -80,3 +82,27 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: psql -X -h 127.0.0.1 -U postgres -d marketplace_replay_test_ci -v ON_ERROR_STOP=1 -f tests/sql/marketplace_migration_replay.sql
+
+  ticket-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ticket_audit_test_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d ticket_audit_test_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify fresh install and non-destructive migration replay
+        env:
+          PGPASSWORD: postgres
+        run: psql -X -h 127.0.0.1 -U postgres -d ticket_audit_test_ci -v ON_ERROR_STOP=1 -f tests/sql/admin_ticket_audit_migration.sql
