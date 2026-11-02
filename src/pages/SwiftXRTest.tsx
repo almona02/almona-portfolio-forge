@@ -139,7 +139,7 @@ export default function SwiftXRTestPage() {
   const totalTests = testResults.length;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 pt-24 pb-12">
+    <main className="min-h-screen bg-gradient-to-br from-background via-black to-background pt-24 pb-12">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
@@ -148,24 +148,24 @@ export default function SwiftXRTestPage() {
               SwiftXR Integration Test
             </span>
           </h1>
-          <p className="text-gray-400">
+          <p className="text-muted-foreground">
             Test all SwiftXR features and 3D model viewing capabilities
           </p>
         </div>
 
         {/* Test Results Summary */}
-        <Card className="mb-6 bg-gradient-to-br from-gray-900 to-black border-gray-700">
+        <Card className="mb-6 bg-gradient-to-br from-background to-black border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TestTube className="h-5 w-5 text-amber-500" />
               Test Results
               {totalTests > 0 && (
                 <div className="ml-auto flex items-center gap-4">
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500">
+                  <Badge className="bg-green-500/20 text-success border-green-500">
                     {passedCount} Passed
                   </Badge>
                   {failedCount > 0 && (
-                    <Badge className="bg-red-500/20 text-red-400 border-red-500">
+                    <Badge className="bg-red-500/20 text-destructive border-red-500">
                       {failedCount} Failed
                     </Badge>
                   )}
@@ -212,7 +212,7 @@ export default function SwiftXRTestPage() {
                 {testResults.map((test, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"
+                    className="flex items-center justify-between p-3 bg-card/50 rounded-lg"
                   >
                     <div className="flex items-center gap-3">
                       {test.status === 'running' && (
@@ -222,12 +222,12 @@ export default function SwiftXRTestPage() {
                         <CheckCircle className="h-4 w-4 status-valid" />
                       )}
                       {test.status === 'failed' && (
-                        <XCircle className="h-4 w-4 text-red-500" />
+                        <XCircle className="h-4 w-4 text-destructive" />
                       )}
-                      <span className="text-white">{test.name}</span>
+                      <span className="text-foreground">{test.name}</span>
                     </div>
                     {test.message && (
-                      <span className="text-sm text-gray-400">{test.message}</span>
+                      <span className="text-sm text-muted-foreground">{test.message}</span>
                     )}
                   </div>
                 ))}
@@ -236,22 +236,22 @@ export default function SwiftXRTestPage() {
 
             {/* Detection Result */}
             {detectionResult && (
-              <div className="mt-4 p-4 bg-gray-800/50 rounded-lg">
-                <h3 className="typography-h3 text-sm text-gray-300 mb-2">Detection Result</h3>
+              <div className="mt-4 p-4 bg-card/50 rounded-lg">
+                <h3 className="typography-h3 text-sm text-foreground mb-2">Detection Result</h3>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
-                    <span className="text-gray-400">Platform:</span>
-                    <span className="ml-2 text-white capitalize">{detectionResult.platform}</span>
+                    <span className="text-muted-foreground">Platform:</span>
+                    <span className="ml-2 text-foreground capitalize">{detectionResult.platform}</span>
                   </div>
                   <div>
-                    <span className="text-gray-400">Can Launch:</span>
-                    <span className={`ml-2 ${detectionResult.canLaunch ? 'text-green-400' : 'text-gray-400'}`}>
+                    <span className="text-muted-foreground">Can Launch:</span>
+                    <span className={`ml-2 ${detectionResult.canLaunch ? 'text-success' : 'text-muted-foreground'}`}>
                       {detectionResult.canLaunch ? 'Yes' : 'No'}
                     </span>
                   </div>
                   <div>
-                    <span className="text-gray-400">App Installed:</span>
-                    <span className={`ml-2 ${detectionResult.isInstalled ? 'text-green-400' : 'text-gray-400'}`}>
+                    <span className="text-muted-foreground">App Installed:</span>
+                    <span className={`ml-2 ${detectionResult.isInstalled ? 'text-success' : 'text-muted-foreground'}`}>
                       {detectionResult.isInstalled ? 'Yes' : 'No'}
                     </span>
                   </div>
@@ -264,7 +264,7 @@ export default function SwiftXRTestPage() {
         {/* Component Tests */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* SwiftXR Manager Test */}
-          <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700">
+          <Card className="bg-gradient-to-br from-background to-black border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Smartphone className="h-5 w-5 text-amber-500" />
@@ -283,7 +283,7 @@ export default function SwiftXRTestPage() {
           </Card>
 
           {/* Unified AR Manager Test */}
-          <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700">
+          <Card className="bg-gradient-to-br from-background to-black border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-amber-500" />
@@ -302,7 +302,7 @@ export default function SwiftXRTestPage() {
         </div>
 
         {/* 3D Viewer Test */}
-        <Card className="mt-6 bg-gradient-to-br from-gray-900 to-black border-gray-700">
+        <Card className="mt-6 bg-gradient-to-br from-background to-black border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Monitor className="h-5 w-5 text-amber-500" />
@@ -323,7 +323,7 @@ export default function SwiftXRTestPage() {
         </Card>
 
         {/* SwiftXR Iframe App */}
-        <Card className="mt-6 bg-gradient-to-br from-gray-900 to-black border-gray-700">
+        <Card className="mt-6 bg-gradient-to-br from-background to-black border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Zap className="h-5 w-5 text-amber-500" />

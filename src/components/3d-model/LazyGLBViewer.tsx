@@ -41,10 +41,10 @@ class ModelErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return this.props.fallback || (
-        <div className="flex items-center justify-center h-full bg-gray-900 text-white">
+        <div className="flex items-center justify-center h-full bg-background text-white">
           <div className="text-center">
-            <p className="text-sm text-red-400">Failed to load 3D model</p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-sm text-destructive">Failed to load 3D model</p>
+            <p className="text-xs text-muted-foreground mt-1">
               {this.state.error?.message || 'Unknown error occurred'}
             </p>
           </div>

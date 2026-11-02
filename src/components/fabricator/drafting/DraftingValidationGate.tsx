@@ -289,8 +289,8 @@ export const DraftingValidationGate: React.FC<DraftingValidationGateProps> = ({
 
   if (!validationResult) {
     return (
-      <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-700">
-        <div className="flex items-center gap-2 text-slate-400">
+      <div className="p-4 bg-card/50 rounded-lg border border-border">
+        <div className="flex items-center gap-2 text-muted-foreground">
           <Shield className="w-5 h-5 animate-pulse" />
           <span className="text-sm">Validating design...</span>
         </div>
@@ -307,36 +307,36 @@ export const DraftingValidationGate: React.FC<DraftingValidationGateProps> = ({
         }`}>
         <div className="flex items-start gap-3">
           {validationResult.qualified ? (
-            <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
+            <CheckCircle2 className="w-6 h-6 text-success flex-shrink-0 mt-0.5" />
           ) : (
-            <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-6 h-6 text-destructive flex-shrink-0 mt-0.5" />
           )}
 
           <div className="flex-1 min-w-0">
-            <h3 className={`font-semibold text-sm mb-1 ${validationResult.qualified ? 'text-green-300' : 'text-red-300'
+            <h3 className={`font-semibold text-sm mb-1 ${validationResult.qualified ? 'text-success' : 'text-destructive'
               }`}>
               {validationResult.qualified
                 ? '✅ Qualified for Manufacturing'
                 : '❌ Manufacturing Violations Detected'}
             </h3>
 
-            <p className="text-xs text-slate-400 mb-2">
-              Validation ID: <code className="text-xs bg-slate-900/50 px-1 py-0.5 rounded">{validationResult.auditHash}</code>
+            <p className="text-xs text-muted-foreground mb-2">
+              Validation ID: <code className="text-xs bg-background/50 px-1 py-0.5 rounded">{validationResult.auditHash}</code>
             </p>
 
             {/* Blocking Violations (Errors) */}
             {validationResult.violations.length > 0 && (
               <div className="mt-3 space-y-2">
-                <h4 className="text-xs font-semibold text-red-300 uppercase tracking-wide">
+                <h4 className="text-xs font-semibold text-destructive uppercase tracking-wide">
                   Blocking Errors (Must Fix)
                 </h4>
                 <ul className="space-y-1.5">
                   {validationResult.violations.map((violation, index) => (
                     <li key={index} className="text-xs text-red-200 flex items-start gap-2">
-                      <span className="text-red-400 flex-shrink-0">•</span>
+                      <span className="text-destructive flex-shrink-0">•</span>
                       <div className="flex-1">
                         <div className="font-medium">{violation.message}</div>
-                        <div className="text-red-300/70 mt-0.5">🔧 {violation.remediation}</div>
+                        <div className="text-destructive/70 mt-0.5">🔧 {violation.remediation}</div>
                       </div>
                     </li>
                   ))}
@@ -347,14 +347,14 @@ export const DraftingValidationGate: React.FC<DraftingValidationGateProps> = ({
             {/* Advisory Warnings */}
             {validationResult.warnings.length > 0 && (
               <div className="mt-3 space-y-2">
-                <h4 className="text-xs font-semibold text-yellow-300 uppercase tracking-wide flex items-center gap-1.5">
+                <h4 className="text-xs font-semibold text-warning uppercase tracking-wide flex items-center gap-1.5">
                   <AlertTriangle className="w-3.5 h-3.5" />
                   Advisory Warnings (Non-Blocking)
                 </h4>
                 <ul className="space-y-1">
                   {validationResult.warnings.map((warning, index) => (
-                    <li key={index} className="text-xs text-yellow-200/80 flex items-start gap-2">
-                      <span className="text-yellow-400 flex-shrink-0">⚠</span>
+                    <li key={index} className="text-xs text-warning/80 flex items-start gap-2">
+                      <span className="text-warning flex-shrink-0">⚠</span>
                       <span>{warning}</span>
                     </li>
                   ))}
@@ -371,7 +371,7 @@ export const DraftingValidationGate: React.FC<DraftingValidationGateProps> = ({
         disabled={!validationResult.qualified || disabled || isValidating}
         className={`w-full h-11 text-sm font-semibold transition-all duration-300 ${validationResult.qualified && !disabled
             ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg shadow-green-900/30'
-            : 'bg-slate-700 text-slate-500 cursor-not-allowed'
+            : 'bg-muted text-muted-foreground cursor-not-allowed'
           }`}
       >
         <Shield className="w-4 h-4 mr-2" />
@@ -381,7 +381,7 @@ export const DraftingValidationGate: React.FC<DraftingValidationGateProps> = ({
       </Button>
 
       {/* Constitutional Notice */}
-      <div className="text-xs text-slate-500 text-center">
+      <div className="text-xs text-muted-foreground text-center">
         <p>Constitutional Validation Gate • AICS-001 §5.8</p>
         <p className="mt-0.5">Deterministic validation • No override allowed</p>
       </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Home, ChevronRight, Sun, Moon, User, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
-import { useTheme, useSetTheme } from '@/stores/fabricatorUIStore';
+import { Home, ChevronRight, User, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { Link } from 'react-router-dom';
 
 interface Breadcrumb {
@@ -30,14 +30,12 @@ export const UniversalHeader: React.FC<UniversalHeaderProps> = ({
   currency = 'EGP',
   className = '',
 }) => {
-  const theme = useTheme();
-  const setTheme = useSetTheme();
   
   const getStatusIcon = () => {
     switch (status) {
-      case 'success': return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'warning': return <AlertCircle className="w-4 h-4 text-amber-500" />;
-      case 'error': return <XCircle className="w-4 h-4 text-red-500" />;
+      case 'success': return <CheckCircle className="w-4 h-4 text-success" />;
+      case 'warning': return <AlertCircle className="w-4 h-4 text-warning" />;
+      case 'error': return <XCircle className="w-4 h-4 text-destructive" />;
       default: return <div className="w-2 h-2 rounded-full bg-green-500" />;
     }
   };
@@ -51,14 +49,11 @@ export const UniversalHeader: React.FC<UniversalHeaderProps> = ({
     }).format(amount);
   };
   
-  const handleThemeToggle = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
   
   return (
     <header className={cn(
       'flex flex-wrap items-center justify-between gap-2 w-full min-h-16 px-3 py-2 sm:px-4 border-b',
-      'bg-gray-900/80 border-amber-600/30 backdrop-blur-sm',
+      'bg-background/80 border-amber-600/30 backdrop-blur-sm',
       className
     )}>
       {/* Left: Breadcrumbs */}
@@ -69,22 +64,22 @@ export const UniversalHeader: React.FC<UniversalHeaderProps> = ({
               {index === 0 ? (
                 <Link
                   to={crumb.href || '#'}
-                  className="flex items-center text-gray-400 hover:text-amber-400 transition-colors"
+                  className="flex items-center text-muted-foreground hover:text-warning transition-colors"
                 >
                   <Home className="w-4 h-4" />
                 </Link>
               ) : (
                 <>
-                  <ChevronRight className="w-4 h-4 text-gray-600" />
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   {crumb.href ? (
                     <Link
                       to={crumb.href}
-                      className="text-gray-400 hover:text-amber-400 transition-colors truncate max-w-[150px]"
+                      className="text-muted-foreground hover:text-warning transition-colors truncate max-w-[150px]"
                     >
                       {crumb.label}
                     </Link>
                   ) : (
-                    <span className="text-gray-300 truncate max-w-[150px]">{crumb.label}</span>
+                    <span className="text-foreground truncate max-w-[150px]">{crumb.label}</span>
                   )}
                 </>
               )}
@@ -96,16 +91,16 @@ export const UniversalHeader: React.FC<UniversalHeaderProps> = ({
       {/* Center: Title with status */}
       <div className="flex min-w-0 items-center sm:justify-center flex-1">
         <div className="flex min-w-0 items-center space-x-3">
-          <h1 className="text-lg font-semibold text-gray-100 truncate max-w-md">{title}</h1>
+          <h1 className="text-lg font-semibold text-foreground truncate max-w-md">{title}</h1>
           <div className="flex items-center space-x-2">
             {getStatusIcon()}
             {statusMessage && (
               <span className={cn(
                 'text-sm',
-                status === 'error' && 'text-red-400',
-                status === 'warning' && 'text-amber-400',
-                status === 'success' && 'text-green-400',
-                status === 'normal' && 'text-gray-400'
+                status === 'error' && 'text-destructive',
+                status === 'warning' && 'text-warning',
+                status === 'success' && 'text-success',
+                status === 'normal' && 'text-muted-foreground'
               )}>
                 {statusMessage}
               </span>
@@ -119,33 +114,22 @@ export const UniversalHeader: React.FC<UniversalHeaderProps> = ({
         {/* Cost Calculator */}
         {showCostCalculator && (
           <div className="flex items-center space-x-2">
-            <div className="px-3 py-1 rounded-lg bg-gray-800/50 border border-amber-600/30">
-              <span className="text-sm font-medium text-amber-400">
+            <div className="px-3 py-1 rounded-lg bg-card/50 border border-amber-600/30">
+              <span className="text-sm font-medium text-warning">
                 {formatCost(cost)}
               </span>
             </div>
           </div>
         )}
         
-        {/* Theme Toggle */}
-        <button
-          onClick={handleThemeToggle}
-          className="p-2 rounded-lg hover:bg-gray-800/50 transition-colors"
-          aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
-        >
-          {theme === 'dark' ? (
-            <Sun className="w-5 h-5 text-amber-400" />
-          ) : (
-            <Moon className="w-5 h-5 text-gray-400" />
-          )}
-        </button>
-        
+        <ThemeToggle size="sm" />
+
         {/* User Menu (placeholder) */}
         <button
-          className="p-2 rounded-lg hover:bg-gray-800/50 transition-colors"
+          className="p-2 rounded-lg hover:bg-card/50 transition-colors"
           aria-label="User menu"
         >
-          <User className="w-5 h-5 text-gray-400" />
+          <User className="w-5 h-5 text-muted-foreground" />
         </button>
       </div>
     </header>

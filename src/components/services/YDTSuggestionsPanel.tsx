@@ -81,7 +81,7 @@ export function YDTSuggestionsPanel({
 
   if (loading) {
     return (
-      <Card className="bg-gradient-to-br from-gray-900 to-black border-amber-500/20">
+      <Card className="bg-gradient-to-br from-background to-black border-amber-500/20">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-amber-400">
             <Brain className="h-5 w-5" />
@@ -91,7 +91,7 @@ export function YDTSuggestionsPanel({
         <CardContent>
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-6 w-6 animate-spin text-amber-400" />
-            <span className="ml-2 text-gray-400">Analyzing with YDT...</span>
+            <span className="ml-2 text-muted-foreground">Analyzing with YDT...</span>
           </div>
         </CardContent>
       </Card>
@@ -100,10 +100,10 @@ export function YDTSuggestionsPanel({
 
   if (suggestions.length === 0) {
     return (
-      <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+      <Card className="bg-gradient-to-br from-background to-black border-border">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Brain className="h-5 w-5 text-gray-500" />
+            <Brain className="h-5 w-5 text-muted-foreground" />
             {title}
           </CardTitle>
         </CardHeader>
@@ -120,7 +120,7 @@ export function YDTSuggestionsPanel({
   }
 
   return (
-    <Card className="bg-gradient-to-br from-gray-900 to-black border-amber-500/20">
+    <Card className="bg-gradient-to-br from-background to-black border-amber-500/20">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -146,7 +146,7 @@ export function YDTSuggestionsPanel({
         {/* Overall Confidence */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-400">Overall Confidence</span>
+            <span className="text-muted-foreground">Overall Confidence</span>
             <div className="flex items-center gap-2">
               <Badge variant={getConfidenceBadge(confidence)}>
                 {Math.round(confidence * 100)}%
@@ -158,7 +158,7 @@ export function YDTSuggestionsPanel({
           </div>
           <Progress value={confidence * 100} className="h-2" />
           {suggestions[0]?.dataPoints && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Based on {suggestions[0].dataPoints} similar cases
             </p>
           )}
@@ -178,7 +178,7 @@ export function YDTSuggestionsPanel({
                 return (
                   <div
                     key={idx}
-                    className="p-3 rounded-lg bg-gray-800/50 border border-gray-700"
+                    className="p-3 rounded-lg bg-card/50 border border-border"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium">{assignment.suggested_agent}</span>
@@ -186,12 +186,12 @@ export function YDTSuggestionsPanel({
                         {assignment.suggested_priority?.toUpperCase()}
                       </Badge>
                     </div>
-                    <p className="text-sm text-gray-400 mb-2">{assignment.reason}</p>
+                    <p className="text-sm text-muted-foreground mb-2">{assignment.reason}</p>
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary" className="text-xs">
                         {assignment.suggested_category}
                       </Badge>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-muted-foreground">
                         Confidence: {Math.round(assignment.confidence * 100)}%
                       </span>
                     </div>
@@ -225,21 +225,21 @@ export function YDTSuggestionsPanel({
                 return (
                   <div
                     key={idx}
-                    className="p-3 rounded-lg bg-gray-800/50 border border-gray-700"
+                    className="p-3 rounded-lg bg-card/50 border border-border"
                   >
                     <div className="mb-2">
                       <span className="font-medium">Likely Cause:</span>
-                      <p className="text-sm text-gray-400 mt-1">{resolution.likelyCause}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{resolution.likelyCause}</p>
                     </div>
                     <div className="mb-2">
                       <span className="font-medium text-sm">Suggested Steps:</span>
-                      <ol className="list-decimal list-inside text-sm text-gray-400 mt-1 space-y-1">
+                      <ol className="list-decimal list-inside text-sm text-muted-foreground mt-1 space-y-1">
                         {resolution.suggestedSteps.map((step, stepIdx) => (
                           <li key={stepIdx}>{step}</li>
                         ))}
                       </ol>
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         <span>{resolution.estimatedTime}</span>
@@ -247,7 +247,7 @@ export function YDTSuggestionsPanel({
                       <span>Confidence: {Math.round(resolution.confidence * 100)}%</span>
                     </div>
                     {resolution.requiredParts && resolution.requiredParts.length > 0 && (
-                      <div className="mt-2 pt-2 border-t border-gray-700">
+                      <div className="mt-2 pt-2 border-t border-border">
                         <span className="text-xs font-medium">Required Parts:</span>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {resolution.requiredParts.map((part, partIdx) => (
@@ -276,7 +276,7 @@ export function YDTSuggestionsPanel({
               .map((suggestion, idx) => (
                 <div
                   key={idx}
-                  className="p-3 rounded-lg bg-gray-800/50 border border-gray-700"
+                  className="p-3 rounded-lg bg-card/50 border border-border"
                 >
                   {suggestion.spareParts!.map((part, partIdx) => (
                     <div
@@ -290,9 +290,9 @@ export function YDTSuggestionsPanel({
                             {part.urgency.toUpperCase()}
                           </Badge>
                         </div>
-                        <p className="text-xs text-gray-500">Qty: {part.quantity}</p>
+                        <p className="text-xs text-muted-foreground">Qty: {part.quantity}</p>
                       </div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-muted-foreground">
                         {Math.round(part.confidence * 100)}%
                       </div>
                     </div>
@@ -303,8 +303,8 @@ export function YDTSuggestionsPanel({
         )}
 
         {/* Footer Info */}
-        <div className="pt-2 border-t border-gray-800">
-          <p className="text-xs text-gray-500 text-center">
+        <div className="pt-2 border-t border-border">
+          <p className="text-xs text-muted-foreground text-center">
             Powered by YDT Intelligence • {getSourceLabel(suggestions[0]?.source || 'unknown')}
           </p>
         </div>

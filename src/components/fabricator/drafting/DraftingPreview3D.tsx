@@ -75,7 +75,7 @@ export const DraftingPreview3D: React.FC<DraftingPreview3DProps> = ({
 
   if (!hasGeometry && !useFullFidelity) {
     return (
-      <div className="w-full h-full bg-slate-900 flex items-center justify-center">
+      <div className="w-full h-full bg-background flex items-center justify-center">
         <EmptyState
           icon={Box}
           title="3D Preview"
@@ -92,7 +92,7 @@ export const DraftingPreview3D: React.FC<DraftingPreview3DProps> = ({
     <DraftingErrorBoundary
       level="component"
       fallback={
-        <div className="w-full h-full flex items-center justify-center p-4 bg-slate-900">
+        <div className="w-full h-full flex items-center justify-center p-4 bg-background">
           <Alert variant="destructive" className="max-w-md">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
@@ -116,13 +116,13 @@ export const DraftingPreview3D: React.FC<DraftingPreview3DProps> = ({
               chromeStatus={
                 <dl
                   aria-label="Preview source"
-                  className="grid max-w-xs grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 rounded border border-slate-700 bg-slate-950/85 px-3 py-2 text-[11px] text-slate-300"
+                  className="grid max-w-xs grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 rounded border border-border bg-background/85 px-3 py-2 text-[11px] text-foreground"
                 >
-                  <dt className="text-slate-500">System</dt><dd>{windowUnit.systemPackId ?? 'Not set'}</dd>
-                  <dt className="text-slate-500">Finish</dt><dd>{windowUnit.color || 'Not set'}</dd>
-                  <dt className="text-slate-500">Size</dt><dd>{`${Math.round(windowUnit.overallWidth)} × ${Math.round(windowUnit.overallHeight)} mm`}</dd>
-                  {windowUnit.revision != null && <><dt className="text-slate-500">Revision</dt><dd>R{windowUnit.revision}</dd></>}
-                  <dt className="text-slate-500">Parts</dt><dd>{BINDING_LABEL[windowUnit.previewLedgerBinding]}</dd>
+                  <dt className="text-muted-foreground">System</dt><dd>{windowUnit.systemPackId ?? 'Not set'}</dd>
+                  <dt className="text-muted-foreground">Finish</dt><dd>{windowUnit.color || 'Not set'}</dd>
+                  <dt className="text-muted-foreground">Size</dt><dd>{`${Math.round(windowUnit.overallWidth)} × ${Math.round(windowUnit.overallHeight)} mm`}</dd>
+                  {windowUnit.revision != null && <><dt className="text-muted-foreground">Revision</dt><dd>R{windowUnit.revision}</dd></>}
+                  <dt className="text-muted-foreground">Parts</dt><dd>{BINDING_LABEL[windowUnit.previewLedgerBinding]}</dd>
                 </dl>
               }
             />

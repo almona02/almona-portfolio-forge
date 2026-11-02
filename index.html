@@ -2,6 +2,12 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
+    <meta name="color-scheme" content="light dark" />
+    <style>
+      :root { --initial-background: #e3d9c6; --initial-foreground: #252526; }
+      :root.dark { --initial-background: #2b2b2c; --initial-foreground: #f5f1e8; }
+    </style>
+    <script src="/theme-init.js"></script>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, minimum-scale=1.0"
@@ -170,7 +176,7 @@
     />
     <meta name="apple-mobile-web-app-title" content="Almona" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="theme-color" content="#0d0f12" />
+    <meta name="theme-color" content="#e3d9c6" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -297,7 +303,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: #0d0f12;
+        background: var(--bg, var(--initial-background));
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -398,8 +404,8 @@
         align-items: center;
         justify-content: center;
         padding: 0.75rem 1.5rem;
-        background: linear-gradient(135deg, #0891b2 0%, #06B6D4 100%);
-        color: white;
+        background: hsl(var(--brand, 16 89% 36%));
+        color: hsl(var(--brand-foreground, 0 0% 100%));
         border: none;
         border-radius: 0.5rem;
         font-weight: 600;
@@ -423,8 +429,8 @@
       /* Base background and text colors - prevent white flash */
       html,
       body {
-        background: #0d0f12;
-        color: #fff;
+        background: var(--bg, var(--initial-background));
+        color: var(--fg, var(--initial-foreground));
       }
 
       body {
@@ -569,7 +575,7 @@
       if (!document.getElementById("root")) {
         console.error("[White Page Fix] Root element missing!");
         document.body.innerHTML =
-          '<div style="padding: 2rem; text-align: center; color: white; background: #0d0f12; min-height: 100vh; display: flex; align-items: center; justify-content: center;"><div><h1>Configuration Error</h1><p>Root element not found. Please check index.html</p></div></div>';
+          '<div style="padding: 2rem; text-align: center; color: white; background: var(--bg, var(--initial-background)); min-height: 100vh; display: flex; align-items: center; justify-content: center;"><div><h1>Configuration Error</h1><p>Root element not found. Please check index.html</p></div></div>';
       }
     </script>
     <script>

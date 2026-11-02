@@ -64,7 +64,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
   };
 
   const StarIcon = ({ filled }: { filled: boolean }) => (
-    <span className={`text-2xl ${filled ? 'text-yellow-400' : 'text-gray-300'}`}>
+    <span className={`text-2xl ${filled ? 'text-yellow-400' : 'text-foreground'}`}>
       ★
     </span>
   );
@@ -95,13 +95,13 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
       {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+          <div className="bg-card rounded-lg shadow-xl w-full max-w-md mx-4">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="typography-h3 text-lg font-medium">Feedback: {feature}</h3>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-muted-foreground hover:text-muted-foreground"
                 >
                   <XIcon />
                 </button>
@@ -110,7 +110,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
               <div className="space-y-4">
                 {/* Rating */}
                 <div>
-                  <label className="typography-label block text-sm font-medium text-gray-700 mb-2">
+                  <label className="typography-label block text-sm font-medium text-foreground mb-2">
                     How would you rate this feature?
                   </label>
                   <div className="flex space-x-2">
@@ -121,7 +121,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
                         className={`p-2 rounded ${
                           rating === star
                             ? 'bg-yellow-100 text-yellow-600'
-                            : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                            : 'bg-muted text-muted-foreground hover:bg-muted'
                         }`}
                       >
                         <StarIcon filled={rating !== null && star <= rating} />
@@ -132,13 +132,13 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
 
                 {/* Comments */}
                 <div>
-                  <label className="typography-label block text-sm font-medium text-gray-700 mb-2">
+                  <label className="typography-label block text-sm font-medium text-foreground mb-2">
                     Comments (optional)
                   </label>
                   <textarea
                     value={comments}
                     onChange={(e) => setComments(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     rows={3}
                     placeholder="What did you like or dislike?"
                   />
@@ -146,7 +146,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
 
                 {/* Issues */}
                 <div>
-                  <label className="typography-label block text-sm font-medium text-gray-700 mb-2">
+                  <label className="typography-label block text-sm font-medium text-foreground mb-2">
                     Did you encounter any issues?
                   </label>
                   <div className="space-y-2">
@@ -162,9 +162,9 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
                               setIssues(issues.filter(i => i !== issue));
                             }
                           }}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-info focus:ring-blue-500 border-border rounded"
                         />
-                        <span className="ml-2 text-sm text-gray-700">{issue}</span>
+                        <span className="ml-2 text-sm text-foreground">{issue}</span>
                       </label>
                     ))}
                   </div>
@@ -172,13 +172,13 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
 
                 {/* Suggestions */}
                 <div>
-                  <label className="typography-label block text-sm font-medium text-gray-700 mb-2">
+                  <label className="typography-label block text-sm font-medium text-foreground mb-2">
                     Suggestions for improvement
                   </label>
                   <textarea
                     value={suggestions.join('\n')}
                     onChange={(e) => setSuggestions(e.target.value.split('\n').filter(s => s.trim()))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     rows={2}
                     placeholder="What would make this feature better?"
                   />
@@ -188,7 +188,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
               <div className="mt-6 flex justify-end space-x-3">
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                  className="px-4 py-2 text-sm font-medium text-foreground hover:text-foreground"
                   disabled={isSubmitting}
                 >
                   Cancel

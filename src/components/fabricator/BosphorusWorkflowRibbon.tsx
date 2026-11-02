@@ -61,7 +61,7 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
       case 'modern':
         return 'from-blue-600 to-cyan-400';
       default:
-        return 'from-slate-600 to-slate-400';
+        return 'from-muted to-muted';
     }
   };
 
@@ -70,22 +70,22 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
       case 'ottoman':
         return {
           label: 'Ottoman Craft',
-          color: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+          color: 'bg-amber-500/20 text-warning border-amber-500/40',
         };
       case 'egyptian':
         return {
           label: 'Egyptian Precision',
-          color: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40',
+          color: 'bg-yellow-500/20 text-warning border-yellow-500/40',
         };
       case 'modern':
         return {
           label: 'YILMAZ Tech',
-          color: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
+          color: 'bg-blue-500/20 text-info border-blue-500/40',
         };
       default:
         return {
           label: 'Cross-Empire',
-          color: 'bg-slate-500/20 text-slate-300 border-slate-500/40',
+          color: 'bg-muted/20 text-foreground border-border/40',
         };
     }
   };
@@ -98,12 +98,12 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
     >
       <Collapsible open={isRibbonOpen} onOpenChange={setIsRibbonOpen}>
         {/* Compact Always-Visible Header */}
-        <div className="mb-3 rounded-xl border border-slate-700/70 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950/95 p-3 shadow-lg relative overflow-hidden">
+        <div className="mb-3 rounded-xl border border-border/70 bg-gradient-to-r from-background via-background to-background/95 p-3 shadow-lg relative overflow-hidden">
           <div className="flex items-center justify-between gap-3">
             <CollapsibleTrigger asChild>
               <button className="flex-1 flex items-center gap-3 text-left hover:opacity-80 transition-opacity">
                 <div className="flex items-center gap-3">
-                  <p className="text-[10px] md:text-[11px] uppercase tracking-[0.28em] text-slate-500">
+                  <p className="text-[10px] md:text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
                     CROSS-EMPIRE FABRICATOR BRIDGE
                   </p>
                   <div className="flex items-center gap-2">
@@ -115,13 +115,13 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
                     </Badge>
                     <Badge
                       variant="outline"
-                      className="bg-yellow-500/10 text-yellow-300 border-yellow-500/30 text-[9px] pointer-events-none"
+                      className="bg-yellow-500/10 text-warning border-yellow-500/30 text-[9px] pointer-events-none"
                     >
                       Egyptian
                     </Badge>
                     <Badge
                       variant="outline"
-                      className="bg-blue-500/10 text-blue-300 border-blue-500/30 text-[9px] pointer-events-none"
+                      className="bg-blue-500/10 text-info border-blue-500/30 text-[9px] pointer-events-none"
                     >
                       YILMAZ
                     </Badge>
@@ -138,7 +138,7 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
                   e.stopPropagation();
                   void navigate('/');
                 }}
-                className="h-8 px-3 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                className="h-8 px-3 text-muted-foreground hover:text-foreground hover:bg-card/50"
                 title="Go to Home"
               >
                 <Home className="h-4 w-4" />
@@ -147,7 +147,7 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsRibbonOpen(!isRibbonOpen)}
-                className="h-8 w-8 p-0 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-card/50"
                 title={isRibbonOpen ? "Collapse" : "Expand"}
               >
                 <ChevronDown
@@ -161,7 +161,7 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
 
         {/* Full Decorative Section - Collapsible */}
         <CollapsibleContent>
-          <div className="mb-5 rounded-3xl border border-slate-700/70 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950/95 p-5 shadow-[0_0_40px_rgba(8,47,73,0.75)] relative overflow-hidden">
+          <div className="mb-5 rounded-3xl border border-border/70 bg-gradient-to-r from-background via-background to-background/95 p-5 shadow-[0_0_40px_rgba(8,47,73,0.75)] relative overflow-hidden">
             {/* Ancient Pattern Overlay */}
             <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(251,191,36,0.1),transparent_50%)]" />
@@ -169,7 +169,7 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
             </div>
 
             <div className="space-y-4 mb-4 relative z-10">
-              <div className="flex items-center gap-3 text-xs text-slate-300">
+              <div className="flex items-center gap-3 text-xs text-foreground">
                 <div className="hidden md:flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_0.6rem_rgba(249,115,22,0.9)]" />
                   <span>Active Innovation</span>
@@ -186,28 +186,28 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
 
               {/* Cross-Empire Efficiency Metrics */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <div className="bg-slate-800/40 rounded-lg p-3 border border-slate-700 /30 card-dark">
-                  <div className="text-xs text-slate-400 mb-1">Efficiency</div>
-                  <div className="text-lg font-bold text-green-400">{efficiency}%</div>
+                <div className="bg-card/40 rounded-lg p-3 border border-border /30 card-dark">
+                  <div className="text-xs text-muted-foreground mb-1">Efficiency</div>
+                  <div className="text-lg font-bold text-success">{efficiency}%</div>
                 </div>
-                <div className="bg-slate-800/40 rounded-lg p-3 border border-slate-700 /30 card-dark">
-                  <div className="text-xs text-slate-400 mb-1">Waste</div>
-                  <div className="text-lg font-bold text-red-400">{wastePercentage}%</div>
+                <div className="bg-card/40 rounded-lg p-3 border border-border /30 card-dark">
+                  <div className="text-xs text-muted-foreground mb-1">Waste</div>
+                  <div className="text-lg font-bold text-destructive">{wastePercentage}%</div>
                 </div>
-                <div className="bg-slate-800/40 rounded-lg p-3 border border-slate-700 /30 card-dark">
-                  <div className="text-xs text-slate-400 mb-1">Empire Fusion</div>
-                  <div className="text-lg font-bold text-amber-400">Active</div>
+                <div className="bg-card/40 rounded-lg p-3 border border-border /30 card-dark">
+                  <div className="text-xs text-muted-foreground mb-1">Empire Fusion</div>
+                  <div className="text-lg font-bold text-warning">Active</div>
                 </div>
-                <div className="bg-slate-800/40 rounded-lg p-3 border border-slate-700 /30 card-dark">
-                  <div className="text-xs text-slate-400 mb-1">Innovation Score</div>
-                  <div className="text-lg font-bold text-blue-400">94.2</div>
+                <div className="bg-card/40 rounded-lg p-3 border border-border /30 card-dark">
+                  <div className="text-xs text-muted-foreground mb-1">Innovation Score</div>
+                  <div className="text-lg font-bold text-info">94.2</div>
                 </div>
               </div>
             </div>
 
             {/* Enhanced Bridge deck with empire symbolism */}
             <div className="relative mb-5">
-              <div className="h-2 rounded-full bg-slate-800/80 overflow-hidden relative">
+              <div className="h-2 rounded-full bg-card/80 overflow-hidden relative">
                 {/* Base bridge structure */}
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-amber-500 via-blue-500 to-emerald-400 shadow-[0_0_18px_rgba(248,250,252,0.7)] relative"
@@ -246,10 +246,10 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
                     whileTap={{ scale: 0.97 }}
                     onClick={() => onStepChange(step.id)}
                     className={`group relative min-w-[180px] md:min-w-0 px-4 pt-4 pb-5 rounded-2xl border text-left transition-all duration-300 backdrop-blur-sm ${isCurrent
-                      ? 'border-amber-400/90 bg-gradient-to-b from-amber-500/20 via-slate-950/95 to-slate-950 shadow-[0_0_30px_rgba(248,113,22,0.9)]'
+                      ? 'border-amber-400/90 bg-gradient-to-b from-amber-500/20 via-background/95 to-background shadow-[0_0_30px_rgba(248,113,22,0.9)]'
                       : isCompleted
-                        ? 'border-emerald-400/80 bg-gradient-to-b from-emerald-500/15 via-slate-950/95 to-slate-950 shadow-[0_0_22px_rgba(16,185,129,0.8)]'
-                        : 'border-slate-700/80 bg-slate-950/90 hover:border-slate-400/80 hover:bg-slate-900/95'
+                        ? 'border-emerald-400/80 bg-gradient-to-b from-emerald-500/15 via-background/95 to-background shadow-[0_0_22px_rgba(16,185,129,0.8)]'
+                        : 'border-border/80 bg-background/90 hover:border-border/80 hover:bg-background/95'
                       }`}
                   >
                     {/* Empire Heritage Background */}
@@ -265,10 +265,10 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
                     <div className="flex items-center justify-between mb-3 relative z-10">
                       <div
                         className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide ${isCurrent
-                          ? 'bg-amber-500 text-slate-950 shadow-[0_0_14px_rgba(248,113,22,0.95)]'
+                          ? 'bg-amber-500 text-foreground shadow-[0_0_14px_rgba(248,113,22,0.95)]'
                           : isCompleted
-                            ? 'bg-emerald-500 text-slate-950 shadow-[0_0_10px_rgba(16,185,129,0.9)]'
-                            : 'bg-slate-800 text-slate-200'
+                            ? 'bg-emerald-500 text-foreground shadow-[0_0_10px_rgba(16,185,129,0.9)]'
+                            : 'bg-card text-foreground'
                           }`}
                       >
                         STEP {index + 1}
@@ -288,15 +288,15 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
                           ? 'border-amber-300 bg-amber-500/20 shadow-[0_0_20px_rgba(248,113,22,0.6)]'
                           : isCompleted
                             ? 'border-emerald-300 bg-emerald-500/15 shadow-[0_0_15px_rgba(16,185,129,0.5)]'
-                            : 'border-slate-600 bg-slate-900'
+                            : 'border-border bg-background'
                           }`}
                       >
                         <Icon
                           className={`h-5 w-5 ${isCurrent
-                            ? 'text-amber-300'
+                            ? 'text-warning'
                             : isCompleted
-                              ? 'text-emerald-300'
-                              : 'text-slate-400 group-hover:text-slate-200'
+                              ? 'text-success'
+                              : 'text-muted-foreground group-hover:text-foreground'
                             }`}
                         />
 
@@ -318,16 +318,16 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
                       ? 'text-amber-50'
                       : isCompleted
                         ? 'text-emerald-50'
-                        : 'text-slate-100'
+                        : 'text-foreground'
                       }`}>
                       {step.name}
                     </h3>
 
-                    <p className="text-[11px] text-slate-400 line-clamp-2 mb-2">{step.description}</p>
+                    <p className="text-[11px] text-muted-foreground line-clamp-2 mb-2">{step.description}</p>
 
                     {/* Innovation heritage */}
                     {step.innovation && (
-                      <div className="text-[10px] text-slate-500 italic border-t border-slate-700/50 pt-2">
+                      <div className="text-[10px] text-muted-foreground italic border-t border-border/50 pt-2">
                         {step.innovation}
                       </div>
                     )}
@@ -339,18 +339,18 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
             {/* Enhanced Progress with Empire Legacy - Collapsible */}
             <Collapsible open={isProgressOpen} onOpenChange={setIsProgressOpen}>
               <CollapsibleTrigger asChild>
-                <div className="mt-4 bg-slate-950/90 rounded-xl p-4 border border-slate-800/80 backdrop-blur-sm cursor-pointer hover:bg-slate-900/90 transition-colors">
+                <div className="mt-4 bg-background/90 rounded-xl p-4 border border-border/80 backdrop-blur-sm cursor-pointer hover:bg-background/90 transition-colors">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs font-medium text-slate-200">Cross-Empire Innovation Index</span>
+                    <span className="text-xs font-medium text-foreground">Cross-Empire Innovation Index</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-300">
+                      <span className="text-xs text-foreground">
                         Step {currentStepIndex + 1} of {totalSteps}{' '}
-                        <span className="ml-1 text-amber-300 font-semibold">
+                        <span className="ml-1 text-warning font-semibold">
                           {Math.round(progressPercent)}%
                         </span>
                       </span>
                       <ChevronDown
-                        className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${isProgressOpen ? 'rotate-180' : ''
+                        className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${isProgressOpen ? 'rotate-180' : ''
                           }`}
                       />
                     </div>
@@ -358,14 +358,14 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
                 </div>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <div className="mt-2 bg-slate-950/90 rounded-xl p-4 border border-slate-800/80 backdrop-blur-sm">
-                  <Progress value={progressPercent} className="h-2 bg-slate-800 mb-3">
+                <div className="mt-2 bg-background/90 rounded-xl p-4 border border-border/80 backdrop-blur-sm">
+                  <Progress value={progressPercent} className="h-2 bg-card mb-3">
                     <div className="h-full bg-gradient-to-r from-amber-500 via-blue-500 to-emerald-400 rounded-full relative">
                       <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_45%,rgba(255,255,255,0.3)_50%,transparent_55%)] bg-[length:20px_100%] animate-pulse" />
                     </div>
                   </Progress>
 
-                  <div className="mt-1 flex justify-between text-[11px] text-slate-500 mb-4">
+                  <div className="mt-1 flex justify-between text-[11px] text-muted-foreground mb-4">
                     <span className="flex items-center gap-1">
                       <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                       Ottoman Craft
@@ -381,16 +381,16 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
                   </div>
 
                   {/* Istanbul Skyline SVG merged here */}
-                  <div className="mt-4 rounded-lg border-t border-slate-800 pt-4">
-                    <div className="flex items-center justify-between text-[11px] text-slate-400 mb-2">
+                  <div className="mt-4 rounded-lg border-t border-border pt-4">
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-2">
                       <span>Istanbul Skyline – lights react as you progress from Measuring to Quality.</span>
-                      <span className="font-medium text-amber-300">
+                      <span className="font-medium text-warning">
                         {Math.round(clamped * 100)}% journey complete
                       </span>
                     </div>
                     <svg
                       viewBox="0 0 400 80"
-                      className="mt-1 h-16 w-full text-slate-700"
+                      className="mt-1 h-16 w-full text-foreground"
                       aria-hidden="true"
                     >
                       <defs>

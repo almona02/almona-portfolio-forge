@@ -132,13 +132,13 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
 
   if (!optimizedProjects.length) {
     return (
-      <Card className="bg-gray-900/70 border-gray-800 card-dark">
+      <Card className="bg-background/70 border-border card-dark">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Factory className="h-5 w-5 text-amber-400" />
+            <Factory className="h-5 w-5 text-warning" />
             Mass Production Mode
           </CardTitle>
-          <CardDescription className="text-sm text-gray-400">
+          <CardDescription className="text-sm text-muted-foreground">
             No optimized projects are available yet. Complete single‑job optimization in the main
             workflow first, then return here to batch optimize across jobs.
           </CardDescription>
@@ -155,15 +155,15 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="bg-gray-900/80 border-gray-800 shadow-xl card-dark">
+      <Card className="bg-background/80 border-border shadow-xl card-dark">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-4">
             <div className="pt-1">
               <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-                <Sparkles className="h-5 w-5 text-amber-400" />
+                <Sparkles className="h-5 w-5 text-warning" />
                 Mass Production Optimizer
               </CardTitle>
-              <CardDescription className="text-sm text-gray-300 mt-1">
+              <CardDescription className="text-sm text-foreground mt-1">
                 Select multiple optimized jobs and run cross‑project, remnant‑aware cutting
                 optimization to minimise waste across the factory.
               </CardDescription>
@@ -172,14 +172,14 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
               <div className="flex flex-col items-end gap-1">
                 <Badge
                   variant="outline"
-                  className="text-[11px] bg-emerald-500/15 text-emerald-300 border-emerald-500/40"
+                  className="text-[11px] bg-emerald-500/15 text-success border-emerald-500/40"
                 >
                   <CheckCircle2 className="h-3 w-3 mr-1" />
                   Run Completed
                 </Badge>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted-foreground">
                   Waste improvement vs baseline:{' '}
-                  <span className="text-emerald-300 font-semibold">
+                  <span className="text-success font-semibold">
                     {improvement.toFixed(1)}%
                   </span>
                 </p>
@@ -190,21 +190,21 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="hover:bg-red-500/15 hover:text-red-400"
+                    className="hover:bg-red-500/15 hover:text-destructive"
                     aria-label="Exit mass production"
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent className="bg-gray-900 border-amber-500/30">
+                <AlertDialogContent className="bg-background border-amber-500/30">
                   <AlertDialogHeader>
-                    <AlertDialogTitle className="text-amber-400">Exit Mass Production?</AlertDialogTitle>
+                    <AlertDialogTitle className="text-warning">Exit Mass Production?</AlertDialogTitle>
                     <AlertDialogDescription>
                       You have unsaved optimization batches. Leaving now will discard the current queue configuration.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="border-gray-700">Stay Here</AlertDialogCancel>
+                    <AlertDialogCancel className="border-border">Stay Here</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
                         if (onClose) onClose();
@@ -232,13 +232,13 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
         {/* Project selection list */}
-        <Card className="bg-gray-900/70 border-gray-800 xl:col-span-2 card-dark">
+        <Card className="bg-background/70 border-border xl:col-span-2 card-dark">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-              <Layers className="h-4 w-4 text-amber-400" />
+              <Layers className="h-4 w-4 text-warning" />
               Optimized Jobs ({optimizedProjects.length})
             </CardTitle>
-            <CardDescription className="text-xs text-gray-400">
+            <CardDescription className="text-xs text-muted-foreground">
               Pick the positions / jobs you want to batch into this mass‑production run. Only jobs
               with a completed cutting optimization are listed.
             </CardDescription>
@@ -258,7 +258,7 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                     className={`w-full text-left p-3 rounded-lg border transition-colors ${
                       isSelected
                         ? 'border-amber-500 bg-amber-500/10'
-                        : 'border-gray-700 bg-gray-900/40 hover:border-gray-500'
+                        : 'border-border bg-background/40 hover:border-border'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
@@ -267,17 +267,17 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                           className={`h-4 w-4 rounded-sm border ${
                             isSelected
                               ? 'bg-amber-500 border-amber-400'
-                              : 'border-gray-500 bg-gray-900'
+                              : 'border-border bg-background'
                           }`}
                         />
                         <div>
-                          <div className="text-sm font-semibold text-gray-100">
+                          <div className="text-sm font-semibold text-foreground">
                             {project.orderNumber}{' '}
-                            <span className="text-[11px] text-gray-400">
+                            <span className="text-[11px] text-muted-foreground">
                               · {project.posNumber}
                             </span>
                           </div>
-                          <div className="text-xs text-gray-400">
+                          <div className="text-xs text-muted-foreground">
                             {project.overallWidth.toFixed(0)} ×{' '}
                             {project.overallHeight.toFixed(0)} mm ·{' '}
                             {project.type.replace('_', ' ')}
@@ -287,13 +287,13 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                       <div className="flex flex-col items-end gap-1">
                         <Badge
                           variant="outline"
-                          className="text-[10px] bg-blue-500/15 text-blue-300 border-blue-500/40"
+                          className="text-[10px] bg-blue-500/15 text-info border-blue-500/40"
                         >
                           Eff. {efficiency.toFixed(1)}%
                         </Badge>
                         <Badge
                           variant="outline"
-                          className="text-[10px] bg-red-500/10 text-red-300 border-red-500/40"
+                          className="text-[10px] bg-red-500/10 text-destructive border-red-500/40"
                         >
                           Waste {waste.toFixed(1)}%
                         </Badge>
@@ -304,10 +304,10 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
               })}
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-gray-800">
-              <p className="text-xs text-gray-400">
+            <div className="flex items-center justify-between pt-2 border-t border-border">
+              <p className="text-xs text-muted-foreground">
                 Selected:{' '}
-                <span className="font-semibold text-gray-200">{selectedIds.length}</span>{' '}
+                <span className="font-semibold text-foreground">{selectedIds.length}</span>{' '}
                 project{selectedIds.length === 1 ? '' : 's'}
               </p>
               <Button
@@ -335,16 +335,16 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
 
         {/* Options & results */}
         <div className="space-y-4">
-          <Card className="bg-gray-900/70 border-gray-800 card-dark">
+          <Card className="bg-background/70 border-border card-dark">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-                <Factory className="h-4 w-4 text-amber-400" />
+                <Factory className="h-4 w-4 text-warning" />
                 Optimization Settings
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-gray-300">Minimise Waste</span>
+                <span className="text-foreground">Minimise Waste</span>
                 <Button
                   type="button"
                   size="sm"
@@ -358,7 +358,7 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                 </Button>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-300">Use Remnants First</span>
+                <span className="text-foreground">Use Remnants First</span>
                 <Button
                   type="button"
                   size="sm"
@@ -375,7 +375,7 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                 </Button>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-300">Prioritise Production Time</span>
+                <span className="text-foreground">Prioritise Production Time</span>
                 <Button
                   type="button"
                   size="sm"
@@ -389,7 +389,7 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                 </Button>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-300">Prioritise Quality</span>
+                <span className="text-foreground">Prioritise Quality</span>
                 <Button
                   type="button"
                   size="sm"
@@ -408,16 +408,16 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900/70 border-gray-800 card-dark">
+          <Card className="bg-background/70 border-border card-dark">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-                <BarChart3 className="h-4 w-4 text-amber-400" />
+                <BarChart3 className="h-4 w-4 text-warning" />
                 Optimization Result
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-xs">
               {!result ? (
-                <p className="text-gray-400">
+                <p className="text-muted-foreground">
                   Run a mass‑production optimization to see combined waste metrics and remnant
                   utilisation here.
                 </p>
@@ -425,20 +425,20 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                 <>
                   <div className="grid grid-cols-3 gap-3 text-center">
                     <div className="space-y-1">
-                      <p className="text-[11px] text-gray-400">Baseline Waste</p>
-                      <p className="text-lg font-semibold text-red-300">
+                      <p className="text-[11px] text-muted-foreground">Baseline Waste</p>
+                      <p className="text-lg font-semibold text-destructive">
                         {result.baselineWastePercentage.toFixed(1)}%
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-[11px] text-gray-400">Final Waste</p>
-                      <p className="text-lg font-semibold text-emerald-300">
+                      <p className="text-[11px] text-muted-foreground">Final Waste</p>
+                      <p className="text-lg font-semibold text-success">
                         {result.finalWastePercentage.toFixed(1)}%
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-[11px] text-gray-400">Improvement</p>
-                      <p className="text-lg font-semibold text-emerald-300">
+                      <p className="text-[11px] text-muted-foreground">Improvement</p>
+                      <p className="text-lg font-semibold text-success">
                         {improvement.toFixed(1)}%
                       </p>
                     </div>
@@ -447,7 +447,7 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                     value={Math.max(0, Math.min(100, 100 - result.finalWastePercentage))}
                     className="h-2 mt-2"
                   />
-                  <div className="flex justify-between text-[11px] text-gray-500">
+                  <div className="flex justify-between text-[11px] text-muted-foreground">
                     <span>Higher is better (material utilisation)</span>
                     <span>
                       {result.projectIds.length} project
@@ -457,8 +457,8 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
 
                   {result.remnantUsage && (
                     <div className="mt-3 space-y-1">
-                      <p className="text-[11px] text-gray-400">Remnant Utilisation</p>
-                      <div className="flex justify-between text-[11px] text-gray-300">
+                      <p className="text-[11px] text-muted-foreground">Remnant Utilisation</p>
+                      <div className="flex justify-between text-[11px] text-foreground">
                         <span>
                           Used:{' '}
                           <span className="font-semibold">
@@ -477,7 +477,7 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                   )}
 
                   {lastSummary && (
-                    <p className="mt-3 text-[11px] text-gray-500 leading-snug">{lastSummary}</p>
+                    <p className="mt-3 text-[11px] text-muted-foreground leading-snug">{lastSummary}</p>
                   )}
                 </>
               )}

@@ -64,7 +64,7 @@ export const YilmazExportActionPanel: React.FC<YilmazExportActionPanelProps> = (
     >
       <div className="flex flex-wrap items-end gap-3 rounded border border-amber-800/50 bg-amber-950/20 p-3">
         <div className="space-y-1 min-w-[10rem]">
-          <label className="text-xs text-amber-200/80" htmlFor="yilmaz-machine-model">
+          <label className="text-xs text-warning/80" htmlFor="yilmaz-machine-model">
             Yilmaz machine
           </label>
           <Select
@@ -86,7 +86,7 @@ export const YilmazExportActionPanel: React.FC<YilmazExportActionPanelProps> = (
         </div>
 
         <div className="space-y-1 min-w-[12rem]">
-          <label className="text-xs text-amber-200/80" htmlFor="yilmaz-export-format">
+          <label className="text-xs text-warning/80" htmlFor="yilmaz-export-format">
             Format
           </label>
           <Select
@@ -122,14 +122,14 @@ export const YilmazExportActionPanel: React.FC<YilmazExportActionPanelProps> = (
           {isExporting ? 'Exporting…' : 'Export to Yilmaz'}
         </Button>
 
-        <Button type="button" variant="outline" className="border-amber-700/60 text-amber-100" asChild>
+        <Button type="button" variant="outline" className="border-amber-700/60 text-warning" asChild>
           <Link to="/yilmaz-export">
             <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
             Full export desk
           </Link>
         </Button>
 
-        <p className="basis-full text-[11px] text-amber-200/70 flex items-center gap-1.5">
+        <p className="basis-full text-[11px] text-warning/70 flex items-center gap-1.5">
           <Shield className="h-3 w-3 shrink-0" />
           Tier 3 deterministic export — human validation required before machine load. Not live-machine verified.
         </p>

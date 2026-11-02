@@ -63,12 +63,12 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
   const selectedCornerData = selectedCorner !== null ? simulation.corners[selectedCorner] : null;
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700">
+    <Card className="bg-card/50 border-border">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Info className="h-5 w-5 text-green-400" /> Cut Simulation Preview
+          <Info className="h-5 w-5 text-success" /> Cut Simulation Preview
         </CardTitle>
-        <CardDescription className="text-gray-400">
+        <CardDescription className="text-muted-foreground">
           Visual representation of cuts with K-factors applied
         </CardDescription>
       </CardHeader>
@@ -77,10 +77,10 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
         {validation.warnings.length > 0 && (
           <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded">
             <div className="flex items-start gap-2">
-              <AlertTriangle className="h-4 w-4 text-yellow-400 mt-0.5 flex-shrink-0" />
+              <AlertTriangle className="h-4 w-4 text-warning mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-yellow-400 mb-1">Warnings</p>
-                <ul className="text-xs text-yellow-300 space-y-1">
+                <p className="text-sm font-semibold text-warning mb-1">Warnings</p>
+                <ul className="text-xs text-warning space-y-1">
                   {validation.warnings.map((warning, idx) => (
                     <li key={idx}>• {warning}</li>
                   ))}
@@ -93,10 +93,10 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
         {validation.errors.length > 0 && (
           <div className="p-3 bg-red-500/10 border border-red-500/30 rounded">
             <div className="flex items-start gap-2">
-              <AlertTriangle className="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" />
+              <AlertTriangle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <p className="text-sm font-semibold text-red-400 mb-1">Errors</p>
-                <ul className="text-xs text-red-300 space-y-1">
+                <p className="text-sm font-semibold text-destructive mb-1">Errors</p>
+                <ul className="text-xs text-destructive space-y-1">
                   {validation.errors.map((error, idx) => (
                     <li key={idx}>• {error}</li>
                   ))}
@@ -113,7 +113,7 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
               variant="outline"
               size="sm"
               onClick={handleZoomIn}
-              className="text-gray-300 border-gray-600 hover:bg-gray-700"
+              className="text-foreground border-border hover:bg-muted"
             >
               <ZoomIn className="h-4 w-4" />
             </Button>
@@ -121,7 +121,7 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
               variant="outline"
               size="sm"
               onClick={handleZoomOut}
-              className="text-gray-300 border-gray-600 hover:bg-gray-700"
+              className="text-foreground border-border hover:bg-muted"
             >
               <ZoomOut className="h-4 w-4" />
             </Button>
@@ -129,12 +129,12 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
               variant="outline"
               size="sm"
               onClick={handleReset}
-              className="text-gray-300 border-gray-600 hover:bg-gray-700"
+              className="text-foreground border-border hover:bg-muted"
             >
               <RotateCw className="h-4 w-4 mr-1" />
               Reset
             </Button>
-            <span className="text-xs text-gray-400 ml-2">
+            <span className="text-xs text-muted-foreground ml-2">
               Zoom: {(zoom * 100).toFixed(0)}%
             </span>
           </div>
@@ -142,7 +142,7 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
             variant="outline"
             size="sm"
             onClick={() => setShowDetails(!showDetails)}
-            className="text-gray-300 border-gray-600 hover:bg-gray-700"
+            className="text-foreground border-border hover:bg-muted"
           >
             {showDetails ? 'Hide' : 'Show'} Details
           </Button>
@@ -150,7 +150,7 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
 
         {/* Simulation Canvas */}
         <div
-          className="relative bg-gray-900 border border-gray-700 rounded overflow-hidden"
+          className="relative bg-background border border-border rounded overflow-hidden"
           style={{ width: viewportWidth, height: viewportHeight }}
         >
           <svg
@@ -221,7 +221,7 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
 
           {/* Overlay info */}
           {showDetails && (
-            <div className="absolute top-2 right-2 bg-gray-900/90 border border-gray-700 rounded p-2 text-xs text-gray-300 max-w-xs">
+            <div className="absolute top-2 right-2 bg-background/90 border border-border rounded p-2 text-xs text-foreground max-w-xs">
               <p className="font-semibold mb-1">Frame Dimensions:</p>
               <p>Width: {simulation.width}mm</p>
               <p>Height: {simulation.height}mm</p>
@@ -232,25 +232,25 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
 
         {/* Selected Cut Details */}
         {selectedCornerData && (
-          <div className="p-4 bg-gray-900 rounded-lg border border-gray-700">
-            <h4 className="typography-h4 text-sm text-gray-300 mb-2">Corner Details</h4>
+          <div className="p-4 bg-background rounded-lg border border-border">
+            <h4 className="typography-h4 text-sm text-foreground mb-2">Corner Details</h4>
             <div className="space-y-2">
               {selectedCornerData.cuts.map((cut, idx) => (
-                <div key={idx} className="p-2 bg-gray-800 rounded text-xs">
-                  <p className="text-gray-300 font-medium">{cut.componentName}</p>
-                  <div className="grid grid-cols-2 gap-2 mt-1 text-gray-400">
+                <div key={idx} className="p-2 bg-card rounded text-xs">
+                  <p className="text-foreground font-medium">{cut.componentName}</p>
+                  <div className="grid grid-cols-2 gap-2 mt-1 text-muted-foreground">
                     <div>
-                      <span className="text-gray-500">Final:</span> {cut.originalDimension}mm
+                      <span className="text-muted-foreground">Final:</span> {cut.originalDimension}mm
                     </div>
                     <div>
-                      <span className="text-gray-500">Cut:</span>{' '}
-                      <span className="text-green-400 font-semibold">{cut.cutLength.toFixed(2)}mm</span>
+                      <span className="text-muted-foreground">Cut:</span>{' '}
+                      <span className="text-success font-semibold">{cut.cutLength.toFixed(2)}mm</span>
                     </div>
                     <div>
-                      <span className="text-gray-500">K-Factor:</span> {cut.kFactor.toFixed(2)}mm
+                      <span className="text-muted-foreground">K-Factor:</span> {cut.kFactor.toFixed(2)}mm
                     </div>
                     <div>
-                      <span className="text-gray-500">Angle:</span> {cut.cutAngle}°
+                      <span className="text-muted-foreground">Angle:</span> {cut.cutAngle}°
                     </div>
                   </div>
                 </div>
@@ -260,8 +260,8 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
         )}
 
         {/* Cut List Summary with Profile Thumbnails */}
-        <div className="p-3 bg-gray-900 rounded border border-gray-700">
-          <h4 className="typography-h4 text-sm text-gray-300 mb-2">Cut Summary</h4>
+        <div className="p-3 bg-background rounded border border-border">
+          <h4 className="typography-h4 text-sm text-foreground mb-2">Cut Summary</h4>
           <div className="space-y-1 text-xs">
             {simulation.cuts.slice(0, 5).map((cut, idx) => {
               // Find profile for this cut
@@ -269,14 +269,14 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
                 components.find(c => c.id === cut.componentId)?.profile?.id === p.id
               );
               return (
-                <div key={idx} className="flex items-center gap-2 justify-between text-gray-400">
+                <div key={idx} className="flex items-center gap-2 justify-between text-muted-foreground">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
                     {/* Profile Thumbnail in Cut Summary */}
                     {profile?.thumbnailUrl && (
                       <img 
                         src={profile.thumbnailUrl} 
                         alt={profile.name}
-                        className="w-6 h-6 rounded border border-gray-700 object-contain bg-white/5 flex-shrink-0"
+                        className="w-6 h-6 rounded border border-border object-contain bg-foreground/5 flex-shrink-0"
                         onError={(e) => {
                           (e.target as HTMLImageElement).style.display = 'none';
                         }}
@@ -284,14 +284,14 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
                     )}
                     <span className="truncate">{cut.componentName}</span>
                   </div>
-                  <span className="text-green-400 flex-shrink-0">
+                  <span className="text-success flex-shrink-0">
                     {cut.originalDimension}mm → {cut.cutLength.toFixed(2)}mm
                   </span>
                 </div>
               );
             })}
             {simulation.cuts.length > 5 && (
-              <p className="text-gray-500 mt-1">... and {simulation.cuts.length - 5} more cuts</p>
+              <p className="text-muted-foreground mt-1">... and {simulation.cuts.length - 5} more cuts</p>
             )}
           </div>
         </div>

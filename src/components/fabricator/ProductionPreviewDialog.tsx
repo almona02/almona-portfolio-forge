@@ -200,12 +200,12 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-4xl bg-gray-900 text-white border-gray-700 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-4xl bg-background text-foreground border-border max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
-            <AlertTriangle className="h-6 w-6 text-amber-400" /> Final Safety Check
+            <AlertTriangle className="h-6 w-6 text-warning" /> Final Safety Check
           </DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogDescription className="text-muted-foreground">
             Review your cuts carefully. This is your final safety check to protect your materials and money.
           </DialogDescription>
         </DialogHeader>
@@ -215,31 +215,31 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="relative p-4 bg-gradient-to-br from-blue-500/10 to-blue-600/5 rounded-lg border border-blue-500/30 shadow-lg hover:shadow-blue-500/20 transition-all duration-300 group">
               <div className="absolute top-2 right-2 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-              <p className="text-xs font-semibold text-blue-300/80 uppercase tracking-wider mb-2">Total Cuts</p>
-              <p className="text-3xl font-bold text-blue-400 group-hover:text-blue-300 transition-colors">
+              <p className="text-xs font-semibold text-info/80 uppercase tracking-wider mb-2">Total Cuts</p>
+              <p className="text-3xl font-bold text-info group-hover:text-info transition-colors">
                 {summary.totalCuts.toLocaleString()}
               </p>
-              <p className="text-[10px] text-blue-400/60 mt-1">Optimized cuts</p>
+              <p className="text-[10px] text-info/60 mt-1">Optimized cuts</p>
             </div>
 
             <div className="relative p-4 bg-gradient-to-br from-green-500/10 to-green-600/5 rounded-lg border border-green-500/30 shadow-lg hover:shadow-green-500/20 transition-all duration-300 group">
               <div className="absolute top-2 right-2 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <p className="text-xs font-semibold text-green-300/80 uppercase tracking-wider mb-2">Profiles</p>
-              <p className="text-3xl font-bold text-green-400 group-hover:text-green-300 transition-colors">
+              <p className="text-xs font-semibold text-success/80 uppercase tracking-wider mb-2">Profiles</p>
+              <p className="text-3xl font-bold text-success group-hover:text-success transition-colors">
                 {summary.uniqueProfiles}
               </p>
-              <p className="text-[10px] text-green-400/60 mt-1">Unique types</p>
+              <p className="text-[10px] text-success/60 mt-1">Unique types</p>
             </div>
 
             <div className="btn-primary-gradient">
               <div className="absolute top-2 right-2 w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
-              <p className="text-xs font-semibold text-amber-300/80 uppercase tracking-wider mb-2">Material Length</p>
-              <p className="text-3xl font-bold text-amber-400 group-hover:text-amber-300 transition-colors">
+              <p className="text-xs font-semibold text-warning/80 uppercase tracking-wider mb-2">Material Length</p>
+              <p className="text-3xl font-bold text-warning group-hover:text-warning transition-colors">
                 {summary.totalMaterialLength > 0 
                   ? `${(summary.totalMaterialLength / 1000).toFixed(2)}m`
                   : '0m'}
               </p>
-              <p className="text-[10px] text-amber-400/60 mt-1">
+              <p className="text-[10px] text-warning/60 mt-1">
                 {summary.totalMaterialLength > 0 
                   ? `${summary.totalMaterialLength.toLocaleString()}mm`
                   : 'No material'}
@@ -248,11 +248,11 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
 
             <div className="relative p-4 bg-gradient-to-br from-amber-500/10 to-amber-600/5 rounded-lg border border-amber-500/30 shadow-lg hover:shadow-amber-500/20 transition-all duration-300 group">
               <div className="absolute top-2 right-2 w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
-              <p className="text-xs font-semibold text-amber-300/80 uppercase tracking-wider mb-2">Est. Bars</p>
-              <p className="text-3xl font-bold text-amber-400 group-hover:text-amber-300 transition-colors">
+              <p className="text-xs font-semibold text-warning/80 uppercase tracking-wider mb-2">Est. Bars</p>
+              <p className="text-3xl font-bold text-warning group-hover:text-warning transition-colors">
                 {summary.estimatedBars}
               </p>
-              <p className="text-[10px] text-amber-400/60 mt-1">
+              <p className="text-[10px] text-warning/60 mt-1">
                 {summary.efficiency > 0 
                   ? `${summary.efficiency.toFixed(1)}% efficiency`
                   : 'Stock bars needed'}
@@ -263,21 +263,21 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
           {/* Additional Metrics Row - Only show if optimization data available */}
           {optimizationResult && (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-700/50">
-                <p className="text-xs text-gray-400 mb-1">Efficiency</p>
+              <div className="p-3 bg-card/50 rounded-lg border border-border/50">
+                <p className="text-xs text-muted-foreground mb-1">Efficiency</p>
                 <p className="text-xl font-bold status-valid">
                   {optimizationResult.nestingEfficiency?.toFixed(1) || '0'}%
                 </p>
               </div>
-              <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-700/50">
-                <p className="text-xs text-gray-400 mb-1">Waste</p>
-                <p className="text-xl font-bold text-red-400">
+              <div className="p-3 bg-card/50 rounded-lg border border-border/50">
+                <p className="text-xs text-muted-foreground mb-1">Waste</p>
+                <p className="text-xl font-bold text-destructive">
                   {optimizationResult.wastePercentage?.toFixed(1) || '0'}%
                 </p>
               </div>
-              <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-700/50">
-                <p className="text-xs text-gray-400 mb-1">Est. Cost</p>
-                <p className="text-xl font-bold text-yellow-400">
+              <div className="p-3 bg-card/50 rounded-lg border border-border/50">
+                <p className="text-xs text-muted-foreground mb-1">Est. Cost</p>
+                <p className="text-xl font-bold text-warning">
                   {optimizationResult.costBreakdown?.totalCost 
                     ? `${optimizationResult.costBreakdown.totalCost.toFixed(0)} EGP`
                     : 'N/A'}
@@ -296,9 +296,9 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
               }
             >
               {calibrationStatus.uncalibrated.length > 0 ? (
-                <XCircle className="h-4 w-4 text-red-400" />
+                <XCircle className="h-4 w-4 text-destructive" />
               ) : (
-                <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                <AlertTriangle className="h-4 w-4 text-warning" />
               )}
               <AlertDescription>
                 <p className="font-semibold mb-1">
@@ -330,15 +330,15 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
           {/* Validation Errors */}
           {validation.errors.length > 0 && (
             <Alert className="bg-red-500/10 border-red-500/30">
-              <XCircle className="h-4 w-4 text-red-400" />
+              <XCircle className="h-4 w-4 text-destructive" />
               <AlertDescription>
-                <p className="font-semibold text-red-400 mb-1">Critical Issues Detected</p>
-                <ul className="text-sm text-red-300 space-y-1">
+                <p className="font-semibold text-destructive mb-1">Critical Issues Detected</p>
+                <ul className="text-sm text-destructive space-y-1">
                   {validation.errors.map((error, idx) => (
                     <li key={idx}>• {error}</li>
                   ))}
                 </ul>
-                <p className="text-sm text-red-300 mt-2">
+                <p className="text-sm text-destructive mt-2">
                   Please fix these issues before generating cut lists.
                 </p>
               </AlertDescription>
@@ -348,10 +348,10 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
           {/* Validation Warnings */}
           {validation.warnings.length > 0 && (
             <Alert className="bg-yellow-500/10 border-yellow-500/30">
-              <AlertTriangle className="h-4 w-4 text-yellow-400" />
+              <AlertTriangle className="h-4 w-4 text-warning" />
               <AlertDescription>
-                <p className="font-semibold text-yellow-400 mb-1">Warnings</p>
-                <ul className="text-sm text-yellow-300 space-y-1">
+                <p className="font-semibold text-warning mb-1">Warnings</p>
+                <ul className="text-sm text-warning space-y-1">
                   {validation.warnings.map((warning, idx) => (
                     <li key={idx}>• {warning}</li>
                   ))}
@@ -363,10 +363,10 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
           {/* All Good Indicator */}
           {canProceed && validation.warnings.length === 0 && (
             <Alert className="bg-green-500/10 border-green-500/30">
-              <CheckCircle2 className="h-4 w-4 text-green-400" />
+              <CheckCircle2 className="h-4 w-4 text-success" />
               <AlertDescription>
-                <p className="font-semibold text-green-400">All checks passed!</p>
-                <p className="text-sm text-green-300">
+                <p className="font-semibold text-success">All checks passed!</p>
+                <p className="text-sm text-success">
                   All profiles are calibrated and cuts are validated. Ready to generate.
                 </p>
               </AlertDescription>
@@ -387,7 +387,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="text-gray-300 border-gray-600 hover:bg-gray-800"
+            className="text-foreground border-border hover:bg-card"
           >
             Cancel
           </Button>

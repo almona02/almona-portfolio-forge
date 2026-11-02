@@ -287,7 +287,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
   const renderPreview = (p: ImportedProfile) => {
     if (p.svgPreview) {
       return (
-        <div className="mt-2 border bg-white rounded p-2 overflow-auto max-h-96 flex items-center justify-center">
+        <div className="mt-2 border bg-card rounded p-2 overflow-auto max-h-96 flex items-center justify-center">
           <div
             className="w-full"
             style={{ maxHeight: '384px' }}
@@ -297,7 +297,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
       );
     }
     return (
-      <div className="mt-2 text-[11px] text-gray-400">
+      <div className="mt-2 text-[11px] text-muted-foreground">
         No preview available. Dimensions: {p.widthMm || '?'} × {p.heightMm || '?'} mm
       </div>
     );
@@ -459,11 +459,11 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
           accept=".dxf,.dwg"
           multiple
           onChange={(e) => void handleFiles(e.target.files)}
-          className="bg-gray-800 border-gray-700"
+          className="bg-card border-border"
         />
         <Button
           variant="outline"
-          className="border-gray-700 text-xs"
+          className="border-border text-xs"
           onClick={() => setProfiles([])}
         >
           Clear
@@ -471,7 +471,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
       </div>
 
       {isParsing && (
-        <Alert className="bg-gray-900/60 border-gray-800 text-xs card-dark">
+        <Alert className="bg-background/60 border-border text-xs card-dark">
           <AlertDescription>Parsing DXF…</AlertDescription>
         </Alert>
       )}
@@ -489,15 +489,15 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
             <button
               key={p.id}
               onClick={() => onSelectProfile && onSelectProfile(p.id)}
-              className={`w-full text-left rounded border px-3 py-2 bg-gray-900/40 transition ${
-                active ? 'border-amber-500 shadow-[0_0_8px_rgba(249,115,22,0.2)]' : 'border-gray-800 hover:border-gray-700'
+              className={`w-full text-left rounded border px-3 py-2 bg-background/40 transition ${
+                active ? 'border-amber-500 shadow-[0_0_8px_rgba(249,115,22,0.2)]' : 'border-border hover:border-border'
               }`}
             >
               <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4 text-gray-400" />
+                <FileText className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <div className="text-sm text-white font-semibold">{p.name}</div>
-                  <div className="text-[11px] text-gray-400">{p.fileName}</div>
+                  <div className="text-sm text-foreground font-semibold">{p.name}</div>
+                  <div className="text-[11px] text-muted-foreground">{p.fileName}</div>
                 </div>
               </div>
               <div className="mt-1 flex items-center gap-2">
@@ -516,7 +516,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
                 )}
               </div>
               {p.warnings && p.warnings.length > 0 && (
-                <div className="mt-1 text-[11px] text-amber-300">
+                <div className="mt-1 text-[11px] text-warning">
                   {p.warnings.join('; ')}
                 </div>
               )}
@@ -526,13 +526,13 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
       </div>
 
       {selected && (
-        <div className="mt-3 rounded border border-gray-800 bg-gray-900 /60 p-4 text-sm text-gray-200 flex flex-col gap-3 card-dark">
+        <div className="mt-3 rounded border border-border bg-background /60 p-4 text-sm text-foreground flex flex-col gap-3 card-dark">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <UploadCloud className="h-4 w-4 text-amber-400" />
+              <UploadCloud className="h-4 w-4 text-warning" />
               <div>
-                <div className="font-semibold text-white">{selected.name}</div>
-                <div className="text-xs text-gray-400">
+                <div className="font-semibold text-foreground">{selected.name}</div>
+                <div className="text-xs text-muted-foreground">
                   {selected.widthMm} × {selected.heightMm} mm
                 </div>
               </div>
@@ -562,42 +562,42 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
           </div>
           
           {/* Enhanced Preview Section */}
-          <div className="border-t border-gray-700 pt-3">
-            <div className="text-xs font-medium text-gray-300 mb-2">Profile Preview</div>
+          <div className="border-t border-border pt-3">
+            <div className="text-xs font-medium text-foreground mb-2">Profile Preview</div>
             {renderPreview(selected)}
           </div>
 
           {/* Profile Details */}
-          <div className="flex flex-wrap gap-3 text-[11px] text-gray-400 border-t border-gray-700 pt-3">
+          <div className="flex flex-wrap gap-3 text-[11px] text-muted-foreground border-t border-border pt-3">
             {selected.areaMm2 && (
               <div>
-                <span className="text-gray-500">Area:</span>{' '}
-                <span className="text-gray-300">{selected.areaMm2.toFixed(1)} mm²</span>
+                <span className="text-muted-foreground">Area:</span>{' '}
+                <span className="text-foreground">{selected.areaMm2.toFixed(1)} mm²</span>
               </div>
             )}
             {selected.perimeterMm && (
               <div>
-                <span className="text-gray-500">Perimeter:</span>{' '}
-                <span className="text-gray-300">{selected.perimeterMm.toFixed(1)} mm</span>
+                <span className="text-muted-foreground">Perimeter:</span>{' '}
+                <span className="text-foreground">{selected.perimeterMm.toFixed(1)} mm</span>
               </div>
             )}
             {selected.weightKgPerM && (
               <div>
-                <span className="text-gray-500">Weight:</span>{' '}
-                <span className="text-gray-300">{selected.weightKgPerM.toFixed(4)} kg/m</span>
+                <span className="text-muted-foreground">Weight:</span>{' '}
+                <span className="text-foreground">{selected.weightKgPerM.toFixed(4)} kg/m</span>
               </div>
             )}
             {selected.isThermalBreak !== undefined && (
               <div>
-                <span className="text-gray-500">Type:</span>{' '}
-                <span className="text-gray-300">
+                <span className="text-muted-foreground">Type:</span>{' '}
+                <span className="text-foreground">
                   {selected.isThermalBreak ? 'Thermal Break' : 'Solid'}
                 </span>
               </div>
             )}
             {selected.metadata?.hasSvgPreview && (
               <div>
-                <span className="text-green-400">✓ SVG Preview Available</span>
+                <span className="text-success">✓ SVG Preview Available</span>
               </div>
             )}
           </div>

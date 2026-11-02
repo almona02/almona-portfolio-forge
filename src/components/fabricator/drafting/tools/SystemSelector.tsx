@@ -20,10 +20,10 @@ export const SystemSelector: React.FC<SystemSelectorProps> = ({
     }, []);
 
     return (
-        <div className="space-y-3 p-3 bg-slate-50 rounded border border-slate-200">
+        <div className="space-y-3 p-3 bg-background rounded border border-border">
             <div className="flex items-center gap-2">
-                <Package size={16} className="text-slate-600" />
-                <span className="text-sm font-medium text-slate-800">
+                <Package size={16} className="text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground">
                     System Pack
                 </span>
             </div>
@@ -31,7 +31,7 @@ export const SystemSelector: React.FC<SystemSelectorProps> = ({
             <select
                 value={activeSystemId}
                 onChange={(e) => onSystemChange(e.target.value)}
-                className="w-full text-xs border border-slate-300 rounded px-2 py-1.5 bg-white shadow-sm focus:ring-1 focus:ring-blue-500"
+                className="w-full text-xs border border-border rounded px-2 py-1.5 bg-card shadow-sm focus:ring-1 focus:ring-blue-500"
             >
                 {systems.map(sys => (
                     <option key={sys.id} value={sys.id}>
@@ -40,7 +40,7 @@ export const SystemSelector: React.FC<SystemSelectorProps> = ({
                 ))}
             </select>
 
-            <div className="text-[10px] text-slate-500 px-1">
+            <div className="text-[10px] text-muted-foreground px-1">
                 {systems.find(s => s.id === activeSystemId)?.description}
             </div>
         </div>

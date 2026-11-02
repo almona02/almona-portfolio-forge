@@ -64,14 +64,14 @@ const MediaGallery = ({ media }: { media: Milestone['media'] }) => {
   const copy = usePublicCopy();
   if (!media || media.length === 0) {
     return (
-      <div className="mt-4 rounded-lg border border-almona-light/10 bg-gradient-to-br from-almona-dark to-almona-dark/80 px-4 py-6 text-sm text-gray-400">{copy("Media coming soon for this milestone.")}</div>
+      <div className="mt-4 rounded-lg border border-border/10 bg-gradient-to-br from-background to-background/80 px-4 py-6 text-sm text-muted-foreground">{copy("Media coming soon for this milestone.")}</div>
     );
   }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
       {media.map((item, index) => (
-        <div key={index} className="relative aspect-[4/3] sm:aspect-video bg-almona-dark rounded-lg overflow-hidden border border-almona-light/10">
+        <div key={index} className="relative aspect-[4/3] sm:aspect-video bg-background rounded-lg overflow-hidden border border-border/10">
           {item.type === 'image' ? (
             <img
               src={item.url}
@@ -145,7 +145,7 @@ const ComparisonSlider = ({ before, after }: { before: string; after: string }) 
             className="w-full h-full object-cover"
           />
                         <div
-                          className="absolute top-0 right-0 bottom-0 w-1 bg-white cursor-ew-resize"
+                          className="absolute top-0 right-0 bottom-0 w-1 bg-card cursor-ew-resize"
                           onMouseDown={handleMouseDown}
                           role="slider"
                           aria-label={copy("Image comparison slider")}
@@ -183,7 +183,7 @@ export const CompanyTimeline = () => {
         transition: 'opacity 0.5s ease'
       }}
     >
-      <div className="flex-1 h-[320px] sm:h-[420px] md:h-[460px] lg:h-[520px] bg-gradient-to-br from-almona-dark to-almona-darker rounded-lg sm:rounded-xl overflow-hidden border border-almona-light/10 shadow-inner">
+      <div className="flex-1 h-[320px] sm:h-[420px] md:h-[460px] lg:h-[520px] bg-gradient-to-br from-background to-almona-darker rounded-lg sm:rounded-xl overflow-hidden border border-border/10 shadow-inner">
         <Canvas camera={{ position: [0, 5, 10], fov: 50 }}>
           <ambientLight intensity={0.5} />
           <pointLight position={[10, 10, 10]} />
@@ -206,10 +206,10 @@ export const CompanyTimeline = () => {
       </div>
 
       <div className="flex-1">
-        <ScrollArea className="h-[320px] sm:h-[420px] md:h-[460px] lg:h-[520px] pr-2 sm:pr-4 bg-almona-dark/60 rounded-lg sm:rounded-xl border border-almona-light/10 p-3 sm:p-4">
+        <ScrollArea className="h-[320px] sm:h-[420px] md:h-[460px] lg:h-[520px] pr-2 sm:pr-4 bg-background/60 rounded-lg sm:rounded-xl border border-border/10 p-3 sm:p-4">
           <div className="space-y-3 sm:space-y-4">
-            <h3 className="typography-h3 text-lg sm:text-xl md:text-2xl text-white leading-tight">{copy(activeMilestone.title)}</h3>
-            <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">{copy(activeMilestone.description)}</p>
+            <h3 className="typography-h3 text-lg sm:text-xl md:text-2xl text-foreground leading-tight">{copy(activeMilestone.title)}</h3>
+            <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">{copy(activeMilestone.description)}</p>
 
             {activeMilestone.comparison && (
               <ComparisonSlider
@@ -221,30 +221,30 @@ export const CompanyTimeline = () => {
             <MediaGallery media={activeMilestone.media} />
 
             <Tabs value="details" onValueChange={() => {}} className="mt-4 sm:mt-6">
-              <TabsList className="grid w-full grid-cols-2 bg-almona-darker h-9 sm:h-10">
+              <TabsList className="grid w-full grid-cols-2 bg-card h-9 sm:h-10">
                 <TabsTrigger value="details" className="text-xs sm:text-sm">{copy("Details")}</TabsTrigger>
                 <TabsTrigger value="impact" className="text-xs sm:text-sm">{copy("Impact")}</TabsTrigger>
               </TabsList>
               <TabsContent value="details" className="mt-3 sm:mt-4">
                 {activeMilestone.details && activeMilestone.details.length > 0 ? (
-                  <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
+                  <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                     {activeMilestone.details.map((item, idx) => (
                       <li key={idx}>{copy(item)}</li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">{copy("Additional details about this milestone will be added soon.")}</p>
+                  <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">{copy("Additional details about this milestone will be added soon.")}</p>
                 )}
               </TabsContent>
               <TabsContent value="impact" className="mt-3 sm:mt-4">
                 {activeMilestone.impact && activeMilestone.impact.length > 0 ? (
-                  <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
+                  <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                     {activeMilestone.impact.map((item, idx) => (
                       <li key={idx}>{copy(item)}</li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">{copy("Impact highlights will be documented here.")}</p>
+                  <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">{copy("Impact highlights will be documented here.")}</p>
                 )}
               </TabsContent>
             </Tabs>

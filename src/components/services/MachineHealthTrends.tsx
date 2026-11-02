@@ -73,33 +73,33 @@ export const MachineHealthTrends: React.FC<MachineHealthTrendsProps> = ({ machin
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-slate-800/50">
+        <Card className="bg-card/50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Vibrate className="h-4 w-4 text-amber-400"/>Vibration Analysis</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-gray-400">FFT-derived RMS trend for early fault detection</div>
+            <div className="text-sm text-muted-foreground">FFT-derived RMS trend for early fault detection</div>
           </CardContent>
         </Card>
-        <Card className="bg-slate-800/50">
+        <Card className="bg-card/50">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Thermometer className="h-4 w-4 text-blue-400"/>Temperature Trend</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Thermometer className="h-4 w-4 text-info"/>Temperature Trend</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-gray-400">Thermal drift indicative of lubrication or load issues</div>
+            <div className="text-sm text-muted-foreground">Thermal drift indicative of lubrication or load issues</div>
           </CardContent>
         </Card>
-        <Card className="bg-slate-800/50">
+        <Card className="bg-card/50">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><TimerReset className="h-4 w-4 text-green-400"/>Operational Hours</CardTitle>
+            <CardTitle className="flex items-center gap-2"><TimerReset className="h-4 w-4 text-success"/>Operational Hours</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-gray-400">Accumulated runtime to plan preventive maintenance</div>
+            <div className="text-sm text-muted-foreground">Accumulated runtime to plan preventive maintenance</div>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="bg-gradient-to-br from-gray-900 to-black border border-amber-500/20">
+      <Card className="bg-gradient-to-br from-background to-black border border-amber-500/20">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">

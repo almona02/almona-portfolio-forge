@@ -98,7 +98,7 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
 
   if (loading) {
     return (
-      <Card className={`p-6 bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark ${className}`}>
+      <Card className={`p-6 bg-background/80 border-amber-600/30 card-glass-dark ${className}`}>
         <CardContent>
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
@@ -110,7 +110,7 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
 
   if (data.length === 0) {
     return (
-      <Card className={`p-6 bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark ${className}`}>
+      <Card className={`p-6 bg-background/80 border-amber-600/30 card-glass-dark ${className}`}>
         <CardContent>
           <div className="text-center py-12">
             <DollarSign className="w-16 h-16 mx-auto mb-4 text-amber-600/20 opacity-50" />
@@ -123,7 +123,7 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
   }
 
   return (
-    <Card className={`p-6 bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark ${className}`}>
+    <Card className={`p-6 bg-background/80 border-amber-600/30 card-glass-dark ${className}`}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -135,7 +135,7 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
             variant="outline"
             size="sm"
             onClick={() => handleDateRangeChange(3)}
-            className="bg-slate-800/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
+            className="bg-card/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
           >
             3M
           </Button>
@@ -143,7 +143,7 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
             variant="outline"
             size="sm"
             onClick={() => handleDateRangeChange(6)}
-            className="bg-slate-800/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
+            className="bg-card/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
           >
             6M
           </Button>
@@ -151,7 +151,7 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
             variant="outline"
             size="sm"
             onClick={() => handleDateRangeChange(12)}
-            className="bg-slate-800/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
+            className="bg-card/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
           >
             12M
           </Button>
@@ -162,7 +162,7 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-amber-600/70">Total Revenue</CardTitle>
           </CardHeader>
@@ -172,7 +172,7 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
             </p>
           </CardContent>
         </Card>
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-amber-600/70">Total Costs</CardTitle>
           </CardHeader>
@@ -182,13 +182,13 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
             </p>
           </CardContent>
         </Card>
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-amber-600/70">Total Profit</CardTitle>
           </CardHeader>
           <CardContent>
             <p className={`text-2xl font-bold flex items-center gap-1 ${
-              totalProfit >= 0 ? 'text-green-400' : 'text-red-400'
+              totalProfit >= 0 ? 'text-success' : 'text-destructive'
             }`}>
               {totalProfit >= 0 ? (
                 <TrendingUp className="w-5 h-5" />
@@ -199,7 +199,7 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
             </p>
           </CardContent>
         </Card>
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-amber-600/70">Avg Margin</CardTitle>
           </CardHeader>

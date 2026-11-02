@@ -25,7 +25,7 @@ const packageColors = {
     gradient: 'from-green-500 to-emerald-600',
     border: 'border-green-500/30',
     bg: 'bg-green-500/10',
-    text: 'text-green-400'
+    text: 'text-success'
   },
   professional: {
     gradient: 'from-yellow-500 to-amber-600',
@@ -37,7 +37,7 @@ const packageColors = {
     gradient: 'from-red-500 to-pink-600',
     border: 'border-red-500/30',
     bg: 'bg-red-500/10',
-    text: 'text-red-400'
+    text: 'text-destructive'
   }
 };
 
@@ -94,22 +94,22 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
         </div>
       )}
       
-      <Card className={`h-full border-2 ${colors.border} bg-slate-800/50 backdrop-blur-sm transition-all duration-300 hover:shadow-2xl ${
+      <Card className={`h-full border-2 ${colors.border} bg-card/50 backdrop-blur-sm transition-all duration-300 hover:shadow-2xl ${
         isPopular ? 'ring-2 ring-yellow-500/50' : ''
       }`}>
         <CardHeader className={`text-center pb-4 ${colors.bg} rounded-t-lg`}>
           <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-r ${colors.gradient} flex items-center justify-center text-white`}>
             {icon}
           </div>
-          <CardTitle className="text-2xl font-bold text-white">
+          <CardTitle className="text-2xl font-bold text-foreground">
             {packageData?.title || packageId}
           </CardTitle>
-          <CardDescription className="text-gray-300">
+          <CardDescription className="text-foreground">
             {packageData?.machines || ''}
           </CardDescription>
           
           <div className="mt-4">
-            <div className="text-4xl font-bold text-white">
+            <div className="text-4xl font-bold text-foreground">
               {priceDisplay}
             </div>
           </div>
@@ -119,8 +119,8 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
           <div className="space-y-4">
             {packageData?.features?.map((feature: string, idx: number) => (
               <div key={idx} className="flex items-start space-x-3">
-                <Check className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-300 text-sm leading-relaxed">{feature}</span>
+                <Check className="h-5 w-5 text-success mt-0.5 flex-shrink-0" />
+                <span className="text-foreground text-sm leading-relaxed">{feature}</span>
               </div>
             ))}
           </div>

@@ -38,12 +38,12 @@ export const BetaFeedbackPortal: React.FC<BetaFeedbackPortalProps> = ({
   const [activeTab, setActiveTab] = useState('wizard');
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800 card-dark">
+        <Card className="bg-background border-border card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Beta Testing Feedback Portal</CardTitle>
-            <p className="text-gray-400">Help us improve by testing all features and sharing your experience</p>
+            <p className="text-muted-foreground">Help us improve by testing all features and sharing your experience</p>
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -54,7 +54,7 @@ export const BetaFeedbackPortal: React.FC<BetaFeedbackPortalProps> = ({
               </TabsList>
 
               <TabsContent value="wizard" className="mt-6">
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-card border-border">
                   <CardContent className="p-6">
                     <h3 className="typography-h3 text-lg mb-4">Smart Wizard Feedback</h3>
                     <EarlyAccessFeedback
@@ -75,7 +75,7 @@ export const BetaFeedbackPortal: React.FC<BetaFeedbackPortalProps> = ({
               </TabsContent>
 
               <TabsContent value="patterns" className="mt-6">
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-card border-border">
                   <CardContent className="p-6">
                     <h3 className="typography-h3 text-lg mb-4">Pattern Library Feedback</h3>
                     <EarlyAccessFeedback
@@ -96,7 +96,7 @@ export const BetaFeedbackPortal: React.FC<BetaFeedbackPortalProps> = ({
               </TabsContent>
 
               <TabsContent value="bom" className="mt-6">
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-card border-border">
                   <CardContent className="p-6">
                     <h3 className="typography-h3 text-lg mb-4">BOM & Pricing Feedback</h3>
                     <EarlyAccessFeedback

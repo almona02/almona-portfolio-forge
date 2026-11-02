@@ -114,13 +114,13 @@ export const ProfileSuggestionsPanel: React.FC<ProfileSuggestionsPanelProps> = (
   const getAvailabilityBadge = (availability?: string) => {
     switch (availability) {
       case 'in_stock':
-        return <Badge variant="default" className="bg-green-600/20 text-green-400 border-green-600/50 text-xs">IN STOCK</Badge>;
+        return <Badge variant="default" className="bg-green-600/20 text-success border-green-600/50 text-xs">IN STOCK</Badge>;
       case 'limited':
-        return <Badge variant="outline" className="border-amber-600/50 text-amber-400 text-xs">LIMITED</Badge>;
+        return <Badge variant="outline" className="border-amber-600/50 text-warning text-xs">LIMITED</Badge>;
       case 'out_of_stock':
-        return <Badge variant="outline" className="text-xs border-red-600/50 text-red-400">OUT OF STOCK</Badge>;
+        return <Badge variant="outline" className="text-xs border-red-600/50 text-destructive">OUT OF STOCK</Badge>;
       case 'discontinued':
-        return <Badge variant="outline" className="text-xs border-red-600/50 text-red-400">DISCONTINUED</Badge>;
+        return <Badge variant="outline" className="text-xs border-red-600/50 text-destructive">DISCONTINUED</Badge>;
       default:
         return null;
     }
@@ -134,7 +134,7 @@ export const ProfileSuggestionsPanel: React.FC<ProfileSuggestionsPanelProps> = (
 
     if (validation.isValid) {
       return (
-        <Badge variant="default" className="bg-green-600/20 text-green-400 border-green-600/50 text-xs">
+        <Badge variant="default" className="bg-green-600/20 text-success border-green-600/50 text-xs">
           <CheckCircle2 className="h-3 w-3 mr-1" />
           TIER 3 VALID
         </Badge>
@@ -142,7 +142,7 @@ export const ProfileSuggestionsPanel: React.FC<ProfileSuggestionsPanelProps> = (
     }
 
     return (
-      <Badge variant="outline" className="text-xs border-red-600/50 text-red-400">
+      <Badge variant="outline" className="text-xs border-red-600/50 text-destructive">
         <AlertCircle className="h-3 w-3 mr-1" />
         VALIDATION FAILED
       </Badge>
@@ -153,24 +153,24 @@ export const ProfileSuggestionsPanel: React.FC<ProfileSuggestionsPanelProps> = (
     <TooltipProvider>
       <Card className={`card-glass-dark shadow-glow-strong ${className}`}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg tracking-[0.02em] uppercase font-semibold text-amber-200">
-            <ShieldCheck className="h-5 w-5 text-amber-500" />
+          <CardTitle className="flex items-center gap-2 text-lg tracking-[0.02em] uppercase font-semibold text-warning">
+            <ShieldCheck className="h-5 w-5 text-warning" />
             Profile Suggestions
           </CardTitle>
-          <CardDescription className="text-xs text-amber-600/80 font-medium">
+          <CardDescription className="text-xs text-warning/80 font-medium">
             Tier 2 advisory suggestions (require Tier 3 validation)
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {loading && (
             <div className="flex items-center justify-center p-4">
-              <Loader2 className="h-6 w-6 animate-spin text-amber-500" />
-              <span className="ml-2 text-amber-300">Loading suggestions...</span>
+              <Loader2 className="h-6 w-6 animate-spin text-warning" />
+              <span className="ml-2 text-warning">Loading suggestions...</span>
             </div>
           )}
 
           {error && (
-            <div className="flex items-center gap-2 text-sm text-red-400 p-3 rounded-lg bg-red-900/20 border border-red-700">
+            <div className="flex items-center gap-2 text-sm text-destructive p-3 rounded-lg bg-red-900/20 border border-red-700">
               <AlertCircle className="h-4 w-4" />
               <span>Error: {error}</span>
             </div>
@@ -179,7 +179,7 @@ export const ProfileSuggestionsPanel: React.FC<ProfileSuggestionsPanelProps> = (
           {!loading && !error && suggestions && (
             <>
               {suggestions.suggestions.length === 0 ? (
-                <div className="flex items-center justify-center p-4 text-sm text-amber-600/70">
+                <div className="flex items-center justify-center p-4 text-sm text-warning/70">
                   <InfoIcon className="h-4 w-4 mr-2" />
                   <span>No profile suggestions available.</span>
                 </div>
@@ -202,23 +202,23 @@ export const ProfileSuggestionsPanel: React.FC<ProfileSuggestionsPanelProps> = (
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="font-mono text-sm font-semibold text-amber-200">
+                              <span className="font-mono text-sm font-semibold text-warning">
                                 {suggestion.profileId}
                               </span>
                               {getValidationBadge(suggestion.profileId)}
                               {getAvailabilityBadge(suggestion.availability)}
                             </div>
-                            <div className="text-xs text-amber-600/70">
+                            <div className="text-xs text-warning/70">
                               Supplier: {suggestion.supplier}
                             </div>
                           </div>
                           {suggestion.price && (
                             <div className="text-right">
-                              <div className="text-sm font-semibold text-amber-200">
+                              <div className="text-sm font-semibold text-warning">
                                 {suggestion.price.toFixed(2)} {suggestion.currency}
                               </div>
                               {suggestion.leadTime && (
-                                <div className="text-xs text-amber-600/70">
+                                <div className="text-xs text-warning/70">
                                   Lead: {suggestion.leadTime} days
                                 </div>
                               )}
@@ -227,7 +227,7 @@ export const ProfileSuggestionsPanel: React.FC<ProfileSuggestionsPanelProps> = (
                         </div>
 
                         {validation && !validation.isValid && (
-                          <div className="mt-2 text-xs text-red-400">
+                          <div className="mt-2 text-xs text-destructive">
                             <AlertCircle className="h-3 w-3 inline mr-1" />
                             {validation.reason}
                           </div>
@@ -241,7 +241,7 @@ export const ProfileSuggestionsPanel: React.FC<ProfileSuggestionsPanelProps> = (
               <div className="pt-2 border-t-2 border-amber-600/30">
                 <Tooltip>
                   <TooltipTrigger>
-                    <div className="flex items-center gap-2 text-xs text-amber-600/70 cursor-help">
+                    <div className="flex items-center gap-2 text-xs text-warning/70 cursor-help">
                       <InfoIcon className="h-3 w-3" />
                       <span>{suggestions.constitutionalNote}</span>
                     </div>
@@ -262,7 +262,7 @@ export const ProfileSuggestionsPanel: React.FC<ProfileSuggestionsPanelProps> = (
           <Button
             onClick={() => void loadSuggestions()}
             disabled={loading}
-            className="w-full h-9 text-xs bg-amber-700/30 hover:bg-amber-700/40 border-amber-600/50 text-amber-200"
+            className="w-full h-9 text-xs bg-amber-700/30 hover:bg-amber-700/40 border-amber-600/50 text-warning"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />

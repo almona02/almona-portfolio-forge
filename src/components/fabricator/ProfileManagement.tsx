@@ -1187,11 +1187,11 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'out': return 'text-red-600';
-      case 'low': return 'text-red-400';
-      case 'medium': return 'text-yellow-400';
-      case 'high': return 'text-green-400';
-      default: return 'text-gray-400';
+      case 'out': return 'text-destructive';
+      case 'low': return 'text-destructive';
+      case 'medium': return 'text-warning';
+      case 'high': return 'text-success';
+      default: return 'text-muted-foreground';
     }
   };
 
@@ -1236,51 +1236,51 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       )}
 
       {/* Tuning & System Overview */}
-      <Card className="bg-gray-900/70 border-gray-700 card-dark">
+      <Card className="bg-background/70 border-border card-dark">
         <CardContent className="py-4 px-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="btn-primary">
-                <Sparkles className="h-5 w-5 text-amber-300" />
+                <Sparkles className="h-5 w-5 text-warning" />
               </div>
               <div>
-                <p className="text-xs uppercase tracking-wide text-gray-400">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">
                   Fabricator Pro · Profile Readiness
                 </p>
-                <p className="text-sm text-gray-200">
+                <p className="text-sm text-foreground">
                   {tuningStats.tuned}/{tuningStats.total} profiles tuned for production
                 </p>
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-              <div className="px-3 py-2 rounded-md bg-gray-800/70 border border-gray-700">
-                <p className="text-[10px] uppercase text-gray-400">Tuned</p>
+              <div className="px-3 py-2 rounded-md bg-card/70 border border-border">
+                <p className="text-[10px] uppercase text-muted-foreground">Tuned</p>
                 <p className="text-sm font-semibold status-valid">
                   {tuningStats.tuned}
-                  <span className="text-[11px] text-gray-500 ml-1">
+                  <span className="text-[11px] text-muted-foreground ml-1">
                     ({tuningStats.total > 0 ? Math.round((tuningStats.tuned / tuningStats.total) * 100) : 0}
                     %)
                   </span>
                 </p>
               </div>
-              <div className="px-3 py-2 rounded-md bg-gray-800/70 border border-gray-700">
-                <p className="text-[10px] uppercase text-gray-400">In Progress</p>
-                <p className="text-sm font-semibold text-blue-300">
+              <div className="px-3 py-2 rounded-md bg-card/70 border border-border">
+                <p className="text-[10px] uppercase text-muted-foreground">In Progress</p>
+                <p className="text-sm font-semibold text-info">
                   {tuningStats.inProgress}
                 </p>
               </div>
-              <div className="px-3 py-2 rounded-md bg-gray-800/70 border border-gray-700">
-                <p className="text-[10px] uppercase text-gray-400">Untuned</p>
-                <p className="text-sm font-semibold text-yellow-300">
+              <div className="px-3 py-2 rounded-md bg-card/70 border border-border">
+                <p className="text-[10px] uppercase text-muted-foreground">Untuned</p>
+                <p className="text-sm font-semibold text-warning">
                   {tuningStats.untuned}
                 </p>
               </div>
-              <div className="px-3 py-2 rounded-md bg-gray-800/70 border border-gray-700 hidden md:block">
-                <p className="text-[10px] uppercase text-gray-400 flex items-center gap-1">
+              <div className="px-3 py-2 rounded-md bg-card/70 border border-border hidden md:block">
+                <p className="text-[10px] uppercase text-muted-foreground flex items-center gap-1">
                   <Shield className="h-3 w-3 text-teal-300" />
                   Core Roles Tuned
                 </p>
-                <p className="text-[11px] text-gray-200 mt-1">
+                <p className="text-[11px] text-foreground mt-1">
                   F:{tuningStats.byRole.frame.tuned}/{tuningStats.byRole.frame.total}{' '}
                   S:{tuningStats.byRole.sash.tuned}/{tuningStats.byRole.sash.total}{' '}
                   M:{tuningStats.byRole.mullion.tuned}/{tuningStats.byRole.mullion.total}
@@ -1293,12 +1293,12 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
       {/* Header with Actions - Collapsible */}
       <Collapsible open={isProfileManagementOpen} onOpenChange={setIsProfileManagementOpen}>
-        <Card className="bg-gray-800/50 border-gray-700">
+        <Card className="bg-card/50 border-border">
           <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-gray-800/70 transition-colors">
+            <CardHeader className="cursor-pointer hover:bg-card/70 transition-colors">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5 text-amber-400" />
+                  <Package className="h-5 w-5 text-warning" />
                   {t('profileManagement.title', 'Profile Management')} ({profiles.length})
                 </CardTitle>
                 <div className="flex items-center gap-2">
@@ -1341,7 +1341,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     </Button>
                   </div>
                   <ChevronDown
-                    className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isProfileManagementOpen ? 'rotate-180' : ''
+                    className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${isProfileManagementOpen ? 'rotate-180' : ''
                       }`}
                   />
                 </div>
@@ -1353,7 +1353,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         <CollapsibleContent>
 
           {/* Filters */}
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-4">
               <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
                 {/* Category Filter */}
@@ -1389,7 +1389,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
                 {/* Search */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder={t('profileManagement.searchProfiles', 'Search Profiles')}
                     value={searchTerm}
@@ -1474,16 +1474,16 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
           {/* Profile Form - Collapsible */}
           <Collapsible open={isProfileFormOpen} onOpenChange={setIsProfileFormOpen}>
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CollapsibleTrigger asChild>
-                <CardHeader className="cursor-pointer hover:bg-gray-800/70 transition-colors">
+                <CardHeader className="cursor-pointer hover:bg-card/70 transition-colors">
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2">
                       {editingId ? <Edit2 className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
                       {editingId ? t('profileManagement.updateProfile', 'Update Profile') : t('profileManagement.addNewProfile', 'Add New Profile')}
                     </CardTitle>
                     <ChevronDown
-                      className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isProfileFormOpen ? 'rotate-180' : ''
+                      className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${isProfileFormOpen ? 'rotate-180' : ''
                         }`}
                     />
                   </div>
@@ -1492,7 +1492,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               <CollapsibleContent>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-muted-foreground">
                       You can also start a new profile from a DXF file exported from your CAD system.
                     </p>
                     <Label>
@@ -1620,7 +1620,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                             <button
                               key={color}
                               type="button"
-                              className="w-8 h-8 rounded border-2 border-gray-600 hover:border-amber-400"
+                              className="w-8 h-8 rounded border-2 border-border hover:border-amber-400"
                               style={{ backgroundColor: color }}
                               onClick={() => setFormData({ ...formData, color })}
                               title={color}
@@ -1821,7 +1821,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                           ))}
                         </SelectContent>
                       </Select>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {selectedSystemPackId === 'custom'
                           ? 'You can manually enter system details below'
                           : 'System details will be auto-filled'}
@@ -1849,7 +1849,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                         </SelectContent>
                       </Select>
                       {selectedSystemPackId !== 'custom' && (
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Auto-filled from selected system pack
                         </p>
                       )}
@@ -1967,15 +1967,15 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                   </div>
 
                   {/* Machining Macros Section */}
-                  <div className="col-span-2 border-t border-gray-700 pt-4 mt-2">
+                  <div className="col-span-2 border-t border-border pt-4 mt-2">
                     <Label>Machining Macros (Router/Pantograph Operations)</Label>
-                    <p className="text-xs text-gray-400 mb-2">
+                    <p className="text-xs text-muted-foreground mb-2">
                       Define machining operations required for accessory installation
                     </p>
 
                     <div className="space-y-3">
                       {formData.machiningMacros?.map((macro, index) => (
-                        <div key={macro.id} className="p-3 bg-gray-700 rounded space-y-2">
+                        <div key={macro.id} className="p-3 bg-muted rounded space-y-2">
                           <div className="grid grid-cols-2 gap-2">
                             <Input
                               placeholder="Operation name"
@@ -2044,7 +2044,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                             variant="outline"
                             size="sm"
                             onClick={() => removeMacro(index)}
-                            className="text-red-400"
+                            className="text-destructive"
                           >
                             <Trash2 className="h-4 w-4 mr-1" />
                             Remove Macro
@@ -2091,7 +2091,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                         <Button
                           onClick={() => setShowProfileDefinitionWizard(true)}
                           variant="outline"
-                          className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+                          className="border-blue-500/30 text-info hover:bg-blue-500/10"
                         >
                           <FileText className="h-4 w-4 mr-2" />
                           Define from Data Sheet
@@ -2105,11 +2105,11 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           </Collapsible>
 
           {/* Accessory Management Section */}
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5 text-green-400" />
+                  <Settings className="h-5 w-5 text-success" />
                   Accessory Library ({accessories.length})
                 </CardTitle>
                 <Button
@@ -2134,13 +2134,13 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           </Card>
 
           {/* Profiles List */}
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle>{t('profileManagement.title', 'Profile Management')} ({filteredProfiles.length})</CardTitle>
             </CardHeader>
             <CardContent>
               {filteredProfiles.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">
+                <div className="text-center py-8 text-muted-foreground">
                   <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>{t('profileManagement.errorLoadingProfiles', 'No profiles found. Add your first profile to get started.')}</p>
                 </div>
@@ -2183,7 +2183,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       const specs = profile.specifications || {};
 
                       return (
-                        <div className="p-4 bg-gray-700 rounded-lg mb-3">
+                        <div className="p-4 bg-muted rounded-lg mb-3">
                           <div className="flex items-center justify-between mb-3">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
@@ -2192,7 +2192,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                                   <img
                                     src={profile.thumbnailUrl}
                                     alt={profile.name}
-                                    className="w-10 h-10 rounded border border-gray-700 object-contain bg-white/5 flex-shrink-0"
+                                    className="w-10 h-10 rounded border border-border object-contain bg-foreground/5 flex-shrink-0"
                                     onError={(e) => {
                                       (e.target as HTMLImageElement).style.display = 'none';
                                     }}
@@ -2201,7 +2201,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                                 <h4 className="typography-h4">{profile.name}</h4>
                                 <Badge variant="outline">{profile.material}</Badge>
                                 {profile.systemBrand && (
-                                  <Badge variant="outline" className="bg-blue-500/20 text-blue-400">
+                                  <Badge variant="outline" className="bg-blue-500/20 text-info">
                                     {profile.systemBrand}
                                   </Badge>
                                 )}
@@ -2215,10 +2215,10 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                                   variant="outline"
                                   className={
                                     tuningStatus === 'tuned'
-                                      ? 'border-emerald-400 text-emerald-300'
+                                      ? 'border-emerald-400 text-success'
                                       : tuningStatus === 'in_progress'
-                                        ? 'border-blue-400 text-blue-300'
-                                        : 'border-yellow-400 text-yellow-300'
+                                        ? 'border-blue-400 text-info'
+                                        : 'border-yellow-400 text-warning'
                                   }
                                 >
                                   {tuningStatus === 'tuned'
@@ -2228,7 +2228,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                                       : 'Untuned'}
                                 </Badge>
                               </div>
-                              <div className="grid grid-cols-4 gap-4 text-sm text-gray-400">
+                              <div className="grid grid-cols-4 gap-4 text-sm text-muted-foreground">
                                 <div>
                                   {t('profileManagement.dimensions', 'Dimensions')}: {profile.width}mm × {profile.height || 'N/A'}mm
                                 </div>
@@ -2236,7 +2236,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                                 <div>{t('profileManagement.stock', 'Stock')}: {profile.stockQuantity}m</div>
                                 <div>{t('profileManagement.supplier', 'Supplier')}: {profile.supplier || t('profileManagement.none', '—')}</div>
                               </div>
-                              <div className="grid grid-cols-4 gap-4 text-xs text-gray-400 mt-2">
+                              <div className="grid grid-cols-4 gap-4 text-xs text-muted-foreground mt-2">
                                 <div>
                                   {t('profileManagement.twinCode', 'Twin Code')}:
                                   <span className="ml-1 font-mono">
@@ -2253,14 +2253,14 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-gray-500">Tuning:</span>
+                                  <span className="text-muted-foreground">Tuning:</span>
                                   <span
                                     className={
                                       tuningStatus === 'tuned'
-                                        ? 'text-emerald-300'
+                                        ? 'text-success'
                                         : tuningStatus === 'in_progress'
-                                          ? 'text-blue-300'
-                                          : 'text-yellow-300'
+                                          ? 'text-info'
+                                          : 'text-warning'
                                     }
                                   >
                                     {tuningStatus === 'tuned'
@@ -2285,7 +2285,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                                 <img
                                   src={profile.thumbnailUrl || (specs.previewImageUrl as string)}
                                   alt={profile.name}
-                                  className="w-24 h-24 rounded border border-gray-600 object-contain bg-white/5"
+                                  className="w-24 h-24 rounded border border-border object-contain bg-foreground/5"
                                   onError={(e) => {
                                     // Fallback to previewImageUrl if thumbnail fails
                                     if (profile.thumbnailUrl && specs.previewImageUrl) {
@@ -2358,7 +2358,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => handleDeleteProfile(profile)}
-                                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                  className="text-destructive hover:text-destructive hover:bg-red-500/10"
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -2379,17 +2379,17 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
       {/* Prestige Delete Confirmation Dialog */}
       <AlertDialog open={!!profileToDelete} onOpenChange={(open) => !open && setProfileToDelete(null)}>
-        <AlertDialogContent className="bg-gray-900 border-gray-700 max-w-md">
+        <AlertDialogContent className="bg-background border-border max-w-md">
           <AlertDialogHeader>
             <div className="flex items-center gap-3 mb-2">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/15 border border-red-500/30">
-                <AlertTriangle className="h-6 w-6 text-red-400" />
+                <AlertTriangle className="h-6 w-6 text-destructive" />
               </div>
               <div className="flex-1">
-                <AlertDialogTitle className="text-lg font-semibold text-gray-100">
+                <AlertDialogTitle className="text-lg font-semibold text-foreground">
                   {t('profileManagement.deleteConfirmTitle', 'Delete Profile?')}
                 </AlertDialogTitle>
-                <AlertDialogDescription className="text-sm text-gray-400 mt-1">
+                <AlertDialogDescription className="text-sm text-muted-foreground mt-1">
                   {t('profileManagement.deleteConfirmSubtitle', 'This action cannot be undone')}
                 </AlertDialogDescription>
               </div>
@@ -2399,13 +2399,13 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           {profileToDelete && (
             <div className="space-y-4 py-4">
               {/* Profile Preview */}
-              <div className="flex items-start gap-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+              <div className="flex items-start gap-4 p-4 bg-card/50 rounded-lg border border-border">
                 {/* Thumbnail */}
                 {(profileToDelete.thumbnailUrl || profileToDelete.specifications?.previewImageUrl) && (
                   <img
                     src={profileToDelete.thumbnailUrl || profileToDelete.specifications?.previewImageUrl}
                     alt={profileToDelete.name}
-                    className="w-16 h-16 rounded border border-gray-700 object-contain bg-white/5 flex-shrink-0"
+                    className="w-16 h-16 rounded border border-border object-contain bg-foreground/5 flex-shrink-0"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = 'none';
                     }}
@@ -2415,13 +2415,13 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 {/* Profile Details */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="typography-h4 text-gray-100 truncate">{profileToDelete.name}</h4>
-                    <Badge variant="outline" className="border-gray-600 text-gray-300">
+                    <h4 className="typography-h4 text-foreground truncate">{profileToDelete.name}</h4>
+                    <Badge variant="outline" className="border-border text-foreground">
                       {profileToDelete.material}
                     </Badge>
                   </div>
 
-                  <div className="space-y-1 text-xs text-gray-400">
+                  <div className="space-y-1 text-xs text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <Ruler className="h-3 w-3" />
                       <span>
@@ -2447,12 +2447,12 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               {/* Warning Details */}
               <div className="btn-primary">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" />
-                  <div className="flex-1 text-xs text-amber-200">
+                  <AlertCircle className="h-4 w-4 text-warning mt-0.5 flex-shrink-0" />
+                  <div className="flex-1 text-xs text-warning">
                     <p className="font-semibold mb-1">
                       {t('profileManagement.deleteWarning', 'What will be deleted:')}
                     </p>
-                    <ul className="space-y-1 text-amber-300/80">
+                    <ul className="space-y-1 text-warning/80">
                       <li>• {t('profileManagement.deleteWarningProfile', 'Profile configuration and specifications')}</li>
                       <li>• {t('profileManagement.deleteWarningTuning', 'All tuning data and calibrations')}</li>
                       <li>• {t('profileManagement.deleteWarningThumbnail', 'Profile thumbnail and preview images')}</li>
@@ -2467,7 +2467,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           <AlertDialogFooter className="gap-2 sm:gap-0">
             <AlertDialogCancel
               disabled={isDeleting}
-              className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-gray-100"
+              className="bg-card border-border text-foreground hover:bg-muted hover:text-foreground"
             >
               {t('profileManagement.cancel', 'Cancel')}
             </AlertDialogCancel>
@@ -2520,12 +2520,12 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       {/* Calibration Wizard Dialog */}
       {calibrationProfile && userId && (
         <AlertDialog open={showCalibrationDialog} onOpenChange={setShowCalibrationDialog}>
-          <AlertDialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gray-900 border-gray-700">
+          <AlertDialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-background border-border">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-white">
+              <AlertDialogTitle className="text-foreground">
                 Calibration: {calibrationProfile.name}
               </AlertDialogTitle>
-              <AlertDialogDescription className="text-gray-300">
+              <AlertDialogDescription className="text-foreground">
                 Configure cutting parameters for this profile. Changes will apply immediately to all windows using this profile.
               </AlertDialogDescription>
             </AlertDialogHeader>
@@ -2584,7 +2584,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700">
+              <AlertDialogCancel className="bg-card border-border text-foreground hover:bg-muted">
                 Close
               </AlertDialogCancel>
             </AlertDialogFooter>

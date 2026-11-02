@@ -389,9 +389,9 @@ const Products = function ProductsPage() {
           <div className="fade-in-up">
             <h1 className="typography-h1 md:text-4xl lg:text-5xl mb-4">
               <span className="text-gradient-orange">{copy("Industrial Machinery")}</span>{' '}
-              <span className="text-white">{copy("For Aluminium & UPVC Workshops")}</span>
+              <span className="text-foreground">{copy("For Aluminium & UPVC Workshops")}</span>
             </h1>
-            <p className="text-lg text-gray-300 max-w-3xl mx-auto mb-6 leading-relaxed">{copy("Browse machine models and discuss your production requirements with ALMONA.")}</p>
+            <p className="text-lg text-foreground max-w-3xl mx-auto mb-6 leading-relaxed">{copy("Browse machine models and discuss your production requirements with ALMONA.")}</p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <Button
@@ -418,21 +418,21 @@ const Products = function ProductsPage() {
           </div>
         </div>
 
-        <p className="max-w-3xl mx-auto mb-6 text-center text-sm text-gray-400">{copy("Prices, stock, delivery, warranty and model-specific certificates are confirmed in a written quotation. Digital integrations depend on the exact machine and configuration.")}</p>
+        <p className="max-w-3xl mx-auto mb-6 text-center text-sm text-muted-foreground">{copy("Prices, stock, delivery, warranty and model-specific certificates are confirmed in a written quotation. Digital integrations depend on the exact machine and configuration.")}</p>
 
         {/* Existing Products page content */}
         <div ref={productsSectionRef} id="products-section" className="scroll-mt-24 mb-6 text-center">
           <h2 className="typography-h2 mb-2">
             <span className="text-gradient-orange">{t('machines.title')}</span>
           </h2>
-          <p className="text-gray-400 max-w-3xl mx-auto text-sm">
+          <p className="text-muted-foreground max-w-3xl mx-auto text-sm">
             {t('machines.subtitle')}
           </p>
         </div>
 
         <Tabs value={materialTab} onValueChange={(v) => setMaterialTab(v as 'aluminium' | 'pvc')} className="mb-8">
           {/* Category selection with adaptive gradient */}
-          <TabsList className="grid w-full grid-cols-2 max-w-sm mx-auto rounded-md shadow-sm border border-gray-700 bg-[linear-gradient(135deg,rgba(0,0,0,0.85)_0%,rgba(30,30,30,0.85)_60%,rgba(55,55,55,0.75)_100%)] backdrop-blur">
+          <TabsList className="grid w-full grid-cols-2 max-w-sm mx-auto rounded-md shadow-sm border border-border bg-[linear-gradient(135deg,rgba(0,0,0,0.85)_0%,rgba(30,30,30,0.85)_60%,rgba(55,55,55,0.75)_100%)] backdrop-blur">
             <TabsTrigger value="aluminium">{t('machines.tabs.aluminium', 'Aluminium')}</TabsTrigger>
             <TabsTrigger value="pvc">{t('machines.tabs.pvc', 'PVC')}</TabsTrigger>
           </TabsList>
@@ -440,13 +440,13 @@ const Products = function ProductsPage() {
         {/* Visible search bar — shared across both Aluminium & PVC tabs */}
         <div className="mb-6 max-w-xl mx-auto">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               type="search"
               value={filters.searchTerm}
               onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
               placeholder={copy("Search machines (e.g. cutting, welding, AIM 4420)")}
-              className="pl-10 bg-gray-900/80 border-gray-700 focus:border-amber-500 focus:ring-amber-500/20"
+              className="pl-10 bg-background/80 border-border focus:border-amber-500 focus:ring-amber-500/20"
             />
           </div>
         </div>
@@ -482,8 +482,8 @@ const Products = function ProductsPage() {
 
                 {/* Filter Status Bar */}
                 {(filters.searchTerm || filters.category !== 'all' || enhancedMachines.length < totalCount) && (
-                  <div className="flex items-center justify-between mt-4 p-3 bg-gray-800/50 rounded-lg">
-                    <div className="text-sm text-gray-300">
+                  <div className="flex items-center justify-between mt-4 p-3 bg-card/50 rounded-lg">
+                    <div className="text-sm text-foreground">
                       {t('machines.showing', { count: enhancedMachines.length, total: totalCount })}
                       {(filters.searchTerm || filters.category !== 'all') && (
                         <span className="text-amber-400 ml-2">{t('machines.filtered')}</span>
@@ -518,18 +518,18 @@ const Products = function ProductsPage() {
               {isLoadingMore ? (
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
-                  <p className="text-gray-400">{t('machines.loading') || 'Loading machines...'}</p>
+                  <p className="text-muted-foreground">{t('machines.loading') || 'Loading machines...'}</p>
                 </div>
               ) : enhancedMachines.length === 0 ? (
                 <div className="text-center py-12">
                   <h3 className="typography-h3 font-medium mb-2">
                     {t('machines.noMachines.title')}
                   </h3>
-                  <p className="text-gray-400">
+                  <p className="text-muted-foreground">
                     {t('machines.noMachines.description')}
                   </p>
                   <Button
-                    className="mt-4 border border-almona-light hover:bg-almona-light/10"
+                    className="mt-4 border border-border hover:bg-almona-light/10"
                     onClick={handleClearFilters}
                   >
                     {t('machines.noMachines.clearFilters')}
@@ -572,7 +572,7 @@ const Products = function ProductsPage() {
 
         <Separator className="my-12 bg-almona-light/20" />
 
-        <details className="mb-8 rounded-lg border border-gray-700 p-4">
+        <details className="mb-8 rounded-lg border border-border p-4">
           <summary className="cursor-pointer text-amber-300">{copy("All machine models")}</summary>
           <nav aria-label={copy("All machine models")}>
             <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-4">
@@ -583,7 +583,7 @@ const Products = function ProductsPage() {
 
         {/* Industry 4.0 Technology Showcase */}
         <div
-          className="bg-gradient-to-r from-gray-900/50 to-gray-800/50 border border-gray-700/50 rounded-lg p-8 mb-12 fade-in-up"
+          className="bg-gradient-to-r from-background/50 to-card/50 border border-border/50 rounded-lg p-8 mb-12 fade-in-up"
           style={{ animationDelay: '0.5s' }}
         >
           <h2 className="typography-h2 mb-6 text-center">
@@ -595,16 +595,16 @@ const Products = function ProductsPage() {
               <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🤖</span>
               </div>
-              <h3 className="typography-h3 mb-2 text-blue-400">{copy("Equipment selection")}</h3>
-              <p className="text-gray-400">{copy("Compare catalogue information, then confirm suitability with the technical team.")}</p>
+              <h3 className="typography-h3 mb-2 text-info">{copy("Equipment selection")}</h3>
+              <p className="text-muted-foreground">{copy("Compare catalogue information, then confirm suitability with the technical team.")}</p>
             </div>
 
             <div className="text-center">
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">📡</span>
               </div>
-              <h3 className="typography-h3 mb-2 text-green-400">{copy("Connectivity requirements")}</h3>
-              <p className="text-gray-400">{copy("Ask which interfaces and software options are supported by the exact model. Connectivity is not included by default.")}</p>
+              <h3 className="typography-h3 mb-2 text-success">{copy("Connectivity requirements")}</h3>
+              <p className="text-muted-foreground">{copy("Ask which interfaces and software options are supported by the exact model. Connectivity is not included by default.")}</p>
             </div>
 
             <div className="text-center">
@@ -612,7 +612,7 @@ const Products = function ProductsPage() {
                 <span className="text-2xl">🎯</span>
               </div>
               <h3 className="typography-h3 mb-2 text-amber-400">{copy("Model previews")}</h3>
-              <p className="text-gray-400">{copy("Available 3D previews help you explore a model. They do not verify installation dimensions or production performance.")}</p>
+              <p className="text-muted-foreground">{copy("Available 3D previews help you explore a model. They do not verify installation dimensions or production performance.")}</p>
             </div>
           </div>
         </div>
@@ -629,11 +629,11 @@ const Products = function ProductsPage() {
             {faqs.map((faq, index) => (
               <div
                 key={index}
-                className="bg-gray-800/30 border border-gray-700/50 rounded-lg p-6 hover:bg-gray-800/50 transition-all duration-300 fade-in-up"
+                className="bg-card/30 border border-border/50 rounded-lg p-6 hover:bg-card/50 transition-all duration-300 fade-in-up"
                 style={{ animationDelay: `${0.7 + index * 0.1}s` }}
               >
-                <h3 className="typography-h3 text-lg text-white mb-2">{faq.question}</h3>
-                <p className="text-gray-400">{faq.answer}</p>
+                <h3 className="typography-h3 text-lg text-foreground mb-2">{faq.question}</h3>
+                <p className="text-muted-foreground">{faq.answer}</p>
               </div>
             ))}
           </div>
@@ -647,14 +647,14 @@ const Products = function ProductsPage() {
           <h2 className="typography-h2 mb-4">
             <span className="text-gradient-orange">{t('newsletter.title')}</span>
           </h2>
-          <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+          <p className="text-foreground mb-6 max-w-2xl mx-auto">
             {t('newsletter.description')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
             <Input
               type="email"
               placeholder={t('newsletter.placeholder')}
-              className="bg-gray-800/50 border-gray-600 text-white placeholder-gray-400"
+              className="bg-card/50 border-border text-foreground placeholder-muted-foreground"
             />
             <Button
               onClick={() => setShowNewsletter(true)}
@@ -666,11 +666,11 @@ const Products = function ProductsPage() {
         </div>
 
         {/* Factory Prestige Card */}
-        <div className="bg-almona-darker/60 border border-gray-800 rounded-xl p-6 sm:p-8 mb-12 fade-in-up">
+        <div className="bg-card/60 border border-border rounded-xl p-6 sm:p-8 mb-12 fade-in-up">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center">
             <div className="space-y-3">
               <h2 className="typography-h2 sm:text-3xl text-gradient-orange">{t('whyChoose.title')}</h2>
-              <p className="text-gray-300 leading-relaxed">{copy("Explore YILMAZ machinery and request the manufacturer documentation for your selected model.")}</p>
+              <p className="text-foreground leading-relaxed">{copy("Explore YILMAZ machinery and request the manufacturer documentation for your selected model.")}</p>
               <div className="flex flex-wrap gap-2">
                 <Badge variant="outline" className="text-xs border-amber-400/60 text-amber-300">{copy("Request conformity documents")}</Badge>
               </div>
@@ -683,7 +683,7 @@ const Products = function ProductsPage() {
               </div>
             </div>
 
-            <div className="relative group overflow-hidden rounded-xl border border-gray-800 bg-slate-900/40 aspect-video">
+            <div className="relative group overflow-hidden rounded-xl border border-border bg-background/40 aspect-video">
               <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/10 via-transparent to-blue-500/10 opacity-80 pointer-events-none" />
               {!isTourPlaying ? (
                 <>
@@ -715,7 +715,7 @@ const Products = function ProductsPage() {
                   <button
                     type="button"
                     onClick={handleTourToggle}
-                    className="absolute top-3 right-3 inline-flex items-center justify-center h-9 w-9 rounded-full bg-white/90 text-slate-800 shadow-md shadow-black/20 ring-1 ring-white/70 hover:bg-white"
+                    className="absolute top-3 right-3 inline-flex items-center justify-center h-9 w-9 rounded-full bg-foreground/90 text-foreground shadow-md shadow-black/20 ring-1 ring-white/70 hover:bg-card"
                     aria-label={copy("Close factory tour video")}
                   >
                     <X className="h-4 w-4" />
@@ -726,7 +726,7 @@ const Products = function ProductsPage() {
           </div>
         </div>
 
-        <div className="bg-almona-darker/50 p-8 rounded-lg">
+        <div className="bg-card/50 p-8 rounded-lg">
           <h2 className="typography-h2 mb-4">
             {t('whyChoose.title')}
           </h2>
@@ -738,7 +738,7 @@ const Products = function ProductsPage() {
                 </Badge>
                 {t('whyChoose.premiumQuality.title')}
               </h3>
-              <p className="text-gray-400">{copy("Request specifications and conformity documents for the exact model and configuration.")}</p>
+              <p className="text-muted-foreground">{copy("Request specifications and conformity documents for the exact model and configuration.")}</p>
             </div>
             <div>
               <h3 className="typography-h3 text-lg mb-2 text-gradient-orange">
@@ -747,7 +747,7 @@ const Products = function ProductsPage() {
                 </Badge>
                 {t('whyChoose.technicalSupport.title')}
               </h3>
-              <p className="text-gray-400">{copy("Discuss maintenance needs and confirm service availability with ALMONA.")}</p>
+              <p className="text-muted-foreground">{copy("Discuss maintenance needs and confirm service availability with ALMONA.")}</p>
             </div>
             <div>
               <h3 className="typography-h3 text-lg mb-2 text-gradient-orange">
@@ -756,7 +756,7 @@ const Products = function ProductsPage() {
                 </Badge>
                 {t('whyChoose.genuineParts.title')}
               </h3>
-              <p className="text-gray-400">{copy("Provide your machine model and serial number so ALMONA can check part compatibility, origin and warranty terms.")}</p>
+              <p className="text-muted-foreground">{copy("Provide your machine model and serial number so ALMONA can check part compatibility, origin and warranty terms.")}</p>
             </div>
           </div>
         </div>
@@ -791,7 +791,7 @@ const Products = function ProductsPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
-              <p className="text-white">{copy("Loading 3D Engine...")}</p>
+              <p className="text-foreground">{copy("Loading 3D Engine...")}</p>
             </div>
           </div>
         }>

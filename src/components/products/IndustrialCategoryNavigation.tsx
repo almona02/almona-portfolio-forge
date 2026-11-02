@@ -116,8 +116,8 @@ const IndustrialCategoryNavigation: React.FC<IndustrialCategoryNavigationProps> 
             ${selected 
               ? 'bg-amber-500/20 border border-amber-500/30 text-amber-400' 
               : hovered 
-                ? 'bg-gray-700/50 border border-gray-600/30 text-gray-200' 
-                : 'text-gray-300 hover:text-gray-100'
+                ? 'bg-muted/50 border border-border/30 text-foreground'
+                : 'text-foreground hover:text-foreground'
             }
             ${compact ? 'py-2 px-3' : 'py-3 px-4'}
           `}
@@ -137,7 +137,7 @@ const IndustrialCategoryNavigation: React.FC<IndustrialCategoryNavigationProps> 
                 {showMachineCounts && category.machineCount && (
                   <Badge 
                     variant="secondary" 
-                    className="text-xs bg-gray-600/50 text-gray-300"
+                    className="text-xs bg-muted/50 text-foreground"
                   >
                     {category.machineCount}
                   </Badge>
@@ -147,8 +147,8 @@ const IndustrialCategoryNavigation: React.FC<IndustrialCategoryNavigationProps> 
                     variant="outline" 
                     className={`text-xs ${
                       category.materialType === 'aluminum' 
-                        ? 'border-blue-500/50 text-blue-400' 
-                        : 'border-green-500/50 text-green-400'
+                        ? 'border-blue-500/50 text-info'
+                        : 'border-green-500/50 text-success'
                     }`}
                   >
                     {category.materialType.toUpperCase()}
@@ -156,7 +156,7 @@ const IndustrialCategoryNavigation: React.FC<IndustrialCategoryNavigationProps> 
                 )}
               </div>
               {!compact && category.description && (
-                <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                   {category.description}
                 </p>
               )}
@@ -168,7 +168,7 @@ const IndustrialCategoryNavigation: React.FC<IndustrialCategoryNavigationProps> 
               animate={{ rotate: expanded ? 90 : 0 }}
               transition={{ duration: 0.2 }}
             >
-              <ChevronRight className="h-4 w-4 text-gray-400" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </LazyMotionDiv>
           )}
         </LazyMotionDiv>
@@ -203,10 +203,10 @@ const IndustrialCategoryNavigation: React.FC<IndustrialCategoryNavigationProps> 
   const currentCategories = getCategoriesByMaterial(selectedMaterialType);
 
   return (
-    <div className={`bg-gray-800/50 rounded-lg border border-gray-700/50 ${className}`}>
+    <div className={`bg-card/50 rounded-lg border border-border/50 ${className}`}>
       {showMaterialTabs && (
-        <div className="p-4 border-b border-gray-700/50">
-          <h3 className="typography-h3 text-lg text-white mb-3">Material Type</h3>
+        <div className="p-4 border-b border-border/50">
+          <h3 className="typography-h3 text-lg text-foreground mb-3">Material Type</h3>
           <div className="flex gap-2">
             {[
               { id: 'all', name: 'All Machinery', icon: 'all' },
@@ -222,7 +222,7 @@ const IndustrialCategoryNavigation: React.FC<IndustrialCategoryNavigationProps> 
                   flex items-center gap-2
                   ${selectedMaterialType === material.id 
                     ? 'bg-amber-500 hover:bg-amber-600' 
-                    : 'border-gray-600 hover:border-amber-500/50'
+                    : 'border-border hover:border-amber-500/50'
                   }
                 `}
               >
@@ -236,7 +236,7 @@ const IndustrialCategoryNavigation: React.FC<IndustrialCategoryNavigationProps> 
 
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="typography-h3 text-lg text-white">
+          <h3 className="typography-h3 text-lg text-foreground">
             {selectedMaterialType === 'all' ? 'All Categories' : 
              selectedMaterialType === 'aluminum' ? 'Aluminum Processing' : 
              'UPVC Processing'}

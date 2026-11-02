@@ -513,7 +513,7 @@ export const OverlayLayer = memo(({
               if (e.key === 'Enter') onTextSubmit(textInputMode.text);
               else if (e.key === 'Escape') onTextCancel();
             }}
-            className="px-2 py-1 border border-amber-600/30 rounded text-sm bg-slate-900/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+            className="px-2 py-1 border border-amber-600/30 rounded text-sm bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-500/50"
             placeholder="Enter text..."
           />
         </foreignObject>

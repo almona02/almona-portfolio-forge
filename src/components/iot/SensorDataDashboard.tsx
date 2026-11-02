@@ -55,7 +55,7 @@ const MiniChart: React.FC<{
           );
         })}
       </div>
-      <div className="absolute top-0 left-0 text-xs text-gray-400">
+      <div className="absolute top-0 left-0 text-xs text-muted-foreground">
         {label}: {data[data.length - 1]?.toFixed(2)} {unit}
       </div>
     </div>
@@ -83,17 +83,17 @@ const SensorStatus: React.FC<{
 
   const getStatusColor = () => {
     switch (status) {
-      case 'normal': return 'text-green-400';
+      case 'normal': return 'text-success';
       case 'warning': return 'text-yellow-400';
-      case 'critical': return 'text-red-400';
+      case 'critical': return 'text-destructive';
     }
   };
 
   const getTrendIcon = () => {
     switch (trend) {
-      case 'increasing': return <TrendingUp className="h-4 w-4 text-red-400" />;
-      case 'decreasing': return <TrendingDown className="h-4 w-4 text-blue-400" />;
-      case 'stable': return <Minus className="h-4 w-4 text-gray-400" />;
+      case 'increasing': return <TrendingUp className="h-4 w-4 text-destructive" />;
+      case 'decreasing': return <TrendingDown className="h-4 w-4 text-info" />;
+      case 'stable': return <Minus className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -106,7 +106,7 @@ const SensorStatus: React.FC<{
   };
 
   return (
-    <Card className="bg-almona-dark/60 border-almona-light/20">
+    <Card className="bg-background/60 border-border/20">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -115,14 +115,14 @@ const SensorStatus: React.FC<{
             </div>
             <div>
               <h4 className="typography-h4 font-medium capitalize">{type.replace('_', ' ')}</h4>
-              <div className="text-2xl font-bold">{value.toFixed(2)} <span className="text-sm text-gray-400">{unit}</span></div>
+              <div className="text-2xl font-bold">{value.toFixed(2)} <span className="text-sm text-muted-foreground">{unit}</span></div>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1">
             <Badge className={`${
-              status === 'normal' ? 'bg-green-500/20 text-green-300 border-green-500/50' :
+              status === 'normal' ? 'bg-green-500/20 text-success border-green-500/50' :
               status === 'warning' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50' :
-              'bg-red-500/20 text-red-300 border-red-500/50'
+              'bg-red-500/20 text-destructive border-red-500/50'
             }`}>
               {status}
             </Badge>
@@ -150,7 +150,7 @@ const PredictiveMaintenanceCard: React.FC<{
   const warningPredictions = predictions.filter(p => p.probability > 0.3 && p.probability <= 0.7);
 
   return (
-    <Card className="bg-almona-dark/60 border-almona-light/20">
+    <Card className="bg-background/60 border-border/20">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5 text-almona-orange" />
@@ -160,19 +160,19 @@ const PredictiveMaintenanceCard: React.FC<{
       <CardContent className="space-y-3">
         {criticalPredictions.length > 0 && (
           <div>
-            <div className="text-sm font-medium text-red-400 mb-2">Critical Predictions</div>
+            <div className="text-sm font-medium text-destructive mb-2">Critical Predictions</div>
             {criticalPredictions.map((prediction, index) => (
               <div key={index} className="p-3 bg-red-500/20 rounded-lg border border-red-500/30">
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-medium">{prediction.component}</span>
-                  <Badge className="bg-red-500/20 text-red-300 border-red-500/50">
+                  <Badge className="bg-red-500/20 text-destructive border-red-500/50">
                     {Math.round(prediction.probability * 100)}%
                   </Badge>
                 </div>
-                <div className="text-xs text-gray-400 mb-2">
+                <div className="text-xs text-muted-foreground mb-2">
                   Estimated failure in {prediction.estimated_days} days
                 </div>
-                <div className="text-xs text-red-300">
+                <div className="text-xs text-destructive">
                   {prediction.recommended_action}
                 </div>
               </div>
@@ -187,7 +187,7 @@ const PredictiveMaintenanceCard: React.FC<{
               <div key={index} className="p-3 bg-yellow-500/20 rounded-lg border border-yellow-500/30">
                 <div className="flex items-center justify-between">
                   <span className="text-sm">{prediction.component}</span>
-                  <span className="text-xs text-gray-400">{prediction.estimated_days} days</span>
+                  <span className="text-xs text-muted-foreground">{prediction.estimated_days} days</span>
                 </div>
               </div>
             ))}
@@ -195,8 +195,8 @@ const PredictiveMaintenanceCard: React.FC<{
         )}
 
         {predictions.length === 0 && (
-          <div className="text-center py-4 text-gray-400">
-            <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-400" />
+          <div className="text-center py-4 text-muted-foreground">
+            <CheckCircle className="h-8 w-8 mx-auto mb-2 text-success" />
             <div className="text-sm">All systems optimal</div>
           </div>
         )}
@@ -213,13 +213,13 @@ const OEEDisplay: React.FC<{
   oee: number;
 }> = ({ availability, performance, quality, oee }) => {
   const getOEEColor = (value: number) => {
-    if (value >= 0.85) return 'text-green-400';
+    if (value >= 0.85) return 'text-success';
     if (value >= 0.65) return 'text-yellow-400';
-    return 'text-red-400';
+    return 'text-destructive';
   };
 
   return (
-    <Card className="bg-almona-dark/60 border-almona-light/20">
+    <Card className="bg-background/60 border-border/20">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <BarChart3 className="h-5 w-5 text-almona-orange" />
@@ -231,23 +231,23 @@ const OEEDisplay: React.FC<{
           <div className={`text-4xl font-bold ${getOEEColor(oee)}`}>
             {Math.round(oee * 100)}%
           </div>
-          <div className="text-sm text-gray-400">Overall OEE</div>
+          <div className="text-sm text-muted-foreground">Overall OEE</div>
         </div>
 
         <div className="grid grid-cols-3 gap-3 text-center">
           <div>
             <div className="text-lg font-semibold">{Math.round(availability * 100)}%</div>
-            <div className="text-xs text-gray-400">Availability</div>
+            <div className="text-xs text-muted-foreground">Availability</div>
             <Progress value={availability * 100} className="h-2 mt-1" />
           </div>
           <div>
             <div className="text-lg font-semibold">{Math.round(performance * 100)}%</div>
-            <div className="text-xs text-gray-400">Performance</div>
+            <div className="text-xs text-muted-foreground">Performance</div>
             <Progress value={performance * 100} className="h-2 mt-1" />
           </div>
           <div>
             <div className="text-lg font-semibold">{Math.round(quality * 100)}%</div>
-            <div className="text-xs text-gray-400">Quality</div>
+            <div className="text-xs text-muted-foreground">Quality</div>
             <Progress value={quality * 100} className="h-2 mt-1" />
           </div>
         </div>
@@ -333,26 +333,26 @@ export const SensorDataDashboard: React.FC<{
   return (
     <div className="space-y-6">
       {/* Connection Status */}
-      <Card className="bg-almona-dark/60 border-almona-light/20">
+      <Card className="bg-background/60 border-border/20">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {isConnected ? (
                 <>
-                  <Wifi className="h-5 w-5 text-green-400" />
+                  <Wifi className="h-5 w-5 text-success" />
                   <div>
                     <div className="font-medium">Connected to IoT Platform</div>
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-muted-foreground">
                       Real-time data streaming • {sensorData.length} readings received
                     </div>
                   </div>
                 </>
               ) : (
                 <>
-                  <WifiOff className="h-5 w-5 text-red-400" />
+                  <WifiOff className="h-5 w-5 text-destructive" />
                   <div>
                     <div className="font-medium">IoT Connection Lost</div>
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-muted-foreground">
                       Showing cached data • Attempting reconnection...
                     </div>
                   </div>
@@ -372,7 +372,7 @@ export const SensorDataDashboard: React.FC<{
       </Card>
 
       <Tabs defaultValue="sensors" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-almona-dark/80">
+        <TabsList className="grid w-full grid-cols-3 bg-background/80">
           <TabsTrigger value="sensors">Real-Time Sensors</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
@@ -409,7 +409,7 @@ export const SensorDataDashboard: React.FC<{
 
           {/* Digital Twin Summary */}
           {digitalTwinData && (
-            <Card className="bg-almona-dark/60 border-almona-light/20">
+            <Card className="bg-background/60 border-border/20">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Settings className="h-5 w-5 text-almona-orange" />
@@ -419,28 +419,28 @@ export const SensorDataDashboard: React.FC<{
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center">
-                    <div className="text-lg font-bold text-green-400">
+                    <div className="text-lg font-bold text-success">
                       {Math.round(digitalTwinData.health_indicators.overall_health)}%
                     </div>
-                    <div className="text-sm text-gray-400">Health Score</div>
+                    <div className="text-sm text-muted-foreground">Health Score</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-blue-400">
+                    <div className="text-lg font-bold text-info">
                       {Math.round(digitalTwinData.performance_metrics.efficiency * 100)}%
                     </div>
-                    <div className="text-sm text-gray-400">Efficiency</div>
+                    <div className="text-sm text-muted-foreground">Efficiency</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg font-bold text-almona-orange">
                       {digitalTwinData.operational_state}
                     </div>
-                    <div className="text-sm text-gray-400">Status</div>
+                    <div className="text-sm text-muted-foreground">Status</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg font-bold text-amber-400">
                       {digitalTwinData.alerts.length}
                     </div>
-                    <div className="text-sm text-gray-400">Active Alerts</div>
+                    <div className="text-sm text-muted-foreground">Active Alerts</div>
                   </div>
                 </div>
               </CardContent>
@@ -452,12 +452,12 @@ export const SensorDataDashboard: React.FC<{
           <OEEDisplay {...oeeData} />
           
           {/* Efficiency Trends */}
-          <Card className="bg-almona-dark/60 border-almona-light/20">
+          <Card className="bg-background/60 border-border/20">
             <CardHeader>
               <CardTitle>Performance Trends</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8 text-muted-foreground">
                 <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <div>Advanced analytics charts would be displayed here</div>
                 <div className="text-sm">Integration with Chart.js or similar library</div>
@@ -470,28 +470,28 @@ export const SensorDataDashboard: React.FC<{
           <PredictiveMaintenanceCard predictions={predictions} />
           
           {/* Maintenance History */}
-          <Card className="bg-almona-dark/60 border-almona-light/20">
+          <Card className="bg-background/60 border-border/20">
             <CardHeader>
               <CardTitle>Maintenance Schedule</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-almona-dark/40 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-background/40 rounded-lg">
                   <div>
                     <div className="font-medium">Routine Inspection</div>
-                    <div className="text-sm text-gray-400">Next: December 15, 2024</div>
+                    <div className="text-sm text-muted-foreground">Next: December 15, 2024</div>
                   </div>
-                  <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/50">
+                  <Badge className="bg-blue-500/20 text-info border-blue-500/50">
                     Scheduled
                   </Badge>
                 </div>
                 
-                <div className="flex items-center justify-between p-3 bg-almona-dark/40 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-background/40 rounded-lg">
                   <div>
                     <div className="font-medium">Oil Change</div>
-                    <div className="text-sm text-gray-400">Next: January 10, 2025</div>
+                    <div className="text-sm text-muted-foreground">Next: January 10, 2025</div>
                   </div>
-                  <Badge className="bg-green-500/20 text-green-300 border-green-500/50">
+                  <Badge className="bg-green-500/20 text-success border-green-500/50">
                     On Schedule
                   </Badge>
                 </div>

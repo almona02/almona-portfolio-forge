@@ -110,13 +110,13 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
   const getComplexityColor = (complexity?: string) => {
     switch (complexity) {
       case 'Basic':
-        return 'bg-green-900/30 border-green-500/30 text-green-400';
+        return 'bg-green-900/30 border-green-500/30 text-success';
       case 'Intermediate':
-        return 'bg-blue-900/30 border-blue-500/30 text-blue-400';
+        return 'bg-blue-900/30 border-blue-500/30 text-info';
       case 'Advanced':
-        return 'bg-amber-900/30 border-amber-500/30 text-amber-400';
+        return 'bg-amber-900/30 border-amber-500/30 text-warning';
       default:
-        return 'bg-gray-900/30 border-gray-500/30 text-gray-400';
+        return 'bg-background/30 border-border/30 text-muted-foreground';
     }
   };
 
@@ -124,11 +124,11 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
   const getPricingTierColor = (tier?: string) => {
     switch (tier) {
       case 'Local':
-        return 'bg-gray-900/30 border-gray-500/30 text-gray-400';
+        return 'bg-background/30 border-border/30 text-muted-foreground';
       case 'Premium':
-        return 'bg-amber-900/30 border-amber-500/30 text-amber-400';
+        return 'bg-amber-900/30 border-amber-500/30 text-warning';
       default:
-        return 'bg-gray-900/30 border-gray-500/30 text-gray-400';
+        return 'bg-background/30 border-border/30 text-muted-foreground';
     }
   };
 
@@ -161,16 +161,16 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
         <div className="space-y-3 mb-4">
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-600/70" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-warning/70" />
               <Input
                 type="text"
                 placeholder={t('template_gallery.search', 'Search templates...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 border-amber-600/30 bg-gray-900/50 text-amber-200 placeholder:text-amber-600/50"
+                className="pl-9 border-amber-600/30 bg-background/50 text-warning placeholder:text-warning/50"
               />
             </div>
-            <div className="flex items-center gap-1 border border-amber-600/30 rounded-lg p-1 bg-gray-900/50">
+            <div className="flex items-center gap-1 border border-amber-600/30 rounded-lg p-1 bg-background/50">
               <Button
                 variant="ghost"
                 size="sm"
@@ -178,8 +178,8 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
                 className={cn(
                   'h-7 px-2',
                   viewMode === 'grid'
-                    ? 'bg-amber-900/30 text-amber-200'
-                    : 'text-amber-600/70 hover:text-amber-200'
+                    ? 'bg-amber-900/30 text-warning'
+                    : 'text-warning/70 hover:text-warning'
                 )}
               >
                 <Grid3X3 className="h-4 w-4" />
@@ -191,8 +191,8 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
                 className={cn(
                   'h-7 px-2',
                   viewMode === 'list'
-                    ? 'bg-amber-900/30 text-amber-200'
-                    : 'text-amber-600/70 hover:text-amber-200'
+                    ? 'bg-amber-900/30 text-warning'
+                    : 'text-warning/70 hover:text-warning'
                 )}
               >
                 <LayoutList className="h-4 w-4" />
@@ -205,8 +205,8 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
       {/* Templates Grid/List */}
       {filteredTemplates.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <Sparkles className="h-12 w-12 text-amber-600/50 mb-4" />
-          <p className="text-amber-600/70 text-sm">
+          <Sparkles className="h-12 w-12 text-warning/50 mb-4" />
+          <p className="text-warning/70 text-sm">
             {t('template_gallery.no_templates', 'No templates found')}
           </p>
         </div>
@@ -228,7 +228,7 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
                 onClick={() => handleTemplateSelect(template)}
                 className={cn(
                   'cursor-pointer transition-all duration-200',
-                  'border-amber-600/30 bg-gray-900/50 hover:bg-gray-900/70',
+                  'border-amber-600/30 bg-background/50 hover:bg-background/70',
                   'hover:border-amber-500/50 hover:shadow-lg',
                   isSelected && 'ring-2 ring-amber-500 border-amber-500 bg-amber-900/20',
                   viewMode === 'list' && 'flex flex-row'
@@ -240,7 +240,7 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
                     <CardHeader className="pb-2">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
-                          <CardTitle className="text-sm font-semibold text-amber-200 truncate flex items-center gap-2">
+                          <CardTitle className="text-sm font-semibold text-warning truncate flex items-center gap-2">
                             {template.icon && <span className="text-lg">{template.icon}</span>}
                             {template.title}
                           </CardTitle>
@@ -252,12 +252,12 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
                     </CardHeader>
                     <CardContent className="space-y-3">
                       {/* Grid Preview */}
-                      <div className="h-24 bg-gray-950/50 rounded border border-amber-600/20 flex items-center justify-center">
+                      <div className="h-24 bg-background/50 rounded border border-amber-600/20 flex items-center justify-center">
                         {renderGridPreview(template)}
                       </div>
 
                       {/* Description */}
-                      <p className="text-xs text-amber-600/80 line-clamp-2">
+                      <p className="text-xs text-warning/80 line-clamp-2">
                         {template.description}
                       </p>
 
@@ -283,7 +283,7 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
 
                       {/* Applications (truncated) */}
                       {template.applications && template.applications.length > 0 && (
-                        <div className="text-[10px] text-amber-600/60 line-clamp-1">
+                        <div className="text-[10px] text-warning/60 line-clamp-1">
                           {template.applications.slice(0, 2).join(', ')}
                           {template.applications.length > 2 && '...'}
                         </div>
@@ -293,13 +293,13 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
                 ) : (
                   <>
                     {/* List View */}
-                    <div className="w-24 bg-gray-950/50 border-r border-amber-600/20 flex items-center justify-center flex-shrink-0">
+                    <div className="w-24 bg-background/50 border-r border-amber-600/20 flex items-center justify-center flex-shrink-0">
                       {renderGridPreview(template)}
                     </div>
                     <div className="flex-1 flex flex-col">
                       <CardHeader className="pb-2">
                         <div className="flex items-start justify-between gap-2">
-                          <CardTitle className="text-sm font-semibold text-amber-200 flex items-center gap-2">
+                          <CardTitle className="text-sm font-semibold text-warning flex items-center gap-2">
                             {template.icon && <span>{template.icon}</span>}
                             {template.title}
                           </CardTitle>
@@ -309,7 +309,7 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-2">
-                        <p className="text-xs text-amber-600/80">{template.description}</p>
+                        <p className="text-xs text-warning/80">{template.description}</p>
                         <div className="flex items-center gap-2 flex-wrap">
                           {template.complexity && (
                             <Badge
@@ -329,7 +329,7 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
                           )}
                         </div>
                         {template.applications && template.applications.length > 0 && (
-                          <div className="text-[10px] text-amber-600/60">
+                          <div className="text-[10px] text-warning/60">
                             {template.applications.join(', ')}
                           </div>
                         )}

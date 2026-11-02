@@ -26,14 +26,14 @@ export const SmartSummaryCard: React.FC<SmartSummaryCardProps> = ({
   items
 }) => {
   return (
-    <Card className="bg-gray-800 border-gray-700">
+    <Card className="bg-card border-border">
       <CardHeader>
         <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {items.map((item, index) => (
           <div key={index} className="flex justify-between items-center">
-            <span className="text-gray-400">{item.label}:</span>
+            <span className="text-muted-foreground">{item.label}:</span>
             <div className="flex items-center gap-2">
               <span className="font-semibold">{item.value}</span>
               {item.explanation && item.onWhyClick && (

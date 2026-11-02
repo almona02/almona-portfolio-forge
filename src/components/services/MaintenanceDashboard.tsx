@@ -118,7 +118,7 @@ export const MaintenanceDashboard = withErrorBoundary(() => {
       case "completed":
         return <CheckCircle2 className="h-4 w-4  status-valid" />;
       case "overdue":
-        return <AlertTriangle className="h-4 w-4 text-red-500" />;
+        return <AlertTriangle className="h-4 w-4 text-destructive" />;
       default:
         return null;
     }
@@ -129,9 +129,9 @@ export const MaintenanceDashboard = withErrorBoundary(() => {
       case "pending":
         return "bg-yellow-500/10 text-yellow-500";
       case "completed":
-        return "bg-green-500/10 text-green-500";
+        return "bg-green-500/10 text-success";
       case "overdue":
-        return "bg-red-500/10 text-red-500";
+        return "bg-red-500/10 text-destructive";
       default:
         return "";
     }
@@ -162,7 +162,7 @@ export const MaintenanceDashboard = withErrorBoundary(() => {
               <div className="grid grid-cols-2 gap-4">
                 {Object.entries(healthData.components).map(([name, value]) => (
                   <div key={name}>
-                    <p className="capitalize text-sm text-gray-400">{name}</p>
+                    <p className="capitalize text-sm text-muted-foreground">{name}</p>
                     <p className="font-bold text-lg">{value}%</p>
                   </div>
                 ))}
@@ -214,19 +214,19 @@ export const MaintenanceDashboard = withErrorBoundary(() => {
                   >
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <Badge className="border border-gray-300">{event.type}</Badge>
+                        <Badge className="border border-border">{event.type}</Badge>
                         <Badge className={getStatusColor(event.status)}>
                           {getStatusIcon(event.status)}
                           {event.status}
                         </Badge>
                       </div>
                       <h3 className="typography-h3 font-medium">{event.description}</h3>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-muted-foreground">
                         {new Date(event.date).toLocaleDateString()} • {event.duration} hours
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-400">Technician:</span>
+                      <span className="text-sm text-muted-foreground">Technician:</span>
                       <span className="font-medium">{event.technician}</span>
                     </div>
                   </div>
@@ -243,29 +243,29 @@ export const MaintenanceDashboard = withErrorBoundary(() => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Button className="h-24 flex-col gap-2 border border-gray-300">
+                <Button className="h-24 flex-col gap-2 border border-border">
                   <span className="font-medium">Operator Manual</span>
-                  <span className="text-sm text-gray-500">PDF • 2.4MB</span>
+                  <span className="text-sm text-muted-foreground">PDF • 2.4MB</span>
                 </Button>
-                <Button className="h-24 flex-col gap-2 border border-gray-300">
+                <Button className="h-24 flex-col gap-2 border border-border">
                   <span className="font-medium">Maintenance Guide</span>
-                  <span className="text-sm text-gray-500">PDF • 3.1MB</span>
+                  <span className="text-sm text-muted-foreground">PDF • 3.1MB</span>
                 </Button>
-                <Button className="h-24 flex-col gap-2 border border-gray-300">
+                <Button className="h-24 flex-col gap-2 border border-border">
                   <span className="font-medium">Safety Procedures</span>
-                  <span className="text-sm text-gray-500">PDF • 1.7MB</span>
+                  <span className="text-sm text-muted-foreground">PDF • 1.7MB</span>
                 </Button>
-                <Button className="h-24 flex-col gap-2 border border-gray-300">
+                <Button className="h-24 flex-col gap-2 border border-border">
                   <span className="font-medium">Wiring Diagrams</span>
-                  <span className="text-sm text-gray-500">PDF • 4.2MB</span>
+                  <span className="text-sm text-muted-foreground">PDF • 4.2MB</span>
                 </Button>
-                <Button className="h-24 flex-col gap-2 border border-gray-300">
+                <Button className="h-24 flex-col gap-2 border border-border">
                   <span className="font-medium">Software Manual</span>
-                  <span className="text-sm text-gray-500">PDF • 5.3MB</span>
+                  <span className="text-sm text-muted-foreground">PDF • 5.3MB</span>
                 </Button>
-                <Button className="h-24 flex-col gap-2 border border-gray-300">
+                <Button className="h-24 flex-col gap-2 border border-border">
                   <span className="font-medium">Troubleshooting</span>
-                  <span className="text-sm text-gray-500">PDF • 2.1MB</span>
+                  <span className="text-sm text-muted-foreground">PDF • 2.1MB</span>
                 </Button>
               </div>
             </CardContent>

@@ -28,6 +28,9 @@ venv-*/
 htmlcov/
 *.html
 *.json
+# Exception: branded Supabase auth emails
+!supabase/templates/
+!supabase/templates/**
 # Exception: YDT knowledge base must be tracked for production
 !src/lib/ydt/knowledge-base.json
 !ai_agents/ydt_agent/operator_question_set.json
@@ -121,6 +124,13 @@ supabase/.temp/
 playwright-report/
 test-results/
 tmp/
+# Root scratch artifacts (never re-commit investor-visible junk)
+/tmp_*.png
+/tmp_*.json
+/debug_pdf_image.png
+/www.pdf
+/debug_failures.txt
+/debug_layout.html
 git-status-push-review.txt
 
 # Reproducible deployment bundles

@@ -47,12 +47,12 @@ export const PerformanceBenchmarkChart: React.FC<PerformanceBenchmarkChartProps>
   }));
 
   return (
-    <Card className="bg-gray-900 border-gray-700 card-dark">
+    <Card className="bg-background border-border card-dark">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Performance Benchmark</CardTitle>
           <Select value={selectedAlgorithm} onValueChange={setSelectedAlgorithm}>
-            <SelectTrigger className="w-40 bg-gray-800 border-gray-700">
+            <SelectTrigger className="w-40 bg-card border-border">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -66,9 +66,9 @@ export const PerformanceBenchmarkChart: React.FC<PerformanceBenchmarkChartProps>
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className="text-center text-gray-500 py-8">Loading benchmark data...</div>
+          <div className="text-center text-muted-foreground py-8">Loading benchmark data...</div>
         ) : trends.length === 0 ? (
-          <div className="text-center text-gray-500 py-8">No benchmark data available</div>
+          <div className="text-center text-muted-foreground py-8">No benchmark data available</div>
         ) : (
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">

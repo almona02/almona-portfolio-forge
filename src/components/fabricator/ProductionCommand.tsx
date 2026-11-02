@@ -125,7 +125,7 @@ const CNCSimulationView: React.FC<{ gcode: string; machine: string }> = ({ gcode
 
         const render = () => {
             // Clear canvas
-            ctx.fillStyle = '#0f172a'; // bg-slate-900
+            ctx.fillStyle = '#0f172a'; // bg-background
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Draw Machine Bed
@@ -197,7 +197,7 @@ const CNCSimulationView: React.FC<{ gcode: string; machine: string }> = ({ gcode
                 className="w-full h-full block"
             />
             <div className="absolute top-2 right-2 flex gap-2">
-                 <div className="bg-black/60 text-green-400 text-xs font-mono px-2 py-1 rounded border border-green-900">
+                 <div className="bg-black/60 text-success text-xs font-mono px-2 py-1 rounded border border-green-900">
                     {progress}%
                 </div>
                 <button 
@@ -522,11 +522,11 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
     // --- Render Logic ---
     if (isGenerating) {
         return (
-            <Card className="bg-gray-700/50 border-gray-600">
+            <Card className="bg-muted/50 border-border">
                 <CardContent className="p-8 text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div>
                     <h3 className="typography-h3 text-lg mb-2">{t('production_command.generating_plan', 'Generating Cutting Plan')}</h3>
-                    <p className="text-gray-400">{t('production_command.ai_optimizing', 'The system is optimizing your material usage...')}</p>
+                    <p className="text-muted-foreground">{t('production_command.ai_optimizing', 'The system is optimizing your material usage...')}</p>
                 </CardContent>
             </Card>
         );
@@ -534,11 +534,11 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
 
     if (!optimization || !project) {
         return (
-            <Card className="bg-gray-700/50 border-gray-600">
+            <Card className="bg-muted/50 border-border">
                 <CardContent className="p-8 text-center">
-                    <Scissors className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <Scissors className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <h3 className="typography-h3 text-lg mb-2">{t('production_command.no_optimization', 'No Optimization Data')}</h3>
-                    <p className="text-gray-400">{t('production_command.complete_design', 'Complete the design phase to generate cutting optimization.')}</p>
+                    <p className="text-muted-foreground">{t('production_command.complete_design', 'Complete the design phase to generate cutting optimization.')}</p>
                 </CardContent>
             </Card>
         );
@@ -546,13 +546,13 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
 
     return (
         <div className="space-y-8">
-            <Card className="bg-gray-800/30 border-gray-700 shadow-2xl">
+            <Card className="bg-card/30 border-border shadow-2xl">
                  <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
-                        <Scissors className="h-6 w-6 text-amber-400" />
+                        <Scissors className="h-6 w-6 text-warning" />
                         {t('production_command.title', 'Production Command Center')}
                     </CardTitle>
-                    <AlertDescription className="text-gray-400">
+                    <AlertDescription className="text-muted-foreground">
                         {t('production_command.description', 'Review the software-assisted plan, visualize the cuts, and dispatch to production.')}
                     </AlertDescription>
                 </CardHeader>
@@ -569,41 +569,41 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
 
             {/* --- 2. KEY PERFORMANCE INDICATORS --- */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card className="bg-gray-700/50 border-gray-600">
+                <Card className="bg-muted/50 border-border">
                     <CardContent className="p-4 text-center">
-                        <TrendingUp className="h-8 w-8 text-green-400 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-green-400">{optimization.nestingEfficiency.toFixed(1)}%</div>
-                        <div className="text-sm text-gray-400">{t('production_command.efficiency', 'Efficiency')}</div>
+                        <TrendingUp className="h-8 w-8 text-success mx-auto mb-2" />
+                        <div className="text-2xl font-bold text-success">{optimization.nestingEfficiency.toFixed(1)}%</div>
+                        <div className="text-sm text-muted-foreground">{t('production_command.efficiency', 'Efficiency')}</div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-gray-700/50 border-gray-600">
+                <Card className="bg-muted/50 border-border">
                     <CardContent className="p-4 text-center">
-                        <Package className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-blue-400">{optimization.wastePercentage.toFixed(1)}%</div>
-                        <div className="text-sm text-gray-400">{t('production_command.waste', 'Waste')}</div>
+                        <Package className="h-8 w-8 text-info mx-auto mb-2" />
+                        <div className="text-2xl font-bold text-info">{optimization.wastePercentage.toFixed(1)}%</div>
+                        <div className="text-sm text-muted-foreground">{t('production_command.waste', 'Waste')}</div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-gray-700/50 border-gray-600">
+                <Card className="bg-muted/50 border-border">
                     <CardContent className="p-4 text-center">
-                        <Clock className="h-8 w-8 text-yellow-400 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-yellow-400">{optimization.estimatedProductionTime.toFixed(1)}m</div>
-                        <div className="text-sm text-gray-400">{t('production_command.production_time', 'Production Time')}</div>
+                        <Clock className="h-8 w-8 text-warning mx-auto mb-2" />
+                        <div className="text-2xl font-bold text-warning">{optimization.estimatedProductionTime.toFixed(1)}m</div>
+                        <div className="text-sm text-muted-foreground">{t('production_command.production_time', 'Production Time')}</div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-gray-700/50 border-gray-600">
+                <Card className="bg-muted/50 border-border">
                     <CardContent className="p-4 text-center">
-                        <DollarSign className="h-8 w-8 text-amber-400 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-amber-400">${optimization.costBreakdown.totalCost.toFixed(0)}</div>
-                        <div className="text-sm text-gray-400">{t('production_command.total_cost', 'Total Cost')}</div>
+                        <DollarSign className="h-8 w-8 text-warning mx-auto mb-2" />
+                        <div className="text-2xl font-bold text-warning">${optimization.costBreakdown.totalCost.toFixed(0)}</div>
+                        <div className="text-sm text-muted-foreground">{t('production_command.total_cost', 'Total Cost')}</div>
                     </CardContent>
                 </Card>
             </div>
 
             {/* --- 3. VISUAL CUTTING PLAN (BarDrawing) --- */}
-            <Card className="bg-gray-800/30 border-gray-700">
+            <Card className="bg-card/30 border-border">
                 <CardHeader>
                     <CardTitle className="text-base">{t('production_command.visual_cutting_plan', 'Visual Cutting Plan')}</CardTitle>
                 </CardHeader>
@@ -626,7 +626,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                     positionNumber: project?.posNumber,
                 });
                 return (
-                    <Card className="bg-gray-800/30 border-gray-700">
+                    <Card className="bg-card/30 border-border">
                         <CardHeader
                             className="cursor-pointer select-none flex flex-row items-center justify-between"
                             onClick={() => setIsCutSheetsExpanded(!isCutSheetsExpanded)}
@@ -643,21 +643,21 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                         {isCutSheetsExpanded && (
                             <CardContent className="space-y-4">
                                 {cutSheets.bars.map((bar) => (
-                                    <div key={bar.barIndex} className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
+                                    <div key={bar.barIndex} className="bg-background/50 rounded-lg p-4 border border-border">
                                         <div className="flex justify-between items-center mb-2">
-                                            <span className="font-medium text-gray-200">
+                                            <span className="font-medium text-foreground">
                                                 Bar {bar.barIndex}: {bar.profileName}
                                             </span>
-                                            <span className="text-xs text-gray-400">
+                                            <span className="text-xs text-muted-foreground">
                                                 {bar.stockLength}mm stock • {bar.utilizationPercent.toFixed(1)}% util
                                             </span>
                                         </div>
                                         <div className="grid grid-cols-5 gap-2 text-xs font-mono">
-                                            <div className="text-gray-500">#</div>
-                                            <div className="text-gray-500">Length</div>
-                                            <div className="text-gray-500">Angle</div>
-                                            <div className="text-gray-500">Position</div>
-                                            <div className="text-gray-500">Component</div>
+                                            <div className="text-muted-foreground">#</div>
+                                            <div className="text-muted-foreground">Length</div>
+                                            <div className="text-muted-foreground">Angle</div>
+                                            <div className="text-muted-foreground">Position</div>
+                                            <div className="text-muted-foreground">Component</div>
                                             {bar.cuts.map((c) => (
                                                 <React.Fragment key={c.sequence}>
                                                     <div>{c.sequence}</div>
@@ -669,7 +669,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                                             ))}
                                         </div>
                                         {bar.wasteMm > 0 && (
-                                            <div className="mt-2 text-xs text-red-400">
+                                            <div className="mt-2 text-xs text-destructive">
                                                 Waste: {bar.wasteMm.toFixed(0)}mm
                                             </div>
                                         )}
@@ -683,7 +683,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
 
             {/* --- 3c. LABELS (per-piece barcode/QR) --- */}
             {labels.length > 0 && (
-                <Card className="bg-gray-800/30 border-gray-700">
+                <Card className="bg-card/30 border-border">
                     <CardHeader
                         className="cursor-pointer select-none flex flex-row items-center justify-between"
                         onClick={() => setIsLabelsExpanded(!isLabelsExpanded)}
@@ -740,14 +740,14 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                                 {labels.slice(0, 24).map((label, i) => (
                                     <div
                                         key={i}
-                                        className="bg-gray-900/80 rounded border border-gray-700 p-2 text-xs font-mono"
+                                        className="bg-background/80 rounded border border-border p-2 text-xs font-mono"
                                     >
-                                        <div className="font-semibold text-amber-400 truncate">{label.barcode}</div>
-                                        <div className="text-gray-400 mt-1">{label.profileName}</div>
+                                        <div className="font-semibold text-warning truncate">{label.barcode}</div>
+                                        <div className="text-muted-foreground mt-1">{label.profileName}</div>
                                         <div>{label.cutLength}mm @ {label.angle}°</div>
-                                        {label.position && <div className="text-gray-500">{label.position}</div>}
+                                        {label.position && <div className="text-muted-foreground">{label.position}</div>}
                                         {label.qrCode && (
-                                            <div className="mt-1 text-[10px] text-gray-600 truncate" title={label.qrCode}>
+                                            <div className="mt-1 text-[10px] text-muted-foreground truncate" title={label.qrCode}>
                                                 QR: {label.qrCode.slice(0, 30)}…
                                             </div>
                                         )}
@@ -755,7 +755,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                                 ))}
                             </div>
                             {labels.length > 24 && (
-                                <div className="text-xs text-gray-500">
+                                <div className="text-xs text-muted-foreground">
                                     {t('production_command.showing_first', 'Showing first 24 of {total} labels', { total: labels.length })}
                                 </div>
                             )}
@@ -766,7 +766,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
 
             {/* --- 3d. ASSEMBLY SEQUENCE --- */}
             {bom?.assemblySequence && bom.assemblySequence.length > 0 && (
-                <Card className="bg-gray-800/30 border-gray-700">
+                <Card className="bg-card/30 border-border">
                     <CardHeader
                         className="cursor-pointer select-none flex flex-row items-center justify-between"
                         onClick={() => setIsAssemblyExpanded(!isAssemblyExpanded)}
@@ -784,13 +784,13 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                         <CardContent>
                             <ol className="space-y-3">
                                 {bom.assemblySequence.map((step) => (
-                                    <li key={step.step} className="flex gap-3 p-3 rounded-lg bg-gray-900/50 border border-gray-700">
-                                        <span className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-600/30 text-amber-300 flex items-center justify-center font-semibold text-sm">
+                                    <li key={step.step} className="flex gap-3 p-3 rounded-lg bg-background/50 border border-border">
+                                        <span className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-600/30 text-warning flex items-center justify-center font-semibold text-sm">
                                             {step.step}
                                         </span>
                                         <div className="flex-1 min-w-0">
-                                            <div className="font-medium text-gray-200">{step.operation}</div>
-                                            <div className="flex flex-wrap gap-2 mt-1 text-xs text-gray-400">
+                                            <div className="font-medium text-foreground">{step.operation}</div>
+                                            <div className="flex flex-wrap gap-2 mt-1 text-xs text-muted-foreground">
                                                 <span>{step.station}</span>
                                                 <span>•</span>
                                                 <span>{step.estimatedTime} min</span>
@@ -802,7 +802,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                                                 )}
                                             </div>
                                             {step.qualityGates && step.qualityGates.length > 0 && (
-                                                <ul className="mt-2 text-xs text-gray-500 list-disc list-inside">
+                                                <ul className="mt-2 text-xs text-muted-foreground list-disc list-inside">
                                                     {step.qualityGates.map((gate, i) => (
                                                         <li key={i}>{gate}</li>
                                                     ))}
@@ -819,7 +819,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
 
             {/* --- 4. INSTALLATION VARIABLES --- */}
             {project && (
-                <Card className="bg-gray-800/30 border-gray-700">
+                <Card className="bg-card/30 border-border">
                     <CardHeader>
                         <CardTitle className="text-base">{t('production_command.installation_variables', 'Installation Variables')}</CardTitle>
                     </CardHeader>
@@ -842,7 +842,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
             <Card className="bg-gradient-to-r from-amber-900/20 to-amber-800/20 border-amber-500/50" id="dispatch-section">
                 <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
-                        <Download className="h-5 w-5 text-amber-400" />
+                        <Download className="h-5 w-5 text-warning" />
                         {t('production_command.one_click_export', 'One-Click Export (Egypt Pilot)')}
                     </CardTitle>
                 </CardHeader>
@@ -877,28 +877,28 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                             <span className="text-xs opacity-90">3 POs Export</span>
                         </Button>
                     </div>
-                    <div className="text-xs text-gray-400 text-center pt-2">
+                    <div className="text-xs text-muted-foreground text-center pt-2">
                         All exports include Frame + Sash cuts separately • Ready for production
                     </div>
                 </CardContent>
             </Card>
 
             {/* --- 6. DISPATCH TO PRODUCTION (Advanced) --- */}
-            <Card className="bg-gray-800/30 border-gray-700" id="dispatch-section-advanced">
+            <Card className="bg-card/30 border-border" id="dispatch-section-advanced">
                 <CardHeader>
                      <CardTitle className="text-base">{t('production_command.dispatch_to_production', 'Dispatch to Production (Advanced)')}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Side: CNC Machine Control */}
                     <div className="space-y-4">
-                        <h3 className="typography-h3 text-gray-300">{t('production_command.cnc_machine_integration', 'CNC Machine Integration')}</h3>
+                        <h3 className="typography-h3 text-foreground">{t('production_command.cnc_machine_integration', 'CNC Machine Integration')}</h3>
                         <div>
-                            <label className="typography-label text-sm font-medium text-gray-400">{t('production_command.target_machine', 'Target Yilmaz Machine:')}</label>
+                            <label className="typography-label text-sm font-medium text-muted-foreground">{t('production_command.target_machine', 'Target Yilmaz Machine:')}</label>
                             <Select value={selectedMachine} onValueChange={handleMachineChange}>
-                                <SelectTrigger className="w-full bg-gray-800 border-gray-600 text-white">
+                                <SelectTrigger className="w-full bg-card border-border text-foreground">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-gray-800 border-gray-600">
+                                <SelectContent className="bg-card border-border">
                                     {availableMachines.map((machine) => (
                                         <SelectItem key={machine} value={machine}>
                                             {machine}
@@ -910,11 +910,11 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
 
                         {gCodePreview && (
                              <div className="space-y-2">
-                                <label className="typography-label text-sm font-medium text-gray-400 block">{t('production_command.machine_simulation', 'Machine Simulation')}</label>
-                                <div className="rounded-md overflow-hidden border border-gray-700 bg-gray-950 relative h-64">
+                                <label className="typography-label text-sm font-medium text-muted-foreground block">{t('production_command.machine_simulation', 'Machine Simulation')}</label>
+                                <div className="rounded-md overflow-hidden border border-border bg-background relative h-64">
                                     <CNCSimulationView gcode={gCodePreview} machine={selectedMachine} />
                                 </div>
-                                <div className="text-xs text-center text-gray-500 font-mono">
+                                <div className="text-xs text-center text-muted-foreground font-mono">
                                     {t('production_command.simulation_note', 'Visualizing tool path for {machine} controller', { machine: selectedMachine })}
                                 </div>
                             </div>
@@ -930,7 +930,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                     </div>
 
                     {/* Right Side: Action Buttons */}
-                    <div className="bg-gray-900/50 p-6 rounded-lg border border-gray-700 flex flex-col justify-center space-y-4">
+                    <div className="bg-background/50 p-6 rounded-lg border border-border flex flex-col justify-center space-y-4">
                         <Button onClick={() => confirmAndExecute('report')} disabled={isProcessing} variant="outline" size="lg">
                             <Download className="h-4 w-4 mr-2"/> {t('production_command.export_pdf', 'Export PDF Cutting List')}
                         </Button>

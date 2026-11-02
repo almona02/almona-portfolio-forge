@@ -135,7 +135,7 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
               type="file" 
               accept="image/*" 
               onChange={handleImageUpload}
-              className="block w-full text-sm text-gray-500
+              className="block w-full text-sm text-muted-foreground
                 file:mr-4 file:py-2 file:px-4
                 file:rounded-md file:border-0
                 file:text-sm file:font-semibold
@@ -323,18 +323,18 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
                 </div>
                 <div className="space-y-3">
                   {equipmentRecommendations.map((rec, _idx) => (
-                    <Card key={rec.productId} className="bg-gray-900/50 border-gray-700 card-dark">
+                    <Card key={rec.productId} className="bg-background/50 border-border card-dark">
                       <CardHeader>
                         <div className="flex items-center justify-between">
                           <CardTitle className="text-lg">{rec.productName}</CardTitle>
-                          <Badge variant="outline" className="bg-blue-500/10 border-blue-500/30 text-blue-400">
+                          <Badge variant="outline" className="bg-blue-500/10 border-blue-500/30 text-info">
                             {Math.round(rec.matchScore)}% Match
                           </Badge>
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-400">Price</span>
+                          <span className="text-sm text-muted-foreground">Price</span>
                           <span className="text-lg font-bold">
                             {rec.price.toLocaleString()} {rec.currency}
                           </span>
@@ -343,8 +343,8 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
                           <p className="text-sm font-medium mb-2">Why this machine:</p>
                           <ul className="space-y-1">
                             {rec.reasons.map((reason, rIdx) => (
-                              <li key={rIdx} className="text-xs text-gray-400 flex items-start gap-2">
-                                <CheckCircle2 className="h-3 w-3 text-green-400 flex-shrink-0 mt-0.5" />
+                              <li key={rIdx} className="text-xs text-muted-foreground flex items-start gap-2">
+                                <CheckCircle2 className="h-3 w-3 text-success flex-shrink-0 mt-0.5" />
                                 {reason}
                               </li>
                             ))}

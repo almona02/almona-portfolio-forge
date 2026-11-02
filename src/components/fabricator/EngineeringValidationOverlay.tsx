@@ -52,13 +52,13 @@ export const EngineeringValidationOverlay: React.FC<EngineeringValidationOverlay
   const getSeverityIcon = (severity: Firman['severity']) => {
     switch (severity) {
       case 'IMPERIAL_DECREE':
-        return <Shield className="h-5 w-5 text-red-600" />;
+        return <Shield className="h-5 w-5 text-destructive" />;
       case 'BLOCK':
-        return <XCircle className="h-5 w-5 text-red-500" />;
+        return <XCircle className="h-5 w-5 text-destructive" />;
       case 'WARNING':
-        return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
+        return <AlertTriangle className="h-5 w-5 text-warning" />;
       case 'ADVICE':
-        return <Info className="h-5 w-5 text-blue-500" />;
+        return <Info className="h-5 w-5 text-info" />;
     }
   };
 
@@ -110,7 +110,7 @@ export const EngineeringValidationOverlay: React.FC<EngineeringValidationOverlay
 
               {/* Pedagogical Note (Professor Mode) */}
               {showPedagogicalNotes && (
-                <div className="mt-3 p-3 bg-white/50 rounded border border-primary/20">
+                <div className="mt-3 p-3 bg-foreground/50 rounded border border-primary/20">
                   <div className="flex items-center gap-2 mb-2">
                     <GraduationCap className="h-4 w-4 text-primary" />
                     <span className="text-xs font-semibold text-primary">Professor Mode</span>
@@ -131,7 +131,7 @@ export const EngineeringValidationOverlay: React.FC<EngineeringValidationOverlay
                     {isExpanded ? 'Hide' : 'Show'} Technical Details
                   </Button>
                   {isExpanded && (
-                    <div className="mt-2 p-2 bg-white/50 rounded text-xs font-mono">
+                    <div className="mt-2 p-2 bg-foreground/50 rounded text-xs font-mono">
                       {firman.technicalDetails.calculatedValues && (
                         <div className="mb-2">
                           <strong>Calculated Values:</strong>
@@ -178,7 +178,7 @@ export const EngineeringValidationOverlay: React.FC<EngineeringValidationOverlay
           {validationResult.isValid ? (
             <CheckCircle2 className="h-6 w-6  status-valid" />
           ) : (
-            <XCircle className="h-6 w-6 text-red-500" />
+            <XCircle className="h-6 w-6 text-destructive" />
           )}
           <div>
             <h3 className="typography-h3 font-cairo">
@@ -231,7 +231,7 @@ export const EngineeringValidationOverlay: React.FC<EngineeringValidationOverlay
       {/* Empty State */}
       {validationResult.summary.total === 0 && (
         <Alert className="bg-green-50 border-green-200">
-          <CheckCircle2 className="h-4 w-4 text-green-600" />
+          <CheckCircle2 className="h-4 w-4 text-success" />
           <AlertTitle>Design Valid</AlertTitle>
           <AlertDescription>
             All engineering constraints satisfied. Design is ready for production.

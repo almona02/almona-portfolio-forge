@@ -230,8 +230,8 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold flex items-center gap-2 text-slate-100">
-          <Factory className="h-5 w-5 text-amber-400" />
+        <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
+          <Factory className="h-5 w-5 text-warning" />
           Production Workflow
         </h3>
         <Badge variant="outline" className="text-xs">
@@ -240,40 +240,40 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
       </div>
 
       <Tabs defaultValue="projects" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-slate-800/50 border border-slate-700/50">
-          <TabsTrigger value="projects" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">Projects</TabsTrigger>
-          <TabsTrigger value="execution" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">Execution</TabsTrigger>
-          <TabsTrigger value="current" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">Design</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 bg-card/50 border border-border/50">
+          <TabsTrigger value="projects" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-warning">Projects</TabsTrigger>
+          <TabsTrigger value="execution" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-warning">Execution</TabsTrigger>
+          <TabsTrigger value="current" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-warning">Design</TabsTrigger>
         </TabsList>
 
         <TabsContent value="projects" className="space-y-4">
           {/* Create New Project */}
-          <Card className="bg-slate-900/60 border-slate-700/50">
-            <CardHeader className="pb-3 border-b border-slate-700/50">
-              <CardTitle className="text-sm flex items-center gap-2 text-slate-200">
-                <FolderPlus className="h-4 w-4 text-amber-400" />
+          <Card className="bg-background/60 border-border/50">
+            <CardHeader className="pb-3 border-b border-border/50">
+              <CardTitle className="text-sm flex items-center gap-2 text-foreground">
+                <FolderPlus className="h-4 w-4 text-warning" />
                 Create Production Project
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label htmlFor="project-name" className="text-xs text-slate-300">Project Name</Label>
+                  <Label htmlFor="project-name" className="text-xs text-foreground">Project Name</Label>
                   <Input
                     id="project-name"
                     placeholder="e.g., Villa Project - Phase 1"
                     value={newProjectName}
                     onChange={(e) => setNewProjectName(e.target.value)}
-                    className="h-8 bg-slate-800/50 border-slate-700/50 text-slate-200 placeholder:text-slate-500"
+                    className="h-8 bg-card/50 border-border/50 text-foreground placeholder:text-muted-foreground"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="grouping-mode" className="text-xs text-slate-300">Grouping Mode</Label>
+                  <Label htmlFor="grouping-mode" className="text-xs text-foreground">Grouping Mode</Label>
                   <Select value={newProjectGrouping} onValueChange={(value) => setNewProjectGrouping(value as 'type' | 'color' | 'none' | 'profile')}>
-                    <SelectTrigger className="h-8 bg-slate-800/50 border-slate-700/50 text-slate-200">
+                    <SelectTrigger className="h-8 bg-card/50 border-border/50 text-foreground">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-700">
+                    <SelectContent className="bg-background border-border">
                       <SelectItem value="none">No Grouping</SelectItem>
                       <SelectItem value="color">By Color</SelectItem>
                       <SelectItem value="type">By Window Type</SelectItem>
@@ -305,11 +305,11 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
                 <Loader2 className="h-6 w-6 animate-spin" />
               </div>
             ) : projects.length === 0 ? (
-              <Card className="bg-slate-900/40 border-slate-800 border-dashed">
+              <Card className="bg-background/40 border-border border-dashed">
                 <CardContent className="p-8 text-center">
-                  <Package className="h-12 w-12 text-slate-600 mx-auto mb-4" />
-                  <p className="text-sm text-slate-400">No production projects yet</p>
-                  <p className="text-xs text-slate-500 mt-1">Create your first project to get started</p>
+                  <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-sm text-muted-foreground">No production projects yet</p>
+                  <p className="text-xs text-muted-foreground mt-1">Create your first project to get started</p>
                 </CardContent>
               </Card>
             ) : (
@@ -317,7 +317,7 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
                 {projects.map((project) => (
                   <Card
                     key={project.id}
-                    className={`cursor-pointer transition-colors border-slate-700/50 bg-slate-800/30 hover:bg-slate-800/50 ${
+                    className={`cursor-pointer transition-colors border-border/50 bg-card/30 hover:bg-card/50 ${
                       selectedProject?.id === project.id ? 'ring-1 ring-amber-500/50 border-amber-500/50 bg-amber-500/5' : ''
                     }`}
                     onClick={() => setSelectedProject(project)}
@@ -325,8 +325,8 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h5 className="font-medium text-sm text-slate-200">{project.name}</h5>
-                          <p className="text-xs text-slate-400">
+                          <h5 className="font-medium text-sm text-foreground">{project.name}</h5>
+                          <p className="text-xs text-muted-foreground">
                             {project.window_count} windows • {project.grouping_mode} grouping
                           </p>
                         </div>
@@ -334,13 +334,13 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
                           <Badge variant={
                             project.status === 'completed' ? 'default' :
                             project.status === 'in_progress' ? 'secondary' : 'outline'
-                          } className="bg-slate-700 text-slate-300 border-slate-600">
+                          } className="bg-muted text-foreground border-border">
                             {project.status}
                           </Badge>
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="text-slate-400 hover:text-amber-400 hover:bg-amber-500/10"
+                            className="text-muted-foreground hover:text-warning hover:bg-amber-500/10"
                             onClick={(e) => {
                               e.stopPropagation();
                               void generateReport(project.id, 'execution_plan');
@@ -359,33 +359,33 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
 
           {/* Selected Project Details */}
           {selectedProject && (
-            <Card className="bg-slate-900/60 border-slate-700/50">
-              <CardHeader className="pb-3 border-b border-slate-700/50">
-                <CardTitle className="text-sm flex items-center justify-between text-slate-200">
+            <Card className="bg-background/60 border-border/50">
+              <CardHeader className="pb-3 border-b border-border/50">
+                <CardTitle className="text-sm flex items-center justify-between text-foreground">
                   <span>{selectedProject.name}</span>
-                  <Badge variant="outline" className="text-slate-300 border-slate-600">{selectedProject.status}</Badge>
+                  <Badge variant="outline" className="text-foreground border-border">{selectedProject.status}</Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 pt-3">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-slate-500">Windows:</span>
-                    <span className="font-medium ml-2 text-slate-200">{selectedProject.window_count}</span>
+                    <span className="text-muted-foreground">Windows:</span>
+                    <span className="font-medium ml-2 text-foreground">{selectedProject.window_count}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500">Grouping:</span>
-                    <span className="font-medium ml-2 capitalize text-slate-200">{selectedProject.grouping_mode}</span>
+                    <span className="text-muted-foreground">Grouping:</span>
+                    <span className="font-medium ml-2 capitalize text-foreground">{selectedProject.grouping_mode}</span>
                   </div>
                 </div>
 
                 {projectItems.length > 0 && (
                   <div className="space-y-2">
-                    <h5 className="text-sm font-medium text-slate-300">Project Items</h5>
+                    <h5 className="text-sm font-medium text-foreground">Project Items</h5>
                     <div className="space-y-1">
                           {projectItems.map((item) => (
-                        <div key={item.id} className="flex items-center justify-between p-2 bg-slate-800/50 border border-slate-700/30 rounded text-xs text-slate-300">
+                        <div key={item.id} className="flex items-center justify-between p-2 bg-card/50 border border-border/30 rounded text-xs text-foreground">
                           <span>Window {item.window_order + 1}</span>
-                          <Badge variant="outline" className="border-slate-600 text-slate-400">{item.group_key}</Badge>
+                          <Badge variant="outline" className="border-border text-muted-foreground">{item.group_key}</Badge>
                         </div>
                       ))}
                     </div>
@@ -419,10 +419,10 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
           {selectedProject ? (
             <ExecutionTrackingPanel projectId={selectedProject.id} />
           ) : (
-            <Card className="bg-slate-900/40 border-slate-800 border-dashed">
+            <Card className="bg-background/40 border-border border-dashed">
               <CardContent className="p-8 text-center">
-                <Wrench className="h-12 w-12 text-slate-600 mx-auto mb-4" />
-                <p className="text-sm text-slate-400">Select a production project to track execution</p>
+                <Wrench className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-sm text-muted-foreground">Select a production project to track execution</p>
               </CardContent>
             </Card>
           )}
@@ -430,19 +430,19 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
 
         <TabsContent value="current" className="space-y-4">
           {currentWindowUnit ? (
-            <Card className="bg-slate-900/60 border-slate-700/50">
-              <CardHeader className="pb-3 border-b border-slate-700/50">
-                <CardTitle className="text-sm text-slate-200">Current Window Design</CardTitle>
+            <Card className="bg-background/60 border-border/50">
+              <CardHeader className="pb-3 border-b border-border/50">
+                <CardTitle className="text-sm text-foreground">Current Window Design</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 pt-3">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-slate-500">ID:</span>
-                    <span className="font-medium ml-2 text-slate-200">{currentWindowUnit.id}</span>
+                    <span className="text-muted-foreground">ID:</span>
+                    <span className="font-medium ml-2 text-foreground">{currentWindowUnit.id}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500">Type:</span>
-                    <span className="font-medium ml-2 text-slate-200">{currentWindowUnit.type}</span>
+                    <span className="text-muted-foreground">Type:</span>
+                    <span className="font-medium ml-2 text-foreground">{currentWindowUnit.type}</span>
                   </div>
                 </div>
 
@@ -468,11 +468,11 @@ export const ProductionWorkflowPanel: React.FC<ProductionWorkflowPanelProps> = (
               </CardContent>
             </Card>
           ) : (
-            <Card className="bg-slate-900/40 border-slate-800 border-dashed">
+            <Card className="bg-background/40 border-border border-dashed">
               <CardContent className="p-8 text-center">
-                <Settings className="h-12 w-12 text-slate-600 mx-auto mb-4" />
-                <p className="text-sm text-slate-400">No window design available</p>
-                <p className="text-xs text-slate-500 mt-1">Complete your design in the drafting area</p>
+                <Settings className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-sm text-muted-foreground">No window design available</p>
+                <p className="text-xs text-muted-foreground mt-1">Complete your design in the drafting area</p>
               </CardContent>
             </Card>
           )}

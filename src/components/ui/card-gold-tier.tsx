@@ -5,14 +5,14 @@ import * as React from "react";
 
 // Gold-tier card variants with market-leader inspiration (Tailwind UI, Shadcn)
 const cardVariants = cva(
-  "rounded-lg border bg-white text-slate-950 shadow-sm transition-all duration-200",
+  "rounded-lg border bg-card text-foreground shadow-sm transition-all duration-200",
   {
     variants: {
       variant: {
-        default: "border-slate-200 shadow-sm",
-        elevated: "border-slate-200 shadow-md",
-        outlined: "border-slate-300 bg-transparent shadow-none",
-        filled: "border-transparent bg-slate-50",
+        default: "border-border shadow-sm",
+        elevated: "border-border shadow-md",
+        outlined: "border-border bg-transparent shadow-none",
+        filled: "border-transparent bg-background",
         ghost: "border-transparent bg-transparent shadow-none",
       },
       interactive: {
@@ -124,7 +124,7 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "text-lg font-semibold leading-none tracking-tight text-slate-900",
+      "text-lg font-semibold leading-none tracking-tight text-foreground",
       className
     )}
     {...props}
@@ -139,7 +139,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("text-sm text-slate-600", className)}
+    className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
 ));
@@ -219,7 +219,7 @@ const Card = React.forwardRef<HTMLDivElement, GoldTierCardProps>(
             {dismissible && (
               <button
                 type="button"
-                className="inline-flex items-center justify-center rounded-md p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                className="inline-flex items-center justify-center rounded-md p-1 text-muted-foreground hover:text-muted-foreground hover:bg-muted transition-colors"
                 onClick={onDismiss}
                 aria-label="Dismiss"
               >
@@ -231,7 +231,7 @@ const Card = React.forwardRef<HTMLDivElement, GoldTierCardProps>(
 
         {/* Loading overlay */}
         {loading && (
-          <div className="absolute inset-0 bg-white/50 rounded-lg flex items-center justify-center">
+          <div className="absolute inset-0 bg-foreground/50 rounded-lg flex items-center justify-center">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-400"></div>
           </div>
         )}
@@ -267,14 +267,14 @@ const StatsCard = React.forwardRef<HTMLDivElement, StatsCardProps>(
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-slate-600">{title}</p>
-            <p className="text-2xl font-bold text-slate-900">{value}</p>
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-2xl font-bold text-foreground">{value}</p>
             {change && (
               <p className={cn(
                 "text-xs font-medium",
-                change.trend === 'up' && "text-green-600",
-                change.trend === 'down' && "text-red-600",
-                change.trend === 'neutral' && "text-slate-600"
+                change.trend === 'up' && "text-success",
+                change.trend === 'down' && "text-destructive",
+                change.trend === 'neutral' && "text-muted-foreground"
               )}>
                 {change.trend === 'up' && '+'}
                 {change.value}% {change.label}
@@ -282,7 +282,7 @@ const StatsCard = React.forwardRef<HTMLDivElement, StatsCardProps>(
             )}
           </div>
           {icon && (
-            <div className="text-slate-400">
+            <div className="text-muted-foreground">
               {icon}
             </div>
           )}
@@ -320,9 +320,9 @@ const ActionCard = React.forwardRef<HTMLDivElement, ActionCardProps>(
             </div>
           )}
           <div className="flex-1 space-y-2">
-            <h3 className="font-semibold text-slate-900">{title}</h3>
+            <h3 className="font-semibold text-foreground">{title}</h3>
             {description && (
-              <p className="text-sm text-slate-600">{description}</p>
+              <p className="text-sm text-muted-foreground">{description}</p>
             )}
             <button
               type="button"

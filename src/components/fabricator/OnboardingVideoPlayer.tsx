@@ -204,17 +204,17 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
 
   if (!videoUrl) {
     return (
-      <div className={cn('flex items-center justify-center h-64 bg-gray-800/50 rounded-lg', className)}>
-        <p className="text-gray-400">No video available</p>
+      <div className={cn('flex items-center justify-center h-64 bg-card/50 rounded-lg', className)}>
+        <p className="text-muted-foreground">No video available</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className={cn('flex items-center justify-center h-64 bg-gray-800/50 rounded-lg', className)}>
+      <div className={cn('flex items-center justify-center h-64 bg-card/50 rounded-lg', className)}>
         <div className="text-center">
-          <p className="text-red-400 mb-2">{error}</p>
+          <p className="text-destructive mb-2">{error}</p>
           <Button variant="outline" size="sm" onClick={() => {
             setError(null);
             setIsLoading(true);
@@ -244,7 +244,7 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
       {/* Loading Overlay */}
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-          <Loader2 className="h-8 w-8 text-amber-500 animate-spin" />
+          <Loader2 className="h-8 w-8 text-warning animate-spin" />
         </div>
       )}
 
@@ -262,7 +262,7 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
                   variant="ghost"
                   size="sm"
                   onClick={togglePlay}
-                  className="text-white hover:text-amber-500"
+                  className="text-foreground hover:text-warning"
                 >
                   {isPlaying ? (
                     <Pause className="h-5 w-5" />
@@ -275,7 +275,7 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
                   variant="ghost"
                   size="sm"
                   onClick={toggleMute}
-                  className="text-white hover:text-amber-500"
+                  className="text-foreground hover:text-warning"
                 >
                   {isMuted ? (
                     <VolumeX className="h-5 w-5" />
@@ -284,20 +284,20 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
                   )}
                 </Button>
 
-                <span className="text-sm text-white/80">
+                <span className="text-sm text-foreground/80">
                   {formatTime(videoRef.current?.currentTime || 0)} / {formatTime(duration)}
                 </span>
               </div>
 
               <div className="flex items-center gap-2">
                 {title && (
-                  <span className="text-sm text-white/80 font-medium">{title}</span>
+                  <span className="text-sm text-foreground/80 font-medium">{title}</span>
                 )}
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleFullscreen}
-                  className="text-white hover:text-amber-500"
+                  className="text-foreground hover:text-warning"
                 >
                   <Maximize2 className="h-5 w-5" />
                 </Button>
@@ -314,7 +314,7 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
             variant="ghost"
             size="lg"
             onClick={togglePlay}
-            className="h-16 w-16 rounded-full bg-black/50 hover:bg-black/70 text-white border-2 border-white/20"
+            className="h-16 w-16 rounded-full bg-black/50 hover:bg-black/70 text-foreground border-2 border-white/20"
           >
             <Play className="h-8 w-8 ml-1" />
           </Button>

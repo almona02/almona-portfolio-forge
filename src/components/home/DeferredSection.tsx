@@ -24,13 +24,13 @@ export function DeferredSection({ children, label, href }: { children: ReactNode
   return (
     <div ref={element}>
       {ready ? <ErrorBoundary fallback={
-        <div className="min-h-[400px] flex flex-col items-center justify-center bg-almona-dark/50 p-4">
+        <div className="min-h-[400px] flex flex-col items-center justify-center bg-background/50 p-4">
           <p>This section is temporarily unavailable.</p>
-          <a href={href} className="text-amber-300 underline p-4">{label}</a>
+          <a href={href} className="text-brand underline p-4">{label}</a>
         </div>
       }>{children}</ErrorBoundary> : (
-        <div className="min-h-[400px] flex items-center justify-center bg-almona-dark/50">
-          <a href={href} className="text-amber-300 underline p-4">{label}</a>
+        <div className="min-h-[400px] flex items-center justify-center bg-background/50">
+          <a href={href} className="text-brand underline p-4">{label}</a>
         </div>
       )}
     </div>

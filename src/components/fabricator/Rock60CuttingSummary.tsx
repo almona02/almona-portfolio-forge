@@ -30,7 +30,7 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
   const bead = config.glazing_beads?.bead_profile;
 
   return (
-    <Card className="bg-gray-900/60 border-gray-700 card-dark">
+    <Card className="bg-background/60 border-border card-dark">
       <CardHeader className="pb-3 flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-sm flex items-center gap-2">
@@ -39,7 +39,7 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
               {config.cut_angle}
             </Badge>
           </CardTitle>
-          <p className="text-[11px] text-gray-400 mt-1">
+          <p className="text-[11px] text-muted-foreground mt-1">
             Based on {rockProfile.name} template & ELSHERIF ROCK 60 configuration.
           </p>
         </div>
@@ -48,9 +48,9 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
         {/* Frame profiles */}
         {frame && (
           <div>
-            <div className="mb-1 font-semibold text-gray-200">Frame Profile ({frame.profile_code})</div>
-            <div className="border border-gray-700 rounded-md overflow-hidden">
-              <div className="grid grid-cols-5 bg-gray-800/80 px-2 py-1 font-semibold">
+            <div className="mb-1 font-semibold text-foreground">Frame Profile ({frame.profile_code})</div>
+            <div className="border border-border rounded-md overflow-hidden">
+              <div className="grid grid-cols-5 bg-card/80 px-2 py-1 font-semibold">
                 <div>Purpose</div>
                 <div className="text-center">Qty</div>
                 <div>Formula</div>
@@ -60,7 +60,7 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
               {frame.cuts?.map((c: any, idx: number) => (
                 <div
                   key={`frame-${idx}`}
-                  className="grid grid-cols-5 px-2 py-1 border-t border-gray-800 bg-gray-900 /60 card-dark"
+                  className="grid grid-cols-5 px-2 py-1 border-t border-border bg-background /60 card-dark"
                 >
                   <div>{c.purpose?.replace(/_/g, ' ')}</div>
                   <div className="text-center">{c.quantity}</div>
@@ -76,9 +76,9 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
         {/* Sash profiles */}
         {sash && (
           <div>
-            <div className="mb-1 font-semibold text-gray-200">Sash Profile ({sash.profile_code})</div>
-            <div className="border border-gray-700 rounded-md overflow-hidden">
-              <div className="grid grid-cols-5 bg-gray-800/80 px-2 py-1 font-semibold">
+            <div className="mb-1 font-semibold text-foreground">Sash Profile ({sash.profile_code})</div>
+            <div className="border border-border rounded-md overflow-hidden">
+              <div className="grid grid-cols-5 bg-card/80 px-2 py-1 font-semibold">
                 <div>Purpose</div>
                 <div className="text-center">Qty</div>
                 <div>Formula</div>
@@ -88,7 +88,7 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
               {sash.cuts?.map((c: any, idx: number) => (
                 <div
                   key={`sash-${idx}`}
-                  className="grid grid-cols-5 px-2 py-1 border-t border-gray-800 bg-gray-900 /60 card-dark"
+                  className="grid grid-cols-5 px-2 py-1 border-t border-border bg-background /60 card-dark"
                 >
                   <div>{c.purpose?.replace(/_/g, ' ')}</div>
                   <div className="text-center">{c.quantity}</div>
@@ -104,11 +104,11 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
         {/* Glazing beads */}
         {bead && (
           <div>
-            <div className="mb-1 font-semibold text-gray-200">
+            <div className="mb-1 font-semibold text-foreground">
               Glazing Bead ({bead.profile_code})
             </div>
-            <div className="border border-gray-700 rounded-md overflow-hidden">
-              <div className="grid grid-cols-5 bg-gray-800/80 px-2 py-1 font-semibold">
+            <div className="border border-border rounded-md overflow-hidden">
+              <div className="grid grid-cols-5 bg-card/80 px-2 py-1 font-semibold">
                 <div>Purpose</div>
                 <div className="text-center">Qty</div>
                 <div>Formula</div>
@@ -118,7 +118,7 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
               {bead.cuts?.map((c: any, idx: number) => (
                 <div
                   key={`bead-${idx}`}
-                  className="grid grid-cols-5 px-2 py-1 border-t border-gray-800 bg-gray-900 /60 card-dark"
+                  className="grid grid-cols-5 px-2 py-1 border-t border-border bg-background /60 card-dark"
                 >
                   <div>{c.purpose?.replace(/_/g, ' ')}</div>
                   <div className="text-center">{c.quantity}</div>
@@ -135,16 +135,16 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
         {config.glass && (
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <div className="font-semibold text-gray-200 mb-1">Glass</div>
-              <div className="border border-gray-700 rounded-md px-2 py-2 bg-gray-900/60">
+              <div className="font-semibold text-foreground mb-1">Glass</div>
+              <div className="border border-border rounded-md px-2 py-2 bg-background/60">
                 <div>{config.glass.type}</div>
-                <div className="mt-1 text-gray-300">
+                <div className="mt-1 text-foreground">
                   {`Width: ${config.glass.dimensions?.width} | Height: ${config.glass.dimensions?.height}`}
                 </div>
               </div>
             </div>
             <div>
-              <div className="font-semibold text-gray-200 mb-1">45° Installation Notes</div>
+              <div className="font-semibold text-foreground mb-1">45° Installation Notes</div>
               <div className="btn-primary">
                 <ul className="list-disc list-inside space-y-1 text-[10px]">
                   <li>All corners mitered at 45° with visible aluminum finish.</li>

@@ -82,8 +82,8 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   if (hasError) {
     return (
-      <div className={`flex items-center justify-center bg-gray-100 dark:bg-gray-800 ${className}`}>
-        <span className="text-gray-500 text-sm">Image unavailable</span>
+      <div className={`flex items-center justify-center bg-muted dark:bg-card ${className}`}>
+        <span className="text-muted-foreground text-sm">Image unavailable</span>
       </div>
     );
   }

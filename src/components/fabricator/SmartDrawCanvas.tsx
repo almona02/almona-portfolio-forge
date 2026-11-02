@@ -770,24 +770,24 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
           {/* Window Dimensions Display - Top of Card - Compact */}
           <div className="w-full border-b-2 border-amber-600/30 pb-3 mb-2 relative z-10">
             <div className="flex items-center justify-center gap-3">
-              <div className="flex items-center gap-1.5 text-amber-200">
-                <Ruler className="h-3.5 w-3.5 text-amber-400" />
-                <span className="text-xs font-semibold text-amber-300">Dimensions:</span>
+              <div className="flex items-center gap-1.5 text-warning">
+                <Ruler className="h-3.5 w-3.5 text-warning" />
+                <span className="text-xs font-semibold text-warning">Dimensions:</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="text-center">
-                  <div className="text-[10px] text-amber-500/80 font-medium uppercase tracking-wide">W</div>
-                  <div className="font-mono text-sm font-bold text-amber-300">{Math.round(width)} mm</div>
+                  <div className="text-[10px] text-warning/80 font-medium uppercase tracking-wide">W</div>
+                  <div className="font-mono text-sm font-bold text-warning">{Math.round(width)} mm</div>
                 </div>
-                <div className="text-amber-600/50 text-sm">×</div>
+                <div className="text-warning/50 text-sm">×</div>
                 <div className="text-center">
-                  <div className="text-[10px] text-amber-500/80 font-medium uppercase tracking-wide">H</div>
-                  <div className="font-mono text-sm font-bold text-amber-300">{Math.round(height)} mm</div>
+                  <div className="text-[10px] text-warning/80 font-medium uppercase tracking-wide">H</div>
+                  <div className="font-mono text-sm font-bold text-warning">{Math.round(height)} mm</div>
                 </div>
-                <div className="text-amber-600/30">|</div>
+                <div className="text-warning/30">|</div>
                 <div className="text-center">
-                  <div className="text-[10px] text-amber-500/80 font-medium uppercase tracking-wide">Area</div>
-                  <div className="font-mono text-xs font-semibold text-amber-400">{(width * height / 1_000_000).toFixed(2)} m²</div>
+                  <div className="text-[10px] text-warning/80 font-medium uppercase tracking-wide">Area</div>
+                  <div className="font-mono text-xs font-semibold text-warning">{(width * height / 1_000_000).toFixed(2)} m²</div>
                 </div>
               </div>
             </div>
@@ -796,15 +796,15 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
           {/* Pattern Selector Section */}
           {patterns.length > 0 && (
             <div className="flex flex-col gap-2 w-full max-w-md relative z-10">
-              <Label className="typography-label text-sm font-semibold text-amber-200 flex items-center gap-2">
-                <Layers className="h-4 w-4 text-amber-500 text-shadow-glow" />
+              <Label className="typography-label text-sm font-semibold text-warning flex items-center gap-2">
+                <Layers className="h-4 w-4 text-warning text-shadow-glow" />
                 Preset Pattern
               </Label>
               <Select
                 value={selectedPatternId || 'none'}
                 onValueChange={(value) => handlePatternSelect(value)}
               >
-                <SelectTrigger className="w-full select-trigger-dark text-sm text-amber-200 h-10">
+                <SelectTrigger className="w-full select-trigger-dark text-sm text-warning h-10">
                   <SelectValue placeholder="Select pattern (or draw manually)..." />
                 </SelectTrigger>
                 <SelectContent className="select-content-dark">
@@ -817,7 +817,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                 </SelectContent>
               </Select>
               {selectedPatternId && (
-                <p className="text-xs text-amber-600/70 mt-1 flex items-center gap-1">
+                <p className="text-xs text-warning/70 mt-1 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                   Pattern applied: Grid will update automatically
                 </p>
@@ -828,12 +828,12 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                 <div className="mt-2 bg-cyan-500/10 backdrop-blur-sm border border-cyan-500/30 rounded-lg p-3">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
-                      <span className="text-xs font-medium text-cyan-300 tracking-[0.05em] uppercase">Suggested Patterns:</span>
+                      <Sparkles className="h-3.5 w-3.5 text-info" />
+                      <span className="text-xs font-medium text-info tracking-[0.05em] uppercase">Suggested Patterns:</span>
                     </div>
                     <button
                       onClick={() => setShowSuggestions(false)}
-                      className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                      className="text-info hover:text-info transition-colors"
                       aria-label="Hide suggestions"
                     >
                       <X className="h-3 w-3" />
@@ -853,7 +853,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                     ))}
                   </div>
                   {suggestedPatterns[0] && suggestedPatterns[0].matchingFeatures.length > 0 && (
-                    <p className="text-[10px] text-cyan-400/80 mt-2">
+                    <p className="text-[10px] text-info/80 mt-2">
                       Matches: {suggestedPatterns[0].matchingFeatures.slice(0, 2).join(', ')}
                     </p>
                   )}
@@ -865,8 +865,8 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
           {/* Grid Structure Controls - Enhanced Layout */}
           <div className="flex flex-wrap justify-center gap-4 w-full">
             <div className="flex flex-col items-center gap-2 card-dark rounded-lg px-4 py-3 min-w-[120px] shadow-glow-premium relative z-10" title="Vertical divisions (columns)">
-              <div className="flex items-center gap-2 text-amber-200 mb-1 font-semibold">
-                <Columns className="h-4 w-4 text-amber-400" />
+              <div className="flex items-center gap-2 text-warning mb-1 font-semibold">
+                <Columns className="h-4 w-4 text-warning" />
                 <span className="text-xs font-medium tracking-[0.05em] uppercase">Columns</span>
               </div>
               <div className="flex items-center gap-3">
@@ -877,7 +877,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                 >
                   <ChevronDown className="h-4 w-4" />
                 </button>
-                <span className="text-lg font-bold text-white min-w-[2ch] text-center">{grid.cols}</span>
+                <span className="text-lg font-bold text-foreground min-w-[2ch] text-center">{grid.cols}</span>
                 <button
                   onClick={() => updateGridStructure(grid.rows, Math.min(12, grid.cols + 1))}
                   className="btn-secondary-dark"
@@ -889,8 +889,8 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
             </div>
 
             <div className="flex flex-col items-center gap-2 card-dark rounded-lg px-4 py-3 min-w-[120px] shadow-glow-premium relative z-10" title="Horizontal divisions (rows)">
-              <div className="flex items-center gap-2 text-amber-200 mb-1 font-semibold">
-                <Rows className="h-4 w-4 text-amber-400" />
+              <div className="flex items-center gap-2 text-warning mb-1 font-semibold">
+                <Rows className="h-4 w-4 text-warning" />
                 <span className="text-xs font-medium tracking-[0.05em] uppercase">Rows</span>
               </div>
               <div className="flex items-center gap-3">
@@ -901,7 +901,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                 >
                   <ChevronDown className="h-4 w-4" />
                 </button>
-                <span className="text-lg font-bold text-white min-w-[2ch] text-center">{grid.rows}</span>
+                <span className="text-lg font-bold text-foreground min-w-[2ch] text-center">{grid.rows}</span>
                 <button
                   onClick={() => updateGridStructure(Math.min(8, grid.rows + 1), grid.cols)}
                   className="btn-secondary-dark"
@@ -915,8 +915,8 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
 
           {/* Mullion Drawing Tools - Enhanced with Position Input */}
           <div className="flex flex-col gap-3 w-full border-t-2 border-amber-600/30 pt-4">
-            <Label className="typography-label text-sm font-semibold text-amber-200 flex items-center gap-2 relative z-10">
-              <Square className="h-4 w-4 text-amber-500 text-shadow-glow" />
+            <Label className="typography-label text-sm font-semibold text-warning flex items-center gap-2 relative z-10">
+              <Square className="h-4 w-4 text-warning text-shadow-glow" />
               Mullion Tools
             </Label>
             <div className="flex flex-wrap gap-2">
@@ -982,12 +982,12 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
             {showMullionInput && (
               <div className="flex flex-col gap-2 card-dark rounded-lg p-4 shadow-glow-premium relative z-10">
                 <div className="flex items-center justify-between">
-                  <Label className="typography-label text-xs font-semibold text-amber-200 flex items-center gap-1.5">
-                    <Plus className="h-3.5 w-3.5 text-amber-500" />
+                  <Label className="typography-label text-xs font-semibold text-warning flex items-center gap-1.5">
+                    <Plus className="h-3.5 w-3.5 text-warning" />
                     {mullionMode.includes('horizontal') ? 'Horizontal' : 'Vertical'} Mullion Position(s) (mm)
                   </Label>
                   {mullionMode.startsWith('sash-') && (
-                    <span className="text-xs text-amber-400 font-semibold">
+                    <span className="text-xs text-warning font-semibold">
                       Select sash first, then enter positions
                     </span>
                   )}
@@ -998,7 +998,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                   placeholder={mullionMode.includes('horizontal')
                     ? "Enter positions from top (mm), e.g.: 400, 800, 1200"
                     : "Enter positions from left (mm), e.g.: 600, 1200, 1800"}
-                  className="w-full textarea-dark text-sm text-amber-200 rounded-lg px-4 py-2.5 min-h-[80px]"
+                  className="w-full textarea-dark text-sm text-warning rounded-lg px-4 py-2.5 min-h-[80px]"
                   rows={3}
                 />
                 <div className="flex items-center gap-2">
@@ -1025,7 +1025,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                     Cancel
                   </Button>
                 </div>
-                <p className="text-[10px] text-amber-600/70">
+                <p className="text-[10px] text-warning/70">
                   {mullionMode.includes('horizontal')
                     ? `Enter position(s) from top edge in mm (0 to ${height}mm). Separate multiple positions with commas or new lines.`
                     : `Enter position(s) from left edge in mm (0 to ${width}mm). Separate multiple positions with commas or new lines.`}
@@ -1036,7 +1036,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
             {/* Sash Selection for Sash-level Mullions */}
             {mullionMode.startsWith('sash-') && !selectedSashForMullion && (
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
-                <p className="text-xs text-blue-300 flex items-center gap-2">
+                <p className="text-xs text-info flex items-center gap-2">
                   <Move className="h-3.5 w-3.5" />
                   Click on a sash cell below to select it, then enter mullion positions
                 </p>
@@ -1044,7 +1044,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
             )}
             {mullionMode.startsWith('sash-') && selectedSashForMullion && (
               <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-2">
-                <p className="text-xs text-green-300 flex items-center gap-2">
+                <p className="text-xs text-success flex items-center gap-2">
                   <Square className="h-3 w-3" />
                   Selected: {(grid.cells && Array.isArray(grid.cells) ? grid.cells.find(c => c.id === selectedSashForMullion)?.id : null) || 'Sash'}
                   <Button
@@ -1063,7 +1063,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
           {/* Phase 2: Enhanced Editing Tools - Compact */}
           <div className="flex flex-wrap justify-center gap-2 w-full border-t-2 border-amber-600/30 pt-3 relative z-10">
             <div className="flex items-center gap-1.5">
-              <Label className="text-xs font-semibold text-amber-200">Edit:</Label>
+              <Label className="text-xs font-semibold text-warning">Edit:</Label>
               {/* Phase 2: Undo/Redo buttons - Compact */}
               <Button
                 variant="outline"
@@ -1139,7 +1139,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                   variant="ghost"
                   size="sm"
                   onClick={clearSelection}
-                  className="text-xs h-6 px-2 text-amber-400"
+                  className="text-xs h-6 px-2 text-warning"
                 >
                   Clear ({selectedCellIds.size})
                 </Button>
@@ -1151,8 +1151,8 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
           <div className="flex flex-wrap justify-center gap-4 w-full border-t-2 border-amber-600/30 pt-4 relative z-10">
             <div className="flex flex-col gap-2 flex-1 min-w-[240px] max-w-[280px]">
               <div className="flex items-center justify-between">
-                <Label className="typography-label text-xs font-semibold text-amber-200 flex items-center gap-1.5">
-                  <List className="h-3.5 w-3.5 text-amber-500 text-shadow-glow" />
+                <Label className="typography-label text-xs font-semibold text-warning flex items-center gap-1.5">
+                  <List className="h-3.5 w-3.5 text-warning text-shadow-glow" />
                   Column Widths
                 </Label>
                 <button
@@ -1161,7 +1161,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                     setColWidthsInput(equal.join(','));
                     handleGridChangeWithHistory({ ...grid, colWidths: equal });
                   }}
-                  className="btn-small-dark text-[10px] text-amber-200"
+                  className="btn-small-dark text-[10px] text-warning"
                   title="Set all columns equal"
                 >
                   Reset
@@ -1180,14 +1180,14 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                   }
                 }}
                 placeholder="600,800,600"
-                className="w-full input-dark text-sm text-amber-200 rounded-lg px-4 py-2.5"
+                className="w-full input-dark text-sm text-warning rounded-lg px-4 py-2.5"
               />
             </div>
 
             <div className="flex flex-col gap-2 flex-1 min-w-[240px] max-w-[280px]">
               <div className="flex items-center justify-between">
-                <Label className="typography-label text-xs font-medium text-gray-300 flex items-center gap-1.5">
-                  <List className="h-3.5 w-3.5 text-amber-500" />
+                <Label className="typography-label text-xs font-medium text-foreground flex items-center gap-1.5">
+                  <List className="h-3.5 w-3.5 text-warning" />
                   Row Heights
                 </Label>
                 <button
@@ -1196,7 +1196,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                     setRowHeightsInput(equal.join(','));
                     handleGridChangeWithHistory({ ...grid, rowHeights: equal });
                   }}
-                  className="btn-small-dark text-[10px] text-amber-200"
+                  className="btn-small-dark text-[10px] text-warning"
                   title="Set all rows equal"
                 >
                   Reset
@@ -1215,16 +1215,16 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                   }
                 }}
                 placeholder="400,1100"
-                className="w-full input-dark text-sm text-amber-200 rounded-lg px-4 py-2.5"
+                className="w-full input-dark text-sm text-warning rounded-lg px-4 py-2.5"
               />
             </div>
           </div>
 
           {/* Grid Info */}
-          <div className="text-xs text-gray-400 font-mono bg-gray-800/40 px-3 py-1.5 rounded border border-gray-700/50">
+          <div className="text-xs text-muted-foreground font-mono bg-card/40 px-3 py-1.5 rounded border border-border/50">
             {grid.cols}×{grid.rows} Grid
             {grid.manualMullions && grid.manualMullions.length > 0 && (
-              <span className="ml-2 text-amber-400">
+              <span className="ml-2 text-warning">
                 • {grid.manualMullions.length} Mullion{grid.manualMullions.length !== 1 ? 's' : ''}
               </span>
             )}
@@ -1234,7 +1234,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
 
       {/* Enhanced Canvas Area - Full height when toolbar hidden */}
       <div className={cn(
-        "relative w-full bg-[#0a0a0a] /40 rounded-lg overflow-hidden flex items-center justify-center shadow-glow-premium card-premium",
+        "relative w-full bg-background /40 rounded-lg overflow-hidden flex items-center justify-center shadow-glow-premium card-premium",
         showToolbar ? "aspect-video p-6" : "flex-1 p-4"
       )}>
         <div
@@ -1547,7 +1547,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
 
       {/* Enhanced Legend - Only show when toolbar is visible */}
       {showToolbar && (
-        <div className="flex flex-wrap gap-4 text-xs text-gray-300 bg-gray-900/60 border border-gray-700/50 rounded-lg p-3 backdrop-blur-sm">
+        <div className="flex flex-wrap gap-4 text-xs text-foreground bg-background/60 border border-border/50 rounded-lg p-3 backdrop-blur-sm">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-blue-500/50 border border-blue-500 rounded" />
             <span className="font-medium">Fixed</span>
@@ -1562,11 +1562,11 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
           </div>
           <div className="flex items-center gap-2">
             <div className="btn-primary" />
-            <span className="font-semibold text-amber-200">Panel</span>
+            <span className="font-semibold text-warning">Panel</span>
           </div>
           <div className="flex items-center gap-2 ml-4 pl-4 border-l-2 border-amber-600/30">
             <div className="btn-primary" />
-            <span className="font-semibold text-amber-200">Mullion</span>
+            <span className="font-semibold text-warning">Mullion</span>
           </div>
         </div>
       )}

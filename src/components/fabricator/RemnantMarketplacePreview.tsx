@@ -85,7 +85,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
             size="sm"
             variant="outline"
             onClick={() => setShowListingDialog(true)}
-            className="bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20"
+            className="bg-green-500/10 border-green-500/30 text-success hover:bg-green-500/20"
           >
             <Plus className="h-4 w-4 mr-1" />
             List remnant
@@ -106,7 +106,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
 
       {/* One-Click Listing Dialog */}
       <Dialog open={showListingDialog} onOpenChange={setShowListingDialog}>
-        <DialogContent className="bg-gray-900 border-gray-700 text-white">
+        <DialogContent className="bg-background border-border text-foreground">
           <DialogHeader>
             <DialogTitle>List Remnant on Marketplace</DialogTitle>
             <DialogDescription>
@@ -121,7 +121,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
                 value={listingPrice}
                 onChange={(e) => setListingPrice(e.target.value)}
                 placeholder="Enter price"
-                className="bg-gray-800 border-gray-700"
+                className="bg-card border-border"
               />
             </div>
             <div>
@@ -130,7 +130,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
                 value={listingDescription}
                 onChange={(e) => setListingDescription(e.target.value)}
                 placeholder="Add description"
-                className="bg-gray-800 border-gray-700"
+                className="bg-card border-border"
               />
             </div>
           </div>
@@ -150,15 +150,15 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
       </Dialog>
 
       {isLoading ? (
-        <div className="text-sm text-gray-400">Loading listings...</div>
+        <div className="text-sm text-muted-foreground">Loading listings...</div>
       ) : recentListings.length === 0 ? (
-        <div className="text-sm text-gray-400 text-center py-4">
+        <div className="text-sm text-muted-foreground text-center py-4">
           No listings available. Be the first to list a remnant!
         </div>
       ) : (
         <div className="space-y-2">
           {recentListings.map((listing) => (
-            <Card key={listing.id} className="bg-gray-900/50 border-gray-800 card-dark">
+            <Card key={listing.id} className="bg-background/50 border-border card-dark">
               <CardContent className="p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
@@ -168,7 +168,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
                         {listing.quality}
                       </Badge>
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-muted-foreground">
                       {listing.length.toFixed(0)}mm · {listing.price.toFixed(2)} {listing.currency}
                     </div>
                   </div>

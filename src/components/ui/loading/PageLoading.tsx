@@ -13,9 +13,9 @@ interface PageLoadingProps {
 
 const variantStyles: Record<'default' | 'minimal' | 'fullscreen', { container: string; icon: string; text: string }> = {
   default: {
-    container: 'bg-[#0f0f0f]/80 border border-amber-600/20 rounded-lg',
+    container: 'bg-background/80 border border-amber-600/20 rounded-lg',
     icon: 'text-amber-500',
-    text: 'text-zinc-300',
+    text: 'text-foreground',
   },
   minimal: {
     container: '',
@@ -80,7 +80,7 @@ export const PageLoading: React.FC<PageLoadingProps> = ({
         </p>
 
         {showProgress && (
-          <div className="w-32 bg-[#0f0f0f]/80 border border-amber-600/30 rounded-full h-1 mt-2">
+          <div className="w-32 bg-background/80 border border-amber-600/30 rounded-full h-1 mt-2">
             <div
               className="bg-gradient-to-r from-amber-400 to-amber-600 h-1 rounded-full transition-all duration-300 ease-out"
               style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}

@@ -9,15 +9,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-almona-orange text-white hover:bg-almona-orange-dark",
+          "bg-almona-orange text-primary-foreground hover:bg-almona-orange-dark",
         destructive:
           "bg-red-500 text-white hover:bg-red-600",
         outline:
           "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
         secondary:
-          "bg-gray-700 text-white hover:bg-gray-600",
+          "bg-muted text-foreground hover:bg-muted",
         ghost:
-          "bg-transparent hover:bg-white/10",
+          "bg-transparent hover:bg-foreground/10",
         link:
           "underline-offset-4 hover:underline text-almona-orange",
       },

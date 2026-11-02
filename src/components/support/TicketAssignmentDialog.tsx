@@ -117,10 +117,10 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
               <span className="font-medium">Priority:</span> 
               <span className={`ml-1 capitalize ${
                 ticket.priority === 'urgent' || ticket.priority === 'critical' 
-                  ? 'text-red-600' 
+                  ? 'text-destructive'
                   : ticket.priority === 'high' 
                   ? 'text-amber-600' 
-                  : 'text-blue-600'
+                  : 'text-info'
               }`}>
                 {ticket.priority}
               </span>

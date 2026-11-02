@@ -59,7 +59,7 @@ export function PerformanceAuditDashboard({
 
   if (error) {
     return (
-      <div className="flex items-center justify-center p-8 text-red-600">
+      <div className="flex items-center justify-center p-8 text-destructive">
         <AlertCircle className="h-6 w-6 mr-2" />
         <span>{error}</span>
       </div>
@@ -123,36 +123,36 @@ export function PerformanceAuditDashboard({
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <span className="text-sm text-gray-600">Heap Start:</span>
+                <span className="text-sm text-muted-foreground">Heap Start:</span>
                 <span className="ml-2 font-mono">
                   {formatValue(metrics.memory.heapStart, 'MB')}
                 </span>
               </div>
               <div>
-                <span className="text-sm text-gray-600">Heap End:</span>
+                <span className="text-sm text-muted-foreground">Heap End:</span>
                 <span className="ml-2 font-mono">
                   {formatValue(metrics.memory.heapEnd, 'MB')}
                 </span>
               </div>
               <div>
-                <span className="text-sm text-gray-600">DOM Nodes Start:</span>
+                <span className="text-sm text-muted-foreground">DOM Nodes Start:</span>
                 <span className="ml-2 font-mono">
                   {formatValue(metrics.memory.domNodesStart, '')}
                 </span>
               </div>
               <div>
-                <span className="text-sm text-gray-600">DOM Nodes End:</span>
+                <span className="text-sm text-muted-foreground">DOM Nodes End:</span>
                 <span className="ml-2 font-mono">
                   {formatValue(metrics.memory.domNodesEnd, '')}
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Memory Leaks:</span>
+              <span className="text-sm text-muted-foreground">Memory Leaks:</span>
               {metrics.memory.memoryLeaks.detected ? (
                 <>
                   <Badge variant="destructive">Issues Detected</Badge>
-                  <span className="text-sm text-red-600">
+                  <span className="text-sm text-destructive">
                     {metrics.memory.memoryLeaks.issues.join(', ')}
                   </span>
                 </>
@@ -221,7 +221,7 @@ export function PerformanceAuditDashboard({
               format=""
             />
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Connection Pool:</span>
+              <span className="text-sm text-muted-foreground">Connection Pool:</span>
               {metrics.database.connectionPool.status === 'healthy' ? (
                 <Badge variant="default" className="bg-green-600">
                   <CheckCircle2 className="h-3 w-3 mr-1" />
@@ -233,7 +233,7 @@ export function PerformanceAuditDashboard({
                     {metrics.database.connectionPool.status === 'warning' ? 'Warning' : 'Unhealthy'}
                   </Badge>
                   {metrics.database.connectionPool.issues.length > 0 && (
-                    <span className="text-sm text-red-600">
+                    <span className="text-sm text-destructive">
                       {metrics.database.connectionPool.issues.join(', ')}
                     </span>
                   )}
@@ -276,7 +276,7 @@ export function PerformanceAuditDashboard({
         </CardContent>
       </Card>
 
-      <div className="text-sm text-gray-500 text-right">
+      <div className="text-sm text-muted-foreground text-right">
         Last updated: {new Date(metrics.lastUpdated).toLocaleTimeString()}
       </div>
     </div>
@@ -302,11 +302,11 @@ function MetricRow({ label, current, target, status, format }: MetricRowProps) {
   const getStatusIcon = () => {
     switch (status) {
       case 'good':
-        return <CheckCircle2 className="h-4 w-4 text-green-600" />;
+        return <CheckCircle2 className="h-4 w-4 text-success" />;
       case 'warning':
-        return <Clock className="h-4 w-4 text-yellow-600" />;
+        return <Clock className="h-4 w-4 text-warning" />;
       case 'bad':
-        return <AlertCircle className="h-4 w-4 text-red-600" />;
+        return <AlertCircle className="h-4 w-4 text-destructive" />;
     }
   };
 
@@ -314,7 +314,7 @@ function MetricRow({ label, current, target, status, format }: MetricRowProps) {
     <div className="flex items-center justify-between py-2 border-b">
       <div className="flex items-center gap-2">
         <span className="font-medium">{label}:</span>
-        <span className="text-sm text-gray-600">Target &lt;{target}{format === 'ms' ? 'ms' : format === 'MB' ? 'MB' : ''}</span>
+        <span className="text-sm text-muted-foreground">Target &lt;{target}{format === 'ms' ? 'ms' : format === 'MB' ? 'MB' : ''}</span>
       </div>
       <div className="flex items-center gap-4">
         <span className="font-mono">

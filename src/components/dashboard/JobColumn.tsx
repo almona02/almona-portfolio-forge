@@ -12,15 +12,15 @@ interface JobColumnProps {
 
 export const JobColumn: React.FC<JobColumnProps> = ({ stage, title, jobs, icon: Icon }) => {
   return (
-    <div className="bg-gray-900/80 border border-gray-700 rounded-xl p-3 flex flex-col min-h-[160px]">
+    <div className="bg-background/80 border border-border rounded-xl p-3 flex flex-col min-h-[160px]">
       <div className="flex items-center justify-between mb-3 gap-2">
         <div className="flex items-center gap-2">
           <Icon className="h-4 w-4 text-amber-400" />
-          <h3 className="typography-h3 text-xs text-gray-300">
+          <h3 className="typography-h3 text-xs text-foreground">
             {title}
           </h3>
         </div>
-        <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-800 text-gray-400">
+        <span className="text-[10px] px-2 py-0.5 rounded-full bg-card text-muted-foreground">
           {jobs.length}
         </span>
       </div>
@@ -31,13 +31,13 @@ export const JobColumn: React.FC<JobColumnProps> = ({ stage, title, jobs, icon: 
         ))}
 
         {jobs.length === 0 && (
-          <div className="text-center text-gray-500 text-[11px] py-4">
+          <div className="text-center text-muted-foreground text-[11px] py-4">
             No jobs in {title}
           </div>
         )}
       </div>
 
-      <div className="mt-2 text-[10px] text-gray-600">
+      <div className="mt-2 text-[10px] text-muted-foreground">
         Stage: <span className="uppercase">{stage}</span>
       </div>
     </div>

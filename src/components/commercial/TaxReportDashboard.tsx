@@ -135,7 +135,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
   return (
     <div className={cn('space-y-6', className)}>
       {/* Period Selection */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -174,10 +174,10 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
             <div>
               <Label className="text-sm text-amber-300/70 mb-2 block">Period</Label>
               <Select value={period} onValueChange={(v) => handlePeriodChange(v as 'month' | 'quarter' | 'custom')}>
-                <SelectTrigger className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200">
+                <SelectTrigger className="bg-background/60 border-amber-600/30 text-amber-200">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0f0f0f] border-amber-600/30">
+                <SelectContent className="bg-background border-amber-600/30">
                   <SelectItem value="month">This Month</SelectItem>
                   <SelectItem value="quarter">This Quarter</SelectItem>
                   <SelectItem value="custom">Custom Range</SelectItem>
@@ -192,7 +192,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
                     type="date"
                     value={format(dateRange.start, 'yyyy-MM-dd')}
                     onChange={(e) => setDateRange({ ...dateRange, start: new Date(e.target.value) })}
-                    className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                    className="bg-background/60 border-amber-600/30 text-amber-200"
                   />
                 </div>
                 <div>
@@ -201,7 +201,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
                     type="date"
                     value={format(dateRange.end, 'yyyy-MM-dd')}
                     onChange={(e) => setDateRange({ ...dateRange, end: new Date(e.target.value) })}
-                    className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                    className="bg-background/60 border-amber-600/30 text-amber-200"
                   />
                 </div>
               </>
@@ -211,7 +211,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
       </Card>
 
       {loading ? (
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardContent className="p-8">
             <div className="flex items-center justify-center">
               <RefreshCw className="w-8 h-8 animate-spin text-amber-500" />
@@ -222,7 +222,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
         <>
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+            <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -236,7 +236,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
               </CardContent>
             </Card>
 
-            <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+            <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -250,7 +250,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
               </CardContent>
             </Card>
 
-            <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+            <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -264,7 +264,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
               </CardContent>
             </Card>
 
-            <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+            <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -284,7 +284,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
 
           {/* Tax Breakdown Chart */}
           {chartData.length > 0 && (
-            <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+            <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
               <CardHeader>
                 <CardTitle className="text-lg text-amber-200">Tax Breakdown by Rate</CardTitle>
                 <CardDescription className="text-sm text-amber-600/70">
@@ -316,7 +316,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
           )}
 
           {/* Detailed Report Table */}
-          <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+          <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
             <CardHeader>
               <CardTitle className="text-lg text-amber-200">Detailed Tax Report</CardTitle>
               <CardDescription className="text-sm text-amber-600/70">
@@ -332,7 +332,7 @@ export const TaxReportDashboard: React.FC<TaxReportDashboardProps> = ({
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-[#0f0f0f]/60 border-amber-600/20">
+                      <TableRow className="bg-background/60 border-amber-600/20">
                         <TableHead className="text-amber-300/70">Date</TableHead>
                         <TableHead className="text-amber-300/70">Invoice</TableHead>
                         <TableHead className="text-amber-300/70">Customer</TableHead>

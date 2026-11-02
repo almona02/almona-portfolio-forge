@@ -20,11 +20,11 @@ export function ModelViewerTest() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-6xl mx-auto">
         <div className="mb-6">
-          <h1 className="typography-h1 text-gray-900 mb-2">3D Model Test</h1>
-          <p className="text-gray-600">
+          <h1 className="typography-h1 text-foreground mb-2">3D Model Test</h1>
+          <p className="text-muted-foreground">
             Testing the 3D model viewer functionality
           </p>
         </div>
@@ -32,7 +32,7 @@ export function ModelViewerTest() {
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
             <h3 className="typography-h3 text-red-800 mb-2">Error Loading Model</h3>
-            <p className="text-red-600 text-sm">{error}</p>
+            <p className="text-destructive text-sm">{error}</p>
           </div>
         )}
 
@@ -42,7 +42,7 @@ export function ModelViewerTest() {
             <Card>
               <CardHeader>
                 <CardTitle>3D Model Viewer</CardTitle>
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   {isLoading ? "Loading model..." : "Interactive 3D model"}
                 </div>
               </CardHeader>
@@ -63,7 +63,7 @@ export function ModelViewerTest() {
             <Card>
               <CardHeader>
                 <CardTitle>Controls</CardTitle>
-                <div className="text-sm text-gray-600">Adjust model properties</div>
+                <div className="text-sm text-muted-foreground">Adjust model properties</div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -135,15 +135,15 @@ export function ModelViewerTest() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div>
                 <h4 className="typography-h4 mb-2">Rotate</h4>
-                <p className="text-gray-600">Click and drag to rotate the model</p>
+                <p className="text-muted-foreground">Click and drag to rotate the model</p>
               </div>
               <div>
                 <h4 className="typography-h4 mb-2">Zoom</h4>
-                <p className="text-gray-600">Scroll wheel to zoom in/out</p>
+                <p className="text-muted-foreground">Scroll wheel to zoom in/out</p>
               </div>
               <div>
                 <h4 className="typography-h4 mb-2">Pan</h4>
-                <p className="text-gray-600">Right-click and drag to pan</p>
+                <p className="text-muted-foreground">Right-click and drag to pan</p>
               </div>
             </div>
           </CardContent>

@@ -135,13 +135,13 @@ export const DraftingToolbar: React.FC<DraftingToolbarProps> = ({
       {toolGroups.map((group, groupIndex) => (
         <React.Fragment key={group.id}>
           {groupIndex > 0 && (
-             <div className="mx-2 h-[1px] bg-slate-700/50 my-0.5" />
+             <div className="mx-2 h-[1px] bg-muted/50 my-0.5" />
           )}
           <div className="flex flex-col gap-0.5">
             {group.tools.map((tool) => {
               const isActive = validatedSelectedTool === tool.id;
               const IconComponent = tool.iconComponent as any;
-              const iconColorClass = isActive ? 'text-amber-400' : 'text-slate-400';
+              const iconColorClass = isActive ? 'text-warning' : 'text-muted-foreground';
               const iconClassName = tool.iconProps 
                 ? `${iconColorClass} ${tool.iconProps}` 
                 : iconColorClass;
@@ -156,7 +156,7 @@ export const DraftingToolbar: React.FC<DraftingToolbarProps> = ({
                         rounded-md
                         ${isActive 
                           ? 'bg-amber-500/10 border border-amber-500/30' 
-                          : 'bg-transparent border border-transparent hover:bg-slate-700/50'
+                          : 'bg-transparent border border-transparent hover:bg-muted/50'
                         }
                       `}
                       onClick={() => handleToolSelect(tool.id)}

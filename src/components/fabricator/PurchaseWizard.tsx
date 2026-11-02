@@ -332,11 +332,11 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={next => { if (!submitting.current) onOpenChange(next); }}>
-      <DialogContent className="max-w-4xl h-[90dvh] max-h-[90dvh] flex flex-col gap-0 p-0 bg-gray-900 border-gray-800">
-        <div className="shrink-0 p-4 sm:p-6 border-b border-gray-800">
+      <DialogContent className="max-w-4xl h-[90dvh] max-h-[90dvh] flex flex-col gap-0 p-0 bg-background border-border">
+        <div className="shrink-0 p-4 sm:p-6 border-b border-border">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
-              <ShoppingCart className="h-6 w-6 text-amber-400" />
+              <ShoppingCart className="h-6 w-6 text-warning" />
               Purchase Wizard
             </DialogTitle>
             <DialogDescription>
@@ -346,17 +346,17 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
           
           {/* Progress Stepper */}
           <div className="flex items-center gap-2 mt-6">
-            <div className={`flex items-center gap-2 ${step === 'system-select' ? 'text-amber-400' : 'text-gray-400'}`}>
+            <div className={`flex items-center gap-2 ${step === 'system-select' ? 'text-warning' : 'text-muted-foreground'}`}>
               <div className="flex items-center justify-center w-6 h-6 rounded-full border border-current text-xs">1</div>
               <span className="text-sm font-medium">System</span>
             </div>
-            <div className="w-8 h-px bg-gray-700" />
-            <div className={`flex items-center gap-2 ${step === 'profile-select' ? 'text-amber-400' : 'text-gray-400'}`}>
+            <div className="w-8 h-px bg-muted" />
+            <div className={`flex items-center gap-2 ${step === 'profile-select' ? 'text-warning' : 'text-muted-foreground'}`}>
               <div className="flex items-center justify-center w-6 h-6 rounded-full border border-current text-xs">2</div>
               <span className="text-sm font-medium">Profiles</span>
             </div>
-            <div className="w-8 h-px bg-gray-700" />
-            <div className={`flex items-center gap-2 ${step === 'review' ? 'text-amber-400' : 'text-gray-400'}`}>
+            <div className="w-8 h-px bg-muted" />
+            <div className={`flex items-center gap-2 ${step === 'review' ? 'text-warning' : 'text-muted-foreground'}`}>
               <div className="flex items-center justify-center w-6 h-6 rounded-full border border-current text-xs">3</div>
               <span className="text-sm font-medium">Review</span>
             </div>
@@ -368,18 +368,18 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
           {step === 'system-select' && (
             <div className="space-y-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input 
                   aria-label="Search systems"
                   placeholder="Search systems (e.g. Rock60, Jumbo)..." 
-                  className="pl-10 bg-gray-800 border-gray-700"
+                  className="pl-10 bg-card border-border"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               {catalogLoading && <p role="status">Loading material catalogue…</p>}
-              {catalogError && <div role="alert" className="text-red-300"><p>{catalogError}</p><Button variant="outline" onClick={() => setCatalogAttempt(value => value + 1)}>Retry catalogue</Button></div>}
-              {!catalogLoading && !catalogError && filteredSystems.length === 0 && <p className="text-gray-400">No systems match your search.</p>}
+              {catalogError && <div role="alert" className="text-destructive"><p>{catalogError}</p><Button variant="outline" onClick={() => setCatalogAttempt(value => value + 1)}>Retry catalogue</Button></div>}
+              {!catalogLoading && !catalogError && filteredSystems.length === 0 && <p className="text-muted-foreground">No systems match your search.</p>}
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredSystems.map(sys => {
@@ -396,7 +396,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                       }
                     }}
                     key={sys.id} 
-                    className={`bg-gray-800 border-gray-700 transition-all ${
+                    className={`bg-card border-border transition-all ${
                       isEmptyPack
                         ? 'opacity-60 cursor-not-allowed'
                         : 'cursor-pointer hover:border-amber-500/50'
@@ -419,18 +419,18 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                   >
                     <CardContent className="p-6 flex items-center justify-between">
                       <div>
-                        <h3 className="typography-h3 text-lg text-gray-100">{sys.name}</h3>
-                        <p className="text-sm text-gray-400">{sys.brand}</p>
-                        <Badge variant="outline" className="mt-2 bg-gray-900/50">
+                        <h3 className="typography-h3 text-lg text-foreground">{sys.name}</h3>
+                        <p className="text-sm text-muted-foreground">{sys.brand}</p>
+                        <Badge variant="outline" className="mt-2 bg-background/50">
                           {isEmptyPack ? 'No purchasable profiles' : `${purchasableCount} profiles`}
                         </Badge>
                         {isEmptyPack ? (
-                          <p className="text-[11px] text-amber-300/90 mt-2 max-w-[220px]">
+                          <p className="text-[11px] text-warning/90 mt-2 max-w-[220px]">
                             Empty catalogue pack — disabled until profiles are configured.
                           </p>
                         ) : null}
                       </div>
-                      <ChevronRight className="h-5 w-5 text-gray-500" />
+                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
                     </CardContent>
                   </Card>
                   );
@@ -444,7 +444,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="typography-h3 text-lg">{selectedSystem.name}</h3>
-                  <p className="text-sm text-gray-400">Select profiles to purchase</p>
+                  <p className="text-sm text-muted-foreground">Select profiles to purchase</p>
                 </div>
                 <Button variant="ghost" size="sm" onClick={() => setStep('system-select')}>
                   Change System
@@ -453,7 +453,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
 
               <Input aria-label="Search profiles" placeholder="Search profile name or code…" value={profileQuery} onChange={event => setProfileQuery(event.target.value)} />
               <Tabs value={activeRoleTab} onValueChange={setActiveRoleTab} className="w-full">
-                <TabsList className="flex w-full justify-start bg-gray-800 p-1 mb-4 overflow-x-auto">
+                <TabsList className="flex w-full justify-start bg-card p-1 mb-4 overflow-x-auto">
                   <TabsTrigger value="frame">Frames</TabsTrigger>
                   <TabsTrigger value="sash">Sashes</TabsTrigger>
                   <TabsTrigger value="mullion">Mullions</TabsTrigger>
@@ -467,7 +467,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                 {Object.entries(profilesByRole).map(([role, profiles]) => (
                   <TabsContent key={role} value={role} className="space-y-4">
                     {profiles.length === 0 ? (
-                      <div className="text-center py-8 text-gray-500">
+                      <div className="text-center py-8 text-muted-foreground">
                         No profiles found for this role.
                       </div>
                     ) : (
@@ -479,10 +479,10 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                           const isEditingRole = editingRoleFor === purchaseProfileKey(profile);
                           
                           return (
-                            <div key={profile.profileCode} className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between p-3 bg-gray-800 rounded-lg border border-gray-700">
+                            <div key={profile.profileCode} className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between p-3 bg-card rounded-lg border border-border">
                               <div className="flex items-center gap-3 flex-1">
-                                <div className="h-10 w-10 bg-gray-700 rounded flex items-center justify-center">
-                                  <Layers className="h-5 w-5 text-gray-400" />
+                                <div className="h-10 w-10 bg-muted rounded flex items-center justify-center">
+                                  <Layers className="h-5 w-5 text-muted-foreground" />
                                 </div>
                                 <div className="flex-1">
                                   <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -522,7 +522,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                                       </Button>
                                     )}
                                   </div>
-                                  <div className="text-xs text-gray-400 flex flex-wrap gap-2">
+                                  <div className="text-xs text-muted-foreground flex flex-wrap gap-2">
                                     <span>Code: {profile.profileCode}</span>
                                     {profile.weightPerMeter && (
                                       <span>• {profile.weightPerMeter} kg/m</span>
@@ -533,7 +533,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                               
                               <div className="flex items-center gap-3">
                                 {inCart ? (
-                                  <div className="flex items-center gap-2 bg-gray-900 rounded px-2 py-1">
+                                  <div className="flex items-center gap-2 bg-background rounded px-2 py-1">
                                     <span className="text-sm font-medium">{inCart.quantity} bars</span>
                                     <Button 
                                       aria-label={`Add one bar of ${profile.name}`}
@@ -617,20 +617,20 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                   <label className="text-sm">Supplier (optional)<Input value={supplier} onChange={event => setSupplier(event.target.value)} placeholder="Supplier name" /></label>
                   <label className="text-sm">Invoice / reference (optional)<Input value={invoice} onChange={event => setInvoice(event.target.value)} placeholder="Delivery note or invoice" /></label>
                 </div>
-                <p className="text-sm text-gray-400">Record received profile bars. Each line keeps its own system, length, and finish.</p>
-                {validationError && <p role="alert" className="text-sm text-red-300">{validationError}</p>}
+                <p className="text-sm text-muted-foreground">Record received profile bars. Each line keeps its own system, length, and finish.</p>
+                {validationError && <p role="alert" className="text-sm text-destructive">{validationError}</p>}
                 {cart.map((item, idx) => (
-                  <div key={idx} className="flex flex-col gap-3 p-4 bg-gray-800 rounded-lg border border-gray-700">
+                  <div key={idx} className="flex flex-col gap-3 p-4 bg-card rounded-lg border border-border">
                     <div className="flex-1">
                       <div className="font-medium">{item.profile.name}</div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-muted-foreground">
                         {item.profile.systemName} • {item.profile.role}
                       </div>
                     </div>
                     
                     <div className="flex flex-wrap items-end gap-3">
                       <div>
-                        <label className="typography-label text-[10px] text-gray-500 block">Bars</label>
+                        <label className="typography-label text-[10px] text-muted-foreground block">Bars</label>
                         <Input 
                           aria-label={`Bars for ${item.profile.name}`}
                           type="number" 
@@ -642,7 +642,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                         />
                       </div>
                       <div>
-                        <label className="typography-label text-[10px] text-gray-500 block">Length (mm)</label>
+                        <label className="typography-label text-[10px] text-muted-foreground block">Length (mm)</label>
                         <Input 
                           aria-label={`Stock length in millimetres for ${item.profile.name}`}
                           type="number" 
@@ -654,10 +654,10 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                         />
                       </div>
                       <div>
-                        <label className="typography-label text-[10px] text-gray-500 block">Color</label>
+                        <label className="typography-label text-[10px] text-muted-foreground block">Color</label>
                         <div className="flex items-center gap-1">
                           <div 
-                            className="w-6 h-6 rounded border border-gray-600"
+                            className="w-6 h-6 rounded border border-border"
                             style={{ backgroundColor: item.color }}
                           />
                           <Input 
@@ -674,7 +674,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                         aria-label={`Remove ${item.profile.name} from purchase`}
                         size="icon" 
                         variant="ghost" 
-                        className="text-red-400 hover:bg-red-900/20"
+                        className="text-destructive hover:bg-red-900/20"
                         onClick={() => removeFromCart(idx)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -688,12 +688,12 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
           </fieldset>
         </div>
 
-        <div className="shrink-0 p-3 sm:p-4 border-t border-gray-800 bg-gray-900">
+        <div className="shrink-0 p-3 sm:p-4 border-t border-border bg-background">
           <div className="flex flex-wrap gap-3 justify-between items-center">
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-muted-foreground">
               {cart.length > 0 && (
                 <span>
-                  Total Bars: <span className="text-gray-200">{totalBars}</span>
+                  Total Bars: <span className="text-foreground">{totalBars}</span>
                  · {totalMetres.toLocaleString(undefined, { maximumFractionDigits: 2 })} m
                 </span>
               )}

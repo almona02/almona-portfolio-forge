@@ -13,18 +13,18 @@ export const ProductionRealityPanel: React.FC<{
       
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
-          <span className="text-gray-700">هدر المنشار:</span>
+          <span className="text-foreground">هدر المنشار:</span>
           <span className="font-mono font-bold text-amber-700">٤.٢ مم/قص</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-700">أطراف البار المؤكسدة:</span>
+          <span className="text-foreground">أطراف البار المؤكسدة:</span>
           <span className="font-mono font-bold text-amber-700">١٥ مم من كل طرف</span>
         </div>
         
         {systemId.includes('panda') && (
           <div className="mt-2 pt-2 border-t border-amber-200">
             <div className="flex justify-between">
-              <span className="text-gray-700">إزاحة مجرى السلك:</span>
+              <span className="text-foreground">إزاحة مجرى السلك:</span>
               <span className="font-mono font-bold text-green-700">١٥ مم</span>
             </div>
             <div className="text-xs text-amber-600 mt-1">⚠️ بدون هذه الإزاحة، سيكون شبك السلك أصغر ب ٣٠ مم</div>
@@ -34,7 +34,7 @@ export const ProductionRealityPanel: React.FC<{
         {systemId.includes('upvc') && (
           <div className="mt-2 pt-2 border-t border-amber-200">
             <div className="flex justify-between">
-              <span className="text-gray-700">هدر اللحام الحراري:</span>
+              <span className="text-foreground">هدر اللحام الحراري:</span>
               <span className="font-mono font-bold text-amber-700">٣ مم/زاوية</span>
             </div>
             <div className="text-xs text-amber-600 mt-1">⚙️ يتم خصم ٣ مم من كل زاوية عند اللحام</div>

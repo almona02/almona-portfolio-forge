@@ -263,24 +263,24 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
   // Get stage status icon
   const getStageIcon = (status: string) => {
     switch (status) {
-      case 'pending': return <Clock className="h-4 w-4 text-gray-400" />;
-      case 'in_progress': return <Wrench className="h-4 w-4 text-blue-500 animate-pulse" />;
-      case 'completed': return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'failed': return <XCircle className="h-4 w-4 text-red-500" />;
-      case 'skipped': return <RotateCcw className="h-4 w-4 text-gray-400" />;
-      default: return <AlertCircle className="h-4 w-4 text-gray-400" />;
+      case 'pending': return <Clock className="h-4 w-4 text-muted-foreground" />;
+      case 'in_progress': return <Wrench className="h-4 w-4 text-info animate-pulse" />;
+      case 'completed': return <CheckCircle className="h-4 w-4 text-success" />;
+      case 'failed': return <XCircle className="h-4 w-4 text-destructive" />;
+      case 'skipped': return <RotateCcw className="h-4 w-4 text-muted-foreground" />;
+      default: return <AlertCircle className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
   // Get stage status color
   const getStageColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-slate-800 text-slate-300 border-slate-700';
-      case 'in_progress': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
-      case 'completed': return 'bg-green-500/20 text-green-300 border-green-500/30';
-      case 'failed': return 'bg-red-500/20 text-red-300 border-red-500/30';
-      case 'skipped': return 'bg-slate-800/50 text-slate-500 border-slate-700/30';
-      default: return 'bg-slate-800 text-slate-300';
+      case 'pending': return 'bg-card text-foreground border-border';
+      case 'in_progress': return 'bg-blue-500/20 text-info border-blue-500/30';
+      case 'completed': return 'bg-green-500/20 text-success border-green-500/30';
+      case 'failed': return 'bg-red-500/20 text-destructive border-red-500/30';
+      case 'skipped': return 'bg-card/50 text-muted-foreground border-border/30';
+      default: return 'bg-card text-foreground';
     }
   };
 
@@ -289,7 +289,7 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
       <div className={`flex items-center justify-center p-8 ${className}`}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto mb-4"></div>
-          <p className="text-sm text-slate-400">Loading execution tracking...</p>
+          <p className="text-sm text-muted-foreground">Loading execution tracking...</p>
         </div>
       </div>
     );
@@ -298,9 +298,9 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
   if (stages.length === 0) {
     return (
       <div className={`p-8 text-center ${className}`}>
-        <Wrench className="h-12 w-12 text-slate-600 mx-auto mb-4" />
-        <h3 className="text-lg font-medium mb-2 text-slate-200">Execution Not Initialized</h3>
-        <p className="text-slate-400 mb-4">
+        <Wrench className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-medium mb-2 text-foreground">Execution Not Initialized</h3>
+        <p className="text-muted-foreground mb-4">
           Initialize execution stages to start tracking production progress.
         </p>
         <Button onClick={() => void initializeStages()}>
@@ -313,31 +313,31 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
   return (
     <div className={`space-y-6 ${className}`}>
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold flex items-center gap-2 text-slate-100">
-          <Wrench className="h-5 w-5 text-amber-400" />
+        <h3 className="text-lg font-semibold flex items-center gap-2 text-foreground">
+          <Wrench className="h-5 w-5 text-warning" />
           Execution Tracking
         </h3>
         <Badge variant="outline">{progress}% Complete</Badge>
       </div>
 
       {/* Progress Overview */}
-      <Card className="bg-slate-900/60 border-slate-700/50">
-        <CardHeader className="pb-3 border-b border-slate-700/50">
-          <CardTitle className="text-sm flex items-center justify-between text-slate-200">
+      <Card className="bg-background/60 border-border/50">
+        <CardHeader className="pb-3 border-b border-border/50">
+          <CardTitle className="text-sm flex items-center justify-between text-foreground">
             <span>Production Progress</span>
-            <span className="text-xs font-normal text-slate-400">{summary?.completedStages || 0} of {summary?.totalStages || 0} stages</span>
+            <span className="text-xs font-normal text-muted-foreground">{summary?.completedStages || 0} of {summary?.totalStages || 0} stages</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-4">
-          <Progress value={progress} className="mb-4 bg-slate-800" />
+          <Progress value={progress} className="mb-4 bg-card" />
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-slate-500">Efficiency:</span>
-              <span className="font-medium ml-2 text-slate-200">{summary ? Math.round(summary.efficiency * 100) : 0}%</span>
+              <span className="text-muted-foreground">Efficiency:</span>
+              <span className="font-medium ml-2 text-foreground">{summary ? Math.round(summary.efficiency * 100) : 0}%</span>
             </div>
             <div>
-              <span className="text-slate-500">Avg Quality:</span>
-              <span className="font-medium ml-2 text-slate-200">{summary ? Math.round(summary.averageQualityScore) : 0}/100</span>
+              <span className="text-muted-foreground">Avg Quality:</span>
+              <span className="font-medium ml-2 text-foreground">{summary ? Math.round(summary.averageQualityScore) : 0}/100</span>
             </div>
           </div>
         </CardContent>
@@ -345,16 +345,16 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
 
       {/* Execution Stages */}
       <div className="space-y-3">
-        <h4 className="text-sm font-medium text-slate-300">Execution Stages</h4>
+        <h4 className="text-sm font-medium text-foreground">Execution Stages</h4>
         {stages.map((stage) => (
-          <Card key={stage.id} className="relative bg-slate-900/60 border-slate-700/50">
+          <Card key={stage.id} className="relative bg-background/60 border-border/50">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {getStageIcon(stage.status)}
                   <div>
-                    <h5 className="font-medium text-sm text-slate-200">{stage.stageName}</h5>
-                    <p className="text-xs text-slate-400">{stage.description}</p>
+                    <h5 className="font-medium text-sm text-foreground">{stage.stageName}</h5>
+                    <p className="text-xs text-muted-foreground">{stage.description}</p>
                   </div>
                 </div>
 
@@ -385,17 +385,17 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
                           Complete
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-md bg-slate-900 border-slate-700/50">
+                      <DialogContent className="max-w-md bg-background border-border/50">
                         <DialogHeader>
-                          <DialogTitle className="text-slate-100">Complete {stage.stageName}</DialogTitle>
-                          <DialogDescription className="text-slate-400">
+                          <DialogTitle className="text-foreground">Complete {stage.stageName}</DialogTitle>
+                          <DialogDescription className="text-muted-foreground">
                             Provide feedback for stage completion.
                           </DialogDescription>
                         </DialogHeader>
 
                         <div className="space-y-4">
                           <div>
-                            <Label htmlFor="quality-score" className="text-slate-300">Quality Score (0-100)</Label>
+                            <Label htmlFor="quality-score" className="text-foreground">Quality Score (0-100)</Label>
                             <Input
                               id="quality-score"
                               type="number"
@@ -533,10 +533,10 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
                             {feedbackForm.consumptionData.length > 0 && (
                               <div className="space-y-2">
                                 {feedbackForm.consumptionData.map((item, index) => (
-                                  <div key={`${item.itemCode}-${index}`} className="flex items-center justify-between text-xs p-2 bg-gray-50 rounded">
+                                  <div key={`${item.itemCode}-${index}`} className="flex items-center justify-between text-xs p-2 bg-background rounded">
                                     <div>
                                       <div className="font-medium">{item.itemName}</div>
-                                      <div className="text-gray-500">{item.itemCode} • {item.actualQuantity}{item.unit}</div>
+                                      <div className="text-muted-foreground">{item.itemCode} • {item.actualQuantity}{item.unit}</div>
                                     </div>
                                     <Button
                                       type="button"
@@ -568,7 +568,7 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
                   )}
 
                   {stage.qualityScore !== undefined && (
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-muted-foreground">
                       Quality: {stage.qualityScore}/100
                     </div>
                   )}
@@ -576,10 +576,10 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
               </div>
 
               {stage.actualDurationMinutes && (
-                <div className="mt-2 text-xs text-slate-500">
+                <div className="mt-2 text-xs text-muted-foreground">
                   Duration: {stage.actualDurationMinutes}min
                   {stage.estimatedDurationMinutes && (
-                    <span className="ml-2 text-slate-600">
+                    <span className="ml-2 text-muted-foreground">
                       (est. {stage.estimatedDurationMinutes}min)
                     </span>
                   )}
@@ -599,18 +599,18 @@ export const ExecutionTrackingPanel: React.FC<ExecutionTrackingPanelProps> = ({
           <CardContent>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-gray-500">Total Wastage:</span>
+                <span className="text-muted-foreground">Total Wastage:</span>
                 <span className="font-medium ml-2">{summary.wastageSummary.totalWastage.toFixed(2)} units</span>
               </div>
               <div>
-                <span className="text-gray-500">Time Spent:</span>
+                <span className="text-muted-foreground">Time Spent:</span>
                 <span className="font-medium ml-2">{summary.totalTimeSpent} min</span>
               </div>
             </div>
 
             {summary.wastageSummary.primaryReasons.length > 0 && (
               <div className="mt-3">
-                <span className="text-xs text-gray-500">Primary Wastage Reasons:</span>
+                <span className="text-xs text-muted-foreground">Primary Wastage Reasons:</span>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {summary.wastageSummary.primaryReasons.map((reason, index) => (
                     <Badge key={index} variant="outline" className="text-xs">

@@ -84,19 +84,19 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       {Icon && (
         <div className="flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20 mb-4">
           <Icon
-            className="w-8 h-8 text-amber-400"
+            className="w-8 h-8 text-warning"
             size={config.iconSize}
             aria-hidden="true"
           />
         </div>
       )}
 
-      <h3 className={`${config.titleClass} text-slate-200 text-center font-semibold mb-2`}>
+      <h3 className={`${config.titleClass} text-foreground text-center font-semibold mb-2`}>
         {title}
       </h3>
 
       {description && (
-        <p className={`${config.descriptionClass} text-slate-400 text-center max-w-md mb-6`}>
+        <p className={`${config.descriptionClass} text-muted-foreground text-center max-w-md mb-6`}>
           {description}
         </p>
       )}
@@ -122,7 +122,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
             <Button
               onClick={secondaryAction.onClick}
               variant={secondaryAction.variant || 'outline'}
-              className="border-amber-600/30 text-amber-400 hover:bg-amber-500/10"
+              className="border-amber-600/30 text-warning hover:bg-amber-500/10"
             >
               {secondaryAction.label}
             </Button>

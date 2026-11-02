@@ -656,15 +656,15 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'out_of_stock':
-        return 'text-red-400 border-red-500';
+        return 'text-destructive border-red-500';
       case 'low':
-        return 'text-amber-400 border-amber-500';
+        return 'text-warning border-amber-500';
       case 'medium':
-        return 'text-yellow-400 border-yellow-500';
+        return 'text-warning border-yellow-500';
       case 'high':
-        return 'text-green-400 border-green-500';
+        return 'text-success border-green-500';
       default:
-        return 'text-gray-400 border-gray-500';
+        return 'text-muted-foreground border-border';
     }
   };
 
@@ -679,7 +679,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       case 'high':
         return 'bg-green-500/20';
       default:
-        return 'bg-gray-500/20';
+        return 'bg-muted/20';
     }
   };
 
@@ -1021,7 +1021,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="typography-h2">{t('inventory_dashboard.title', 'Inventory Dashboard')}</h2>
-          <p className="text-gray-400">{t('inventory_dashboard.description', 'Workshop stock balances, remnant tracking, and ledger history. Analytics use recorded movements only — no demand forecasts.')}</p>
+          <p className="text-muted-foreground">{t('inventory_dashboard.description', 'Workshop stock balances, remnant tracking, and ledger history. Analytics use recorded movements only — no demand forecasts.')}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -1060,7 +1060,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           </AlertTitle>
           <AlertDescription>
             {stockAlerts.filter(a => a.severity === 'critical').length > 0 && (
-              <span className="text-red-400 font-semibold">
+              <span className="text-destructive font-semibold">
                 {stockAlerts.filter(a => a.severity === 'critical').length} critical alert(s) require immediate attention.
               </span>
             )}
@@ -1069,10 +1069,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         </Alert>
       )}
 
-      <Alert className="border-slate-600/40 bg-slate-900/40">
+      <Alert className="border-border/40 bg-background/40">
         <Info className="h-4 w-4" />
         <AlertTitle>Currency</AlertTitle>
-        <AlertDescription className="text-sm text-slate-300">
+        <AlertDescription className="text-sm text-foreground">
           Inventory totals use <strong>{inventoryCurrency}</strong>. {catalogueCurrencyNote}
           {testStockLots.length > 0
             ? ` ${testStockLots.length} TEST STOCK lot(s) are listed but excluded from production readiness totals.`
@@ -1082,56 +1082,56 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
         {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gray-700/50 border-gray-600">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Production Profiles</p>
-                <p className="text-2xl font-bold text-blue-400">{productionInventory.length}</p>
+                <p className="text-sm text-muted-foreground">Production Profiles</p>
+                <p className="text-2xl font-bold text-info">{productionInventory.length}</p>
                 {testStockLots.length > 0 ? (
-                  <p className="text-[10px] text-slate-400 mt-1">+{testStockLots.length} TEST STOCK lot(s) listed, excluded from readiness</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">+{testStockLots.length} TEST STOCK lot(s) listed, excluded from readiness</p>
                 ) : null}
               </div>
-              <Package className="h-8 w-8 text-blue-400 opacity-50" />
+              <Package className="h-8 w-8 text-info opacity-50" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-700/50 border-gray-600">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">{t('inventory_dashboard.low_stock', 'Low Stock')}</p>
-                <p className="text-2xl font-bold text-amber-400">{lowStockCount}</p>
+                <p className="text-sm text-muted-foreground">{t('inventory_dashboard.low_stock', 'Low Stock')}</p>
+                <p className="text-2xl font-bold text-warning">{lowStockCount}</p>
               </div>
-              <AlertTriangle className="h-8 w-8 text-amber-400 opacity-50" />
+              <AlertTriangle className="h-8 w-8 text-warning opacity-50" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-700/50 border-gray-600">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Good Stock</p>
-                <p className="text-2xl font-bold text-green-400">{goodStockCount}</p>
+                <p className="text-sm text-muted-foreground">Good Stock</p>
+                <p className="text-2xl font-bold text-success">{goodStockCount}</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-400 opacity-50" />
+              <CheckCircle className="h-8 w-8 text-success opacity-50" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-700/50 border-gray-600">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">{t('inventory_dashboard.total_value', 'Total Value')}</p>
-                <p className="text-2xl font-bold text-amber-400">
+                <p className="text-sm text-muted-foreground">{t('inventory_dashboard.total_value', 'Total Value')}</p>
+                <p className="text-2xl font-bold text-warning">
                   {money(totalValue)}
                 </p>
-                <p className="text-[10px] text-slate-400 mt-1">{inventoryCurrency} · excludes TEST STOCK</p>
+                <p className="text-[10px] text-muted-foreground mt-1">{inventoryCurrency} · excludes TEST STOCK</p>
               </div>
-              <DollarSign className="h-8 w-8 text-amber-400 opacity-50" />
+              <DollarSign className="h-8 w-8 text-warning opacity-50" />
             </div>
           </CardContent>
         </Card>
@@ -1140,58 +1140,58 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       {/* Remnant Stats */}
       {remnantStats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-gray-700/50 border-gray-600">
+          <Card className="bg-muted/50 border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400">Available Remnants</p>
-                  <p className="text-2xl font-bold text-cyan-400">
+                  <p className="text-sm text-muted-foreground">Available Remnants</p>
+                  <p className="text-2xl font-bold text-info">
                     {remnantStats.availableRemnants}
                   </p>
                 </div>
-                <Box className="h-8 w-8 text-cyan-400 opacity-50" />
+                <Box className="h-8 w-8 text-info opacity-50" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-700/50 border-gray-600">
+          <Card className="bg-muted/50 border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400">Total Remnant Length</p>
-                  <p className="text-2xl font-bold text-cyan-400">
+                  <p className="text-sm text-muted-foreground">Total Remnant Length</p>
+                  <p className="text-2xl font-bold text-info">
                     {(remnantStats.totalLength / 1000).toFixed(2)}m
                   </p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-cyan-400 opacity-50" />
+                <TrendingUp className="h-8 w-8 text-info opacity-50" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-700/50 border-gray-600">
+          <Card className="bg-muted/50 border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400">Remnant Value</p>
-                  <p className="text-2xl font-bold text-cyan-400">
+                  <p className="text-sm text-muted-foreground">Remnant Value</p>
+                  <p className="text-2xl font-bold text-info">
                     {money(remnantStats.totalValue)}
                   </p>
                 </div>
-                <DollarSign className="h-8 w-8 text-cyan-400 opacity-50" />
+                <DollarSign className="h-8 w-8 text-info opacity-50" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-700/50 border-gray-600">
+          <Card className="bg-muted/50 border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400">Expiring Soon</p>
-                  <p className="text-2xl font-bold text-amber-400">
+                  <p className="text-sm text-muted-foreground">Expiring Soon</p>
+                  <p className="text-2xl font-bold text-warning">
                     {remnantStats.expiringSoon}
                   </p>
                 </div>
-                <Calendar className="h-8 w-8 text-amber-400 opacity-50" />
+                <Calendar className="h-8 w-8 text-warning opacity-50" />
               </div>
             </CardContent>
           </Card>
@@ -1220,7 +1220,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
           {/* Use Remnants First Toggle */}
-          <Card className="bg-gray-700/50 border-gray-600">
+          <Card className="bg-muted/50 border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -1230,7 +1230,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   />
                   <div>
                     <Label className="typography-label text-base font-semibold">{t('inventory_dashboard.use_remnants_first', 'Remnant Optimization')}</Label>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       {t('inventory_dashboard.use_remnants_desc', 'Prioritize matching and using available remnant stock before cutting new material')}
                     </p>
                   </div>
@@ -1239,8 +1239,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   className={cn(
                     "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold pointer-events-none select-none",
                     useRemnantsFirst 
-                      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" 
-                      : "bg-amber-500/10 text-amber-400/80 border-amber-500/30"
+                      ? "bg-emerald-500/20 text-success border-emerald-500/40"
+                      : "bg-amber-500/10 text-warning/80 border-amber-500/30"
                   )}
                   aria-label={useRemnantsFirst ? "Remnant optimization enabled" : "Remnant optimization disabled"}
                 >
@@ -1264,12 +1264,12 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
             {/* Main inventory list and filters */}
             <div className="lg:col-span-2 space-y-4 flex flex-col min-h-0">
               {/* Search and Filters */}
-              <Card className="bg-gray-700/50 border-gray-600">
+              <Card className="bg-muted/50 border-border">
                 <CardContent className="p-4 space-y-3">
                   <div className="flex flex-wrap gap-4">
                     <div className="flex-1 min-w-[200px]">
                       <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           placeholder="Search profiles..."
                           value={searchQuery}
@@ -1293,7 +1293,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
                   {/* Brand / system-pack filter */}
                   <div className="flex flex-wrap gap-2 text-[11px]">
-                    <span className="text-gray-400">Systems:</span>
+                    <span className="text-muted-foreground">Systems:</span>
                     <Button
                       type="button"
                       size="sm"
@@ -1314,7 +1314,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                           onClick={() => setFilterSystemPackId(tree.systemPackId)}
                         >
                           {tree.displayName}
-                          <span className="ml-1 text-[10px] text-gray-300">
+                          <span className="ml-1 text-[10px] text-foreground">
                             {tree.profiles.length}
                           </span>
                         </Button>
@@ -1326,17 +1326,17 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
               {/* Inventory List */}
               <Collapsible open={isProfileInventoryOpen} onOpenChange={setIsProfileInventoryOpen}>
-                <Card className="bg-gray-700/50 border-gray-600 flex flex-col flex-1 min-h-0">
+                <Card className="bg-muted/50 border-border flex flex-col flex-1 min-h-0">
                   <CollapsibleTrigger asChild>
-                    <CardHeader className="flex-shrink-0 cursor-pointer hover:bg-gray-800/70 transition-colors">
+                    <CardHeader className="flex-shrink-0 cursor-pointer hover:bg-card/70 transition-colors">
                       <div className="flex items-center justify-between">
                         <CardTitle className="flex items-center gap-2">
-                          <Package className="h-5 w-5 text-amber-400" />
+                          <Package className="h-5 w-5 text-warning" />
                           Profile Inventory
                         </CardTitle>
                         <ChevronDown 
                           className={cn(
-                            "h-4 w-4 text-gray-400 transition-transform duration-200",
+                            "h-4 w-4 text-muted-foreground transition-transform duration-200",
                             isProfileInventoryOpen && "rotate-180"
                           )}
                         />
@@ -1371,12 +1371,12 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                                       </div>
                                     </Badge>
                                   </div>
-                                  <p className="text-sm text-gray-400">
+                                  <p className="text-sm text-muted-foreground">
                                     {profile.material} • {profile.width}mm • {profile.color}
                                   </p>
                                 </div>
                                 {profile.userId && locations.length > 0 && (
-                                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <MapPin className="h-4 w-4" />
                                     {locations.find(l => l.isDefault)?.name || 'Default'}
                                   </div>
@@ -1389,7 +1389,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                                   <span>Min Level: {profile.minStockLevel || 0}m</span>
                                 </div>
                                 <Progress value={stockPercentage} className="h-2" />
-                                <div className="flex justify-between text-sm text-gray-400">
+                                <div className="flex justify-between text-sm text-muted-foreground">
                                   <span>Cost: {money(profile.costPerMeter)}/m</span>
                                   <span>Supplier: {profile.supplier || 'N/A'}</span>
                                 </div>
@@ -1424,28 +1424,28 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
             {/* Customer / project inventory side panel (pricing lives on Pricing tab) */}
             <div className="space-y-4">
-              <Card className="bg-gray-700/50 border-gray-600">
+              <Card className="bg-muted/50 border-border">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm flex items-center gap-2">
-                    <Warehouse className="h-4 w-4 text-blue-400" />
+                    <Warehouse className="h-4 w-4 text-info" />
                     Customer Inventory
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3 text-xs">
                   {!project ? (
-                    <p className="text-gray-400">
+                    <p className="text-muted-foreground">
                       No active project selected. Customer inventory will appear here when a job is
                       loaded.
                     </p>
                   ) : projectProfiles.length === 0 ? (
-                    <p className="text-gray-400">
+                    <p className="text-muted-foreground">
                       Project has no linked profiles yet. Once components are defined, their stock
                       status will be shown here.
                     </p>
                   ) : (
                     <>
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-gray-400">Customer</span>
+                        <span className="text-muted-foreground">Customer</span>
                         <Badge variant="outline" className="text-[10px] max-w-[140px] truncate">
                           {project.customer || 'Unnamed customer'}
                         </Badge>
@@ -1454,11 +1454,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         {projectProfiles.map(({ profile, status }) => (
                           <div
                             key={profile.id}
-                            className="flex justify-between items-center gap-2 border-b border-gray-700 pb-1 last:border-b-0"
+                            className="flex justify-between items-center gap-2 border-b border-border pb-1 last:border-b-0"
                           >
                             <div className="flex-1 min-w-0">
                               <p className="truncate">{profile.name}</p>
-                              <p className="text-[10px] text-gray-400">
+                              <p className="text-[10px] text-muted-foreground">
                                 Stock {profile.stockQuantity}m • Min {profile.minStockLevel}m
                               </p>
                             </div>
@@ -1481,9 +1481,9 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   )}
                 </CardContent>
               </Card>
-              <Card className="bg-gray-700/50 border-gray-600">
-                <CardContent className="p-4 text-xs text-slate-300 space-y-2">
-                  <p className="font-semibold text-slate-100">System pricing</p>
+              <Card className="bg-muted/50 border-border">
+                <CardContent className="p-4 text-xs text-foreground space-y-2">
+                  <p className="font-semibold text-foreground">System pricing</p>
                   <p>
                     Catalogue / pack pricing is separate from workshop stock balances. Open the Pricing
                     tab to edit owned profile rates ({inventoryCurrency} inventory totals stay on Overview).
@@ -1498,10 +1498,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         </TabsContent>
 
         <TabsContent value="pricing" className="space-y-4">
-          <Alert className="border-slate-600/40 bg-slate-900/40">
+          <Alert className="border-border/40 bg-background/40">
             <DollarSign className="h-4 w-4" />
             <AlertTitle>Pricing setup (separate from stock overview)</AlertTitle>
-            <AlertDescription className="text-sm text-slate-300">
+            <AlertDescription className="text-sm text-foreground">
               Match owned BATCH0 / catalogue profiles here. {catalogueCurrencyNote}
             </AlertDescription>
           </Alert>
@@ -1541,7 +1541,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           )}
 
           {/* Remnant Filters */}
-          <Card className="bg-gray-700/50 border-gray-600">
+          <Card className="bg-muted/50 border-border">
             <CardContent className="p-4">
               <div className="flex flex-wrap gap-4">
                 <Select value={filterStatus} onValueChange={setFilterStatus}>
@@ -1561,17 +1561,17 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           </Card>
 
           {/* Remnants List */}
-          <Card className="bg-gray-700/50 border-gray-600">
+          <Card className="bg-muted/50 border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Box className="h-5 w-5 text-cyan-400" />
+                <Box className="h-5 w-5 text-info" />
                 Material Remnants ({filteredRemnants.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {filteredRemnants.length === 0 ? (
-                  <div className="text-center py-8 text-gray-400">
+                  <div className="text-center py-8 text-muted-foreground">
                     <Box className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No remnants available</p>
                   </div>
@@ -1579,7 +1579,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   filteredRemnants.map((remnant) => (
                     <div
                       key={remnant.id}
-                      className="p-4 bg-gray-800 rounded-lg border border-gray-600"
+                      className="p-4 bg-card rounded-lg border border-border"
                     >
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex-1">
@@ -1592,7 +1592,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                               {remnant.quality}
                             </Badge>
                           </div>
-                          <p className="text-sm text-gray-400">
+                          <p className="text-sm text-muted-foreground">
                             {remnant.profile?.material} • Length: {(remnant.length / 1000).toFixed(2)}m
                             {remnant.locationName && ` • Location: ${remnant.locationName}`}
                           </p>
@@ -1620,25 +1620,25 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
-                          <span className="text-gray-400">Value:</span>
+                          <span className="text-muted-foreground">Value:</span>
                           <p className="font-semibold">{money(remnant.estimatedValue)}</p>
                         </div>
                         <div>
-                          <span className="text-gray-400">Created:</span>
+                          <span className="text-muted-foreground">Created:</span>
                           <p className="font-semibold">
                             {new Date(remnant.createdAt).toLocaleDateString()}
                           </p>
                         </div>
                         {remnant.expirationDate && (
                           <div>
-                            <span className="text-gray-400">Expires:</span>
+                            <span className="text-muted-foreground">Expires:</span>
                             <p className="font-semibold">
                               {new Date(remnant.expirationDate).toLocaleDateString()}
                             </p>
                           </div>
                         )}
                         <div>
-                          <span className="text-gray-400">Usage Count:</span>
+                          <span className="text-muted-foreground">Usage Count:</span>
                           <p className="font-semibold">{remnant.usageCount}</p>
                         </div>
                       </div>
@@ -1652,13 +1652,13 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
         {/* Purchases / Stock Intake Tab */}
         <TabsContent value="purchases" className="space-y-4">
-          <Card className="bg-gray-700/50 border-gray-600">
+          <Card className="bg-muted/50 border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm md:text-base">
-                <FileText className="h-4 w-4 text-amber-400" />
+                <FileText className="h-4 w-4 text-warning" />
                 Stock Intake by Invoice
               </CardTitle>
-              <CardDescription className="text-xs text-gray-400">
+              <CardDescription className="text-xs text-muted-foreground">
                 Record purchase invoices and update stock levels for profiles. This feeds warehouse
                 inventory and stock alerts before cutting.
               </CardDescription>
@@ -1679,15 +1679,15 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   <Label className="typography-label text-xs">Profile / Series / Pack</Label>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <Label className="typography-label text-[10px] text-gray-400">Series / Pack</Label>
+                      <Label className="typography-label text-[10px] text-muted-foreground">Series / Pack</Label>
                       <Select
                         value={invoiceSystemPackFilter}
                         onValueChange={setInvoiceSystemPackFilter}
                       >
-                        <SelectTrigger className="h-7 text-[11px] bg-gray-800 border-gray-700">
+                        <SelectTrigger className="h-7 text-[11px] bg-card border-border">
                           <SelectValue placeholder="All packs" />
                         </SelectTrigger>
-                        <SelectContent className="bg-gray-900 border-gray-700 text-xs">
+                        <SelectContent className="bg-background border-border text-xs">
                           <SelectItem value="all">All packs</SelectItem>
                           <SelectItem value="rock60">ROCK 60</SelectItem>
                           <SelectItem value="jumbo100">JUMBO 100</SelectItem>
@@ -1696,15 +1696,15 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       </Select>
                     </div>
                     <div>
-                      <Label className="typography-label text-[10px] text-gray-400">Role</Label>
+                      <Label className="typography-label text-[10px] text-muted-foreground">Role</Label>
                       <Select
                         value={invoiceRoleFilter}
                         onValueChange={setInvoiceRoleFilter}
                       >
-                        <SelectTrigger className="h-7 text-[11px] bg-gray-800 border-gray-700">
+                        <SelectTrigger className="h-7 text-[11px] bg-card border-border">
                           <SelectValue placeholder="All roles" />
                         </SelectTrigger>
-                        <SelectContent className="bg-gray-900 border-gray-700 text-xs">
+                        <SelectContent className="bg-background border-border text-xs">
                           <SelectItem value="all">All roles</SelectItem>
                           <SelectItem value="frame">Frame</SelectItem>
                           <SelectItem value="sash">Sash</SelectItem>
@@ -1721,10 +1721,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       setInvoiceBarLengthM('');
                     }}
                   >
-                    <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700 mt-1">
+                    <SelectTrigger className="h-8 text-xs bg-card border-border mt-1">
                       <SelectValue placeholder="Select profile by ID in chosen series" />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-72">
+                    <SelectContent className="bg-background border-border text-xs max-h-72">
                       {invoiceProfileOptions.map((p) => {
                         const specs: any = p.specifications || {};
                         const packLabel: string =
@@ -1741,11 +1741,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         return (
                           <SelectItem key={p.id} value={p.id}>
                             <div className="flex flex-col gap-0.5">
-                              <span className="font-medium text-gray-100">{p.name}</span>
-                              <span className="text-[10px] text-gray-500">
+                              <span className="font-medium text-foreground">{p.name}</span>
+                              <span className="text-[10px] text-muted-foreground">
                                 {packLabel} • role {roleLabel} • code {codeLabel}
                               </span>
-                              <span className="text-[10px] text-gray-500">
+                              <span className="text-[10px] text-muted-foreground">
                                 {p.material} • {p.width}mm • stock {p.stockQuantity}m
                               </span>
                             </div>
@@ -1755,29 +1755,29 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     </SelectContent>
                   </Select>
               {invoiceSelectedProfile && (
-                <div className="mt-1 grid grid-cols-2 gap-2 text-[11px] text-gray-400">
+                <div className="mt-1 grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
                   <div>
-                    <span className="text-gray-500">System / Pack:</span>{' '}
-                    <span className="text-gray-200">{invoiceProfileSystemPack}</span>
+                    <span className="text-muted-foreground">System / Pack:</span>{' '}
+                    <span className="text-foreground">{invoiceProfileSystemPack}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500">Profile item code:</span>{' '}
-                    <span className="font-mono text-gray-200">{invoiceProfileCode}</span>
+                    <span className="text-muted-foreground">Profile item code:</span>{' '}
+                    <span className="font-mono text-foreground">{invoiceProfileCode}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500">Role:</span>{' '}
-                    <span className="text-gray-200 capitalize">{invoiceProfileRole}</span>
+                    <span className="text-muted-foreground">Role:</span>{' '}
+                    <span className="text-foreground capitalize">{invoiceProfileRole}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500">Default bar length:</span>{' '}
-                    <span className="text-gray-200">
+                    <span className="text-muted-foreground">Default bar length:</span>{' '}
+                    <span className="text-foreground">
                       {invoiceDefaultBarLengthM.toFixed(2)} m
                     </span>
                   </div>
                   {invoiceWeightPerMeter && (
                     <div>
-                      <span className="text-gray-500">Weight per meter:</span>{' '}
-                      <span className="text-gray-200">
+                      <span className="text-muted-foreground">Weight per meter:</span>{' '}
+                      <span className="text-foreground">
                         {invoiceWeightPerMeter.toFixed(3)} kg/m
                       </span>
                     </div>
@@ -1793,16 +1793,16 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       min={0}
                       value={invoiceQuantity || ''}
                       onChange={(e) => setInvoiceQuantity(Number(e.target.value) || 0)}
-                      className="h-8 text-xs bg-gray-800 border-gray-700 flex-1"
+                      className="h-8 text-xs bg-card border-border flex-1"
                     />
                     <Select
                       value={invoiceUnit}
                       onValueChange={(v) => setInvoiceUnit(v as 'bar' | 'meter')}
                     >
-                      <SelectTrigger className="h-8 w-20 text-xs bg-gray-800 border-gray-700">
+                      <SelectTrigger className="h-8 w-20 text-xs bg-card border-border">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-900 border-gray-700 text-xs">
+                      <SelectContent className="bg-background border-border text-xs">
                         <SelectItem value="bar">Bars</SelectItem>
                         <SelectItem value="meter">Meters</SelectItem>
                       </SelectContent>
@@ -1823,7 +1823,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       )
                     }
                     placeholder={invoiceDefaultBarLengthM.toFixed(2)}
-                    className="h-8 text-xs bg-gray-800 border-gray-700"
+                    className="h-8 text-xs bg-card border-border"
                   />
                 </div>
                 <div>
@@ -1832,7 +1832,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     value={invoiceNumber}
                     onChange={(e) => setInvoiceNumber(e.target.value)}
                     placeholder="e.g. INV-2025-0012"
-                    className="h-8 text-xs bg-gray-800 border-gray-700"
+                    className="h-8 text-xs bg-card border-border"
                   />
                 </div>
                 <div>
@@ -1841,7 +1841,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     value={invoiceSupplier}
                     onChange={(e) => setInvoiceSupplier(e.target.value)}
                     placeholder="e.g. ALSALAM, ELSHERIF"
-                    className="h-8 text-xs bg-gray-800 border-gray-700"
+                    className="h-8 text-xs bg-card border-border"
                   />
                 </div>
                 <div className="flex flex-col gap-1">
@@ -1851,7 +1851,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       checked={invoiceIsPainted}
                       onCheckedChange={(v) => setInvoiceIsPainted(!!v)}
                     />
-                    <span className="text-[11px] text-gray-400">
+                    <span className="text-[11px] text-muted-foreground">
                       {invoiceIsPainted ? 'Yes – specify color' : 'No (mill finish)'}
                     </span>
                   </div>
@@ -1862,15 +1862,15 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         value={invoicePaintColor}
                         onValueChange={setInvoicePaintColor}
                       >
-                        <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
+                        <SelectTrigger className="h-8 text-xs bg-card border-border">
                           <SelectValue placeholder="Select color from pack" />
                         </SelectTrigger>
-                        <SelectContent className="bg-gray-900 border-gray-700 text-xs">
+                        <SelectContent className="bg-background border-border text-xs">
                           {invoiceColorOptions.map((opt) => (
                             <SelectItem key={opt.value} value={opt.value}>
                               <div className="flex items-center gap-2">
                                 <span
-                                  className="inline-block h-3 w-3 rounded-sm border border-gray-600"
+                                  className="inline-block h-3 w-3 rounded-sm border border-border"
                                   style={{ backgroundColor: opt.swatch }}
                                 />
                                 <span>{opt.label}</span>
@@ -1885,17 +1885,17 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               </div>
 
               {totalInvoiceLengthM > 0 && (
-                <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-2 rounded-lg bg-gray-800/60 border border-gray-700 text-[11px] text-gray-300">
+                <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-2 rounded-lg bg-card/60 border border-border text-[11px] text-foreground">
                   <div>
-                    <span className="text-gray-400">Total length:</span>{' '}
-                    <span className="font-semibold text-gray-100">
+                    <span className="text-muted-foreground">Total length:</span>{' '}
+                    <span className="font-semibold text-foreground">
                       {totalInvoiceLengthM.toFixed(2)} m
                     </span>
                   </div>
                   {totalInvoiceWeightKg > 0 && (
                     <div>
-                      <span className="text-gray-400">Estimated weight:</span>{' '}
-                      <span className="font-semibold text-gray-100">
+                      <span className="text-muted-foreground">Estimated weight:</span>{' '}
+                      <span className="font-semibold text-foreground">
                         {totalInvoiceWeightKg.toFixed(2)} kg
                       </span>
                     </div>
@@ -1904,9 +1904,9 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               )}
 
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-                <div className="text-[11px] text-gray-400 max-w-md">
+                <div className="text-[11px] text-muted-foreground max-w-md">
                   Import full invoices from your purchasing system as CSV (columns:{' '}
-                  <span className="font-mono text-gray-200">
+                  <span className="font-mono text-foreground">
                     profile_code, quantity, unit, bar_length_m, invoice_no, supplier
                   </span>
                   ).
@@ -1917,7 +1917,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="border-gray-600 text-xs"
+                      className="border-border text-xs"
                       asChild
                     >
                       <span>
@@ -1953,7 +1953,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               {csvPreviewRows ? (
                 <div className="mt-4 rounded border border-amber-700/40 bg-black/30 p-3 space-y-2">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-sm text-amber-100">
+                    <p className="text-sm text-warning">
                       CSV preview · {csvPreviewValid.length} valid / {csvPreviewRows.length} total
                     </p>
                     <div className="flex gap-2">
@@ -1961,7 +1961,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         type="button"
                         size="sm"
                         variant="outline"
-                        className="border-gray-600 text-xs"
+                        className="border-border text-xs"
                         onClick={() => {
                           setCsvPreviewRows(null);
                           setCsvPreviewValid([]);
@@ -1982,7 +1982,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   </div>
                   <div className="max-h-48 overflow-auto text-[11px]">
                     <table className="w-full text-left">
-                      <thead className="text-gray-400">
+                      <thead className="text-muted-foreground">
                         <tr>
                           <th className="py-1 pr-2">Row</th>
                           <th className="py-1 pr-2">Code</th>
@@ -1996,7 +1996,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         {csvPreviewRows.map((row) => (
                           <tr
                             key={row.rowNumber}
-                            className={row.errors.length ? 'text-red-300' : 'text-emerald-200'}
+                            className={row.errors.length ? 'text-destructive' : 'text-emerald-200'}
                           >
                             <td className="py-1 pr-2">{row.rowNumber}</td>
                             <td className="py-1 pr-2">{row.profileCode || '—'}</td>
@@ -2016,30 +2016,30 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-700/50 border-gray-600">
+          <Card className="bg-muted/50 border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm md:text-base">
-                <History className="h-4 w-4 text-blue-400" />
+                <History className="h-4 w-4 text-info" />
                 Recent Stock Movements
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-xs text-gray-300">
+            <CardContent className="space-y-2 text-xs text-foreground">
               {stockMovements.length === 0 && (
-                <p className="text-gray-400">No stock movements recorded yet.</p>
+                <p className="text-muted-foreground">No stock movements recorded yet.</p>
               )}
               {stockMovements.map((m) => (
                 <div
                   key={m.id}
-                  className="flex items-center justify-between border-b border-gray-600 pb-1 last:border-b-0"
+                  className="flex items-center justify-between border-b border-border pb-1 last:border-b-0"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{m.profileName}</div>
-                    <div className="text-[10px] text-gray-400 truncate">
+                    <div className="text-[10px] text-muted-foreground truncate">
                       {m.movementType} • {m.quantity} {m.unit} •{' '}
                       {m.createdAt.toLocaleDateString()}
                     </div>
                     {m.notes && (
-                      <div className="text-[10px] text-gray-500 truncate">Note: {m.notes}</div>
+                      <div className="text-[10px] text-muted-foreground truncate">Note: {m.notes}</div>
                     )}
                   </div>
                 </div>
@@ -2050,16 +2050,16 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
         {/* Alerts Tab */}
         <TabsContent value="alerts" className="space-y-4">
-          <Card className="bg-gray-700/50 border-gray-600">
+          <Card className="bg-muted/50 border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-amber-400" />
+                <AlertTriangle className="h-5 w-5 text-warning" />
                 Stock Alerts ({stockAlerts.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
               {stockAlerts.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">
+                <div className="text-center py-8 text-muted-foreground">
                   <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>No active alerts</p>
                 </div>
@@ -2098,13 +2098,13 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                             Current: {alert.currentValue}m • Threshold: {alert.thresholdValue}m
                           </p>
                           {alert.reorderQuantity && (
-                            <div className="mt-2 p-2 bg-gray-800 rounded">
+                            <div className="mt-2 p-2 bg-card rounded">
                               <p className="text-sm font-semibold">Threshold coverage (not a forecast):</p>
                               <p className="text-sm">
                                 Metres below minimum: {alert.reorderQuantity.toFixed(2)}m
                                 {alert.reorderPriority && ` (Priority: ${alert.reorderPriority})`}
                               </p>
-                              <p className="text-[11px] text-slate-400 mt-1">
+                              <p className="text-[11px] text-muted-foreground mt-1">
                                 Derived from stock vs min level. Not an automation or demand prediction.
                               </p>
                             </div>
@@ -2122,11 +2122,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
         {/* History Tab */}
         <TabsContent value="history" className="space-y-4">
-          <Card className="bg-gray-700/50 border-gray-600">
+          <Card className="bg-muted/50 border-border">
             <CardHeader className="space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <CardTitle className="flex items-center gap-2">
-                  <History className="h-5 w-5 text-blue-400" aria-hidden />
+                  <History className="h-5 w-5 text-info" aria-hidden />
                   Stock Movement History
                 </CardTitle>
                 <div className="flex flex-wrap gap-2">
@@ -2134,7 +2134,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     type="button"
                     size="sm"
                     variant="outline"
-                    className="border-gray-600 text-xs"
+                    className="border-border text-xs"
                     aria-label="Apply history filters"
                     onClick={() => void loadStockMovements(1)}
                   >
@@ -2144,7 +2144,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     type="button"
                     size="sm"
                     variant="outline"
-                    className="border-gray-600 text-xs"
+                    className="border-border text-xs"
                     aria-label="Export filtered history as CSV"
                     disabled={!stockMovements.length}
                     onClick={() => {
@@ -2164,9 +2164,9 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               </div>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-2 text-xs">
                 <div>
-                  <Label htmlFor="history-profile" className="text-[11px] text-gray-400">Profile</Label>
+                  <Label htmlFor="history-profile" className="text-[11px] text-muted-foreground">Profile</Label>
                   <Select value={historyProfileId} onValueChange={setHistoryProfileId}>
-                    <SelectTrigger id="history-profile" className="h-8 bg-gray-800 border-gray-600">
+                    <SelectTrigger id="history-profile" className="h-8 bg-card border-border">
                       <SelectValue placeholder="All profiles" />
                     </SelectTrigger>
                     <SelectContent>
@@ -2181,51 +2181,51 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="history-invoice" className="text-[11px] text-gray-400">Invoice / notes</Label>
+                  <Label htmlFor="history-invoice" className="text-[11px] text-muted-foreground">Invoice / notes</Label>
                   <Input
                     id="history-invoice"
-                    className="h-8 bg-gray-800 border-gray-600"
+                    className="h-8 bg-card border-border"
                     value={historyInvoiceQuery}
                     onChange={(e) => setHistoryInvoiceQuery(e.target.value)}
                     placeholder="INV-…"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="history-from" className="text-[11px] text-gray-400">From</Label>
+                  <Label htmlFor="history-from" className="text-[11px] text-muted-foreground">From</Label>
                   <Input
                     id="history-from"
                     type="date"
-                    className="h-8 bg-gray-800 border-gray-600"
+                    className="h-8 bg-card border-border"
                     value={historyFromDate}
                     onChange={(e) => setHistoryFromDate(e.target.value)}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="history-to" className="text-[11px] text-gray-400">To</Label>
+                  <Label htmlFor="history-to" className="text-[11px] text-muted-foreground">To</Label>
                   <Input
                     id="history-to"
                     type="date"
-                    className="h-8 bg-gray-800 border-gray-600"
+                    className="h-8 bg-card border-border"
                     value={historyToDate}
                     onChange={(e) => setHistoryToDate(e.target.value)}
                   />
                 </div>
               </div>
               {lastSuccessfulRefreshAt ? (
-                <p className="text-[11px] text-gray-500">
+                <p className="text-[11px] text-muted-foreground">
                   Dashboard last refreshed {lastSuccessfulRefreshAt.toLocaleString()}
                 </p>
               ) : null}
             </CardHeader>
             <CardContent>
               {historyLoading ? (
-                <div className="py-8 text-center text-gray-400 text-sm">Loading movement history…</div>
+                <div className="py-8 text-center text-muted-foreground text-sm">Loading movement history…</div>
               ) : historyError ? (
                 <Alert variant="destructive">
                   <AlertDescription>{historyError}</AlertDescription>
                 </Alert>
               ) : stockMovements.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">
+                <div className="text-center py-8 text-muted-foreground">
                   <History className="h-12 w-12 mx-auto mb-4 opacity-50" aria-hidden />
                   <p>No movement history for these filters</p>
                 </div>
@@ -2234,26 +2234,26 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   {stockMovements.map((movement) => (
                     <div
                       key={movement.id}
-                      className="p-3 bg-gray-800 rounded border border-gray-600"
+                      className="p-3 bg-card rounded border border-border"
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <p className="font-semibold truncate">{movement.profileName}</p>
-                          <p className="text-sm text-gray-400">
+                          <p className="text-sm text-muted-foreground">
                             {movement.movementType} • {movement.quantity} {movement.unit}
                             {movement.canonicalMetres != null
                               ? ` · ${movement.canonicalMetres} m canonical`
                               : ''}
                           </p>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-muted-foreground mt-1">
                             Balance {movement.stockBefore ?? '—'} → {movement.stockAfter ?? '—'}
                             {movement.referenceNumber ? ` · ${movement.referenceNumber}` : ''}
                           </p>
                           {movement.notes && (
-                            <p className="text-xs text-gray-500 mt-1 truncate">{movement.notes}</p>
+                            <p className="text-xs text-muted-foreground mt-1 truncate">{movement.notes}</p>
                           )}
                         </div>
-                        <div className="text-right text-sm text-gray-400 shrink-0">
+                        <div className="text-right text-sm text-muted-foreground shrink-0">
                           <p>{new Date(movement.createdAt).toLocaleDateString()}</p>
                           <p>{new Date(movement.createdAt).toLocaleTimeString()}</p>
                         </div>
@@ -2265,19 +2265,19 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       type="button"
                       size="sm"
                       variant="outline"
-                      className="border-gray-600"
+                      className="border-border"
                       disabled={historyPage <= 1 || historyLoading}
                       aria-label="Previous history page"
                       onClick={() => void loadStockMovements(historyPage - 1)}
                     >
                       Previous
                     </Button>
-                    <span className="text-xs text-gray-400">Page {historyPage}</span>
+                    <span className="text-xs text-muted-foreground">Page {historyPage}</span>
                     <Button
                       type="button"
                       size="sm"
                       variant="outline"
-                      className="border-gray-600"
+                      className="border-border"
                       disabled={!historyHasMore || historyLoading}
                       aria-label="Next history page"
                       onClick={() => void loadStockMovements(historyPage + 1)}
@@ -2293,55 +2293,55 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
         {/* Analytics Tab — ledger-backed only (PR3) */}
         <TabsContent value="analytics" className="space-y-4">
-          <Alert className="border-slate-600/40 bg-slate-900/40">
+          <Alert className="border-border/40 bg-background/40">
             <BarChart3 className="h-4 w-4" />
             <AlertTitle>Ledger analytics</AlertTitle>
-            <AlertDescription className="text-sm text-slate-300">
+            <AlertDescription className="text-sm text-foreground">
               Consumption, ageing and reorder coverage come from recorded stock movements and owned
               balances. Unsupported automation / demand-forecast claims are not shown.
             </AlertDescription>
           </Alert>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="bg-gray-700/50 border-gray-600">
+            <Card className="bg-muted/50 border-border">
               <CardContent className="p-4">
-                <p className="text-sm text-gray-400">On-hand (production)</p>
-                <p className="text-2xl font-bold text-cyan-400">{stockAnalytics.totalMetresOnHand.toFixed(2)}m</p>
-                <p className="text-[11px] text-slate-400">{money(stockAnalytics.totalInventoryValue)} · {inventoryCurrency}</p>
+                <p className="text-sm text-muted-foreground">On-hand (production)</p>
+                <p className="text-2xl font-bold text-info">{stockAnalytics.totalMetresOnHand.toFixed(2)}m</p>
+                <p className="text-[11px] text-muted-foreground">{money(stockAnalytics.totalInventoryValue)} · {inventoryCurrency}</p>
               </CardContent>
             </Card>
-            <Card className="bg-gray-700/50 border-gray-600">
+            <Card className="bg-muted/50 border-border">
               <CardContent className="p-4">
-                <p className="text-sm text-gray-400">Consumed (30d sample)</p>
-                <p className="text-2xl font-bold text-amber-400">{stockAnalytics.consumedMetres30d.toFixed(2)}m</p>
-                <p className="text-[11px] text-slate-400">Intake {stockAnalytics.intakeMetres30d.toFixed(2)}m</p>
+                <p className="text-sm text-muted-foreground">Consumed (30d sample)</p>
+                <p className="text-2xl font-bold text-warning">{stockAnalytics.consumedMetres30d.toFixed(2)}m</p>
+                <p className="text-[11px] text-muted-foreground">Intake {stockAnalytics.intakeMetres30d.toFixed(2)}m</p>
               </CardContent>
             </Card>
-            <Card className="bg-gray-700/50 border-gray-600">
+            <Card className="bg-muted/50 border-border">
               <CardContent className="p-4">
-                <p className="text-sm text-gray-400">Reorder coverage</p>
-                <p className="text-2xl font-bold text-red-400">{stockAnalytics.reorderCoverageMetres.toFixed(2)}m</p>
-                <p className="text-[11px] text-slate-400">Metres below min — not a forecast</p>
+                <p className="text-sm text-muted-foreground">Reorder coverage</p>
+                <p className="text-2xl font-bold text-destructive">{stockAnalytics.reorderCoverageMetres.toFixed(2)}m</p>
+                <p className="text-[11px] text-muted-foreground">Metres below min — not a forecast</p>
               </CardContent>
             </Card>
-            <Card className="bg-gray-700/50 border-gray-600">
+            <Card className="bg-muted/50 border-border">
               <CardContent className="p-4">
-                <p className="text-sm text-gray-400">Remnant reuse rate</p>
-                <p className="text-2xl font-bold text-green-400">
+                <p className="text-sm text-muted-foreground">Remnant reuse rate</p>
+                <p className="text-2xl font-bold text-success">
                   {stockAnalytics.remnantReuseRate == null
                     ? '—'
                     : `${(stockAnalytics.remnantReuseRate * 100).toFixed(0)}%`}
                 </p>
-                <p className="text-[11px] text-slate-400">Available ÷ total remnants</p>
+                <p className="text-[11px] text-muted-foreground">Available ÷ total remnants</p>
               </CardContent>
             </Card>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="bg-gray-700/50 border-gray-600">
+            <Card className="bg-muted/50 border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <TrendingUp className="h-5 w-5 text-green-400" />
+                  <TrendingUp className="h-5 w-5 text-success" />
                   Ageing (from loaded ledger)
                 </CardTitle>
               </CardHeader>
@@ -2353,10 +2353,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-700/50 border-gray-600">
+            <Card className="bg-muted/50 border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <BarChart3 className="h-5 w-5 text-amber-400" />
+                  <BarChart3 className="h-5 w-5 text-warning" />
                   Remnant Statistics
                 </CardTitle>
               </CardHeader>
@@ -2364,7 +2364,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                 {remnantStats ? (
                   <div className="space-y-4">
                     <div>
-                      <p className="text-sm text-gray-400">By Material</p>
+                      <p className="text-sm text-muted-foreground">By Material</p>
                       <div className="mt-2 space-y-2">
                         {Object.entries(remnantStats.byMaterial).map(([material, stats]) => (
                           <div key={material} className="flex justify-between">
@@ -2378,27 +2378,27 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-center">
                       <div>
-                        <p className="text-[11px] text-gray-400">Total</p>
+                        <p className="text-[11px] text-muted-foreground">Total</p>
                         <p className="font-semibold">{remnantStats.totalRemnants}</p>
                       </div>
                       <div>
-                        <p className="text-[11px] text-gray-400">Available</p>
-                        <p className="font-semibold text-green-400">{remnantStats.availableRemnants}</p>
+                        <p className="text-[11px] text-muted-foreground">Available</p>
+                        <p className="font-semibold text-success">{remnantStats.availableRemnants}</p>
                       </div>
                       <div>
-                        <p className="text-[11px] text-gray-400">Unused 90d+</p>
-                        <p className="font-semibold text-amber-400">{remnantStats.unusedRemnants}</p>
+                        <p className="text-[11px] text-muted-foreground">Unused 90d+</p>
+                        <p className="font-semibold text-warning">{remnantStats.unusedRemnants}</p>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-gray-400">No remnant statistics available</p>
+                  <p className="text-muted-foreground">No remnant statistics available</p>
                 )}
               </CardContent>
             </Card>
           </div>
 
-          <ul className="text-xs text-slate-400 list-disc pl-5 space-y-1">
+          <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-1">
             {stockAnalytics.notes.map((note) => (
               <li key={note}>{note}</li>
             ))}

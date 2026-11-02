@@ -85,7 +85,7 @@ export const AddMullionDialog: React.FC<AddMullionDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-gray-900 border-gray-700 text-gray-200">
+      <DialogContent className="bg-background border-border text-foreground">
         <DialogHeader>
           <DialogTitle>Add Mullion</DialogTitle>
         </DialogHeader>
@@ -99,7 +99,7 @@ export const AddMullionDialog: React.FC<AddMullionDialogProps> = ({
                   name="mullionType"
                   checked={type === 'vertical'}
                   onChange={() => setType('vertical')}
-                  className="rounded border-gray-600 bg-gray-800 text-amber-500"
+                  className="rounded border-border bg-card text-warning"
                 />
                 Vertical
               </label>
@@ -109,7 +109,7 @@ export const AddMullionDialog: React.FC<AddMullionDialogProps> = ({
                   name="mullionType"
                   checked={type === 'horizontal'}
                   onChange={() => setType('horizontal')}
-                  className="rounded border-gray-600 bg-gray-800 text-amber-500"
+                  className="rounded border-border bg-card text-warning"
                 />
                 Horizontal
               </label>
@@ -124,7 +124,7 @@ export const AddMullionDialog: React.FC<AddMullionDialogProps> = ({
                   name="splitType"
                   checked={splitType === 'absolute'}
                   onChange={() => setSplitType('absolute')}
-                  className="rounded border-gray-600 bg-gray-800 text-amber-500"
+                  className="rounded border-border bg-card text-warning"
                 />
                 Absolute (mm)
               </label>
@@ -134,7 +134,7 @@ export const AddMullionDialog: React.FC<AddMullionDialogProps> = ({
                   name="splitType"
                   checked={splitType === 'proportional'}
                   onChange={() => setSplitType('proportional')}
-                  className="rounded border-gray-600 bg-gray-800 text-amber-500"
+                  className="rounded border-border bg-card text-warning"
                 />
                 Proportional (%)
               </label>
@@ -144,7 +144,7 @@ export const AddMullionDialog: React.FC<AddMullionDialogProps> = ({
                   name="splitType"
                   checked={splitType === 'clearance-based'}
                   onChange={() => setSplitType('clearance-based')}
-                  className="rounded border-gray-600 bg-gray-800 text-amber-500"
+                  className="rounded border-border bg-card text-warning"
                   disabled
                 />
                 Clearance-based (soon)
@@ -165,7 +165,7 @@ export const AddMullionDialog: React.FC<AddMullionDialogProps> = ({
               min={splitType === 'proportional' ? 1 : 1}
               max={splitType === 'proportional' ? 99 : maxPosition - 1}
               step={splitType === 'proportional' ? 1 : 1}
-              className="bg-gray-800 border-gray-600 text-gray-200"
+              className="bg-card border-border text-foreground"
             />
           </div>
           <div className="grid gap-2">
@@ -178,12 +178,12 @@ export const AddMullionDialog: React.FC<AddMullionDialogProps> = ({
               min={10}
               max={200}
               step={5}
-              className="bg-gray-800 border-gray-600 text-gray-200"
+              className="bg-card border-border text-foreground"
             />
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-gray-600">
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">
             Cancel
           </Button>
           <Button type="button" onClick={handleApply} disabled={!canApply} className="bg-amber-600 hover:bg-amber-700">

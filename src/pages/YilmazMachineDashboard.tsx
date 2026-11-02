@@ -87,7 +87,7 @@ export const YilmazMachineDashboard: React.FC = () => {
   };
 
   const getVoltageColor = (voltage: number) =>
-    voltage < 200 || voltage > 240 ? 'text-destructive' : 'text-green-600';
+    voltage < 200 || voltage > 240 ? 'text-destructive' : 'text-success';
 
   return (
     <div className="p-6 bg-muted/30 min-h-screen">

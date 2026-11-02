@@ -179,9 +179,9 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
 
   if (loading) {
     return (
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardContent className="p-4">
-          <div className="text-sm text-gray-400">Calculating costs...</div>
+          <div className="text-sm text-muted-foreground">Calculating costs...</div>
         </CardContent>
       </Card>
     );
@@ -189,46 +189,46 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
 
   if (!costData) {
     return (
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardContent className="p-4">
-          <div className="text-sm text-gray-400">Start designing to see live costs</div>
+          <div className="text-sm text-muted-foreground">Start designing to see live costs</div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700 sticky top-4">
+    <Card className="bg-card/50 border-border sticky top-4">
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
-          <DollarSign className="h-5 w-5 text-amber-400" />
+          <DollarSign className="h-5 w-5 text-warning" />
           Live Cost & Engineering Console
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Cost Breakdown */}
         <div className="space-y-2">
-          <h4 className="typography-h4 text-sm text-gray-300">Cost Breakdown</h4>
+          <h4 className="typography-h4 text-sm text-foreground">Cost Breakdown</h4>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-400">Total Aluminum:</span>
+              <span className="text-muted-foreground">Total Aluminum:</span>
               <span className="font-medium">{costData.totalAluminum.toFixed(0)} {currency}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-400">Total Glass:</span>
+              <span className="text-muted-foreground">Total Glass:</span>
               <span className="font-medium">{costData.totalGlass.toFixed(0)} {currency}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-400">Total Accessories:</span>
+              <span className="text-muted-foreground">Total Accessories:</span>
               <span className="font-medium">{costData.totalAccessories.toFixed(0)} {currency}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-400">Total Labor:</span>
+              <span className="text-muted-foreground">Total Labor:</span>
               <span className="font-medium">{costData.totalLabor.toFixed(0)} {currency}</span>
             </div>
-            <div className="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold">
+            <div className="border-t border-border pt-1 mt-1 flex justify-between font-bold">
               <span>Total:</span>
-              <span className="text-amber-400">{costData.total.toFixed(0)} {currency}</span>
+              <span className="text-warning">{costData.total.toFixed(0)} {currency}</span>
             </div>
           </div>
         </div>
@@ -236,18 +236,18 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
         {/* Waste Prediction */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h4 className="typography-h4 text-sm text-gray-300 flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-yellow-400" />
+            <h4 className="typography-h4 text-sm text-foreground flex items-center gap-2">
+              <TrendingDown className="h-4 w-4 text-warning" />
               Waste Prediction
             </h4>
             <Badge
               variant="outline"
               className={
                 costData.wastePercentage < 10
-                  ? 'bg-green-500/10 border-green-500/30 text-green-400'
+                  ? 'bg-green-500/10 border-green-500/30 text-success'
                   : costData.wastePercentage < 15
-                    ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400'
-                    : 'bg-red-500/10 border-red-500/30 text-red-400'
+                    ? 'bg-yellow-500/10 border-yellow-500/30 text-warning'
+                    : 'bg-red-500/10 border-red-500/30 text-destructive'
               }
             >
               {costData.wastePercentage.toFixed(1)}%
@@ -255,7 +255,7 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
           </div>
           <Progress value={costData.wastePercentage} className="h-2" />
           {costData.wastePercentage > 14 && (
-            <p className="text-xs text-yellow-400">
+            <p className="text-xs text-warning">
               Consider adjusting dimensions to reduce waste
             </p>
           )}
@@ -264,13 +264,13 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
         {/* Structural Warnings */}
         {costData.structuralWarnings.length > 0 && (
           <div className="space-y-2">
-            <h4 className="typography-h4 text-sm text-gray-300 flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-yellow-400" />
+            <h4 className="typography-h4 text-sm text-foreground flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-warning" />
               Structural Warnings
             </h4>
             {costData.structuralWarnings.map((warning, idx) => (
               <Alert key={idx} className="bg-yellow-500/10 border-yellow-500/30">
-                <AlertDescription className="text-xs text-yellow-300">{warning}</AlertDescription>
+                <AlertDescription className="text-xs text-warning">{warning}</AlertDescription>
               </Alert>
             ))}
           </div>
@@ -279,14 +279,14 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
         {/* Remnant Suggestions */}
         {costData.remnantSuggestions.length > 0 && (
           <div className="space-y-2">
-            <h4 className="typography-h4 text-sm text-gray-300 flex items-center gap-2">
-              <Package className="h-4 w-4 text-green-400" />
+            <h4 className="typography-h4 text-sm text-foreground flex items-center gap-2">
+              <Package className="h-4 w-4 text-success" />
               Remnant Suggestions
             </h4>
             {costData.remnantSuggestions.map((suggestion, idx) => (
               <Alert key={idx} className="bg-green-500/10 border-green-500/30">
-                <CheckCircle2 className="h-4 w-4 text-green-400" />
-                <AlertDescription className="text-xs text-green-300">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                <AlertDescription className="text-xs text-success">
                   {suggestion.message}
                 </AlertDescription>
               </Alert>
@@ -295,7 +295,7 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
         )}
 
         {costData.structuralWarnings.length === 0 && costData.remnantSuggestions.length === 0 && (
-          <div className="text-xs text-gray-500 text-center py-2">
+          <div className="text-xs text-muted-foreground text-center py-2">
             <Info className="h-4 w-4 inline mr-1" />
             No warnings or suggestions
           </div>

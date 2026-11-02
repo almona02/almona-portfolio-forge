@@ -216,11 +216,11 @@ const PaymentFormInner: React.FC<PaymentFormProps & { clientSecret: string }> = 
 
   if (success) {
     return (
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-8">
           <div className="flex flex-col items-center justify-center text-center">
             <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-500/50 flex items-center justify-center mb-4">
-              <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+              <CheckCircle2 className="w-8 h-8 text-success" />
             </div>
             <h3 className="text-lg font-semibold text-amber-200 mb-2">Payment Successful</h3>
             <p className="text-sm text-amber-600/70">
@@ -233,7 +233,7 @@ const PaymentFormInner: React.FC<PaymentFormProps & { clientSecret: string }> = 
   }
 
   return (
-    <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+    <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>
@@ -254,7 +254,7 @@ const PaymentFormInner: React.FC<PaymentFormProps & { clientSecret: string }> = 
       <CardContent>
         <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-6">
           {/* Payment Amount Display */}
-          <div className="p-4 rounded-lg bg-[#0f0f0f]/60 border border-amber-600/20">
+          <div className="p-4 rounded-lg bg-background/60 border border-amber-600/20">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-amber-400" />
@@ -276,10 +276,10 @@ const PaymentFormInner: React.FC<PaymentFormProps & { clientSecret: string }> = 
                 value={paymentMethod}
                 onValueChange={(value) => setValue('paymentMethod', value as PaymentFormValues['paymentMethod'])}
               >
-                <SelectTrigger className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200">
+                <SelectTrigger className="bg-background/60 border-amber-600/30 text-amber-200">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0f0f0f] border-amber-600/30">
+                <SelectContent className="bg-background border-amber-600/30">
                   <SelectItem value="stripe">Credit/Debit Card (Stripe)</SelectItem>
                   <SelectItem value="cash">Cash</SelectItem>
                   <SelectItem value="check">Check</SelectItem>
@@ -293,13 +293,13 @@ const PaymentFormInner: React.FC<PaymentFormProps & { clientSecret: string }> = 
           {paymentMethod === 'stripe' && (
             <div className="space-y-2">
               <Label className="text-sm text-amber-300">Card Details</Label>
-              <div className="p-4 rounded-lg bg-[#0f0f0f]/60 border border-amber-600/30">
+              <div className="p-4 rounded-lg bg-background/60 border border-amber-600/30">
                 <CardElement options={cardElementOptions} />
               </div>
               {error && (
                 <Alert variant="destructive" className="bg-red-500/10 border-red-500/30">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription className="text-red-400 text-sm">
+                  <AlertDescription className="text-destructive text-sm">
                     {error}
                   </AlertDescription>
                 </Alert>
@@ -317,7 +317,7 @@ const PaymentFormInner: React.FC<PaymentFormProps & { clientSecret: string }> = 
                 id="notes"
                 {...form.register('notes')}
                 placeholder="Add payment reference or notes..."
-                className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
+                className="bg-background/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
               />
             </div>
           )}
@@ -412,7 +412,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
 
   if (loading) {
     return (
-      <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+      <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
         <CardContent className="p-8">
           <div className="flex flex-col items-center justify-center">
             <Loader2 className="w-8 h-8 animate-spin text-amber-500 mb-4" />
@@ -425,12 +425,12 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
 
   if (error || !clientSecret) {
     return (
-      <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+      <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
         <CardContent className="p-8">
           <Alert variant="destructive" className="bg-red-500/10 border-red-500/30">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle className="text-red-400">Payment Initialization Failed</AlertTitle>
-            <AlertDescription className="text-red-400/70 text-sm mt-2">
+            <AlertTitle className="text-destructive">Payment Initialization Failed</AlertTitle>
+            <AlertDescription className="text-destructive/70 text-sm mt-2">
               {error || 'Failed to initialize payment. Please try again.'}
             </AlertDescription>
           </Alert>
@@ -442,7 +442,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
   // If no client secret (manual payment only or Stripe not configured)
   if (!clientSecret && showManualPayment) {
     return (
-      <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+      <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
         <CardHeader className="pb-4">
           <CardTitle className="text-lg text-amber-200 flex items-center gap-2">
             <CreditCard className="w-5 h-5" />
@@ -467,12 +467,12 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
 
   if (!clientSecret) {
     return (
-      <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+      <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
         <CardContent className="p-8">
           <Alert variant="destructive" className="bg-red-500/10 border-red-500/30">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle className="text-red-400">Payment Processing Unavailable</AlertTitle>
-            <AlertDescription className="text-red-400/70 text-sm mt-2">
+            <AlertTitle className="text-destructive">Payment Processing Unavailable</AlertTitle>
+            <AlertDescription className="text-destructive/70 text-sm mt-2">
               Stripe payment processing is not configured. Please contact support or use manual payment methods.
             </AlertDescription>
           </Alert>
@@ -484,12 +484,12 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
   const stripePromise = getStripePromise();
   if (!stripePromise) {
     return (
-      <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+      <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
         <CardContent className="p-8">
           <Alert variant="destructive" className="bg-red-500/10 border-red-500/30">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle className="text-red-400">Stripe Not Configured</AlertTitle>
-            <AlertDescription className="text-red-400/70 text-sm mt-2">
+            <AlertTitle className="text-destructive">Stripe Not Configured</AlertTitle>
+            <AlertDescription className="text-destructive/70 text-sm mt-2">
               Please set VITE_STRIPE_PUBLISHABLE_KEY in your environment variables.
             </AlertDescription>
           </Alert>
@@ -574,7 +574,7 @@ const ManualPaymentForm: React.FC<{
 
   return (
     <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
-      <div className="p-4 rounded-lg bg-[#0f0f0f]/60 border border-amber-600/20">
+      <div className="p-4 rounded-lg bg-background/60 border border-amber-600/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <DollarSign className="w-5 h-5 text-amber-400" />
@@ -591,10 +591,10 @@ const ManualPaymentForm: React.FC<{
       <div className="space-y-2">
         <Label className="text-sm text-amber-300">Payment Method</Label>
         <Select value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as 'cash' | 'check' | 'bank_transfer')}>
-          <SelectTrigger className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200">
+          <SelectTrigger className="bg-background/60 border-amber-600/30 text-amber-200">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-[#0f0f0f] border-amber-600/30">
+          <SelectContent className="bg-background border-amber-600/30">
             <SelectItem value="cash">Cash</SelectItem>
             <SelectItem value="check">Check</SelectItem>
             <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
@@ -611,14 +611,14 @@ const ManualPaymentForm: React.FC<{
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Add payment reference or notes..."
-          className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
+          className="bg-background/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
         />
       </div>
 
       {error && (
         <Alert variant="destructive" className="bg-red-500/10 border-red-500/30">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="text-red-400 text-sm">
+          <AlertDescription className="text-destructive text-sm">
             {error}
           </AlertDescription>
         </Alert>

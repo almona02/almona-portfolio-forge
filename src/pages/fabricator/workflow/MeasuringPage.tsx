@@ -272,10 +272,10 @@ export const MeasuringPage: React.FC = () => {
         }
         : undefined;
 
-    if (!projectId || !poseId) return <div role="alert" className="p-8 text-red-300">Authoritative project and position identifiers are required.</div>;
+    if (!projectId || !poseId) return <div role="alert" className="p-8 text-destructive">Authoritative project and position identifiers are required.</div>;
 
     return (
-        <div className="flex flex-col h-full min-h-0 overflow-hidden bg-slate-950">
+        <div className="flex flex-col h-full min-h-0 overflow-hidden bg-background">
             <Collapsible
                 open={poseLayoutOpen}
                 onOpenChange={setPoseLayoutOpen}
@@ -290,11 +290,11 @@ export const MeasuringPage: React.FC = () => {
                         <div className="min-w-0 flex-1">
                             <h2 className="truncate text-xs sm:text-sm font-semibold text-amber-200">
                                 Pose {pose?.posNumber || '1'}
-                                <span className="ml-1.5 font-mono font-normal text-[10px] text-slate-500 sm:hidden">
+                                <span className="ml-1.5 font-mono font-normal text-[10px] text-muted-foreground sm:hidden">
                                     {activePoseSummary}
                                 </span>
                             </h2>
-                            <p className="hidden sm:block truncate font-mono text-[11px] text-slate-500">
+                            <p className="hidden sm:block truncate font-mono text-[11px] text-muted-foreground">
                                 {activePoseSummary}
                             </p>
                         </div>
@@ -304,7 +304,7 @@ export const MeasuringPage: React.FC = () => {
                         />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="pt-2 pb-1 data-[state=closed]:animate-none">
-                        <p className="mb-2 hidden text-xs text-slate-500 sm:block">
+                        <p className="mb-2 hidden text-xs text-muted-foreground sm:block">
                             Width and height for this pose are saved on the position record and shown in the project layout.
                         </p>
                         <div className="max-h-[40vh] overflow-y-auto overscroll-contain sm:max-h-none">

@@ -25,16 +25,16 @@ export const QuoteTwinSearchPanel: React.FC<Props> = ({ onSelect, className }) =
           onChange={e => setQuery(e.target.value)}
         />
       </div>
-      {isLoading && <p className="text-sm text-gray-400">Searching...</p>}
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {isLoading && <p className="text-sm text-muted-foreground">Searching...</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
       {!isLoading && !error && results.length === 0 && query.length >= 2 && (
-        <p className="text-sm text-gray-500">No matches.</p>
+        <p className="text-sm text-muted-foreground">No matches.</p>
       )}
       <ul className="space-y-2 max-h-64 overflow-y-auto pr-1">
         {results.map(r => (
           <li
             key={r.id}
-            className="p-3 rounded bg-almona-dark hover:bg-almona-darker transition"
+            className="p-3 rounded bg-background hover:bg-card transition"
           >
             <div className="flex justify-between items-center">
               <div className="flex-1 cursor-pointer" onClick={() => onSelect?.(r.id)}>
@@ -57,7 +57,7 @@ export const QuoteTwinSearchPanel: React.FC<Props> = ({ onSelect, className }) =
                   </Button>
                 </div>
                 <div className="flex items-center gap-2 mt-1">
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-muted-foreground">
                     {r.digital_twin_code || 'No twin'} • {r.portal_reference || 'No ref'}
                   </p>
                   {r.digital_twin_code && (
@@ -83,7 +83,7 @@ export const QuoteTwinSearchPanel: React.FC<Props> = ({ onSelect, className }) =
                 {r.status}
               </Badge>
             </div>
-            <div className="mt-1 text-xs text-gray-500 flex justify-between">
+            <div className="mt-1 text-xs text-muted-foreground flex justify-between">
               <span>{new Date(r.created_at).toLocaleDateString()}</span>
               <span>
                 {typeof r.total_amount === 'number'

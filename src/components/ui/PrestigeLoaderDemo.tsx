@@ -15,8 +15,8 @@ export const PrestigeLoaderDemo: React.FC = () => {
   if (showLoader) {
     return (
       <PrestigeLoader>
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-          <div className="text-center text-white">
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center text-foreground">
             <h1 className="typography-h1 mb-4">Almona Forge</h1>
             <p className="text-xl">Loading animation completed!</p>
             <button 
@@ -32,8 +32,8 @@ export const PrestigeLoaderDemo: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-      <div className="text-center text-white">
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="text-center text-foreground">
         <h1 className="typography-h1 mb-4">Prestige Loader Demo</h1>
         <p className="text-xl mb-8">Click the button below to see the enhanced loading animation</p>
         <button 

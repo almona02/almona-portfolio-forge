@@ -61,8 +61,8 @@ export const RealTimeCostDisplay: React.FC<RealTimeCostDisplayProps> = ({
 
   if (!costBreakdown || !costDetails) {
     return (
-      <Card className="bg-slate-900/60 -xl border-slate-700/50 shadow-card card-glass-dark">
-        <CardContent className="p-6 text-center text-slate-400">
+      <Card className="bg-background/60 -xl border-border/50 shadow-card card-glass-dark">
+        <CardContent className="p-6 text-center text-muted-foreground">
           No cost data available. Complete design first.
         </CardContent>
       </Card>
@@ -72,11 +72,11 @@ export const RealTimeCostDisplay: React.FC<RealTimeCostDisplayProps> = ({
   return (
     <div className="space-y-4">
       {/* Main Cost Card */}
-      <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 500/30 shadow-premium card-glass-dark">
+      <Card className="bg-gradient-to-br from-background/80 to-card/80 500/30 shadow-premium card-glass-dark">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-lg text-slate-100">
-              <DollarSign className="h-5 w-5 text-amber-400" />
+            <CardTitle className="flex items-center gap-2 text-lg text-foreground">
+              <DollarSign className="h-5 w-5 text-warning" />
               Real-time Cost Analysis
             </CardTitle>
             <Badge variant="outline" className="btn-primary">
@@ -88,13 +88,13 @@ export const RealTimeCostDisplay: React.FC<RealTimeCostDisplayProps> = ({
           {/* Total Cost Display */}
           <div className="btn-primary-gradient">
             <div className="flex items-baseline justify-between mb-2">
-              <span className="text-sm text-slate-400 uppercase tracking-wide">Total Project Cost</span>
-              <span className="text-xs text-slate-500">{costBreakdown.currency}</span>
+              <span className="text-sm text-muted-foreground uppercase tracking-wide">Total Project Cost</span>
+              <span className="text-xs text-muted-foreground">{costBreakdown.currency}</span>
             </div>
-            <div className="text-4xl font-bold text-amber-400 font-mono">
+            <div className="text-4xl font-bold text-warning font-mono">
               {formatCost(costBreakdown.total, costBreakdown.currency)}
             </div>
-            <div className="text-xs text-slate-400 mt-2">
+            <div className="text-xs text-muted-foreground mt-2">
               {formatCost(costPerArea, costBreakdown.currency)}/m² • {liveProject?.overallWidth}×{liveProject?.overallHeight}mm
             </div>
           </div>
@@ -102,37 +102,37 @@ export const RealTimeCostDisplay: React.FC<RealTimeCostDisplayProps> = ({
           {/* Cost Breakdown Grid */}
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-              <div className="text-xs text-blue-300 mb-1">Profiles</div>
-              <div className="text-lg font-bold text-blue-400">
+              <div className="text-xs text-info mb-1">Profiles</div>
+              <div className="text-lg font-bold text-info">
                 {formatCost(costBreakdown.profilesCost, costBreakdown.currency)}
               </div>
-              <div className="text-[10px] text-blue-400/60 mt-1">
+              <div className="text-[10px] text-info/60 mt-1">
                 {costDetails.profileCosts.length} types
               </div>
             </div>
 
             <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
-              <div className="text-xs text-amber-300 mb-1">Hardware</div>
-              <div className="text-lg font-bold text-amber-400">
+              <div className="text-xs text-warning mb-1">Hardware</div>
+              <div className="text-lg font-bold text-warning">
                 {formatCost(costBreakdown.hardwareCost, costBreakdown.currency)}
               </div>
-              <div className="text-[10px] text-amber-400/60 mt-1">
+              <div className="text-[10px] text-warning/60 mt-1">
                 {costDetails.hardwareCosts.length} items
               </div>
             </div>
 
             <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-lg p-3">
-              <div className="text-xs text-cyan-300 mb-1">Glass</div>
-              <div className="text-lg font-bold text-cyan-400">
+              <div className="text-xs text-info mb-1">Glass</div>
+              <div className="text-lg font-bold text-info">
                 {formatCost(costBreakdown.glassCost, costBreakdown.currency)}
               </div>
-              <div className="text-[10px] text-cyan-400/60 mt-1">
+              <div className="text-[10px] text-info/60 mt-1">
                 {bomData?.glassDetails?.totalGlassArea?.toFixed(2)}m²
               </div>
             </div>
 
             <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
-              <div className="text-xs text-emerald-300 mb-1">Labor</div>
+              <div className="text-xs text-success mb-1">Labor</div>
               <div className="text-lg font-bold status-valid">
                 {formatCost(costBreakdown.laborCost, costBreakdown.currency)}
               </div>
@@ -143,18 +143,18 @@ export const RealTimeCostDisplay: React.FC<RealTimeCostDisplayProps> = ({
           </div>
 
           {/* Markup & Tax */}
-          <div className="space-y-2 pt-2 border-t border-slate-700/50">
+          <div className="space-y-2 pt-2 border-t border-border/50">
             <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-400">Subtotal</span>
-              <span className="font-mono text-slate-300">{formatCost(costBreakdown.subtotal, costBreakdown.currency)}</span>
+              <span className="text-muted-foreground">Subtotal</span>
+              <span className="font-mono text-foreground">{formatCost(costBreakdown.subtotal, costBreakdown.currency)}</span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-400">Markup (30%)</span>
-              <span className="font-mono text-amber-400">+{formatCost(costBreakdown.markup, costBreakdown.currency)}</span>
+              <span className="text-muted-foreground">Markup (30%)</span>
+              <span className="font-mono text-warning">+{formatCost(costBreakdown.markup, costBreakdown.currency)}</span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-400">Tax (14% VAT)</span>
-              <span className="font-mono text-amber-500">+{formatCost(costBreakdown.tax, costBreakdown.currency)}</span>
+              <span className="text-muted-foreground">Tax (14% VAT)</span>
+              <span className="font-mono text-warning">+{formatCost(costBreakdown.tax, costBreakdown.currency)}</span>
             </div>
           </div>
 
@@ -162,7 +162,7 @@ export const RealTimeCostDisplay: React.FC<RealTimeCostDisplayProps> = ({
           {roi && (
             <Alert className="bg-emerald-500/10 border-emerald-500/30 backdrop-blur-sm">
               <Zap className="h-4 w-4 status-valid" />
-              <AlertDescription className="text-sm text-emerald-300">
+              <AlertDescription className="text-sm text-success">
                 <div className="flex justify-between items-center">
                   <span>Profit Margin: {roi.profitMargin.toFixed(1)}%</span>
                   <span className="font-bold status-valid">
@@ -176,9 +176,9 @@ export const RealTimeCostDisplay: React.FC<RealTimeCostDisplayProps> = ({
       </Card>
 
       {/* Detailed Breakdown */}
-      <Card className="bg-slate-900/60 -xl border-slate-700/50 shadow-card card-glass-dark">
+      <Card className="bg-background/60 -xl border-border/50 shadow-card card-glass-dark">
         <CardHeader>
-          <CardTitle className="text-base text-slate-100">Cost Breakdown Details</CardTitle>
+          <CardTitle className="text-base text-foreground">Cost Breakdown Details</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {/* Profiles */}
@@ -186,23 +186,23 @@ export const RealTimeCostDisplay: React.FC<RealTimeCostDisplayProps> = ({
             open={expandedSection === 'profiles'}
             onOpenChange={(open) => setExpandedSection(open ? 'profiles' : null)}
           >
-            <CollapsibleTrigger className="flex items-center justify-between w-full p-3 hover: rounded-lg transition-colors border border-slate-700/30 hover:border-amber- 500/30 card-premium">
+            <CollapsibleTrigger className="flex items-center justify-between w-full p-3 hover: rounded-lg transition-colors border border-border/30 hover:border-amber- 500/30 card-premium">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-slate-300">Profiles</span>
-                <Badge variant="outline" className="text-xs border-slate-700/50 text-slate-400 bg-slate-800 /30 card-dark">
+                <span className="text-sm font-medium text-foreground">Profiles</span>
+                <Badge variant="outline" className="text-xs border-border/50 text-muted-foreground bg-card /30 card-dark">
                   {costDetails.profileCosts.length}
                 </Badge>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-mono text-sm text-blue-400">
+                <span className="font-mono text-sm text-info">
                   {formatCost(costBreakdown.profilesCost, costBreakdown.currency)}
                 </span>
-                <ChevronDown className="h-4 w-4 text-slate-500 transition-transform data-[state=open]:rotate-180" />
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform data-[state=open]:rotate-180" />
               </div>
             </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-2 pt-2 pl-3 border-l border-slate-700/50">
+            <CollapsibleContent className="space-y-2 pt-2 pl-3 border-l border-border/50">
               {costDetails.profileCosts.map((profile, idx) => (
-                <div key={idx} className="flex justify-between items-center text-xs text-slate-400 py-1">
+                <div key={idx} className="flex justify-between items-center text-xs text-muted-foreground py-1">
                   <span>{profile.profileName}</span>
                   <span className="font-mono">
                     {(profile.totalLength / 1000).toFixed(2)}m × {profile.costPerMeter.toFixed(2)} = {formatCost(profile.subtotal, costBreakdown.currency)}
@@ -217,23 +217,23 @@ export const RealTimeCostDisplay: React.FC<RealTimeCostDisplayProps> = ({
             open={expandedSection === 'hardware'}
             onOpenChange={(open) => setExpandedSection(open ? 'hardware' : null)}
           >
-            <CollapsibleTrigger className="flex items-center justify-between w-full p-3 hover: rounded-lg transition-colors border border-slate-700/30 hover:border-amber- 500/30 card-premium">
+            <CollapsibleTrigger className="flex items-center justify-between w-full p-3 hover: rounded-lg transition-colors border border-border/30 hover:border-amber- 500/30 card-premium">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-slate-300">Hardware</span>
-                <Badge variant="outline" className="text-xs border-slate-700/50 text-slate-400 bg-slate-800 /30 card-dark">
+                <span className="text-sm font-medium text-foreground">Hardware</span>
+                <Badge variant="outline" className="text-xs border-border/50 text-muted-foreground bg-card /30 card-dark">
                   {costDetails.hardwareCosts.length}
                 </Badge>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-mono text-sm text-amber-400">
+                <span className="font-mono text-sm text-warning">
                   {formatCost(costBreakdown.hardwareCost, costBreakdown.currency)}
                 </span>
-                <ChevronDown className="h-4 w-4 text-slate-500 transition-transform data-[state=open]:rotate-180" />
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform data-[state=open]:rotate-180" />
               </div>
             </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-2 pt-2 pl-3 border-l border-slate-700/50">
+            <CollapsibleContent className="space-y-2 pt-2 pl-3 border-l border-border/50">
               {costDetails.hardwareCosts.map((hw, idx) => (
-                <div key={idx} className="flex justify-between items-center text-xs text-slate-400 py-1">
+                <div key={idx} className="flex justify-between items-center text-xs text-muted-foreground py-1">
                   <span>{hw.hardwareName}</span>
                   <span className="font-mono">
                     {hw.quantity}× {hw.costPerUnit.toFixed(2)} = {formatCost(hw.subtotal, costBreakdown.currency)}
@@ -249,23 +249,23 @@ export const RealTimeCostDisplay: React.FC<RealTimeCostDisplayProps> = ({
               open={expandedSection === 'glass'}
               onOpenChange={(open) => setExpandedSection(open ? 'glass' : null)}
             >
-              <CollapsibleTrigger className="flex items-center justify-between w-full p-3 hover: rounded-lg transition-colors border border-slate-700/30 hover:border-amber- 500/30 card-premium">
+              <CollapsibleTrigger className="flex items-center justify-between w-full p-3 hover: rounded-lg transition-colors border border-border/30 hover:border-amber- 500/30 card-premium">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-slate-300">Glass</span>
-                  <Badge variant="outline" className="text-xs border-slate-700/50 text-slate-400 bg-slate-800 /30 card-dark">
+                  <span className="text-sm font-medium text-foreground">Glass</span>
+                  <Badge variant="outline" className="text-xs border-border/50 text-muted-foreground bg-card /30 card-dark">
                     {costDetails.glassCosts.length}
                   </Badge>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-sm text-cyan-400">
+                  <span className="font-mono text-sm text-info">
                     {formatCost(costBreakdown.glassCost, costBreakdown.currency)}
                   </span>
-                  <ChevronDown className="h-4 w-4 text-slate-500 transition-transform data-[state=open]:rotate-180" />
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform data-[state=open]:rotate-180" />
                 </div>
               </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-2 pt-2 pl-3 border-l border-slate-700/50">
+              <CollapsibleContent className="space-y-2 pt-2 pl-3 border-l border-border/50">
                 {costDetails.glassCosts.map((glass, idx) => (
-                  <div key={idx} className="flex justify-between items-center text-xs text-slate-400 py-1">
+                  <div key={idx} className="flex justify-between items-center text-xs text-muted-foreground py-1">
                     <span>{glass.glassType}</span>
                     <span className="font-mono">
                       {glass.area.toFixed(2)}m² × {glass.costPerM2.toFixed(2)} = {formatCost(glass.subtotal, costBreakdown.currency)}

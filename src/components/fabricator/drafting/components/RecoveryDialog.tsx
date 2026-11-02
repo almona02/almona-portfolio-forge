@@ -60,26 +60,26 @@ export const RecoveryDialog: React.FC<RecoveryDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onDismiss()}>
       <DialogContent 
-        className="bg-slate-900 border-amber-600/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
+        className="bg-background border-amber-600/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
       >
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30">
-              <AlertCircle className="h-6 w-6 text-amber-400" />
+              <AlertCircle className="h-6 w-6 text-warning" />
             </div>
-            <DialogTitle className={`${getTypographyPreset('h3')} text-amber-200`}>
+            <DialogTitle className={`${getTypographyPreset('h3')} text-warning`}>
               Recover Unsaved Work
             </DialogTitle>
           </div>
-          <DialogDescription className={`${getTypographyPreset('body')} text-slate-400`}>
+          <DialogDescription className={`${getTypographyPreset('body')} text-muted-foreground`}>
             We detected an unsaved draft from a previous session. Would you like to restore it?
           </DialogDescription>
         </DialogHeader>
 
         {recoveryTimestamp && (
-          <div className="flex items-center gap-2 p-3 bg-slate-800/50 border border-amber-600/20 rounded-lg">
-            <Clock className="h-4 w-4 text-amber-400" />
-            <span className={`${getTypographyPreset('bodySmall')} text-slate-300`}>
+          <div className="flex items-center gap-2 p-3 bg-card/50 border border-amber-600/20 rounded-lg">
+            <Clock className="h-4 w-4 text-warning" />
+            <span className={`${getTypographyPreset('bodySmall')} text-foreground`}>
               Last saved: {formatVersionTimestamp(recoveryTimestamp)}
             </span>
           </div>
@@ -90,7 +90,7 @@ export const RecoveryDialog: React.FC<RecoveryDialogProps> = ({
             <Button
               variant="outline"
               onClick={onDiscard}
-              className="border-red-600/30 text-red-400 hover:bg-red-500/10"
+              className="border-red-600/30 text-destructive hover:bg-red-500/10"
             >
               <X className="h-4 w-4 mr-2" />
               Discard
@@ -99,7 +99,7 @@ export const RecoveryDialog: React.FC<RecoveryDialogProps> = ({
           <Button
             variant="outline"
             onClick={onDismiss}
-            className="border-slate-600/30 text-slate-400 hover:bg-slate-800/50"
+            className="border-border/30 text-muted-foreground hover:bg-card/50"
           >
             Cancel
           </Button>

@@ -163,7 +163,7 @@ export const CustomersPanel: React.FC = () => {
         </div>
 
         {error ? (
-          <div className="text-red-600 text-sm">{error}</div>
+          <div className="text-destructive text-sm">{error}</div>
         ) : (
           <DataTable columns={columns} data={data} searchKey={undefined} showPagination={false} />
         )}

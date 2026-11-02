@@ -104,15 +104,15 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({
 
   return (
     <div 
-      className={`flex flex-col h-full bg-slate-950 border-l border-amber-600/30 ${className}`}
+      className={`flex flex-col h-full bg-background border-l border-amber-600/30 ${className}`}
       role="complementary"
       aria-label="Help and Documentation"
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-amber-600/30 bg-slate-900/50">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-amber-600/30 bg-background/50">
         <div className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-amber-400" aria-hidden="true" />
-          <h2 className="text-lg font-bold text-slate-200 leading-tight" id="help-panel-title">
+          <BookOpen className="h-5 w-5 text-warning" aria-hidden="true" />
+          <h2 className="text-lg font-bold text-foreground leading-tight" id="help-panel-title">
             Help & Documentation
           </h2>
         </div>
@@ -121,7 +121,7 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="h-8 w-8 text-slate-400 hover:text-slate-200"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
             aria-label="Close help panel"
           >
             <X className="h-4 w-4" aria-hidden="true" />
@@ -130,15 +130,15 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({
       </div>
 
       {/* Search */}
-      <div className="px-4 py-3 border-b border-amber-600/30 bg-slate-900/30">
+      <div className="px-4 py-3 border-b border-amber-600/30 bg-background/30">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" aria-hidden="true" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
           <Input
             type="text"
             placeholder="Search tools, shortcuts, actions..."
             value={searchQuery}
             onChange={handleSearch}
-            className="pl-9 bg-slate-900 border-amber-600/30 text-slate-200 placeholder:text-slate-500"
+            className="pl-9 bg-background border-amber-600/30 text-foreground placeholder:text-muted-foreground"
             aria-label="Search help content"
             aria-describedby="help-panel-title"
           />
@@ -148,7 +148,7 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         <Tabs defaultValue="all" value={selectedCategory} onValueChange={(v) => handleCategoryChange(v as HelpCategory)} className="h-full flex flex-col">
-          <TabsList className="mx-4 mt-2 bg-slate-900/50">
+          <TabsList className="mx-4 mt-2 bg-background/50">
             <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
             <TabsTrigger value="tool" className="text-xs">Tools</TabsTrigger>
             <TabsTrigger value="action" className="text-xs">Actions</TabsTrigger>
@@ -160,13 +160,13 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({
             <div className="flex h-full">
               {/* Left: List */}
               <div className="w-1/2 border-r border-amber-600/30 overflow-hidden flex flex-col">
-                <div className="px-4 py-2.5 text-xs text-slate-400 font-semibold bg-slate-900/30 border-b border-amber-600/20">
+                <div className="px-4 py-2.5 text-xs text-muted-foreground font-semibold bg-background/30 border-b border-amber-600/20">
                   {filteredContent.length} {filteredContent.length === 1 ? 'item' : 'items'} found
                 </div>
                 <ScrollArea className="flex-1">
                   <div className="p-2 space-y-1">
                     {filteredContent.length === 0 ? (
-                      <div className="p-4 text-center text-slate-400 text-sm">
+                      <div className="p-4 text-center text-muted-foreground text-sm">
                         No items found. Try a different search.
                       </div>
                     ) : (
@@ -177,41 +177,41 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({
                           className={`w-full text-left p-3 rounded-lg transition-all duration-150 ${
                             selectedItem === item.key
                               ? 'bg-amber-500/20 border border-amber-500/40 shadow-sm'
-                              : 'bg-slate-900/50 hover:bg-slate-800/50 border border-transparent hover:border-amber-600/20'
+                              : 'bg-background/50 hover:bg-card/50 border border-transparent hover:border-amber-600/20'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="font-semibold text-slate-200 text-sm truncate leading-tight">
+                                <span className="font-semibold text-foreground text-sm truncate leading-tight">
                                   {item.title}
                                 </span>
                                 <Badge
                                   variant="outline"
                                   className={`text-xs ${
-                                    item.category === 'tool' ? 'border-blue-500/30 text-blue-400' :
-                                    item.category === 'action' ? 'border-green-500/30 text-green-400' :
-                                    item.category === 'viewport' ? 'border-amber-500/30 text-amber-400' :
-                                    'border-slate-600/30 text-slate-400'
+                                    item.category === 'tool' ? 'border-blue-500/30 text-info' :
+                                    item.category === 'action' ? 'border-green-500/30 text-success' :
+                                    item.category === 'viewport' ? 'border-amber-500/30 text-warning' :
+                                    'border-border/30 text-muted-foreground'
                                   }`}
                                 >
                                   {item.category}
                                 </Badge>
                               </div>
-                              <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                              <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                                 {item.description}
                               </p>
                               {item.keyboardShortcut && (
                                 <div className="mt-1 flex items-center gap-1">
-                                  <Keyboard className="h-3 w-3 text-slate-500" />
-                                  <span className="text-xs text-slate-500 font-mono">
+                                  <Keyboard className="h-3 w-3 text-muted-foreground" />
+                                  <span className="text-xs text-muted-foreground font-mono">
                                     {formatShortcut(item.keyboardShortcut)}
                                   </span>
                                 </div>
                               )}
                             </div>
                             <ChevronRight
-                              className={`h-4 w-4 text-slate-400 flex-shrink-0 transition-transform ${
+                              className={`h-4 w-4 text-muted-foreground flex-shrink-0 transition-transform ${
                                 selectedItem === item.key ? 'rotate-90' : ''
                               }`}
                             />
@@ -229,16 +229,16 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({
                   <ScrollArea className="flex-1">
                     <div className="p-6 space-y-4">
                       <div>
-                        <h3 className="text-xl font-bold text-slate-200 mb-3 leading-tight">
+                        <h3 className="text-xl font-bold text-foreground mb-3 leading-tight">
                           {selectedItemContent.title}
                         </h3>
                         <Badge
                           variant="outline"
                           className={`${
-                            selectedItemContent.category === 'tool' ? 'border-blue-500/30 text-blue-400' :
-                            selectedItemContent.category === 'action' ? 'border-green-500/30 text-green-400' :
-                            selectedItemContent.category === 'viewport' ? 'border-amber-500/30 text-amber-400' :
-                            'border-slate-600/30 text-slate-400'
+                            selectedItemContent.category === 'tool' ? 'border-blue-500/30 text-info' :
+                            selectedItemContent.category === 'action' ? 'border-green-500/30 text-success' :
+                            selectedItemContent.category === 'viewport' ? 'border-amber-500/30 text-warning' :
+                            'border-border/30 text-muted-foreground'
                           }`}
                         >
                           {selectedItemContent.category}
@@ -246,20 +246,20 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({
                       </div>
 
                       <div>
-                        <h4 className="text-sm font-semibold text-slate-300 mb-2.5">Description</h4>
-                        <p className="text-sm text-slate-400 leading-relaxed font-normal">
+                        <h4 className="text-sm font-semibold text-foreground mb-2.5">Description</h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed font-normal">
                           {selectedItemContent.description}
                         </p>
                       </div>
 
                       {selectedItemContent.keyboardShortcut && (
                         <div>
-                          <h4 className="text-sm font-semibold text-slate-300 mb-2.5 flex items-center gap-2">
+                          <h4 className="text-sm font-semibold text-foreground mb-2.5 flex items-center gap-2">
                             <Keyboard className="h-4 w-4" />
                             Keyboard Shortcut
                           </h4>
-                          <div className="bg-slate-900/50 border border-amber-600/20 rounded-lg p-3">
-                            <code className="text-sm font-mono text-amber-300 font-medium">
+                          <div className="bg-background/50 border border-amber-600/20 rounded-lg p-3">
+                            <code className="text-sm font-mono text-warning font-medium">
                               {formatShortcut(selectedItemContent.keyboardShortcut)}
                             </code>
                           </div>
@@ -268,12 +268,12 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({
 
                       {selectedItemContent.usageExample && (
                         <div>
-                          <h4 className="text-sm font-semibold text-slate-300 mb-2.5 flex items-center gap-2">
+                          <h4 className="text-sm font-semibold text-foreground mb-2.5 flex items-center gap-2">
                             <Info className="h-4 w-4" />
                             Usage Example
                           </h4>
-                          <div className="bg-slate-900/50 border border-amber-600/20 rounded-lg p-3">
-                            <p className="text-sm text-slate-400 leading-relaxed font-normal">
+                          <div className="bg-background/50 border border-amber-600/20 rounded-lg p-3">
+                            <p className="text-sm text-muted-foreground leading-relaxed font-normal">
                               {selectedItemContent.usageExample}
                             </p>
                           </div>
@@ -283,7 +283,7 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({
                   </ScrollArea>
                 ) : (
                   <div className="flex-1 flex items-center justify-center p-6">
-                    <div className="text-center text-slate-400">
+                    <div className="text-center text-muted-foreground">
                       <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p className="text-sm">
                         Select an item from the list to view detailed information

@@ -52,13 +52,13 @@ export const PDFGenerationProgress = memo<PDFGenerationProgressProps>(({
   const getStageColor = (stage: string) => {
     switch (stage.toLowerCase()) {
       case 'preparing':
-        return 'text-blue-500';
+        return 'text-info';
       case 'processing':
         return 'text-amber-500';
       case 'finalizing':
-        return 'text-green-500';
+        return 'text-success';
       default:
-        return 'text-gray-500';
+        return 'text-muted-foreground';
     }
   };
 
@@ -70,7 +70,7 @@ export const PDFGenerationProgress = memo<PDFGenerationProgressProps>(({
             <CardTitle className="text-lg flex items-center gap-2">
               {error ? (
                 <>
-                  <X className="w-5 h-5 text-red-500" />
+                  <X className="w-5 h-5 text-destructive" />
                   PDF Generation Failed
                 </>
               ) : (
@@ -85,7 +85,7 @@ export const PDFGenerationProgress = memo<PDFGenerationProgressProps>(({
                 variant="ghost"
                 size="sm"
                 onClick={onCancel}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -96,7 +96,7 @@ export const PDFGenerationProgress = memo<PDFGenerationProgressProps>(({
         <CardContent className="space-y-4">
           {error ? (
             <div className="text-center space-y-4">
-              <div className="text-red-500 text-sm">
+              <div className="text-destructive text-sm">
                 {error}
               </div>
               <Button
@@ -114,7 +114,7 @@ export const PDFGenerationProgress = memo<PDFGenerationProgressProps>(({
                   <span className={`font-medium ${getStageColor(stage)}`}>
                     {stage}
                   </span>
-                  <span className="text-gray-500">
+                  <span className="text-muted-foreground">
                     {Math.round(progress)}%
                   </span>
                 </div>
@@ -122,13 +122,13 @@ export const PDFGenerationProgress = memo<PDFGenerationProgressProps>(({
               </div>
               
               {fileName && (
-                <div className="text-sm text-gray-600 text-center">
+                <div className="text-sm text-muted-foreground text-center">
                   Creating: {fileName}
                 </div>
               )}
               
               {progress === 100 && onDownload && (
-                <div className="text-center text-sm text-green-600 font-medium">
+                <div className="text-center text-sm text-success font-medium">
                   PDF downloaded successfully!
                 </div>
               )}

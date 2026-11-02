@@ -93,7 +93,7 @@ const FabricatorWorkspaceLayoutComponent: React.FC<FabricatorWorkspaceLayoutProp
         )}
         
         {/* Main Content */}
-        <main className="flex-1 min-h-0 min-w-0 overflow-hidden bg-gray-950">
+        <main className="flex-1 min-h-0 min-w-0 overflow-hidden bg-background">
           {mainContent}
         </main>
         
@@ -112,7 +112,7 @@ const FabricatorWorkspaceLayoutComponent: React.FC<FabricatorWorkspaceLayoutProp
       
       {/* Footer */}
       {footer && (
-        <footer className="border-t border-amber-600/30 bg-gray-900/50">
+        <footer className="border-t border-amber-600/30 bg-background/50">
           {footer}
         </footer>
       )}

@@ -97,16 +97,16 @@ export const SystemDrivenDesign: React.FC<SystemDrivenDesignProps> = ({
   const canGenerate = selectedPack && width > 0 && height > 0;
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700">
+    <Card className="bg-card/50 border-border">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Zap className="h-5 w-5 text-amber-400" />
+          <Zap className="h-5 w-5 text-warning" />
           <CardTitle>System-Driven Design</CardTitle>
-          <Badge variant="outline" className="ml-auto bg-green-500/10 border-green-500/30 text-green-400">
+          <Badge variant="outline" className="ml-auto bg-green-500/10 border-green-500/30 text-success">
             Fast & Accurate
           </Badge>
         </div>
-        <CardDescription className="text-gray-400">
+        <CardDescription className="text-muted-foreground">
           Select a system pack and enter dimensions. The system will automatically generate the window
           with correct profiles, accessories, and structural constraints.
         </CardDescription>
@@ -115,15 +115,15 @@ export const SystemDrivenDesign: React.FC<SystemDrivenDesignProps> = ({
         <div>
           <Label className="typography-label text-sm">System Pack *</Label>
           <Select value={selectedSystemPackId || ''} onValueChange={onSystemPackChange}>
-            <SelectTrigger className="bg-gray-900 border-gray-700">
+            <SelectTrigger className="bg-background border-border">
               <SelectValue placeholder="Select system pack" />
             </SelectTrigger>
-            <SelectContent className="bg-gray-900 border-gray-700">
+            <SelectContent className="bg-background border-border">
               {SYSTEM_PACKS.map((pack) => (
                 <SelectItem key={pack.meta.id} value={pack.meta.id}>
                   <div className="flex flex-col">
                     <span>{pack.meta.name}</span>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-muted-foreground">
                       {pack.meta.brands.join(', ')} • {pack.meta.regions.join(', ')}
                     </span>
                   </div>
@@ -132,7 +132,7 @@ export const SystemDrivenDesign: React.FC<SystemDrivenDesignProps> = ({
             </SelectContent>
           </Select>
           {selectedPack && (
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {selectedPack.meta.name} - {selectedPack.meta.brands.join(', ')}
             </p>
           )}
@@ -146,7 +146,7 @@ export const SystemDrivenDesign: React.FC<SystemDrivenDesignProps> = ({
               value={width || ''}
               onChange={(e) => setWidth(Number(e.target.value))}
               placeholder="e.g. 2000"
-              className="bg-gray-900 border-gray-700"
+              className="bg-background border-border"
             />
           </div>
           <div>
@@ -156,18 +156,18 @@ export const SystemDrivenDesign: React.FC<SystemDrivenDesignProps> = ({
               value={height || ''}
               onChange={(e) => setHeight(Number(e.target.value))}
               placeholder="e.g. 1500"
-              className="bg-gray-900 border-gray-700"
+              className="bg-background border-border"
             />
           </div>
         </div>
 
         {selectedPack && width > 0 && height > 0 && (
           <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-            <div className="flex items-center gap-2 text-green-400">
+            <div className="flex items-center gap-2 text-success">
               <CheckCircle2 className="h-4 w-4" />
               <span className="text-sm font-medium">Ready to Generate</span>
             </div>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Window will be auto-generated with all profiles, accessories, and constraints from{' '}
               {selectedPack.meta.name}
             </p>

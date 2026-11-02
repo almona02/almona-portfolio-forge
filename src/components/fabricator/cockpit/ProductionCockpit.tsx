@@ -48,12 +48,12 @@ export const ProductionCockpit: React.FC<ProductionCockpitProps> = ({
       className="h-full min-h-0 grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)_240px] grid-rows-[auto_minmax(0,1fr)] gap-2 p-2"
       data-testid="production-cockpit"
     >
-      <aside className="border border-amber-600/20 bg-[#0d0d0d] overflow-auto lg:row-span-2">
-        <header className="px-3 py-2 text-[10px] uppercase tracking-widest text-amber-500 border-b border-amber-600/20">
+      <aside className="border border-amber-600/20 bg-background overflow-auto lg:row-span-2">
+        <header className="px-3 py-2 text-[10px] uppercase tracking-widest text-warning border-b border-amber-600/20">
           {t('industrial.prod.batches', 'Batches / work orders')}
         </header>
         {!batchIds?.length ? (
-          <p className="p-3 text-xs text-slate-500" data-testid="production-no-batches">
+          <p className="p-3 text-xs text-muted-foreground" data-testid="production-no-batches">
             {NOT_RECORDED}
           </p>
         ) : (
@@ -67,16 +67,16 @@ export const ProductionCockpit: React.FC<ProductionCockpitProps> = ({
         )}
       </aside>
 
-      <section className="border border-amber-600/20 bg-[#0d0d0d] p-3">
-        <header className="text-[10px] uppercase tracking-widest text-amber-500 mb-2">
+      <section className="border border-amber-600/20 bg-background p-3">
+        <header className="text-[10px] uppercase tracking-widest text-warning mb-2">
           {t('industrial.prod.preview', 'Selected position')}
         </header>
         {!project ? (
-          <p className="text-xs text-slate-500">{NOT_RECORDED}</p>
+          <p className="text-xs text-muted-foreground">{NOT_RECORDED}</p>
         ) : (
           <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
             <dt className="text-amber-700">Pose</dt>
-            <dd className="font-mono text-amber-100" dir="ltr">{project.posNumber}</dd>
+            <dd className="font-mono text-warning" dir="ltr">{project.posNumber}</dd>
             <dt className="text-amber-700">Size</dt>
             <dd className="font-mono" dir="ltr">
               {project.overallWidth} × {project.overallHeight} mm
@@ -89,8 +89,8 @@ export const ProductionCockpit: React.FC<ProductionCockpitProps> = ({
         )}
       </section>
 
-      <aside className="border border-amber-600/20 bg-[#0d0d0d] p-3 lg:row-span-2 overflow-auto space-y-3">
-        <header className="text-[10px] uppercase tracking-widest text-amber-500">
+      <aside className="border border-amber-600/20 bg-background p-3 lg:row-span-2 overflow-auto space-y-3">
+        <header className="text-[10px] uppercase tracking-widest text-warning">
           {t('industrial.prod.readiness', 'Readiness')}
         </header>
         <ReadinessRow
@@ -129,25 +129,25 @@ export const ProductionCockpit: React.FC<ProductionCockpitProps> = ({
           type="button"
           size="sm"
           variant="outline"
-          className="w-full border-amber-700/50 text-amber-200"
+          className="w-full border-amber-700/50 text-warning"
           onClick={() => setStockOpen(true)}
         >
           {t('industrial.stock.confirm_cta', 'Confirm stock consumption')}
         </Button>
       </aside>
 
-      <section className="border border-amber-600/20 bg-[#0d0d0d] min-h-0 flex flex-col overflow-hidden">
-        <header className="px-3 py-2 text-[10px] uppercase tracking-widest text-amber-500 border-b border-amber-600/20">
+      <section className="border border-amber-600/20 bg-background min-h-0 flex flex-col overflow-hidden">
+        <header className="px-3 py-2 text-[10px] uppercase tracking-widest text-warning border-b border-amber-600/20">
           {t('industrial.prod.cuts', 'Physical cuts')}
         </header>
         <div className="flex-1 overflow-auto">
           {cuts.length === 0 ? (
-            <p className="p-3 text-xs text-slate-500" data-testid="production-no-cuts">
+            <p className="p-3 text-xs text-muted-foreground" data-testid="production-no-cuts">
               {NOT_RECORDED}
             </p>
           ) : (
             <table className="w-full text-xs">
-              <thead className="sticky top-0 bg-[#111] text-[10px] uppercase text-amber-700">
+              <thead className="sticky top-0 bg-background text-[10px] uppercase text-amber-700">
                 <tr>
                   <th className="text-start px-2 py-1">sourceCutId</th>
                   <th className="text-start px-2 py-1">Profile</th>
@@ -207,7 +207,7 @@ function ReadinessRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-2 text-[11px]">
       <span className="text-amber-700">{label}</span>
-      <span className="text-amber-100 text-end">{value}</span>
+      <span className="text-warning text-end">{value}</span>
     </div>
   );
 }

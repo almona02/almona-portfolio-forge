@@ -51,19 +51,19 @@ const TelemetryCard: React.FC<{
   trend?: 'up' | 'down' | 'stable';
   warning?: boolean;
 }> = ({ icon, label, value, trend, warning }) => (
-  <div className={`p-3 rounded-lg ${warning ? 'bg-yellow-500/10' : 'bg-gray-800'}`}>
+  <div className={`p-3 rounded-lg ${warning ? 'bg-yellow-500/10' : 'bg-card'}`}>
     <div className="flex items-center gap-2 mb-1">
       {icon}
-      <span className="text-xs text-gray-400">{label}</span>
+      <span className="text-xs text-muted-foreground">{label}</span>
     </div>
     <div className="flex items-center gap-2">
-      <span className={`text-lg font-bold ${warning ? 'text-yellow-400' : 'text-white'}`}>
+      <span className={`text-lg font-bold ${warning ? 'text-warning' : 'text-foreground'}`}>
         {value}
       </span>
       {trend && (
         <span className={`text-xs ${
-          trend === 'up' ? 'text-green-400' : 
-          trend === 'down' ? 'text-red-400' : 'text-gray-400'
+          trend === 'up' ? 'text-success' :
+          trend === 'down' ? 'text-destructive' : 'text-muted-foreground'
         }`}>
           {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '–'}
         </span>
@@ -75,17 +75,17 @@ const TelemetryCard: React.FC<{
 // Status Badge Component
 const StatusBadge: React.FC<{ status: MachineStatus['status'] }> = ({ status }) => {
   const config = {
-    idle: { color: 'bg-gray-500', icon: Pause, label: 'Idle' },
+    idle: { color: 'bg-muted', icon: Pause, label: 'Idle' },
     running: { color: 'bg-green-500', icon: Play, label: 'Running' },
     maintenance: { color: 'bg-yellow-500', icon: Settings, label: 'Maintenance' },
     error: { color: 'bg-red-500', icon: AlertCircle, label: 'Error' },
-    offline: { color: 'bg-gray-700', icon: WifiOff, label: 'Offline' },
+    offline: { color: 'bg-muted', icon: WifiOff, label: 'Offline' },
   };
   
   const { color, icon: Icon, label } = config[status];
   
   return (
-    <Badge className={`${color} text-white flex items-center gap-1`}>
+    <Badge className={`${color} text-foreground flex items-center gap-1`}>
       <Icon className="w-3 h-3" />
       {label}
     </Badge>
@@ -187,11 +187,11 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
   
   if (!machine) {
     return (
-      <Card className="bg-gray-900/60 border-gray-700 card-dark">
+      <Card className="bg-background/60 border-border card-dark">
         <CardContent className="p-6 flex items-center justify-center">
           <div className="text-center">
-            <Cpu className="w-8 h-8 text-gray-500 mx-auto mb-2 animate-pulse" />
-            <p className="text-sm text-gray-400">Loading machine data...</p>
+            <Cpu className="w-8 h-8 text-muted-foreground mx-auto mb-2 animate-pulse" />
+            <p className="text-sm text-muted-foreground">Loading machine data...</p>
           </div>
         </CardContent>
       </Card>
@@ -200,18 +200,18 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
   
   if (compact) {
     return (
-      <Card className="bg-gray-900/60 border-gray-700 card-dark">
+      <Card className="bg-background/60 border-border card-dark">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={`w-3 h-3 rounded-full ${
                 machine.status === 'running' ? 'bg-green-500 animate-pulse' :
                 machine.status === 'error' ? 'bg-red-500' :
-                machine.status === 'offline' ? 'bg-gray-500' : 'bg-yellow-500'
+                machine.status === 'offline' ? 'bg-muted' : 'bg-yellow-500'
               }`} />
               <div>
                 <div className="font-medium text-sm">{machine.name}</div>
-                <div className="text-xs text-gray-400">{machine.brand} {machine.model}</div>
+                <div className="text-xs text-muted-foreground">{machine.brand} {machine.model}</div>
               </div>
             </div>
             <StatusBadge status={machine.status} />
@@ -222,23 +222,23 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
   }
   
   return (
-    <Card className="bg-gray-900/60 border-gray-700 overflow-hidden card-dark">
+    <Card className="bg-background/60 border-border overflow-hidden card-dark">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Cpu className="w-5 h-5 text-blue-400" />
+            <Cpu className="w-5 h-5 text-info" />
             {machine.name}
           </CardTitle>
           <div className="flex items-center gap-2">
             {isConnected ? (
-              <Wifi className="w-4 h-4 text-green-400" />
+              <Wifi className="w-4 h-4 text-success" />
             ) : (
-              <WifiOff className="w-4 h-4 text-red-400" />
+              <WifiOff className="w-4 h-4 text-destructive" />
             )}
             <StatusBadge status={machine.status} />
           </div>
         </div>
-        <div className="text-xs text-gray-400">
+        <div className="text-xs text-muted-foreground">
           {machine.brand} {machine.model}
         </div>
       </CardHeader>
@@ -249,18 +249,18 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
           <div className={`absolute inset-0 opacity-20 bg-gradient-to-r ${
             machine.status === 'running' ? 'from-green-500/20' :
             machine.status === 'error' ? 'from-red-500/20' :
-            machine.status === 'offline' ? 'from-gray-500/10' : 'from-yellow-500/10'
+            machine.status === 'offline' ? 'from-muted/10' : 'from-yellow-500/10'
           } to-transparent ${machine.status === 'running' ? 'animate-pulse' : ''}`} />
           
           <div className="relative z-10 text-center">
             <div className="text-4xl font-mono font-bold tracking-tighter mb-2">
               {machine.status.toUpperCase()}
             </div>
-            <div className="text-sm text-gray-400 font-mono">
+            <div className="text-sm text-muted-foreground font-mono">
               PROGRAM: {machine.currentProgram || 'NONE'}
             </div>
             {machine.status === 'error' && machine.errorMessage && (
-              <div className="mt-2 text-xs text-red-400 flex items-center justify-center gap-1">
+              <div className="mt-2 text-xs text-destructive flex items-center justify-center gap-1">
                 <AlertTriangle className="w-3 h-3" />
                 {machine.errorMessage}
               </div>
@@ -270,20 +270,20 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
         
         {/* Position Display */}
         <div className="grid grid-cols-3 gap-2">
-          <div className="p-2 bg-gray-800 rounded text-center">
-            <div className="text-xs text-gray-400">X</div>
+          <div className="p-2 bg-card rounded text-center">
+            <div className="text-xs text-muted-foreground">X</div>
             <div className="text-sm font-mono font-bold">
               {machine.telemetry.position.x.toFixed(2)}
             </div>
           </div>
-          <div className="p-2 bg-gray-800 rounded text-center">
-            <div className="text-xs text-gray-400">Y</div>
+          <div className="p-2 bg-card rounded text-center">
+            <div className="text-xs text-muted-foreground">Y</div>
             <div className="text-sm font-mono font-bold">
               {machine.telemetry.position.y.toFixed(2)}
             </div>
           </div>
-          <div className="p-2 bg-gray-800 rounded text-center">
-            <div className="text-xs text-gray-400">Z</div>
+          <div className="p-2 bg-card rounded text-center">
+            <div className="text-xs text-muted-foreground">Z</div>
             <div className="text-sm font-mono font-bold">
               {machine.telemetry.position.z.toFixed(2)}
             </div>
@@ -293,13 +293,13 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
         {/* Telemetry Cards */}
         <div className="grid grid-cols-2 gap-2">
           <TelemetryCard
-            icon={<Thermometer className="w-4 h-4 text-amber-400" />}
+            icon={<Thermometer className="w-4 h-4 text-warning" />}
             label="Spindle Temp"
             value={machine.telemetry.spindleTemp ? `${machine.telemetry.spindleTemp}°C` : '--'}
             warning={machine.telemetry.spindleTemp ? machine.telemetry.spindleTemp > 50 : false}
           />
           <TelemetryCard
-            icon={<Gauge className="w-4 h-4 text-blue-400" />}
+            icon={<Gauge className="w-4 h-4 text-info" />}
             label="Feed Rate"
             value={machine.telemetry.feedRateActual ? `${machine.telemetry.feedRateActual}%` : '--'}
           />
@@ -308,14 +308,14 @@ export const MachineTwinDisplay: React.FC<MachineTwinDisplayProps> = ({
         {/* Connection Health */}
         <div className="space-y-1">
           <div className="flex justify-between text-xs">
-            <span className="text-gray-400">Connection Health</span>
-            <span className="text-gray-400">{getConnectionHealth()}%</span>
+            <span className="text-muted-foreground">Connection Health</span>
+            <span className="text-muted-foreground">{getConnectionHealth()}%</span>
           </div>
           <Progress value={getConnectionHealth()} className="h-1" />
         </div>
         
         {/* Last Update */}
-        <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
             <Clock className="w-3 h-3" />
             Last update: {lastUpdate ? lastUpdate.toLocaleTimeString() : 'Never'}

@@ -98,23 +98,23 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
 
   if (submitted) {
     return (
-      <Card className="bg-gray-900 border-gray-800 card-dark">
+      <Card className="bg-background border-border card-dark">
         <CardContent className="p-6 text-center">
           <CheckCircle2 className="h-16 w-16 mx-auto mb-4  status-valid" />
           <h3 className="typography-h3 mb-2">Thank You!</h3>
-          <p className="text-gray-400">Your feedback has been submitted successfully.</p>
+          <p className="text-muted-foreground">Your feedback has been submitted successfully.</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800 card-dark">
+        <Card className="bg-background border-border card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Early Access Feedback</CardTitle>
-            <p className="text-gray-400">Help us improve by sharing your experience</p>
+            <p className="text-muted-foreground">Help us improve by sharing your experience</p>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
@@ -141,7 +141,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
                     type="number"
                     value={bomAccuracy}
                     onChange={(e) => setBomAccuracy(Number(e.target.value))}
-                    className="bg-gray-800 border-gray-700"
+                    className="bg-card border-border"
                     min={0}
                     max={100}
                   />
@@ -152,7 +152,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
                     type="number"
                     value={hardwareAccuracy}
                     onChange={(e) => setHardwareAccuracy(Number(e.target.value))}
-                    className="bg-gray-800 border-gray-700"
+                    className="bg-card border-border"
                     min={0}
                     max={100}
                   />
@@ -163,7 +163,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
                     type="number"
                     value={overallAccuracy}
                     onChange={(e) => setOverallAccuracy(Number(e.target.value))}
-                    className="bg-gray-800 border-gray-700"
+                    className="bg-card border-border"
                     min={0}
                     max={100}
                   />
@@ -185,7 +185,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
                         className={`p-2 rounded ${
                           easeOfUse >= rating
                             ? 'bg-blue-600 text-white'
-                            : 'bg-gray-800 text-gray-400'
+                            : 'bg-card text-muted-foreground'
                         }`}
                       >
                         <Star className="h-5 w-5" />
@@ -199,7 +199,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
                     type="number"
                     value={timeSavings}
                     onChange={(e) => setTimeSavings(Number(e.target.value))}
-                    className="bg-gray-800 border-gray-700"
+                    className="bg-card border-border"
                     min={0}
                   />
                 </div>
@@ -214,7 +214,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
                         className={`p-2 rounded ${
                           satisfaction >= rating
                             ? 'bg-blue-600 text-white'
-                            : 'bg-gray-800 text-gray-400'
+                            : 'bg-card text-muted-foreground'
                         }`}
                       >
                         <Star className="h-5 w-5" />
@@ -231,13 +231,13 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
                 <Button
                   variant="outline"
                   onClick={addIssue}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-card border-border"
                 >
                   Add Issue
                 </Button>
               </div>
               {issues.map((issue, index) => (
-                <div key={index} className="grid grid-cols-3 gap-4 p-4 bg-gray-800 rounded-lg">
+                <div key={index} className="grid grid-cols-3 gap-4 p-4 bg-card rounded-lg">
                   <div className="space-y-2">
                     <Label>Severity</Label>
                     <Select
@@ -268,7 +268,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
                         newIssues[index].description = e.target.value;
                         setIssues(newIssues);
                       }}
-                      className="bg-gray-700 border-gray-600"
+                      className="bg-muted border-border"
                       placeholder="Describe the issue"
                     />
                   </div>
@@ -281,7 +281,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
                         newIssues[index].feature = e.target.value;
                         setIssues(newIssues);
                       }}
-                      className="bg-gray-700 border-gray-600"
+                      className="bg-muted border-border"
                       placeholder="Feature name"
                     />
                   </div>
@@ -294,7 +294,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
               <Textarea
                 value={suggestions}
                 onChange={(e) => setSuggestions(e.target.value)}
-                className="bg-gray-800 border-gray-700"
+                className="bg-card border-border"
                 rows={4}
                 placeholder="Share your suggestions..."
               />

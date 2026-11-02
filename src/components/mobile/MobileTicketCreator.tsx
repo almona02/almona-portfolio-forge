@@ -118,7 +118,7 @@ export const MobileTicketCreator: React.FC<{
       id: 'emergency' as const,
       label: 'طوارئ',
       icon: AlertTriangle,
-      color: 'bg-red-500/20 text-red-300 border-red-500/50',
+      color: 'bg-red-500/20 text-destructive border-red-500/50',
       description: 'مشكلة طارئة تحتاج تدخل فوري'
     },
     {
@@ -132,23 +132,23 @@ export const MobileTicketCreator: React.FC<{
       id: 'parts' as const,
       label: 'قطع غيار',
       icon: Package,
-      color: 'bg-blue-500/20 text-blue-300 border-blue-500/50',
+      color: 'bg-blue-500/20 text-info border-blue-500/50',
       description: 'طلب قطع غيار أو استفسار'
     },
     {
       id: 'support' as const,
       label: 'دعم فني',
       icon: MessageSquare,
-      color: 'bg-green-500/20 text-green-300 border-green-500/50',
+      color: 'bg-green-500/20 text-success border-green-500/50',
       description: 'استفسار أو دعم عام'
     }
   ];
 
   const priorities = [
-    { id: 'low' as const, label: 'منخفضة', color: 'bg-green-500/20 text-green-300' },
+    { id: 'low' as const, label: 'منخفضة', color: 'bg-green-500/20 text-success' },
     { id: 'medium' as const, label: 'متوسطة', color: 'bg-yellow-500/20 text-yellow-300' },
     { id: 'high' as const, label: 'عالية', color: 'bg-amber-500/20 text-amber-300' },
-    { id: 'critical' as const, label: 'حرجة', color: 'bg-red-500/20 text-red-300' }
+    { id: 'critical' as const, label: 'حرجة', color: 'bg-red-500/20 text-destructive' }
   ];
 
   // Get current location
@@ -320,17 +320,17 @@ export const MobileTicketCreator: React.FC<{
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: '100%', opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="w-full max-w-md bg-almona-dark rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden"
+          className="w-full max-w-md bg-background rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden"
         >
           {/* Header */}
-          <div className="sticky top-0 bg-almona-dark/95 backdrop-blur-sm border-b border-almona-light/20 p-4">
+          <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border/20 p-4">
             <div className="flex items-center justify-between mb-3">
               <h2 className="typography-h2 text-lg text-almona-orange">إنشاء طلب خدمة</h2>
               <div className="flex items-center gap-2">
                 {isOnline ? (
-                  <Wifi className="h-4 w-4 text-green-400" />
+                  <Wifi className="h-4 w-4 text-success" />
                 ) : (
-                  <WifiOff className="h-4 w-4 text-red-400" />
+                  <WifiOff className="h-4 w-4 text-destructive" />
                 )}
                 <Button variant="ghost" size="sm" onClick={onClose}>
                   <X className="h-4 w-4" />
@@ -341,7 +341,7 @@ export const MobileTicketCreator: React.FC<{
             <Progress value={progress} className="h-2 mb-2" />
             <div className="text-sm">
               <div className="font-medium">{steps[currentStep].title}</div>
-              <div className="text-gray-400 text-xs">{steps[currentStep].subtitle}</div>
+              <div className="text-muted-foreground text-xs">{steps[currentStep].subtitle}</div>
             </div>
           </div>
 
@@ -370,14 +370,14 @@ export const MobileTicketCreator: React.FC<{
                         className={`w-full p-4 rounded-lg border-2 text-right transition-all ${
                           isSelected 
                             ? category.color + ' border-opacity-100' 
-                            : 'bg-almona-dark/40 border-almona-light/20 hover:border-almona-orange/30'
+                            : 'bg-background/40 border-border/20 hover:border-almona-orange/30'
                         }`}
                       >
                         <div className="flex items-center gap-3">
                           <IconComponent className="h-6 w-6" />
                           <div className="flex-1">
                             <div className="font-medium">{category.label}</div>
-                            <div className="text-sm text-gray-400">{category.description}</div>
+                            <div className="text-sm text-muted-foreground">{category.description}</div>
                           </div>
                           {isSelected && <Check className="h-5 w-5 text-almona-orange" />}
                         </div>
@@ -402,7 +402,7 @@ export const MobileTicketCreator: React.FC<{
                       value={ticketData.title}
                       onChange={(e) => setTicketData(prev => ({ ...prev, title: e.target.value }))}
                       placeholder="اكتب عنوان مختصر للمشكلة"
-                      className="bg-almona-dark/60 border-almona-light/30"
+                      className="bg-background/60 border-border/30"
                     />
                   </div>
                   
@@ -413,7 +413,7 @@ export const MobileTicketCreator: React.FC<{
                       onChange={(e) => setTicketData(prev => ({ ...prev, description: e.target.value }))}
                       placeholder="صف المشكلة بالتفصيل..."
                       rows={4}
-                      className="bg-almona-dark/60 border-almona-light/30 resize-none"
+                      className="bg-background/60 border-border/30 resize-none"
                     />
                   </div>
                 </LazyMotionDiv>
@@ -432,7 +432,7 @@ export const MobileTicketCreator: React.FC<{
                     <Button
                       variant="outline"
                       onClick={handleImageCapture}
-                      className="h-20 border-almona-light/30 hover:bg-almona-orange/20"
+                      className="h-20 border-border/30 hover:bg-almona-orange/20"
                     >
                       <div className="text-center">
                         <Camera className="h-6 w-6 mx-auto mb-1" />
@@ -443,7 +443,7 @@ export const MobileTicketCreator: React.FC<{
                     <Button
                       variant="outline"
                       onClick={isRecording ? stopRecording : startRecording}
-                      className={`h-20 border-almona-light/30 ${
+                      className={`h-20 border-border/30 ${
                         isRecording ? 'bg-red-500/20 hover:bg-red-500/30' : 'hover:bg-almona-orange/20'
                       }`}
                     >
@@ -462,7 +462,7 @@ export const MobileTicketCreator: React.FC<{
                       <div className="text-sm font-medium mb-2">الصور المحددة:</div>
                       <div className="space-y-1">
                         {ticketData.images?.map((file, index) => (
-                          <div key={index} className="text-xs p-2 bg-almona-dark/40 rounded border border-almona-light/20">
+                          <div key={index} className="text-xs p-2 bg-background/40 rounded border border-border/20">
                             📷 {file.name}
                           </div>
                         ))}
@@ -475,7 +475,7 @@ export const MobileTicketCreator: React.FC<{
                       <div className="text-sm font-medium mb-2">التسجيلات الصوتية:</div>
                       <div className="space-y-1">
                         {ticketData.audio_notes?.map((file, index) => (
-                          <div key={index} className="text-xs p-2 bg-almona-dark/40 rounded border border-almona-light/20">
+                          <div key={index} className="text-xs p-2 bg-background/40 rounded border border-border/20">
                             🎵 {file.name}
                           </div>
                         ))}
@@ -506,7 +506,7 @@ export const MobileTicketCreator: React.FC<{
                   <Button
                     variant="outline"
                     onClick={getCurrentLocation}
-                    className="w-full border-almona-light/30 hover:bg-almona-orange/20"
+                    className="w-full border-border/30 hover:bg-almona-orange/20"
                   >
                     <MapPin className="h-4 w-4 mr-2" />
                     {location ? 'تم تحديد الموقع ✓' : 'تحديد الموقع الحالي'}
@@ -522,7 +522,7 @@ export const MobileTicketCreator: React.FC<{
                           className={`p-3 rounded-lg border text-center transition-all ${
                             ticketData.priority === priority.id
                               ? priority.color + ' border-opacity-100'
-                              : 'bg-almona-dark/40 border-almona-light/20 hover:border-almona-orange/30'
+                              : 'bg-background/40 border-border/20 hover:border-almona-orange/30'
                           }`}
                         >
                           <div className="text-sm font-medium">{priority.label}</div>
@@ -542,28 +542,28 @@ export const MobileTicketCreator: React.FC<{
                   exit={{ opacity: 0, x: -50 }}
                   className="space-y-4"
                 >
-                  <Card className="bg-almona-dark/40 border-almona-light/20">
+                  <Card className="bg-background/40 border-border/20">
                     <CardContent className="p-4 space-y-3">
                       <div>
-                        <div className="text-sm text-gray-400">النوع</div>
+                        <div className="text-sm text-muted-foreground">النوع</div>
                         <div className="font-medium">
                           {categories.find(c => c.id === ticketData.category)?.label}
                         </div>
                       </div>
                       
                       <div>
-                        <div className="text-sm text-gray-400">العنوان</div>
+                        <div className="text-sm text-muted-foreground">العنوان</div>
                         <div className="font-medium">{ticketData.title}</div>
                       </div>
                       
                       <div>
-                        <div className="text-sm text-gray-400">الوصف</div>
+                        <div className="text-sm text-muted-foreground">الوصف</div>
                         <div className="text-sm">{ticketData.description}</div>
                       </div>
                       
                       <div className="flex justify-between">
                         <div>
-                          <div className="text-sm text-gray-400">الأولوية</div>
+                          <div className="text-sm text-muted-foreground">الأولوية</div>
                           <Badge className={priorities.find(p => p.id === ticketData.priority)?.color}>
                             {priorities.find(p => p.id === ticketData.priority)?.label}
                           </Badge>
@@ -571,8 +571,8 @@ export const MobileTicketCreator: React.FC<{
                         
                         {location && (
                           <div>
-                            <div className="text-sm text-gray-400">الموقع</div>
-                            <div className="text-xs text-green-400">تم تحديده ✓</div>
+                            <div className="text-sm text-muted-foreground">الموقع</div>
+                            <div className="text-xs text-success">تم تحديده ✓</div>
                           </div>
                         )}
                       </div>
@@ -595,13 +595,13 @@ export const MobileTicketCreator: React.FC<{
           </div>
 
           {/* Footer Navigation */}
-          <div className="sticky bottom-0 bg-almona-dark/95 backdrop-blur-sm border-t border-almona-light/20 p-4">
+          <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border/20 p-4">
             <div className="flex gap-3">
               {currentStep > 0 && (
                 <Button
                   variant="outline"
                   onClick={prevStep}
-                  className="border-almona-light/30"
+                  className="border-border/30"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>

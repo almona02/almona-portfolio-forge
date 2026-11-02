@@ -20,19 +20,19 @@ const aspectRatioClasses = {
 
 const variantStyles = {
   default: {
-    container: 'bg-gradient-to-br from-gray-900 via-gray-800 to-black',
-    icon: 'text-blue-400',
-    text: 'text-gray-300'
+    container: 'bg-gradient-to-br from-background via-card to-black',
+    icon: 'text-info',
+    text: 'text-foreground'
   },
   minimal: {
-    container: 'bg-gray-100 dark:bg-gray-800',
-    icon: 'text-gray-500 dark:text-gray-400',
-    text: 'text-gray-600 dark:text-gray-300'
+    container: 'bg-muted dark:bg-card',
+    icon: 'text-muted-foreground dark:text-muted-foreground',
+    text: 'text-muted-foreground dark:text-foreground'
   },
   detailed: {
     container: 'bg-gradient-to-br from-amber-900 via-blue-900 to-cyan-900',
-    icon: 'text-cyan-400',
-    text: 'text-gray-200'
+    icon: 'text-info',
+    text: 'text-foreground'
   }
 };
 

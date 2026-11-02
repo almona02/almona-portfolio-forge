@@ -164,7 +164,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
 
   if (loading) {
     return (
-      <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+      <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Revenue Chart</CardTitle>
         </CardHeader>
@@ -178,7 +178,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
   }
 
   return (
-    <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+    <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -198,10 +198,10 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
           {showControls && (
             <div className="flex items-center gap-2">
               <Select value={period} onValueChange={(v) => setPeriod(v as 'daily' | 'weekly' | 'monthly')}>
-                <SelectTrigger className="w-[120px] bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 text-xs">
+                <SelectTrigger className="w-[120px] bg-background/60 border-amber-600/30 text-amber-200 text-xs">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0f0f0f] border-amber-600/30">
+                <SelectContent className="bg-background border-amber-600/30">
                   <SelectItem value="daily">Daily</SelectItem>
                   <SelectItem value="weekly">Weekly</SelectItem>
                   <SelectItem value="monthly">Monthly</SelectItem>

@@ -86,16 +86,16 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
   }, [mullionPosition, windowUnit.overallWidth]);
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="typography-h1 text-white flex items-center gap-3">
-              <Plus className="h-8 w-8 text-amber-500" />
+            <h1 className="typography-h1 text-foreground flex items-center gap-3">
+              <Plus className="h-8 w-8 text-warning" />
               Custom Mullion Validator
             </h1>
-            <p className="text-gray-400 mt-2">
+            <p className="text-muted-foreground mt-2">
               Structural validation and thermal analysis for custom mullion placement (99.2% accuracy)
             </p>
           </div>
@@ -108,13 +108,13 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Parameters */}
-          <Card className="bg-gray-900/50 border-gray-800 card-dark">
+          <Card className="bg-background/50 border-border card-dark">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Ruler className="h-5 w-5 text-amber-500" />
+              <CardTitle className="text-foreground flex items-center gap-2">
+                <Ruler className="h-5 w-5 text-warning" />
                 Mullion Parameters
               </CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardDescription className="text-muted-foreground">
                 Configure mullion position and type
               </CardDescription>
             </CardHeader>
@@ -122,28 +122,28 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
               {/* Window Dimensions (Read-only) */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="typography-label text-gray-300">Window Width (mm)</Label>
+                  <Label className="typography-label text-foreground">Window Width (mm)</Label>
                   <Input
                     type="number"
                     value={windowUnit.overallWidth}
                     disabled
-                    className="bg-gray-800 border-gray-700 text-gray-400"
+                    className="bg-card border-border text-muted-foreground"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="typography-label text-gray-300">Window Height (mm)</Label>
+                  <Label className="typography-label text-foreground">Window Height (mm)</Label>
                   <Input
                     type="number"
                     value={windowUnit.overallHeight}
                     disabled
-                    className="bg-gray-800 border-gray-700 text-gray-400"
+                    className="bg-card border-border text-muted-foreground"
                   />
                 </div>
               </div>
 
               {/* Mullion Position */}
               <div className="space-y-2">
-                <Label className="typography-label text-gray-300">
+                <Label className="typography-label text-foreground">
                   Mullion Position: {mullionPosition}mm ({positionPercentage.toFixed(1)}%)
                 </Label>
                 <Input
@@ -154,7 +154,7 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
                   onChange={(e) => setMullionPosition(Number(e.target.value))}
                   className="w-full"
                 />
-                <div className="flex justify-between text-xs text-gray-400">
+                <div className="flex justify-between text-xs text-muted-foreground">
                   <span>100mm</span>
                   <span>{Math.floor(windowUnit.overallWidth / 2)}mm (center)</span>
                   <span>{windowUnit.overallWidth - 100}mm</span>
@@ -163,7 +163,7 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
                   type="number"
                   value={mullionPosition}
                   onChange={(e) => setMullionPosition(Number(e.target.value))}
-                  className="bg-gray-800 border-gray-700 text-white mt-2"
+                  className="bg-card border-border text-foreground mt-2"
                   min={100}
                   max={windowUnit.overallWidth - 100}
                 />
@@ -171,15 +171,15 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
 
               {/* Mullion Type */}
               <div className="space-y-2">
-                <Label className="typography-label text-gray-300">Mullion Type</Label>
+                <Label className="typography-label text-foreground">Mullion Type</Label>
                 <Select
                   value={mullionType}
                   onValueChange={(value: MullionType) => setMullionType(value)}
                 >
-                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                  <SelectTrigger className="bg-card border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-gray-700">
+                  <SelectContent className="bg-background border-border">
                     <SelectItem value="standard">
                       Standard (Basic support)
                     </SelectItem>
@@ -218,7 +218,7 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
               {error && (
                 <Alert variant="destructive" className="bg-red-900/20 border-red-800">
                   <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription className="text-red-300">{error}</AlertDescription>
+                  <AlertDescription className="text-destructive">{error}</AlertDescription>
                 </Alert>
               )}
             </CardContent>
@@ -229,13 +229,13 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
             {validation ? (
               <>
                 {/* Validation Summary */}
-                <Card className="bg-gray-900/50 border-gray-800 card-dark">
+                <Card className="bg-background/50 border-border card-dark">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
+                    <CardTitle className="text-foreground flex items-center gap-2">
                       {validation.isFeasible ? (
                         <CheckCircle2 className="h-5 w-5 status-valid" />
                       ) : (
-                        <AlertTriangle className="h-5 w-5 text-red-500" />
+                        <AlertTriangle className="h-5 w-5 text-destructive" />
                       )}
                       Validation Result
                     </CardTitle>
@@ -244,11 +244,11 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
                     <div className="flex items-center gap-2">
                       <Badge 
                         variant={validation.isFeasible ? "default" : "destructive"}
-                        className={validation.isFeasible ? "bg-green-900/30 text-green-400" : "bg-red-900/30 text-red-400"}
+                        className={validation.isFeasible ? "bg-green-900/30 text-success" : "bg-red-900/30 text-destructive"}
                       >
                         {validation.isFeasible ? 'Feasible' : 'Not Feasible'}
                       </Badge>
-                      <Badge variant="outline" className="bg-gray-800 text-gray-300">
+                      <Badge variant="outline" className="bg-card text-foreground">
                         99.2% Accuracy
                       </Badge>
                     </div>
@@ -256,28 +256,28 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
                     {/* Structural Analysis */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <Shield className="h-4 w-4 text-blue-500" />
-                        <p className="text-sm font-medium text-gray-300">Structural Analysis</p>
+                        <Shield className="h-4 w-4 text-info" />
+                        <p className="text-sm font-medium text-foreground">Structural Analysis</p>
                       </div>
-                      <div className="bg-gray-800/50 p-3 rounded space-y-2 text-sm">
+                      <div className="bg-card/50 p-3 rounded space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Max Deflection:</span>
-                          <span className="text-white">{validation.structural.maxDeflection.toFixed(2)} mm</span>
+                          <span className="text-muted-foreground">Max Deflection:</span>
+                          <span className="text-foreground">{validation.structural.maxDeflection.toFixed(2)} mm</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Wind Load Capacity:</span>
-                          <span className="text-white">{validation.structural.windLoadCapacity} Pa</span>
+                          <span className="text-muted-foreground">Wind Load Capacity:</span>
+                          <span className="text-foreground">{validation.structural.windLoadCapacity} Pa</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Safety Factor:</span>
-                          <span className={validation.structural.safetyFactor >= 1.5 ? "text-green-400" : "text-red-400"}>
+                          <span className="text-muted-foreground">Safety Factor:</span>
+                          <span className={validation.structural.safetyFactor >= 1.5 ? "text-success" : "text-destructive"}>
                             {validation.structural.safetyFactor.toFixed(2)}
                           </span>
                         </div>
                         {validation.structural.warnings.length > 0 && (
                           <div className="mt-2">
-                            <p className="text-yellow-400 text-xs font-medium">Warnings:</p>
-                            <ul className="list-disc list-inside text-yellow-300 text-xs space-y-1">
+                            <p className="text-warning text-xs font-medium">Warnings:</p>
+                            <ul className="list-disc list-inside text-warning text-xs space-y-1">
                               {validation.structural.warnings.map((warning, idx) => (
                                 <li key={idx}>{warning}</li>
                               ))}
@@ -290,22 +290,22 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
                     {/* Thermal Analysis */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <Thermometer className="h-4 w-4 text-amber-500" />
-                        <p className="text-sm font-medium text-gray-300">Thermal Analysis</p>
+                        <Thermometer className="h-4 w-4 text-warning" />
+                        <p className="text-sm font-medium text-foreground">Thermal Analysis</p>
                       </div>
-                      <div className="bg-gray-800/50 p-3 rounded space-y-2 text-sm">
+                      <div className="bg-card/50 p-3 rounded space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">U-Value Impact:</span>
-                          <span className="text-white">+{validation.thermal.uValueImpact.toFixed(2)} W/m²K</span>
+                          <span className="text-muted-foreground">U-Value Impact:</span>
+                          <span className="text-foreground">+{validation.thermal.uValueImpact.toFixed(2)} W/m²K</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Thermal Bridge Length:</span>
-                          <span className="text-white">{validation.thermal.thermalBridgeLength.toFixed(0)} mm</span>
+                          <span className="text-muted-foreground">Thermal Bridge Length:</span>
+                          <span className="text-foreground">{validation.thermal.thermalBridgeLength.toFixed(0)} mm</span>
                         </div>
                         {validation.thermal.recommendations.length > 0 && (
                           <div className="mt-2">
-                            <p className="text-blue-400 text-xs font-medium">Recommendations:</p>
-                            <ul className="list-disc list-inside text-blue-300 text-xs space-y-1">
+                            <p className="text-info text-xs font-medium">Recommendations:</p>
+                            <ul className="list-disc list-inside text-info text-xs space-y-1">
                               {validation.thermal.recommendations.map((rec, idx) => (
                                 <li key={idx}>{rec}</li>
                               ))}
@@ -319,20 +319,20 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <DollarSign className="h-4 w-4 status-valid" />
-                        <p className="text-sm font-medium text-gray-300">Cost Impact</p>
+                        <p className="text-sm font-medium text-foreground">Cost Impact</p>
                       </div>
-                      <div className="bg-gray-800/50 p-3 rounded space-y-2 text-sm">
+                      <div className="bg-card/50 p-3 rounded space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Material Cost:</span>
-                          <span className="text-white">{validation.cost.materialCost.toFixed(2)} EGP</span>
+                          <span className="text-muted-foreground">Material Cost:</span>
+                          <span className="text-foreground">{validation.cost.materialCost.toFixed(2)} EGP</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Labor Cost:</span>
-                          <span className="text-white">{validation.cost.laborCost.toFixed(2)} EGP</span>
+                          <span className="text-muted-foreground">Labor Cost:</span>
+                          <span className="text-foreground">{validation.cost.laborCost.toFixed(2)} EGP</span>
                         </div>
-                        <div className="flex justify-between border-t border-gray-700 pt-2">
-                          <span className="text-gray-300 font-medium">Total Cost:</span>
-                          <span className="text-amber-400 font-semibold">{validation.cost.totalCost.toFixed(2)} EGP</span>
+                        <div className="flex justify-between border-t border-border pt-2">
+                          <span className="text-foreground font-medium">Total Cost:</span>
+                          <span className="text-warning font-semibold">{validation.cost.totalCost.toFixed(2)} EGP</span>
                         </div>
                       </div>
                     </div>
@@ -340,26 +340,26 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
                     {/* Required Profile */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <Wrench className="h-4 w-4 text-amber-500" />
-                        <p className="text-sm font-medium text-gray-300">Required Profile</p>
+                        <Wrench className="h-4 w-4 text-warning" />
+                        <p className="text-sm font-medium text-foreground">Required Profile</p>
                       </div>
-                      <div className="bg-gray-800/50 p-3 rounded space-y-2 text-sm">
+                      <div className="bg-card/50 p-3 rounded space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Profile Code:</span>
-                          <span className="text-white">{validation.requiredProfile.code}</span>
+                          <span className="text-muted-foreground">Profile Code:</span>
+                          <span className="text-foreground">{validation.requiredProfile.code}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Dimensions:</span>
-                          <span className="text-white">
+                          <span className="text-muted-foreground">Dimensions:</span>
+                          <span className="text-foreground">
                             {validation.requiredProfile.width} × {validation.requiredProfile.depth} mm
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Material:</span>
-                          <span className="text-white capitalize">{validation.requiredProfile.material}</span>
+                          <span className="text-muted-foreground">Material:</span>
+                          <span className="text-foreground capitalize">{validation.requiredProfile.material}</span>
                         </div>
                         {validation.requiredProfile.reinforcement && (
-                          <Badge variant="outline" className="bg-yellow-900/30 text-yellow-400 border-yellow-800">
+                          <Badge variant="outline" className="bg-yellow-900/30 text-warning border-yellow-800">
                             Requires Reinforcement
                           </Badge>
                         )}
@@ -368,39 +368,39 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
 
                     {/* Connector Specification */}
                     <div>
-                      <p className="text-sm font-medium text-gray-300 mb-2">Connector Specification</p>
-                      <div className="bg-gray-800/50 p-3 rounded space-y-2 text-sm">
+                      <p className="text-sm font-medium text-foreground mb-2">Connector Specification</p>
+                      <div className="bg-card/50 p-3 rounded space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Type:</span>
-                          <span className="text-white capitalize">{validation.connectorSpec.type.replace('_', ' ')}</span>
+                          <span className="text-muted-foreground">Type:</span>
+                          <span className="text-foreground capitalize">{validation.connectorSpec.type.replace('_', ' ')}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Quantity:</span>
-                          <span className="text-white">{validation.connectorSpec.quantity}</span>
+                          <span className="text-muted-foreground">Quantity:</span>
+                          <span className="text-foreground">{validation.connectorSpec.quantity}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Manufacturing Info */}
                     <div>
-                      <p className="text-sm font-medium text-gray-300 mb-2">Manufacturing</p>
-                      <div className="bg-gray-800/50 p-3 rounded space-y-2 text-sm">
+                      <p className="text-sm font-medium text-foreground mb-2">Manufacturing</p>
+                      <div className="bg-card/50 p-3 rounded space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Difficulty:</span>
+                          <span className="text-muted-foreground">Difficulty:</span>
                           <Badge 
                             variant="outline"
                             className={
-                              validation.manufacturing.difficulty === 'easy' ? 'bg-green-900/30 text-green-400' :
-                              validation.manufacturing.difficulty === 'medium' ? 'bg-yellow-900/30 text-yellow-400' :
-                              'bg-red-900/30 text-red-400'
+                              validation.manufacturing.difficulty === 'easy' ? 'bg-green-900/30 text-success' :
+                              validation.manufacturing.difficulty === 'medium' ? 'bg-yellow-900/30 text-warning' :
+                              'bg-red-900/30 text-destructive'
                             }
                           >
                             {validation.manufacturing.difficulty}
                           </Badge>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Estimated Time:</span>
-                          <span className="text-white">{validation.manufacturing.estimatedTime} min</span>
+                          <span className="text-muted-foreground">Estimated Time:</span>
+                          <span className="text-foreground">{validation.manufacturing.estimatedTime} min</span>
                         </div>
                       </div>
                     </div>
@@ -408,10 +408,10 @@ export const CustomMullionDesigner: React.FC<CustomMullionDesignerProps> = ({
                 </Card>
               </>
             ) : (
-              <Card className="bg-gray-900/50 border-gray-800 card-dark">
+              <Card className="bg-background/50 border-border card-dark">
                 <CardContent className="py-12 text-center">
-                  <Plus className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-400">
+                  <Plus className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
                     Configure mullion parameters and click "Validate Mullion" to see analysis
                   </p>
                 </CardContent>

@@ -317,7 +317,7 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
               <div
                 key={step}
                 className={`flex flex-col items-center ${
-                  isActive ? 'text-primary' : isComplete ? 'text-green-600' : 'text-muted-foreground'
+                  isActive ? 'text-primary' : isComplete ? 'text-success' : 'text-muted-foreground'
                 }`}
               >
                 <div
@@ -483,8 +483,8 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
 
                 {wizardState.dimensions && wizardState.violations.length === 0 && (
                   <div className="p-6 bg-green-50 dark:bg-green-950 border-2 border-green-500 rounded-lg text-center">
-                    <Check className="h-12 w-12 text-green-600 mx-auto mb-2" />
-                    <p className="text-xl font-bold text-green-700 dark:text-green-300">
+                    <Check className="h-12 w-12 text-success mx-auto mb-2" />
+                    <p className="text-xl font-bold text-green-700 dark:text-success">
                       {locale === 'ar' ? '✅ المقاسات صحيحة!' : '✅ Dimensions Valid!'}
                     </p>
                   </div>
@@ -525,7 +525,7 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
             {/* Step 5: Review */}
             {wizardState.currentStep === 5 && (
               <div className="space-y-6">
-                <div className="bg-slate-50 dark:bg-slate-900 p-6 rounded-lg">
+                <div className="bg-background dark:bg-background p-6 rounded-lg">
                   <h3 className="text-2xl font-bold mb-4">
                     {locale === 'ar' ? 'ملخص التصميم' : 'Design Summary'}
                   </h3>
@@ -557,7 +557,7 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
                 )}
 
                 {wizardState.violations.filter((v) => v.severity === 'critical').length === 0 && (
-                   <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-center text-blue-700 dark:text-blue-300">
+                   <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-center text-blue-700 dark:text-info">
                       {locale === 'ar' ? 'اضغط التالي لعرض خيارات الإنتاج' : 'Click Next to see production options'}
                    </div>
                 )}

@@ -51,15 +51,15 @@ export const TicketMetrics: React.FC<TicketMetricsProps> = ({ metrics, isLoading
     switch (priority) {
       case 'critical':
       case 'urgent':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-destructive'
       case 'high':
         return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300'
       case 'medium':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
       case 'low':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-success'
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+        return 'bg-muted text-foreground dark:bg-background dark:text-foreground'
     }
   }
 
@@ -99,7 +99,7 @@ export const TicketMetrics: React.FC<TicketMetricsProps> = ({ metrics, isLoading
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{metrics.inProgressTickets}</div>
+            <div className="text-2xl font-bold text-info">{metrics.inProgressTickets}</div>
             <p className="text-xs text-muted-foreground">
               Being worked on
             </p>
@@ -112,7 +112,7 @@ export const TicketMetrics: React.FC<TicketMetricsProps> = ({ metrics, isLoading
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{metrics.resolvedTickets}</div>
+            <div className="text-2xl font-bold text-success">{metrics.resolvedTickets}</div>
             <p className="text-xs text-muted-foreground">
               Successfully resolved
             </p>
@@ -151,10 +151,10 @@ export const TicketMetrics: React.FC<TicketMetricsProps> = ({ metrics, isLoading
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Overdue Tickets</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-500" />
+            <AlertTriangle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{metrics.overdueTickets}</div>
+            <div className="text-2xl font-bold text-destructive">{metrics.overdueTickets}</div>
             <p className="text-xs text-muted-foreground">
               Past SLA deadline
             </p>

@@ -61,20 +61,20 @@ export const ZoomControls: React.FC<ZoomControlsProps> = ({
   }, 'ZoomControls', 'reset');
   
   return (
-    <div className={`flex items-center gap-2 bg-slate-900/95 backdrop-blur-sm rounded-lg p-2 shadow-lg border border-amber-600/20 ${className || ''}`}>
+    <div className={`flex items-center gap-2 bg-background/95 backdrop-blur-sm rounded-lg p-2 shadow-lg border border-amber-600/20 ${className || ''}`}>
       <EnhancedTooltip toolKey="zoom-out" placement="bottom" delay={300}>
         <Button
           onClick={handleZoomOut}
           variant="outline"
           size="sm"
-          className="h-8 w-8 p-0 border-slate-700/50 bg-slate-800/50 text-slate-300 hover:text-amber-300 hover:bg-amber-500/10 hover:border-amber-600/50"
+          className="h-8 w-8 p-0 border-border/50 bg-card/50 text-foreground hover:text-warning hover:bg-amber-500/10 hover:border-amber-600/50"
           aria-label="Zoom Out"
         >
           <ZoomOut className="w-4 h-4" />
         </Button>
       </EnhancedTooltip>
       
-      <div className="px-3 py-1 bg-slate-800/50 rounded text-xs font-mono min-w-[60px] text-center text-amber-300 border border-amber-600/20">
+      <div className="px-3 py-1 bg-card/50 rounded text-xs font-mono min-w-[60px] text-center text-warning border border-amber-600/20">
         {formatZoomLevel(viewport as Viewport)}
       </div>
       
@@ -83,7 +83,7 @@ export const ZoomControls: React.FC<ZoomControlsProps> = ({
           onClick={handleZoomIn}
           variant="outline"
           size="sm"
-          className="h-8 w-8 p-0 border-slate-700/50 bg-slate-800/50 text-slate-300 hover:text-amber-300 hover:bg-amber-500/10 hover:border-amber-600/50"
+          className="h-8 w-8 p-0 border-border/50 bg-card/50 text-foreground hover:text-warning hover:bg-amber-500/10 hover:border-amber-600/50"
           aria-label="Zoom In"
         >
           <ZoomIn className="w-4 h-4" />
@@ -97,7 +97,7 @@ export const ZoomControls: React.FC<ZoomControlsProps> = ({
           onClick={handleZoomToFit}
           variant="outline"
           size="sm"
-          className="h-8 px-2 text-xs border-slate-700/50 bg-slate-800/50 text-slate-300 hover:text-amber-300 hover:bg-amber-500/10 hover:border-amber-600/50"
+          className="h-8 px-2 text-xs border-border/50 bg-card/50 text-foreground hover:text-warning hover:bg-amber-500/10 hover:border-amber-600/50"
           aria-label="Zoom to Fit"
         >
           <Maximize2 className="w-3 h-3 mr-1" />
@@ -110,7 +110,7 @@ export const ZoomControls: React.FC<ZoomControlsProps> = ({
           onClick={handleZoomToSelection}
           variant="outline"
           size="sm"
-          className="h-8 px-2 text-xs border-slate-700/50 bg-slate-800/50 text-slate-300 hover:text-amber-300 hover:bg-amber-500/10 hover:border-amber-600/50"
+          className="h-8 px-2 text-xs border-border/50 bg-card/50 text-foreground hover:text-warning hover:bg-amber-500/10 hover:border-amber-600/50"
           aria-label="Zoom to Selection"
           disabled={!viewport}
         >
@@ -126,7 +126,7 @@ export const ZoomControls: React.FC<ZoomControlsProps> = ({
           onClick={handleReset}
           variant="outline"
           size="sm"
-          className="h-8 w-8 p-0 border-slate-700/50 bg-slate-800/50 text-slate-300 hover:text-amber-300 hover:bg-amber-500/10 hover:border-amber-600/50"
+          className="h-8 w-8 p-0 border-border/50 bg-card/50 text-foreground hover:text-warning hover:bg-amber-500/10 hover:border-amber-600/50"
           aria-label="Reset Viewport"
         >
           <RotateCcw className="w-4 h-4" />

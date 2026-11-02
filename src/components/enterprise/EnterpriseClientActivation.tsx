@@ -272,7 +272,7 @@ export const EnterpriseClientActivation: React.FC = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-blue-100 rounded-lg">
-            <Building2 className="h-8 w-8 text-blue-600" />
+            <Building2 className="h-8 w-8 text-info" />
           </div>
           <div>
             <h2 className="typography-h2">{client.companyName}</h2>
@@ -298,7 +298,7 @@ export const EnterpriseClientActivation: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <DollarSign className="h-8 w-8 text-success" />
               <div>
                 <p className="text-sm text-muted-foreground">Monthly Value</p>
                 <p className="text-xl font-bold">${client.proposal.monthlyValue.toLocaleString()}</p>
@@ -310,7 +310,7 @@ export const EnterpriseClientActivation: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <TrendingUp className="h-8 w-8 text-blue-600" />
+              <TrendingUp className="h-8 w-8 text-info" />
               <div>
                 <p className="text-sm text-muted-foreground">Annual Value</p>
                 <p className="text-xl font-bold">${(client.proposal.monthlyValue * 12).toLocaleString()}</p>
@@ -361,11 +361,11 @@ export const EnterpriseClientActivation: React.FC = () => {
               {['prospect', 'qualified', 'proposal-sent', 'negotiation', 'contract-signed', 'active'].map((status) => (
                 <div 
                   key={status}
-                  className={`p-3 rounded-lg border ${client.status === status ? 'bg-blue-50 border-blue-200' : 'bg-gray-50'}`}
+                  className={`p-3 rounded-lg border ${client.status === status ? 'bg-blue-50 border-blue-200' : 'bg-background'}`}
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium capitalize">{status.replace('-', ' ')}</span>
-                    {client.status === status && <CheckCircle className="h-4 w-4 text-blue-600" />}
+                    {client.status === status && <CheckCircle className="h-4 w-4 text-info" />}
                   </div>
                 </div>
               ))}
@@ -450,7 +450,7 @@ export const EnterpriseClientActivation: React.FC = () => {
             <div className="grid gap-3 md:grid-cols-2">
               {client.proposal.features.map((feature, index) => (
                 <div key={index} className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <CheckCircle className="h-4 w-4 text-success" />
                   <span className="text-sm">{feature}</span>
                 </div>
               ))}
@@ -556,7 +556,7 @@ export const EnterpriseClientActivation: React.FC = () => {
           <div className="space-y-3">
             {client.requirements.map((requirement, index) => (
               <div key={index} className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
+                <CheckCircle className="h-4 w-4 text-success" />
                 <span className="text-sm">{requirement}</span>
               </div>
             ))}

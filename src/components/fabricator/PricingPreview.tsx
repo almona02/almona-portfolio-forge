@@ -126,7 +126,7 @@ const PricingPreviewComponent: React.FC<PricingPreviewProps> = ({
   // If there is no active project yet, keep the card dormant.
   if (!project) {
     return (
-      <Card className="bg-gray-800/60 border-gray-700">
+      <Card className="bg-card/60 border-border">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             Pricing Preview
@@ -135,7 +135,7 @@ const PricingPreviewComponent: React.FC<PricingPreviewProps> = ({
             </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-xs text-gray-500">
+        <CardContent className="text-xs text-muted-foreground">
           Create or select a project to see a quick pricing preview.
         </CardContent>
       </Card>
@@ -144,7 +144,7 @@ const PricingPreviewComponent: React.FC<PricingPreviewProps> = ({
 
   if (isLoading || materialTotal === null) {
     return (
-      <Card className="bg-gray-800/60 border-gray-700">
+      <Card className="bg-card/60 border-border">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             Pricing Preview
@@ -153,7 +153,7 @@ const PricingPreviewComponent: React.FC<PricingPreviewProps> = ({
             </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-xs text-gray-400">
+        <CardContent className="text-xs text-muted-foreground">
           Calculating metal-indexed material pricing...
         </CardContent>
       </Card>
@@ -161,7 +161,7 @@ const PricingPreviewComponent: React.FC<PricingPreviewProps> = ({
   }
 
   return (
-    <Card className="bg-gray-800/60 border-gray-700">
+    <Card className="bg-card/60 border-border">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="text-sm flex items-center gap-2">
@@ -175,14 +175,14 @@ const PricingPreviewComponent: React.FC<PricingPreviewProps> = ({
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3 text-xs text-gray-300">
+      <CardContent className="space-y-3 text-xs text-foreground">
         {metalAlert && (
           <div
             className={`rounded border px-2 py-1 text-[11px] ${
               metalAlert.severity === 'high'
                 ? 'border-red-500/60 bg-red-900/30 text-red-200'
                 : metalAlert.severity === 'medium'
-                ? 'border-amber-500/60 bg-amber-900/30 text-amber-100'
+                ? 'border-amber-500/60 bg-amber-900/30 text-warning'
                 : 'border-sky-500/60 bg-sky-900/30 text-sky-100'
             }`}
           >
@@ -191,13 +191,13 @@ const PricingPreviewComponent: React.FC<PricingPreviewProps> = ({
         )}
 
         <div className="flex justify-between items-center">
-          <span className="text-gray-400">Estimated material cost (profiles)</span>
+          <span className="text-muted-foreground">Estimated material cost (profiles)</span>
           <span className="font-semibold">
             {materialTotal.toFixed(2)} {currency}
           </span>
         </div>
 
-        <p className="text-[11px] text-gray-500 border-t border-gray-700 pt-2">
+        <p className="text-[11px] text-muted-foreground border-t border-border pt-2">
           This preview uses stub regional pricing and metal indices. Wire it into your quoting
           engine once you are ready to expose full price breakdowns and margins.
         </p>

@@ -1,3 +1,4 @@
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
@@ -323,7 +324,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
       case "NEW":
         return `${baseStyles} text-white bg-gradient-to-r from-green-500 to-emerald-500`;
       default:
-        return `${baseStyles} text-white bg-slate-700`;
+        return `${baseStyles} text-foreground bg-muted`;
     }
   }, []);
 
@@ -332,10 +333,10 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
       ref={navbarRef}
       dir="ltr"
       style={{ direction: "ltr" }}
-      className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-200 ${
+      className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-200 surface-metal ${
         isScrolled 
-          ? "bg-black/95 border-b border-amber-500/30 shadow-2xl" 
-          : "bg-gradient-to-b from-black/95 to-black/80"
+          ? "bg-background/95 border-b border-border shadow-lg backdrop-blur-md" 
+          : "bg-background/90 border-b border-border/70 backdrop-blur-sm"
       }`}
     >
       <div className="mx-auto px-3 sm:px-4 md:px-6 lg:px-6 xl:px-8 2xl:px-10 max-w-screen-2xl">
@@ -344,13 +345,13 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
           {/* Logo */}
           <Link 
             to="/" 
-            className="flex items-center space-x-2 sm:space-x-2.5 md:space-x-3 text-white font-bold text-xl group flex-shrink-0"
+            className="flex items-center space-x-2 sm:space-x-2.5 md:space-x-3 text-foreground font-bold text-xl group flex-shrink-0"
             onClick={closeAllDropdowns}
           >
             <div className="relative w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 xl:w-12 xl:h-12 2xl:w-14 2xl:h-14">
               <Logo />
             </div>
-            <span className="bg-gradient-to-r from-amber-200 to-red-200 bg-clip-text text-transparent text-base sm:text-lg md:text-xl lg:text-xl xl:text-xl 2xl:text-3xl font-extrabold whitespace-nowrap">
+            <span className="text-brand text-base sm:text-lg md:text-xl lg:text-xl xl:text-xl 2xl:text-3xl font-extrabold whitespace-nowrap tracking-wide">
               ALMONA
             </span>
           </Link>
@@ -367,8 +368,8 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                     to={item.path}
                     className={`px-3 py-2 xl:px-4 xl:py-2.5 2xl:px-4 2xl:py-3 rounded-xl transition-all duration-200 font-semibold text-sm xl:text-sm 2xl:text-base whitespace-nowrap ${
                       isActive
-                        ? "text-amber-400 bg-gradient-to-r from-amber-500/10 to-red-500/10"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
+                        ? "text-warning bg-gradient-to-r from-amber-500/10 to-red-500/10"
+                        : "text-foreground hover:text-foreground hover:bg-foreground/5"
                     }`}
                     onClick={closeAllDropdowns}
                     aria-label={`Navigate to ${item.name} page`}
@@ -393,8 +394,8 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                     onClick={() => handleDropdownToggle(item.name)}
                     className={`px-3 py-2 xl:px-4 xl:py-2.5 2xl:px-4 2xl:py-3 rounded-xl transition-all duration-200 font-semibold text-sm xl:text-sm 2xl:text-base flex items-center gap-2 whitespace-nowrap ${
                       isActive || activeDropdown === item.name
-                        ? "text-amber-400 bg-gradient-to-r from-amber-500/10 to-red-500/10"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
+                        ? "text-warning bg-gradient-to-r from-amber-500/10 to-red-500/10"
+                        : "text-foreground hover:text-foreground hover:bg-foreground/5"
                     }`}
                     aria-haspopup="true"
                     aria-expanded={activeDropdown === item.name}
@@ -408,7 +409,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
 
                   {activeDropdown === item.name && (
                       <div
-                        className="absolute top-full left-0 mt-2 w-72 xl:w-80 2xl:w-96 bg-gray-900/95 border 500/30 rounded-xl shadow-2xl overflow-hidden navbar-dropdown-enter card-glass-dark"
+                        className="absolute top-full left-0 mt-2 w-72 xl:w-80 2xl:w-96 bg-popover text-popover-foreground border border-border rounded-xl shadow-2xl overflow-hidden navbar-dropdown-enter"
                         style={{ zIndex: 10000 }}
                         onMouseEnter={() => handleDropdownEnter(item.name)}
                         onMouseLeave={() => handleDropdownLeave(item.name)}
@@ -420,16 +421,16 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                               <Link
                                 key={subItem.name}
                                 to={subItem.path}
-                                className="block p-3 rounded-xl transition-all duration-200 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-amber-500/10 hover:to-red-500/10"
+                                className="block p-3 rounded-xl transition-all duration-200 text-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-amber-500/10 hover:to-red-500/10"
                                 onClick={closeAllDropdowns}
                                 aria-label={`Navigate to ${subItem.name} page`}
                               >
                                 <div className="flex items-start gap-3">
-                                  {IconComponent && <IconComponent className="h-5 w-5 mt-0.5 flex-shrink-0 text-gray-400" />}
+                                  {IconComponent && <IconComponent className="h-5 w-5 mt-0.5 flex-shrink-0 text-muted-foreground" />}
                                   <div className="flex-1">
-                                    <div className="font-medium text-white">{subItem.name}</div>
+                                    <div className="font-medium text-foreground">{subItem.name}</div>
                                     {subItem.description && (
-                                      <div className="text-sm text-gray-400 mt-1">{subItem.description}</div>
+                                      <div className="text-sm text-muted-foreground mt-1">{subItem.description}</div>
                                     )}
                                   </div>
                                 </div>
@@ -446,6 +447,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
 
           {/* Right Side Actions */}
           <div className="hidden lg:flex items-center gap-1.5 xl:gap-2 2xl:gap-3 flex-shrink-0 ml-auto">
+            <ThemeToggle size="sm" />
             {/* Language Switcher */}
             <LanguageSwitcher 
               variant="icons" 
@@ -457,7 +459,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
               <div className="relative z-50">
                 <button
                   onClick={() => handleDropdownToggle("user")}
-                  className="flex items-center gap-1.5 xl:gap-2 px-2 py-1.5 xl:px-2.5 xl:py-2 2xl:px-3 2xl:py-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200 min-w-[44px] min-h-[44px] flex-shrink-0"
+                  className="flex items-center gap-1.5 xl:gap-2 px-2 py-1.5 xl:px-2.5 xl:py-2 2xl:px-3 2xl:py-2.5 text-foreground hover:text-foreground hover:bg-foreground/5 rounded-xl transition-all duration-200 min-w-[44px] min-h-[44px] flex-shrink-0"
                   aria-haspopup="true"
                   aria-expanded={activeDropdown === "user"}
                   aria-label="Open user dropdown menu"
@@ -471,12 +473,12 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
 
                 {activeDropdown === "user" && (
                     <div
-                      className="absolute right-0 top-full mt-2 w-56 xl:w-64 2xl:w-72 bg-gray-900/95 border 500/30 rounded-xl shadow-2xl overflow-hidden navbar-dropdown-enter card-glass-dark"
+                      className="absolute right-0 top-full mt-2 w-56 xl:w-64 2xl:w-72 bg-popover text-popover-foreground border border-border rounded-xl shadow-2xl overflow-hidden navbar-dropdown-enter"
                       style={{ zIndex: 10000 }}
                     >
                       <div className="p-3 border-b border-amber-500/20">
-                        <div className="font-medium text-white">{user.name || 'User'}</div>
-                        <div className="text-sm text-gray-400 truncate">
+                        <div className="font-medium text-foreground">{user.name || 'User'}</div>
+                        <div className="text-sm text-muted-foreground truncate">
                           {user.role === 'admin' ? 'Administrator' : user.role === 'user' ? 'User' : user.role || 'User'}
                         </div>
                       </div>
@@ -484,7 +486,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                         {user.role === "admin" && (
                           <Link
                             to="/admin"
-                            className="flex items-center gap-3 px-3 py-3 text-sm text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-amber-500/10 hover:to-red-500/10 rounded-xl transition-all duration-200"
+                            className="flex items-center gap-3 px-3 py-3 text-sm text-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-amber-500/10 hover:to-red-500/10 rounded-xl transition-all duration-200"
                             onClick={closeAllDropdowns}
                             aria-label="Navigate to admin panel"
                           >
@@ -494,7 +496,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                         )}
                         <Link
                           to="/portal"
-                          className="flex items-center gap-3 px-3 py-3 text-sm text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-amber-500/10 hover:to-red-500/10 rounded-xl transition-all duration-200"
+                          className="flex items-center gap-3 px-3 py-3 text-sm text-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-amber-500/10 hover:to-red-500/10 rounded-xl transition-all duration-200"
                           onClick={closeAllDropdowns}
                           aria-label="Navigate to machine control"
                         >
@@ -506,7 +508,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                         {!confirmLogout ? (
                           <button
                             onClick={() => setConfirmLogout(true)}
-                            className="w-full flex items-center gap-3 px-3 py-3 text-sm text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-amber-500/10 hover:to-red-500/10 rounded-xl transition-all duration-200 text-left"
+                            className="w-full flex items-center gap-3 px-3 py-3 text-sm text-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-amber-500/10 hover:to-red-500/10 rounded-xl transition-all duration-200 text-left"
                             aria-label="Logout"
                           >
                             <LogOut className="h-4 w-4" />
@@ -514,7 +516,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                           </button>
                         ) : (
                           <div className="w-full px-3 py-3 rounded-xl bg-gradient-to-r from-amber-500/10 to-red-500/10 border border-amber-500/30 space-y-2">
-                            <div className="text-sm text-white font-semibold">Confirm logout?</div>
+                            <div className="text-sm text-foreground font-semibold">Confirm logout?</div>
                             <div className="flex gap-2">
                               <button
                                 onClick={() => void handleLogout()}
@@ -525,7 +527,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                               </button>
                               <button
                                 onClick={() => setConfirmLogout(false)}
-                                className="flex-1 px-3 py-2 text-sm font-semibold text-gray-200 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800 transition-colors card-dark"
+                                className="flex-1 px-3 py-2 text-sm font-semibold text-foreground rounded-lg border border-border hover:border-border hover:bg-card transition-colors card-dark"
                               >
                                 Cancel
                               </button>
@@ -540,7 +542,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
               <div className="flex items-center gap-1.5 xl:gap-2 flex-shrink-0">
                 <Link
                   to="/login"
-                  className="px-2.5 py-1.5 xl:px-3 xl:py-2 2xl:px-3.5 2xl:py-2 text-xs xl:text-xs 2xl:text-sm text-gray-300 hover:text-white transition-all duration-200 font-medium whitespace-nowrap"
+                  className="px-2.5 py-1.5 xl:px-3 xl:py-2 2xl:px-3.5 2xl:py-2 text-xs xl:text-xs 2xl:text-sm text-foreground hover:text-foreground transition-all duration-200 font-medium whitespace-nowrap"
                   onClick={closeAllDropdowns}
                   aria-label="Navigate to login page"
                 >
@@ -558,9 +560,10 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
             )}
           </div>
 
+          <div className="lg:hidden"><ThemeToggle size="sm" /></div>
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 sm:p-3 text-gray-300 hover:text-white transition-all duration-200 hover:bg-white/5 rounded-xl flex-shrink-0 ml-auto"
+            className="lg:hidden p-2 sm:p-3 text-foreground hover:text-foreground transition-all duration-200 hover:bg-foreground/5 rounded-xl flex-shrink-0 ml-auto"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={isMobileMenuOpen}
@@ -572,7 +575,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
             <div
-              className="lg:hidden border-t bg-black/98 -xl max-h-[calc(100vh-4rem)] overflow-y-auto mobile-menu-enter card-glass-dark"
+              className="lg:hidden border-t border-border bg-background/98 max-h-[calc(100vh-4rem)] overflow-y-auto mobile-menu-enter"
             >
               <div className="py-4 space-y-1 px-2">
                 {navItems.map((item) => (
@@ -582,8 +585,8 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                         to={item.path}
                         className={`block px-4 py-3 sm:py-4 text-base sm:text-lg font-semibold transition-all duration-200 rounded-xl ${
                           isActivePath(item.path)
-                            ? "text-amber-400 bg-gradient-to-r from-amber-500/10 to-red-500/10"
-                            : "text-gray-300 hover:text-white hover:bg-white/5"
+                            ? "text-warning bg-gradient-to-r from-amber-500/10 to-red-500/10"
+                            : "text-foreground hover:text-foreground hover:bg-foreground/5"
                         }`}
                         onClick={closeAllDropdowns}
                         aria-label={`Navigate to ${item.name} page`}
@@ -598,8 +601,8 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                         <button
                           className={`w-full flex items-center justify-between px-4 py-3 sm:py-4 text-base sm:text-lg font-semibold transition-all duration-200 rounded-xl ${
                             isActivePath(item.path) || activeDropdown === item.name
-                              ? "text-amber-400 bg-gradient-to-r from-amber-500/10 to-red-500/10"
-                              : "text-gray-300 hover:text-white hover:bg-white/5"
+                              ? "text-warning bg-gradient-to-r from-amber-500/10 to-red-500/10"
+                              : "text-foreground hover:text-foreground hover:bg-foreground/5"
                           }`}
                           onClick={() => handleDropdownToggle(item.name)}
                           aria-haspopup="true"
@@ -625,9 +628,9 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                                   onClick={closeAllDropdowns}
                                   aria-label={`Navigate to ${subItem.name} page`}
                                 >
-                                  <div className="font-medium text-sm sm:text-base text-white">{subItem.name}</div>
+                                  <div className="font-medium text-sm sm:text-base text-foreground">{subItem.name}</div>
                                   {subItem.description && (
-                                    <div className="text-xs sm:text-sm text-gray-400 mt-1">{subItem.description}</div>
+                                    <div className="text-xs sm:text-sm text-muted-foreground mt-1">{subItem.description}</div>
                                   )}
                                 </Link>
                               ))}
@@ -644,20 +647,20 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                   <div className="px-2 mb-4">
                     <LanguageSwitcher 
                       variant="minimal" 
-                      className="w-full border-gray-700/50 hover: text-gray-300 hover:text-white bg-transparent hover:bg-white/5 rounded-xl px-4 py-3 justify-center -sm transition-all duration-200 card-glass-dark" 
+                      className="w-full border-border/50 text-foreground hover:text-foreground bg-transparent hover:bg-foreground/5 rounded-xl px-4 py-3 justify-center transition-all duration-200"
                     />
                   </div>
 
                   {user ? (
                     <div className="space-y-2 px-2">
-                      <div className="px-4 py-3 text-gray-300 border border-amber-500/20 rounded-xl">
+                      <div className="px-4 py-3 text-foreground border border-amber-500/20 rounded-xl">
                         <div className="font-semibold text-sm sm:text-base">Welcome, {user.name}</div>
-                        <div className="text-xs sm:text-sm text-gray-400 truncate">{user.email}</div>
+                        <div className="text-xs sm:text-sm text-muted-foreground truncate">{user.email}</div>
                       </div>
                       {user.role === "admin" && (
                         <Link
                           to="/admin"
-                          className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
+                          className="flex items-center gap-3 px-4 py-3 text-foreground hover:text-foreground hover:bg-foreground/5 rounded-xl transition-all duration-200"
                           onClick={closeAllDropdowns}
                           aria-label="Navigate to admin panel"
                         >
@@ -667,7 +670,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                       )}
                       <Link
                         to="/portal"
-                        className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
+                        className="flex items-center gap-3 px-4 py-3 text-foreground hover:text-foreground hover:bg-foreground/5 rounded-xl transition-all duration-200"
                         onClick={closeAllDropdowns}
                         aria-label="Navigate to my portal"
                       >
@@ -688,7 +691,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                           }
                           })();
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200 text-left"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-foreground hover:text-foreground hover:bg-foreground/5 rounded-xl transition-all duration-200 text-left"
                         aria-label="Logout"
                       >
                         <LogOut className="h-5 w-5" />
@@ -699,7 +702,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                     <div className="space-y-2 px-2">
                       <Link
                         to="/login"
-                        className="block px-4 py-3 sm:py-4 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200 text-center font-semibold text-sm sm:text-base"
+                        className="block px-4 py-3 sm:py-4 text-foreground hover:text-foreground hover:bg-foreground/5 rounded-xl transition-all duration-200 text-center font-semibold text-sm sm:text-base"
                         onClick={closeAllDropdowns}
                         aria-label="Navigate to login page"
                       >

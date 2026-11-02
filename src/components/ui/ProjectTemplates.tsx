@@ -403,13 +403,13 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
       {/* Header with search and filters */}
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-slate-200">Project Templates</h2>
+          <h2 className="text-2xl font-bold text-foreground">Project Templates</h2>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-              className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+              className="bg-card border-border text-foreground hover:bg-muted"
             >
               {viewMode === 'grid' ? <List className="h-4 w-4" /> : <Grid3x3 className="h-4 w-4" />}
             </Button>
@@ -417,7 +417,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
               variant="outline"
               size="sm"
               onClick={handleCreateFromExisting}
-              className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+              className="bg-card border-border text-foreground hover:bg-muted"
             >
               <Plus className="h-4 w-4 mr-2" />
               Create from Project
@@ -427,23 +427,23 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
 
         {/* Search bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Search templates..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="pl-10 bg-slate-800 border-slate-700 text-slate-200"
+            className="pl-10 bg-card border-border text-foreground"
           />
         </div>
 
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-2">
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-40 bg-slate-800 border-slate-700 text-slate-200">
+            <SelectTrigger className="w-40 bg-card border-border text-foreground">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700">
+            <SelectContent className="bg-card border-border">
               <SelectItem value="all">All Categories</SelectItem>
               <SelectItem value="residential">Residential</SelectItem>
               <SelectItem value="commercial">Commercial</SelectItem>
@@ -462,7 +462,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                 'cursor-pointer',
                 selectedTags.includes(tag)
                   ? 'bg-amber-600 text-white border-amber-600'
-                  : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+                  : 'bg-card border-border text-foreground hover:bg-muted'
               )}
               onClick={() => toggleTag(tag)}
             >
@@ -476,7 +476,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
               variant="ghost"
               size="sm"
               onClick={clearFilters}
-              className="text-slate-400 hover:text-slate-200"
+              className="text-muted-foreground hover:text-foreground"
             >
               <X className="h-4 w-4 mr-2" />
               Clear Filters
@@ -491,11 +491,11 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
           <div className="flex items-center justify-center py-12">
             <div className="flex flex-col items-center gap-4">
               <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
-              <p className="text-slate-400">Loading templates...</p>
+              <p className="text-muted-foreground">Loading templates...</p>
             </div>
           </div>
         ) : filteredTemplates.length === 0 ? (
-          <div className="py-12 text-center text-slate-400">
+          <div className="py-12 text-center text-muted-foreground">
             <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>No templates found</p>
             {searchQuery || selectedCategory !== 'all' || selectedTags.length > 0 ? (
@@ -522,7 +522,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
               <Card
                 key={template.id}
                 className={cn(
-                  'bg-slate-800/50 border-slate-700/50 hover:border-amber-400/30 transition-all cursor-pointer group',
+                  'bg-card/50 border-border/50 hover:border-amber-400/30 transition-all cursor-pointer group',
                   viewMode === 'list' && 'flex flex-row'
                 )}
                 role="gridcell"
@@ -532,7 +532,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                 {viewMode === 'grid' ? (
                   <>
                     {/* Thumbnail */}
-                    <div className="aspect-video bg-slate-900/50 rounded-t-lg overflow-hidden">
+                    <div className="aspect-video bg-background/50 rounded-t-lg overflow-hidden">
                       {template.thumbnail ? (
                         <img
                           src={template.thumbnail}
@@ -542,23 +542,23 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <FileText className="h-12 w-12 text-slate-600" />
+                          <FileText className="h-12 w-12 text-muted-foreground" />
                         </div>
                       )}
                     </div>
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-base text-slate-200 line-clamp-1">
+                      <CardTitle className="text-base text-foreground line-clamp-1">
                         {template.name}
                       </CardTitle>
                       {template.description && (
-                        <CardDescription className="text-sm text-slate-400 line-clamp-2">
+                        <CardDescription className="text-sm text-muted-foreground line-clamp-2">
                           {template.description}
                         </CardDescription>
                       )}
                     </CardHeader>
                     <CardContent className="pt-0">
                       <div className="flex items-center justify-between">
-                        <Badge variant="outline" className="bg-slate-900/50 border-slate-700 text-slate-300">
+                        <Badge variant="outline" className="bg-background/50 border-border text-foreground">
                           {template.category}
                         </Badge>
                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -597,7 +597,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                               handleDelete(template);
                             }}
                             disabled={isDeleting === template.id}
-                            className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-red-950/20"
+                            className="h-7 w-7 p-0 text-destructive hover:text-destructive hover:bg-red-950/20"
                           >
                             {isDeleting === template.id ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -613,7 +613,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                             <Badge
                               key={tag}
                               variant="outline"
-                              className="text-xs bg-slate-900/50 border-slate-700 text-slate-400"
+                              className="text-xs bg-background/50 border-border text-muted-foreground"
                             >
                               {tag}
                             </Badge>
@@ -621,7 +621,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                           {template.tags.length > 3 && (
                             <Badge
                               variant="outline"
-                              className="text-xs bg-slate-900/50 border-slate-700 text-slate-400"
+                              className="text-xs bg-background/50 border-border text-muted-foreground"
                             >
                               +{template.tags.length - 3}
                             </Badge>
@@ -633,7 +633,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                 ) : (
                   <>
                     {/* List view */}
-                    <div className="w-32 h-24 bg-slate-900/50 rounded-l-lg overflow-hidden flex-shrink-0">
+                    <div className="w-32 h-24 bg-background/50 rounded-l-lg overflow-hidden flex-shrink-0">
                       {template.thumbnail ? (
                         <img
                           src={template.thumbnail}
@@ -643,30 +643,30 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <FileText className="h-8 w-8 text-slate-600" />
+                          <FileText className="h-8 w-8 text-muted-foreground" />
                         </div>
                       )}
                     </div>
                     <div className="flex-1 p-4">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <CardTitle className="text-base text-slate-200 mb-1">
+                          <CardTitle className="text-base text-foreground mb-1">
                             {template.name}
                           </CardTitle>
                           {template.description && (
-                            <CardDescription className="text-sm text-slate-400 mb-2">
+                            <CardDescription className="text-sm text-muted-foreground mb-2">
                               {template.description}
                             </CardDescription>
                           )}
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="bg-slate-900/50 border-slate-700 text-slate-300">
+                            <Badge variant="outline" className="bg-background/50 border-border text-foreground">
                               {template.category}
                             </Badge>
                             {template.tags?.slice(0, 3).map(tag => (
                               <Badge
                                 key={tag}
                                 variant="outline"
-                                className="text-xs bg-slate-900/50 border-slate-700 text-slate-400"
+                                className="text-xs bg-background/50 border-border text-muted-foreground"
                               >
                                 {tag}
                               </Badge>
@@ -709,7 +709,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                               handleDelete(template);
                             }}
                             disabled={isDeleting === template.id}
-                            className="text-red-400 hover:text-red-300 hover:bg-red-950/20"
+                            className="text-destructive hover:text-destructive hover:bg-red-950/20"
                           >
                             {isDeleting === template.id ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -730,10 +730,10 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
 
       {/* Preview dialog */}
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent className="bg-slate-900 border-slate-700 max-w-2xl max-h-[80vh]">
+        <DialogContent className="bg-background border-border max-w-2xl max-h-[80vh]">
           <DialogHeader>
-            <DialogTitle className="text-slate-200">{previewTemplate?.name}</DialogTitle>
-            <DialogDescription className="text-slate-400">
+            <DialogTitle className="text-foreground">{previewTemplate?.name}</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               {previewTemplate?.description}
             </DialogDescription>
           </DialogHeader>
@@ -741,7 +741,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
             <ScrollArea className="max-h-[60vh]">
               <div className="space-y-4">
                 {previewTemplate.thumbnail && (
-                  <div className="aspect-video bg-slate-900/50 rounded-lg overflow-hidden">
+                  <div className="aspect-video bg-background/50 rounded-lg overflow-hidden">
                     <img
                       src={previewTemplate.thumbnail}
                       alt={previewTemplate.name}
@@ -751,35 +751,35 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                 )}
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <Label className="text-slate-400">Category</Label>
-                    <p className="text-slate-200">{previewTemplate.category}</p>
+                    <Label className="text-muted-foreground">Category</Label>
+                    <p className="text-foreground">{previewTemplate.category}</p>
                   </div>
                   <div>
-                    <Label className="text-slate-400">Usage Count</Label>
-                    <p className="text-slate-200">{previewTemplate.usageCount}</p>
+                    <Label className="text-muted-foreground">Usage Count</Label>
+                    <p className="text-foreground">{previewTemplate.usageCount}</p>
                   </div>
                   <div>
-                    <Label className="text-slate-400">Created</Label>
-                    <p className="text-slate-200">
+                    <Label className="text-muted-foreground">Created</Label>
+                    <p className="text-foreground">
                       {new Date(previewTemplate.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                   <div>
-                    <Label className="text-slate-400">Updated</Label>
-                    <p className="text-slate-200">
+                    <Label className="text-muted-foreground">Updated</Label>
+                    <p className="text-foreground">
                       {new Date(previewTemplate.updatedAt).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
                 {previewTemplate.tags && previewTemplate.tags.length > 0 && (
                   <div>
-                    <Label className="text-slate-400">Tags</Label>
+                    <Label className="text-muted-foreground">Tags</Label>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {previewTemplate.tags.map(tag => (
                         <Badge
                           key={tag}
                           variant="outline"
-                          className="bg-slate-800 border-slate-700 text-slate-300"
+                          className="bg-card border-border text-foreground"
                         >
                           {tag}
                         </Badge>
@@ -794,7 +794,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
             <Button
               variant="outline"
               onClick={() => setShowPreview(false)}
-              className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+              className="bg-card border-border text-foreground hover:bg-muted"
             >
               Close
             </Button>
@@ -826,49 +826,49 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
 
       {/* Edit dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="bg-slate-900 border-slate-700 max-w-md">
+        <DialogContent className="bg-background border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-slate-200">Edit Template</DialogTitle>
-            <DialogDescription className="text-slate-400">
+            <DialogTitle className="text-foreground">Edit Template</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               Update template metadata
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="edit-name" className="text-slate-300">
+              <Label htmlFor="edit-name" className="text-foreground">
                 Name
               </Label>
               <Input
                 id="edit-name"
                 value={editForm.name}
                 onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                className="bg-slate-800 border-slate-700 text-slate-200"
+                className="bg-card border-border text-foreground"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-description" className="text-slate-300">
+              <Label htmlFor="edit-description" className="text-foreground">
                 Description
               </Label>
               <Textarea
                 id="edit-description"
                 value={editForm.description}
                 onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                className="bg-slate-800 border-slate-700 text-slate-200"
+                className="bg-card border-border text-foreground"
                 rows={3}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-category" className="text-slate-300">
+              <Label htmlFor="edit-category" className="text-foreground">
                 Category
               </Label>
               <Select
                 value={editForm.category}
                 onValueChange={(value: TemplateCategory) => setEditForm({ ...editForm, category: value })}
               >
-                <SelectTrigger id="edit-category" className="bg-slate-800 border-slate-700 text-slate-200">
+                <SelectTrigger id="edit-category" className="bg-card border-border text-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-slate-700">
+                <SelectContent className="bg-card border-border">
                   <SelectItem value="residential">Residential</SelectItem>
                   <SelectItem value="commercial">Commercial</SelectItem>
                   <SelectItem value="custom">Custom</SelectItem>
@@ -878,7 +878,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-tags" className="text-slate-300">
+              <Label htmlFor="edit-tags" className="text-foreground">
                 Tags (comma-separated)
               </Label>
               <Input
@@ -886,7 +886,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                 value={editForm.tags}
                 onChange={(e) => setEditForm({ ...editForm, tags: e.target.value })}
                 placeholder="tag1, tag2, tag3"
-                className="bg-slate-800 border-slate-700 text-slate-200"
+                className="bg-card border-border text-foreground"
               />
             </div>
           </div>
@@ -894,7 +894,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
             <Button
               variant="outline"
               onClick={() => setShowEditDialog(false)}
-              className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+              className="bg-card border-border text-foreground hover:bg-muted"
             >
               Cancel
             </Button>
@@ -918,10 +918,10 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
 
       {/* Delete confirmation dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent className="bg-slate-900 border-slate-700">
+        <AlertDialogContent className="bg-background border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-200">Delete Template</AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-400">
+            <AlertDialogTitle className="text-foreground">Delete Template</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
               Are you sure you want to delete "{deleteConfirmTemplate?.name}"? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -931,7 +931,7 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
                 setShowDeleteConfirm(false);
                 setDeleteConfirmTemplate(null);
               }}
-              className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+              className="bg-card border-border text-foreground hover:bg-muted"
             >
               Cancel
             </AlertDialogCancel>

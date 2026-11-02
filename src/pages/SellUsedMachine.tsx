@@ -31,7 +31,7 @@ const SellUsedMachine = () => {
   // Show loading spinner while checking authentication
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen bg-almona-dark text-white">
+      <div className="flex flex-col min-h-screen bg-background text-foreground">
         <div className="flex-grow flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-almona-orange mx-auto mb-4"></div>
@@ -71,13 +71,13 @@ const SellUsedMachine = () => {
             <h1 className="typography-h1 sm:text-4xl mb-4 text-gradient-orange">
               Sell Your Used Machine
             </h1>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <p className="text-muted-foreground max-w-2xl mx-auto">
               List your used industrial machinery on our marketplace and connect with potential buyers across the region.
             </p>
           </div>
 
           <div className="max-w-2xl mx-auto">
-            <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm">
+            <Card className="bg-background/60 border-border/20 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-almona-orange">Machine Details</CardTitle>
               </CardHeader>
@@ -88,9 +88,9 @@ const SellUsedMachine = () => {
                     <Input 
                       {...register('name')} 
                       placeholder="e.g., YILMAZ DC 421 PBS"
-                      className="bg-almona-dark/80 border-almona-light/30 focus:ring-2 focus:ring-almona-light focus:border-almona-light"
+                      className="bg-background/80 border-border/30 focus:ring-2 focus:ring-almona-light focus:border-border"
                     />
-                    {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>}
+                    {errors.name && <p className="text-destructive text-sm mt-1">{errors.name.message}</p>}
                   </div>
                   
                   <div>
@@ -98,9 +98,9 @@ const SellUsedMachine = () => {
                     <Input 
                       {...register('model')} 
                       placeholder="Model number or name"
-                      className="bg-almona-dark/80 border-almona-light/30 focus:ring-2 focus:ring-almona-light focus:border-almona-light"
+                      className="bg-background/80 border-border/30 focus:ring-2 focus:ring-almona-light focus:border-border"
                     />
-                    {errors.model && <p className="text-red-400 text-sm mt-1">{errors.model.message}</p>}
+                    {errors.model && <p className="text-destructive text-sm mt-1">{errors.model.message}</p>}
                   </div>
                   
                   <div>
@@ -109,9 +109,9 @@ const SellUsedMachine = () => {
                       {...register('year', { valueAsNumber: true })} 
                       type="number" 
                       placeholder="e.g., 2020"
-                      className="bg-almona-dark/80 border-almona-light/30 focus:ring-2 focus:ring-almona-light focus:border-almona-light"
+                      className="bg-background/80 border-border/30 focus:ring-2 focus:ring-almona-light focus:border-border"
                     />
-                    {errors.year && <p className="text-red-400 text-sm mt-1">{errors.year.message}</p>}
+                    {errors.year && <p className="text-destructive text-sm mt-1">{errors.year.message}</p>}
                   </div>
                   
                   <div>
@@ -120,9 +120,9 @@ const SellUsedMachine = () => {
                       {...register('description')} 
                       placeholder="Detailed description of the machine's condition, features, usage history, and any included accessories..."
                       rows={4}
-                      className="bg-almona-dark/80 border-almona-light/30 focus:ring-2 focus:ring-almona-light focus:border-almona-light"
+                      className="bg-background/80 border-border/30 focus:ring-2 focus:ring-almona-light focus:border-border"
                     />
-                    {errors.description && <p className="text-red-400 text-sm mt-1">{errors.description.message}</p>}
+                    {errors.description && <p className="text-destructive text-sm mt-1">{errors.description.message}</p>}
                   </div>
                   
                   <div>
@@ -131,9 +131,9 @@ const SellUsedMachine = () => {
                       {...register('price', { valueAsNumber: true })} 
                       type="number" 
                       placeholder="e.g., 150000"
-                      className="bg-almona-dark/80 border-almona-light/30 focus:ring-2 focus:ring-almona-light focus:border-almona-light"
+                      className="bg-background/80 border-border/30 focus:ring-2 focus:ring-almona-light focus:border-border"
                     />
-                    {errors.price && <p className="text-red-400 text-sm mt-1">{errors.price.message}</p>}
+                    {errors.price && <p className="text-destructive text-sm mt-1">{errors.price.message}</p>}
                   </div>
                   
                   <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -147,7 +147,7 @@ const SellUsedMachine = () => {
                     <Button 
                       type="button" 
                       onClick={() => void navigate('/used-machines')}
-                      className="bg-almona-light/20 hover:bg-almona-light/30 text-white border border-almona-light/30"
+                      className="bg-almona-light/20 hover:bg-almona-light/30 text-foreground border border-border/30"
                     >
                       Cancel
                     </Button>
@@ -157,10 +157,10 @@ const SellUsedMachine = () => {
             </Card>
 
             <div className="mt-8 text-center">
-              <p className="text-gray-400 mb-4">
+              <p className="text-muted-foreground mb-4">
                 Need help with pricing or have questions about selling?
               </p>
-              <Button asChild className="bg-almona-light/20 hover:bg-almona-light/30 text-white border border-almona-light/30">
+              <Button asChild className="bg-almona-light/20 hover:bg-almona-light/30 text-foreground border border-border/30">
                 <Link to="/contact">Contact Our Team</Link>
               </Button>
             </div>

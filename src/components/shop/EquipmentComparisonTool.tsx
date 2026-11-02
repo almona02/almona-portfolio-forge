@@ -34,7 +34,7 @@ export const EquipmentComparisonTool = ({ selectedMachines, allMachines, onToggl
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-4xl text-white bg-almona-dark">
+        <DialogContent className="max-w-4xl text-foreground bg-background">
           <DialogHeader>
             <DialogTitle>Machine Comparison</DialogTitle>
           </DialogHeader>

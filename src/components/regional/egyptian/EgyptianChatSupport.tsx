@@ -76,10 +76,10 @@ export const EgyptianChatSupport: React.FC = () => {
 
   return (
     <div className="fixed bottom-4 left-4 z-50 w-80">
-      <Card className="shadow-xl border border-gray-200 dark:border-gray-700">
+      <Card className="shadow-xl border border-border dark:border-border">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <CardTitle className="text-sm font-semibold text-foreground dark:text-foreground flex items-center gap-2">
               <MessageCircle className="w-4 h-4  status-valid" />
               دعم العملاء - مصر
             </CardTitle>
@@ -95,7 +95,7 @@ export const EgyptianChatSupport: React.FC = () => {
         </CardHeader>
         <CardContent className="pt-0">
           {/* Contact Info */}
-          <div className="mb-3 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs">
+          <div className="mb-3 p-2 bg-background dark:bg-card rounded text-xs">
             <div className="flex items-center gap-2 mb-1">
               <Phone className="w-3 h-3  status-valid" />
               <span>+20 2 1234 5678</span>
@@ -121,7 +121,7 @@ export const EgyptianChatSupport: React.FC = () => {
                   className={`max-w-[80%] p-2 rounded-lg text-xs ${
                     msg.sender === 'user'
                       ? 'bg-green-500 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                      : 'bg-muted dark:bg-muted text-foreground dark:text-foreground'
                   }`}
                 >
                   {msg.text}

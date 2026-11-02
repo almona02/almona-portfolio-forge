@@ -144,13 +144,13 @@ export const DraftListDialog: React.FC<DraftListDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] bg-slate-900 border-amber-600/30">
+      <DialogContent className="sm:max-w-[600px] bg-background border-amber-600/30">
         <DialogHeader>
-          <DialogTitle className="text-amber-300 flex items-center gap-2">
+          <DialogTitle className="text-warning flex items-center gap-2">
             <FileText className="h-5 w-5" />
             My Drafts
           </DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogDescription className="text-muted-foreground">
             Select a draft to continue working, or import a file.
           </DialogDescription>
         </DialogHeader>
@@ -158,12 +158,12 @@ export const DraftListDialog: React.FC<DraftListDialogProps> = ({
         <div className="space-y-4 py-4">
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search drafts by name or twincode..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-slate-800/50 border-slate-700 text-slate-200"
+              className="pl-9 bg-card/50 border-border text-foreground"
             />
           </div>
 
@@ -172,17 +172,17 @@ export const DraftListDialog: React.FC<DraftListDialogProps> = ({
             <div className="flex items-center justify-center h-48">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto mb-2"></div>
-                <p className="text-sm text-slate-400">Loading drafts...</p>
+                <p className="text-sm text-muted-foreground">Loading drafts...</p>
               </div>
             </div>
           ) : filteredDrafts.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-48 text-center">
-              <FileText className="h-12 w-12 text-slate-600 mb-4" />
-              <p className="text-slate-400 mb-2">
+              <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+              <p className="text-muted-foreground mb-2">
                 {searchQuery ? 'No drafts match your search' : 'No drafts found'}
               </p>
               {!searchQuery && (
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-muted-foreground">
                   Create a new draft and save it to see it here.
                 </p>
               )}
@@ -197,18 +197,18 @@ export const DraftListDialog: React.FC<DraftListDialogProps> = ({
                     className={`group relative p-4 rounded-lg border transition-all cursor-pointer ${
                       isLoadingDraft === draft.id
                         ? 'border-amber-500 bg-amber-500/10'
-                        : 'border-slate-700 bg-slate-800/50 hover:border-amber-500/50 hover:bg-slate-800'
+                        : 'border-border bg-card/50 hover:border-amber-500/50 hover:bg-card'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <Grid3x3 className="h-4 w-4 text-amber-400 flex-shrink-0" />
-                          <h3 className="font-medium text-slate-200 truncate">
+                          <Grid3x3 className="h-4 w-4 text-warning flex-shrink-0" />
+                          <h3 className="font-medium text-foreground truncate">
                             {draft.name}
                           </h3>
                         </div>
-                        <div className="flex items-center gap-4 text-xs text-slate-400 mt-2">
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
                           <div className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
                             <span>{formatVersionTimestamp(new Date(draft.updated_at).getTime())}</span>
@@ -218,7 +218,7 @@ export const DraftListDialog: React.FC<DraftListDialogProps> = ({
                               <span>{draft.element_count} elements</span>
                             </div>
                           )}
-                          <div className="font-mono text-amber-400/70">
+                          <div className="font-mono text-warning/70">
                             {draft.twincode}
                           </div>
                         </div>
@@ -228,7 +228,7 @@ export const DraftListDialog: React.FC<DraftListDialogProps> = ({
                         size="icon"
                         onClick={(e) => void handleDeleteDraft(draft.id, e)}
                         disabled={isDeleting === draft.id}
-                        className="h-8 w-8 text-slate-400 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         {isDeleting === draft.id ? (
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-400"></div>
@@ -238,10 +238,10 @@ export const DraftListDialog: React.FC<DraftListDialogProps> = ({
                       </Button>
                     </div>
                     {isLoadingDraft === draft.id && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80 rounded-lg">
+                      <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-lg">
                         <div className="text-center">
                           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-400 mx-auto mb-2"></div>
-                          <p className="text-xs text-slate-300">Loading draft...</p>
+                          <p className="text-xs text-foreground">Loading draft...</p>
                         </div>
                       </div>
                     )}
@@ -252,12 +252,12 @@ export const DraftListDialog: React.FC<DraftListDialogProps> = ({
           )}
         </div>
 
-        <DialogFooter className="flex items-center justify-between border-t border-slate-800 pt-4">
+        <DialogFooter className="flex items-center justify-between border-t border-border pt-4">
           <Button
             type="button"
             variant="outline"
             onClick={handleImportFile}
-            className="border-slate-700 text-slate-300 hover:bg-slate-800"
+            className="border-border text-foreground hover:bg-card"
           >
             <Upload className="h-4 w-4 mr-2" />
             Import File
@@ -267,12 +267,12 @@ export const DraftListDialog: React.FC<DraftListDialogProps> = ({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-slate-700 text-slate-300 hover:bg-slate-800"
+              className="border-border text-foreground hover:bg-card"
             >
               Cancel
             </Button>
             {filteredDrafts.length > 0 && (
-              <div className="text-xs text-slate-500">
+              <div className="text-xs text-muted-foreground">
                 {filteredDrafts.length} draft{filteredDrafts.length !== 1 ? 's' : ''}
               </div>
             )}

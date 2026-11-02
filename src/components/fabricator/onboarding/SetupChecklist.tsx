@@ -93,24 +93,24 @@ export const SetupChecklist: React.FC<SetupChecklistProps> = ({ userId }) => {
 
   if (loading) {
     return (
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardContent className="p-4">
-          <div className="text-sm text-gray-400">Loading setup progress...</div>
+          <div className="text-sm text-muted-foreground">Loading setup progress...</div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700">
+    <Card className="bg-card/50 border-border">
       <CardHeader>
         <CardTitle className="text-lg">Setup Progress</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-400">Overall Progress</span>
-            <span className="font-medium text-amber-400">
+            <span className="text-muted-foreground">Overall Progress</span>
+            <span className="font-medium text-warning">
               {Math.round(progressPercentage)}% Complete
             </span>
           </div>
@@ -121,17 +121,17 @@ export const SetupChecklist: React.FC<SetupChecklistProps> = ({ userId }) => {
           {items.map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between p-2 rounded hover:bg-gray-900/50 transition-colors"
+              className="flex items-center justify-between p-2 rounded hover:bg-background/50 transition-colors"
             >
               <div className="flex items-center gap-2">
                 {item.completed ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-400" />
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                 ) : (
-                  <Circle className="h-5 w-5 text-gray-500" />
+                  <Circle className="h-5 w-5 text-muted-foreground" />
                 )}
                 <span
                   className={`text-sm ${
-                    item.completed ? 'text-gray-300 line-through' : 'text-gray-400'
+                    item.completed ? 'text-foreground line-through' : 'text-muted-foreground'
                   }`}
                 >
                   {item.label}
@@ -154,7 +154,7 @@ export const SetupChecklist: React.FC<SetupChecklistProps> = ({ userId }) => {
 
         {completedCount === items.length && (
           <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-            <p className="text-sm text-green-400 font-medium">
+            <p className="text-sm text-success font-medium">
               🎉 Setup complete! You're ready to start using Fabricator Pro.
             </p>
           </div>

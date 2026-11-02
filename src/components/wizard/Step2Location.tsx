@@ -27,7 +27,7 @@ export const Step2Location: React.FC<Step2LocationProps> = ({
       <div className="space-y-2">
         <Label htmlFor="region" className="typography-label">Region</Label>
         <Select value={region ?? ''} onValueChange={(value) => onRegionChange(value as LocationRegion)}>
-          <SelectTrigger className="bg-gray-800 border-gray-700">
+          <SelectTrigger className="bg-card border-border">
             <SelectValue placeholder="Select region" />
           </SelectTrigger>
           <SelectContent>

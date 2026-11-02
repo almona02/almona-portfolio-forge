@@ -304,10 +304,10 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Header */}
-      <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border-slate-700/50 shadow-xl">
+      <Card className="bg-gradient-to-br from-background/80 to-card/80 border-border/50 shadow-xl">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Box className="h-5 w-5 text-amber-400" />
+            <Box className="h-5 w-5 text-warning" />
             Block Library
           </CardTitle>
         </CardHeader>
@@ -316,51 +316,51 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
       {/* Statistics */}
       {stats.totalBlocks > 0 && (
         <div className="grid grid-cols-2 gap-2">
-          <Card className="bg-slate-900/60 border-slate-700/50">
+          <Card className="bg-background/60 border-border/50">
             <CardContent className="p-3">
-              <div className="text-xs text-slate-400 mb-1">Total Blocks</div>
-              <div className="text-xl font-bold text-slate-100">{stats.totalBlocks}</div>
+              <div className="text-xs text-muted-foreground mb-1">Total Blocks</div>
+              <div className="text-xl font-bold text-foreground">{stats.totalBlocks}</div>
             </CardContent>
           </Card>
-          <Card className="bg-slate-900/60 border-slate-700/50">
+          <Card className="bg-background/60 border-border/50">
             <CardContent className="p-3">
-              <div className="text-xs text-slate-400 mb-1">Total Usage</div>
-              <div className="text-xl font-bold text-amber-400">{stats.totalUsage}</div>
+              <div className="text-xs text-muted-foreground mb-1">Total Usage</div>
+              <div className="text-xl font-bold text-warning">{stats.totalUsage}</div>
             </CardContent>
           </Card>
         </div>
       )}
 
       {/* Search & Filter */}
-      <Card className="bg-slate-900/60 border-slate-700/50">
+      <Card className="bg-background/60 border-border/50">
         <CardContent className="p-3 space-y-3">
           <div className="flex gap-2">
             <div className="flex-1 relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search blocks..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 h-9 text-sm border-slate-700/50 text-slate-100 focus:border-amber-500/30 bg-slate-800/50"
+                className="pl-8 h-9 text-sm border-border/50 text-foreground focus:border-amber-500/30 bg-card/50"
               />
             </div>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-32 h-9 text-sm border-slate-700/50 text-slate-100 focus:border-amber-500/30 bg-slate-800/50">
+              <SelectTrigger className="w-32 h-9 text-sm border-border/50 text-foreground focus:border-amber-500/30 bg-card/50">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-900/95 backdrop-blur-xl border-slate-700/50">
+              <SelectContent className="bg-background/95 backdrop-blur-xl border-border/50">
                 {categoryOptions.map(opt => (
                   <SelectItem 
                     key={opt.value} 
                     value={opt.value}
-                    className="text-slate-200 focus:bg-slate-800/80 focus:text-amber-400"
+                    className="text-foreground focus:bg-card/80 focus:text-warning"
                   >
                     {opt.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <div className="flex gap-1 bg-slate-800/50 rounded-lg p-1 border border-slate-700/50">
+            <div className="flex gap-1 bg-card/50 rounded-lg p-1 border border-border/50">
               <Button
                 size="sm"
                 variant={viewMode === 'grid' ? 'default' : 'ghost'}
@@ -385,8 +385,8 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
       {/* Blocks Grid/List */}
       {filteredBlocks.length === 0 ? (
         <Alert className="bg-cyan-500/10 border-cyan-500/30">
-          <AlertCircle className="h-4 w-4 text-cyan-400" />
-          <AlertDescription className="text-sm text-cyan-300">
+          <AlertCircle className="h-4 w-4 text-info" />
+          <AlertDescription className="text-sm text-info">
             {blocks.length === 0 
               ? 'No blocks available. Create blocks from selected geometry in the canvas.'
               : 'No blocks match your search. Try adjusting your filters.'}
@@ -403,12 +403,12 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
             return (
               <Card
                 key={block.id}
-                className="border-slate-700/50 hover:border-amber-500/50 transition-all cursor-pointer group shadow-sm hover:shadow-md bg-slate-900/60"
+                className="border-border/50 hover:border-amber-500/50 transition-all cursor-pointer group shadow-sm hover:shadow-md bg-background/60"
               >
                 <CardContent className="p-3 space-y-2">
                   {/* Thumbnail */}
                   {viewMode === 'grid' && (
-                    <div className="w-full h-24 bg-slate-800/50 rounded-lg overflow-hidden border border-slate-700/50 flex items-center justify-center">
+                    <div className="w-full h-24 bg-card/50 rounded-lg overflow-hidden border border-border/50 flex items-center justify-center">
                       <img
                         src={thumbnail}
                         alt={block.name}
@@ -423,11 +423,11 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
 
                   {/* Block Info */}
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-100 group-hover:text-amber-400 transition-colors line-clamp-1">
+                    <h3 className="text-sm font-semibold text-foreground group-hover:text-warning transition-colors line-clamp-1">
                       {block.name}
                     </h3>
                     {block.description && (
-                      <p className="text-xs text-slate-400 line-clamp-2 mt-1">
+                      <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
                         {block.description}
                       </p>
                     )}
@@ -437,14 +437,14 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
                   <div className="flex flex-wrap gap-1.5">
                     <Badge 
                       variant="outline" 
-                      className="text-[10px] border-slate-700/50 text-slate-300 bg-slate-800/30"
+                      className="text-[10px] border-border/50 text-foreground bg-card/30"
                     >
                       {block.category}
                     </Badge>
                     {block.usageCount > 0 && (
                       <Badge 
                         variant="outline" 
-                        className="text-[10px] flex items-center gap-1 border-cyan-500/30 text-cyan-300 bg-cyan-500/10"
+                        className="text-[10px] flex items-center gap-1 border-cyan-500/30 text-info bg-cyan-500/10"
                       >
                         <TrendingUp className="h-2.5 w-2.5" />
                         {block.usageCount}
@@ -452,7 +452,7 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
                     )}
                     <Badge 
                       variant="outline" 
-                      className="text-[10px] flex items-center gap-1 border-slate-700/50 text-slate-400 bg-slate-800/30"
+                      className="text-[10px] flex items-center gap-1 border-border/50 text-muted-foreground bg-card/30"
                     >
                       <Clock className="h-2.5 w-2.5" />
                       {new Date(block.createdAt).toLocaleDateString()}
@@ -466,7 +466,7 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
                         <Badge 
                           key={tag} 
                           variant="secondary" 
-                          className="text-[10px] bg-slate-800/50 text-slate-300 border-slate-700/50"
+                          className="text-[10px] bg-card/50 text-foreground border-border/50"
                         >
                           {tag}
                         </Badge>
@@ -474,7 +474,7 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
                       {block.tags.length > 2 && (
                         <Badge 
                           variant="secondary" 
-                          className="text-[10px] bg-slate-800/50 text-slate-400 border-slate-700/50"
+                          className="text-[10px] bg-card/50 text-muted-foreground border-border/50"
                         >
                           +{block.tags.length - 2}
                         </Badge>
@@ -483,7 +483,7 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
                   )}
 
                   {/* Actions */}
-                  <div className="flex gap-1.5 pt-2 border-t border-slate-700/50">
+                  <div className="flex gap-1.5 pt-2 border-t border-border/50">
                     <Button
                       size="sm"
                       onClick={() => handleInsertBlock(block.id)}
@@ -496,7 +496,7 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
                       size="sm"
                       variant="outline"
                       onClick={() => handleEditBlock(block)}
-                      className="h-7 w-7 p-0 border-slate-700/50 text-slate-300 hover:bg-slate-800/50 hover:text-amber-400"
+                      className="h-7 w-7 p-0 border-border/50 text-foreground hover:bg-card/50 hover:text-warning"
                       title="Edit"
                     >
                       <Edit2 className="h-3 w-3" />
@@ -505,7 +505,7 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
                       size="sm"
                       variant="outline"
                       onClick={() => handleDuplicateBlock(block)}
-                      className="h-7 w-7 p-0 border-slate-700/50 text-slate-300 hover:bg-slate-800/50 hover:text-amber-400"
+                      className="h-7 w-7 p-0 border-border/50 text-foreground hover:bg-card/50 hover:text-warning"
                       title="Duplicate"
                     >
                       <Copy className="h-3 w-3" />
@@ -514,7 +514,7 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
                       size="sm"
                       variant="outline"
                       onClick={() => handleDeleteBlock(block.id)}
-                      className="h-7 w-7 p-0 border-slate-700/50 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                      className="h-7 w-7 p-0 border-border/50 text-destructive hover:text-destructive hover:bg-red-500/10"
                       title="Delete"
                     >
                       <Trash2 className="h-3 w-3" />
@@ -529,49 +529,49 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
 
       {/* Edit Dialog */}
       <Dialog open={!!editingBlock} onOpenChange={(open) => !open && setEditingBlock(null)}>
-        <DialogContent className="bg-slate-900/95 backdrop-blur-xl border-slate-700/50">
+        <DialogContent className="bg-background/95 backdrop-blur-xl border-border/50">
           <DialogHeader>
-            <DialogTitle className="text-slate-100">Edit Block</DialogTitle>
-            <DialogDescription className="text-slate-400">
+            <DialogTitle className="text-foreground">Edit Block</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               Update block properties
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label className="typography-label text-sm text-slate-300">Block Name *</Label>
+              <Label className="typography-label text-sm text-foreground">Block Name *</Label>
               <Input
                 placeholder="Block name"
                 value={editFormData.name}
                 onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                className="border-slate-700/50 text-slate-100 mt-1 focus:border-amber-500/30 bg-slate-800/50"
+                className="border-border/50 text-foreground mt-1 focus:border-amber-500/30 bg-card/50"
               />
             </div>
             <div>
-              <Label className="typography-label text-sm text-slate-300">Description</Label>
+              <Label className="typography-label text-sm text-foreground">Description</Label>
               <Input
                 placeholder="Optional description"
                 value={editFormData.description}
                 onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
-                className="border-slate-700/50 text-slate-100 mt-1 focus:border-amber-500/30 bg-slate-800/50"
+                className="border-border/50 text-foreground mt-1 focus:border-amber-500/30 bg-card/50"
               />
             </div>
             <div>
-              <Label className="typography-label text-sm text-slate-300">Category</Label>
+              <Label className="typography-label text-sm text-foreground">Category</Label>
               <Select 
                 value={editFormData.category} 
                 onValueChange={(value: BlockDefinition['category']) => 
                   setEditFormData({ ...editFormData, category: value })
                 }
               >
-                <SelectTrigger className="border-slate-700/50 text-slate-100 mt-1 focus:border-amber-500/30 bg-slate-800/50">
+                <SelectTrigger className="border-border/50 text-foreground mt-1 focus:border-amber-500/30 bg-card/50">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-900/95 backdrop-blur-xl border-slate-700/50">
+                <SelectContent className="bg-background/95 backdrop-blur-xl border-border/50">
                   {categoryOptions.slice(1).map(opt => (
                     <SelectItem 
                       key={opt.value} 
                       value={opt.value}
-                      className="text-slate-200 focus:bg-slate-800/80 focus:text-amber-400"
+                      className="text-foreground focus:bg-card/80 focus:text-warning"
                     >
                       {opt.label}
                     </SelectItem>
@@ -580,12 +580,12 @@ export const BlockLibraryPanel: React.FC<BlockLibraryPanelProps> = ({
               </Select>
             </div>
             <div>
-              <Label className="typography-label text-sm text-slate-300">Tags (comma-separated)</Label>
+              <Label className="typography-label text-sm text-foreground">Tags (comma-separated)</Label>
               <Input
                 placeholder="e.g., window, casement, modern"
                 value={editFormData.tags}
                 onChange={(e) => setEditFormData({ ...editFormData, tags: e.target.value })}
-                className="border-slate-700/50 text-slate-100 mt-1 focus:border-amber-500/30 bg-slate-800/50"
+                className="border-border/50 text-foreground mt-1 focus:border-amber-500/30 bg-card/50"
               />
             </div>
             <div className="flex gap-2 pt-4">

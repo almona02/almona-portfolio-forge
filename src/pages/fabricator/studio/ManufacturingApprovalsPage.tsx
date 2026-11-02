@@ -125,10 +125,10 @@ function ApprovalSettingsFields({
           const id = `approval-${requestId}-${key}`;
           const error = validation.errors[key];
           return (
-            <label key={key} htmlFor={id} className="flex flex-col gap-1 text-xs text-slate-300">
+            <label key={key} htmlFor={id} className="flex flex-col gap-1 text-xs text-foreground">
               <span>
                 {limit.label} ({limit.unit})
-                <span className="ml-1 text-slate-500">· {state.source[key] === 'workshop' ? 'workshop default' : 'platform default'}</span>
+                <span className="ml-1 text-muted-foreground">· {state.source[key] === 'workshop' ? 'workshop default' : 'platform default'}</span>
               </span>
               <input
                 id={id}
@@ -141,13 +141,13 @@ function ApprovalSettingsFields({
                 onChange={(e) => onChange(key, e.target.value)}
                 aria-invalid={error ? true : undefined}
                 aria-describedby={error ? `${id}-error` : undefined}
-                className="rounded border border-slate-600 bg-slate-950 px-2 py-1 text-sm text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                className="rounded border border-border bg-background px-2 py-1 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                 data-testid={`${id}-input`}
               />
               {error ? (
-                <span id={`${id}-error`} className="text-red-400">{error}</span>
+                <span id={`${id}-error`} className="text-destructive">{error}</span>
               ) : (
-                <span className="text-slate-500">{limit.min}–{limit.max} {limit.unit}</span>
+                <span className="text-muted-foreground">{limit.min}–{limit.max} {limit.unit}</span>
               )}
             </label>
           );
@@ -552,7 +552,7 @@ export default function ManufacturingApprovalsPage() {
             <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
             Manufacturing Approvals
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-muted-foreground">
             Pending request review, one-click vendor catalogue approval (provenance=vendor), and revoke.
             Packs are never blanket-seeded by migration.
           </p>
@@ -560,7 +560,7 @@ export default function ManufacturingApprovalsPage() {
 
         <div
           ref={stickyChromeRef}
-          className="sticky top-0 z-30 -mx-3 px-3 sm:-mx-6 sm:px-6 bg-[#0a0a0a]/95 backdrop-blur border-b border-amber-600/20"
+          className="sticky top-0 z-30 -mx-3 px-3 sm:-mx-6 sm:px-6 bg-background/95 backdrop-blur border-b border-amber-600/20"
           data-testid="approvals-sticky-chrome"
         >
           <nav
@@ -599,15 +599,15 @@ export default function ManufacturingApprovalsPage() {
         <section
           id="approvals-vendor"
           style={sectionStyle}
-          className="rounded-lg border border-slate-700 bg-slate-900/50 p-3 sm:p-4 space-y-3"
+          className="rounded-lg border border-border bg-background/50 p-3 sm:p-4 space-y-3"
           data-testid="vendor-catalogue-section"
         >
           <h2 className="font-semibold text-amber-100">Approve vendor catalogue</h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted-foreground">
             Closed vendor allowlist ({vendorRows.length}). Writes provenance=vendor, an audit row, and
             supersedes any prior active revision. Revoke anytime below.
           </p>
-          <p className="text-xs text-slate-500" data-testid="vendor-catalogue-settings-note">
+          <p className="text-xs text-muted-foreground" data-testid="vendor-catalogue-settings-note">
             Vendor payloads are built server-side with fixed settings (kerf {VENDOR_AUTHORITY_DEFAULT_SETTINGS.sawKerfMm} mm ·
             trim {VENDOR_AUTHORITY_DEFAULT_SETTINGS.trimCutMm} mm · stock {VENDOR_AUTHORITY_DEFAULT_SETTINGS.stockLengthMm} mm).
             To approve different values, review a pending request below.
@@ -616,11 +616,11 @@ export default function ManufacturingApprovalsPage() {
             {vendorRows.map((pack) => (
               <li
                 key={pack.id}
-                className="flex flex-col gap-2 rounded border border-slate-700 px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-2 rounded border border-border px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
               >
-                <span className="text-slate-200 min-w-0">
+                <span className="text-foreground min-w-0">
                   <span className="text-amber-200 font-medium">{pack.label}</span>
-                  <span className="block text-xs text-slate-500 truncate">{pack.id}</span>
+                  <span className="block text-xs text-muted-foreground truncate">{pack.id}</span>
                 </span>
                 <Button
                   size="sm"
@@ -639,27 +639,27 @@ export default function ManufacturingApprovalsPage() {
         <section
           id="approvals-catalogue"
           style={sectionStyle}
-          className="rounded-lg border border-slate-700 bg-slate-900/50 p-3 sm:p-4 space-y-3"
+          className="rounded-lg border border-border bg-background/50 p-3 sm:p-4 space-y-3"
           data-testid="full-catalogue-section"
         >
           <h2 className="font-semibold text-amber-100">All other system packs</h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted-foreground">
             Remaining engineering catalogue ({otherPackRows.length}), including rock/jumbo/ASAS/UPVC and
             owned workshop copies. Approves from live pack profiles (provenance=admin_review). Requires
             frame + sash profiles on the pack.
           </p>
           {otherPackRows.length === 0 ? (
-            <p className="text-sm text-slate-400">No additional packs beyond the vendor allowlist.</p>
+            <p className="text-sm text-muted-foreground">No additional packs beyond the vendor allowlist.</p>
           ) : (
             <ul className="grid gap-2 sm:grid-cols-2" data-testid="full-catalogue-list">
               {otherPackRows.map((pack) => (
                 <li
                   key={pack.id}
-                  className="flex flex-col gap-2 rounded border border-slate-700 px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded border border-border px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <span className="text-slate-200 min-w-0">
+                  <span className="text-foreground min-w-0">
                     <span className="text-amber-200 font-medium">{pack.label}</span>
-                    <span className="block text-xs text-slate-500 truncate">
+                    <span className="block text-xs text-muted-foreground truncate">
                       {pack.id} · {pack.profileCount} profiles
                     </span>
                   </span>
@@ -682,11 +682,11 @@ export default function ManufacturingApprovalsPage() {
         <section
           id="approvals-pending"
           style={sectionStyle}
-          className="rounded-lg border border-slate-700 bg-slate-900/50 p-3 sm:p-4 space-y-3"
+          className="rounded-lg border border-border bg-background/50 p-3 sm:p-4 space-y-3"
         >
           <h2 className="font-semibold text-amber-100">Pending requests</h2>
           {rows.length === 0 ? (
-            <p className="text-sm text-slate-400" data-testid="pending-requests-empty">
+            <p className="text-sm text-muted-foreground" data-testid="pending-requests-empty">
               No pending manufacturing approval requests.
             </p>
           ) : (
@@ -694,22 +694,22 @@ export default function ManufacturingApprovalsPage() {
               {rows.map((row) => (
                 <li
                   key={row.id}
-                  className="rounded border border-slate-700 p-3 text-sm text-slate-200 space-y-2"
+                  className="rounded border border-border p-3 text-sm text-foreground space-y-2"
                   data-testid={`approval-request-${row.id}`}
                 >
                   <div className="flex flex-wrap justify-between gap-2">
                     <span className="font-medium text-amber-200">{row.system_pack_id}</span>
-                    <span className="text-slate-400">rev {row.position_revision}</span>
+                    <span className="text-muted-foreground">rev {row.position_revision}</span>
                   </div>
-                  <p className="text-slate-400 break-all">Catalogue: {row.catalogue_reference}</p>
-                  <p className="text-slate-400 break-all">Rules: {row.rule_reference}</p>
+                  <p className="text-muted-foreground break-all">Catalogue: {row.catalogue_reference}</p>
+                  <p className="text-muted-foreground break-all">Rules: {row.rule_reference}</p>
                   <ApprovalSettingsFields
                     requestId={row.id}
                     state={requestSettings[row.id] ?? PLATFORM_SETTINGS_STATE}
                     disabled={busyId === row.id}
                     onChange={(key, value) => updateRequestSetting(row.id, key, value)}
                   />
-                  <div className="sticky bottom-20 z-10 -mx-1 flex flex-wrap gap-2 rounded-md border border-amber-600/30 bg-[#0f0f0f]/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-[#0f0f0f]/80 sm:bottom-16">
+                  <div className="sticky bottom-20 z-10 -mx-1 flex flex-wrap gap-2 rounded-md border border-amber-600/30 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:bottom-16">
                     <Button
                       size="sm"
                       disabled={busyId === row.id || !validateApprovalSettings((requestSettings[row.id] ?? PLATFORM_SETTINGS_STATE).draft).ok}
@@ -739,25 +739,25 @@ export default function ManufacturingApprovalsPage() {
         <section
           id="approvals-active"
           style={sectionStyle}
-          className="rounded-lg border border-slate-700 bg-slate-900/50 p-3 sm:p-4 space-y-3"
+          className="rounded-lg border border-border bg-background/50 p-3 sm:p-4 space-y-3"
           data-testid="active-authority-section"
         >
           <h2 className="font-semibold text-amber-100">Active authority (revoke)</h2>
           {active.length === 0 ? (
-            <p className="text-sm text-slate-400">No active manufacturing authority revisions.</p>
+            <p className="text-sm text-muted-foreground">No active manufacturing authority revisions.</p>
           ) : (
             <ul className="space-y-2">
               {active.map((row) => (
                 <li
                   key={row.approval_id}
-                  className="flex flex-col gap-2 rounded border border-slate-700 px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded border border-border px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                   data-testid={`active-authority-${row.system_pack_id}`}
                 >
-                  <div className="text-slate-200 min-w-0">
+                  <div className="text-foreground min-w-0">
                     <span className="text-amber-200 font-medium">{row.system_pack_id}</span>
-                    <span className="text-slate-400"> · r{row.system_pack_revision}</span>
-                    <span className="text-slate-500"> · {row.provenance}</span>
-                    <span className="block text-xs text-slate-500 break-all">{row.approval_id}</span>
+                    <span className="text-muted-foreground"> · r{row.system_pack_revision}</span>
+                    <span className="text-muted-foreground"> · {row.provenance}</span>
+                    <span className="block text-xs text-muted-foreground break-all">{row.approval_id}</span>
                   </div>
                   <Button
                     size="sm"
@@ -778,7 +778,7 @@ export default function ManufacturingApprovalsPage() {
         <div
           id="approvals-hardener"
           style={sectionStyle}
-          className="rounded-lg border border-slate-700 bg-slate-900/50 p-3 sm:p-4"
+          className="rounded-lg border border-border bg-background/50 p-3 sm:p-4"
         >
           <HardenerApprovalsPanel />
         </div>

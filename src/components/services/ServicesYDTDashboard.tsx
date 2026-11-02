@@ -48,9 +48,9 @@ export function ServicesYDTDashboard() {
   }, []);
 
   const getStatusColor = (value: number, thresholds: { good: number; warning: number }) => {
-    if (value >= thresholds.good) return 'text-green-400';
+    if (value >= thresholds.good) return 'text-success';
     if (value >= thresholds.warning) return 'text-yellow-400';
-    return 'text-red-400';
+    return 'text-destructive';
   };
 
   const getStatusBadge = (value: number, thresholds: { good: number; warning: number }) => {
@@ -61,7 +61,7 @@ export function ServicesYDTDashboard() {
 
   return (
     <div className="services-ydt-dashboard space-y-6">
-      <Card className="bg-gradient-to-br from-gray-900 to-black border-amber-500/20">
+      <Card className="bg-gradient-to-br from-background to-black border-amber-500/20">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Brain className="h-5 w-5 text-amber-400" />
@@ -74,22 +74,22 @@ export function ServicesYDTDashboard() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Total Calls */}
-            <Card className="bg-gray-800/50">
+            <Card className="bg-card/50">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Total Calls</span>
-                  <Activity className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-muted-foreground">Total Calls</span>
+                  <Activity className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <div className="text-2xl font-bold text-white">{metrics.totalCalls}</div>
-                <p className="text-xs text-gray-500 mt-1">Today</p>
+                <div className="text-2xl font-bold text-foreground">{metrics.totalCalls}</div>
+                <p className="text-xs text-muted-foreground mt-1">Today</p>
               </CardContent>
             </Card>
 
             {/* Success Rate */}
-            <Card className="bg-gray-800/50">
+            <Card className="bg-card/50">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Success Rate</span>
+                  <span className="text-sm text-muted-foreground">Success Rate</span>
                   <CheckCircle2 className={`h-4 w-4 ${getStatusColor(metrics.successRate, { good: 0.9, warning: 0.7 })}`} />
                 </div>
                 <div className={`text-2xl font-bold ${getStatusColor(metrics.successRate, { good: 0.9, warning: 0.7 })}`}>
@@ -103,10 +103,10 @@ export function ServicesYDTDashboard() {
             </Card>
 
             {/* Avg Confidence */}
-            <Card className="bg-gray-800/50">
+            <Card className="bg-card/50">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Avg Confidence</span>
+                  <span className="text-sm text-muted-foreground">Avg Confidence</span>
                   <Brain className={`h-4 w-4 ${getStatusColor(metrics.avgConfidence, { good: 0.8, warning: 0.6 })}`} />
                 </div>
                 <div className={`text-2xl font-bold ${getStatusColor(metrics.avgConfidence, { good: 0.8, warning: 0.6 })}`}>
@@ -120,16 +120,16 @@ export function ServicesYDTDashboard() {
             </Card>
 
             {/* Avg Response Time */}
-            <Card className="bg-gray-800/50">
+            <Card className="bg-card/50">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Avg Response</span>
-                  <Clock className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm text-muted-foreground">Avg Response</span>
+                  <Clock className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <div className="text-2xl font-bold text-white">
+                <div className="text-2xl font-bold text-foreground">
                   {Math.round(metrics.avgResponseTime)}ms
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {metrics.avgResponseTime < 150 ? 'Within target' : 'Above target'}
                 </p>
               </CardContent>
@@ -139,7 +139,7 @@ export function ServicesYDTDashboard() {
           {/* Fallback Rate */}
           <div className="mt-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-400">Fallback Rate</span>
+              <span className="text-sm text-muted-foreground">Fallback Rate</span>
               <Badge variant={getStatusBadge(1 - metrics.fallbackRate, { good: 0.9, warning: 0.7 })}>
                 {Math.round((1 - metrics.fallbackRate) * 100)}% YDT Live
               </Badge>
@@ -148,7 +148,7 @@ export function ServicesYDTDashboard() {
               value={metrics.fallbackRate * 100} 
               className="h-2"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {Math.round(metrics.fallbackRate * 100)}% using cache/baseline
             </p>
           </div>
@@ -160,7 +160,7 @@ export function ServicesYDTDashboard() {
               <div className="space-y-1">
                 {Object.entries(metrics.callsByService).map(([service, count]) => (
                   <div key={service} className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400 capitalize">{service.replace('_', ' ')}</span>
+                    <span className="text-muted-foreground capitalize">{service.replace('_', ' ')}</span>
                     <Badge variant="outline">{count}</Badge>
                   </div>
                 ))}
@@ -216,8 +216,8 @@ export function ServicesYDTDashboard() {
              metrics.avgConfidence >= 0.8 && 
              metrics.fallbackRate < 0.2 && (
               <Alert className="bg-green-500/10 border-green-500/20">
-                <CheckCircle2 className="h-4 w-4 text-green-400" />
-                <AlertDescription className="text-green-400">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                <AlertDescription className="text-success">
                   YDT integration performing well! All metrics within target ranges.
                 </AlertDescription>
               </Alert>

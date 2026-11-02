@@ -82,7 +82,7 @@
 
 /* Glassmorphism Utilities */
 .glass-gold {
-  background: rgba(10, 10, 10, 0.8);
+  background: hsl(var(--card) / 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(245, 158, 11, 0.15);
@@ -90,7 +90,7 @@
 }
 
 .glass-gold-hover:hover {
-  background: rgba(10, 10, 10, 0.9);
+  background: hsl(var(--card) / 0.9);
   border-color: rgba(245, 158, 11, 0.3);
   box-shadow: var(--shadow-xl), var(--glow-gold-md);
 }

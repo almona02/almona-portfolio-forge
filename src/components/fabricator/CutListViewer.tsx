@@ -72,9 +72,9 @@ const CutListViewerInner: React.FC<CutListViewerProps> = ({
 
   // Waste indicator color
   const getWasteColor = (percentage: number): string => {
-    if (percentage < 5) return 'text-green-600 bg-green-50 border-green-200';
-    if (percentage < 10) return 'text-amber-600 bg-amber-50 border-amber-200';
-    return 'text-red-600 bg-red-50 border-red-200';
+    if (percentage < 5) return 'text-success bg-green-50 border-green-200';
+    if (percentage < 10) return 'text-warning bg-amber-50 border-amber-200';
+    return 'text-destructive bg-red-50 border-red-200';
   };
 
   const getWasteIcon = (percentage: number) => {
@@ -108,11 +108,11 @@ const CutListViewerInner: React.FC<CutListViewerProps> = ({
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Total Bars */}
-            <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
-              <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+            <div className="bg-background dark:bg-background p-4 rounded-lg border border-border dark:border-border">
+              <div className="text-sm text-muted-foreground dark:text-muted-foreground mb-1">
                 Total Bars (6m)
               </div>
-              <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+              <div className="text-3xl font-bold text-foreground dark:text-foreground">
                 {cutList.totalBarsUsed}
               </div>
             </div>
@@ -133,7 +133,7 @@ const CutListViewerInner: React.FC<CutListViewerProps> = ({
 
             {/* Cutting Efficiency */}
             <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-              <div className="text-sm text-blue-600 dark:text-blue-400 mb-1">
+              <div className="text-sm text-info dark:text-info mb-1">
                 Efficiency
               </div>
               <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">
@@ -145,15 +145,15 @@ const CutListViewerInner: React.FC<CutListViewerProps> = ({
             {showRemnants && (
               <div className="bg-amber-50 dark:bg-amber-950 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
                 <div className="flex items-center justify-between mb-1">
-                  <div className="text-sm text-amber-600 dark:text-amber-400">
+                  <div className="text-sm text-warning dark:text-warning">
                     Remnants
                   </div>
-                  <PackageOpen className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  <PackageOpen className="h-5 w-5 text-warning dark:text-warning" />
                 </div>
-                <div className="text-2xl font-bold text-amber-900 dark:text-amber-100">
+                <div className="text-2xl font-bold text-amber-900 dark:text-warning">
                   {cutList.totalBarsUsed}
                 </div>
-                <div className="text-xs mt-1 text-amber-600 dark:text-amber-400">
+                <div className="text-xs mt-1 text-warning dark:text-warning">
                   For marketplace
                 </div>
               </div>
@@ -173,7 +173,7 @@ const CutListViewerInner: React.FC<CutListViewerProps> = ({
       <Card>
         <CardHeader>
           <CardTitle>Sequential Cutting Order</CardTitle>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground">
             Follow this order for optimal workflow on Yılmaz single-head machine
           </p>
         </CardHeader>
@@ -182,7 +182,7 @@ const CutListViewerInner: React.FC<CutListViewerProps> = ({
             {cutList.cuttingSequence.map((step, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors"
+                className="flex items-center gap-3 p-3 bg-background dark:bg-background rounded border border-border dark:border-border hover:border-blue-500 dark:hover:border-blue-500 transition-colors"
               >
                 <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
                   {idx + 1}

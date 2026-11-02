@@ -230,33 +230,33 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
   }, [userId, strategy, loadSavedPreferences]);
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700">
+    <Card className="bg-card/50 border-border">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Settings className={`${UI_DIMENSIONS.ICON_LARGE} text-amber-400`} /> {t('optimization_equalizer.title', 'Optimization Strategy Equalizer')}
+          <Settings className={`${UI_DIMENSIONS.ICON_LARGE} text-warning`} /> {t('optimization_equalizer.title', 'Optimization Strategy Equalizer')}
         </CardTitle>
-        <CardDescription className="text-gray-400">
+        <CardDescription className="text-muted-foreground">
           {t('optimization_equalizer.description', 'Fine-tune optimization parameters to match your production needs')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Strategy Preset Selector */}
         <div>
-          <Label htmlFor="strategy-preset" className="typography-label text-gray-300 mb-2 block">
+          <Label htmlFor="strategy-preset" className="typography-label text-foreground mb-2 block">
             {t('optimization_equalizer.optimization_strategy', 'Optimization Strategy')}
           </Label>
           <Select value={selectedPreset} onValueChange={handlePresetChange}>
-            <SelectTrigger id="strategy-preset" className="bg-gray-900 border-gray-600 text-white">
+            <SelectTrigger id="strategy-preset" className="bg-background border-border text-foreground">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-gray-800 border-gray-700">
+            <SelectContent className="bg-card border-border">
               {OptimizationPresets.getPresetNames().map((name) => {
                 const preset = OptimizationPresets.getPreset(name);
                 return (
                   <SelectItem key={name} value={name}>
                     <div>
                       <div className="font-medium">{preset.name}</div>
-                      <div className="text-xs text-gray-400">{preset.description}</div>
+                      <div className="text-xs text-muted-foreground">{preset.description}</div>
                     </div>
                   </SelectItem>
                 );
@@ -266,9 +266,9 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
         </div>
 
         {tier3ManufacturingPath && (
-          <Alert className="bg-gray-900 border-amber-700/40" data-testid="advisory-controls-note">
-            <Info className="h-4 w-4 text-amber-400" />
-            <AlertDescription className="text-xs text-amber-200">
+          <Alert className="bg-background border-amber-700/40" data-testid="advisory-controls-note">
+            <Info className="h-4 w-4 text-warning" />
+            <AlertDescription className="text-xs text-warning">
               {t('optimization_equalizer.advisory_note', 'Strategy weights and remnant constraints are advisory and are not applied by the deterministic Tier-3 cut solver. Supported inputs (run mode, algorithm, approved stock length) are in the Solver inputs panel; actual bars and waste are shown in the cockpit after the run.')}
             </AlertDescription>
           </Alert>
@@ -278,11 +278,11 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
         <div className="space-y-4" aria-disabled={tier3ManufacturingPath}>
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="typography-label text-gray-300 flex items-center gap-2">
-                <TrendingUp className={`${UI_DIMENSIONS.ICON_MEDIUM} text-green-400`} />
+              <Label className="typography-label text-foreground flex items-center gap-2">
+                <TrendingUp className={`${UI_DIMENSIONS.ICON_MEDIUM} text-success`} />
                 {t('optimization_equalizer.waste_reduction', 'Waste Reduction')}
               </Label>
-              <Badge variant="outline" className="text-green-400 border-green-500/30">
+              <Badge variant="outline" className="text-success border-green-500/30">
                 {strategy.wasteReductionWeight}%
               </Badge>
             </div>
@@ -295,18 +295,18 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
               step={SLIDER_CONFIG.STEP}
               className="w-full"
             />
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {t('optimization_equalizer.waste_reduction_desc', 'Prioritize minimizing material waste. Higher values reduce waste but may increase cut complexity.')}
             </p>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="typography-label text-gray-300 flex items-center gap-2">
-                <Package className={`${UI_DIMENSIONS.ICON_MEDIUM} text-blue-400`} />
+              <Label className="typography-label text-foreground flex items-center gap-2">
+                <Package className={`${UI_DIMENSIONS.ICON_MEDIUM} text-info`} />
                 {t('optimization_equalizer.remnant_usage', 'Remnant Usage')}
               </Label>
-              <Badge variant="outline" className="text-blue-400 border-blue-500/30">
+              <Badge variant="outline" className="text-info border-blue-500/30">
                 {strategy.remnantUsageWeight}%
               </Badge>
             </div>
@@ -319,18 +319,18 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
               step={SLIDER_CONFIG.STEP}
               className="w-full"
             />
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {t('optimization_equalizer.remnant_usage_desc', 'Prioritize using existing remnants from previous jobs. Higher values increase remnant reuse.')}
             </p>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="typography-label text-gray-300 flex items-center gap-2">
-                <Settings className={`${UI_DIMENSIONS.ICON_MEDIUM} text-amber-400`} />
+              <Label className="typography-label text-foreground flex items-center gap-2">
+                <Settings className={`${UI_DIMENSIONS.ICON_MEDIUM} text-warning`} />
                 {t('optimization_equalizer.cut_complexity', 'Cut Complexity')}
               </Label>
-              <Badge variant="outline" className="text-amber-400 border-amber-500/30">
+              <Badge variant="outline" className="text-warning border-amber-500/30">
                 {strategy.cutComplexityWeight}%
               </Badge>
             </div>
@@ -343,18 +343,18 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
               step={SLIDER_CONFIG.STEP}
               className="w-full"
             />
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {t('optimization_equalizer.cut_complexity_desc', 'Balance between simple cuts (faster) and complex optimization (more efficient).')}
             </p>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="typography-label text-gray-300 flex items-center gap-2">
-                <Clock className={`${UI_DIMENSIONS.ICON_MEDIUM} text-amber-400`} />
+              <Label className="typography-label text-foreground flex items-center gap-2">
+                <Clock className={`${UI_DIMENSIONS.ICON_MEDIUM} text-warning`} />
                 {t('optimization_equalizer.production_speed', 'Production Speed')}
               </Label>
-              <Badge variant="outline" className="text-amber-400 border-amber-500/30">
+              <Badge variant="outline" className="text-warning border-amber-500/30">
                 {strategy.productionSpeedWeight}%
               </Badge>
             </div>
@@ -367,32 +367,32 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
               step={SLIDER_CONFIG.STEP}
               className="w-full"
             />
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {t('optimization_equalizer.production_speed_desc', 'Prioritize faster optimization and fewer cuts. Higher values reduce optimization time.')}
             </p>
           </div>
         </div>
 
         {/* Real-Time Impact Preview — slider model only, never the cut-plan result */}
-        {!tier3ManufacturingPath && <Alert className="bg-gray-900 border-gray-700">
-          <Info className="h-4 w-4 text-blue-400" />
+        {!tier3ManufacturingPath && <Alert className="bg-background border-border">
+          <Info className="h-4 w-4 text-info" />
           <AlertDescription>
             <div className="grid grid-cols-3 gap-4 mt-2">
               <div>
-                <p className="text-xs text-gray-400">{t('optimization_equalizer.estimated_waste', 'Estimated Waste')}</p>
-                <p className="text-lg font-semibold text-yellow-400">
+                <p className="text-xs text-muted-foreground">{t('optimization_equalizer.estimated_waste', 'Estimated Waste')}</p>
+                <p className="text-lg font-semibold text-warning">
                   {estimatedImpact.estimatedWastePercentage.toFixed(1)}%
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400">{t('optimization_equalizer.est_bars_used', 'Est. Bars Used')}</p>
-                <p className="text-lg font-semibold text-blue-400">
+                <p className="text-xs text-muted-foreground">{t('optimization_equalizer.est_bars_used', 'Est. Bars Used')}</p>
+                <p className="text-lg font-semibold text-info">
                   ~{estimatedImpact.estimatedBarsUsed}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400">{t('optimization_equalizer.est_opt_time', 'Est. Opt. Time')}</p>
-                <p className="text-lg font-semibold text-green-400">
+                <p className="text-xs text-muted-foreground">{t('optimization_equalizer.est_opt_time', 'Est. Opt. Time')}</p>
+                <p className="text-lg font-semibold text-success">
                   ~{estimatedImpact.estimatedOptimizationTime.toFixed(1)}s
                 </p>
               </div>
@@ -401,11 +401,11 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
         </Alert>}
 
         {/* Material Constraints */}
-        <div className="p-4 bg-gray-900 rounded-lg border border-gray-700">
-          <h4 className="typography-h4 text-sm text-gray-300 mb-3">{t('optimization_equalizer.material_constraints', 'Material Constraints')}</h4>
+        <div className="p-4 bg-background rounded-lg border border-border">
+          <h4 className="typography-h4 text-sm text-foreground mb-3">{t('optimization_equalizer.material_constraints', 'Material Constraints')}</h4>
           <div className="space-y-3">
             <div>
-              <Label htmlFor="min-remnant" className="typography-label text-gray-300 text-sm">
+              <Label htmlFor="min-remnant" className="typography-label text-foreground text-sm">
                 {t('optimization_equalizer.min_remnant_length', 'Minimum Remnant Length (mm)')}
               </Label>
               <input
@@ -414,16 +414,16 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
                 disabled={tier3ManufacturingPath}
                 value={minRemnantLength}
                 onChange={(e) => setMinRemnantLength(parseInt(e.target.value) || DEFAULT_OPTIMIZATION_PARAMS.DEFAULT_MIN_REMNANT_LENGTH_MM)}
-                className="mt-1 w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm"
+                className="mt-1 w-full px-3 py-2 bg-card border border-border rounded text-foreground text-sm"
                 min={INPUT_CONSTRAINTS.MIN_REMNANT_LENGTH_MM}
                 max={INPUT_CONSTRAINTS.MAX_REMNANT_LENGTH_MM}
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t('optimization_equalizer.min_remnant_desc', 'Remnants shorter than this will not be considered for reuse')}
               </p>
             </div>
             <div>
-              <Label htmlFor="max-remnant-age" className="typography-label text-gray-300 text-sm">
+              <Label htmlFor="max-remnant-age" className="typography-label text-foreground text-sm">
                 {t('optimization_equalizer.max_remnant_age', 'Maximum Remnant Age (days)')}
               </Label>
               <input
@@ -432,11 +432,11 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
                 disabled={tier3ManufacturingPath}
                 value={maxRemnantAge}
                 onChange={(e) => setMaxRemnantAge(parseInt(e.target.value) || DEFAULT_OPTIMIZATION_PARAMS.DEFAULT_MAX_REMNANT_AGE_DAYS)}
-                className="mt-1 w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm"
+                className="mt-1 w-full px-3 py-2 bg-card border border-border rounded text-foreground text-sm"
                 min={INPUT_CONSTRAINTS.MIN_REMNANT_AGE_DAYS}
                 max={INPUT_CONSTRAINTS.MAX_REMNANT_AGE_DAYS}
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t('optimization_equalizer.max_remnant_desc', 'Remnants older than this will be excluded from optimization')}
               </p>
             </div>
@@ -444,12 +444,12 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
         </div>
 
         {/* Save Actions */}
-        <div className="flex items-center gap-2 pt-2 border-t border-gray-700">
+        <div className="flex items-center gap-2 pt-2 border-t border-border">
           <Button
             onClick={() => void handleSaveStrategy()}
             disabled={isSaving}
             variant="outline"
-            className="flex-1 border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+            className="flex-1 border-blue-500/30 text-info hover:bg-blue-500/10"
           >
             <Save className={`${UI_DIMENSIONS.ICON_MEDIUM} mr-2`} />
             {t('optimization_equalizer.save_strategy', 'Save Strategy')}
@@ -458,7 +458,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
             onClick={() => void handleSetAsDefault()}
             disabled={isSaving}
             variant="outline"
-            className="flex-1 border-green-500/30 text-green-400 hover:bg-green-500/10"
+            className="flex-1 border-green-500/30 text-success hover:bg-green-500/10"
           >
             {t('optimization_equalizer.set_as_default', 'Set as Default')}
           </Button>
@@ -466,7 +466,7 @@ const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
 
         {/* Continue to Production - P0: Unblock workflow */}
         {onComplete && (
-          <div className="pt-4 border-t border-gray-700">
+          <div className="pt-4 border-t border-border">
             <Button
               onClick={() => onComplete({ strategy, minRemnantLength, maxRemnantAge })}
               disabled={runDisabled}

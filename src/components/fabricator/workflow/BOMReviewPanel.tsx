@@ -184,11 +184,11 @@ export const BOMReviewPanel: React.FC = () => {
 
   if (!projectId || !poseId || !currentProject) {
     return (
-      <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
-        <div className="max-w-md w-full bg-slate-900/50 border border-amber-600/30 rounded-lg p-8 text-center space-y-4">
-          <AlertCircle className="w-16 h-16 text-amber-500 mx-auto" />
-          <h2 className="text-2xl font-bold text-amber-200">Design Required</h2>
-          <p className="text-slate-400">Complete the design step before reviewing the BOM.</p>
+      <div className="flex items-center justify-center h-full bg-gradient-to-br from-background to-background p-6">
+        <div className="max-w-md w-full bg-background/50 border border-amber-600/30 rounded-lg p-8 text-center space-y-4">
+          <AlertCircle className="w-16 h-16 text-warning mx-auto" />
+          <h2 className="text-2xl font-bold text-warning">Design Required</h2>
+          <p className="text-muted-foreground">Complete the design step before reviewing the BOM.</p>
           <button
             onClick={() => void navigate(fabricatorRoutes.studioProjects())}
             className="w-full px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-semibold hover:from-amber-600 hover:to-amber-700 transition-all"
@@ -202,11 +202,11 @@ export const BOMReviewPanel: React.FC = () => {
 
   if (isGenerating) {
     return (
-      <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900">
+      <div className="flex items-center justify-center h-full bg-gradient-to-br from-background to-background">
         <div className="text-center space-y-4">
-          <Loader2 className="w-12 h-12 text-amber-400 animate-spin mx-auto" />
-          <p className="text-slate-400">Generating Bill of Materials...</p>
-          <p className="text-xs text-slate-500">Generating a revision-bound BOM estimate...</p>
+          <Loader2 className="w-12 h-12 text-warning animate-spin mx-auto" />
+          <p className="text-muted-foreground">Generating Bill of Materials...</p>
+          <p className="text-xs text-muted-foreground">Generating a revision-bound BOM estimate...</p>
         </div>
       </div>
     );
@@ -214,16 +214,16 @@ export const BOMReviewPanel: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex items-start justify-center h-full overflow-y-auto bg-gradient-to-br from-slate-950 to-slate-900 p-6">
-        <div className="max-w-md w-full bg-slate-900/50 border border-red-600/30 rounded-lg p-8 space-y-4">
+      <div className="flex items-start justify-center h-full overflow-y-auto bg-gradient-to-br from-background to-background p-6">
+        <div className="max-w-md w-full bg-background/50 border border-red-600/30 rounded-lg p-8 space-y-4">
           <div className="text-center space-y-4">
-            <AlertCircle className="w-16 h-16 text-red-500 mx-auto" />
+            <AlertCircle className="w-16 h-16 text-destructive mx-auto" />
             <h2 className="text-xl font-bold text-red-200">BOM Generation Failed</h2>
-            <p className="text-slate-400 text-sm">{error}</p>
+            <p className="text-muted-foreground text-sm">{error}</p>
             <Button onClick={() => void generateBOM()} className="bg-amber-500 hover:bg-amber-600">
               Retry
             </Button>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Resolve the design components and profiles in Design. Resolve prerequisites.
             </p>
           </div>
@@ -236,11 +236,11 @@ export const BOMReviewPanel: React.FC = () => {
   if ((!systemPack || !pattern) && !bom) {
     const designHref = `/fabricator/studio/projects/${projectId}/positions/${poseId}/design`;
     return (
-      <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
-        <div className="max-w-md w-full bg-slate-900/50 border border-amber-600/30 rounded-lg p-8 text-center space-y-4">
-          <AlertCircle className="w-16 h-16 text-amber-500 mx-auto" />
-          <h2 className="text-xl font-bold text-amber-200">BOM prerequisites missing</h2>
-          <p className="text-slate-400 text-sm">
+      <div className="flex items-center justify-center h-full bg-gradient-to-br from-background to-background p-6">
+        <div className="max-w-md w-full bg-background/50 border border-amber-600/30 rounded-lg p-8 text-center space-y-4">
+          <AlertCircle className="w-16 h-16 text-warning mx-auto" />
+          <h2 className="text-xl font-bold text-warning">BOM prerequisites missing</h2>
+          <p className="text-muted-foreground text-sm">
             {!systemPack
               ? `Resolve system pack "${currentProject.systemPackId ?? 'unknown'}" (built-in or owned custom) before generating the BOM.`
               : 'The saved grid does not match a supported window pattern. Return to Design and choose a compatible layout.'}
@@ -255,11 +255,11 @@ export const BOMReviewPanel: React.FC = () => {
 
   if (!bom) {
     return (
-      <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
-        <div className="max-w-md w-full bg-slate-900/50 border border-amber-600/30 rounded-lg p-8 text-center space-y-4">
-          <AlertCircle className="w-16 h-16 text-amber-500 mx-auto" />
-          <h2 className="text-xl font-bold text-amber-200">No BOM yet</h2>
-          <p className="text-slate-400 text-sm">Generate a revision-bound BOM for this saved design.</p>
+      <div className="flex items-center justify-center h-full bg-gradient-to-br from-background to-background p-6">
+        <div className="max-w-md w-full bg-background/50 border border-amber-600/30 rounded-lg p-8 text-center space-y-4">
+          <AlertCircle className="w-16 h-16 text-warning mx-auto" />
+          <h2 className="text-xl font-bold text-warning">No BOM yet</h2>
+          <p className="text-muted-foreground text-sm">Generate a revision-bound BOM for this saved design.</p>
           <Button onClick={() => void generateBOM()} className="bg-amber-500 hover:bg-amber-600">
             Generate BOM
           </Button>
@@ -269,30 +269,30 @@ export const BOMReviewPanel: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-br from-slate-950 to-slate-900 overflow-auto">
+    <div className="flex flex-col h-full bg-gradient-to-br from-background to-background overflow-auto">
       <div className="max-w-7xl mx-auto w-full p-3 sm:p-6 space-y-6">
         {/* Header */}
-        <div className="bg-slate-900/60 backdrop-blur-sm rounded-lg border border-amber-600/30 p-6">
+        <div className="bg-background/60 backdrop-blur-sm rounded-lg border border-amber-600/30 p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-amber-200 flex items-center gap-2">
+              <h1 className="text-2xl font-bold text-warning flex items-center gap-2">
                 <ClipboardList className="w-6 h-6" />
                 Bill of Materials
               </h1>
-              <p className="text-slate-400 mt-1">
+              <p className="text-muted-foreground mt-1">
                 {currentProject.orderNumber} &mdash; {currentProject.overallWidth}mm &times; {currentProject.overallHeight}mm
               </p>
             </div>
             <div className="flex items-center gap-3">
               <Badge className={bom.qualification?.status === 'qualified'
-                ? 'bg-green-500/20 text-green-300 border-green-500/40'
-                : 'bg-amber-500/20 text-amber-300 border-amber-500/40'}>
+                ? 'bg-green-500/20 text-success border-green-500/40'
+                : 'bg-amber-500/20 text-warning border-amber-500/40'}>
                 {bom.qualification?.status === 'qualified' ? 'Manufacturing qualified' : 'Estimate only'}
               </Badge>
             </div>
           </div>
           {bom.qualification?.status !== 'qualified' && (
-            <div className="mt-3 text-sm text-amber-100/80 space-y-1" data-testid="bom-gate-actions">
+            <div className="mt-3 text-sm text-warning/80 space-y-1" data-testid="bom-gate-actions">
               <p>Manufacturing release blocked. Resolve via:</p>
               <ul className="list-disc list-inside">
                 {(bom.qualification?.reasons ?? ['Manufacturing qualification evidence is missing']).map((reason) => (
@@ -300,11 +300,11 @@ export const BOMReviewPanel: React.FC = () => {
                 ))}
               </ul>
               <p className="pt-1">
-                <a className="text-amber-300 underline" href="/fabricator/studio/approvals">Admin Approvals</a>
+                <a className="text-warning underline" href="/fabricator/studio/approvals">Admin Approvals</a>
                 {' · '}
-                <a className="text-amber-300 underline" href="/fabricator/studio/data/tuning">Pack qualification</a>
+                <a className="text-warning underline" href="/fabricator/studio/data/tuning">Pack qualification</a>
                 {' · '}
-                <a className="text-amber-300 underline" href="/fabricator/studio/data/stock">Stock</a>
+                <a className="text-warning underline" href="/fabricator/studio/data/stock">Stock</a>
               </p>
             </div>
           )}
@@ -323,20 +323,20 @@ export const BOMReviewPanel: React.FC = () => {
 
         {/* BOM Tabs */}
         <Tabs defaultValue="profiles" className="w-full">
-          <TabsList className="bg-slate-900/60 border-amber-600/20 flex justify-start overflow-x-auto w-full max-w-2xl">
-            <TabsTrigger value="profiles" className="text-amber-300 data-[state=active]:text-amber-100 text-xs">
+          <TabsList className="bg-background/60 border-amber-600/20 flex justify-start overflow-x-auto w-full max-w-2xl">
+            <TabsTrigger value="profiles" className="text-warning data-[state=active]:text-warning text-xs">
               <Package className="w-3 h-3 mr-1" /> Profiles ({bom.profiles.length})
             </TabsTrigger>
-            <TabsTrigger value="hardware" className="text-amber-300 data-[state=active]:text-amber-100 text-xs">
+            <TabsTrigger value="hardware" className="text-warning data-[state=active]:text-warning text-xs">
               <Wrench className="w-3 h-3 mr-1" /> Hardware ({bom.hardware.length})
             </TabsTrigger>
-            <TabsTrigger value="glazing" className="text-amber-300 data-[state=active]:text-amber-100 text-xs">
+            <TabsTrigger value="glazing" className="text-warning data-[state=active]:text-warning text-xs">
               <GlassWater className="w-3 h-3 mr-1" /> Glass ({bom.glazing.length})
             </TabsTrigger>
-            <TabsTrigger value="accessories" className="text-amber-300 data-[state=active]:text-amber-100 text-xs">
+            <TabsTrigger value="accessories" className="text-warning data-[state=active]:text-warning text-xs">
               <Cog className="w-3 h-3 mr-1" /> Accessories ({bom.accessories.length})
             </TabsTrigger>
-            <TabsTrigger value="assembly" className="text-amber-300 data-[state=active]:text-amber-100 text-xs">
+            <TabsTrigger value="assembly" className="text-warning data-[state=active]:text-warning text-xs">
               <ClipboardList className="w-3 h-3 mr-1" /> Assembly
             </TabsTrigger>
           </TabsList>
@@ -359,9 +359,9 @@ export const BOMReviewPanel: React.FC = () => {
         </Tabs>
 
         {/* Metadata */}
-        <Card className="bg-slate-900/40 border-amber-600/20">
+        <Card className="bg-background/40 border-amber-600/20">
           <CardContent className="pt-4">
-            <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
+            <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
               <span>Pattern: {bom.metadata.patternUsed}</span>
               <span>System: {bom.metadata.systemPackUsed}</span>
               <span>Generated: {new Date(bom.metadata.generationTimestamp).toLocaleString()}</span>
@@ -372,7 +372,7 @@ export const BOMReviewPanel: React.FC = () => {
       </div>
 
       {!WorkflowValidator.validateBOMToOptimization(bom).passed && (
-        <div role="status" className="mx-3 mb-3 rounded border border-amber-600/40 bg-amber-500/10 p-4 text-sm text-amber-100">
+        <div role="status" className="mx-3 mb-3 rounded border border-amber-600/40 bg-amber-500/10 p-4 text-sm text-warning">
           <p className="font-semibold">Before optimization</p>
           <ul className="mt-2 list-inside list-disc break-words">
             {WorkflowValidator.validateBOMToOptimization(bom).issues.map(issue => <li key={issue.code}>{issue.message}</li>)}
@@ -381,8 +381,8 @@ export const BOMReviewPanel: React.FC = () => {
         </div>
       )}
       {/* Continue Button */}
-      <div className="sticky bottom-0 z-10 flex flex-wrap justify-end gap-3 border-t border-slate-700 bg-slate-950 p-3 sm:p-4">
-        <Button variant="outline" onClick={() => void generateBOM()} className="border-amber-600/30 text-amber-300">
+      <div className="sticky bottom-0 z-10 flex flex-wrap justify-end gap-3 border-t border-border bg-background p-3 sm:p-4">
+        <Button variant="outline" onClick={() => void generateBOM()} className="border-amber-600/30 text-warning">
           Regenerate BOM
         </Button>
         <button
@@ -402,12 +402,12 @@ export const BOMReviewPanel: React.FC = () => {
 };
 
 const CostCard: React.FC<{ label: string; value: number; highlight?: boolean }> = ({ label, value, highlight }) => (
-  <Card className={`${highlight ? 'bg-amber-500/10 border-amber-500/40' : 'bg-slate-900/40 border-amber-600/20'}`}>
+  <Card className={`${highlight ? 'bg-amber-500/10 border-amber-500/40' : 'bg-background/40 border-amber-600/20'}`}>
     <CardContent className="pt-4 pb-3 px-4">
-      <p className="text-[10px] uppercase tracking-wider text-slate-500">{label}</p>
-      <p className={`text-lg font-bold mt-1 ${highlight ? 'text-amber-300' : 'text-amber-200'}`}>
+      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className={`text-lg font-bold mt-1 ${highlight ? 'text-warning' : 'text-warning'}`}>
         {value.toLocaleString('en-EG', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-        <span className="text-xs font-normal text-slate-500 ml-1">EGP</span>
+        <span className="text-xs font-normal text-muted-foreground ml-1">EGP</span>
       </p>
     </CardContent>
   </Card>
@@ -417,15 +417,15 @@ const CostCard: React.FC<{ label: string; value: number; highlight?: boolean }> 
 const unitQuantityOf = (poseQuantity?: number) => Math.max(1, Number(poseQuantity ?? 1) || 1);
 
 export const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles']; poseQuantity?: number }> = ({ profiles, poseQuantity }) => (
-  <Card className="bg-slate-900/40 border-amber-600/20">
+  <Card className="bg-background/40 border-amber-600/20">
     <CardHeader className="pb-2">
-      <CardTitle className="text-sm text-amber-200">Profile Cut List</CardTitle>
+      <CardTitle className="text-sm text-warning">Profile Cut List</CardTitle>
     </CardHeader>
     <CardContent>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-amber-600/20 text-xs text-slate-500 uppercase">
+            <tr className="border-b border-amber-600/20 text-xs text-muted-foreground uppercase">
               <th className="text-left py-2 px-3">Role</th>
               <th className="text-left py-2 px-3">Profile Code</th>
               <th className="text-right py-2 px-3">Cut lengths (mm)</th>
@@ -436,24 +436,24 @@ export const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles']; poseQu
           </thead>
           <tbody>
             {profiles.map((p, i) => (
-              <tr key={i} className="border-b border-slate-800/50 hover:bg-amber-500/5">
-                <td className="py-2 px-3 text-amber-300 font-medium">{p.role}</td>
-                <td className="py-2 px-3 text-slate-400">{p.profileCode || '—'}</td>
-                <td className="py-2 px-3 text-right text-slate-300">{p.cuttingLengths?.length ? groupProfileCuts(p).map((cut, cutIndex) => <div key={cutIndex}>{cut.length.toFixed(1)} × {cut.count * unitQuantityOf(poseQuantity)}</div>) : p.length?.toFixed(1) ?? '—'}</td>
-                <td className="py-2 px-3 text-right text-slate-300">{((p.cuttingLengths?.length ?? 0) || p.quantity) * unitQuantityOf(poseQuantity)}</td>
-                <td className="py-2 px-3 text-right text-slate-400">{p.angles?.length ? p.angles.map((angle, cutIndex) => <div key={cutIndex}>{angle}°</div>) : '90°'}</td>
-                <td className="py-2 px-3 text-right text-amber-200">{p.cost?.toFixed(2) ?? '—'}</td>
+              <tr key={i} className="border-b border-border/50 hover:bg-amber-500/5">
+                <td className="py-2 px-3 text-warning font-medium">{p.role}</td>
+                <td className="py-2 px-3 text-muted-foreground">{p.profileCode || '—'}</td>
+                <td className="py-2 px-3 text-right text-foreground">{p.cuttingLengths?.length ? groupProfileCuts(p).map((cut, cutIndex) => <div key={cutIndex}>{cut.length.toFixed(1)} × {cut.count * unitQuantityOf(poseQuantity)}</div>) : p.length?.toFixed(1) ?? '—'}</td>
+                <td className="py-2 px-3 text-right text-foreground">{((p.cuttingLengths?.length ?? 0) || p.quantity) * unitQuantityOf(poseQuantity)}</td>
+                <td className="py-2 px-3 text-right text-muted-foreground">{p.angles?.length ? p.angles.map((angle, cutIndex) => <div key={cutIndex}>{angle}°</div>) : '90°'}</td>
+                <td className="py-2 px-3 text-right text-warning">{p.cost?.toFixed(2) ?? '—'}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
             <tr className="border-t border-amber-600/30 font-bold">
-              <td colSpan={3} className="py-2 px-3 text-amber-200">Total</td>
-              <td className="py-2 px-3 text-right text-amber-200">
+              <td colSpan={3} className="py-2 px-3 text-warning">Total</td>
+              <td className="py-2 px-3 text-right text-warning">
                 {profiles.reduce((s, p) => s + ((p.cuttingLengths?.length ?? 0) || p.quantity) * unitQuantityOf(poseQuantity), 0)}
               </td>
               <td />
-              <td className="py-2 px-3 text-right text-amber-300">
+              <td className="py-2 px-3 text-right text-warning">
                 {profiles.reduce((s, p) => s + p.cost, 0).toFixed(2)}
               </td>
             </tr>
@@ -465,15 +465,15 @@ export const ProfilesTable: React.FC<{ profiles: CompleteBOM['profiles']; poseQu
 );
 
 const HardwareTable: React.FC<{ hardware: CompleteBOM['hardware'] }> = ({ hardware }) => (
-  <Card className="bg-slate-900/40 border-amber-600/20">
+  <Card className="bg-background/40 border-amber-600/20">
     <CardHeader className="pb-2">
-      <CardTitle className="text-sm text-amber-200">Hardware List</CardTitle>
+      <CardTitle className="text-sm text-warning">Hardware List</CardTitle>
     </CardHeader>
     <CardContent>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-amber-600/20 text-xs text-slate-500 uppercase">
+            <tr className="border-b border-amber-600/20 text-xs text-muted-foreground uppercase">
               <th className="text-left py-2 px-3">Category</th>
               <th className="text-left py-2 px-3">Name</th>
               <th className="text-right py-2 px-3">Qty</th>
@@ -483,12 +483,12 @@ const HardwareTable: React.FC<{ hardware: CompleteBOM['hardware'] }> = ({ hardwa
           </thead>
           <tbody>
             {hardware.map((h, i) => (
-              <tr key={i} className="border-b border-slate-800/50 hover:bg-amber-500/5">
-                <td className="py-2 px-3 text-amber-300 font-medium">{h.category}</td>
-                <td className="py-2 px-3 text-slate-400">{h.name}</td>
-                <td className="py-2 px-3 text-right text-slate-300">{h.quantity}</td>
-                <td className="py-2 px-3 text-slate-400 font-mono text-xs">{h.supplierCode || '—'}</td>
-                <td className="py-2 px-3 text-right text-slate-400">{h.estimatedTime ?? '—'}</td>
+              <tr key={i} className="border-b border-border/50 hover:bg-amber-500/5">
+                <td className="py-2 px-3 text-warning font-medium">{h.category}</td>
+                <td className="py-2 px-3 text-muted-foreground">{h.name}</td>
+                <td className="py-2 px-3 text-right text-foreground">{h.quantity}</td>
+                <td className="py-2 px-3 text-muted-foreground font-mono text-xs">{h.supplierCode || '—'}</td>
+                <td className="py-2 px-3 text-right text-muted-foreground">{h.estimatedTime ?? '—'}</td>
               </tr>
             ))}
           </tbody>
@@ -499,15 +499,15 @@ const HardwareTable: React.FC<{ hardware: CompleteBOM['hardware'] }> = ({ hardwa
 );
 
 const GlazingTable: React.FC<{ glazing: CompleteBOM['glazing'] }> = ({ glazing }) => (
-  <Card className="bg-slate-900/40 border-amber-600/20">
+  <Card className="bg-background/40 border-amber-600/20">
     <CardHeader className="pb-2">
-      <CardTitle className="text-sm text-amber-200">Glass Specifications</CardTitle>
+      <CardTitle className="text-sm text-warning">Glass Specifications</CardTitle>
     </CardHeader>
     <CardContent>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-amber-600/20 text-xs text-slate-500 uppercase">
+            <tr className="border-b border-amber-600/20 text-xs text-muted-foreground uppercase">
               <th className="text-left py-2 px-3">Type</th>
               <th className="text-right py-2 px-3">Width (mm)</th>
               <th className="text-right py-2 px-3">Height (mm)</th>
@@ -521,15 +521,15 @@ const GlazingTable: React.FC<{ glazing: CompleteBOM['glazing'] }> = ({ glazing }
               const w = g.dimensions?.width;
               const h = g.dimensions?.height;
               return (
-                <tr key={i} className="border-b border-slate-800/50 hover:bg-amber-500/5">
-                  <td className="py-2 px-3 text-amber-300 font-medium">{g.type || 'Standard'}</td>
-                  <td className="py-2 px-3 text-right text-slate-300">{w?.toFixed(0) ?? '—'}</td>
-                  <td className="py-2 px-3 text-right text-slate-300">{h?.toFixed(0) ?? '—'}</td>
-                  <td className="py-2 px-3 text-right text-slate-400">
+                <tr key={i} className="border-b border-border/50 hover:bg-amber-500/5">
+                  <td className="py-2 px-3 text-warning font-medium">{g.type || 'Standard'}</td>
+                  <td className="py-2 px-3 text-right text-foreground">{w?.toFixed(0) ?? '—'}</td>
+                  <td className="py-2 px-3 text-right text-foreground">{h?.toFixed(0) ?? '—'}</td>
+                  <td className="py-2 px-3 text-right text-muted-foreground">
                     {w && h ? ((w * h) / 1_000_000).toFixed(2) : '—'}
                   </td>
-                  <td className="py-2 px-3 text-right text-slate-400">{g.uValue?.toFixed(2) ?? '—'}</td>
-                  <td className="py-2 px-3 text-right text-amber-200">{g.weight?.toFixed(1) ?? '—'}</td>
+                  <td className="py-2 px-3 text-right text-muted-foreground">{g.uValue?.toFixed(2) ?? '—'}</td>
+                  <td className="py-2 px-3 text-right text-warning">{g.weight?.toFixed(1) ?? '—'}</td>
                 </tr>
               );
             })}
@@ -541,18 +541,18 @@ const GlazingTable: React.FC<{ glazing: CompleteBOM['glazing'] }> = ({ glazing }
 );
 
 const AccessoriesTable: React.FC<{ accessories: CompleteBOM['accessories'] }> = ({ accessories }) => (
-  <Card className="bg-slate-900/40 border-amber-600/20">
+  <Card className="bg-background/40 border-amber-600/20">
     <CardHeader className="pb-2">
-      <CardTitle className="text-sm text-amber-200">Accessories</CardTitle>
+      <CardTitle className="text-sm text-warning">Accessories</CardTitle>
     </CardHeader>
     <CardContent>
       {accessories.length === 0 ? (
-        <p className="text-sm text-slate-500 py-4 text-center">No accessories required.</p>
+        <p className="text-sm text-muted-foreground py-4 text-center">No accessories required.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-amber-600/20 text-xs text-slate-500 uppercase">
+              <tr className="border-b border-amber-600/20 text-xs text-muted-foreground uppercase">
                 <th className="text-left py-2 px-3">Item</th>
                 <th className="text-left py-2 px-3">Category</th>
                 <th className="text-right py-2 px-3">Qty</th>
@@ -562,12 +562,12 @@ const AccessoriesTable: React.FC<{ accessories: CompleteBOM['accessories'] }> = 
             </thead>
             <tbody>
               {accessories.map((a, i) => (
-                <tr key={i} className="border-b border-slate-800/50 hover:bg-amber-500/5">
-                  <td className="py-2 px-3 text-amber-300">{a.name}</td>
-                  <td className="py-2 px-3 text-slate-400">{a.category}</td>
-                  <td className="py-2 px-3 text-right text-slate-300">{a.quantity}</td>
-                  <td className="py-2 px-3 text-right text-slate-400">{a.unitPrice.toFixed(2)}</td>
-                  <td className="py-2 px-3 text-right text-amber-200">{a.totalCost.toFixed(2)}</td>
+                <tr key={i} className="border-b border-border/50 hover:bg-amber-500/5">
+                  <td className="py-2 px-3 text-warning">{a.name}</td>
+                  <td className="py-2 px-3 text-muted-foreground">{a.category}</td>
+                  <td className="py-2 px-3 text-right text-foreground">{a.quantity}</td>
+                  <td className="py-2 px-3 text-right text-muted-foreground">{a.unitPrice.toFixed(2)}</td>
+                  <td className="py-2 px-3 text-right text-warning">{a.totalCost.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -579,25 +579,25 @@ const AccessoriesTable: React.FC<{ accessories: CompleteBOM['accessories'] }> = 
 );
 
 const AssemblySequence: React.FC<{ sequence: CompleteBOM['assemblySequence'] }> = ({ sequence }) => (
-  <Card className="bg-slate-900/40 border-amber-600/20">
+  <Card className="bg-background/40 border-amber-600/20">
     <CardHeader className="pb-2">
-      <CardTitle className="text-sm text-amber-200">Assembly Sequence</CardTitle>
+      <CardTitle className="text-sm text-warning">Assembly Sequence</CardTitle>
     </CardHeader>
     <CardContent>
       <div className="space-y-3">
         {sequence.map((step, i) => (
-          <div key={i} className="flex items-start gap-3 p-3 bg-slate-800/30 rounded-lg border border-slate-700/30">
+          <div key={i} className="flex items-start gap-3 p-3 bg-card/30 rounded-lg border border-border/30">
             <div className="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center flex-shrink-0">
-              <span className="text-xs font-bold text-amber-300">{step.step ?? i + 1}</span>
+              <span className="text-xs font-bold text-warning">{step.step ?? i + 1}</span>
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-amber-200">{step.operation || `Step ${i + 1}`}</p>
+              <p className="text-sm font-medium text-warning">{step.operation || `Step ${i + 1}`}</p>
               <div className="flex items-center gap-3 mt-1">
-                <span className="text-xs text-slate-500">Station: {step.station}</span>
+                <span className="text-xs text-muted-foreground">Station: {step.station}</span>
                 {step.estimatedTime && (
-                  <span className="text-xs text-slate-500">Est. {step.estimatedTime} min</span>
+                  <span className="text-xs text-muted-foreground">Est. {step.estimatedTime} min</span>
                 )}
-                <span className="text-xs text-slate-600">Skill: {step.skillsRequired}</span>
+                <span className="text-xs text-muted-foreground">Skill: {step.skillsRequired}</span>
               </div>
             </div>
           </div>

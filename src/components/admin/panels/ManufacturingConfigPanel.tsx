@@ -43,7 +43,7 @@ export const ManufacturingConfigPanel: React.FC = () => {
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="text-sm font-medium">{link.label}</span>
                             {link.adminOnly && (
-                              <Badge variant="outline" className="border-amber-500/40 text-amber-300">
+                              <Badge variant="outline" className="border-amber-500/40 text-warning">
                                 <ShieldCheck aria-hidden="true" className="mr-1 h-3 w-3" /> admin only
                               </Badge>
                             )}
@@ -79,7 +79,7 @@ export const ManufacturingConfigPanel: React.FC = () => {
       <Card data-testid="manufacturing-constraints">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <Lock aria-hidden="true" className="h-4 w-4 text-amber-400" /> Non-editable manufacturing constraints
+            <Lock aria-hidden="true" className="h-4 w-4 text-warning" /> Non-editable manufacturing constraints
           </CardTitle>
           <CardDescription>
             These guarantees are enforced in code and server RPCs. They are shown here so admins know what cannot be

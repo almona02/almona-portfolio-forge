@@ -144,7 +144,7 @@ export const FabricatorWorkflowBar: React.FC = () => {
     <>
     <nav
       className={cn(
-        'flex items-center gap-0 px-3 py-1.5 bg-[#0c0c0c] border-b border-amber-600/20 overflow-x-auto',
+        'flex items-center gap-0 px-3 py-1.5 bg-card surface-metal border-b border-border overflow-x-auto',
         'scrollbar-thin scrollbar-thumb-amber-900/50',
       )}
       aria-label={t('industrial.workflow_nav', 'Manufacturing workflow')}
@@ -163,7 +163,7 @@ export const FabricatorWorkflowBar: React.FC = () => {
               <div
                 className={cn(
                   'w-4 h-px flex-shrink-0',
-                  status === 'complete' || isActive ? 'bg-amber-500/50' : 'bg-slate-800',
+                  status === 'complete' || isActive ? 'bg-amber-500/50' : 'bg-card',
                 )}
                 aria-hidden
               />
@@ -177,12 +177,12 @@ export const FabricatorWorkflowBar: React.FC = () => {
                 'flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-medium whitespace-nowrap',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
                 isActive &&
-                  'bg-amber-500/15 text-amber-100 border border-amber-500/40',
-                !isActive && status === 'complete' && 'text-amber-400/80 hover:bg-amber-500/5',
-                !isActive && status === 'not_recorded' && 'text-slate-500 hover:text-slate-300',
+                  'bg-amber-500/15 text-warning border border-border',
+                !isActive && status === 'complete' && 'text-warning/80 hover:bg-amber-500/5',
+                !isActive && status === 'not_recorded' && 'text-muted-foreground hover:text-foreground',
                 !isActive &&
                   status === 'not_started' &&
-                  'text-slate-500 hover:text-slate-300 hover:bg-slate-800/40',
+                  'text-muted-foreground hover:text-foreground hover:bg-card/40',
               )}
               aria-current={isActive ? 'step' : undefined}
               aria-label={`${label} — ${statusLabel(status)}`}
@@ -191,9 +191,9 @@ export const FabricatorWorkflowBar: React.FC = () => {
               <span
                 className={cn(
                   'w-4 h-4 rounded-full flex items-center justify-center border',
-                  isActive && 'border-amber-400 text-amber-200',
-                  !isActive && status === 'complete' && 'border-emerald-500/70 text-emerald-400',
-                  !isActive && status !== 'complete' && 'border-slate-700 text-slate-500',
+                  isActive && 'border-border text-warning',
+                  !isActive && status === 'complete' && 'border-emerald-500/70 text-success',
+                  !isActive && status !== 'complete' && 'border-border text-muted-foreground',
                 )}
                 aria-hidden
               >
@@ -210,7 +210,7 @@ export const FabricatorWorkflowBar: React.FC = () => {
         );
       })}
     </nav>
-    {activeStage && blockedReason && <div role="status" className="border-b border-amber-600/20 bg-slate-950 px-4 py-2 text-xs text-amber-200 break-words">{blockedReason} <Link className="ml-2 underline whitespace-nowrap" to={resolveStudioWorkflowHref(stageRecoveryStage(activeStage, evidence), ctx)}>Resolve prerequisites</Link></div>}
+    {activeStage && blockedReason && <div role="status" className="border-b border-border bg-background px-4 py-2 text-xs text-warning break-words">{blockedReason} <Link className="ml-2 underline whitespace-nowrap" to={resolveStudioWorkflowHref(stageRecoveryStage(activeStage, evidence), ctx)}>Resolve prerequisites</Link></div>}
     </>
   );
 };

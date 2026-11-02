@@ -138,8 +138,8 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
       {/* Market Tier Indicator */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Sparkles className="w-6 h-6 text-amber-500" />
-          <h2 className="typography-h2 text-gray-900">
+          <Sparkles className="w-6 h-6 text-warning" />
+          <h2 className="typography-h2 text-foreground">
             {marketTier === 'enterprise' 
               ? 'Commission Architectural Intelligence' 
               : 'Choose Window Design Pattern'}
@@ -150,7 +150,7 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
           variant={marketTier === 'enterprise' ? 'default' : 'secondary'}
           className={cn(
             marketTier === 'enterprise' && "bg-amber-500 text-white",
-            marketTier === 'local' && "bg-gray-200 text-gray-700"
+            marketTier === 'local' && "bg-muted text-foreground"
           )}
         >
           {marketTier === 'enterprise' ? (
@@ -198,14 +198,14 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
                     "hover:shadow-xl hover:-translate-y-1",
                     isSelected
                       ? "border-2 border-amber-500 bg-gradient-to-br from-amber-50 to-white shadow-xl"
-                      : "border border-gray-200 hover:border-amber-300"
+                      : "border border-border hover:border-amber-300"
                   )}
                 >
                   {/* Selection Indicator */}
                   {isSelected && (
                     <div className="absolute top-4 right-4 z-10">
                       <div className="btn-primary">
-                        <CheckCircle2 className="w-5 h-5 text-white" />
+                        <CheckCircle2 className="w-5 h-5 text-foreground" />
                       </div>
                     </div>
                   )}
@@ -219,7 +219,7 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
                         preset.pricingTier === 'Standard' && "bg-green-500 text-white",
                         preset.pricingTier === 'Premium' && "bg-amber-500 text-white",
                         preset.pricingTier === 'Enterprise' && "bg-amber-500 text-white",
-                        preset.pricingTier === 'Bespoke' && "bg-gray-900 text-white"
+                        preset.pricingTier === 'Bespoke' && "bg-background text-foreground"
                       )}
                     >
                       {preset.pricingTier}
@@ -234,19 +234,19 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
                     <div className="mb-4">
                       <h3 className={cn(
                         "typography-h3 text-lg font-bold mb-2",
-                        isLocal ? "text-gray-900" : "text-gray-900"
+                        isLocal ? "text-foreground" : "text-foreground"
                       )}>
                         {isLocal ? preset.title.local : preset.title.enterprise}
                       </h3>
-                      <p className="text-sm text-gray-600 leading-relaxed">
+                      <p className="text-sm text-muted-foreground leading-relaxed">
                         {isLocal ? preset.description.local : preset.description.enterprise}
                       </p>
                     </div>
 
                     {/* Applications */}
                     <div className="mb-4">
-                      <h4 className="typography-h4 text-xs text-gray-700 mb-2">Best For</h4>
-                      <p className="text-xs text-gray-600 mb-2">
+                      <h4 className="typography-h4 text-xs text-foreground mb-2">Best For</h4>
+                      <p className="text-xs text-muted-foreground mb-2">
                         {isLocal ? preset.bestFor.local : preset.bestFor.enterprise}
                       </p>
                       <div className="flex flex-wrap gap-1.5">
@@ -254,7 +254,7 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
                           <Badge 
                             key={i} 
                             variant="secondary" 
-                            className="text-xs bg-gray-100 text-gray-700"
+                            className="text-xs bg-muted text-foreground"
                           >
                             {app}
                           </Badge>
@@ -263,34 +263,34 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
                     </div>
 
                     {/* Intelligence Summary (Simplified for local, detailed for enterprise) */}
-                    <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                    <div className="mb-4 p-3 bg-background rounded-lg">
                       {isLocal ? (
                         <div className="space-y-1 text-xs">
                           <div className="flex justify-between">
-                            <span className="text-gray-600">System:</span>
+                            <span className="text-muted-foreground">System:</span>
                             <span className="font-semibold">{preset.intelligence.systemRecommendation}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-600">Material:</span>
+                            <span className="text-muted-foreground">Material:</span>
                             <span className="font-semibold">{preset.intelligence.materialRecommendation}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-600">Complexity:</span>
+                            <span className="text-muted-foreground">Complexity:</span>
                             <span className="font-semibold">{preset.intelligence.complexity}</span>
                           </div>
                         </div>
                       ) : (
                         <div className="space-y-2 text-xs">
                           <div>
-                            <span className="text-gray-600 font-semibold">Optimization:</span>
-                            <p className="text-gray-700 mt-1">{preset.intelligence.optimization}</p>
+                            <span className="text-muted-foreground font-semibold">Optimization:</span>
+                            <p className="text-foreground mt-1">{preset.intelligence.optimization}</p>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-600">System Authority:</span>
+                            <span className="text-muted-foreground">System Authority:</span>
                             <span className="font-semibold">{preset.intelligence.systemRecommendation}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-600">Material Authority:</span>
+                            <span className="text-muted-foreground">Material Authority:</span>
                             <span className="font-semibold">{preset.intelligence.materialRecommendation}</span>
                           </div>
                         </div>
@@ -300,10 +300,10 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
                     {/* Testimonials (Enterprise only) */}
                     {!isLocal && preset.testimonials && preset.testimonials.length > 0 && (
                       <div className="mb-4">
-                        <h4 className="typography-h4 text-xs text-gray-700 mb-2">Authority Proof</h4>
+                        <h4 className="typography-h4 text-xs text-foreground mb-2">Authority Proof</h4>
                         <ul className="space-y-1">
                           {preset.testimonials.slice(0, 2).map((testimonial, i) => (
-                            <li key={i} className="text-xs text-gray-600 flex items-start gap-2">
+                            <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
                               <div className="btn-primary" />
                               <span>{testimonial}</span>
                             </li>
@@ -320,7 +320,7 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
                         isSelected 
                           ? "bg-amber-500 hover:bg-amber-600 text-white"
                           : isLocal
-                          ? "bg-gray-900 hover:bg-gray-800 text-white"
+                          ? "bg-background hover:bg-card text-foreground"
                           : "bg-amber-500 hover:bg-amber-600 text-white"
                       )}
                     >

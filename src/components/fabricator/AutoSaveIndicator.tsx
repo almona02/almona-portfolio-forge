@@ -44,10 +44,10 @@ export const AutoSaveIndicator: React.FC<AutoSaveIndicatorProps> = ({
   };
 
   const getStatusColor = (): string => {
-    if (isSaving) return 'text-yellow-500';
-    if (hasUnsavedChanges) return 'text-amber-500';
-    if (lastSaved) return 'text-green-500';
-    return 'text-gray-500';
+    if (isSaving) return 'text-warning';
+    if (hasUnsavedChanges) return 'text-warning';
+    if (lastSaved) return 'text-success';
+    return 'text-muted-foreground';
   };
 
   const getStatusText = (): string => {
@@ -83,7 +83,7 @@ export const AutoSaveIndicator: React.FC<AutoSaveIndicatorProps> = ({
           disabled={isSaving}
           className={cn(
             'px-2 py-1 text-xs rounded-md transition-colors',
-            'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20',
+            'bg-amber-500/10 text-warning hover:bg-amber-500/20',
             'disabled:opacity-50 disabled:cursor-not-allowed'
           )}
           title="Save now"

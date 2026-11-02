@@ -18,7 +18,7 @@ export const AIAgentStatus = () => {
         to="/prestige-agent"
         className="group block"
       >
-        <div className="relative border bg-gradient-to-br from-slate-900/95 to-slate-800/95 -sm rounded-lg p-4 sm:p-5 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10 card-glass-dark">
+        <div className="relative border bg-gradient-to-br from-background/95 to-card/95 -sm rounded-lg p-4 sm:p-5 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10 card-glass-dark">
           <div className="flex items-center justify-between gap-4">
             {/* automation Icon */}
             <div className="relative flex-shrink-0">
@@ -26,7 +26,7 @@ export const AIAgentStatus = () => {
                 <BrainCircuit className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400 group-hover:text-amber-300 transition-colors" />
               </div>
               {/* Active indicator */}
-              <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-slate-900">
+              <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-border">
                 <motion.div
                   className="w-full h-full bg-green-400 rounded-full"
                   animate={{ opacity: [1, 0.5, 1] }}
@@ -37,10 +37,10 @@ export const AIAgentStatus = () => {
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <h3 className="typography-h3 text-base sm:text-lg text-white group-hover:text-amber-300 transition-colors mb-0.5">
+              <h3 className="typography-h3 text-base sm:text-lg text-foreground group-hover:text-amber-300 transition-colors mb-0.5">
                 YDT Agent
               </h3>
-              <p className="text-xs text-slate-400 truncate">
+              <p className="text-xs text-muted-foreground truncate">
                 Industrial automation Assistant
               </p>
             </div>

@@ -82,14 +82,14 @@ export const YilmazMachineRegistration: React.FC<Props> = ({ onSubmit }) => {
   };
 
   return (
-    <form onSubmit={(e) => { void handleSubmit(onFormSubmit)(e); }} className="space-y-4 bg-almona-darker/50 p-6 rounded-lg">
+    <form onSubmit={(e) => { void handleSubmit(onFormSubmit)(e); }} className="space-y-4 bg-card/50 p-6 rounded-lg">
   <h3 className="typography-h3">{t('yilmazRegistration.title')}</h3>
       <div className="flex items-center gap-2">
         <input
           {...register('serialNumber')}
           type="text"
           placeholder={t('yilmazRegistration.serialNumberLabel')}
-          className="flex-1 px-3 py-2 rounded bg-almona-dark border border-almona-light/20"
+          className="flex-1 px-3 py-2 rounded bg-background border border-border/20"
         />
         <button
           type="button"
@@ -103,10 +103,10 @@ export const YilmazMachineRegistration: React.FC<Props> = ({ onSubmit }) => {
         </button>
       </div>
 
-  {validationError && <p className="text-red-400">{validationError}</p>}
+  {validationError && <p className="text-destructive">{validationError}</p>}
 
       {validatedData && (
-        <div className="bg-almona-dark/60 p-4 rounded">
+        <div className="bg-background/60 p-4 rounded">
           <p>{t('yilmazValidation.success')}</p>
           <p className="text-sm">Model: {validatedData?.model_code}</p>
           <p className="text-sm">Warranty: {validatedData?.warranty_status}</p>
@@ -114,12 +114,12 @@ export const YilmazMachineRegistration: React.FC<Props> = ({ onSubmit }) => {
         </div>
       )}
 
-      {successMessage && <p className="text-green-400">{successMessage}</p>}
+      {successMessage && <p className="text-success">{successMessage}</p>}
       <div className="flex justify-end">
         <button
           type="submit"
           disabled={!validatedData || submitting}
-          className={`px-4 py-2 rounded ${validatedData ? 'bg-emerald-500' : 'bg-gray-600 cursor-not-allowed'}`}
+          className={`px-4 py-2 rounded ${validatedData ? 'bg-emerald-500' : 'bg-muted cursor-not-allowed'}`}
         >
           {submitting ? <span className="loader" /> : t('yilmazRegistration.title')}
         </button>

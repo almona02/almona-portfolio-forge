@@ -8,7 +8,7 @@ interface ModelTestProps {
 
 export function ModelTest({ modelPath = "/models/demo-machine.glb" }: ModelTestProps) {
   return (
-    <div className="w-full h-[600px] bg-gray-100 rounded-lg overflow-hidden">
+    <div className="w-full h-[600px] bg-muted rounded-lg overflow-hidden">
       <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} />

@@ -34,11 +34,11 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
         <Button
           variant="outline"
           role="combobox"
-          className="w-full justify-between bg-almona-dark border-almona-light"
+          className="w-full justify-between bg-background border-border"
         >
           <div className="flex flex-wrap gap-1">
             {selected.length === 0 ? (
-              <span className="text-gray-400">{placeholder}</span>
+              <span className="text-muted-foreground">{placeholder}</span>
             ) : (
               selected.map((value) => {
                 const option = options.find((o) => o.value === value);
@@ -60,16 +60,16 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-almona-darker border-almona-light">
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-card border-border">
         <Command>
-          <CommandInput placeholder="Search options..." className="bg-almona-dark border-almona-light" />
+          <CommandInput placeholder="Search options..." className="bg-background border-border" />
           <CommandEmpty>No options found.</CommandEmpty>
           <CommandGroup>
             {options.map((option) => (
               <CommandItem
                 key={option.value}
                 onSelect={() => handleSelect(option.value)}
-                className="cursor-pointer hover:bg-almona-dark"
+                className="cursor-pointer hover:bg-background"
               >
                 <Check
                   className={cn(

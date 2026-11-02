@@ -144,7 +144,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
   return (
     <div className={cn('space-y-6', className)}>
       {/* Tax Rule Configuration */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <CardTitle className="text-lg text-amber-200 flex items-center gap-2">
             <Settings className="w-5 h-5" />
@@ -158,13 +158,13 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label className="text-sm text-amber-300/70">Standard Tax Rate</Label>
-              <div className="mt-1 p-3 bg-[#0f0f0f]/60 border border-amber-600/30 rounded text-amber-200">
+              <div className="mt-1 p-3 bg-background/60 border border-amber-600/30 rounded text-amber-200">
                 {(taxRule.standardRate * 100).toFixed(2)}% {taxRule.taxName}
               </div>
             </div>
             <div>
               <Label className="text-sm text-amber-300/70">Tax Inclusive</Label>
-              <div className="mt-1 p-3 bg-[#0f0f0f]/60 border border-amber-600/30 rounded text-amber-200">
+              <div className="mt-1 p-3 bg-background/60 border border-amber-600/30 rounded text-amber-200">
                 {taxRule.taxInclusive ? 'Yes' : 'No'}
               </div>
             </div>
@@ -173,7 +173,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
           {taxRule.additionalTax && (
             <div>
               <Label className="text-sm text-amber-300/70">Additional Tax</Label>
-              <div className="mt-1 p-3 bg-[#0f0f0f]/60 border border-amber-600/30 rounded text-amber-200">
+              <div className="mt-1 p-3 bg-background/60 border border-amber-600/30 rounded text-amber-200">
                 {(taxRule.additionalTax.rate * 100).toFixed(2)}% {taxRule.additionalTax.name}
                 <span className="text-xs text-amber-600/50 ml-2">
                   (applies to {taxRule.additionalTax.appliesTo})
@@ -189,7 +189,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
                 {Object.entries(taxRule.reducedRates).map(([category, rate]) => (
                   <div
                     key={category}
-                    className="flex items-center justify-between p-2 bg-[#0f0f0f]/60 border border-amber-600/30 rounded"
+                    className="flex items-center justify-between p-2 bg-background/60 border border-amber-600/30 rounded"
                   >
                     <span className="text-amber-200 capitalize">{category}</span>
                     <Badge variant="outline" className="bg-amber-500/20 text-amber-200 border-amber-500/30">
@@ -204,7 +204,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
       </Card>
 
       {/* Exemption Certificates */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -227,7 +227,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
         </CardHeader>
         <CardContent className="space-y-4">
           {showAddExemption && (
-            <Card className="bg-[#0f0f0f]/60 border-amber-600/20 p-4">
+            <Card className="bg-background/60 border-amber-600/20 p-4">
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -235,7 +235,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
                     <Input
                       value={newExemption.customerId}
                       onChange={(e) => setNewExemption({ ...newExemption, customerId: e.target.value })}
-                      className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                      className="mt-1 bg-background/60 border-amber-600/30 text-amber-200"
                       placeholder="Customer UUID"
                     />
                   </div>
@@ -244,7 +244,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
                     <Input
                       value={newExemption.certificateNumber}
                       onChange={(e) => setNewExemption({ ...newExemption, certificateNumber: e.target.value })}
-                      className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                      className="mt-1 bg-background/60 border-amber-600/30 text-amber-200"
                       placeholder="CERT-XXXXX"
                     />
                   </div>
@@ -256,10 +256,10 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
                       value={newExemption.exemptionType}
                       onValueChange={(v) => setNewExemption({ ...newExemption, exemptionType: v as 'full' | 'partial' })}
                     >
-                      <SelectTrigger className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200">
+                      <SelectTrigger className="mt-1 bg-background/60 border-amber-600/30 text-amber-200">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#0f0f0f] border-amber-600/30">
+                      <SelectContent className="bg-background border-amber-600/30">
                         <SelectItem value="full">Full Exemption</SelectItem>
                         <SelectItem value="partial">Partial Exemption</SelectItem>
                       </SelectContent>
@@ -275,7 +275,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
                         step="0.01"
                         value={newExemption.exemptionRate}
                         onChange={(e) => setNewExemption({ ...newExemption, exemptionRate: parseFloat(e.target.value) || 0 })}
-                        className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                        className="mt-1 bg-background/60 border-amber-600/30 text-amber-200"
                       />
                     </div>
                   )}
@@ -287,7 +287,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
                       type="date"
                       value={newExemption.validFrom}
                       onChange={(e) => setNewExemption({ ...newExemption, validFrom: e.target.value })}
-                      className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                      className="mt-1 bg-background/60 border-amber-600/30 text-amber-200"
                     />
                   </div>
                   <div>
@@ -296,7 +296,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
                       type="date"
                       value={newExemption.validUntil}
                       onChange={(e) => setNewExemption({ ...newExemption, validUntil: e.target.value })}
-                      className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                      className="mt-1 bg-background/60 border-amber-600/30 text-amber-200"
                     />
                   </div>
                 </div>
@@ -305,7 +305,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
                   <Input
                     value={newExemption.reason}
                     onChange={(e) => setNewExemption({ ...newExemption, reason: e.target.value })}
-                    className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                    className="mt-1 bg-background/60 border-amber-600/30 text-amber-200"
                     placeholder="Exemption reason"
                   />
                 </div>
@@ -337,7 +337,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#0f0f0f]/60 border-amber-600/20">
+                <TableRow className="bg-background/60 border-amber-600/20">
                   <TableHead className="text-amber-300/70">Certificate</TableHead>
                   <TableHead className="text-amber-300/70">Customer</TableHead>
                   <TableHead className="text-amber-300/70">Type</TableHead>
@@ -400,7 +400,7 @@ export const TaxSettingsPanel: React.FC<TaxSettingsPanelProps> = ({
                             size="sm"
                             variant="outline"
                             onClick={() => void handleRevokeExemption(exemption.id)}
-                            className="border-red-500/30 text-red-300 hover:bg-red-500/10"
+                            className="border-red-500/30 text-destructive hover:bg-red-500/10"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>

@@ -67,7 +67,7 @@ const WorkflowBuilderPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950">
+        <div className="min-h-screen bg-background">
             <div className="container mx-auto p-4 h-screen flex flex-col">
                 {/* Header */}
                 <div className="mb-4 flex items-center justify-between">
@@ -76,15 +76,15 @@ const WorkflowBuilderPage: React.FC = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => void navigate('/workflows')}
-                            className="text-slate-400 hover:text-slate-200"
+                            className="text-muted-foreground hover:text-foreground"
                         >
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
                         <div>
-                            <h1 className="text-2xl font-bold text-slate-100">
+                            <h1 className="text-2xl font-bold text-foreground">
                                 {workflowId ? 'Edit Workflow' : 'New Workflow'}
                             </h1>
-                            <p className="text-sm text-slate-400">
+                            <p className="text-sm text-muted-foreground">
                                 {workflowId 
                                     ? 'Edit your workflow configuration'
                                     : 'Create a new workflow for business process automation'}

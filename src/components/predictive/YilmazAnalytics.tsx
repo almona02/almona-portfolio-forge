@@ -161,8 +161,8 @@ export const YilmazAnalytics: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-green-600" />
-              <span className="text-2xl font-bold text-green-600">{totalROI.toLocaleString()} EGP</span>
+              <DollarSign className="w-5 h-5 text-success" />
+              <span className="text-2xl font-bold text-success">{totalROI.toLocaleString()} EGP</span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               {lang === 'en' ? 'Compared to reactive emergency repairs' : 'مقارنة بالإصلاحات الطارئة التفاعلية'}
@@ -177,8 +177,8 @@ export const YilmazAnalytics: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-blue-600" />
-              <span className="text-2xl font-bold text-blue-600">{totalDowntime.toFixed(1)}h</span>
+              <Shield className="w-5 h-5 text-info" />
+              <span className="text-2xl font-bold text-info">{totalDowntime.toFixed(1)}h</span>
             </div>
           </CardContent>
         </Card>
@@ -190,8 +190,8 @@ export const YilmazAnalytics: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <LineChart className="w-5 h-5 text-red-600" />
-              <span className="text-2xl font-bold text-red-600">
+              <LineChart className="w-5 h-5 text-destructive" />
+              <span className="text-2xl font-bold text-destructive">
                 {data.filter((r) => r.riskLevel !== 'low').length}
               </span>
             </div>
@@ -228,7 +228,7 @@ export const YilmazAnalytics: React.FC = () => {
                     </TableCell>
                     <TableCell>EGP {row.preventiveCost.toLocaleString()}</TableCell>
                     <TableCell>EGP {row.failureCost.toLocaleString()}</TableCell>
-                    <TableCell className="font-semibold text-green-600">
+                    <TableCell className="font-semibold text-success">
                       + EGP {row.roi.toLocaleString()}
                     </TableCell>
                   </TableRow>

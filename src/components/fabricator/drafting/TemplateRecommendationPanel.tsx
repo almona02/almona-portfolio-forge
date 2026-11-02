@@ -173,7 +173,7 @@ export const TemplateRecommendationPanel: React.FC<TemplateRecommendationPanelPr
   if (geometry.rectangles.length === 0) {
     return (
       <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-        <div className="flex items-center gap-2 text-blue-400">
+        <div className="flex items-center gap-2 text-info">
           <AlertCircle size={16} />
           <span className="text-sm font-medium">Start drawing to get template recommendations</span>
         </div>
@@ -184,11 +184,11 @@ export const TemplateRecommendationPanel: React.FC<TemplateRecommendationPanelPr
   if (recommendations.length === 0) {
     return (
       <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-        <div className="flex items-center gap-2 text-amber-400">
+        <div className="flex items-center gap-2 text-warning">
           <AlertCircle size={16} />
           <span className="text-sm font-medium">No matching templates found</span>
         </div>
-        <p className="text-xs text-amber-600/80 mt-2">
+        <p className="text-xs text-warning/80 mt-2">
           Your design doesn't match any standard Egyptian templates. Consider adjusting dimensions or structure.
         </p>
       </div>
@@ -202,17 +202,17 @@ export const TemplateRecommendationPanel: React.FC<TemplateRecommendationPanelPr
         <div className="p-3 bg-green-500/10 border-2 border-green-500/30 rounded-lg">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <Sparkles size={16} className="text-green-400" />
-              <span className="text-sm font-semibold text-green-400">Best Match</span>
+              <Sparkles size={16} className="text-success" />
+              <span className="text-sm font-semibold text-success">Best Match</span>
             </div>
             <div className="flex items-center gap-1">
-              <span className="text-xs font-medium text-green-300">{bestMatch.score}%</span>
-              <CheckCircle size={14} className="text-green-400" />
+              <span className="text-xs font-medium text-success">{bestMatch.score}%</span>
+              <CheckCircle size={14} className="text-success" />
             </div>
           </div>
           <div className="mb-2">
             <h4 className="text-sm font-medium text-green-100">{bestMatch.templateName}</h4>
-            <p className="text-xs text-green-300/80 mt-1">{bestMatch.reason}</p>
+            <p className="text-xs text-success/80 mt-1">{bestMatch.reason}</p>
           </div>
           <button
             onClick={() => handleApplyTemplate(bestMatch.template)}
@@ -226,19 +226,19 @@ export const TemplateRecommendationPanel: React.FC<TemplateRecommendationPanelPr
       {/* Other Recommendations */}
       {recommendations.length > 1 && (
         <div>
-          <h4 className="text-xs font-semibold text-slate-400 mb-2">Other Recommendations</h4>
+          <h4 className="text-xs font-semibold text-muted-foreground mb-2">Other Recommendations</h4>
           <div className="space-y-2">
             {recommendations.slice(1, 4).map((rec) => (
               <div
                 key={rec.templateId}
-                className="p-2 bg-slate-800/50 border border-slate-700/50 rounded hover:bg-slate-800 transition-colors cursor-pointer"
+                className="p-2 bg-card/50 border border-border/50 rounded hover:bg-card transition-colors cursor-pointer"
                 onClick={() => handleApplyTemplate(rec.template)}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-medium text-slate-200">{rec.templateName}</span>
-                  <span className="text-xs text-slate-500">{rec.score}%</span>
+                  <span className="text-xs font-medium text-foreground">{rec.templateName}</span>
+                  <span className="text-xs text-muted-foreground">{rec.score}%</span>
                 </div>
-                <p className="text-xs text-slate-400 line-clamp-2">{rec.reason}</p>
+                <p className="text-xs text-muted-foreground line-clamp-2">{rec.reason}</p>
               </div>
             ))}
           </div>
@@ -247,22 +247,22 @@ export const TemplateRecommendationPanel: React.FC<TemplateRecommendationPanelPr
 
       {/* Template Info */}
       {bestMatch && (
-        <div className="p-2 bg-slate-800/50 border border-slate-700/50 rounded text-xs">
+        <div className="p-2 bg-card/50 border border-border/50 rounded text-xs">
           <div className="flex justify-between mb-1">
-            <span className="text-slate-400">Grid:</span>
-            <span className="font-medium text-slate-200">
+            <span className="text-muted-foreground">Grid:</span>
+            <span className="font-medium text-foreground">
               {bestMatch.template.rows}×{bestMatch.template.cols}
             </span>
           </div>
           <div className="flex justify-between mb-1">
-            <span className="text-slate-400">Width Range:</span>
-            <span className="font-medium text-slate-200">
+            <span className="text-muted-foreground">Width Range:</span>
+            <span className="font-medium text-foreground">
               {bestMatch.template.constraints.minWidth}–{bestMatch.template.constraints.maxWidth}mm
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-slate-400">Height Range:</span>
-            <span className="font-medium text-slate-200">
+            <span className="text-muted-foreground">Height Range:</span>
+            <span className="font-medium text-foreground">
               {bestMatch.template.constraints.minHeight}–{bestMatch.template.constraints.maxHeight}mm
             </span>
           </div>

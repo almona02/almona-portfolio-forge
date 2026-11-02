@@ -348,43 +348,43 @@ export const FabricatorCustomersPanel: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-dark">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Users className="h-5 w-5 text-amber-400" />
+            <Users className="h-5 w-5 text-warning" />
             {t('customers.title', 'Fabricator Customers')}
           </CardTitle>
-          <CardDescription className="text-xs text-amber-600/70">
+          <CardDescription className="text-xs text-warning/70">
             {t('customers.description', 'Per-workshop customer directory used by the New Project Wizard. Create a customer once, then reuse it from the dropdown when starting new projects.')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Filters */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-[11px] text-amber-600/70 uppercase tracking-wide">
-              <Filter className="h-3 w-3 text-amber-400" />
+            <div className="flex items-center gap-2 text-[11px] text-warning/70 uppercase tracking-wide">
+              <Filter className="h-3 w-3 text-warning" />
               {t('customers.filters.smart_filters', 'Smart Filters')}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
               <div>
-                <Label className="typography-label text-[11px] text-amber-600/70">{t('customers.filters.search', 'Search')}</Label>
+                <Label className="typography-label text-[11px] text-warning/70">{t('customers.filters.search', 'Search')}</Label>
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder={t('customers.filters.search_placeholder', 'Name, contact, email, phone…')}
-                  className="h-8 text-xs bg-[#0f0f0f]/60 border-amber-600/30"
+                  className="h-8 text-xs bg-background/60 border-amber-600/30"
                 />
               </div>
               <div>
-                <Label className="typography-label text-[11px] text-amber-600/70">{t('customers.filters.sector', 'Sector')}</Label>
+                <Label className="typography-label text-[11px] text-warning/70">{t('customers.filters.sector', 'Sector')}</Label>
                 <Select
                   value={sector}
                   onValueChange={(v) => setSector(v as SectorType | 'all')}
                 >
-                  <SelectTrigger className="h-8 text-xs bg-[#0f0f0f]/60 border-amber-600/30">
+                  <SelectTrigger className="h-8 text-xs bg-background/60 border-amber-600/30">
                     <SelectValue placeholder={t('customers.filters.all_sectors', 'All sectors')} />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0f0f0f] border-amber-600/30 text-xs">
+                  <SelectContent className="bg-background border-amber-600/30 text-xs">
                     <SelectItem value="all">{t('customers.sectors.all', 'All')}</SelectItem>
                     <SelectItem value="ALUMINIUM">{t('customers.sectors.aluminium', 'Aluminium')}</SelectItem>
                     <SelectItem value="UPVC">{t('customers.sectors.upvc', 'UPVC')}</SelectItem>
@@ -395,15 +395,15 @@ export const FabricatorCustomersPanel: React.FC = () => {
                 </Select>
               </div>
               <div>
-                <Label className="typography-label text-[11px] text-amber-600/70 flex items-center gap-1">
-                  <Calendar className="h-3 w-3 text-amber-400" />
+                <Label className="typography-label text-[11px] text-warning/70 flex items-center gap-1">
+                  <Calendar className="h-3 w-3 text-warning" />
                   {t('customers.filters.registered_year', 'Registered Year')}
                 </Label>
                 <Select value={year} onValueChange={(v) => setYear(v)}>
-                  <SelectTrigger className="h-8 text-xs bg-[#0f0f0f]/60 border-amber-600/30">
+                  <SelectTrigger className="h-8 text-xs bg-background/60 border-amber-600/30">
                     <SelectValue placeholder={t('customers.filters.all_years', 'All years')} />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0f0f0f] border-amber-600/30 text-xs max-h-64">
+                  <SelectContent className="bg-background border-amber-600/30 text-xs max-h-64">
                     <SelectItem value="all">{t('customers.filters.all_years', 'All years')}</SelectItem>
                     {availableYears.map((y) => (
                       <SelectItem key={y} value={y}>
@@ -417,40 +417,40 @@ export const FabricatorCustomersPanel: React.FC = () => {
           </div>
 
           {error && (
-            <div className="text-xs text-red-400">
+            <div className="text-xs text-destructive">
               {error}
             </div>
           )}
         </CardContent>
       </Card>
 
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-dark">
         <CardHeader className="pb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-sm flex items-center gap-2">
-            <Users className="h-4 w-4 text-amber-400" />
+            <Users className="h-4 w-4 text-warning" />
             {t('customers.directory.title', 'Customer Directory')}
             <Badge variant="outline" className="ml-1 text-[10px]">
               {filteredCustomers.length} / {customers.length}
             </Badge>
           </CardTitle>
-          <CardDescription className="text-[11px] text-amber-600/70">
+          <CardDescription className="text-[11px] text-warning/70">
             {t('customers.directory.description', 'These customers are available in the New Project Wizard dropdown.')}
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-0">
           {isLoading ? (
-            <div className="h-32 rounded-lg bg-[#0f0f0f]/60 animate-pulse" />
+            <div className="h-32 rounded-lg bg-background/60 animate-pulse" />
           ) : filteredCustomers.length === 0 ? (
             <div className="py-12 text-center space-y-4">
               <div className="flex flex-col items-center gap-3">
-                <div className="w-16 h-16 rounded-full bg-[#0f0f0f]/60 flex items-center justify-center">
-                  <Users className="h-8 w-8 text-amber-600/70" />
+                <div className="w-16 h-16 rounded-full bg-background/60 flex items-center justify-center">
+                  <Users className="h-8 w-8 text-warning/70" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-amber-300">
+                  <p className="text-sm font-medium text-warning">
                     {t('customers.directory.no_customers', 'No customers found')}
                   </p>
-                  <p className="text-xs text-amber-600/70">
+                  <p className="text-xs text-warning/70">
                     {t('customers.directory.no_customers_desc', 'Get started by adding your first customer.')}
                   </p>
                 </div>
@@ -510,7 +510,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
               <div className="rounded-lg border border-amber-600/30 overflow-hidden">
                 <Table className="text-[11px]">
                   <TableHeader>
-                    <TableRow className="bg-[#0f0f0f]/80">
+                    <TableRow className="bg-background/80">
                       <TableHead className="w-48">{t('customers.directory.table.name', 'Name')}</TableHead>
                       <TableHead className="w-40">{t('customers.directory.table.contact', 'Contact')}</TableHead>
                       <TableHead className="w-40">{t('customers.directory.table.email', 'Email')}</TableHead>
@@ -531,7 +531,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
                           className={isSelected ? 'bg-amber-500/10' : ''}
                         >
                           <TableCell
-                            className="font-medium text-amber-200 cursor-pointer"
+                            className="font-medium text-warning cursor-pointer"
                             onClick={() =>
                               setSelectedCustomerId((prev) => (prev === c.id ? null : c.id))
                             }
@@ -570,7 +570,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
                           >
                             <Badge
                               variant="outline"
-                              className="text-[10px] border-amber-600/50 text-amber-300"
+                              className="text-[10px] border-amber-600/50 text-warning"
                             >
                               {c.sector || 'GENERAL'}
                             </Badge>
@@ -587,7 +587,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
                             onClick={() =>
                               setSelectedCustomerId((prev) => (prev === c.id ? null : c.id))
                             }
-                            className="max-w-xs truncate text-amber-300 cursor-pointer"
+                            className="max-w-xs truncate text-warning cursor-pointer"
                           >
                             {c.notes}
                           </TableCell>
@@ -596,7 +596,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-6 w-6 p-0 text-amber-600/70 hover:text-amber-400 hover:bg-amber-500/10"
+                                className="h-6 w-6 p-0 text-warning/70 hover:text-warning hover:bg-amber-500/10"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleViewDetails(c);
@@ -622,7 +622,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-6 w-6 p-0 text-amber-600/70 hover:text-red-400 hover:bg-red-500/10"
+                                className="h-6 w-6 p-0 text-warning/70 hover:text-destructive hover:bg-red-500/10"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleDeleteClick(c);
@@ -647,13 +647,13 @@ export const FabricatorCustomersPanel: React.FC = () => {
 
       {/* Add Customer Wizard Dialog */}
       <Dialog open={wizardOpen} onOpenChange={setWizardOpen}>
-        <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-2xl">
+        <DialogContent className="bg-background border-border text-foreground max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg">
-              <Users className="h-5 w-5 text-amber-400" />
+              <Users className="h-5 w-5 text-warning" />
               {editingId ? t('customers.edit_customer', 'Edit Customer') : t('customers.add_new', 'Add New Customer')}
             </DialogTitle>
-            <DialogDescription className="text-xs text-gray-400">
+            <DialogDescription className="text-xs text-muted-foreground">
               {editingId
                 ? t('customers.wizard.edit_desc', 'Update customer information below.')
                 : t('customers.wizard.desc', 'Fill in the customer details to add them to your directory.')}
@@ -664,16 +664,16 @@ export const FabricatorCustomersPanel: React.FC = () => {
             {/* Step Indicator */}
             {!editingId && (
               <div className="flex items-center justify-center gap-2 pb-4">
-                <div className={`flex items-center gap-2 ${currentStep >= 1 ? 'text-amber-400' : 'text-gray-600'}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${currentStep >= 1 ? 'bg-amber-500 text-white' : 'bg-gray-800 text-gray-500'
+                <div className={`flex items-center gap-2 ${currentStep >= 1 ? 'text-warning' : 'text-muted-foreground'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${currentStep >= 1 ? 'bg-amber-500 text-white' : 'bg-card text-muted-foreground'
                     }`}>
                     1
                   </div>
                   <span className="text-xs">Basic Info</span>
                 </div>
-                <div className={`w-12 h-0.5 ${currentStep >= 2 ? 'bg-amber-500' : 'bg-gray-700'}`} />
-                <div className={`flex items-center gap-2 ${currentStep >= 2 ? 'text-amber-400' : 'text-gray-600'}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${currentStep >= 2 ? 'bg-amber-500 text-white' : 'bg-gray-800 text-gray-500'
+                <div className={`w-12 h-0.5 ${currentStep >= 2 ? 'bg-amber-500' : 'bg-muted'}`} />
+                <div className={`flex items-center gap-2 ${currentStep >= 2 ? 'text-warning' : 'text-muted-foreground'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${currentStep >= 2 ? 'bg-amber-500 text-white' : 'bg-card text-muted-foreground'
                     }`}>
                     2
                   </div>
@@ -686,26 +686,26 @@ export const FabricatorCustomersPanel: React.FC = () => {
             {(currentStep === 1 || editingId) && (
               <div className="space-y-3">
                 <div className="space-y-2">
-                  <Label className="typography-label text-xs text-gray-300">
-                    {t('customers.form.name', 'Customer / Company name')} <span className="text-red-400">*</span>
+                  <Label className="typography-label text-xs text-foreground">
+                    {t('customers.form.name', 'Customer / Company name')} <span className="text-destructive">*</span>
                   </Label>
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder={t('customers.form.name', 'Customer / Company name *')}
-                    className="h-9 text-sm bg-gray-800 border-gray-700"
+                    className="h-9 text-sm bg-card border-border"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="typography-label text-xs text-gray-300">{t('customers.form.sector', 'Sector')}</Label>
+                  <Label className="typography-label text-xs text-foreground">{t('customers.form.sector', 'Sector')}</Label>
                   <Select
                     value={formSector}
                     onValueChange={(v) => setFormSector(v as SectorType)}
                   >
-                    <SelectTrigger className="h-9 text-sm bg-gray-800 border-gray-700">
+                    <SelectTrigger className="h-9 text-sm bg-card border-border">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-gray-700 text-sm">
+                    <SelectContent className="bg-background border-border text-sm">
                       <SelectItem value="GENERAL">{t('customers.sectors.general', 'General')}</SelectItem>
                       <SelectItem value="ALUMINIUM">{t('customers.sectors.aluminium', 'Aluminium')}</SelectItem>
                       <SelectItem value="UPVC">{t('customers.sectors.upvc', 'UPVC')}</SelectItem>
@@ -721,42 +721,42 @@ export const FabricatorCustomersPanel: React.FC = () => {
             {(currentStep === 2 || editingId) && (
               <div className="space-y-3">
                 <div className="space-y-2">
-                  <Label className="typography-label text-xs text-gray-300">{t('customers.form.contact_person', 'Contact person')}</Label>
+                  <Label className="typography-label text-xs text-foreground">{t('customers.form.contact_person', 'Contact person')}</Label>
                   <Input
                     value={contactPerson}
                     onChange={(e) => setContactPerson(e.target.value)}
                     placeholder={t('customers.form.contact_person', 'Contact person')}
-                    className="h-9 text-sm bg-gray-800 border-gray-700"
+                    className="h-9 text-sm bg-card border-border"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label className="typography-label text-xs text-gray-300">{t('customers.form.email', 'Email')}</Label>
+                    <Label className="typography-label text-xs text-foreground">{t('customers.form.email', 'Email')}</Label>
                     <Input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder={t('customers.form.email', 'Email')}
-                      className="h-9 text-sm bg-gray-800 border-gray-700"
+                      className="h-9 text-sm bg-card border-border"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="typography-label text-xs text-gray-300">{t('customers.form.phone', 'Phone')}</Label>
+                    <Label className="typography-label text-xs text-foreground">{t('customers.form.phone', 'Phone')}</Label>
                     <Input
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder={t('customers.form.phone', 'Phone')}
-                      className="h-9 text-sm bg-gray-800 border-gray-700"
+                      className="h-9 text-sm bg-card border-border"
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label className="typography-label text-xs text-gray-300">{t('customers.form.notes', 'Notes (optional)')}</Label>
+                  <Label className="typography-label text-xs text-foreground">{t('customers.form.notes', 'Notes (optional)')}</Label>
                   <Input
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder={t('customers.form.notes', 'Notes (optional)')}
-                    className="h-9 text-sm bg-gray-800 border-gray-700"
+                    className="h-9 text-sm bg-card border-border"
                   />
                 </div>
               </div>
@@ -769,7 +769,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
                 <Button
                   variant="outline"
                   onClick={handleCancelEdit}
-                  className="text-xs border-gray-600 hover:bg-gray-800"
+                  className="text-xs border-border hover:bg-card"
                 >
                   <X className="h-3 w-3 mr-1" />
                   {t('customers.form.cancel', 'Cancel')}
@@ -779,7 +779,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
                 <Button
                   variant="outline"
                   onClick={() => setCurrentStep(currentStep - 1)}
-                  className="text-xs border-gray-600 hover:bg-gray-800"
+                  className="text-xs border-border hover:bg-card"
                 >
                   Previous
                 </Button>
@@ -828,12 +828,12 @@ export const FabricatorCustomersPanel: React.FC = () => {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <AlertDialogContent className="bg-gray-900 border-gray-700">
+        <AlertDialogContent className="bg-background border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-100">Delete Customer?</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-400">
+            <AlertDialogTitle className="text-foreground">Delete Customer?</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
               Are you sure you want to delete customer{' '}
-              <span className="font-semibold text-amber-400">
+              <span className="font-semibold text-warning">
                 {customerToDelete?.name}
               </span>
               ?
@@ -843,25 +843,25 @@ export const FabricatorCustomersPanel: React.FC = () => {
                 <div className="space-y-1 mt-2">
                   {customerToDelete.contact_person && (
                     <div className="text-sm">
-                      <span className="text-gray-500">Contact:</span>{' '}
-                      <span className="text-gray-200">{customerToDelete.contact_person}</span>
+                      <span className="text-muted-foreground">Contact:</span>{' '}
+                      <span className="text-foreground">{customerToDelete.contact_person}</span>
                     </div>
                   )}
                   {customerToDelete.email && (
                     <div className="text-sm">
-                      <span className="text-gray-500">Email:</span>{' '}
-                      <span className="text-gray-200">{customerToDelete.email}</span>
+                      <span className="text-muted-foreground">Email:</span>{' '}
+                      <span className="text-foreground">{customerToDelete.email}</span>
                     </div>
                   )}
                   {customerToDelete.phone && (
                     <div className="text-sm">
-                      <span className="text-gray-500">Phone:</span>{' '}
-                      <span className="text-gray-200">{customerToDelete.phone}</span>
+                      <span className="text-muted-foreground">Phone:</span>{' '}
+                      <span className="text-foreground">{customerToDelete.phone}</span>
                     </div>
                   )}
                   <div className="text-sm">
-                    <span className="text-gray-500">Sector:</span>{' '}
-                    <span className="text-gray-200">{customerToDelete.sector || 'GENERAL'}</span>
+                    <span className="text-muted-foreground">Sector:</span>{' '}
+                    <span className="text-foreground">{customerToDelete.sector || 'GENERAL'}</span>
                   </div>
                 </div>
               )}
@@ -870,7 +870,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700">
+            <AlertDialogCancel className="bg-card border-border text-foreground hover:bg-muted">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -886,13 +886,13 @@ export const FabricatorCustomersPanel: React.FC = () => {
 
       {/* Customer Detail Dialog */}
       <Dialog open={detailDialogOpen} onOpenChange={handleCloseDetailDialog}>
-        <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-6xl max-h-[90vh] flex flex-col">
+        <DialogContent className="bg-background border-border text-foreground max-w-6xl max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg">
-              <Users className="h-5 w-5 text-amber-400" />
+              <Users className="h-5 w-5 text-warning" />
               {viewingCustomer?.name || 'Customer Details'}
             </DialogTitle>
-            <DialogDescription className="text-xs text-gray-400">
+            <DialogDescription className="text-xs text-muted-foreground">
               {viewingCustomer?.email && (
                 <span>{viewingCustomer.email}</span>
               )}
@@ -904,7 +904,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
           {viewingCustomerId && (
             <ScrollArea className="flex-1 pr-4">
               <Tabs defaultValue="analytics" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 bg-[#0f0f0f]/60 border-amber-600/30">
+                <TabsList className="grid w-full grid-cols-5 bg-background/60 border-amber-600/30">
                   <TabsTrigger value="analytics" className="flex items-center gap-2">
                     <BarChart3 className="h-4 w-4" />
                     Analytics
@@ -967,7 +967,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
             <Button
               variant="outline"
               onClick={handleCloseDetailDialog}
-              className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700"
+              className="bg-card border-border text-foreground hover:bg-muted"
             >
               Close
             </Button>

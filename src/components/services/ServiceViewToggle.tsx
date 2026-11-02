@@ -18,7 +18,7 @@ export const ServiceViewToggle: React.FC<ServiceViewToggleProps> = ({
 
   return (
     <div className={`flex justify-center mb-8 ${className}`}>
-      <div className="inline-flex items-center bg-slate-800/50 -sm border border-white/10 rounded-2xl p-2 card-glass-dark">
+      <div className="inline-flex items-center bg-card/50 -sm border border-white/10 rounded-2xl p-2 card-glass-dark">
         <Button
           variant={viewMode === 'simple' ? 'default' : 'ghost'}
           size="lg"
@@ -26,7 +26,7 @@ export const ServiceViewToggle: React.FC<ServiceViewToggleProps> = ({
           className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all ${
             viewMode === 'simple' 
               ? 'bg-amber-500 hover:bg-amber-600 text-white' 
-              : 'text-gray-400 hover:text-white hover:bg-white/10'
+              : 'text-muted-foreground hover:text-foreground hover:bg-foreground/10'
           }`}
         >
           <Users className="h-4 w-4" />
@@ -39,7 +39,7 @@ export const ServiceViewToggle: React.FC<ServiceViewToggleProps> = ({
           className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all ${
             viewMode === 'advanced' 
               ? 'bg-amber-500 hover:bg-amber-600 text-white' 
-              : 'text-gray-400 hover:text-white hover:bg-white/10'
+              : 'text-muted-foreground hover:text-foreground hover:bg-foreground/10'
           }`}
         >
           <Brain className="h-4 w-4" />

@@ -16,7 +16,7 @@ export const PackageCalculator = ({ onPackageRecommend, className = '' }: Packag
   const [recommendation, setRecommendation] = useState<ServicePackageId | null>(null);
   const packages = getServicePackages(language);
   const valid = Number.isSafeInteger(Number(count)) && Number(count) > 0;
-  return <Card className={`bg-slate-800/50 border-white/10 text-white ${className}`}>
+  return <Card className={`bg-card/50 border-white/10 text-foreground ${className}`}>
     <CardHeader><CardTitle>{label('Find a service plan to discuss', 'اختر خطة خدمة للمناقشة')}</CardTitle></CardHeader>
     <CardContent className="space-y-5">
       <p>{label('This guide uses your machine count to suggest a starting point. It does not calculate a price or guarantee coverage.', 'يستخدم هذا الدليل عدد ماكيناتك لاقتراح نقطة بداية، ولا يحسب سعراً أو يضمن التغطية.')}</p>

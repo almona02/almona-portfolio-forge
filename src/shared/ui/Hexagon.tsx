@@ -31,7 +31,7 @@ const Hexagon: React.FC<HexagonProps> = ({ active = false, children, className =
   if (active) {
     baseClasses.push('bg-cyan-600/30', 'border-cyan-400', 'border-2');
   } else {
-    baseClasses.push('bg-gray-800', 'border', 'border-gray-700');
+    baseClasses.push('bg-card', 'border', 'border-border');
   }
 
   if (className) {

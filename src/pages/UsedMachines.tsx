@@ -90,11 +90,11 @@ const UsedMachines = () => {
       <main className="flex-grow pt-16">
         <div className="container mx-auto px-4 py-6">
           {/* Hero — simple & fast */}
-          <div className="mb-8 text-center bg-gradient-to-r from-amber-900 to-amber-700 py-10 px-4 rounded-xl">
-            <h1 className="typography-h1 md:text-5xl mb-3 text-white">{copy('Used Machines Marketplace')}</h1>
-            <p className="text-xl text-amber-100 mb-2">{copy('Simple & fast — buy and sell used machinery, free.')}</p>
-            <p className="text-sm text-amber-200/80 mb-6">{copy('Post in 2 minutes. No account needed. Buyers contact you directly.')}</p>
-            <Button size="lg" className="bg-white text-amber-700 hover:bg-amber-100" onClick={() => handleTabChange('sell')}>
+          <div className="mb-8 text-center bg-card text-card-foreground border border-border py-10 px-4 rounded-xl">
+            <h1 className="typography-h1 md:text-5xl mb-3 text-foreground">{copy('Used Machines Marketplace')}</h1>
+            <p className="text-xl text-foreground mb-2">{copy('Simple & fast — buy and sell used machinery, free.')}</p>
+            <p className="text-sm text-muted-foreground mb-6">{copy('Post in 2 minutes. No account needed. Buyers contact you directly.')}</p>
+            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => handleTabChange('sell')}>
               <Plus className="w-5 h-5 mr-2" /> {copy('Post your machine — free')}
             </Button>
           </div>
@@ -107,35 +107,35 @@ const UsedMachines = () => {
 
             <TabsContent value="browse">
               {/* Search + filters */}
-              <div className="mb-6 bg-almona-darker p-4 rounded-lg border border-almona-light/20 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              <div className="mb-6 bg-card p-4 rounded-lg border border-border/20 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 <div className="relative md:col-span-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={copy('Search machines…')} className="pl-9 bg-almona-dark border-almona-light text-white" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={copy('Search machines…')} className="pl-9 bg-background border-border text-foreground" />
                 </div>
                 <Select value={location} onValueChange={setLocation}>
-                  <SelectTrigger className="bg-almona-dark border-almona-light text-white"><SelectValue placeholder={copy('All governorates')} /></SelectTrigger>
-                  <SelectContent className="bg-almona-darker text-white">
+                  <SelectTrigger className="bg-background border-border text-foreground"><SelectValue placeholder={copy('All governorates')} /></SelectTrigger>
+                  <SelectContent className="bg-card text-foreground">
                     <SelectItem value="all">{copy('All governorates')}</SelectItem>
                     {GOVERNORATES.map((g) => <SelectItem key={g} value={g}>{copy(g)}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="bg-almona-dark border-almona-light text-white"><SelectValue placeholder={copy('All categories')} /></SelectTrigger>
-                  <SelectContent className="bg-almona-darker text-white">
+                  <SelectTrigger className="bg-background border-border text-foreground"><SelectValue placeholder={copy('All categories')} /></SelectTrigger>
+                  <SelectContent className="bg-card text-foreground">
                     <SelectItem value="all">{copy('All categories')}</SelectItem>
                     {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{copy(c)}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <Select value={sort} onValueChange={(v) => setSort(v as 'newest' | 'oldest')}>
-                  <SelectTrigger className="bg-almona-dark border-almona-light text-white"><SelectValue placeholder={copy('Sort by')} /></SelectTrigger>
-                  <SelectContent className="bg-almona-darker text-white">
+                  <SelectTrigger className="bg-background border-border text-foreground"><SelectValue placeholder={copy('Sort by')} /></SelectTrigger>
+                  <SelectContent className="bg-card text-foreground">
                     <SelectItem value="newest">{copy('Newest first')}</SelectItem>
                     <SelectItem value="oldest">{copy('Oldest first')}</SelectItem>
                   </SelectContent>
                 </Select>
                 <Select value={within} onValueChange={(v) => setWithin(v as 'all' | '24h' | '7d' | '30d')}>
-                  <SelectTrigger className="bg-almona-dark border-almona-light text-white"><SelectValue placeholder={copy('All time')} /></SelectTrigger>
-                  <SelectContent className="bg-almona-darker text-white">
+                  <SelectTrigger className="bg-background border-border text-foreground"><SelectValue placeholder={copy('All time')} /></SelectTrigger>
+                  <SelectContent className="bg-card text-foreground">
                     <SelectItem value="all">{copy('All time')}</SelectItem>
                     <SelectItem value="24h">{copy('Last 24 hours')}</SelectItem>
                     <SelectItem value="7d">{copy('Last 7 days')}</SelectItem>
@@ -147,8 +147,8 @@ const UsedMachines = () => {
               {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" aria-busy="true" aria-label={copy('Loading listings…')}>
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="bg-almona-darker border border-almona-light/20 rounded-lg overflow-hidden animate-pulse">
-                      <div className="h-48 bg-almona-dark" />
+                    <div key={i} className="bg-card border border-border/20 rounded-lg overflow-hidden animate-pulse">
+                      <div className="h-48 bg-background" />
                       <div className="p-4 space-y-3">
                         <div className="h-4 bg-almona-light/20 rounded w-3/4" />
                         <div className="h-5 bg-almona-light/20 rounded w-1/3" />
@@ -159,14 +159,14 @@ const UsedMachines = () => {
                 </div>
               ) : loadError ? (
                 <div role="alert" className="text-center py-16">
-                  <p className="text-xl text-gray-300 mb-2">{copy('We could not load the machines right now.')}</p>
-                  <p className="text-sm text-gray-400 mb-6">{copy('Please check your connection and try again. You can still post your machine using the Sell tab.')}</p>
+                  <p className="text-xl text-foreground mb-2">{copy('We could not load the machines right now.')}</p>
+                  <p className="text-sm text-muted-foreground mb-6">{copy('Please check your connection and try again. You can still post your machine using the Sell tab.')}</p>
                   <Button onClick={load}>{copy('Retry loading machines')}</Button>
                 </div>
               ) : filtered.length === 0 ? (
                 <div className="text-center py-16">
-                  <p className="text-xl text-gray-300 mb-2">{copy('No listings yet — be the first to post.')}</p>
-                  <p className="text-sm text-gray-500 mb-6">{copy('Free, no account needed.')}</p>
+                  <p className="text-xl text-foreground mb-2">{copy('No listings yet — be the first to post.')}</p>
+                  <p className="text-sm text-muted-foreground mb-6">{copy('Free, no account needed.')}</p>
                   <Button className="btn-primary" onClick={() => handleTabChange('sell')}>
                     <Plus className="w-4 h-4 mr-2" /> {copy('Post a machine')}
                   </Button>
@@ -178,7 +178,7 @@ const UsedMachines = () => {
               )}
 
               {filtered.length > 0 && (
-                <p className="text-center text-xs text-gray-500 mt-10">
+                <p className="text-center text-xs text-muted-foreground mt-10">
                   {filtered.length} {filtered.length === 1 ? copy('listing') : copy('listings')} · {copy('prices are indicative — confirm with the seller.')}
                 </p>
               )}

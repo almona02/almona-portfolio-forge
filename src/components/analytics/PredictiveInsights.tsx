@@ -275,9 +275,9 @@ export const PredictiveInsights: React.FC = () => {
 
   const PredictionCard: React.FC<{ prediction: Prediction }> = ({ prediction }) => {
     const trendIcons = {
-      positive: <TrendingUp className="h-4 w-4 text-green-600" />,
-      negative: <TrendingDown className="h-4 w-4 text-red-600" />,
-      neutral: <Activity className="h-4 w-4 text-gray-600" />
+      positive: <TrendingUp className="h-4 w-4 text-success" />,
+      negative: <TrendingDown className="h-4 w-4 text-destructive" />,
+      neutral: <Activity className="h-4 w-4 text-muted-foreground" />
     };
 
     const impactColors = {
@@ -339,7 +339,7 @@ export const PredictiveInsights: React.FC = () => {
                   <div className="space-y-1">
                     {prediction.factors.map((factor, index) => (
                       <div key={index} className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5" />
+                        <CheckCircle className="h-4 w-4 text-info mt-0.5" />
                         <span className="text-sm">{factor}</span>
                       </div>
                     ))}
@@ -351,7 +351,7 @@ export const PredictiveInsights: React.FC = () => {
                   <div className="space-y-1">
                     {prediction.recommendations.map((rec, index) => (
                       <div key={index} className="flex items-start gap-2">
-                        <Target className="h-4 w-4 text-green-600 mt-0.5" />
+                        <Target className="h-4 w-4 text-success mt-0.5" />
                         <span className="text-sm">{rec}</span>
                       </div>
                     ))}
@@ -480,19 +480,19 @@ export const PredictiveInsights: React.FC = () => {
                   <div className="grid grid-cols-3 gap-4 text-sm">
                     <div>
                       <span className="text-muted-foreground">Growth: </span>
-                      <span className={segment.growth > 20 ? 'text-green-600' : 'text-gray-600'}>
+                      <span className={segment.growth > 20 ? 'text-success' : 'text-muted-foreground'}>
                         +{segment.growth}%
                       </span>
                     </div>
                     <div>
                       <span className="text-muted-foreground">Churn Risk: </span>
-                      <span className={segment.churnRisk > 20 ? 'text-red-600' : 'text-gray-600'}>
+                      <span className={segment.churnRisk > 20 ? 'text-destructive' : 'text-muted-foreground'}>
                         {segment.churnRisk}%
                       </span>
                     </div>
                     <div>
                       <span className="text-muted-foreground">LTV: </span>
-                      <span className="text-gray-600">{segment.lifetime} years</span>
+                      <span className="text-muted-foreground">{segment.lifetime} years</span>
                     </div>
                   </div>
                 </div>
@@ -601,7 +601,7 @@ export const PredictiveInsights: React.FC = () => {
                   <div className="space-y-1">
                     {risk.mitigation.map((strategy, idx) => (
                       <div key={idx} className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                        <CheckCircle className="h-4 w-4 text-success mt-0.5" />
                         <span className="text-sm">{strategy}</span>
                       </div>
                     ))}

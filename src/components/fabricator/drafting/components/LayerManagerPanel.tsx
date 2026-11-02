@@ -125,11 +125,11 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
   // };
 
   return (
-    <Card className={`bg-slate-900/80 border-slate-700/50 ${className}`}>
+    <Card className={`bg-background/80 border-border/50 ${className}`}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-slate-200 flex items-center gap-2 text-sm font-semibold">
-            <Layers className="h-4 w-4 text-amber-400" />
+          <CardTitle className="text-foreground flex items-center gap-2 text-sm font-semibold">
+            <Layers className="h-4 w-4 text-warning" />
             Layers
           </CardTitle>
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -137,39 +137,39 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-7 w-7 p-0 text-amber-400 hover:text-slate-300 hover:bg-amber-500/10"
+                className="h-7 w-7 p-0 text-warning hover:text-foreground hover:bg-amber-500/10"
               >
                 <Plus className="h-4 w-4" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-900 border-slate-700/50">
+            <DialogContent className="bg-background border-border/50">
               <DialogHeader>
-                <DialogTitle className="text-slate-200">Create New Layer</DialogTitle>
-                <DialogDescription className="text-slate-400">
+                <DialogTitle className="text-foreground">Create New Layer</DialogTitle>
+                <DialogDescription className="text-muted-foreground">
                   Add a new layer to organize your drawing
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 mt-4">
                 <div>
-                  <Label htmlFor="layer-name" className="text-slate-300">Layer Name</Label>
+                  <Label htmlFor="layer-name" className="text-foreground">Layer Name</Label>
                   <Input
                     id="layer-name"
                     value={newLayerName}
                     onChange={(e) => setNewLayerName(e.target.value)}
                     placeholder="e.g., Hardware, Dimensions"
-                    className="bg-slate-800 border-slate-700/50 text-slate-200 mt-1"
+                    className="bg-card border-border/50 text-foreground mt-1"
                     maxLength={50}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="layer-color" className="text-slate-300">Color</Label>
+                  <Label htmlFor="layer-color" className="text-foreground">Color</Label>
                   <div className="flex items-center gap-2 mt-1">
                     <Input
                       id="layer-color"
                       type="color"
                       value={newLayerColor}
                       onChange={(e) => setNewLayerColor(e.target.value)}
-                      className="w-16 h-10 p-1 bg-slate-800 border-slate-700/50"
+                      className="w-16 h-10 p-1 bg-card border-border/50"
                     />
                     <Input
                       type="text"
@@ -180,7 +180,7 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
                         }
                       }}
                       placeholder="#3b82f6"
-                      className="flex-1 bg-slate-800 border-slate-700/50 text-slate-200"
+                      className="flex-1 bg-card border-border/50 text-foreground"
                     />
                   </div>
                 </div>
@@ -188,7 +188,7 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
                   <Button
                     variant="outline"
                     onClick={() => setShowCreateDialog(false)}
-                    className="border-amber-500/30 text-slate-300"
+                    className="border-amber-500/30 text-foreground"
                   >
                     Cancel
                   </Button>
@@ -217,13 +217,13 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
                 flex items-center gap-2 p-2 rounded-lg transition-all
                 ${isActive 
                   ? 'bg-amber-600/20 border border-amber-500/50' 
-                  : 'bg-slate-800/50 border border-slate-700/50 hover:border-slate-700/50'
+                  : 'bg-card/50 border border-border/50 hover:border-border/50'
                 }
               `}
             >
               {/* Color indicator */}
               <div
-                className="w-4 h-4 rounded border border-slate-600 flex-shrink-0"
+                className="w-4 h-4 rounded border border-border flex-shrink-0"
                 style={{ backgroundColor: layer.color }}
                 title={layer.color}
               />
@@ -233,7 +233,7 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
                 <Input
                   value={editingLayer?.name || ''}
                   onChange={(e) => setEditingLayer({ ...editingLayer, name: e.target.value })}
-                  className="flex-1 h-7 text-xs bg-slate-700 border-slate-700/50 text-slate-200"
+                  className="flex-1 h-7 text-xs bg-muted border-border/50 text-foreground"
                   autoFocus
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -248,7 +248,7 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
                   onClick={() => handleSetActiveLayer(layer.id)}
                   className={`
                     flex-1 text-left text-xs font-medium transition-colors
-                    ${isActive ? 'text-slate-300' : 'text-slate-300 hover:text-amber-400'}
+                    ${isActive ? 'text-foreground' : 'text-foreground hover:text-warning'}
                   `}
                   title={layer.description || layer.name}
                 >
@@ -258,7 +258,7 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
 
               {/* Active indicator */}
               {isActive && (
-                <Badge className="bg-amber-500/20 text-slate-300 border-amber-500/30 text-[10px] px-1.5 py-0">
+                <Badge className="bg-amber-500/20 text-foreground border-amber-500/30 text-[10px] px-1.5 py-0">
                   Active
                 </Badge>
               )}
@@ -274,9 +274,9 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
                   title={layer.visible ? 'Hide layer' : 'Show layer'}
                 >
                   {layer.visible ? (
-                    <Eye className="h-3.5 w-3.5 text-amber-400" />
+                    <Eye className="h-3.5 w-3.5 text-warning" />
                   ) : (
-                    <EyeOff className="h-3.5 w-3.5 text-slate-500" />
+                    <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />
                   )}
                 </Button>
 
@@ -289,9 +289,9 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
                   title={layer.locked ? 'Unlock layer' : 'Lock layer'}
                 >
                   {layer.locked ? (
-                    <Lock className="h-3.5 w-3.5 text-amber-400" />
+                    <Lock className="h-3.5 w-3.5 text-warning" />
                   ) : (
-                    <Unlock className="h-3.5 w-3.5 text-slate-400" />
+                    <Unlock className="h-3.5 w-3.5 text-muted-foreground" />
                   )}
                 </Button>
 
@@ -304,7 +304,7 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
                     onClick={() => setEditingLayer(layer)}
                     title="Edit layer"
                   >
-                    <Edit2 className="h-3.5 w-3.5 text-slate-400" />
+                    <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
                   </Button>
                 )}
 
@@ -318,7 +318,7 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
                       onClick={() => handleUpdateLayer(layer.id, { name: editingLayer.name })}
                       title="Save"
                     >
-                      <Check className="h-3.5 w-3.5 text-green-400" />
+                      <Check className="h-3.5 w-3.5 text-success" />
                     </Button>
                     <Button
                       size="sm"
@@ -327,7 +327,7 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
                       onClick={() => setEditingLayer(null)}
                       title="Cancel"
                     >
-                      <X className="h-3.5 w-3.5 text-red-400" />
+                      <X className="h-3.5 w-3.5 text-destructive" />
                     </Button>
                   </>
                 )}
@@ -341,7 +341,7 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
                     onClick={() => handleDeleteLayer(layer.id)}
                     title="Delete layer"
                   >
-                    <Trash2 className="h-3.5 w-3.5 text-red-400" />
+                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
                   </Button>
                 )}
               </div>
@@ -350,10 +350,10 @@ export const LayerManagerPanel: React.FC<LayerManagerPanelProps> = ({
         })}
 
         {/* Layer info footer */}
-        <div className="pt-2 mt-2 border-t border-slate-700/50 text-xs text-slate-400">
+        <div className="pt-2 mt-2 border-t border-border/50 text-xs text-muted-foreground">
           <div className="flex items-center justify-between">
             <span>Total: {layers.length} layers</span>
-            <span className="text-amber-400">{activeLayer.name}</span>
+            <span className="text-warning">{activeLayer.name}</span>
           </div>
         </div>
       </CardContent>

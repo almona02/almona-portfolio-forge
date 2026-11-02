@@ -121,15 +121,15 @@ export const Register = () => {
         <div key={index} className="flex items-center">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
             index + 1 === currentStep 
-              ? 'bg-almona-orange text-white' 
+              ? 'bg-almona-orange text-primary-foreground'
               : index + 1 < currentStep 
                 ? 'bg-green-500 text-white' 
-                : 'bg-gray-600 text-gray-300'
+                : 'bg-muted text-foreground'
           }`}>
             {index + 1 < currentStep ? '✓' : index + 1}
           </div>
           {index < totalSteps - 1 && (
-            <div className={`w-16 h-1 mx-2 ${index + 1 < currentStep ? 'bg-green-500' : 'bg-gray-600'}`} />
+            <div className={`w-16 h-1 mx-2 ${index + 1 < currentStep ? 'bg-green-500' : 'bg-muted'}`} />
           )}
         </div>
       ))}
@@ -142,14 +142,14 @@ export const Register = () => {
         className="flex-grow flex items-center justify-center p-4 bg-cover bg-center relative py-12" 
         style={{ backgroundImage: "url('/images/machines/cutting-machine.jpg')" }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-almona-dark/90 via-almona-dark/70 to-almona-dark/90" />
+        <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/70 to-background/90" />
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="w-full max-w-4xl mx-auto mt-6 sm:mt-8 lg:mt-12 backdrop-blur-xl bg-black/50 rounded-3xl shadow-2xl overflow-hidden border border-almona-light/20"
+          className="w-full max-w-4xl mx-auto mt-6 sm:mt-8 lg:mt-12 backdrop-blur-xl bg-black/50 rounded-3xl shadow-2xl overflow-hidden border border-border/20"
         >
-          <Card className="bg-transparent border-0 text-white">
+          <Card className="bg-transparent border-0 text-foreground">
             <CardHeader className="text-center p-8 pb-6 lg:mt-10">
               <motion.div 
                 initial={{ y: -20, opacity: 0 }} 
@@ -160,7 +160,7 @@ export const Register = () => {
                 <Sparkles className="h-8 w-8 text-almona-orange mr-2" />
                 <CardTitle className="text-4xl font-bold text-gradient-orange">Join Almona Network</CardTitle>
               </motion.div>
-              <CardDescription className="text-gray-300 pt-2 text-lg">
+              <CardDescription className="text-foreground pt-2 text-lg">
                 Register to access exclusive industry resources and support
               </CardDescription>
             </CardHeader>
@@ -181,43 +181,43 @@ export const Register = () => {
                     >
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-3">
-                          <Label htmlFor="name" className="typography-label text-almona-light">Full Name</Label>
+                          <Label htmlFor="name" className="typography-label text-foreground">Full Name</Label>
                           <div className="relative">
-                            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-almona-light/70" />
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/70" />
                             <Input 
                               id="name" 
                               {...register('name')} 
                               placeholder="John Doe" 
-                              className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12" 
+                              className="pl-10 bg-background/60 border-border/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12"
                             />
                           </div>
                           {errors.name && (
                             <motion.p 
                               initial={{ opacity: 0, y: -10 }}
                               animate={{ opacity: 1, y: 0 }}
-                              className="text-red-400 text-sm"
+                              className="text-destructive text-sm"
                             >
                               {errors.name.message}
                             </motion.p>
                           )}
                         </div>
                         <div className="space-y-3">
-                          <Label htmlFor="email" className="typography-label text-almona-light">Email Address</Label>
+                          <Label htmlFor="email" className="typography-label text-foreground">Email Address</Label>
                           <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-almona-light/70" />
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/70" />
                             <Input 
                               id="email" 
                               type="email" 
                               {...register('email')} 
                               placeholder="you@example.com" 
-                              className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12" 
+                              className="pl-10 bg-background/60 border-border/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12"
                             />
                           </div>
                           {errors.email && (
                             <motion.p 
                               initial={{ opacity: 0, y: -10 }}
                               animate={{ opacity: 1, y: 0 }}
-                              className="text-red-400 text-sm"
+                              className="text-destructive text-sm"
                             >
                               {errors.email.message}
                             </motion.p>
@@ -226,9 +226,9 @@ export const Register = () => {
                       </div>
 
                       <div className="space-y-3">
-                        <Label htmlFor="phone" className="typography-label text-almona-light">Phone Number</Label>
+                        <Label htmlFor="phone" className="typography-label text-foreground">Phone Number</Label>
                         <div className="relative">
-                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-almona-light/70" />
+                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/70" />
                           <Input 
                             id="phone" 
                             type="tel" 
@@ -236,14 +236,14 @@ export const Register = () => {
                             onChange={handlePhoneChange} 
                             placeholder="+20XXXXXXXXXX" 
                             maxLength={13} 
-                            className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12" 
+                            className="pl-10 bg-background/60 border-border/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12"
                           />
                         </div>
                         {errors.phone && (
                           <motion.p 
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-red-400 text-sm"
+                            className="text-destructive text-sm"
                           >
                             {errors.phone.message}
                           </motion.p>
@@ -273,44 +273,44 @@ export const Register = () => {
                     >
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-3">
-                          <Label htmlFor="password" className="typography-label text-almona-light">Password</Label>
+                          <Label htmlFor="password" className="typography-label text-foreground">Password</Label>
                           <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-almona-light/70" />
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/70" />
                             <Input 
                               id="password" 
                               type="password" 
                               {...register('password')} 
                               placeholder="••••••••" 
-                              className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12" 
+                              className="pl-10 bg-background/60 border-border/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12"
                             />
                           </div>
                           {errors.password && (
                             <motion.p 
                               initial={{ opacity: 0, y: -10 }}
                               animate={{ opacity: 1, y: 0 }}
-                              className="text-red-400 text-sm"
+                              className="text-destructive text-sm"
                             >
                               {errors.password.message}
                             </motion.p>
                           )}
                         </div>
                         <div className="space-y-3">
-                          <Label htmlFor="confirmPassword" className="typography-label text-almona-light">Confirm Password</Label>
+                          <Label htmlFor="confirmPassword" className="typography-label text-foreground">Confirm Password</Label>
                           <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-almona-light/70" />
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/70" />
                             <Input 
                               id="confirmPassword" 
                               type="password" 
                               {...register('confirmPassword')} 
                               placeholder="••••••••" 
-                              className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12" 
+                              className="pl-10 bg-background/60 border-border/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12"
                             />
                           </div>
                           {errors.confirmPassword && (
                             <motion.p 
                               initial={{ opacity: 0, y: -10 }}
                               animate={{ opacity: 1, y: 0 }}
-                              className="text-red-400 text-sm"
+                              className="text-destructive text-sm"
                             >
                               {errors.confirmPassword.message}
                             </motion.p>
@@ -319,14 +319,14 @@ export const Register = () => {
                       </div>
 
                       <div className="space-y-3">
-                        <Label htmlFor="company" className="typography-label text-almona-light">Company Name (Optional)</Label>
+                        <Label htmlFor="company" className="typography-label text-foreground">Company Name (Optional)</Label>
                         <div className="relative">
-                          <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-almona-light/70" />
+                          <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/70" />
                           <Input 
                             id="company" 
                             {...register('company')} 
                             placeholder="Almona Inc." 
-                            className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12" 
+                            className="pl-10 bg-background/60 border-border/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange h-12"
                           />
                         </div>
                       </div>
@@ -336,7 +336,7 @@ export const Register = () => {
                           type="button" 
                           onClick={prevStep}
                           variant="outline"
-                          className="border-almona-light/30 text-almona-light hover:bg-almona-light/10"
+                          className="border-border/30 text-foreground hover:bg-almona-light/10"
                         >
                           Back
                         </Button>
@@ -362,7 +362,7 @@ export const Register = () => {
                     >
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-3">
-                          <Label htmlFor="workshopLocation" className="typography-label text-almona-light">Workshop Location</Label>
+                          <Label htmlFor="workshopLocation" className="typography-label text-foreground">Workshop Location</Label>
                           <motion.div 
                             className="relative"
                             animate={selectedLocation ? { scale: [1, 1.02, 1] } : {}}
@@ -375,7 +375,7 @@ export const Register = () => {
                               } : {}}
                               transition={{ duration: 0.4 }}
                             >
-                              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-almona-light/70 z-10" />
+                              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/70 z-10" />
                             </motion.div>
                             <Select onValueChange={(value) => {
                               setValue('workshopLocation', value);
@@ -384,14 +384,14 @@ export const Register = () => {
                               <SelectTrigger className={`pl-10 h-12 transition-all duration-300 ${
                                 selectedLocation 
                                   ? 'bg-almona-orange/10 border-almona-orange shadow-lg shadow-almona-orange/20 ring-2 ring-almona-orange/30' 
-                                  : 'bg-almona-dark/60 border-almona-light/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange'
+                                  : 'bg-background/60 border-border/30 focus:ring-2 focus:ring-almona-orange focus:border-almona-orange'
                               }`}>
                                 <SelectValue 
                                   placeholder="Select your location" 
                                   className={selectedLocation ? 'text-almona-orange font-medium' : ''}
                                 />
                               </SelectTrigger>
-                              <SelectContent className="bg-almona-dark/95 text-white border-almona-light/30 backdrop-blur-xl">
+                              <SelectContent className="bg-background/95 text-foreground border-border/30 backdrop-blur-xl">
                                 {egyptianCities.map(city => (
                                   <SelectItem 
                                     key={city} 
@@ -424,7 +424,7 @@ export const Register = () => {
                                     initial={{ scale: 0 }}
                                     animate={{ scale: 1 }}
                                     transition={{ delay: 0.2 }}
-                                    className="text-white text-xs font-bold"
+                                    className="text-foreground text-xs font-bold"
                                   >
                                     ✓
                                   </motion.span>
@@ -451,7 +451,7 @@ export const Register = () => {
                             <motion.p 
                               initial={{ opacity: 0, y: -10 }}
                               animate={{ opacity: 1, y: 0 }}
-                              className="text-red-400 text-sm"
+                              className="text-destructive text-sm"
                             >
                               {errors.workshopLocation.message}
                             </motion.p>
@@ -460,14 +460,14 @@ export const Register = () => {
                       </div>
 
                       <div className="space-y-3">
-                        <Label className="typography-label text-almona-light">Industry Sector</Label>
+                        <Label className="typography-label text-foreground">Industry Sector</Label>
                         <div className="flex space-x-4 justify-center pt-2">
                           <motion.button 
                             type="button" 
                             onClick={() => setValue('sector', 'ALUMINIUM')} 
                             whileHover={{ scale: 1.03 }}
                             whileTap={{ scale: 0.98 }}
-                            className={`flex-1 flex flex-col items-center p-4 rounded-lg cursor-pointer transition-all duration-300 border-2 ${watch('sector') === 'ALUMINIUM' ? 'border-almona-orange bg-almona-orange/10' : 'border-almona-light/30 bg-almona-dark/60 hover:bg-almona-light/10'}`}
+                            className={`flex-1 flex flex-col items-center p-4 rounded-lg cursor-pointer transition-all duration-300 border-2 ${watch('sector') === 'ALUMINIUM' ? 'border-almona-orange bg-almona-orange/10' : 'border-border/30 bg-background/60 hover:bg-almona-light/10'}`}
                           >
                             <Factory className="h-8 w-8 mb-2" />
                             ALUMINIUM
@@ -477,7 +477,7 @@ export const Register = () => {
                             onClick={() => setValue('sector', 'UPVC')} 
                             whileHover={{ scale: 1.03 }}
                             whileTap={{ scale: 0.98 }}
-                            className={`flex-1 flex flex-col items-center p-4 rounded-lg cursor-pointer transition-all duration-300 border-2 ${watch('sector') === 'UPVC' ? 'border-almona-orange bg-almona-orange/10' : 'border-almona-light/30 bg-almona-dark/60 hover:bg-almona-light/10'}`}
+                            className={`flex-1 flex flex-col items-center p-4 rounded-lg cursor-pointer transition-all duration-300 border-2 ${watch('sector') === 'UPVC' ? 'border-almona-orange bg-almona-orange/10' : 'border-border/30 bg-background/60 hover:bg-almona-light/10'}`}
                           >
                             <Building className="h-8 w-8 mb-2" />
                             UPVC
@@ -487,7 +487,7 @@ export const Register = () => {
                           <motion.p 
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-red-400 text-sm"
+                            className="text-destructive text-sm"
                           >
                             {errors.sector.message}
                           </motion.p>
@@ -499,7 +499,7 @@ export const Register = () => {
                           type="button" 
                           onClick={prevStep}
                           variant="outline"
-                          className="border-almona-light/30 text-almona-light hover:bg-almona-light/10"
+                          className="border-border/30 text-foreground hover:bg-almona-light/10"
                         >
                           Back
                         </Button>
@@ -526,7 +526,7 @@ export const Register = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
-                className="mt-8 text-center text-sm text-gray-400 border-t border-almona-light/20 pt-6"
+                className="mt-8 text-center text-sm text-muted-foreground border-t border-border/20 pt-6"
               >
                 Already have an account?{' '}
                 <a href="/login" className="font-medium text-almona-orange hover:underline">

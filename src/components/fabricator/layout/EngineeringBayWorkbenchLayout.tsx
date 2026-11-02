@@ -43,7 +43,7 @@ export const EngineeringBayWorkbenchLayout: React.FC<EngineeringBayWorkbenchLayo
     >
       <div
         className={cn(
-          'min-h-[640px] rounded-lg border border-gray-800/80 overflow-hidden bg-gray-950/40',
+          'min-h-[640px] rounded-lg border border-border/80 overflow-hidden bg-background/40',
           useInlineRails ? 'flex' : 'flex flex-col',
         )}
         data-testid="engineering-bay-layout"
@@ -58,7 +58,7 @@ export const EngineeringBayWorkbenchLayout: React.FC<EngineeringBayWorkbenchLayo
             widthExpanded={railMode === 'collapse-left' ? 220 : 300}
             widthCollapsed={48}
             resizable
-            className="bg-gray-900/80"
+            className="bg-background/80"
           >
             <div className="p-3 space-y-4 overflow-y-auto">{controls}</div>
           </CollapsiblePanel>
@@ -98,7 +98,7 @@ export const EngineeringBayWorkbenchLayout: React.FC<EngineeringBayWorkbenchLayo
             widthExpanded={ENGINEERING_BAY_PREVIEW_RAIL_PX}
             widthCollapsed={48}
             variant={useInlineRails ? 'docked' : 'overlay'}
-            className="bg-gray-900/80 h-full"
+            className="bg-background/80 h-full"
           >
             <div className="h-full min-h-[380px] p-3 space-y-4 overflow-y-auto">{preview}</div>
           </CollapsiblePanel>

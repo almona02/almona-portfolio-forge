@@ -57,25 +57,25 @@ export const StudioOperatorHelpPage: React.FC = () => {
 
   return (
     <div
-      className="h-full overflow-y-auto bg-[#0a0a0a] text-amber-100/90"
+      className="h-full overflow-y-auto bg-background text-amber-100/90"
       dir={rtl ? 'rtl' : 'ltr'}
       data-testid="studio-operator-help"
       lang={i18n.language.startsWith('ar') ? 'ar' : i18n.language.startsWith('tr') ? 'tr' : 'en'}
     >
       <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8 print:max-w-none print:px-2 print:py-2">
-        <header className="border border-amber-700/40 bg-[#0f0f0f] p-4 sm:p-5 mb-6 print:border-black print:bg-white print:text-black">
+        <header className="border border-amber-700/40 bg-background p-4 sm:p-5 mb-6 print:border-black print:bg-card print:text-foreground">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 space-y-2">
-              <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-amber-600 print:text-neutral-600">
+              <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-amber-600 print:text-muted-foreground">
                 ALMONA · Fabricator Pro
               </p>
-              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-amber-100 print:text-black">
+              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-amber-100 print:text-foreground">
                 {t('meta.title')}
               </h1>
-              <p className="text-sm text-amber-200/70 max-w-2xl leading-relaxed print:text-neutral-700">
+              <p className="text-sm text-amber-200/70 max-w-2xl leading-relaxed print:text-foreground">
                 {t('meta.subtitle')}
               </p>
-              <p className="text-[11px] text-amber-700/90 print:text-neutral-600">
+              <p className="text-[11px] text-amber-700/90 print:text-muted-foreground">
                 {t('meta.audience')} · {t('meta.live_site')}:{' '}
                 <a
                   href="https://www.almona02.com"
@@ -86,7 +86,7 @@ export const StudioOperatorHelpPage: React.FC = () => {
                   www.almona02.com
                 </a>
               </p>
-              <p className="text-[10px] font-mono text-amber-800 print:text-neutral-500">
+              <p className="text-[10px] font-mono text-amber-800 print:text-muted-foreground">
                 {t('meta.standards')}
               </p>
             </div>
@@ -124,7 +124,7 @@ export const StudioOperatorHelpPage: React.FC = () => {
 
         <section id="help-principles" className="mb-8 scroll-mt-4">
           <SectionHeading>{t('principles.heading')}</SectionHeading>
-          <p className="mb-4 text-sm text-amber-200/60 leading-relaxed print:text-neutral-700">
+          <p className="mb-4 text-sm text-amber-200/60 leading-relaxed print:text-foreground">
             {t('principles.intro')}
           </p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 print:grid-cols-2">
@@ -132,20 +132,20 @@ export const StudioOperatorHelpPage: React.FC = () => {
               principles.map((item, index) => (
                 <article
                   key={item.title}
-                  className="border border-amber-800/45 bg-[#0c0c0c] p-4 flex flex-col gap-2 print:border-neutral-400 print:bg-white"
+                  className="border border-amber-800/45 bg-background p-4 flex flex-col gap-2 print:border-border print:bg-card"
                 >
                   <div className="flex items-baseline gap-2">
                     <span className="font-mono text-[10px] text-amber-600 tabular-nums">
                       {String(index + 1).padStart(2, '0')}
                     </span>
-                    <h3 className="text-sm font-semibold text-amber-100 print:text-black">
+                    <h3 className="text-sm font-semibold text-amber-100 print:text-foreground">
                       {item.title}
                     </h3>
                   </div>
-                  <p className="text-xs text-amber-200/75 leading-relaxed flex-1 print:text-neutral-800">
+                  <p className="text-xs text-amber-200/75 leading-relaxed flex-1 print:text-foreground">
                     {item.body}
                   </p>
-                  <p className="text-[11px] border-t border-amber-900/40 pt-2 text-amber-500/90 print:border-neutral-300 print:text-neutral-600">
+                  <p className="text-[11px] border-t border-amber-900/40 pt-2 text-amber-500/90 print:border-border print:text-muted-foreground">
                     {item.result}
                   </p>
                 </article>
@@ -155,37 +155,37 @@ export const StudioOperatorHelpPage: React.FC = () => {
 
         <section id="help-pipeline" className="mb-8 scroll-mt-4">
           <SectionHeading>{t('pipeline.heading')}</SectionHeading>
-          <p className="mb-4 text-sm text-amber-200/60 leading-relaxed print:text-neutral-700">
+          <p className="mb-4 text-sm text-amber-200/60 leading-relaxed print:text-foreground">
             {t('pipeline.intro')}
           </p>
-          <ol className="space-y-0 border border-amber-800/40 print:border-neutral-400">
+          <ol className="space-y-0 border border-amber-800/40 print:border-border">
             {Array.isArray(steps) &&
               steps.map((step, index) => (
                 <li
                   key={`${step.label}-${index}`}
                   className={cn(
                     'flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 px-3 py-2.5',
-                    index % 2 === 0 ? 'bg-[#0c0c0c]' : 'bg-[#0a0a0a]',
-                    'border-b border-amber-900/30 last:border-b-0 print:bg-white print:border-neutral-200',
+                    index % 2 === 0 ? 'bg-background' : 'bg-background',
+                    'border-b border-amber-900/30 last:border-b-0 print:bg-card print:border-border',
                   )}
                 >
                   <div className="flex items-center gap-2 sm:min-w-[11rem] shrink-0">
                     <span className="font-mono text-[10px] text-amber-700 tabular-nums w-5">
                       {String(index + 1).padStart(2, '0')}
                     </span>
-                    <span className="text-sm font-medium text-amber-100 print:text-black">
+                    <span className="text-sm font-medium text-amber-100 print:text-foreground">
                       {step.label}
                     </span>
                   </div>
                   {step.gate ? (
-                    <p className="text-[11px] text-amber-600/95 leading-snug sm:pt-0.5 print:text-neutral-700">
+                    <p className="text-[11px] text-amber-600/95 leading-snug sm:pt-0.5 print:text-foreground">
                       <span className="font-mono uppercase tracking-wider text-amber-700/80 me-1.5">
                         {t('meta.gate_label')}
                       </span>
                       {step.gate}
                     </p>
                   ) : (
-                    <p className="text-[11px] text-amber-800/80 sm:pt-0.5 print:text-neutral-500">—</p>
+                    <p className="text-[11px] text-amber-800/80 sm:pt-0.5 print:text-muted-foreground">—</p>
                   )}
                 </li>
               ))}
@@ -194,25 +194,25 @@ export const StudioOperatorHelpPage: React.FC = () => {
 
         <section id="help-revision" className="mb-8 scroll-mt-4">
           <SectionHeading>{t('revision.heading')}</SectionHeading>
-          <div className="border border-amber-700/50 bg-amber-950/20 p-4 space-y-3 print:border-neutral-500 print:bg-neutral-50">
-            <p className="font-mono text-[11px] text-amber-400 break-words print:text-neutral-800">
+          <div className="border border-amber-700/50 bg-amber-950/20 p-4 space-y-3 print:border-border print:bg-background">
+            <p className="font-mono text-[11px] text-amber-400 break-words print:text-foreground">
               {t('revision.identity')}
             </p>
-            <p className="text-sm text-amber-100/85 leading-relaxed print:text-neutral-800">
+            <p className="text-sm text-amber-100/85 leading-relaxed print:text-foreground">
               {t('revision.what')}
             </p>
-            <p className="text-sm text-amber-100/85 leading-relaxed print:text-neutral-800">
+            <p className="text-sm text-amber-100/85 leading-relaxed print:text-foreground">
               {t('revision.when')}
             </p>
-            <div className="border border-amber-600/40 bg-[#0a0a0a] p-3 print:border-black print:bg-white">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-400 mb-1.5 print:text-black">
+            <div className="border border-amber-600/40 bg-background p-3 print:border-black print:bg-card">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-400 mb-1.5 print:text-foreground">
                 {t('revision.rule_title')}
               </h3>
-              <p className="text-xs text-amber-200/80 leading-relaxed print:text-neutral-800">
+              <p className="text-xs text-amber-200/80 leading-relaxed print:text-foreground">
                 {t('revision.rule_body')}
               </p>
             </div>
-            <p className="text-[11px] text-amber-500 flex items-start gap-2 print:text-neutral-700">
+            <p className="text-[11px] text-amber-500 flex items-start gap-2 print:text-foreground">
               <CheckSquare size={14} className="mt-0.5 shrink-0" aria-hidden />
               <span>{t('revision.evidence')}</span>
             </p>
@@ -221,14 +221,14 @@ export const StudioOperatorHelpPage: React.FC = () => {
 
         <section id="help-roles" className="mb-8 scroll-mt-4">
           <SectionHeading>{t('roles.heading')}</SectionHeading>
-          <div className="space-y-3 text-sm text-amber-200/75 leading-relaxed print:text-neutral-800">
+          <div className="space-y-3 text-sm text-amber-200/75 leading-relaxed print:text-foreground">
             <p>{t('roles.register')}</p>
             <p>{t('roles.privileged')}</p>
-            <div className="border border-amber-800/45 p-3 bg-[#0c0c0c] print:border-neutral-400 print:bg-white">
-              <h3 className="text-xs font-semibold text-amber-300 mb-1 print:text-black">
+            <div className="border border-amber-800/45 p-3 bg-background print:border-border print:bg-card">
+              <h3 className="text-xs font-semibold text-amber-300 mb-1 print:text-foreground">
                 {t('roles.shared_title')}
               </h3>
-              <p className="text-xs text-amber-200/70 print:text-neutral-800">
+              <p className="text-xs text-amber-200/70 print:text-foreground">
                 {t('roles.shared_body')}
               </p>
             </div>
@@ -237,11 +237,11 @@ export const StudioOperatorHelpPage: React.FC = () => {
 
         <section id="help-packs" className="mb-8 scroll-mt-4">
           <SectionHeading>{t('packs.heading')}</SectionHeading>
-          <ul className="space-y-2 text-sm text-amber-200/75 leading-relaxed print:text-neutral-800">
+          <ul className="space-y-2 text-sm text-amber-200/75 leading-relaxed print:text-foreground">
             <li>
               <Link
                 to={fabricatorRoutes.studioData()}
-                className="text-amber-400 underline-offset-2 hover:underline print:text-black"
+                className="text-amber-400 underline-offset-2 hover:underline print:text-foreground"
               >
                 {t('packs.gallery')}
               </Link>
@@ -252,19 +252,19 @@ export const StudioOperatorHelpPage: React.FC = () => {
               {t('packs.tuning')}{' '}
               <Link
                 to={fabricatorRoutes.studioData('tuning-no-dxf')}
-                className="text-amber-500 hover:underline print:text-neutral-700"
+                className="text-amber-500 hover:underline print:text-foreground"
               >
                 No-DXF
               </Link>
               {' · '}
               <Link
                 to={fabricatorRoutes.studioData('tuning')}
-                className="text-amber-500 hover:underline print:text-neutral-700"
+                className="text-amber-500 hover:underline print:text-foreground"
               >
                 DXF
               </Link>
             </li>
-            <li className="border border-amber-800/40 p-3 text-xs text-amber-500/95 print:border-neutral-400 print:text-neutral-700">
+            <li className="border border-amber-800/40 p-3 text-xs text-amber-500/95 print:border-border print:text-foreground">
               {t('packs.note')}
             </li>
           </ul>
@@ -272,11 +272,11 @@ export const StudioOperatorHelpPage: React.FC = () => {
 
         <section id="help-stock" className="mb-8 scroll-mt-4">
           <SectionHeading>{t('stock.heading')}</SectionHeading>
-          <ul className="space-y-2 text-sm text-amber-200/75 leading-relaxed print:text-neutral-800">
+          <ul className="space-y-2 text-sm text-amber-200/75 leading-relaxed print:text-foreground">
             <li>
               <Link
                 to={fabricatorRoutes.studioDataStock()}
-                className="text-amber-400 underline-offset-2 hover:underline print:text-black"
+                className="text-amber-400 underline-offset-2 hover:underline print:text-foreground"
               >
                 {t('stock.location')}
               </Link>
@@ -285,16 +285,16 @@ export const StudioOperatorHelpPage: React.FC = () => {
             <li>{t('stock.invoice')}</li>
             <li>{t('stock.soft')}</li>
             <li>{t('stock.add')}</li>
-            <li className="text-xs text-amber-600 print:text-neutral-600">{t('stock.test')}</li>
+            <li className="text-xs text-amber-600 print:text-muted-foreground">{t('stock.test')}</li>
           </ul>
         </section>
 
         <section id="help-troubleshoot" className="mb-8 scroll-mt-4">
           <SectionHeading>{t('troubleshoot.heading')}</SectionHeading>
-          <div className="overflow-x-auto border border-amber-800/40 print:border-neutral-400">
+          <div className="overflow-x-auto border border-amber-800/40 print:border-border">
             <table className="w-full text-xs min-w-[36rem]">
               <thead>
-                <tr className="bg-amber-950/40 text-[10px] uppercase tracking-wider text-amber-600 print:bg-neutral-100 print:text-neutral-700">
+                <tr className="bg-amber-950/40 text-[10px] uppercase tracking-wider text-amber-600 print:bg-muted print:text-foreground">
                   <th className="text-start p-2.5 font-medium">{t('troubleshoot.cols.symptom')}</th>
                   <th className="text-start p-2.5 font-medium">{t('troubleshoot.cols.cause')}</th>
                   <th className="text-start p-2.5 font-medium">{t('troubleshoot.cols.action')}</th>
@@ -305,11 +305,11 @@ export const StudioOperatorHelpPage: React.FC = () => {
                   troubleRows.map((row) => (
                     <tr
                       key={row.symptom}
-                      className="border-t border-amber-900/35 align-top print:border-neutral-200"
+                      className="border-t border-amber-900/35 align-top print:border-border"
                     >
-                      <td className="p-2.5 text-amber-100/90 print:text-black">{row.symptom}</td>
-                      <td className="p-2.5 text-amber-200/65 print:text-neutral-800">{row.cause}</td>
-                      <td className="p-2.5 text-amber-200/75 print:text-neutral-800">{row.action}</td>
+                      <td className="p-2.5 text-amber-100/90 print:text-foreground">{row.symptom}</td>
+                      <td className="p-2.5 text-amber-200/65 print:text-foreground">{row.cause}</td>
+                      <td className="p-2.5 text-amber-200/75 print:text-foreground">{row.action}</td>
                     </tr>
                   ))}
               </tbody>
@@ -321,22 +321,22 @@ export const StudioOperatorHelpPage: React.FC = () => {
           <SectionHeading icon={<ClipboardList size={16} aria-hidden />}>
             {t('assessment.heading')}
           </SectionHeading>
-          <p className="mb-2 text-sm text-amber-200/60 print:text-neutral-700">
+          <p className="mb-2 text-sm text-amber-200/60 print:text-foreground">
             {t('assessment.intro')}
           </p>
-          <p className="mb-4 text-[11px] font-medium text-amber-400 flex items-start gap-2 print:text-neutral-800">
+          <p className="mb-4 text-[11px] font-medium text-amber-400 flex items-start gap-2 print:text-foreground">
             <CheckSquare size={14} className="mt-0.5 shrink-0" aria-hidden />
             {t('assessment.mandatory_chrome')}
           </p>
-          <ul className="space-y-2 border border-amber-800/40 p-3 sm:p-4 print:border-neutral-400">
+          <ul className="space-y-2 border border-amber-800/40 p-3 sm:p-4 print:border-border">
             {Array.isArray(assessmentItems) &&
               assessmentItems.map((item) => (
                 <li
                   key={item}
-                  className="flex gap-2.5 text-xs text-amber-200/80 leading-snug print:text-neutral-800"
+                  className="flex gap-2.5 text-xs text-amber-200/80 leading-snug print:text-foreground"
                 >
                   <span
-                    className="mt-0.5 inline-block h-3.5 w-3.5 shrink-0 border border-amber-600/50 print:border-neutral-500"
+                    className="mt-0.5 inline-block h-3.5 w-3.5 shrink-0 border border-amber-600/50 print:border-border"
                     aria-hidden
                   />
                   <span>{item}</span>
@@ -345,12 +345,12 @@ export const StudioOperatorHelpPage: React.FC = () => {
           </ul>
         </section>
 
-        <footer className="border-t border-amber-900/40 pt-4 pb-8 space-y-2 text-[11px] text-amber-700 print:border-neutral-300 print:text-neutral-600">
+        <footer className="border-t border-amber-900/40 pt-4 pb-8 space-y-2 text-[11px] text-amber-700 print:border-border print:text-muted-foreground">
           <div className="flex items-center gap-2">
             <BookOpen size={14} aria-hidden />
             <span>{t('meta.full_guide')}</span>
           </div>
-          <p className="font-mono text-amber-600/90 break-all print:text-neutral-600">
+          <p className="font-mono text-amber-600/90 break-all print:text-muted-foreground">
             {t('meta.guide_path')}
           </p>
           <Link
@@ -374,7 +374,7 @@ function SectionHeading({
   icon?: React.ReactNode;
 }) {
   return (
-    <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-amber-400 border-b border-amber-800/40 pb-2 print:text-black print:border-neutral-400">
+    <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-amber-400 border-b border-amber-800/40 pb-2 print:text-foreground print:border-border">
       {icon}
       {children}
     </h2>

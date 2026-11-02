@@ -316,18 +316,18 @@ export const OptimizationPage: React.FC = () => {
     const productionBlocked = mode === 'production' && (!authority || inputIssues.length > 0 || !readiness.ready);
 
     const LoadingFallback = (
-        <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900">
+        <div className="flex items-center justify-center h-full bg-gradient-to-br from-background to-background">
             <div className="text-center space-y-4">
                 <Loader2 className="w-12 h-12 text-amber-400 animate-spin mx-auto" />
-                <p className="text-slate-400 text-sm">Loading optimization controls...</p>
+                <p className="text-muted-foreground text-sm">Loading optimization controls...</p>
             </div>
         </div>
     );
 
     if (!hasRequiredData || !optimizationValidation.valid) {
         return (
-            <div className="flex items-start sm:items-center justify-center h-full min-h-0 overflow-y-auto bg-gradient-to-br from-slate-950 to-slate-900 p-3 sm:p-6">
-                <div className="max-w-md w-full bg-slate-900/50 border border-amber-600/30 rounded-lg p-8 space-y-6">
+            <div className="flex items-start sm:items-center justify-center h-full min-h-0 overflow-y-auto bg-gradient-to-br from-background to-background p-3 sm:p-6">
+                <div className="max-w-md w-full bg-background/50 border border-amber-600/30 rounded-lg p-8 space-y-6">
                     <div className="text-center">
                         <AlertCircle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
                         <h2 className="text-2xl font-bold text-amber-200">
@@ -355,8 +355,8 @@ export const OptimizationPage: React.FC = () => {
     }
 
     return (
-        <div className="flex flex-col h-full bg-[#0a0a0a]">
-            <p className="px-3 py-2 text-xs text-slate-400">
+        <div className="flex flex-col h-full bg-background">
+            <p className="px-3 py-2 text-xs text-muted-foreground">
               Cut plan for pose quantity {currentProject?.quantity ?? 1} (design ledger × N). Project optimization still pools across positions; verify inventory before production.
             </p>
             <Suspense fallback={LoadingFallback}>

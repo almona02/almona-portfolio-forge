@@ -75,15 +75,15 @@ export function AuditLogViewer({
   };
 
   const getPriceImpactIcon = (impact?: number) => {
-    if (!impact) return <Minus className="h-5 w-5 text-gray-500" />;
-    if (impact > 0) return <TrendingUp className="h-5 w-5 text-red-500" />;
-    return <TrendingDown className="h-5 w-5 text-green-500" />;
+    if (!impact) return <Minus className="h-5 w-5 text-muted-foreground" />;
+    if (impact > 0) return <TrendingUp className="h-5 w-5 text-destructive" />;
+    return <TrendingDown className="h-5 w-5 text-success" />;
   };
 
   const getPriceImpactColor = (impact?: number) => {
-    if (!impact) return 'text-gray-700 dark:text-gray-300';
-    if (impact > 0) return 'text-red-700 dark:text-red-400 font-bold'; // Price INCREASE = RED = BAD
-    return 'text-green-700 dark:text-green-400 font-bold'; // Price DECREASE = GREEN = GOOD
+    if (!impact) return 'text-foreground dark:text-foreground';
+    if (impact > 0) return 'text-red-700 dark:text-destructive font-bold'; // Price INCREASE = RED = BAD
+    return 'text-green-700 dark:text-success font-bold'; // Price DECREASE = GREEN = GOOD
   };
 
   const getActionTypeIcon = (actionType: AuditEntry['actionType']) => {

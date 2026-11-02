@@ -74,25 +74,25 @@ export const FabricatorWorkflowPro: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] text-amber-200 pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background text-warning pt-20">
       <div className="container mx-auto px-4 py-8 space-y-6">
         {/* Header */}
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 shadow-2xl card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 shadow-2xl card-glass-dark">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="relative flex items-center justify-center">
-                  <Factory className="h-9 w-9 text-amber-400" />
+                  <Factory className="h-9 w-9 text-warning" />
                   <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full animate-pulse ring-2 ring-emerald-400/40 status-valid" />
                 </div>
                 <div>
-                  <div className="text-[11px] font-semibold tracking-[0.25em] text-amber-300/80 uppercase">
+                  <div className="text-[11px] font-semibold tracking-[0.25em] text-warning/80 uppercase">
                     {t('workflow_pro.title', 'FABRICATOR WORKFLOW PRO')}
                   </div>
                   <CardTitle className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-amber-400 via-red-400 to-red-500 bg-clip-text text-transparent">
                     {t('workflow_pro.mass_production_cockpit', 'Mass Production Cockpit')}
                   </CardTitle>
-                  <CardDescription className="text-xs md:text-sm text-amber-600/80 mt-1">
+                  <CardDescription className="text-xs md:text-sm text-warning/80 mt-1">
                     {t('workflow_pro.description', 'Cross‑project optimisation using GA + remnant‑aware cutting, built for high‑volume workshops.')}
                   </CardDescription>
                 </div>
@@ -100,7 +100,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
               <div className="flex flex-col items-end gap-2">
                 <Badge
                   variant="outline"
-                  className="bg-amber-500/15 border-amber-500/40 text-[11px] text-amber-300"
+                  className="bg-amber-500/15 border-amber-500/40 text-[11px] text-warning"
                 >
                   <Sparkles className="h-3 w-3 mr-1" />
                   {optimizedJobs.length} {optimizedJobs.length === 1 
@@ -108,9 +108,9 @@ export const FabricatorWorkflowPro: React.FC = () => {
                     : t('workflow_pro.optimised_jobs_plural', 'optimised jobs')}
                 </Badge>
                 {userId && (
-                  <p className="text-[11px] text-amber-600/70">
+                  <p className="text-[11px] text-warning/70">
                     {t('workflow_pro.user', 'User')}:{' '}
-                    <span className="font-mono text-amber-300">
+                    <span className="font-mono text-warning">
                       {userId.slice(0, 4)}…{userId.slice(-4)}
                     </span>
                   </p>
@@ -147,7 +147,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
           }
         >
           {/* Optimization CTA */}
-          <div className="flex flex-wrap items-center gap-3 p-4 bg-[#0f0f0f]/60 border border-amber-600/30 rounded-lg card-dark">
+          <div className="flex flex-wrap items-center gap-3 p-4 bg-background/60 border border-amber-600/30 rounded-lg card-dark">
             <Button
               size="lg"
               onClick={() => void handleOptimize()}
@@ -181,8 +181,8 @@ export const FabricatorWorkflowPro: React.FC = () => {
           {userId ? (
             <MassProductionDashboard projects={optimizedJobs} userId={userId} />
           ) : (
-            <Card className="bg-[#0f0f0f]/70 border-amber-600/30 card-glass-dark">
-              <CardContent className="p-6 text-sm text-amber-300">
+            <Card className="bg-background/70 border-amber-600/30 card-glass-dark">
+              <CardContent className="p-6 text-sm text-warning">
                 {t('workflow_pro.disabled_until_auth', 'Mass production optimisation is disabled until a user is authenticated.')}
               </CardContent>
             </Card>

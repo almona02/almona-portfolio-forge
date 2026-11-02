@@ -94,7 +94,7 @@ export const AdminSettingsPanel: React.FC = () => {
                 </div>
                 <div className="w-40">{renderInput(s)}</div>
                 <Button size="sm" variant="outline" onClick={() => void save(s)}>Save</Button>
-                <Button size="sm" variant="ghost" onClick={() => void appSettingsApi.deleteSetting(s.id).then(refresh)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                <Button size="sm" variant="ghost" onClick={() => void appSettingsApi.deleteSetting(s.id).then(refresh)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
               </div>
             ))}
           </div>

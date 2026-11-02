@@ -9,10 +9,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md hover:from-amber-600 hover:to-amber-700 hover:shadow-amber-500/25 border border-amber-400/20",
-        secondary: "bg-slate-700 text-white hover:bg-slate-600 shadow-md hover:shadow-slate-500/25 border border-slate-600/20",
-        outline: "border-2 border-amber-400/60 bg-transparent text-amber-400 hover:bg-amber-400/10 hover:border-amber-400 shadow-sm",
-        ghost: "bg-transparent text-slate-300 hover:bg-white/5 hover:text-white shadow-none border-0",
+        primary: "bg-brand text-brand-foreground shadow-sm hover:bg-brand/90 border border-brand focus-visible:ring-ring",
+        secondary: "bg-muted text-foreground hover:bg-muted shadow-md hover:shadow-slate-500/25 border border-border/20",
+        outline: "border border-input bg-card text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring shadow-sm",
+        ghost: "bg-transparent text-foreground hover:bg-foreground/5 hover:text-foreground shadow-none border-0",
         danger: "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-md hover:from-red-600 hover:to-red-700 hover:shadow-red-500/25 border border-red-400/20",
         success: "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md hover:from-green-600 hover:to-green-700 hover:shadow-green-500/25 border border-green-400/20",
       },
@@ -125,7 +125,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         
         {/* Subtle touch feedback overlay (Gold Tier Polish) */}
         {!isDisabled && !asChild && (
-           <span className="absolute inset-0 rounded-[inherit] bg-white/0 hover:bg-white/5 active:bg-black/5 transition-colors duration-200 pointer-events-none" />
+           <span className="absolute inset-0 rounded-[inherit] bg-foreground/0 hover:bg-foreground/5 active:bg-black/5 transition-colors duration-200 pointer-events-none" />
         )}
       </button>
     );

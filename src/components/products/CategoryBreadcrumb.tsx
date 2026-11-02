@@ -34,11 +34,11 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
             variant="ghost"
             size="sm"
             onClick={onHomeClick}
-            className="text-gray-400 hover:text-white p-1 h-auto"
+            className="text-muted-foreground hover:text-foreground p-1 h-auto"
           >
             <Home className="h-4 w-4" />
           </Button>
-          <ChevronRight className="h-4 w-4 text-gray-500" />
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </>
       )}
 
@@ -55,7 +55,7 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
                 p-1 h-auto text-xs
                 ${isLast 
                   ? 'text-amber-400 font-medium cursor-default' 
-                  : 'text-gray-400 hover:text-white cursor-pointer'
+                  : 'text-muted-foreground hover:text-foreground cursor-pointer'
                 }
               `}
               disabled={isLast}
@@ -64,7 +64,7 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
             </Button>
 
             {!isLast && (
-              <ChevronRight className="h-4 w-4 text-gray-500" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
             )}
           </React.Fragment>
         );

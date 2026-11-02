@@ -75,18 +75,18 @@ interface InvoiceDetailDialogProps {
 const getStatusBadge = (status: string) => {
   const statusColors: Record<string, { bg: string; text: string; border: string }> = {
     draft: {
-      bg: 'bg-slate-500/10',
-      text: 'text-slate-300',
-      border: 'border-slate-500/30',
+      bg: 'bg-muted/10',
+      text: 'text-foreground',
+      border: 'border-border/30',
     },
     submitted: {
       bg: 'bg-blue-500/10',
-      text: 'text-blue-300',
+      text: 'text-info',
       border: 'border-blue-500/30',
     },
     approved: {
       bg: 'bg-emerald-500/10',
-      text: 'text-emerald-300',
+      text: 'text-success',
       border: 'border-emerald-500/30',
     },
     locked: {
@@ -96,12 +96,12 @@ const getStatusBadge = (status: string) => {
     },
     executed: {
       bg: 'bg-cyan-500/10',
-      text: 'text-cyan-300',
+      text: 'text-info',
       border: 'border-cyan-500/30',
     },
     cancelled: {
       bg: 'bg-red-500/10',
-      text: 'text-red-300',
+      text: 'text-destructive',
       border: 'border-red-500/30',
     },
   };
@@ -232,7 +232,7 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-[#0f0f0f] border-amber-600/30 max-w-5xl max-h-[95vh] overflow-hidden flex flex-col">
+      <DialogContent className="bg-background border-amber-600/30 max-w-5xl max-h-[95vh] overflow-hidden flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
@@ -260,7 +260,7 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
 
         <div className="flex-1 overflow-y-auto">
           <Tabs defaultValue="details" className="w-full">
-            <TabsList className="bg-[#0f0f0f]/60 border-amber-600/20 mb-4">
+            <TabsList className="bg-background/60 border-amber-600/20 mb-4">
               <TabsTrigger value="details" className="text-amber-300 data-[state=active]:text-amber-200">
                 Details
               </TabsTrigger>
@@ -275,7 +275,7 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
             {/* Details Tab */}
             <TabsContent value="details" className="space-y-4">
               {/* Invoice Info Card */}
-              <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+              <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
                 <CardHeader>
                   <CardTitle className="text-base text-amber-200">Invoice Information</CardTitle>
                 </CardHeader>
@@ -338,7 +338,7 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
               </Card>
 
               {/* State Management Card */}
-              <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+              <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
                 <CardHeader>
                   <CardTitle className="text-base text-amber-200">Status Management</CardTitle>
                 </CardHeader>
@@ -385,7 +385,7 @@ const InvoiceDetailDialogComponent: React.FC<InvoiceDetailDialogProps> = ({
                   {generatingLink ? 'Generating...' : 'Generate Payment Link'}
                 </Button>
                 {paymentLink && (
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-[#0f0f0f]/60 border border-amber-600/30">
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-background/60 border border-amber-600/30">
                     <Input
                       value={paymentLink}
                       readOnly

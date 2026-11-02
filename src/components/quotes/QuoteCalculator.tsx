@@ -45,7 +45,7 @@ export const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({
   const estimatedTotal = calculateEstimate();
 
   return (
-    <Card className="bg-almona-dark border-almona-light/20">
+    <Card className="bg-background border-border/20">
       <CardHeader>
         <CardTitle className="text-lg">Price Estimation</CardTitle>
       </CardHeader>

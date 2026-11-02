@@ -61,7 +61,7 @@ const SeverityIcon: React.FC<{ severity: ValidationIssue['severity'] }> = ({ sev
     case 'warning':
       return <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />;
     case 'info':
-      return <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" />;
+      return <CheckCircle2 className="w-4 h-4 text-info flex-shrink-0" />;
   }
 };
 
@@ -229,10 +229,10 @@ const YilmazExportPage: React.FC = () => {
                     ? 'bg-primary text-primary-foreground'
                     : step === 'validate' && hasValidated
                       ? preFlight?.valid
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                        : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-success'
+                        : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-destructive'
                       : step === 'export' && result?.success
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-success'
                         : 'text-muted-foreground hover:bg-accent'
                 }`}
               >
@@ -378,7 +378,7 @@ const YilmazExportPage: React.FC = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
                     {preFlight.valid ? (
-                      <CheckCircle2 className="w-5 h-5 text-green-600" />
+                      <CheckCircle2 className="w-5 h-5 text-success" />
                     ) : (
                       <XCircle className="w-5 h-5 text-destructive" />
                     )}
@@ -532,25 +532,25 @@ const YilmazExportPage: React.FC = () => {
                       {/* Metadata */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 text-center">
-                          <p className="text-lg font-bold text-green-700 dark:text-green-400">
+                          <p className="text-lg font-bold text-green-700 dark:text-success">
                             {result.metadata.totalCuts}
                           </p>
                           <p className="text-xs text-muted-foreground">Cuts Exported</p>
                         </div>
                         <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 text-center">
-                          <p className="text-lg font-bold text-green-700 dark:text-green-400">
+                          <p className="text-lg font-bold text-green-700 dark:text-success">
                             {result.metadata.gcodeLinesCount}
                           </p>
                           <p className="text-xs text-muted-foreground">G-Code Lines</p>
                         </div>
                         <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 text-center">
-                          <p className="text-lg font-bold text-green-700 dark:text-green-400">
+                          <p className="text-lg font-bold text-green-700 dark:text-success">
                             {result.metadata.machineModel}
                           </p>
                           <p className="text-xs text-muted-foreground">Target Machine</p>
                         </div>
                         <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 text-center">
-                          <p className="text-sm font-mono font-bold text-green-700 dark:text-green-400">
+                          <p className="text-sm font-mono font-bold text-green-700 dark:text-success">
                             {result.checksum}
                           </p>
                           <p className="text-xs text-muted-foreground">Checksum</p>
@@ -564,13 +564,13 @@ const YilmazExportPage: React.FC = () => {
                         <FileCard
                           file={result.files.gcode}
                           label="CNC Program (.cnc)"
-                          icon={<FileCode className="w-5 h-5 text-blue-600" />}
+                          icon={<FileCode className="w-5 h-5 text-info" />}
                           onDownload={handleDownloadFile}
                         />
                         <FileCard
                           file={result.files.csv}
                           label="CSV Cut List"
-                          icon={<Table2 className="w-5 h-5 text-green-600" />}
+                          icon={<Table2 className="w-5 h-5 text-success" />}
                           onDownload={handleDownloadFile}
                         />
                         <FileCard

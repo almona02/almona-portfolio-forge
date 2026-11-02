@@ -560,7 +560,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
       />
 
       {/* Main canvas area */}
-      <div ref={canvasContainerRef} className="relative w-full h-[600px] bg-gray-900 rounded-lg overflow-hidden">
+      <div ref={canvasContainerRef} className="relative w-full h-[600px] bg-background rounded-lg overflow-hidden">
         <Canvas
           camera={{ position: [0, 0, 5], fov: 50 }}
           gl={{ 
@@ -593,12 +593,12 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
 
         {/* Overlay controls */}
         {!backgroundImage && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80">
+          <div className="absolute inset-0 flex items-center justify-center bg-background/80">
             <Card className="max-w-md">
               <CardContent className="p-6 text-center">
-                <ImageIcon className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <ImageIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                 <h3 className="typography-h3 text-lg mb-2">Upload Building Photo</h3>
-                <p className="text-sm text-gray-400 mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                   Upload a photo of the building to superimpose your window design
                 </p>
                 <Button onClick={() => fileInputRef.current?.click()}>
@@ -668,12 +668,12 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
                   max={3}
                   step={0.1}
                 />
-                <div className="text-xs text-gray-400 mt-1">{windowScale.toFixed(1)}x</div>
+                <div className="text-xs text-muted-foreground mt-1">{windowScale.toFixed(1)}x</div>
               </div>
 
               {detectedWindows.length > 0 && (
                 <div className="p-3 bg-blue-500/10 rounded-lg">
-                  <p className="text-sm text-blue-400">
+                  <p className="text-sm text-info">
                     {detectedWindows.length} window opening(s) detected
                   </p>
                   <Button
@@ -698,7 +698,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
                   max={2}
                   step={0.1}
                 />
-                <div className="text-xs text-gray-400 mt-1">{lighting.intensity.toFixed(1)}</div>
+                <div className="text-xs text-muted-foreground mt-1">{lighting.intensity.toFixed(1)}</div>
               </div>
 
               <div>
@@ -710,7 +710,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
                   max={360}
                   step={1}
                 />
-                <div className="text-xs text-gray-400 mt-1">{lighting.direction}°</div>
+                <div className="text-xs text-muted-foreground mt-1">{lighting.direction}°</div>
               </div>
 
               <div>
@@ -722,7 +722,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
                   max={1}
                   step={0.1}
                 />
-                <div className="text-xs text-gray-400 mt-1">{lighting.ambient.toFixed(1)}</div>
+                <div className="text-xs text-muted-foreground mt-1">{lighting.ambient.toFixed(1)}</div>
               </div>
 
               <div>
@@ -734,7 +734,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
                   max={1}
                   step={0.1}
                 />
-                <div className="text-xs text-gray-400 mt-1">{lighting.shadowOpacity.toFixed(1)}</div>
+                <div className="text-xs text-muted-foreground mt-1">{lighting.shadowOpacity.toFixed(1)}</div>
               </div>
             </TabsContent>
 
@@ -808,7 +808,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
 
       {/* Mobile optimization indicator */}
       {isMobile && (
-        <div className="mt-2 flex items-center gap-2 text-sm text-gray-400">
+        <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
           <Smartphone className="h-4 w-4" />
           <span>Mobile-optimized view</span>
         </div>

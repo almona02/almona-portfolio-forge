@@ -61,8 +61,8 @@ export const TabRedirectBanner: React.FC<TabRedirectBannerProps> = ({
       'backdrop-blur-sm'
     )}>
       <div className="flex items-start gap-3">
-        <ArrowRight className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
-        <AlertDescription className="flex-1 text-blue-300">
+        <ArrowRight className="h-4 w-4 text-info mt-0.5 flex-shrink-0" />
+        <AlertDescription className="flex-1 text-info">
           <div className="flex items-center justify-between gap-4">
             <div>
               {lang === 'ar' ? (
@@ -82,7 +82,7 @@ export const TabRedirectBanner: React.FC<TabRedirectBannerProps> = ({
                 setIsVisible(false);
                 onDismiss();
               }}
-              className="h-6 w-6 p-0 text-blue-400 hover:text-blue-300"
+              className="h-6 w-6 p-0 text-info hover:text-info"
             >
               <X className="h-4 w-4" />
             </Button>

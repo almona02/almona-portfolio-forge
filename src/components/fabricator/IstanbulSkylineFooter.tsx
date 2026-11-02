@@ -14,11 +14,11 @@ export const IstanbulSkylineFooter: React.FC<IstanbulSkylineFooterProps> = ({
   const litWindows = Math.round(totalWindows * clamped);
 
   return (
-    <div className="mt-10 rounded-t-2xl border-t border-slate-800 bg-gradient-to-t from-slate-950 via-slate-950/95 to-slate-900/80 px-4 py-5">
+    <div className="mt-10 rounded-t-2xl border-t border-border bg-gradient-to-t from-background via-background/95 to-background/80 px-4 py-5">
       <div className="mx-auto flex max-w-5xl flex-col gap-2">
-        <div className="flex items-center justify-between text-[11px] text-slate-400">
+        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
           <span>Istanbul Skyline – lights react as you progress from Measuring to Quality.</span>
-          <span className="font-medium text-amber-300">
+          <span className="font-medium text-warning">
             {Math.round(clamped * 100)}
             % journey complete
           </span>
@@ -27,7 +27,7 @@ export const IstanbulSkylineFooter: React.FC<IstanbulSkylineFooterProps> = ({
         {/* Stylised skyline – simple, fast SVG tailored to dark backgrounds */}
         <svg
           viewBox="0 0 400 80"
-          className="mt-1 h-16 w-full text-slate-700"
+          className="mt-1 h-16 w-full text-foreground"
           aria-hidden="true"
         >
           <defs>

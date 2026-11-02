@@ -17,19 +17,19 @@ export const AvailableStockPanel: React.FC<AvailableStockPanelProps> = ({ plans,
 
   return (
     <section
-      className="h-full min-h-0 flex flex-col border border-amber-600/20 bg-[#0d0d0d]"
+      className="h-full min-h-0 flex flex-col border border-amber-600/20 bg-background"
       data-testid="available-stock-panel"
     >
-      <header className="px-3 py-2 border-b border-amber-600/20 text-[10px] uppercase tracking-widest text-amber-500">
+      <header className="px-3 py-2 border-b border-amber-600/20 text-[10px] uppercase tracking-widest text-warning">
         {t('industrial.opt.stock', 'Available stock / remnants')}
       </header>
       <div className="flex-1 overflow-auto">
         {bars.length === 0 ? (
-          <div><p className="p-3 text-xs text-slate-500">{profiles?.length ? 'Catalogue stock lengths — confirm owned availability in Stock.' : NOT_RECORDED}</p>
+          <div><p className="p-3 text-xs text-muted-foreground">{profiles?.length ? 'Catalogue stock lengths — confirm owned availability in Stock.' : NOT_RECORDED}</p>
           {profiles?.map(profile => <p key={profile.id} className="px-3 py-1 text-xs">{profile.name || profile.id}: {profile.barLength ?? NOT_RECORDED} mm · <a className="underline" href="/fabricator/studio/data/stock">Check inventory</a></p>)}</div>
         ) : (
           <table className="w-full text-xs">
-            <thead className="sticky top-0 bg-[#111] text-[10px] uppercase text-amber-700">
+            <thead className="sticky top-0 bg-background text-[10px] uppercase text-amber-700">
               <tr>
                 <th className="text-start px-2 py-1 font-medium">Profile</th>
                 <th className="text-end px-2 py-1 font-medium">Stock</th>

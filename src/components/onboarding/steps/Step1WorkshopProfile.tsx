@@ -35,7 +35,7 @@ export const Step1WorkshopProfile: React.FC<Step1WorkshopProfileProps> = ({
     <div className="space-y-6">
       <div>
         <h3 className="typography-h3 text-lg mb-4">Workshop Information</h3>
-        <p className="text-gray-400 mb-6">Tell us about your workshop to personalize your experience</p>
+        <p className="text-muted-foreground mb-6">Tell us about your workshop to personalize your experience</p>
       </div>
 
       <div className="space-y-4">
@@ -44,7 +44,7 @@ export const Step1WorkshopProfile: React.FC<Step1WorkshopProfileProps> = ({
           <Input
             value={data.workshopProfile.name}
             onChange={(e) => updateWorkshopProfile({ name: e.target.value })}
-            className="bg-gray-800 border-gray-700"
+            className="bg-card border-border"
             placeholder="Enter workshop name"
           />
         </div>
@@ -55,7 +55,7 @@ export const Step1WorkshopProfile: React.FC<Step1WorkshopProfileProps> = ({
             value={data.workshopProfile.location}
             onValueChange={(v) => updateWorkshopProfile({ location: v as any })}
           >
-            <SelectTrigger className="bg-gray-800 border-gray-700">
+            <SelectTrigger className="bg-card border-border">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -73,7 +73,7 @@ export const Step1WorkshopProfile: React.FC<Step1WorkshopProfileProps> = ({
             value={data.workshopProfile.size}
             onValueChange={(v) => updateWorkshopProfile({ size: v as any })}
           >
-            <SelectTrigger className="bg-gray-800 border-gray-700">
+            <SelectTrigger className="bg-card border-border">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -90,7 +90,7 @@ export const Step1WorkshopProfile: React.FC<Step1WorkshopProfileProps> = ({
             value={data.workshopProfile.primaryMaterial}
             onValueChange={(v) => updateWorkshopProfile({ primaryMaterial: v as any })}
           >
-            <SelectTrigger className="bg-gray-800 border-gray-700">
+            <SelectTrigger className="bg-card border-border">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

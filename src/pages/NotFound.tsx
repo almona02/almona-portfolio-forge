@@ -92,9 +92,9 @@ const NotFound = () => {
   if (!isClient) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="max-w-2xl w-full bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 text-center border border-white/20">
-          <h2 className="typography-h2 font-semibold text-gray-800 mb-2">Page Not Found</h2>
-          <p className="text-gray-600 mb-6">
+        <div className="max-w-2xl w-full bg-foreground/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 text-center border border-white/20">
+          <h2 className="typography-h2 font-semibold text-foreground mb-2">Page Not Found</h2>
+          <p className="text-muted-foreground mb-6">
             The page you&apos;re looking for doesn&apos;t exist.
           </p>
           <button
@@ -135,13 +135,13 @@ const NotFound = () => {
           </Canvas>
         ) : (
           <div className="h-64 mb-6 relative bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg flex items-center justify-center">
-            <h1 className="typography-h1 text-8xl text-blue-600">404</h1>
+            <h1 className="typography-h1 text-8xl text-info">404</h1>
           </div>
         )}
       </div>
       
       <div className="min-h-screen flex items-center justify-center px-4 relative z-10">
-        <div className="max-w-2xl w-full bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 text-center border border-white/20">
+        <div className="max-w-2xl w-full bg-foreground/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 text-center border border-white/20">
           {/* 3D 404 Display */}
           <div className="h-64 mb-6 relative">
             {canRender3D ? (
@@ -162,22 +162,22 @@ const NotFound = () => {
               </Canvas>
             ) : (
               <div className="h-64 mb-6 relative bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg flex items-center justify-center">
-                <h1 className="typography-h1 text-8xl text-blue-600">404</h1>
+                <h1 className="typography-h1 text-8xl text-info">404</h1>
               </div>
             )}
           </div>
 
           {/* Error Message */}
-          <h2 className="typography-h2 font-semibold text-gray-800 mb-2">Lost in the Digital Space</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="typography-h2 font-semibold text-foreground mb-2">Lost in the Digital Space</h2>
+          <p className="text-muted-foreground mb-6">
             The page you&apos;re looking for seems to have drifted into orbit. 
             Let us guide you back to familiar territory.
           </p>
 
           {/* Attempted URL */}
-          <div className="bg-gray-50/80 rounded-lg p-3 mb-6 backdrop-blur-sm">
-            <p className="text-sm text-gray-500">Attempted destination:</p>
-            <code className="text-sm font-mono text-gray-800 break-all">{location.pathname}</code>
+          <div className="bg-background/80 rounded-lg p-3 mb-6 backdrop-blur-sm">
+            <p className="text-sm text-muted-foreground">Attempted destination:</p>
+            <code className="text-sm font-mono text-foreground break-all">{location.pathname}</code>
           </div>
 
           {/* Action Buttons */}
@@ -192,7 +192,7 @@ const NotFound = () => {
             </button>
             <button
               onClick={handleGoBack}
-              className="flex-1 bg-white text-gray-800 px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors font-medium shadow-md hover:shadow-lg"
+              className="flex-1 bg-card text-foreground px-6 py-3 rounded-lg border border-border hover:bg-background transition-colors font-medium shadow-md hover:shadow-lg"
             >
               Navigate Back
             </button>
@@ -206,8 +206,8 @@ const NotFound = () => {
           </div>
 
           {/* Suggested Pages */}
-          <div className="text-left bg-white/80 p-4 rounded-xl backdrop-blur-sm">
-            <h3 className="typography-h3 text-sm text-gray-700 mb-3">Recommended destinations:</h3>
+          <div className="text-left bg-foreground/80 p-4 rounded-xl backdrop-blur-sm">
+            <h3 className="typography-h3 text-sm text-foreground mb-3">Recommended destinations:</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {suggestedPages.map((page) => (
                 <button
@@ -222,7 +222,7 @@ const NotFound = () => {
           </div>
 
           {/* Easter egg for developers */}
-          <div className="mt-6 text-xs text-gray-400">
+          <div className="mt-6 text-xs text-muted-foreground">
             <p>PS: Check the console for technical details 🛠️</p>
           </div>
         </div>

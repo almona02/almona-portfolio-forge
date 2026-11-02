@@ -17,11 +17,11 @@ const LocalizationTest: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 rounded-lg m-4">
+    <div className="p-6 bg-muted rounded-lg m-4">
       <h2 className="typography-h2 mb-4">Localization Test</h2>
       
       {/* Current Status */}
-      <div className="mb-6 p-4 bg-white rounded border">
+      <div className="mb-6 p-4 bg-card rounded border">
         <h3 className="typography-h3 text-lg mb-2">Current Status</h3>
         <p><strong>Language:</strong> {i18n.language}</p>
         <p><strong>Region:</strong> {regionState.region}</p>
@@ -31,13 +31,13 @@ const LocalizationTest: React.FC = () => {
       </div>
 
       {/* Language Switcher */}
-      <div className="mb-6 p-4 bg-white rounded border">
+      <div className="mb-6 p-4 bg-card rounded border">
         <h3 className="typography-h3 text-lg mb-2">Language Switcher</h3>
         <div className="flex gap-2">
           <button
             onClick={() => handleLanguageChange('en')}
             className={`px-4 py-2 rounded ${
-              i18n.language === 'en' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+              i18n.language === 'en' ? 'bg-blue-500 text-white' : 'bg-muted'
             }`}
           >
             English
@@ -45,7 +45,7 @@ const LocalizationTest: React.FC = () => {
           <button
             onClick={() => handleLanguageChange('tr')}
             className={`px-4 py-2 rounded ${
-              i18n.language === 'tr' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+              i18n.language === 'tr' ? 'bg-blue-500 text-white' : 'bg-muted'
             }`}
           >
             Türkçe
@@ -53,7 +53,7 @@ const LocalizationTest: React.FC = () => {
           <button
             onClick={() => handleLanguageChange('ar')}
             className={`px-4 py-2 rounded ${
-              i18n.language === 'ar' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+              i18n.language === 'ar' ? 'bg-blue-500 text-white' : 'bg-muted'
             }`}
           >
             العربية
@@ -62,13 +62,13 @@ const LocalizationTest: React.FC = () => {
       </div>
 
       {/* Region Switcher */}
-      <div className="mb-6 p-4 bg-white rounded border">
+      <div className="mb-6 p-4 bg-card rounded border">
         <h3 className="typography-h3 text-lg mb-2">Region Switcher</h3>
         <div className="flex gap-2">
           <button
             onClick={() => handleRegionChange('DEFAULT')}
             className={`px-4 py-2 rounded ${
-              regionState.region === 'DEFAULT' ? 'bg-green-500 text-white' : 'bg-gray-200'
+              regionState.region === 'DEFAULT' ? 'bg-green-500 text-white' : 'bg-muted'
             }`}
           >
             🌍 International
@@ -76,7 +76,7 @@ const LocalizationTest: React.FC = () => {
           <button
             onClick={() => handleRegionChange('TR')}
             className={`px-4 py-2 rounded ${
-              regionState.region === 'TR' ? 'bg-green-500 text-white' : 'bg-gray-200'
+              regionState.region === 'TR' ? 'bg-green-500 text-white' : 'bg-muted'
             }`}
           >
             🇹🇷 Turkey
@@ -84,7 +84,7 @@ const LocalizationTest: React.FC = () => {
           <button
             onClick={() => handleRegionChange('EG')}
             className={`px-4 py-2 rounded ${
-              regionState.region === 'EG' ? 'bg-green-500 text-white' : 'bg-gray-200'
+              regionState.region === 'EG' ? 'bg-green-500 text-white' : 'bg-muted'
             }`}
           >
             🇪🇬 Egypt
@@ -93,7 +93,7 @@ const LocalizationTest: React.FC = () => {
       </div>
 
       {/* Translation Examples */}
-      <div className="mb-6 p-4 bg-white rounded border">
+      <div className="mb-6 p-4 bg-card rounded border">
         <h3 className="typography-h3 text-lg mb-2">Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Welcome:</strong> {t('common.welcome')}</p>
@@ -106,7 +106,7 @@ const LocalizationTest: React.FC = () => {
       </div>
 
       {/* Machine Examples */}
-      <div className="mb-6 p-4 bg-white rounded border">
+      <div className="mb-6 p-4 bg-card rounded border">
         <h3 className="typography-h3 text-lg mb-2">Machine Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Title:</strong> {t('machines.title')}</p>
@@ -117,7 +117,7 @@ const LocalizationTest: React.FC = () => {
       </div>
 
       {/* Services Examples */}
-      <div className="mb-6 p-4 bg-white rounded border">
+      <div className="mb-6 p-4 bg-card rounded border">
         <h3 className="typography-h3 text-lg mb-2">Services Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Title:</strong> {t('services.title')}</p>
@@ -128,7 +128,7 @@ const LocalizationTest: React.FC = () => {
       </div>
 
       {/* Quote Examples */}
-      <div className="mb-6 p-4 bg-white rounded border">
+      <div className="mb-6 p-4 bg-card rounded border">
         <h3 className="typography-h3 text-lg mb-2">Quote Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Title:</strong> {t('quotes.title')}</p>
@@ -139,7 +139,7 @@ const LocalizationTest: React.FC = () => {
       </div>
 
       {/* Ticket Examples */}
-      <div className="mb-6 p-4 bg-white rounded border">
+      <div className="mb-6 p-4 bg-card rounded border">
         <h3 className="typography-h3 text-lg mb-2">Ticket Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Title:</strong> {t('tickets.title')}</p>
@@ -150,7 +150,7 @@ const LocalizationTest: React.FC = () => {
       </div>
 
       {/* Training Examples */}
-      <div className="mb-6 p-4 bg-white rounded border">
+      <div className="mb-6 p-4 bg-card rounded border">
         <h3 className="typography-h3 text-lg mb-2">Training Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Title:</strong> {t('training.title')}</p>
@@ -161,7 +161,7 @@ const LocalizationTest: React.FC = () => {
       </div>
 
       {/* Geography Examples */}
-      <div className="mb-6 p-4 bg-white rounded border">
+      <div className="mb-6 p-4 bg-card rounded border">
         <h3 className="typography-h3 text-lg mb-2">Geography Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Title:</strong> {t('geography.title')}</p>

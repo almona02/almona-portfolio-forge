@@ -69,9 +69,9 @@ export const DraftingWorkbenchLayout: React.FC<DraftingWorkbenchLayoutProps> = (
   }, [state.ui.viewport]);
 
   return (
-    <div className="h-full w-full flex flex-col bg-[#1a1a1a] text-slate-200 overflow-hidden">
+    <div className="h-full w-full flex flex-col bg-background text-foreground overflow-hidden">
       {/* Top Menu Bar */}
-      <div className="flex-shrink-0 border-b border-slate-700/50">
+      <div className="flex-shrink-0 border-b border-border/50">
         <DraftingMenuBar
           onNew={handleNew}
           onOpen={handlers.handleLoadWithDialog}
@@ -111,7 +111,7 @@ export const DraftingWorkbenchLayout: React.FC<DraftingWorkbenchLayoutProps> = (
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden relative">
         {/* Left Panel - Toolbar */}
-        <div className="w-14 flex-shrink-0 border-r border-slate-700/50 bg-slate-900 overflow-y-auto overflow-x-hidden">
+        <div className="w-14 flex-shrink-0 border-r border-border/50 bg-background overflow-y-auto overflow-x-hidden">
           <DraftingToolbar
             selectedTool={state.ui.selectedTool}
             onToolSelect={actions.setSelectedTool}
@@ -124,7 +124,7 @@ export const DraftingWorkbenchLayout: React.FC<DraftingWorkbenchLayoutProps> = (
         </div>
 
         {/* Right Panel */}
-        <div className={`relative flex-shrink-0 min-h-0 border-l border-slate-700/50 bg-slate-900 overflow-hidden transition-all duration-300 ease-in-out ${
+        <div className={`relative flex-shrink-0 min-h-0 border-l border-border/50 bg-background overflow-hidden transition-all duration-300 ease-in-out ${
           state.ui.rightPanelCollapsed ? 'w-0' : 'w-80'
         }`}>
           <div className="h-full min-h-0 flex flex-col w-full">
@@ -139,7 +139,7 @@ export const DraftingWorkbenchLayout: React.FC<DraftingWorkbenchLayoutProps> = (
              {/* Use pointer-events-auto to make the button clickable */}
              <button
                 onClick={() => actions.setRightPanelCollapsed(!state.ui.rightPanelCollapsed)}
-                className="pointer-events-auto h-12 w-6 bg-slate-800 border-l border-t border-b border-slate-700/50 rounded-l-md flex items-center justify-center text-slate-400 hover:text-slate-200 hover:bg-slate-700 transition-colors shadow-md"
+                className="pointer-events-auto h-12 w-6 bg-card border-l border-t border-b border-border/50 rounded-l-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-md"
                 aria-label={state.ui.rightPanelCollapsed ? "Expand right panel" : "Collapse right panel"}
                 title={state.ui.rightPanelCollapsed ? "Expand panel" : "Collapse panel"}
               >
@@ -149,7 +149,7 @@ export const DraftingWorkbenchLayout: React.FC<DraftingWorkbenchLayoutProps> = (
       </div>
 
       {/* Bottom Status Bar */}
-      <div className="flex-shrink-0 border-t border-slate-700/50 bg-slate-900">
+      <div className="flex-shrink-0 border-t border-border/50 bg-background">
         <EnhancedStatusBar
           operationStatus={state.operations.operationStatus}
           messages={state.operations.statusMessages}

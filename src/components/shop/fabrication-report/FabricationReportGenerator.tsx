@@ -243,19 +243,19 @@ export default function FabricationReportGenerator() {
         <div className="mt-8 p-4 border rounded-lg">
           <h2 className="typography-h2 text-xl mb-4">Machine Comparison</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-gray-100 rounded-lg">
+            <div className="p-4 bg-muted rounded-lg">
               <h3 className="typography-h3">YILMAZ KM-212</h3>
               <p>Power: {comparisonData.yilmaz.power} kW</p>
               <p>Price: EGP {comparisonData.yilmaz.price.toLocaleString()}</p>
               <p>Cutting Time: {comparisonData.yilmaz.cuttingTime.toFixed(2)} hours</p>
             </div>
-            <div className="p-4 bg-gray-100 rounded-lg">
+            <div className="p-4 bg-muted rounded-lg">
               <h3 className="typography-h3">Chinese Model</h3>
               <p>Power: {comparisonData.chinese[0].power} kW</p>
               <p>Price: EGP {comparisonData.chinese[0].price.toLocaleString()}</p>
               <p>Cutting Time: {comparisonData.chinese[0].cuttingTime.toFixed(2)} hours</p>
             </div>
-            <div className="p-4 bg-gray-100 rounded-lg">
+            <div className="p-4 bg-muted rounded-lg">
               <h3 className="typography-h3">Comparison</h3>
               <p>Power Difference: +{comparisonData.powerDifference} kW</p>
               <p>Price Difference: +EGP {comparisonData.priceDifference.toLocaleString()}</p>

@@ -159,14 +159,14 @@ export const OrdersPanel: React.FC = () => {
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
 
   return (
-    <Card className="bg-slate-950/60 border-amber-600/20 text-slate-100">
+    <Card className="bg-background/60 border-amber-600/20 text-foreground">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-amber-200">Orders</CardTitle>
+        <CardTitle className="text-warning">Orders</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-400">Bulk status:</span>
+            <span className="text-sm text-muted-foreground">Bulk status:</span>
             <Select value={bulkStatusValue ?? undefined} onValueChange={(v: string) => { setBulkStatusValue(v as Order['status']); if (hasSelection) { setPendingAction({ type: 'status', value: v as Order['status'] }); setConfirmOpen(true) } }}>
               <SelectTrigger aria-label="Bulk order status" className="w-[180px]">
                 <SelectValue placeholder={hasSelection ? 'Select status' : 'Select rows first'} />
@@ -185,7 +185,7 @@ export const OrdersPanel: React.FC = () => {
             </Select>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-400">Bulk payment:</span>
+            <span className="text-sm text-muted-foreground">Bulk payment:</span>
             <Select value={bulkPaymentValue ?? undefined} onValueChange={(v: string) => { setBulkPaymentValue(v); if (hasSelection) { setPendingAction({ type: 'payment', value: v }); setConfirmOpen(true) } }}>
               <SelectTrigger aria-label="Bulk payment status" className="w-[180px]">
                 <SelectValue placeholder={hasSelection ? 'Select payment' : 'Select rows first'} />
@@ -239,7 +239,7 @@ export const OrdersPanel: React.FC = () => {
         </div>
 
         {error ? (
-          <div className="text-red-600 text-sm">{error}</div>
+          <div className="text-destructive text-sm">{error}</div>
         ) : (
           <DataTable
             columns={columns}

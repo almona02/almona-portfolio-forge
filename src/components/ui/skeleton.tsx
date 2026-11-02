@@ -1,6 +1,6 @@
 
 export const Skeleton = ({ className }: { className?: string }) => (
-  <div className={`animate-pulse bg-gray-200 rounded-md ${className}`} />
+  <div className={`animate-pulse bg-muted rounded-md ${className}`} />
 );
 
 export const ProductCardSkeleton = () => (

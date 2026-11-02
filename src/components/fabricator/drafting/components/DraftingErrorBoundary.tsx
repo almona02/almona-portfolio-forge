@@ -135,13 +135,13 @@ export class DraftingErrorBoundary extends Component<Props, State> {
       const canRetry = retryCount < this.maxRetries;
 
       return (
-        <div className={`min-h-screen flex items-center justify-center p-4 ${isCritical ? 'bg-red-50' : 'bg-gray-50'}`}>
+        <div className={`min-h-screen flex items-center justify-center p-4 ${isCritical ? 'bg-red-50' : 'bg-background'}`}>
           <Alert variant="destructive" className="max-w-2xl">
             <div className="flex items-start gap-3">
               {isCritical ? (
-                <XCircle className="w-6 h-6 text-red-600 mt-0.5" />
+                <XCircle className="w-6 h-6 text-destructive mt-0.5" />
               ) : (
-                <AlertTriangle className="w-6 h-6 text-yellow-600 mt-0.5" />
+                <AlertTriangle className="w-6 h-6 text-warning mt-0.5" />
               )}
               <div className="flex-1">
                 <AlertTitle className="text-lg font-semibold mb-2">
@@ -202,14 +202,14 @@ export class DraftingErrorBoundary extends Component<Props, State> {
                           <strong>Error Message:</strong> {error.message}
                         </div>
                         {error.stack && (
-                          <pre className="text-xs bg-gray-100 p-3 rounded overflow-auto max-h-64">
+                          <pre className="text-xs bg-muted p-3 rounded overflow-auto max-h-64">
                             {error.stack}
                           </pre>
                         )}
                         {this.state.errorInfo?.componentStack && (
                           <div>
                             <strong>Component Stack:</strong>
-                            <pre className="text-xs bg-gray-100 p-3 rounded overflow-auto max-h-64 mt-1">
+                            <pre className="text-xs bg-muted p-3 rounded overflow-auto max-h-64 mt-1">
                               {this.state.errorInfo.componentStack}
                             </pre>
                           </div>

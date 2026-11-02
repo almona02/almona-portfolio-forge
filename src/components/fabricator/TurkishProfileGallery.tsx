@@ -131,7 +131,7 @@ export const TurkishProfileGallery: React.FC = () => {
               <select
                 value={selectedManufacturer}
                 onChange={(e) => setSelectedManufacturer(e.target.value)}
-                className="px-3 py-2 border rounded-md bg-white"
+                className="px-3 py-2 border rounded-md bg-card"
               >
                 {manufacturers.map(mfg => (
                   <option key={mfg} value={mfg}>
@@ -152,11 +152,11 @@ export const TurkishProfileGallery: React.FC = () => {
           {/* Profiles Grid */}
           {filteredProfiles.length === 0 ? (
             <div className="text-center py-12 border-2 border-dashed rounded-lg">
-              <Package className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <p className="text-lg font-medium text-gray-600 mb-2">
+              <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <p className="text-lg font-medium text-muted-foreground mb-2">
                 No Turkish profiles defined yet.
               </p>
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-muted-foreground mb-4">
                 Create your first Turkish profile to start using custom systems.
               </p>
               <Button
@@ -194,7 +194,7 @@ export const TurkishProfileGallery: React.FC = () => {
                         size="sm"
                         onClick={() => handleDelete(profile.id)}
                         disabled={deletingId === profile.id}
-                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                        className="h-8 w-8 p-0 text-destructive hover:text-red-700"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -204,24 +204,24 @@ export const TurkishProfileGallery: React.FC = () => {
                     
                     <div className="space-y-2 mb-4">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Type:</span>
+                        <span className="text-muted-foreground">Type:</span>
                         <span className="font-medium capitalize">{profile.profileType}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Bar Length:</span>
+                        <span className="text-muted-foreground">Bar Length:</span>
                         <span className="font-mono font-medium">{profile.barLength}mm</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Saw Kerf:</span>
+                        <span className="text-muted-foreground">Saw Kerf:</span>
                         <span className="font-mono font-medium">{profile.sawKerf}mm</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Welding:</span>
+                        <span className="text-muted-foreground">Welding:</span>
                         <span className="font-mono font-medium">{profile.weldingAllowance}mm</span>
                       </div>
                       {profile.unitWeight && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Weight:</span>
+                          <span className="text-muted-foreground">Weight:</span>
                           <span className="font-mono font-medium">{profile.unitWeight} kg/m</span>
                         </div>
                       )}

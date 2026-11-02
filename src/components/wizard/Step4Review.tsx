@@ -33,24 +33,24 @@ export const Step4Review: React.FC<Step4ReviewProps> = ({
   return (
     <div className="space-y-4">
       <h3 className="typography-h3 text-lg">Review Your Window</h3>
-      <Card className="bg-gray-800 border-gray-700">
+      <Card className="bg-card border-border">
         <CardContent className="p-6 space-y-4">
           <div className="flex justify-between">
-            <span className="text-gray-400">Project Type:</span>
+            <span className="text-muted-foreground">Project Type:</span>
             <span className="font-semibold">{projectType}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Location:</span>
+            <span className="text-muted-foreground">Location:</span>
             <span className="font-semibold">{region}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Dimensions:</span>
+            <span className="text-muted-foreground">Dimensions:</span>
             <span className="font-semibold">{width}mm × {height}mm</span>
           </div>
           {defaults && (
             <>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">System:</span>
+                <span className="text-muted-foreground">System:</span>
                 <div className="flex items-center gap-2">
                   <span className="font-semibold">{defaults.systemPackId}</span>
                   {defaults.explanations.systemPackId && (
@@ -66,7 +66,7 @@ export const Step4Review: React.FC<Step4ReviewProps> = ({
                 </div>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Color:</span>
+                <span className="text-muted-foreground">Color:</span>
                 <div className="flex items-center gap-2">
                   <span className="font-semibold">{defaults.color}</span>
                   {defaults.explanations.color && (
@@ -82,14 +82,14 @@ export const Step4Review: React.FC<Step4ReviewProps> = ({
                 </div>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Opening Type:</span>
+                <span className="text-muted-foreground">Opening Type:</span>
                 <span className="font-semibold">{defaults.openingType.replace('_', ' ')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Confidence:</span>
+                <span className="text-muted-foreground">Confidence:</span>
                 <span className={`font-semibold ${
-                  defaults.confidence > 0.8 ? 'text-green-400' :
-                  defaults.confidence > 0.6 ? 'text-yellow-400' : 'text-red-400'
+                  defaults.confidence > 0.8 ? 'text-success' :
+                  defaults.confidence > 0.6 ? 'text-yellow-400' : 'text-destructive'
                 }`}>
                   {(defaults.confidence * 100).toFixed(0)}%
                 </span>

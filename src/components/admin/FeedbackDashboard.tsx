@@ -34,12 +34,12 @@ export const FeedbackDashboard: React.FC<FeedbackDashboardProps> = ({
   const responseRate = surveyData.length > 0 ? (filteredData.length / surveyData.length) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        <Card className="bg-gray-900 border-gray-800 card-dark">
+        <Card className="bg-background border-border card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Pilot Feedback Dashboard</CardTitle>
-            <p className="text-gray-400">Analyze survey responses and feedback trends</p>
+            <p className="text-muted-foreground">Analyze survey responses and feedback trends</p>
           </CardHeader>
           <CardContent>
             <Tabs value={selectedSurvey} onValueChange={(v) => setSelectedSurvey(v as SurveyType)}>
@@ -54,21 +54,21 @@ export const FeedbackDashboard: React.FC<FeedbackDashboardProps> = ({
               {(['week1', 'week2', 'week4', 'week8', 'week12'] as SurveyType[]).map((type) => (
                 <TabsContent key={type} value={type} className="mt-6">
                   <div className="grid grid-cols-3 gap-4 mb-6">
-                    <Card className="bg-gray-800 border-gray-700">
+                    <Card className="bg-card border-border">
                       <CardContent className="p-4">
-                        <div className="text-sm text-gray-400">Total Responses</div>
+                        <div className="text-sm text-muted-foreground">Total Responses</div>
                         <div className="text-2xl font-bold">{filteredData.length}</div>
                       </CardContent>
                     </Card>
-                    <Card className="bg-gray-800 border-gray-700">
+                    <Card className="bg-card border-border">
                       <CardContent className="p-4">
-                        <div className="text-sm text-gray-400">Response Rate</div>
+                        <div className="text-sm text-muted-foreground">Response Rate</div>
                         <div className="text-2xl font-bold">{responseRate.toFixed(1)}%</div>
                       </CardContent>
                     </Card>
-                    <Card className="bg-gray-800 border-gray-700">
+                    <Card className="bg-card border-border">
                       <CardContent className="p-4">
-                        <div className="text-sm text-gray-400">Average Rating</div>
+                        <div className="text-sm text-muted-foreground">Average Rating</div>
                         <div className="text-2xl font-bold">
                           {filteredData.length > 0
                             ? (filteredData.reduce((sum, d) => {
@@ -83,16 +83,16 @@ export const FeedbackDashboard: React.FC<FeedbackDashboardProps> = ({
 
                   <div className="space-y-4">
                     {filteredData.map((survey, index) => (
-                      <Card key={index} className="bg-gray-800 border-gray-700">
+                      <Card key={index} className="bg-card border-border">
                         <CardContent className="p-4">
-                          <div className="text-sm text-gray-400 mb-2">
+                          <div className="text-sm text-muted-foreground mb-2">
                             Workshop: {survey.workshopId} | {survey.submittedAt.toLocaleDateString()}
                           </div>
                           <div className="space-y-2">
                             {Object.entries(survey.responses).map(([key, value]) => (
                               <div key={key} className="text-sm">
-                                <span className="text-gray-400">{key}:</span>{' '}
-                                <span className="text-gray-300">{String(value)}</span>
+                                <span className="text-muted-foreground">{key}:</span>{' '}
+                                <span className="text-foreground">{String(value)}</span>
                               </div>
                             ))}
                           </div>

@@ -128,7 +128,7 @@ export const EmailSendDialog: React.FC<EmailSendDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={cn('max-w-4xl max-h-[90vh] overflow-y-auto bg-[#0f0f0f]/95 border-amber-600/30', className)}>
+      <DialogContent className={cn('max-w-4xl max-h-[90vh] overflow-y-auto bg-background/95 border-amber-600/30', className)}>
         <DialogHeader>
           <DialogTitle className="text-xl text-amber-200 flex items-center gap-2">
             <Mail className="w-5 h-5" />
@@ -144,14 +144,14 @@ export const EmailSendDialog: React.FC<EmailSendDialogProps> = ({
           <div className="space-y-4">
             <div>
               <Label htmlFor="to" className="text-amber-300/70 text-sm">
-                To <span className="text-red-400">*</span>
+                To <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="to"
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
                 placeholder="recipient@example.com"
-                className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
+                className="mt-1 bg-background/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
                 disabled={sending}
               />
               <p className="text-xs text-amber-600/50 mt-1">
@@ -169,7 +169,7 @@ export const EmailSendDialog: React.FC<EmailSendDialogProps> = ({
                   value={cc}
                   onChange={(e) => setCc(e.target.value)}
                   placeholder="cc@example.com"
-                  className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
+                  className="mt-1 bg-background/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
                   disabled={sending}
                 />
               </div>
@@ -183,7 +183,7 @@ export const EmailSendDialog: React.FC<EmailSendDialogProps> = ({
                   value={bcc}
                   onChange={(e) => setBcc(e.target.value)}
                   placeholder="bcc@example.com"
-                  className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
+                  className="mt-1 bg-background/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
                   disabled={sending}
                 />
               </div>
@@ -193,13 +193,13 @@ export const EmailSendDialog: React.FC<EmailSendDialogProps> = ({
           {/* Subject */}
           <div>
             <Label htmlFor="subject" className="text-amber-300/70 text-sm">
-              Subject <span className="text-red-400">*</span>
+              Subject <span className="text-destructive">*</span>
             </Label>
             <Input
               id="subject"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+              className="mt-1 bg-background/60 border-amber-600/30 text-amber-200"
               disabled={sending}
             />
           </div>
@@ -215,7 +215,7 @@ export const EmailSendDialog: React.FC<EmailSendDialogProps> = ({
               onChange={(e) => setCustomMessage(e.target.value)}
               placeholder="Add a personal message to the email..."
               rows={3}
-              className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
+              className="mt-1 bg-background/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
               disabled={sending}
             />
           </div>
@@ -225,7 +225,7 @@ export const EmailSendDialog: React.FC<EmailSendDialogProps> = ({
             <div className="flex items-center justify-between mb-2">
               <Label className="text-amber-300/70 text-sm">Preview</Label>
               <Tabs value={previewMode} onValueChange={(v) => setPreviewMode(v as 'html' | 'text')}>
-                <TabsList className="bg-[#0f0f0f]/60 border-amber-600/20 h-8">
+                <TabsList className="bg-background/60 border-amber-600/20 h-8">
                   <TabsTrigger value="html" className="text-xs text-amber-300 data-[state=active]:text-amber-200">
                     HTML
                   </TabsTrigger>
@@ -235,7 +235,7 @@ export const EmailSendDialog: React.FC<EmailSendDialogProps> = ({
                 </TabsList>
               </Tabs>
             </div>
-            <div className="bg-[#0f0f0f]/60 border border-amber-600/30 rounded-md p-4 max-h-64 overflow-y-auto">
+            <div className="bg-background/60 border border-amber-600/30 rounded-md p-4 max-h-64 overflow-y-auto">
               {previewMode === 'html' ? (
                 <div
                   dangerouslySetInnerHTML={{ __html: template.htmlBody }}

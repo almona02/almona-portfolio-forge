@@ -35,34 +35,34 @@ export const OptimizationSolverInputsPanel: React.FC<OptimizationSolverInputsPan
 }) => {
   const profileIds = Object.keys(stockOptionsByProfile).sort();
   return (
-    <section data-testid="solver-inputs-panel" className="mx-4 mb-4 rounded border border-amber-600/20 bg-[#0d0d0d] p-3 text-xs text-slate-300 space-y-3">
-      <header className="text-[10px] uppercase tracking-widest text-amber-500">Solver inputs (approved · revision-bound)</header>
+    <section data-testid="solver-inputs-panel" className="mx-4 mb-4 rounded border border-amber-600/20 bg-background p-3 text-xs text-primary-foreground space-y-3">
+      <header className="text-[10px] uppercase tracking-widest text-warning">Solver inputs (approved · revision-bound)</header>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1">
-          <span className="text-slate-400">Run mode</span>
+          <span className="text-muted-foreground">Run mode</span>
           <select
             aria-label="Optimization run mode"
             value={mode}
             disabled={disabled}
             onChange={(event) => onModeChange(event.target.value as OptimizationMode)}
-            className="rounded border border-slate-700 bg-slate-900 px-2 py-1 text-slate-100"
+            className="rounded border border-border bg-background px-2 py-1 text-foreground"
           >
             <option value="production">Production run (approved stock · acknowledged inventory · records evidence)</option>
             <option value="simulation">Inventory-free simulation (no evidence · cannot unlock production)</option>
           </select>
         </label>
         <div className="flex flex-col gap-1" data-testid="algorithm-note">
-          <span className="text-slate-400">Algorithm</span>
-          <span className="rounded border border-slate-800 bg-slate-950 px-2 py-1 text-slate-300">
+          <span className="text-muted-foreground">Algorithm</span>
+          <span className="rounded border border-border bg-background px-2 py-1 text-foreground">
             Rule-based Tier-3 selection (greedy / linear) — not operator-tunable (AICS-001 / FP-016). Strategy weights do not change it.
           </span>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-4" data-testid="approved-machining">
-        <span>Saw kerf: <strong className="text-amber-200">{machining ? `${machining.kerfMm} mm` : 'not approved'}</strong></span>
-        <span>Bar-end trim: <strong className="text-amber-200">{machining ? `${machining.trimMm} mm` : 'not approved'}</strong></span>
+        <span>Saw kerf: <strong className="text-warning">{machining ? `${machining.kerfMm} mm` : 'not approved'}</strong></span>
+        <span>Bar-end trim: <strong className="text-warning">{machining ? `${machining.trimMm} mm` : 'not approved'}</strong></span>
       </div>
       {authorityError && (
         <p role="alert" className="rounded border border-red-500/40 bg-red-950/40 p-2 text-red-200">{authorityError}</p>
@@ -84,10 +84,10 @@ export const OptimizationSolverInputsPanel: React.FC<OptimizationSolverInputsPan
               const actual = actualBarsByProfile?.[profileId];
               return (
                 <tr key={profileId} className="border-t border-amber-900/20">
-                  <td className="px-2 py-1 font-mono text-amber-100" dir="ltr">{profileId}</td>
+                  <td className="px-2 py-1 font-mono text-warning" dir="ltr">{profileId}</td>
                   <td className="px-2 py-1" dir="ltr">
                     {options.length === 0 ? (
-                      <span className="text-red-300">not approved</span>
+                      <span className="text-destructive">not approved</span>
                     ) : options.length === 1 ? (
                       <span className="font-mono">{options[0]} mm</span>
                     ) : (
@@ -96,7 +96,7 @@ export const OptimizationSolverInputsPanel: React.FC<OptimizationSolverInputsPan
                         value={selected ?? ''}
                         disabled={disabled}
                         onChange={(event) => onStockSelectionChange(profileId, Number(event.target.value))}
-                        className="rounded border border-slate-700 bg-slate-900 px-2 py-0.5 text-slate-100"
+                        className="rounded border border-border bg-background px-2 py-0.5 text-foreground"
                       >
                         <option value="" disabled>choose…</option>
                         {options.map((mm) => <option key={mm} value={mm}>{mm} mm</option>)}
@@ -114,13 +114,13 @@ export const OptimizationSolverInputsPanel: React.FC<OptimizationSolverInputsPan
       )}
 
       {inputIssues.length > 0 && (
-        <ul data-testid="solver-input-issues" className="list-disc space-y-1 ps-5 text-amber-200">
+        <ul data-testid="solver-input-issues" className="list-disc space-y-1 ps-5 text-warning">
           {inputIssues.map((issue, index) => <li key={`${issue.code}-${issue.profileId ?? index}`}>{issue.message}</li>)}
         </ul>
       )}
 
       {readiness && (
-        <div data-testid="stock-readiness" className={readiness.ready ? 'text-green-300' : 'text-amber-200'}>
+        <div data-testid="stock-readiness" className={readiness.ready ? 'text-success' : 'text-warning'}>
           {readiness.ready ? (
             <p>Owned stock acknowledged for this revision and BOM (soft availability check).</p>
           ) : (

@@ -26,9 +26,9 @@ export const FabricatorProjectSkeleton: React.FC<FabricatorProjectSkeletonProps>
   showContent = true
 }) => {
   return (
-    <div className={cn('min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900', className)}>
+    <div className={cn('min-h-screen bg-gradient-to-br from-background via-background to-background', className)}>
       {showHeader && (
-        <div className="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-sm">
+        <div className="border-b border-border/80 bg-background/70 backdrop-blur-sm">
           <div className="container mx-auto px-4 md:px-6 py-4">
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-2 flex-1">
@@ -56,7 +56,7 @@ export const FabricatorProjectSkeleton: React.FC<FabricatorProjectSkeletonProps>
         <div className="container mx-auto px-4 md:px-6 py-6">
           <div className="space-y-6">
             {/* Project Header Skeleton */}
-            <div className="bg-slate-800/50 rounded-lg p-6 space-y-4">
+            <div className="bg-card/50 rounded-lg p-6 space-y-4">
               <LoadingSkeleton className="h-6 w-48" animation="wave" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <LoadingSkeleton className="h-20 w-full" animation="wave" />
@@ -67,13 +67,13 @@ export const FabricatorProjectSkeleton: React.FC<FabricatorProjectSkeletonProps>
             
             {/* Content Grid Skeleton */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-slate-800/50 rounded-lg p-6 space-y-4">
+              <div className="bg-card/50 rounded-lg p-6 space-y-4">
                 <LoadingSkeleton className="h-5 w-32" animation="wave" />
                 <LoadingSkeleton className="h-32 w-full" animation="wave" />
                 <LoadingSkeleton className="h-4 w-full" animation="wave" />
                 <LoadingSkeleton className="h-4 w-3/4" animation="wave" />
               </div>
-              <div className="bg-slate-800/50 rounded-lg p-6 space-y-4">
+              <div className="bg-card/50 rounded-lg p-6 space-y-4">
                 <LoadingSkeleton className="h-5 w-32" animation="wave" />
                 <LoadingSkeleton className="h-32 w-full" animation="wave" />
                 <LoadingSkeleton className="h-4 w-full" animation="wave" />
@@ -118,14 +118,14 @@ export const ProgressLoader: React.FC<ProgressLoaderProps> = ({
     <div className={cn('w-full space-y-2', className)}>
       {(label || showPercentage) && (
         <div className="flex items-center justify-between text-sm">
-          {label && <span className="text-slate-400">{label}</span>}
+          {label && <span className="text-muted-foreground">{label}</span>}
           {showPercentage && (
-            <span className="text-slate-300 font-medium">{Math.round(clampedProgress)}%</span>
+            <span className="text-foreground font-medium">{Math.round(clampedProgress)}%</span>
           )}
         </div>
       )}
       <div className={cn(
-        'w-full bg-slate-700/50 rounded-full overflow-hidden',
+        'w-full bg-muted/50 rounded-full overflow-hidden',
         sizeClasses[size]
       )}>
         <div
@@ -175,7 +175,7 @@ export const FabricatorLoader: React.FC<FabricatorLoaderProps> = ({
   return (
     <div className={cn(
       'fixed inset-0 z-50 flex items-center justify-center',
-      'bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900',
+      'bg-gradient-to-br from-background via-background to-background',
       className
     )}>
       <div className="flex flex-col items-center space-y-6 p-8 max-w-md w-full mx-4">
@@ -189,9 +189,9 @@ export const FabricatorLoader: React.FC<FabricatorLoaderProps> = ({
 
         {/* Stage text */}
         <div className="text-center space-y-2">
-          <h3 className="typography-h3 text-lg text-white">{currentStage}</h3>
+          <h3 className="typography-h3 text-lg text-foreground">{currentStage}</h3>
           {message && (
-            <p className="text-sm text-slate-400">{message}</p>
+            <p className="text-sm text-muted-foreground">{message}</p>
           )}
         </div>
 

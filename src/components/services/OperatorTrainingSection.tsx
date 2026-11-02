@@ -23,7 +23,7 @@ export const OperatorTrainingSection = () => {
     {
       title: "Material Preparation",
       description: "Proper handling and preparation of aluminum profiles",
-      icon: <Layers className="h-5 w-5 text-white" />,
+      icon: <Layers className="h-5 w-5 text-foreground" />,
       duration: "2-4 hours",
       keyPoints: [
         "Profile storage best practices",
@@ -35,7 +35,7 @@ export const OperatorTrainingSection = () => {
     {
       title: "Precision Cutting",
       description: "Achieving perfect cuts for seamless joins",
-      icon: <Scissors className="h-5 w-5 text-white" />,
+      icon: <Scissors className="h-5 w-5 text-foreground" />,
       duration: "4-6 hours",
       keyPoints: [
         "CNC cutting machine operation",
@@ -47,7 +47,7 @@ export const OperatorTrainingSection = () => {
     {
       title: "Thermal Break Installation",
       description: "Ensuring optimal thermal performance",
-      icon: <Thermometer className="h-5 w-5 text-white" />,
+      icon: <Thermometer className="h-5 w-5 text-foreground" />,
       duration: "3-5 hours",
       keyPoints: [
         "Polyamide strip installation",
@@ -59,7 +59,7 @@ export const OperatorTrainingSection = () => {
     {
       title: "Assembly & Glazing",
       description: "Final assembly and glass installation",
-      icon: <Settings className="h-5 w-5 text-white" />,
+      icon: <Settings className="h-5 w-5 text-foreground" />,
       duration: "5-8 hours",
       keyPoints: [
         "Corner cleaning techniques",
@@ -74,7 +74,7 @@ export const OperatorTrainingSection = () => {
     {
       title: "Profile Welding",
       description: "Creating strong, seamless joins in UPVC",
-      icon: <Zap className="h-5 w-5 text-white" />,
+      icon: <Zap className="h-5 w-5 text-foreground" />,
       duration: "3-5 hours",
       keyPoints: [
         "Welding temperature control",
@@ -86,7 +86,7 @@ export const OperatorTrainingSection = () => {
     {
       title: "Hardware Installation",
       description: "Precision fitting of locks and mechanisms",
-      icon: <Settings className="h-5 w-5 text-white" />,
+      icon: <Settings className="h-5 w-5 text-foreground" />,
       duration: "4-6 hours",
       keyPoints: [
         "Multi-point locking systems",
@@ -98,7 +98,7 @@ export const OperatorTrainingSection = () => {
     {
       title: "Glazing & Beading",
       description: "Secure glass installation for UPVC frames",
-      icon: <ShieldCheck className="h-5 w-5 text-white" />,
+      icon: <ShieldCheck className="h-5 w-5 text-foreground" />,
       duration: "3-4 hours",
       keyPoints: [
         "Gasket selection",
@@ -110,7 +110,7 @@ export const OperatorTrainingSection = () => {
     {
       title: "Quality Control",
       description: "Final inspection and testing procedures",
-      icon: <Gauge className="h-5 w-5 text-white" />,
+      icon: <Gauge className="h-5 w-5 text-foreground" />,
       duration: "2-3 hours",
       keyPoints: [
         "Air infiltration testing",
@@ -188,7 +188,7 @@ export const OperatorTrainingSection = () => {
           </Button>
         </div>
         
-        <p className="max-w-3xl mx-auto text-gray-400">
+        <p className="max-w-3xl mx-auto text-muted-foreground">
           {selectedMaterial === "aluminium" 
             ? "Master the complete process of aluminium window and door fabrication with our specialized training programs tailored for Egyptian industrial standards."
             : "Learn the intricacies of UPVC window production with techniques optimized for Egypt's climate and market demands."}
@@ -228,14 +228,14 @@ export const OperatorTrainingSection = () => {
       </div>
       
       {/* Egyptian Market Focus */}
-      <div className="bg-gradient-to-r from-almona-darker to-almona-dark/80 p-8 rounded-lg border border-almona-light/20">
+      <div className="bg-gradient-to-r from-almona-darker to-background/80 p-8 rounded-lg border border-border/20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <div>
             <Badge className="mb-4 bg-egyptian-blue">Egypt Market Special</Badge>
             <h3 className="typography-h3 mb-4">
               Tailored for Egyptian Fabricators
             </h3>
-            <p className="text-gray-400 mb-6">
+            <p className="text-muted-foreground mb-6">
               Our training programs incorporate specific adaptations for the Egyptian market, including:
             </p>
             <ul className="space-y-3">
@@ -257,7 +257,7 @@ export const OperatorTrainingSection = () => {
               </li>
             </ul>
           </div>
-          <div className="bg-almona-dark rounded-lg p-6 border border-almona-light/20">
+          <div className="bg-background rounded-lg p-6 border border-border/20">
             <h4 className="typography-h4 mb-4">Egyptian Market Advantages</h4>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
@@ -266,7 +266,7 @@ export const OperatorTrainingSection = () => {
                 </div>
                 <div>
                   <h5 className="font-medium">Government Incentives</h5>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     Special training subsidies available for Egyptian manufacturers
                   </p>
                 </div>
@@ -277,7 +277,7 @@ export const OperatorTrainingSection = () => {
                 </div>
                 <div>
                   <h5 className="font-medium">Local Certification</h5>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     Recognized by Egyptian Industrial Development Authority
                   </p>
                 </div>
@@ -288,7 +288,7 @@ export const OperatorTrainingSection = () => {
                 </div>
                 <div>
                   <h5 className="font-medium">Market Insights</h5>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     Includes Egyptian market trends and customer preferences
                   </p>
                 </div>

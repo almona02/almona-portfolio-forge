@@ -50,22 +50,22 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-gray-800 rounded-lg p-6 text-center">
-            <div className="text-red-500 text-6xl mb-4">⚠️</div>
-            <h1 className="typography-h1 text-xl text-white mb-2">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-card rounded-lg p-6 text-center">
+            <div className="text-destructive text-6xl mb-4">⚠️</div>
+            <h1 className="typography-h1 text-xl text-foreground mb-2">
               Something went wrong
             </h1>
-            <p className="text-gray-300 mb-4">
+            <p className="text-foreground mb-4">
               The application encountered an unexpected error. Please try refreshing the page.
             </p>
 
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details className="text-left text-sm text-gray-400 mb-4">
-                <summary className="cursor-pointer text-gray-300 mb-2">
+              <details className="text-left text-sm text-muted-foreground mb-4">
+                <summary className="cursor-pointer text-foreground mb-2">
                   Error Details (Development)
                 </summary>
-                <pre className="bg-gray-900 p-3 rounded text-xs overflow-auto">
+                <pre className="bg-background p-3 rounded text-xs overflow-auto">
                   {this.state.error.message}
                   {this.state.error.stack}
                 </pre>
@@ -81,7 +81,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </button>
               <button
                 onClick={() => this.setState({ hasError: false, error: undefined, errorInfo: undefined })}
-                className="w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded transition-colors"
+                className="w-full bg-muted hover:bg-muted text-foreground font-medium py-2 px-4 rounded transition-colors"
               >
                 Try Again
               </button>

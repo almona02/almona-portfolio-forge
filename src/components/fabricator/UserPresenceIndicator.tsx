@@ -17,28 +17,28 @@ export const UserPresenceIndicator: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center gap-2 p-2 bg-gray-800 rounded-lg border border-gray-700">
-      <Users className="h-4 w-4 text-gray-400" />
-      <span className="text-xs text-gray-400">
+    <div className="flex items-center gap-2 p-2 bg-card rounded-lg border border-border">
+      <Users className="h-4 w-4 text-muted-foreground" />
+      <span className="text-xs text-muted-foreground">
         {state.collaborators.length} {state.collaborators.length === 1 ? 'collaborator' : 'collaborators'}
       </span>
       <div className="flex -space-x-2">
         {state.collaborators.slice(0, 5).map((collab) => (
-          <Avatar key={collab.id} className="h-6 w-6 border-2 border-gray-700">
+          <Avatar key={collab.id} className="h-6 w-6 border-2 border-border">
             <AvatarImage src={collab.avatarUrl} alt={collab.userName} />
-            <AvatarFallback className="text-xs bg-gray-700 text-gray-300">
+            <AvatarFallback className="text-xs bg-muted text-foreground">
               {collab.userName.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         ))}
         {state.collaborators.length > 5 && (
-          <div className="h-6 w-6 rounded-full bg-gray-700 border-2 border-gray-700 flex items-center justify-center">
-            <span className="text-xs text-gray-300">+{state.collaborators.length - 5}</span>
+          <div className="h-6 w-6 rounded-full bg-muted border-2 border-border flex items-center justify-center">
+            <span className="text-xs text-foreground">+{state.collaborators.length - 5}</span>
           </div>
         )}
       </div>
       {state.isConnected && (
-        <Badge variant="outline" className="bg-green-900/20 border-green-700 text-green-400 text-xs">
+        <Badge variant="outline" className="bg-green-900/20 border-green-700 text-success text-xs">
           <Circle className="h-2 w-2 fill-current mr-1" />
           Live
         </Badge>

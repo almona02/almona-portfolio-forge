@@ -30,7 +30,7 @@ const FabricatorDashboard: React.FC = () => {
 
   return (
     <div
-      className="h-full overflow-auto bg-[#0a0a0a] text-amber-200 relative"
+      className="h-full overflow-auto bg-background text-foreground relative"
       data-testid="fabricator-command-center"
     >
       <div
@@ -47,16 +47,16 @@ const FabricatorDashboard: React.FC = () => {
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
         <header className={`mb-6 ${isRTLMode ? 'text-right' : 'text-left'}`}>
           <div className={`flex flex-wrap items-baseline gap-x-3 gap-y-1 ${isRTLMode ? 'flex-row-reverse' : ''}`}>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-amber-700 font-mono">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono">
               Almona · Fabricator Pro
             </p>
             {displayName && (
-              <p className="text-[10px] text-amber-700/80 font-mono truncate max-w-[14rem]">
+              <p className="text-[10px] text-muted-foreground font-mono truncate max-w-[14rem]">
                 {displayName}
               </p>
             )}
           </div>
-          <h1 className="mt-1.5 text-2xl sm:text-3xl font-semibold tracking-wide text-amber-200">
+          <h1 className="mt-1.5 text-2xl sm:text-3xl font-semibold tracking-wide text-foreground">
             {t('fabricator:dashboard.title', 'Command Center')}
           </h1>
           <p className="mt-1 text-xs text-amber-600/70 font-mono tracking-wide">
@@ -69,16 +69,16 @@ const FabricatorDashboard: React.FC = () => {
         <section className="mb-10">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-[10px] uppercase tracking-[0.25em] text-amber-700 font-mono">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-mono">
                 Floor
               </p>
-              <h2 className="mt-1 text-lg font-semibold text-amber-200">
+              <h2 className="mt-1 text-lg font-semibold text-foreground">
                 Today&apos;s work
               </h2>
             </div>
             <Link
               to={fabricatorRoutes.studioProjects()}
-              className="text-xs uppercase tracking-wider text-amber-500 hover:text-amber-300 border border-amber-600/30 px-3 py-1.5"
+              className="text-xs uppercase tracking-wider text-amber-500 hover:text-amber-300 border border-border px-3 py-1.5"
             >
               Open Project Studio
             </Link>
@@ -86,14 +86,14 @@ const FabricatorDashboard: React.FC = () => {
           <TodayDashboard />
         </section>
 
-        <Card className="mb-8 border-amber-600/25 bg-[#0c0c0c]/90 rounded-none">
+        <Card className="mb-8 border-border bg-background/90 rounded-none">
           <CardHeader>
-            <CardTitle className={`flex items-center gap-2 text-amber-200 text-base ${isRTLMode ? 'flex-row-reverse' : ''}`}>
+            <CardTitle className={`flex items-center gap-2 text-foreground text-base ${isRTLMode ? 'flex-row-reverse' : ''}`}>
               <Recycle className="h-4 w-4 text-amber-500" />
               {t('fabricator:dashboard.remnant_marketplace.title', 'Remnant exchange')}
               <Badge
                 variant="outline"
-                className="rounded-none border-amber-600/40 text-amber-500 text-[10px] uppercase tracking-wider"
+                className="rounded-none border-border text-amber-500 text-[10px] uppercase tracking-wider"
               >
                 Optional
               </Badge>

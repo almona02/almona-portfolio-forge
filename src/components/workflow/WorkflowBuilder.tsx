@@ -255,7 +255,7 @@ export const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
     return (
         <div className={cn("h-full flex flex-col", className)}>
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-900/50">
+            <div className="flex items-center justify-between p-4 border-b border-border bg-background/50">
                 <div className="flex items-center gap-4">
                     <CardTitle className="text-xl">
                         {workflowId ? 'Edit Workflow' : 'New Workflow'}
@@ -264,13 +264,13 @@ export const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
                         <div className="flex items-center gap-2">
                             {validationResult.valid ? (
                                 <>
-                                    <CheckCircle2 className="h-4 w-4 text-green-500" />
-                                    <span className="text-sm text-green-500">Valid</span>
+                                    <CheckCircle2 className="h-4 w-4 text-success" />
+                                    <span className="text-sm text-success">Valid</span>
                                 </>
                             ) : (
                                 <>
-                                    <AlertCircle className="h-4 w-4 text-red-500" />
-                                    <span className="text-sm text-red-500">
+                                    <AlertCircle className="h-4 w-4 text-destructive" />
+                                    <span className="text-sm text-destructive">
                                         {validationResult.errors.length} error(s)
                                     </span>
                                 </>
@@ -291,7 +291,7 @@ export const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
                             variant="outline"
                             onClick={() => setShowDeleteDialog(true)}
                             size="sm"
-                            className="text-red-400 border-red-500/50 hover:bg-red-500/10"
+                            className="text-destructive border-red-500/50 hover:bg-red-500/10"
                         >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete Node
@@ -331,7 +331,7 @@ export const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
                 {/* Node Palette */}
                 <NodePalette
                     onNodeDragStart={handleNodeDragStart}
-                    className="border-r border-slate-700"
+                    className="border-r border-border"
                 />
 
                 {/* Canvas */}
@@ -353,16 +353,16 @@ export const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
                     node={selectedNode}
                     onSave={handleNodeSave}
                     onCancel={() => setSelectedNode(null)}
-                    className="border-l border-slate-700"
+                    className="border-l border-border"
                 />
             </div>
 
             {/* Validation errors panel */}
             {validationResult && !validationResult.valid && validationResult.errors.length > 0 && (
-                <div className="border-t border-slate-700 bg-red-950/20 p-4 max-h-32 overflow-auto">
+                <div className="border-t border-border bg-red-950/20 p-4 max-h-32 overflow-auto">
                     <div className="space-y-1">
                         {validationResult.errors.map((error: any, index: number) => (
-                            <div key={index} className="text-sm text-red-400 flex items-center gap-2">
+                            <div key={index} className="text-sm text-destructive flex items-center gap-2">
                                 <AlertCircle className="h-3 w-3" />
                                 {error.message}
                             </div>

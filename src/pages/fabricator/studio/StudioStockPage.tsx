@@ -353,7 +353,7 @@ export const StudioStockPage: React.FC = () => {
               {reservationCurrent && stockReservation && !acknowledgementStale ? (
                 <span
                   className={`inline-flex items-center gap-1 text-xs ${
-                    stockReservation.availabilityOk ? 'text-green-300' : 'text-amber-300'
+                    stockReservation.availabilityOk ? 'text-success' : 'text-amber-300'
                   }`}
                 >
                   {stockReservation.availabilityOk ? (
@@ -450,8 +450,8 @@ export const StudioStockPage: React.FC = () => {
             </table>
           </div>
         ) : (
-          <Alert className="border-slate-600/40 bg-slate-900/40">
-            <AlertDescription className="text-xs text-slate-300">
+          <Alert className="border-border/40 bg-background/40">
+            <AlertDescription className="text-xs text-foreground">
               No linked BOM profiles for this revision yet. Open BOM review after a qualified design
               to see required metres and shortages.
             </AlertDescription>

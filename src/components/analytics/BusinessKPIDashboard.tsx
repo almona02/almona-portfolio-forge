@@ -149,7 +149,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
     icon: React.ReactNode;
     color?: string;
     subtitle?: string;
-  }> = ({ title, value, change, icon, color = 'text-blue-600', subtitle }) => (
+  }> = ({ title, value, change, icon, color = 'text-info', subtitle }) => (
     <Card className="relative overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
@@ -162,11 +162,11 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
         )}
         <div className="flex items-center text-xs">
           {change >= 0 ? (
-            <ArrowUpRight className="h-3 w-3 text-green-600 mr-1" />
+            <ArrowUpRight className="h-3 w-3 text-success mr-1" />
           ) : (
-            <ArrowDownLeft className="h-3 w-3 text-red-600 mr-1" />
+            <ArrowDownLeft className="h-3 w-3 text-destructive mr-1" />
           )}
-          <span className={change >= 0 ? 'text-green-600' : 'text-red-600'}>
+          <span className={change >= 0 ? 'text-success' : 'text-destructive'}>
             {Math.abs(change)}%
           </span>
           <span className="text-muted-foreground ml-1">vs last period</span>
@@ -247,7 +247,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
           value={`$${(metrics.revenue.total / 1000).toFixed(0)}K`}
           change={metrics.revenue.growth}
           icon={<DollarSign className="h-4 w-4" />}
-          color="text-green-600"
+          color="text-success"
           subtitle="Monthly recurring"
         />
         <MetricCard
@@ -255,7 +255,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
           value={metrics.customers.total.toLocaleString()}
           change={12.3}
           icon={<Users className="h-4 w-4" />}
-          color="text-blue-600"
+          color="text-info"
           subtitle={`${metrics.customers.new} new this month`}
         />
         <MetricCard
@@ -426,7 +426,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Growth</span>
-                    <Badge variant="outline" className="text-green-600">
+                    <Badge variant="outline" className="text-success">
                       +{metrics.regional.egypt.growth}%
                     </Badge>
                   </div>
@@ -452,7 +452,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Growth</span>
-                    <Badge variant="outline" className="text-green-600">
+                    <Badge variant="outline" className="text-success">
                       +{metrics.regional.turkey.growth}%
                     </Badge>
                   </div>
@@ -478,7 +478,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Growth</span>
-                    <Badge variant="outline" className="text-green-600">
+                    <Badge variant="outline" className="text-success">
                       +{metrics.regional.eu.growth}%
                     </Badge>
                   </div>

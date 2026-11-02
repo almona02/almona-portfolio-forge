@@ -163,16 +163,16 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
           'flex items-center gap-2 rounded-md border px-2.5 py-1.5 min-h-9',
           selected
             ? 'border-amber-500/50 bg-amber-500/10'
-            : 'border-amber-600/20 bg-slate-950/50',
+            : 'border-amber-600/20 bg-background/50',
         )}
       >
-        <Grid3x3 className="h-3.5 w-3.5 text-amber-500 shrink-0" aria-hidden />
+        <Grid3x3 className="h-3.5 w-3.5 text-warning shrink-0" aria-hidden />
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] uppercase tracking-wider text-slate-500 leading-none mb-0.5">Pattern</p>
-          <p className="text-xs sm:text-sm font-medium text-amber-100 truncate">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground leading-none mb-0.5">Pattern</p>
+          <p className="text-xs sm:text-sm font-medium text-warning truncate">
             {selected ? shortName(selected) : 'None — pick a layout'}
             {selected ? (
-              <span className="ml-1.5 font-mono font-normal text-[10px] text-slate-500">
+              <span className="ml-1.5 font-mono font-normal text-[10px] text-muted-foreground">
                 {selected.gridSpec.cols}×{selected.gridSpec.rows}
               </span>
             ) : null}
@@ -182,7 +182,7 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
           <button
             type="button"
             onClick={() => setBrowseOpen((open) => !open)}
-            className="inline-flex items-center gap-1 shrink-0 rounded-md border border-amber-600/30 px-2 py-1 text-[10px] uppercase tracking-wide text-amber-200/90 hover:bg-amber-500/10 touch-manipulation"
+            className="inline-flex items-center gap-1 shrink-0 rounded-md border border-amber-600/30 px-2 py-1 text-[10px] uppercase tracking-wide text-warning/90 hover:bg-amber-500/10 touch-manipulation"
             aria-expanded={showBrowse}
             data-testid="measuring-pattern-browse-toggle"
           >
@@ -193,7 +193,7 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
           <button
             type="button"
             onClick={onClear}
-            className="inline-flex items-center gap-1 shrink-0 rounded-md border border-amber-600/30 px-2 py-1 text-[11px] text-amber-200/90 hover:bg-amber-500/10"
+            className="inline-flex items-center gap-1 shrink-0 rounded-md border border-amber-600/30 px-2 py-1 text-[11px] text-warning/90 hover:bg-amber-500/10"
             aria-label="Clear pattern selection"
           >
             <X className="h-3 w-3" />
@@ -223,8 +223,8 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
               className={cn(
                 'shrink-0 rounded-md px-2.5 py-1 text-[11px] font-medium border transition-colors touch-manipulation',
                 active
-                  ? 'border-amber-500/60 bg-amber-500/20 text-amber-100'
-                  : 'border-transparent text-slate-500 hover:text-slate-300 hover:bg-slate-800/80',
+                  ? 'border-amber-500/60 bg-amber-500/20 text-warning'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-card/80',
               )}
             >
               {f.label}
@@ -269,32 +269,32 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
                 'active:scale-[0.98] touch-manipulation',
                 isSelected
                   ? 'border-amber-500 bg-amber-500/20 ring-1 ring-amber-500/40'
-                  : 'border-amber-600/30 bg-slate-950/70 hover:border-amber-500/50 hover:bg-amber-500/5',
+                  : 'border-amber-600/30 bg-background/70 hover:border-amber-500/50 hover:bg-amber-500/5',
               )}
             >
               {isSelected && (
-                <span className="absolute top-1.5 right-1.5 text-amber-400" aria-hidden>
+                <span className="absolute top-1.5 right-1.5 text-warning" aria-hidden>
                   <CheckCircle2 className="h-3.5 w-3.5" />
                 </span>
               )}
 
-              <span className="absolute top-1.5 left-1.5 rounded bg-slate-900/80 px-1 py-px font-mono text-[9px] text-amber-300/90 tabular-nums border border-amber-600/25">
+              <span className="absolute top-1.5 left-1.5 rounded bg-background/80 px-1 py-px font-mono text-[9px] text-warning/90 tabular-nums border border-amber-600/25">
                 {cols}×{rows}
               </span>
 
-              <Icon size={34} className="mt-3 text-amber-400/90 md:hidden" />
+              <Icon size={34} className="mt-3 text-warning/90 md:hidden" />
               <span className="mt-3 hidden md:inline-flex">
-                <Icon size={40} className="text-amber-400/90" />
+                <Icon size={40} className="text-warning/90" />
               </span>
 
-              <span className="w-full truncate text-center text-[11px] font-semibold text-amber-100/95 px-0.5" title={pattern.name}>
+              <span className="w-full truncate text-center text-[11px] font-semibold text-warning/95 px-0.5" title={pattern.name}>
                 {shortName(pattern)}
               </span>
 
               <span
                 className={cn(
                   'text-[10px] font-medium',
-                  isSelected ? 'text-amber-300' : 'text-slate-500',
+                  isSelected ? 'text-warning' : 'text-muted-foreground',
                 )}
               >
                 {isSelected ? 'Selected' : 'Use'}
@@ -305,7 +305,7 @@ export const EgyptianPatternSelector: React.FC<EgyptianPatternSelectorProps> = (
       </div>
 
       {filteredPatterns.length === 0 && (
-        <p className="text-xs text-slate-500 text-center py-3">No patterns in this filter for the current system.</p>
+        <p className="text-xs text-muted-foreground text-center py-3">No patterns in this filter for the current system.</p>
       )}
     </div>
   );

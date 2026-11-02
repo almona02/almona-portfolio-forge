@@ -9,12 +9,12 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from 'sonner'
 
 const ROLE_COLORS: Record<AdminUserRole, string> = {
-  admin: 'border-red-500/40 bg-red-500/15 text-red-300',
-  customer: 'border-sky-500/40 bg-sky-500/15 text-sky-300',
-  sales_rep: 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300',
-  technician: 'border-amber-500/40 bg-amber-500/15 text-amber-300',
+  admin: 'border-red-500/40 bg-red-500/15 text-destructive',
+  customer: 'border-sky-500/40 bg-sky-500/15 text-info',
+  sales_rep: 'border-emerald-500/40 bg-emerald-500/15 text-success',
+  technician: 'border-amber-500/40 bg-amber-500/15 text-warning',
   support: 'border-violet-500/40 bg-violet-500/15 text-violet-300',
-  fabricator_admin: 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300',
+  fabricator_admin: 'border-cyan-500/40 bg-cyan-500/15 text-info',
 }
 
 export const UserRolePanel: React.FC<{ currentUserId: string }> = ({ currentUserId }) => {

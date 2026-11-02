@@ -369,11 +369,11 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   const StatusBadge: React.FC<{ status: string; efficiency?: string }> = ({ status, efficiency }) => {
     const statusConfig = {
       verified: { color: 'text-[#003366]', bg: 'bg-[#FFD700]', border: 'border-[#003366]', dot: 'bg-green-500' }, // New Gold Tier status
-      optimal: { color: 'text-emerald-400', bg: 'bg-emerald-400/20', border: 'border-emerald-400/30', dot: 'bg-emerald-400' },
-      running: { color: 'text-blue-400', bg: 'bg-blue-400/20', border: 'border-blue-400/30', dot: 'bg-blue-400' },
-      monitoring: { color: 'text-amber-400', bg: 'bg-amber-400/20', border: 'border-amber-400/30', dot: 'bg-amber-400' },
+      optimal: { color: 'text-success', bg: 'bg-emerald-400/20', border: 'border-emerald-400/30', dot: 'bg-emerald-400' },
+      running: { color: 'text-info', bg: 'bg-blue-400/20', border: 'border-blue-400/30', dot: 'bg-blue-400' },
+      monitoring: { color: 'text-warning', bg: 'bg-amber-400/20', border: 'border-amber-400/30', dot: 'bg-amber-400' },
       active: { color: 'text-[#FFD700]', bg: 'bg-[#FFD700]/20', border: 'border-[#FFD700]/30', dot: 'bg-[#FFD700]' },
-      pending: { color: 'text-amber-400', bg: 'bg-amber-400/20', border: 'border-amber-400/30', dot: 'bg-amber-400' }
+      pending: { color: 'text-warning', bg: 'bg-amber-400/20', border: 'border-amber-400/30', dot: 'bg-amber-400' }
     };
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
     return (
@@ -450,7 +450,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       />
 
       {/* Header - Enterprise Grade with Gold Tier */}
-      <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3.5 border-b border-amber-600/30 bg-[#0f0f0f]/50 backdrop-blur-sm relative z-10">
+      <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3.5 border-b border-amber-600/30 bg-background/50 backdrop-blur-sm relative z-10">
         <motion.div
           initial={false}
           animate={{ opacity: isCollapsed ? 0 : 1, scale: isCollapsed ? 0.8 : 1 }}
@@ -488,7 +488,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 <span className="typography-h3 text-xs sm:text-sm bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent uppercase leading-tight truncate">
                   ALMONA
                 </span>
-                <span className="text-[9px] sm:text-[10px] font-semibold text-amber-600/90 leading-tight mt-0.5 truncate">
+                <span className="text-[9px] sm:text-[10px] font-semibold text-warning/90 leading-tight mt-0.5 truncate">
                   {cockpitOwner} Cockpit
                 </span>
               </motion.div>
@@ -526,7 +526,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="relative z-10"
           >
-            <ChevronLeft className="w-2 h-2 text-amber-300 group-hover:text-amber-200" />
+            <ChevronLeft className="w-2 h-2 text-warning group-hover:text-warning" />
           </motion.div>
           {/* Pulse effect when active */}
           {!isCollapsed && (
@@ -566,8 +566,8 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
               }}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#003366]/95 to-[#004488]/95 backdrop-blur-sm border border-[#FFD700]/60 shadow-xl shadow-[#003366]/40"
             >
-              <ArrowRight className="w-4 h-4 text-white flex-shrink-0" />
-              <span className="text-xs font-semibold text-white whitespace-nowrap">
+              <ArrowRight className="w-4 h-4 text-foreground flex-shrink-0" />
+              <span className="text-xs font-semibold text-foreground whitespace-nowrap">
                 Welcome! Explore your workspace
               </span>
             </motion.div>
@@ -586,14 +586,14 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           className="mx-3 mt-3 px-4 py-2 bg-gradient-to-r from-amber-600/30 to-amber-500/30 border border-amber-500/20 rounded-lg backdrop-blur-sm relative z-10"
         >
           <div className="flex items-center justify-between text-[10px]">
-            <div className="flex items-center gap-1.5 text-amber-300">
-              <span className="text-amber-400">⚡</span>
+            <div className="flex items-center gap-1.5 text-warning">
+              <span className="text-warning">⚡</span>
               <span>LME Aluminum</span>
             </div>
             <div className="flex items-center gap-1 font-mono">
-              <span className="text-amber-200 font-bold">{getLiveAluminumPrice().toLocaleString()}</span>
-              <span className="text-amber-400">EGP</span>
-              <span className="text-green-400">▲</span>
+              <span className="text-warning font-bold">{getLiveAluminumPrice().toLocaleString()}</span>
+              <span className="text-warning">EGP</span>
+              <span className="text-success">▲</span>
             </div>
           </div>
         </motion.div>
@@ -605,29 +605,29 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="mx-3 mt-3 p-3 rounded-lg bg-[#0f0f0f]/60 border border-amber-600/20 backdrop-blur-sm shadow-inner relative z-10 card-dark"
+          className="mx-3 mt-3 p-3 rounded-lg bg-background/60 border border-amber-600/20 backdrop-blur-sm shadow-inner relative z-10 card-dark"
         >
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Activity className="w-3.5 h-3.5 status-valid" />
-                <span className="text-xs text-amber-600/70">System</span>
+                <span className="text-xs text-warning/70">System</span>
               </div>
               <span className="text-xs font-semibold status-valid">Optimal</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <TrendingUp className="w-3.5 h-3.5 text-sky-400" />
-                <span className="text-xs text-amber-600/70">Efficiency</span>
+                <TrendingUp className="w-3.5 h-3.5 text-info" />
+                <span className="text-xs text-warning/70">Efficiency</span>
               </div>
-              <span className="text-xs font-semibold text-sky-400">92.5%</span>
+              <span className="text-xs font-semibold text-info">92.5%</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Factory className="w-3.5 h-3.5 text-amber-400" />
-                <span className="text-xs text-amber-600/70">Active Jobs</span>
+                <Factory className="w-3.5 h-3.5 text-warning" />
+                <span className="text-xs text-warning/70">Active Jobs</span>
               </div>
-              <span className="text-xs font-semibold text-amber-400">12</span>
+              <span className="text-xs font-semibold text-warning">12</span>
             </div>
           </div>
         </motion.div>
@@ -643,7 +643,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
               exit={{ opacity: 0, scale: 0.9 }}
               className="relative"
             >
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-600/70" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warning/70" />
               <input
                 type="text"
                 placeholder="Search..."
@@ -651,7 +651,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onBlur={() => !searchQuery && setShowSearch(false)}
                 autoFocus
-                className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-[#0f0f0f]/60 border border-amber-600/20 text-sm text-amber-200 placeholder-amber-600/50 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 transition-all card-dark"
+                className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-background/60 border border-amber-600/20 text-sm text-warning placeholder-amber-600/50 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 transition-all card-dark"
               />
             </motion.div>
           ) : (
@@ -668,7 +668,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 </motion.button>
               </TooltipTrigger>
               {isCollapsed && (
-                <TooltipContent side="right" className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 card-dark">
+                <TooltipContent side="right" className="bg-background border-amber-600/30 text-warning card-dark">
                   <p>Search navigation</p>
                 </TooltipContent>
               )}
@@ -689,17 +689,17 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all mb-2 ${
                 activeMenu === 'quickActions'
                   ? 'bg-gradient-to-r from-amber-600/15 to-amber-500/15 border border-amber-500/40 shadow-sm shadow-amber-900/10'
-                  : 'hover:bg-[#0f0f0f]/40 border border-amber-600/30'
+                  : 'hover:bg-background/40 border border-amber-600/30'
               }`}
             >
               <div className="flex items-center gap-3">
-                <Zap className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} ${activeMenu === 'quickActions' ? 'text-amber-400' : 'text-amber-600/70'}`} />
-                <span className={`text-sm font-medium ${activeMenu === 'quickActions' ? 'text-amber-400' : 'text-amber-300'}`}>
+                <Zap className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} ${activeMenu === 'quickActions' ? 'text-warning' : 'text-warning/70'}`} />
+                <span className={`text-sm font-medium ${activeMenu === 'quickActions' ? 'text-warning' : 'text-warning'}`}>
                   Quick Actions
                 </span>
               </div>
               <ChevronDown
-                className={`w-4 h-4 text-amber-600/70 transition-transform ${activeMenu === 'quickActions' ? 'rotate-180' : ''}`}
+                className={`w-4 h-4 text-warning/70 transition-transform ${activeMenu === 'quickActions' ? 'rotate-180' : ''}`}
               />
             </motion.button>
             <AnimatePresence>
@@ -719,10 +719,10 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                         void action.action();
                         if (isMobile) setIsMobileNavOpen(false);
                       }}
-                      className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#0f0f0f]/40 transition-all group border border-transparent hover:border-amber-600/30 w-full text-left card-dark"
+                      className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-background/40 transition-all group border border-transparent hover:border-amber-600/30 w-full text-left card-dark"
                     >
-                      <action.icon className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} text-amber-600/70 group-hover:text-amber-400 transition-colors`} />
-                      <span className="text-xs font-medium text-amber-300">{action.name}</span>
+                      <action.icon className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} text-warning/70 group-hover:text-warning transition-colors`} />
+                      <span className="text-xs font-medium text-warning">{action.name}</span>
                     </motion.button>
                   ))}
                 </motion.div>
@@ -737,8 +737,8 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             onClick={() => setActiveMenu(activeMenu === 'workflow' ? null : 'workflow')}
             className={`w-full flex items-center justify-between px-2 py-1.5 rounded text-sm transition-colors ${
               activeMenu === 'workflow'
-                ? 'text-amber-200'
-                : 'text-amber-600/70 hover:text-amber-200'
+                ? 'text-warning'
+                : 'text-warning/70 hover:text-warning'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -771,8 +771,8 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       }}
                       className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-colors ${
                         isActive
-                          ? 'bg-[#0f0f0f]/80 text-amber-400'
-                          : 'text-amber-600/70 hover:text-amber-300 hover:bg-[#0f0f0f]/50'
+                          ? 'bg-background/80 text-warning'
+                          : 'text-warning/70 hover:text-warning hover:bg-background/50'
                       }`}
                     >
                       <stage.icon className={`${isCollapsed ? 'w-4 h-4' : 'w-3.5 h-3.5'}`} />
@@ -810,8 +810,8 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                   }}
                   className={`w-full flex items-center justify-between px-2 py-1.5 rounded text-sm transition-colors ${
                     isActive
-                      ? 'bg-[#0f0f0f]/80 text-amber-400'
-                      : 'text-amber-600/70 hover:text-amber-200 hover:bg-[#0f0f0f]/50'
+                      ? 'bg-background/80 text-warning'
+                      : 'text-warning/70 hover:text-warning hover:bg-background/50'
                   }`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
@@ -855,8 +855,8 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                             }}
                             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-colors ${
                               isChildActive
-                                ? 'bg-[#0f0f0f]/80 text-amber-400'
-                                : 'text-amber-600/70 hover:text-amber-300 hover:bg-[#0f0f0f]/50'
+                                ? 'bg-background/80 text-warning'
+                                : 'text-warning/70 hover:text-warning hover:bg-background/50'
                             }`}
                           >
                             <child.icon className="w-3.5 h-3.5" />
@@ -900,13 +900,13 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all group ${
                     isActive
                       ? 'bg-gradient-to-r from-amber-600/15 to-amber-500/15 border border-amber-500/40 shadow-sm shadow-amber-900/10'
-                      : 'hover:bg-[#0f0f0f]/40 border border-transparent hover:border-amber-600/30'
+                      : 'hover:bg-background/40 border border-transparent hover:border-amber-600/30'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <item.icon
                       className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} flex-shrink-0 transition-colors ${
-                        isActive ? 'text-amber-400' : 'text-amber-600/70 group-hover:text-amber-200'
+                        isActive ? 'text-warning' : 'text-warning/70 group-hover:text-warning'
                       }`}
                     />
                     {!isCollapsed && (
@@ -914,7 +914,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                         <div className="flex items-center gap-2">
                           <span
                             className={`text-sm font-medium truncate ${
-                              isActive ? 'text-amber-400' : 'text-amber-300'
+                              isActive ? 'text-warning' : 'text-warning'
                             }`}
                           >
                             {item.label}
@@ -926,14 +926,14 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                           )}
                         </div>
                         {item.description && !isCollapsed && (
-                          <p className="text-[10px] text-amber-600/70 truncate mt-0.5">{item.description}</p>
+                          <p className="text-[10px] text-warning/70 truncate mt-0.5">{item.description}</p>
                         )}
                       </div>
                     )}
                   </div>
                   {hasChildren && !isCollapsed && (
                     <ChevronRight
-                      className={`w-4 h-4 text-amber-600/70 transition-transform ${
+                      className={`w-4 h-4 text-warning/70 transition-transform ${
                         isExpanded ? 'rotate-90' : ''
                       }`}
                     />
@@ -963,8 +963,8 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                             }}
                             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-all ${
                               isChildActive
-                                ? 'text-amber-400 bg-amber-600/10'
-                                : 'text-amber-600/70 hover:text-amber-200 hover:bg-[#0f0f0f]/50'
+                                ? 'text-warning bg-amber-600/10'
+                                : 'text-warning/70 hover:text-warning hover:bg-background/50'
                             }`}
                           >
                             <child.icon className="w-3.5 h-3.5" />
@@ -995,17 +995,17 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all mb-2 ${
                 activeMenu === 'modules'
                   ? 'bg-gradient-to-r from-amber-600/15 to-amber-500/15 border border-amber-500/40 shadow-sm shadow-amber-900/10'
-                  : 'hover:bg-[#0f0f0f]/40 border border-transparent hover:border-amber-600/30'
+                  : 'hover:bg-background/40 border border-transparent hover:border-amber-600/30'
               }`}
             >
               <div className="flex items-center gap-3">
-                <Package className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} ${activeMenu === 'modules' ? 'text-amber-400' : 'text-amber-600/70'}`} />
-                <span className={`text-sm font-medium ${activeMenu === 'modules' ? 'text-amber-400' : 'text-amber-300'}`}>
+                <Package className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} ${activeMenu === 'modules' ? 'text-warning' : 'text-warning/70'}`} />
+                <span className={`text-sm font-medium ${activeMenu === 'modules' ? 'text-warning' : 'text-warning'}`}>
                   Modules
                 </span>
               </div>
               <ChevronDown
-                className={`w-4 h-4 text-amber-600/70 transition-transform ${activeMenu === 'modules' ? 'rotate-180' : ''}`}
+                className={`w-4 h-4 text-warning/70 transition-transform ${activeMenu === 'modules' ? 'rotate-180' : ''}`}
               />
             </motion.button>
             <AnimatePresence>
@@ -1027,11 +1027,11 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                         onClick={() => {
                           if (isMobile) setIsMobileNavOpen(false);
                         }}
-                        className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#0f0f0f]/40 transition-all group border border-transparent hover:border-amber-600/30 card-dark"
+                        className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-background/40 transition-all group border border-transparent hover:border-amber-600/30 card-dark"
                       >
-                        <module.icon className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} text-amber-600/70 group-hover:text-amber-400 transition-colors`} />
+                        <module.icon className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} text-warning/70 group-hover:text-warning transition-colors`} />
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-medium text-amber-300 truncate">{module.name}</div>
+                          <div className="text-xs font-medium text-warning truncate">{module.name}</div>
                           <StatusBadge status={module.status} efficiency={module.efficiency} />
                         </div>
                       </Link>
@@ -1046,7 +1046,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       </div>
 
       {/* Footer - Enterprise Footer Section */}
-      <div className="border-t border-amber-600/30 bg-[#0a0a0a]/80 backdrop-blur-sm p-2 space-y-1.5 relative z-10">
+      <div className="border-t border-amber-600/30 bg-background/80 backdrop-blur-sm p-2 space-y-1.5 relative z-10">
         {/* Notifications */}
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -1072,7 +1072,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 border-2 border-[#0a0a0a]"
+              className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 border-2 border-border"
             />
           )}
         </motion.button>
@@ -1095,17 +1095,17 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             className="btn-secondary w-full"
           >
             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-600 via-amber-500 to-amber-400 flex items-center justify-center flex-shrink-0 shadow-glow-strong ring-2 ring-amber-500/30">
-              <User className="w-3.5 h-3.5 text-[#0a0a0a] font-bold" />
+              <User className="w-3.5 h-3.5 text-foreground font-bold" />
             </div>
             {!isCollapsed && (
               <div className="flex-1 min-w-0 text-left">
-                <div className="text-xs font-medium text-amber-300 truncate">{user?.name || 'Operator'}</div>
-                <div className="text-[9px] text-amber-600/70 truncate">{user?.email || 'operator@fabricator.com'}</div>
+                <div className="text-xs font-medium text-warning truncate">{user?.name || 'Operator'}</div>
+                <div className="text-[9px] text-warning/70 truncate">{user?.email || 'operator@fabricator.com'}</div>
               </div>
             )}
             {!isCollapsed && (
               <ChevronDown
-                className={`w-3.5 h-3.5 text-amber-600/70 transition-transform flex-shrink-0 ${
+                className={`w-3.5 h-3.5 text-warning/70 transition-transform flex-shrink-0 ${
                   activeMenu === 'user' ? 'rotate-180' : ''
                 }`}
               />
@@ -1117,7 +1117,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute bottom-full left-0 mb-2 w-full bg-[#0f0f0f]/95 border border-amber-600/30 rounded-lg shadow-2xl overflow-hidden z-50 card-dark"
+                className="absolute bottom-full left-0 mb-2 w-full bg-background/95 border border-amber-600/30 rounded-lg shadow-2xl overflow-hidden z-50 card-dark"
               >
                 <div className="p-2 space-y-1">
                   <button
@@ -1127,11 +1127,11 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                     }}
                     className="btn-secondary"
                   >
-                    <Settings className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} text-amber-400`} />
-                    <span className="text-sm text-amber-300">Settings</span>
+                    <Settings className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} text-warning`} />
+                    <span className="text-sm text-warning">Settings</span>
                   </button>
                   <button
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-500/10 transition-colors text-left text-red-400"
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-500/10 transition-colors text-left text-destructive"
                     onClick={() => setShowLogoutConfirm(true)}
                   >
                     <span className="text-sm">Sign Out</span>
@@ -1156,18 +1156,18 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="max-w-sm w-full bg-[#0f0f0f] border border-amber-600/30 rounded-2xl shadow-2xl shadow-amber-900/20 p-6 space-y-4"
+                className="max-w-sm w-full bg-background border border-amber-600/30 rounded-2xl shadow-2xl shadow-amber-900/20 p-6 space-y-4"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-600 to-amber-500 flex items-center justify-center text-[#0a0a0a] font-bold shadow-lg shadow-amber-900/40 border border-amber-400/30">
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-600 to-amber-500 flex items-center justify-center text-foreground font-bold shadow-lg shadow-amber-900/40 border border-amber-400/30">
                     !
                   </div>
                   <div>
-                    <h3 className="typography-h3 text-lg text-white">
+                    <h3 className="typography-h3 text-lg text-foreground">
                       {t('confirmation.signOut.title', 'Confirm sign out')}
                     </h3>
-                    <p className="text-sm text-amber-600/70">
+                    <p className="text-sm text-warning/70">
                       {t('confirmation.signOut.body', 'You will be logged out of Fabricator Pro.')}
                     </p>
                   </div>
@@ -1175,7 +1175,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 <div className="flex gap-3 justify-end">
                   <button
                     onClick={() => setShowLogoutConfirm(false)}
-                    className="px-4 py-2 rounded-lg border border-amber-600/30 text-amber-200 hover:bg-[#0f0f0f]/60 transition-colors card-dark"
+                    className="px-4 py-2 rounded-lg border border-amber-600/30 text-warning hover:bg-background/60 transition-colors card-dark"
                   >
                     {t('confirmation.cancel', 'Cancel')}
                   </button>
@@ -1209,18 +1209,18 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="max-w-sm w-full bg-[#0f0f0f] border border-amber-600/30 rounded-2xl shadow-2xl shadow-amber-900/20 p-6 space-y-4"
+                className="max-w-sm w-full bg-background border border-amber-600/30 rounded-2xl shadow-2xl shadow-amber-900/20 p-6 space-y-4"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-600 via-amber-500 to-amber-400 flex items-center justify-center text-[#0a0a0a] font-bold shadow-lg shadow-amber-900/40">
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-600 via-amber-500 to-amber-400 flex items-center justify-center text-foreground font-bold shadow-lg shadow-amber-900/40">
                     ⓘ
                   </div>
                   <div>
-                    <h3 className="typography-h3 text-lg text-white">
+                    <h3 className="typography-h3 text-lg text-foreground">
                       {t('confirmation.home.title', 'Leave this workspace?')}
                     </h3>
-                    <p className="text-sm text-amber-600/70">
+                    <p className="text-sm text-warning/70">
                       {t('confirmation.home.body', "You're about to return to the home page.")}
                     </p>
                   </div>
@@ -1228,7 +1228,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 <div className="flex gap-3 justify-end">
                   <button
                     onClick={() => setShowHomeConfirm(false)}
-                    className="px-4 py-2 rounded-lg border border-amber-600/30 text-amber-200 hover:bg-[#0f0f0f]/60 transition-colors card-dark"
+                    className="px-4 py-2 rounded-lg border border-amber-600/30 text-warning hover:bg-background/60 transition-colors card-dark"
                   >
                     {t('confirmation.home.stay', 'Stay')}
                   </button>
@@ -1238,7 +1238,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       setIsMobileNavOpen(false);
                       void navigate('/');
                     }}
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-[#0a0a0a] shadow-lg shadow-amber-900/30 hover:from-amber-500 hover:to-amber-600 transition-colors border border-amber-400/30"
+                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-foreground shadow-lg shadow-amber-900/30 hover:from-amber-500 hover:to-amber-600 transition-colors border border-amber-400/30"
                   >
                     {t('confirmation.home.leave', 'Leave')}
                   </button>
@@ -1259,7 +1259,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           ref={sidebarRef}
           dir={isRTLMode ? 'rtl' : 'ltr'}
           style={{ width: sidebarWidth }}
-          className={`fixed ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-screen z-[200] flex flex-col bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] backdrop-blur-2xl border-${isRTLMode ? 'l' : 'r'} border-amber-600/30 shadow-2xl shadow-amber-900/20 will-change-[width] w-full sm:w-auto`}
+          className={`fixed ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-screen z-[200] flex flex-col bg-gradient-to-b from-background via-background to-background backdrop-blur-2xl border-${isRTLMode ? 'l' : 'r'} border-amber-600/30 shadow-2xl shadow-amber-900/20 will-change-[width] w-full sm:w-auto`}
         >
           {sidebarContent}
           {/* Resize handle */}
@@ -1299,7 +1299,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             onClick={closeMobileNav}
           >
             <motion.div
-              className={`absolute ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-full bg-[#0a0a0a]/98 ${isRTLMode ? 'border-l' : 'border-r'} border-amber-600/30 shadow-2xl shadow-amber-900/20 flex flex-col`}
+              className={`absolute ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-full bg-background/98 ${isRTLMode ? 'border-l' : 'border-r'} border-amber-600/30 shadow-2xl shadow-amber-900/20 flex flex-col`}
               style={{ width: sidebarConfig.drawerWidth || '82vw' }}
               initial={{ x: isRTLMode ? 20 : -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
@@ -1321,12 +1321,12 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             style={isRTLMode ? { right: `var(--sidebar-width, 320px)` } : { left: `var(--sidebar-width, 320px)` }}
-            className={`fixed top-20 z-[190] w-96 bg-[#0a0a0a]/98 border border-amber-600/50 rounded-2xl shadow-2xl shadow-amber-900/20 overflow-hidden backdrop-blur-xl ${isRTLMode ? 'mr-2' : 'ml-2'}`}
+            className={`fixed top-20 z-[190] w-96 bg-background/98 border border-amber-600/50 rounded-2xl shadow-2xl shadow-amber-900/20 overflow-hidden backdrop-blur-xl ${isRTLMode ? 'mr-2' : 'ml-2'}`}
           >
             <div className="px-4 py-3 border-b border-amber-600/30 flex items-center gap-2">
-              <Search className="h-4 w-4 text-amber-400" />
-              <span className="text-sm font-semibold text-amber-200">Search Results</span>
-              <span className="ml-auto text-[11px] text-amber-600/70">{filteredNavItems.length} matches</span>
+              <Search className="h-4 w-4 text-warning" />
+              <span className="text-sm font-semibold text-warning">Search Results</span>
+              <span className="ml-auto text-[11px] text-warning/70">{filteredNavItems.length} matches</span>
             </div>
             <div className="max-h-80 overflow-y-auto">
               {filteredNavItems.length > 0 ? (
@@ -1340,20 +1340,20 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                           void navigate(item.path);
                         }
                       }}
-                      className="w-full text-left px-4 py-3 hover:bg-white/5 transition-colors flex items-center gap-3"
+                      className="w-full text-left px-4 py-3 hover:bg-foreground/5 transition-colors flex items-center gap-3"
                     >
                       <item.icon className="h-4 w-4 text-[#FFD700]" />
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-amber-200">{item.label}</span>
+                          <span className="text-sm font-semibold text-warning">{item.label}</span>
                           {item.badge && (
-                            <span className={item.badge === 'LIVE' ? 'badge-live-bronze' : 'text-[10px] px-1.5 py-0.5 rounded-full border border-amber-400/40 text-amber-400 bg-amber-600/10 uppercase font-semibold'}>
+                            <span className={item.badge === 'LIVE' ? 'badge-live-bronze' : 'text-[10px] px-1.5 py-0.5 rounded-full border border-amber-400/40 text-warning bg-amber-600/10 uppercase font-semibold'}>
                               {item.badge}
                             </span>
                           )}
                         </div>
                         {item.description && (
-                          <p className="text-xs text-amber-600/70 mt-0.5">{item.description}</p>
+                          <p className="text-xs text-warning/70 mt-0.5">{item.description}</p>
                         )}
                       </div>
                     </button>
@@ -1369,12 +1369,12 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                                 void navigate(child.path);
                               }
                             }}
-                            className="w-full text-left pl-12 pr-4 py-2 hover:bg-white/5 transition-colors flex items-center gap-3 text-xs"
+                            className="w-full text-left pl-12 pr-4 py-2 hover:bg-foreground/5 transition-colors flex items-center gap-3 text-xs"
                           >
-                            <child.icon className="h-3 w-3 text-amber-600/70" />
-                            <span className="text-amber-200">{child.label}</span>
+                            <child.icon className="h-3 w-3 text-warning/70" />
+                            <span className="text-warning">{child.label}</span>
                             {child.badge && (
-                              <span className={child.badge === 'LIVE' ? 'badge-live-bronze ml-2' : 'ml-2 text-[9px] px-1.5 py-0.5 rounded-full border border-amber-600/50 text-amber-300 bg-[#0f0f0f]/60 uppercase'}>
+                              <span className={child.badge === 'LIVE' ? 'badge-live-bronze ml-2' : 'ml-2 text-[9px] px-1.5 py-0.5 rounded-full border border-amber-600/50 text-warning bg-background/60 uppercase'}>
                                 {child.badge}
                               </span>
                             )}
@@ -1385,8 +1385,8 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                   </div>
                 ))
               ) : (
-                <div className="px-6 py-8 text-center text-amber-600/70 text-sm">
-                  No results found for "<span className="text-amber-200">{searchQuery}</span>"
+                <div className="px-6 py-8 text-center text-warning/70 text-sm">
+                  No results found for "<span className="text-warning">{searchQuery}</span>"
                 </div>
               )}
             </div>

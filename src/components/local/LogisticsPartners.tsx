@@ -1,11 +1,11 @@
 const LogisticsPartners = () => {
   return (
-    <section className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md mt-8">
+    <section className="p-6 max-w-4xl mx-auto bg-card rounded-lg shadow-md mt-8">
       <h2 className="typography-h2 mb-4">Our Local Logistics Partners</h2>
       <p className="mb-4">
         We collaborate with trusted local logistics companies to ensure fast and reliable delivery across Egypt.
       </p>
-      <ul className="list-disc list-inside space-y-2 text-gray-700">
+      <ul className="list-disc list-inside space-y-2 text-foreground">
         <li>Egypt Express Shipping</li>
         <li>Cairo Logistics Co.</li>
         <li>Delta Freight Services</li>

@@ -62,7 +62,7 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
         <div className="flex items-center text-amber-400 mr-4">
           {sectionIcon}
         </div>
-        <h3 className="typography-h3 text-almona-light">{sectionTitle}</h3>
+        <h3 className="typography-h3 text-foreground">{sectionTitle}</h3>
         {showTrending && (
           <Badge className="btn-primary">
             🔥 Hot
@@ -79,7 +79,7 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
           return (
             <Card 
               key={machine.id} 
-              className="bg-almona-darker border-almona-light/20 overflow-hidden hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10 group"
+              className="bg-card border-border/20 overflow-hidden hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10 group"
             >
               {/* Machine Image */}
               <div className="relative h-40 overflow-hidden">
@@ -117,18 +117,18 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
 
               <CardContent className="pt-0">
                 {/* Machine Details */}
-                <div className="space-y-2 text-sm text-almona-light/70 mb-4">
+                <div className="space-y-2 text-sm text-foreground/70 mb-4">
                   <div className="flex justify-between">
                     <span>Location:</span>
-                    <span className="text-almona-light">{machine.location}</span>
+                    <span className="text-foreground">{machine.location}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Year:</span>
-                    <span className="text-almona-light">{machine.year}</span>
+                    <span className="text-foreground">{machine.year}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Hours:</span>
-                    <span className="text-almona-light">{machine.hours.toLocaleString()}</span>
+                    <span className="text-foreground">{machine.hours.toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -137,7 +137,7 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
                   <div className="mb-3">
                     <Badge 
                       variant="outline" 
-                      className="text-xs bg-blue-600/10 text-blue-400 border-blue-400/30"
+                      className="text-xs bg-blue-600/10 text-info border-blue-400/30"
                     >
                       {recommendation.explanation}
                     </Badge>
@@ -188,7 +188,7 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
       {/* Engagement Stats */}
       {currentMachine && recommendations.length > 0 && (
         <div className="mt-4 text-center">
-          <p className="text-xs text-almona-light/50">
+          <p className="text-xs text-foreground/50">
             Based on user behavior from {recommendations.length * 50}+ similar searches
           </p>
         </div>

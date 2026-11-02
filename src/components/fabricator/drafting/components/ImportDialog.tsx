@@ -115,13 +115,13 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-slate-900 border-amber-600/30">
+      <DialogContent className="sm:max-w-[500px] bg-background border-amber-600/30">
         <DialogHeader>
-          <DialogTitle className="text-amber-300 flex items-center gap-2">
+          <DialogTitle className="text-warning flex items-center gap-2">
             <Upload className="h-5 w-5" />
             Import Drawing
           </DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogDescription className="text-muted-foreground">
             Select a file format and choose a file to import into the drafting workspace.
           </DialogDescription>
         </DialogHeader>
@@ -129,7 +129,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
         <div className="space-y-4 py-4">
           {/* Format Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300">File Format</label>
+            <label className="text-sm font-medium text-foreground">File Format</label>
             <div className="flex flex-col gap-2">
               {supportedFormats.map((format) => (
                 <button
@@ -144,15 +144,15 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
                   }}
                   className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
                     selectedFormat === format
-                      ? 'border-amber-500 bg-amber-500/10 text-amber-300'
-                      : 'border-slate-700 bg-slate-800/50 text-slate-300 hover:border-slate-600'
+                      ? 'border-amber-500 bg-amber-500/10 text-warning'
+                      : 'border-border bg-card/50 text-foreground hover:border-border'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <FileText className="h-4 w-4" />
                     <div className="text-left">
                       <div className="font-medium">{format.toUpperCase()}</div>
-                      <div className="text-xs text-slate-400">{formatDescriptions[format]}</div>
+                      <div className="text-xs text-muted-foreground">{formatDescriptions[format]}</div>
                     </div>
                   </div>
                   {selectedFormat === format && (
@@ -165,7 +165,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
 
           {/* File Input */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300">Select File</label>
+            <label className="text-sm font-medium text-foreground">Select File</label>
             <div className="flex items-center gap-2">
               <input
                 ref={fileInputRef}
@@ -177,7 +177,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
               />
               <label
                 htmlFor="import-file-input"
-                className="flex-1 flex items-center justify-center gap-2 p-3 border border-slate-700 rounded-lg bg-slate-800/50 hover:border-amber-500/50 hover:bg-slate-800 cursor-pointer transition-colors text-slate-300"
+                className="flex-1 flex items-center justify-center gap-2 p-3 border border-border rounded-lg bg-card/50 hover:border-amber-500/50 hover:bg-card cursor-pointer transition-colors text-foreground"
               >
                 <Upload className="h-4 w-4" />
                 <span className="text-sm">
@@ -195,27 +195,27 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
                       fileInputRef.current.value = '';
                     }
                   }}
-                  className="h-10 w-10 text-slate-400 hover:text-slate-200"
+                  className="h-10 w-10 text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-4 w-4" />
                 </Button>
               )}
             </div>
             {selectedFile && (
-              <div className="text-xs text-slate-400">
+              <div className="text-xs text-muted-foreground">
                 Size: {(selectedFile.size / 1024).toFixed(2)} KB
               </div>
             )}
           </div>
         </div>
 
-        <DialogFooter className="border-t border-slate-800 pt-4">
+        <DialogFooter className="border-t border-border pt-4">
           <Button
             type="button"
             variant="outline"
             onClick={handleCancel}
             disabled={isImporting}
-            className="border-slate-700 text-slate-300 hover:bg-slate-800"
+            className="border-border text-foreground hover:bg-card"
           >
             Cancel
           </Button>

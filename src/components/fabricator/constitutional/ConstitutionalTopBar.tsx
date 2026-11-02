@@ -73,8 +73,8 @@ export const ConstitutionalTopBar: React.FC<ConstitutionalTopBarProps> = ({
         <div
             className={`
         flex items-center justify-between
-        bg-gradient-to-r from-slate-900/50 to-slate-800/50
-        border border-slate-700/50
+        bg-gradient-to-r from-background/50 to-card/50
+        border border-border/50
         rounded-lg px-4 py-2.5
         backdrop-blur-sm
         shadow-lg shadow-black/10
@@ -83,24 +83,24 @@ export const ConstitutionalTopBar: React.FC<ConstitutionalTopBarProps> = ({
         >
             {/* Left: Position & Project Info */}
             <div className="flex items-center gap-3">
-                <MapPin className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
 
                 <div className="flex items-center gap-2 text-sm">
-                    <span className="text-slate-400">Pos</span>
-                    <span className="font-mono text-amber-300 font-semibold tracking-tight">
+                    <span className="text-muted-foreground">Pos</span>
+                    <span className="font-mono text-warning font-semibold tracking-tight">
                         #{project.posNumber}
                     </span>
                     {systemPackName && (
                         <span
-                            className="ml-1.5 text-amber-400/90 font-medium"
+                            className="ml-1.5 text-warning/90 font-medium"
                             title={systemPackName}
                         >
                             — {systemPackName}
                         </span>
                     )}
-                    <span className="text-slate-600 mx-1">of</span>
-                    <span className="text-slate-400">Project</span>
-                    <span className="font-mono text-blue-300 font-semibold tracking-tight">
+                    <span className="text-muted-foreground mx-1">of</span>
+                    <span className="text-muted-foreground">Project</span>
+                    <span className="font-mono text-info font-semibold tracking-tight">
                         #{project.orderNumber}
                     </span>
                 </div>
@@ -114,8 +114,8 @@ export const ConstitutionalTopBar: React.FC<ConstitutionalTopBarProps> = ({
                     className={`
             text-xs font-medium border
             ${mode === 'drafting'
-                            ? 'bg-blue-500/10 text-blue-300 border-blue-500/30'
-                            : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                            ? 'bg-blue-500/10 text-info border-blue-500/30'
+                            : 'bg-amber-500/10 text-warning border-amber-500/30'
                         }
           `}
                 >
@@ -143,7 +143,7 @@ export const ConstitutionalTopBar: React.FC<ConstitutionalTopBarProps> = ({
                         variant="outline"
                         className="
               text-xs font-medium
-              bg-emerald-500/10 text-emerald-300 border-emerald-500/30
+              bg-emerald-500/10 text-success border-emerald-500/30
             "
                         title={`Hash: ${constitutionalStatus.hash?.substring(0, 8)}...`}
                     >
@@ -159,7 +159,7 @@ export const ConstitutionalTopBar: React.FC<ConstitutionalTopBarProps> = ({
                     variant="outline"
                     className="
             text-xs font-mono
-            bg-slate-800/50 text-slate-300 border-slate-600/50
+            bg-card/50 text-foreground border-border/50
           "
                     title="Frame size (width × height)"
                 >
@@ -191,18 +191,18 @@ export const ConstitutionalTopBarCompact: React.FC<ConstitutionalTopBarProps> = 
         <div
             className={`
         flex items-center gap-2
-        text-xs text-slate-400
+        text-xs text-muted-foreground
         ${className}
       `}
         >
             <MapPin className="h-3 w-3" />
             <span>
-                Pos <span className="font-mono text-amber-300">#{project.posNumber}</span>
+                Pos <span className="font-mono text-warning">#{project.posNumber}</span>
                 {systemPackName && (
-                    <span className="text-amber-400/90 font-medium ml-1">— {systemPackName}</span>
+                    <span className="text-warning/90 font-medium ml-1">— {systemPackName}</span>
                 )}
                 {' '}of{' '}
-                <span className="font-mono text-blue-300">#{project.orderNumber}</span>
+                <span className="font-mono text-info">#{project.orderNumber}</span>
             </span>
 
             {hasUnsavedChanges && (

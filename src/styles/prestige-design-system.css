@@ -213,7 +213,7 @@
 /* PRIMARY BUTTON - Gold/Amber */
 .btn-primary {
   background-color: #fbbf24;        /* Amber 400 - Primary button bg default per tokens */
-  color: #020617;                   /* Slate 950 - Primary button fg default per tokens */
+  color: hsl(var(--foreground));                   /* Slate 950 - Primary button fg default per tokens */
   font-weight: 600;
   padding: 10px 20px;
   border-radius: 6px;
@@ -248,8 +248,8 @@
 
 /* SECONDARY BUTTON - Prestige Dark */
 .btn-secondary {
-  background-color: #334155;        /* Slate 700 - Secondary button bg default per tokens */
-  color: #f1f5f9;                   /* Slate 100 - Secondary button fg default per tokens */
+  background-color: hsl(var(--muted));        /* Slate 700 - Secondary button bg default per tokens */
+  color: hsl(var(--foreground));                   /* Slate 100 - Secondary button fg default per tokens */
   font-weight: 600;
   padding: 6px 12px;
   border-radius: 6px;
@@ -263,12 +263,12 @@
 }
 
 .btn-secondary:hover {
-  background-color: #475569;        /* Slate 600 - Secondary button bg hover per tokens */
+  background-color: hsl(var(--input));        /* Slate 600 - Secondary button bg hover per tokens */
   transform: scale(1.02);
 }
 
 .btn-secondary:active {
-  background-color: #1e293b;        /* Slate 800 - Secondary button bg active per tokens */
+  background-color: hsl(var(--card));        /* Slate 800 - Secondary button bg active per tokens */
   transform: scale(0.99);
 }
 
@@ -431,7 +431,7 @@
 /* ACCENT BUTTON - Cyan */
 .btn-accent {
   background-color: #22d3ee;        /* Cyan 400 */
-  color: #0f172a;                   /* Slate 900 */
+  color: hsl(var(--foreground));                   /* Slate 900 */
   font-weight: 600;
   padding: 10px 20px;
   border-radius: 6px;
@@ -487,8 +487,8 @@
 
 /* SECONDARY BUTTON - DARK VARIANT */
 .btn-secondary-dark {
-  background-color: rgba(26, 26, 26, 0.8);  /* #1a1a1a with opacity */
-  color: #fbbf24;                            /* Amber 400 */
+  background-color: hsl(var(--card) / 0.8);  /* #1a1a1a with opacity */
+  color: hsl(var(--warning));                            /* Amber 400 */
   font-weight: 600;
   padding: 10px 20px;
   border-radius: 6px;
@@ -499,8 +499,8 @@
 }
 
 .btn-secondary-dark:hover {
-  background-color: rgba(26, 26, 26, 0.95);
-  color: #fcd34d;  /* Amber 300 */
+  background-color: hsl(var(--card) / 0.95);
+  color: hsl(var(--warning));  /* Amber 300 */
   border-color: rgba(245, 158, 11, 0.5);
 }
 
@@ -510,7 +510,7 @@
 
 /* STANDARD CARD */
 .card {
-  background-color: #1e293b;        /* Slate 800 */
+  background-color: hsl(var(--secondary));
   border: 1px solid #334155;        /* Slate 700 */
   border-radius: 8px;
   padding: 20px;
@@ -525,7 +525,7 @@
 
 /* PREMIUM CARD - Gold Border */
 .card-premium {
-  background-color: #1e293b;        /* Slate 800 */
+  background-color: hsl(var(--secondary));
   border: 2px solid #f59e0b;        /* Amber 500 */
   border-radius: 8px;
   padding: 20px;
@@ -547,7 +547,7 @@
 
 /* GLASS MORPHISM CARD */
 .card-glass {
-  background: rgba(15, 23, 42, 0.6);
+  background: hsl(var(--card) / 0.6);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(245, 158, 11, 0.2);
   border-radius: 12px;
@@ -557,7 +557,7 @@
 
 /* GLASS MORPHISM CARD - DARK VARIANT */
 .card-glass-dark {
-  background: rgba(15, 15, 15, 0.8);  /* #0f0f0f with opacity */
+  background: hsl(var(--card) / 0.8);  /* #0f0f0f with opacity */
   backdrop-filter: blur(20px);
   border: 2px solid rgba(245, 158, 11, 0.4);  /* Amber 600 with opacity */
   border-radius: 8px;
@@ -573,7 +573,7 @@
 
 /* CARD - DARK BACKGROUND VARIANT */
 .card-dark {
-  background: rgba(26, 26, 26, 0.6);  /* #1a1a1a with opacity */
+  background: hsl(var(--card) / 0.6);  /* #1a1a1a with opacity */
   border: 2px solid rgba(245, 158, 11, 0.3);  /* Amber 600 with opacity */
   border-radius: 8px;
   padding: 20px;
@@ -595,7 +595,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #4ade80;                   /* Emerald 400 */
+  color: hsl(var(--success));                   /* Emerald 400 */
   font-weight: 500;
 }
 
@@ -638,11 +638,11 @@
 
 /* INPUT - Dark Background */
 .input-dark {
-  background: rgba(15, 15, 15, 0.8);  /* #0f0f0f with opacity */
+  background: hsl(var(--card) / 0.8);  /* #0f0f0f with opacity */
   border: 2px solid rgba(245, 158, 11, 0.3);  /* Amber 600 with opacity */
   border-radius: 6px;
   padding: 10px 16px;
-  color: #fbbf24;  /* Amber 400 */
+  color: hsl(var(--warning));  /* Amber 400 */
   font-size: 0.875rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(8px);
@@ -660,11 +660,11 @@
 
 /* TEXTAREA - Dark Background */
 .textarea-dark {
-  background: rgba(15, 15, 15, 0.8);  /* #0f0f0f with opacity */
+  background: hsl(var(--card) / 0.8);  /* #0f0f0f with opacity */
   border: 2px solid rgba(245, 158, 11, 0.3);  /* Amber 600 with opacity */
   border-radius: 6px;
   padding: 10px 16px;
-  color: #fbbf24;  /* Amber 400 */
+  color: hsl(var(--warning));  /* Amber 400 */
   font-size: 0.875rem;
   font-family: monospace;
   min-height: 80px;
@@ -680,11 +680,11 @@
 
 /* SELECT TRIGGER - Dark Background */
 .select-trigger-dark {
-  background: rgba(26, 26, 26, 0.8);  /* #1a1a1a with opacity */
+  background: hsl(var(--card) / 0.8);  /* #1a1a1a with opacity */
   border: 2px solid rgba(245, 158, 11, 0.3);  /* Amber 600 with opacity */
   border-radius: 6px;
   padding: 10px 16px;
-  color: #fbbf24;  /* Amber 400 */
+  color: hsl(var(--warning));  /* Amber 400 */
   font-size: 0.875rem;
   height: 40px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -697,20 +697,20 @@
 
 /* SELECT CONTENT - Dark Background */
 .select-content-dark {
-  background: rgba(15, 15, 15, 0.95);  /* #0f0f0f with opacity */
+  background: hsl(var(--card) / 0.95);  /* #0f0f0f with opacity */
   backdrop-filter: blur(20px);
   border: 2px solid rgba(245, 158, 11, 0.4);  /* Amber 600 with opacity */
   border-radius: 6px;
-  color: #fbbf24;  /* Amber 400 */
+  color: hsl(var(--warning));  /* Amber 400 */
 }
 
 /* BUTTON - Small Dark Variant */
 .btn-small-dark {
-  background: rgba(26, 26, 26, 0.6);  /* #1a1a1a with opacity */
+  background: hsl(var(--card) / 0.6);  /* #1a1a1a with opacity */
   border: 2px solid rgba(245, 158, 11, 0.3);  /* Amber 600 with opacity */
   border-radius: 4px;
   padding: 4px 8px;
-  color: #fbbf24;  /* Amber 400 */
+  color: hsl(var(--warning));  /* Amber 400 */
   font-size: 10px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(8px);
@@ -718,40 +718,40 @@
 
 .btn-small-dark:hover {
   border-color: rgba(245, 158, 11, 0.5);
-  background: rgba(26, 26, 26, 1);
+  background: hsl(var(--card) / 1);
 }
 
 /* STATUS BADGE VARIANTS */
 .status-badge-tuned {
   background: rgba(16, 185, 129, 0.15);  /* Emerald 500/15 */
-  color: #34d399;  /* Emerald 300 */
+  color: hsl(var(--success));  /* Emerald 300 */
   border: 1px solid rgba(16, 185, 129, 0.5);  /* Emerald 500/50 */
 }
 
 .status-badge-in-progress {
   background: rgba(59, 130, 246, 0.15);  /* Blue 500/15 */
-  color: #93c5fd;  /* Blue 300 */
+  color: hsl(var(--info));  /* Blue 300 */
   border: 1px solid rgba(59, 130, 246, 0.5);  /* Blue 500/50 */
 }
 
 .status-badge-untuned {
   background: rgba(234, 179, 8, 0.15);  /* Yellow 500/15 */
-  color: #fcd34d;  /* Yellow 300 */
+  color: hsl(var(--warning));  /* Yellow 300 */
   border: 1px solid rgba(234, 179, 8, 0.5);  /* Yellow 500/50 */
 }
 
 .status-badge-out-of-stock {
-  color: #f87171;  /* Red 400 */
+  color: hsl(var(--destructive));  /* Red 400 */
   border-color: #ef4444;  /* Red 500 */
 }
 
 .status-badge-low {
-  color: #fbbf24;  /* Amber 400 */
+  color: hsl(var(--warning));  /* Amber 400 */
   border-color: #f59e0b;  /* Amber 500 */
 }
 
 .status-badge-high {
-  color: #4ade80;  /* Emerald 400 */
+  color: hsl(var(--success));  /* Emerald 400 */
   border-color: #10b981;  /* Emerald 500 */
 }
 
@@ -759,7 +759,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #f59e0b;                   /* Amber 500 */
+  color: hsl(var(--warning));                   /* Amber 500 */
   font-weight: 500;
   border-left: 3px solid #f59e0b;
   padding-left: 8px;
@@ -773,7 +773,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #ef4444;                   /* Red 500 */
+  color: hsl(var(--destructive));                   /* Red 500 */
   font-weight: 500;
   border-left: 3px solid #ef4444;
   padding-left: 8px;
@@ -788,7 +788,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #22d3ee;                   /* Cyan 400 */
+  color: hsl(var(--info));                   /* Cyan 400 */
   font-weight: 500;
 }
 
@@ -801,7 +801,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #fbbf24;                   /* Amber 400 */
+  color: hsl(var(--warning));                   /* Amber 400 */
   font-weight: 500;
 }
 
@@ -976,7 +976,7 @@
   align-items: center;
   gap: 8px;
   background: linear-gradient(135deg, #4ade80, #22d3ee);
-  color: #0f172a;                   /* Slate 900 */
+  color: hsl(var(--foreground));                   /* Slate 900 */
   padding: 8px 16px;
   border-radius: 20px;
   font-weight: 600;
@@ -997,7 +997,7 @@
   align-items: center;
   gap: 6px;
   background: linear-gradient(135deg, #f59e0b, #fbbf24);
-  color: #0f172a;                   /* Slate 900 */
+  color: hsl(var(--foreground));                   /* Slate 900 */
   padding: 6px 12px;
   border-radius: 16px;
   font-weight: 600;
@@ -1041,37 +1041,25 @@
    ============================================================================ */
 
 /* Text Colors */
-.text-primary {
-  color: #f1f5f9;                   /* Slate 100 */
-}
 
-.text-secondary {
-  color: #cbd5e1;                   /* Slate 300 */
-}
 
 .text-tertiary {
-  color: #94a3b8;                   /* Slate 400 */
+  color: hsl(var(--muted-foreground));
 }
 
 .text-gold {
-  color: #fbbf24;                   /* Amber 400 */
+  color: hsl(var(--warning));                   /* Amber 400 */
 }
 
 .text-cyan {
-  color: #22d3ee;                   /* Cyan 400 */
+  color: hsl(var(--info));                   /* Cyan 400 */
 }
 
 /* Background Colors */
-.bg-primary {
-  background-color: #0f172a;        /* Slate 900 */
-}
 
-.bg-secondary {
-  background-color: #1e293b;        /* Slate 800 */
-}
 
 .bg-tertiary {
-  background-color: #334155;        /* Slate 700 */
+  background-color: hsl(var(--muted));
 }
 
 .bg-gold {

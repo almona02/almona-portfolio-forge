@@ -110,13 +110,13 @@ export const InvoiceUploadDialog: React.FC<InvoiceUploadDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-background border-border text-foreground max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-amber-400" />
+            <FileText className="h-5 w-5 text-warning" />
             Upload Supplier Invoice
           </DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogDescription className="text-muted-foreground">
             Upload a CSV invoice file to automatically import stock items
           </DialogDescription>
         </DialogHeader>
@@ -130,7 +130,7 @@ export const InvoiceUploadDialog: React.FC<InvoiceUploadDialogProps> = ({
                 value={supplier}
                 onChange={(e) => setSupplier(e.target.value)}
                 placeholder="e.g. Caluminium"
-                className="bg-gray-800 border-gray-700"
+                className="bg-card border-border"
               />
             </div>
             <div>
@@ -139,7 +139,7 @@ export const InvoiceUploadDialog: React.FC<InvoiceUploadDialogProps> = ({
                 value={invoiceNumber}
                 onChange={(e) => setInvoiceNumber(e.target.value)}
                 placeholder="e.g. INV-2024-001"
-                className="bg-gray-800 border-gray-700"
+                className="bg-card border-border"
               />
             </div>
           </div>
@@ -150,28 +150,28 @@ export const InvoiceUploadDialog: React.FC<InvoiceUploadDialogProps> = ({
             <div
               onDrop={handleDrop}
               onDragOver={handleDragOver}
-              className="border-dashed border-gray-700 rounded-lg p-8 text-center /50 transition-colors cursor-pointer card-premium"
+              className="border-dashed border-border rounded-lg p-8 text-center /50 transition-colors cursor-pointer card-premium"
             >
               {loading ? (
                 <div className="flex flex-col items-center gap-2">
-                  <Loader2 className="h-8 w-8 animate-spin text-amber-400" />
-                  <p className="text-sm text-gray-400">Parsing invoice...</p>
+                  <Loader2 className="h-8 w-8 animate-spin text-warning" />
+                  <p className="text-sm text-muted-foreground">Parsing invoice...</p>
                 </div>
               ) : file ? (
                 <div className="flex flex-col items-center gap-2">
-                  <CheckCircle2 className="h-8 w-8 text-green-400" />
+                  <CheckCircle2 className="h-8 w-8 text-success" />
                   <p className="text-sm font-medium">{file.name}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-muted-foreground">
                     {(file.size / 1024).toFixed(2)} KB
                   </p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-2">
-                  <Upload className="h-8 w-8 text-gray-400" />
-                  <p className="text-sm text-gray-300">
+                  <Upload className="h-8 w-8 text-muted-foreground" />
+                  <p className="text-sm text-foreground">
                     Drag and drop your CSV file here, or click to browse
                   </p>
-                  <p className="text-xs text-gray-500">CSV format only</p>
+                  <p className="text-xs text-muted-foreground">CSV format only</p>
                   <Input
                     type="file"
                     accept=".csv"
@@ -200,8 +200,8 @@ export const InvoiceUploadDialog: React.FC<InvoiceUploadDialogProps> = ({
           {/* Error Display */}
           {error && (
             <Alert className="bg-red-500/10 border-red-500/30">
-              <AlertCircle className="h-4 w-4 text-red-400" />
-              <AlertDescription className="text-red-300 text-sm">{error}</AlertDescription>
+              <AlertCircle className="h-4 w-4 text-destructive" />
+              <AlertDescription className="text-destructive text-sm">{error}</AlertDescription>
             </Alert>
           )}
 
@@ -223,10 +223,10 @@ export const InvoiceUploadDialog: React.FC<InvoiceUploadDialogProps> = ({
                   >
                     <div className="flex justify-between items-center">
                       <span className="font-medium">{item.profileCode}</span>
-                      <span className="text-gray-400">
+                      <span className="text-muted-foreground">
                         {item.quantity} {item.unit}
                         {item.matchedProfileId && (
-                          <span className="ml-2 text-green-400">✓ Matched</span>
+                          <span className="ml-2 text-success">✓ Matched</span>
                         )}
                       </span>
                     </div>

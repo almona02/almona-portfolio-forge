@@ -163,7 +163,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-green-600">تم إنشاء عرض السعر بنجاح</DialogTitle>
+            <DialogTitle className="text-2xl text-success">تم إنشاء عرض السعر بنجاح</DialogTitle>
           </DialogHeader>
           
           <LazyMotionDiv
@@ -192,7 +192,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                 {result.portal_reference && (
                   <div>
                     <Label className="typography-label text-sm font-medium">مرجع البوابة</Label>
-                    <p className="text-sm text-gray-600">{result.portal_reference}</p>
+                    <p className="text-sm text-muted-foreground">{result.portal_reference}</p>
                   </div>
                 )}
 
@@ -346,7 +346,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                     <div key={product.id} className="flex items-center justify-between p-3 border rounded">
                       <div>
                         <h4 className="typography-h4 font-medium">{product.name}</h4>
-                        <p className="text-sm text-gray-600">{product.category}</p>
+                        <p className="text-sm text-muted-foreground">{product.category}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{product.price} جنيه</span>
@@ -365,7 +365,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                     <div key={service.id} className="flex items-center justify-between p-3 border rounded">
                       <div>
                         <h4 className="typography-h4 font-medium">{service.name}</h4>
-                        <p className="text-sm text-gray-600">{service.description}</p>
+                        <p className="text-sm text-muted-foreground">{service.description}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{service.price} جنيه</span>

@@ -124,7 +124,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl w-full bg-almona-darker border-almona-light max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+      <DialogContent className="max-w-5xl w-full bg-card border-border max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-xl sm:text-2xl text-gradient-orange">
               Request a Quote
@@ -144,12 +144,12 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
           )}
           {result && (
             <div className="space-y-6 py-4">
-              <div className="p-4 rounded border border-almona-light/30 bg-almona-dark">
+              <div className="p-4 rounded border border-border/30 bg-background">
                 <h3 className="typography-h3 text-lg mb-2">Quote Submitted</h3>
-                <p className="text-sm text-gray-300 mb-2">Your quote was created successfully.</p>
-                <ul className="text-sm text-gray-400 space-y-2 mb-4">
+                <p className="text-sm text-foreground mb-2">Your quote was created successfully.</p>
+                <ul className="text-sm text-muted-foreground space-y-2 mb-4">
                   <li className="flex items-center justify-between">
-                    <span><span className="text-gray-500">Quote #:</span> {result.quote_number}</span>
+                    <span><span className="text-muted-foreground">Quote #:</span> {result.quote_number}</span>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -165,7 +165,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
                   </li>
                   <li className="flex items-center justify-between">
                     <span>
-                      <span className="text-gray-500">Digital Twin:</span>{' '}
+                      <span className="text-muted-foreground">Digital Twin:</span>{' '}
                       {result.digital_twin_code || 'Pending assignment'}
                     </span>
                     {result.digital_twin_code && (
@@ -183,10 +183,10 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
                       </Button>
                     )}
                   </li>
-                  <li><span className="text-gray-500">Portal Reference:</span> {result.portal_reference || 'N/A'}</li>
+                  <li><span className="text-muted-foreground">Portal Reference:</span> {result.portal_reference || 'N/A'}</li>
                   {relatedServiceTicketId && (
                     <li>
-                      <span className="text-gray-500">Linked Ticket:</span>{' '}
+                      <span className="text-muted-foreground">Linked Ticket:</span>{' '}
                       <button
                         type="button"
                         onClick={() => {
@@ -212,7 +212,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
                     Track in Portal
                   </button>
                   <button
-                    className="px-4 py-2 rounded border border-almona-light/30 text-sm hover:bg-almona-light/10 transition"
+                    className="px-4 py-2 rounded border border-border/30 text-sm hover:bg-almona-light/10 transition"
                     onClick={() => {
                       setResult(null);
                     }}

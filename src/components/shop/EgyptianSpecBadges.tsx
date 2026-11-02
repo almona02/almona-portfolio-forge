@@ -19,7 +19,7 @@ const EgyptianSpecBadges: React.FC<EgyptianSpecBadgesProps> = ({ machine }) => {
   return (
     <div className="flex flex-wrap gap-2">
       {machine.egyptCertifications?.map(cert => (
-        <span key={cert} className="bg-[#ce1126] text-white px-3 py-1 rounded-full text-xs flex items-center">
+        <span key={cert} className="bg-[#ce1126] text-primary-foreground px-3 py-1 rounded-full text-xs flex items-center">
           <span className="mr-1">🇪🇬</span>
           {getCertificationLabel(cert)}
         </span>

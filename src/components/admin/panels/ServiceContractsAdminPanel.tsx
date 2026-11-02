@@ -132,7 +132,7 @@ export const ServiceContractsAdminPanel: React.FC = () => {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {error ? <p className="text-sm text-red-500" role="alert">{error}</p> : null}
+        {error ? <p className="text-sm text-destructive" role="alert">{error}</p> : null}
         {loading ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loading…</div>
         ) : contracts.length === 0 ? (
@@ -163,11 +163,11 @@ export const ServiceContractsAdminPanel: React.FC = () => {
                           <DropdownMenuContent align="end">
                             {c.status !== 'active' && <DropdownMenuItem onClick={() => void changeStatus(c, 'active')}><Power className="mr-2 h-4 w-4" /> Activate</DropdownMenuItem>}
                             {c.status === 'active' && <DropdownMenuItem onClick={() => void changeStatus(c, 'expired')}>Mark expired</DropdownMenuItem>}
-                            {c.status === 'active' && <DropdownMenuItem className="text-red-500" onClick={() => void changeStatus(c, 'cancelled')}>Cancel contract</DropdownMenuItem>}
+                            {c.status === 'active' && <DropdownMenuItem className="text-destructive" onClick={() => void changeStatus(c, 'cancelled')}>Cancel contract</DropdownMenuItem>}
                           </DropdownMenuContent>
                         </DropdownMenu>
                         <Button size="sm" variant="ghost" onClick={() => void openPrint(c)} title="Print contract (AR/EN)"><Printer className="h-4 w-4" /></Button>
-                        <Button size="sm" variant="ghost" onClick={() => setConfirmDelete(c)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                        <Button size="sm" variant="ghost" onClick={() => setConfirmDelete(c)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                       </div>
                     </td>
                   </tr>

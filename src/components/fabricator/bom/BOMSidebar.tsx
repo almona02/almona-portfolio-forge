@@ -174,7 +174,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
   // Show empty state if bomData is not available yet
   if (!bomData) {
     return (
-      <div className="p-4 text-center text-amber-600/70">
+      <div className="p-4 text-center text-warning/70">
         <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
         <p className="text-sm">{t('engineering_bay.bom_loading', 'Bill of Materials')}</p>
         <p className="text-xs mt-1 opacity-60">{t('engineering_bay.bom_generating', 'Generating components...')}</p>
@@ -208,12 +208,12 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
       <GoldTierCard variant="elevated" className="card-glass-dark shadow-glow-intense flex-1 flex flex-col">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 tracking-[0.15em] uppercase text-amber-200 font-semibold">
-              <FileText className="h-5 w-5 text-amber-500 text-shadow-glow" />
+            <CardTitle className="flex items-center gap-2 tracking-[0.15em] uppercase text-warning font-semibold">
+              <FileText className="h-5 w-5 text-warning text-shadow-glow" />
               {t('engineering_bay.bill_of_materials', 'Real-time Bill of Materials')}
               <Badge
                 data-testid="bom-estimate-badge"
-                className="bg-amber-500/15 border border-amber-500/40 text-amber-200 text-[10px] tracking-normal normal-case"
+                className="bg-amber-500/15 border border-amber-500/40 text-warning text-[10px] tracking-normal normal-case"
               >
                 {bomSurface.badgeLabel}
               </Badge>
@@ -221,7 +221,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
             {onToggleCollapse && (
               <GoldTierButton
                 onClick={onToggleCollapse}
-                className="h-6 w-6 p-0 text-amber-400 hover:text-amber-300"
+                className="h-6 w-6 p-0 text-warning hover:text-warning"
                 aria-label={collapsed ? t('engineering_bay.expand_bom', 'Expand BOM') : t('engineering_bay.collapse_bom', 'Collapse BOM')}
               >
                 {collapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
@@ -229,7 +229,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
             )}
           </div>
           <CardDescription
-            className="text-xs text-amber-600/80 font-medium flex items-center justify-between gap-2"
+            className="text-xs text-warning/80 font-medium flex items-center justify-between gap-2"
             data-testid="bom-estimate-description"
           >
             <span>{bomSurface.description}</span>
@@ -239,8 +239,8 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                   variant="outline"
                   className={
                     pricingSource === 'system_pricing'
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 text-[10px]'
-                      : 'bg-amber-500/10 border-amber-500/30 text-amber-400 text-[10px]'
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-success text-[10px]'
+                      : 'bg-amber-500/10 border-amber-500/30 text-warning text-[10px]'
                   }
                 >
                   {pricingSource === 'system_pricing'
@@ -257,7 +257,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                       });
                       onOpenPricingStudio(liveProject.systemPackId, systemPackProfile?.id);
                     }}
-                    className="h-6 px-2 text-[10px] text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
+                    className="h-6 px-2 text-[10px] text-warning hover:text-warning hover:bg-amber-500/10"
                     title={t('engineering_bay.configure_pricing', 'Configure Pricing')}
                   >
                     <Settings className="h-3 w-3 mr-1" />
@@ -270,7 +270,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
           {/* Summary when collapsed */}
           {collapsed && showSummary && summary && (
             <div className="mt-2 p-2 bg-amber-900/20 border border-amber-600/30 rounded">
-              <div className="text-sm text-amber-200 font-semibold">
+              <div className="text-sm text-warning font-semibold">
                 {summary.itemCount} {t('engineering_bay.items', 'items')} • {formatCost(summary.totalCost)}
               </div>
             </div>
@@ -288,10 +288,10 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
               return (
                 <Collapsible key={category} defaultOpen={false} className="space-y-2">
                   <CollapsibleTrigger className="btn-secondary-dark">
-                    <h4 className="typography-h4 typography-label-compact text-amber-500/80 truncate flex-1 text-left">
+                    <h4 className="typography-h4 typography-label-compact text-warning/80 truncate flex-1 text-left">
                       {categoryLabels[category as keyof typeof categoryLabels]}
                     </h4>
-                    <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600/70 transition-transform duration-200 data-[state=open]:rotate-180 flex-shrink-0 ml-2" />
+                    <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-warning/70 transition-transform duration-200 data-[state=open]:rotate-180 flex-shrink-0 ml-2" />
                   </CollapsibleTrigger>
                   <CollapsibleContent className="space-y-1.5 sm:space-y-2 pt-1">
                     {Object.values(aggregated).map((item: any, idx) => {
@@ -305,10 +305,10 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                           className={cn(
                             'flex flex-col sm:flex-row sm:justify-between sm:items-center p-2 sm:p-2.5 rounded border text-xs sm:text-sm gap-1 sm:gap-0',
                             isVerified
-                              ? 'bg-[#0f0f0f]/60 border border-amber-600/40'
+                              ? 'bg-background/60 border border-amber-600/40'
                               : hasMissing || hasMismatched
-                              ? 'bg-[#1a1a1a]/60 border border-amber-600/50'
-                              : 'bg-[#0f0f0f]/60 border border-amber-600/30'
+                              ? 'bg-background/60 border border-amber-600/50'
+                              : 'bg-background/60 border border-amber-600/30'
                           )}
                         >
                           <div className="flex-1 min-w-0">
@@ -318,13 +318,13 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                                 <img
                                   src={item.profile.thumbnailUrl}
                                   alt={item.profile.name || item.type}
-                                  className="w-6 h-6 sm:w-8 sm:h-8 rounded border-amber-600/30 object-contain bg-white/5 flex-shrink-0 card-premium"
+                                  className="w-6 h-6 sm:w-8 sm:h-8 rounded border-amber-600/30 object-contain bg-foreground/5 flex-shrink-0 card-premium"
                                   onError={(e) => {
                                     (e.target as HTMLImageElement).style.display = 'none';
                                   }}
                                 />
                               )}
-                              <div className="font-semibold text-amber-200 text-xs sm:text-sm truncate">
+                              <div className="font-semibold text-warning text-xs sm:text-sm truncate">
                                 {item.profile?.name || item.type}
                               </div>
                               {!isVerified && (
@@ -346,7 +346,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                                 />
                               )}
                             </div>
-                            <div className="text-[10px] sm:text-xs text-amber-600/70 mt-0.5 break-words space-x-1">
+                            <div className="text-[10px] sm:text-xs text-warning/70 mt-0.5 break-words space-x-1">
                               <span className="inline-block">{item.type}</span>
                               {item.role && <span className="inline-block"> • {item.role}</span>}
                               {item.specs?.material && <span className="inline-block"> • {item.specs.material}</span>}
@@ -368,7 +368,7 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                               </div>
                             )}
                           </div>
-                          <span className="font-mono text-amber-300 font-bold sm:ml-4 text-xs sm:text-sm flex-shrink-0">
+                          <span className="font-mono text-warning font-bold sm:ml-4 text-xs sm:text-sm flex-shrink-0">
                             {item.quantity}{t('engineering_bay.units.quantity', 'x')}
                           </span>
                         </div>
@@ -383,19 +383,19 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
             {glassDetails.glassSpecs.length > 0 && (
               <Collapsible defaultOpen={false} className="space-y-2 pt-2 border-t border-amber-600/30">
                 <CollapsibleTrigger className="btn-secondary-dark">
-                  <h4 className="typography-h4 typography-label text-amber-500/80">
+                  <h4 className="typography-h4 typography-label text-warning/80">
                     {t('engineering_bay.bom_glass', 'Glass & Glazing')}
                   </h4>
-                  <ChevronDown className="h-4 w-4 text-amber-600/70 transition-transform duration-200 data-[state=open]:rotate-180" />
+                  <ChevronDown className="h-4 w-4 text-warning/70 transition-transform duration-200 data-[state=open]:rotate-180" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-2 pt-1">
                   {glassDetails.glassSpecs.map((glass, idx) => (
                     <div key={idx} className="flex justify-between items-center p-2 card-dark rounded text-sm">
                       <div className="flex-1">
-                        <div className="font-semibold text-amber-200">
+                        <div className="font-semibold text-warning">
                           {t('engineering_bay.glass_sash', 'Sash')} {glass.sashIndex} - {glass.type} {glassDetails.glassThickness}mm
                         </div>
-                        <div className="text-xs text-amber-600/70 mt-0.5">
+                        <div className="text-xs text-warning/70 mt-0.5">
                           {Math.round(glass.width)}{t('engineering_bay.units.mm', 'mm')} × {Math.round(glass.height)}{t('engineering_bay.units.mm', 'mm')}
                           {` • ${glass.area.toFixed(2)}${t('engineering_bay.units.m2', 'm²')}`}
                         </div>
@@ -403,13 +403,13 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                     </div>
                   ))}
                   <div className="p-2 card-dark rounded text-xs">
-                    <div className="flex justify-between text-amber-200">
+                    <div className="flex justify-between text-warning">
                       <span className="font-semibold">{t('engineering_bay.total_glass_area', 'Total Glass Area')}:</span>
-                      <span className="font-mono font-bold text-amber-400 text-shadow-glow-strong">{glassDetails.totalGlassArea.toFixed(2)}{t('engineering_bay.units.m2', 'm²')}</span>
+                      <span className="font-mono font-bold text-warning text-shadow-glow-strong">{glassDetails.totalGlassArea.toFixed(2)}{t('engineering_bay.units.m2', 'm²')}</span>
                     </div>
-                    <div className="flex justify-between text-amber-200 mt-1">
+                    <div className="flex justify-between text-warning mt-1">
                       <span className="font-semibold">{t('engineering_bay.total_glass_weight', 'Total Glass Weight')}:</span>
-                      <span className="font-mono font-bold text-amber-400 text-shadow-glow-strong">{glassDetails.totalGlassWeight.toFixed(2)}{t('engineering_bay.units.kg', 'kg')}</span>
+                      <span className="font-mono font-bold text-warning text-shadow-glow-strong">{glassDetails.totalGlassWeight.toFixed(2)}{t('engineering_bay.units.kg', 'kg')}</span>
                     </div>
                   </div>
                 </CollapsibleContent>
@@ -420,23 +420,23 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
             {liveProject?.hardware && liveProject.hardware.length > 0 && (
               <Collapsible defaultOpen={false} className="space-y-2 pt-2 border-t border-amber-600/30">
                 <CollapsibleTrigger className="btn-secondary-dark">
-                  <h4 className="typography-h4 text-[10px] sm:text-xs text-amber-500/80 tracking-[0.15em] truncate flex-1 text-left">
+                  <h4 className="typography-h4 text-[10px] sm:text-xs text-warning/80 tracking-[0.15em] truncate flex-1 text-left">
                     {t('engineering_bay.bom_hardware', 'Hardware')}
                   </h4>
-                  <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600/70 transition-transform duration-200 data-[state=open]:rotate-180 flex-shrink-0 ml-2" />
+                  <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-warning/70 transition-transform duration-200 data-[state=open]:rotate-180 flex-shrink-0 ml-2" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-1.5 sm:space-y-2 pt-1">
                   {liveProject.hardware.map(hw => (
                     <div key={hw.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-2 sm:p-2.5 card-dark rounded text-xs sm:text-sm gap-1 sm:gap-0">
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-amber-200 text-xs sm:text-sm truncate">{hw.name}</div>
-                        <div className="text-[10px] sm:text-xs text-amber-600/70 mt-0.5 break-words">
+                        <div className="font-semibold text-warning text-xs sm:text-sm truncate">{hw.name}</div>
+                        <div className="text-[10px] sm:text-xs text-warning/70 mt-0.5 break-words">
                           <span className="inline-block">{hw.type}</span>
                           {hw.length && <span className="inline-block"> • {Math.round(hw.length)}{t('engineering_bay.units.mm', 'mm')}</span>}
                           {hw.position && <span className="inline-block"> • {hw.position}</span>}
                         </div>
                       </div>
-                      <span className="font-mono text-amber-300 font-bold sm:ml-4 text-xs sm:text-sm flex-shrink-0">
+                      <span className="font-mono text-warning font-bold sm:ml-4 text-xs sm:text-sm flex-shrink-0">
                         {hw.quantity || 1}{hw.type === 'gasket' ? t('engineering_bay.units.meters', 'm') : hw.type === 'reinforcement' ? ` ${t('engineering_bay.units.bars', 'bars')}` : t('engineering_bay.units.quantity', 'x')}
                       </span>
                     </div>
@@ -482,20 +482,20 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
 
             {/* Unit Summary & Totals - Always visible */}
             <div className="space-y-2 pt-2 border-t border-amber-600/30">
-              <h4 className="typography-h4 typography-label text-amber-200">
+              <h4 className="typography-h4 typography-label text-warning">
                 {t('engineering_bay.bom_summary', 'Unit Summary')}
               </h4>
               <div className="p-3 card-dark rounded space-y-2 text-sm">
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <span className="text-amber-500/80 font-semibold">{t('engineering_bay.unit_dimensions', 'Dimensions')}:</span>
-                    <div className="font-mono text-amber-200 font-bold mt-0.5 text-shadow-glow-subtle">
+                    <span className="text-warning/80 font-semibold">{t('engineering_bay.unit_dimensions', 'Dimensions')}:</span>
+                    <div className="font-mono text-warning font-bold mt-0.5 text-shadow-glow-subtle">
                       {Math.round(liveProject?.overallWidth || 0)}{t('engineering_bay.units.mm', 'mm')} × {Math.round(liveProject?.overallHeight || 0)}{t('engineering_bay.units.mm', 'mm')}
                     </div>
                   </div>
                   <div>
-                    <span className="text-amber-500/80 font-semibold">{t('engineering_bay.system_pack', 'System Pack')}:</span>
-                    <div className="text-amber-200 font-semibold mt-0.5">
+                    <span className="text-warning/80 font-semibold">{t('engineering_bay.system_pack', 'System Pack')}:</span>
+                    <div className="text-warning font-semibold mt-0.5">
                       {systemPack?.meta.name || liveProject?.systemPackId || t('engineering_bay.not_specified', 'Not specified')}
                     </div>
                   </div>
@@ -503,36 +503,36 @@ const BOMSidebarInner: React.FC<BOMSidebarProps> = ({
                     <>
                       {liveProject.positionMeta.flatNumber && (
                         <div>
-                          <span className="text-amber-500/80 font-semibold">{t('engineering_bay.flat_number', 'Flat')}:</span>
-                          <div className="text-amber-200 mt-0.5">{liveProject.positionMeta.flatNumber}</div>
+                          <span className="text-warning/80 font-semibold">{t('engineering_bay.flat_number', 'Flat')}:</span>
+                          <div className="text-warning mt-0.5">{liveProject.positionMeta.flatNumber}</div>
                         </div>
                       )}
                       {liveProject.positionMeta.floor && (
                         <div>
-                          <span className="text-amber-500/80 font-semibold">{t('engineering_bay.floor', 'Floor')}:</span>
-                          <div className="text-amber-200 mt-0.5">{liveProject.positionMeta.floor}</div>
+                          <span className="text-warning/80 font-semibold">{t('engineering_bay.floor', 'Floor')}:</span>
+                          <div className="text-warning mt-0.5">{liveProject.positionMeta.floor}</div>
                         </div>
                       )}
                     </>
                   )}
                 </div>
                 <div className="pt-2 border-t border-amber-600/30 space-y-1">
-                  <div className="flex justify-between text-amber-200">
+                  <div className="flex justify-between text-warning">
                     <span className="font-semibold">{t('engineering_bay.total_material_cost', 'Total Material Cost')}:</span>
-                    <span className="font-mono font-bold text-amber-400 text-shadow-glow-strong">
+                    <span className="font-mono font-bold text-warning text-shadow-glow-strong">
                       {totals.materialCost.toFixed(2)} {t('engineering_bay.currency', 'EGP')}
                     </span>
                   </div>
-                  <div className="flex justify-between text-amber-200">
+                  <div className="flex justify-between text-warning">
                     <span className="font-semibold">{t('engineering_bay.total_profile_weight', 'Total Profile Weight')}:</span>
-                    <span className="font-mono font-bold text-amber-300">
+                    <span className="font-mono font-bold text-warning">
                       {totals.weight.toFixed(2)}{t('engineering_bay.units.kg', 'kg')}
                     </span>
                   </div>
                   {glassDetails.totalGlassWeight > 0 && (
-                    <div className="flex justify-between text-amber-200">
+                    <div className="flex justify-between text-warning">
                       <span className="font-semibold">{t('engineering_bay.total_unit_weight', 'Total Unit Weight')}:</span>
-                      <span className="font-mono font-bold text-amber-400">
+                      <span className="font-mono font-bold text-warning">
                         {(totals.weight + glassDetails.totalGlassWeight).toFixed(2)}{t('engineering_bay.units.kg', 'kg')}
                       </span>
                     </div>

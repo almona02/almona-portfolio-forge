@@ -317,11 +317,11 @@ function WindowPartAnnotation({
 
   return (
     <Html position={position} center>
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 max-w-xs border border-gray-200 dark:border-gray-600">
-        <h4 className="typography-h4 text-gray-900 dark:text-white text-sm">
+      <div className="bg-card dark:bg-card rounded-lg shadow-lg p-3 max-w-xs border border-border dark:border-border">
+        <h4 className="typography-h4 text-foreground dark:text-white text-sm">
           {getLocalizedName()}
         </h4>
-        <p className="text-gray-600 dark:text-gray-300 text-xs mt-1">
+        <p className="text-muted-foreground dark:text-foreground text-xs mt-1">
           {getLocalizedDescription()}
         </p>
         <div className="mt-2 flex justify-between items-center">
@@ -329,7 +329,7 @@ function WindowPartAnnotation({
             {utils.formatCurrency(annotation.price, { showSymbol: true })}
           </span>
           {annotation.material && (
-            <span className="text-gray-500 text-xs">
+            <span className="text-muted-foreground text-xs">
               {annotation.material}
             </span>
           )}
@@ -641,7 +641,7 @@ export function Interactive3DViewer({
         {/* Window Controls */}
         {isWindowMode && enableWindowControls && !presentationMode && (
           <div className="absolute top-3 right-3 z-10">
-            <div className="bg-gray-900/90 backdrop-blur-sm border border-gray-700 rounded-lg p-2 space-y-2">
+            <div className="bg-background/90 backdrop-blur-sm border border-border rounded-lg p-2 space-y-2">
               <button
                 onClick={() => {
                   setIsWindowAnimating(!isWindowAnimating);
@@ -658,7 +658,7 @@ export function Interactive3DViewer({
                   setWindowAnimationProgress(0);
                   setIsWindowAnimating(false);
                 }}
-                className="w-full px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white rounded text-xs font-medium transition-colors"
+                className="w-full px-3 py-1.5 bg-muted hover:bg-muted text-white rounded text-xs font-medium transition-colors"
               >
                 Reset
               </button>
@@ -668,13 +668,13 @@ export function Interactive3DViewer({
 
         {/* Selected Part Info */}
         {selectedPart && (
-          <div className="absolute top-4 left-4 z-10 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm">
-            <h3 className="typography-h3 text-gray-900 dark:text-white">
+          <div className="absolute top-4 left-4 z-10 bg-card dark:bg-card rounded-lg shadow-lg p-4 max-w-sm">
+            <h3 className="typography-h3 text-foreground dark:text-white">
               {i18n.language === 'tr' ? selectedPart.nameTr || selectedPart.name : 
                i18n.language === 'ar' ? selectedPart.nameAr || selectedPart.name : 
                selectedPart.name}
             </h3>
-            <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
+            <p className="text-muted-foreground dark:text-foreground text-sm mt-1">
               {i18n.language === 'tr' ? selectedPart.descriptionTr || selectedPart.description : 
                i18n.language === 'ar' ? selectedPart.descriptionAr || selectedPart.description : 
                selectedPart.description}
@@ -685,7 +685,7 @@ export function Interactive3DViewer({
                   {utils.formatCurrency(selectedPart.price, { showSymbol: true })}
                 </span>
                 {selectedPart.material && (
-                  <span className="text-gray-500 text-sm">
+                  <span className="text-muted-foreground text-sm">
                     {selectedPart.material}
                   </span>
                 )}

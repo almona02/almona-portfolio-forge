@@ -170,33 +170,33 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
 
     const getStatusIcon = (status: string) => {
         switch (status) {
-            case 'healthy': return <CheckCircle className="w-5 h-5 text-emerald-500" />;
+            case 'healthy': return <CheckCircle className="w-5 h-5 text-success" />;
             case 'warning': return <AlertTriangle className="w-5 h-5 text-amber-500" />;
-            case 'critical': return <AlertTriangle className="w-5 h-5 text-red-500" />;
-            default: return <Activity className="w-5 h-5 text-slate-500" />;
+            case 'critical': return <AlertTriangle className="w-5 h-5 text-destructive" />;
+            default: return <Activity className="w-5 h-5 text-muted-foreground" />;
         }
     };
 
     return (
-        <div className="constitutional-dashboard p-6 bg-slate-900 min-h-screen text-white">
+        <div className="constitutional-dashboard p-6 bg-background min-h-screen text-foreground">
             {/* Header */}
-            <header className="flex justify-between items-center mb-8 pb-4 border-b border-slate-700">
+            <header className="flex justify-between items-center mb-8 pb-4 border-b border-border">
                 <div className="flex items-center gap-3">
                     <Shield className="w-8 h-8 text-amber-400" />
                     <div>
                         <h1 className="text-2xl font-bold text-amber-200">Constitutional Health Dashboard</h1>
-                        <span className="text-sm text-slate-400">AICS-001 v1.0.0 Compliant</span>
+                        <span className="text-sm text-muted-foreground">AICS-001 v1.0.0 Compliant</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
-                    <span className="px-4 py-2 bg-emerald-500/20 text-emerald-400 rounded-full text-sm font-semibold">
+                    <span className="px-4 py-2 bg-emerald-500/20 text-success rounded-full text-sm font-semibold">
                         ✅ SYSTEM COMPLIANT
                     </span>
                     <Button
                         variant="outline"
                         size="sm"
                         onClick={() => void loadData()}
-                        className="border-slate-600 text-slate-300"
+                        className="border-border text-foreground"
                     >
                         <RefreshCw className="w-4 h-4 mr-2" />
                         Refresh
@@ -211,19 +211,19 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
                     {metrics.map((metric) => (
                         <div
                             key={metric.id}
-                            className="bg-slate-800/50 rounded-lg p-5 border-l-4"
+                            className="bg-card/50 rounded-lg p-5 border-l-4"
                             style={{ borderLeftColor: getStatusColor(metric.status) }}
                         >
                             <div className="flex justify-between items-start mb-3">
-                                <h3 className="font-medium text-slate-200">{metric.label}</h3>
+                                <h3 className="font-medium text-foreground">{metric.label}</h3>
                                 {getStatusIcon(metric.status)}
                             </div>
                             <div className="text-3xl font-bold mb-2">
-                                <span className="text-white">{metric.value}</span>
-                                <span className="text-slate-500 text-xl">/{metric.target}</span>
+                                <span className="text-foreground">{metric.value}</span>
+                                <span className="text-muted-foreground text-xl">/{metric.target}</span>
                             </div>
-                            <p className="text-sm text-slate-400 mb-3">{metric.description}</p>
-                            <div className="h-2 bg-slate-700 rounded-full overflow-hidden mb-2">
+                            <p className="text-sm text-muted-foreground mb-3">{metric.description}</p>
+                            <div className="h-2 bg-muted rounded-full overflow-hidden mb-2">
                                 <div
                                     className="h-full rounded-full transition-all duration-500"
                                     style={{
@@ -232,7 +232,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
                                     }}
                                 />
                             </div>
-                            <span className="text-xs text-slate-500">{metric.reference}</span>
+                            <span className="text-xs text-muted-foreground">{metric.reference}</span>
                         </div>
                     ))}
                 </div>
@@ -241,49 +241,49 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
             {/* Migration Health */}
             <section className="mb-8">
                 <h2 className="text-lg font-semibold text-amber-300 mb-4">🔗 Fabricator Migration Health</h2>
-                <div className="bg-slate-800/50 rounded-lg p-5 border border-amber-600/20">
+                <div className="bg-card/50 rounded-lg p-5 border border-amber-600/20">
                     {migrationMode ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div>
-                                <div className="text-xs text-slate-400 uppercase tracking-wider">Mode</div>
+                                <div className="text-xs text-muted-foreground uppercase tracking-wider">Mode</div>
                                 <div className="text-amber-200 font-semibold">{migrationMode.mode}</div>
-                                <div className="text-xs text-slate-500 mt-1">Read source: {migrationMode.readSource}</div>
+                                <div className="text-xs text-muted-foreground mt-1">Read source: {migrationMode.readSource}</div>
                             </div>
                             <div>
-                                <div className="text-xs text-slate-400 uppercase tracking-wider">Writes</div>
-                                <div className="text-slate-200">
+                                <div className="text-xs text-muted-foreground uppercase tracking-wider">Writes</div>
+                                <div className="text-foreground">
                                     v1:{' '}
-                                    <span className={migrationMode.allowsWritesToV1 ? 'text-emerald-400' : 'text-red-400'}>
+                                    <span className={migrationMode.allowsWritesToV1 ? 'text-success' : 'text-destructive'}>
                                         {migrationMode.allowsWritesToV1 ? 'allowed' : 'blocked'}
                                     </span>
                                     {'  '}| v2:{' '}
-                                    <span className={migrationMode.allowsWritesToV2 ? 'text-emerald-400' : 'text-red-400'}>
+                                    <span className={migrationMode.allowsWritesToV2 ? 'text-success' : 'text-destructive'}>
                                         {migrationMode.allowsWritesToV2 ? 'allowed' : 'blocked'}
                                     </span>
                                 </div>
-                                <div className="text-xs text-slate-500 mt-1 font-mono truncate">
+                                <div className="text-xs text-muted-foreground mt-1 font-mono truncate">
                                     event: {migrationMode.derivedFromEventHash}
                                 </div>
                             </div>
                         </div>
                     ) : (
-                        <div className="text-slate-400 text-sm">Migration mode not available.</div>
+                        <div className="text-muted-foreground text-sm">Migration mode not available.</div>
                     )}
 
-                    <div className="mt-4 border-t border-slate-700 pt-4">
+                    <div className="mt-4 border-t border-border pt-4">
                         {drift ? (
                             <div className="flex items-center justify-between text-sm">
-                                <div className="text-slate-200">
+                                <div className="text-foreground">
                                     Drift:{' '}
-                                    <span className={drift.drift_rate <= 0.001 ? 'text-emerald-400' : 'text-amber-400'}>
+                                    <span className={drift.drift_rate <= 0.001 ? 'text-success' : 'text-amber-400'}>
                                         {(drift.drift_rate * 100).toFixed(3)}%
                                     </span>
                                     {'  '}({drift.mismatch_count}/{drift.sample_size})
                                 </div>
-                                <div className="text-xs text-slate-500">{new Date(drift.created_at).toLocaleString()}</div>
+                                <div className="text-xs text-muted-foreground">{new Date(drift.created_at).toLocaleString()}</div>
                             </div>
                         ) : (
-                            <div className="text-slate-500 text-sm">No drift report found (monitor not running yet).</div>
+                            <div className="text-muted-foreground text-sm">No drift report found (monitor not running yet).</div>
                         )}
                     </div>
                 </div>
@@ -293,49 +293,49 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
             <section className="mb-8">
                 <h2 className="text-lg font-semibold text-amber-300 mb-4">🧠 Advisory Intelligence</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-slate-800/50 rounded-lg p-5 text-center">
-                        <div className="text-3xl font-bold text-white">{advisoryStats.total}</div>
-                        <div className="text-sm text-slate-400">Total Snapshots</div>
+                    <div className="bg-card/50 rounded-lg p-5 text-center">
+                        <div className="text-3xl font-bold text-foreground">{advisoryStats.total}</div>
+                        <div className="text-sm text-muted-foreground">Total Snapshots</div>
                     </div>
-                    <div className="bg-slate-800/50 rounded-lg p-5 text-center">
-                        <div className="text-3xl font-bold text-blue-400">{advisoryStats.tier1}</div>
-                        <div className="text-sm text-slate-400">Tier 1 (Strategic)</div>
+                    <div className="bg-card/50 rounded-lg p-5 text-center">
+                        <div className="text-3xl font-bold text-info">{advisoryStats.tier1}</div>
+                        <div className="text-sm text-muted-foreground">Tier 1 (Strategic)</div>
                     </div>
-                    <div className="bg-slate-800/50 rounded-lg p-5 text-center">
+                    <div className="bg-card/50 rounded-lg p-5 text-center">
                         <div className="text-3xl font-bold text-amber-400">{advisoryStats.tier2}</div>
-                        <div className="text-sm text-slate-400">Tier 2 (Advisory)</div>
+                        <div className="text-sm text-muted-foreground">Tier 2 (Advisory)</div>
                     </div>
-                    <div className="bg-slate-800/50 rounded-lg p-5 text-center">
-                        <div className="text-3xl font-bold text-emerald-400">{advisoryStats.avgConfidence}%</div>
-                        <div className="text-sm text-slate-400">Avg Confidence</div>
+                    <div className="bg-card/50 rounded-lg p-5 text-center">
+                        <div className="text-3xl font-bold text-success">{advisoryStats.avgConfidence}%</div>
+                        <div className="text-sm text-muted-foreground">Avg Confidence</div>
                     </div>
                 </div>
             </section>
 
             {/* Violations */}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="bg-slate-800/50 rounded-lg p-5">
-                    <h3 className="font-semibold text-emerald-400 mb-4">✅ Active Violations (0)</h3>
+                <div className="bg-card/50 rounded-lg p-5">
+                    <h3 className="font-semibold text-success mb-4">✅ Active Violations (0)</h3>
                     <div className="text-center py-8">
-                        <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-3 opacity-50" />
-                        <p className="text-slate-400">No active constitutional violations</p>
+                        <CheckCircle className="w-12 h-12 text-success mx-auto mb-3 opacity-50" />
+                        <p className="text-muted-foreground">No active constitutional violations</p>
                     </div>
                 </div>
 
-                <div className="bg-slate-800/50 rounded-lg p-5">
-                    <h3 className="font-semibold text-slate-300 mb-4">📜 Resolved Violations ({resolvedViolations.length})</h3>
+                <div className="bg-card/50 rounded-lg p-5">
+                    <h3 className="font-semibold text-foreground mb-4">📜 Resolved Violations ({resolvedViolations.length})</h3>
                     <div className="space-y-3 max-h-48 overflow-y-auto">
                         {resolvedViolations.map((v, i) => (
                             <div
                                 key={i}
-                                className="border-l-2 border-emerald-500 pl-3 py-2 bg-slate-700/30 rounded-r"
+                                className="border-l-2 border-emerald-500 pl-3 py-2 bg-muted/30 rounded-r"
                             >
                                 <div className="flex justify-between items-start">
-                                    <span className="text-xs font-mono text-slate-400">{v.type}</span>
-                                    <span className="text-xs text-slate-500">{v.resolvedAt}</span>
+                                    <span className="text-xs font-mono text-muted-foreground">{v.type}</span>
+                                    <span className="text-xs text-muted-foreground">{v.resolvedAt}</span>
                                 </div>
-                                <div className="text-sm text-slate-300">{v.component}</div>
-                                <div className="text-xs text-emerald-400 mt-1">✓ {v.remediation}</div>
+                                <div className="text-sm text-foreground">{v.component}</div>
+                                <div className="text-xs text-success mt-1">✓ {v.remediation}</div>
                             </div>
                         ))}
                     </div>
@@ -343,7 +343,7 @@ export const ConstitutionalHealthDashboard: React.FC = () => {
             </section>
 
             {/* Footer */}
-            <footer className="flex justify-between items-center pt-4 border-t border-slate-700 text-sm text-slate-500">
+            <footer className="flex justify-between items-center pt-4 border-t border-border text-sm text-muted-foreground">
                 <div>
                     Last refresh: {lastRefresh.toLocaleTimeString()}
                 </div>

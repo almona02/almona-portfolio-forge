@@ -119,11 +119,11 @@ export const QuoteToCutWorkflow: React.FC<QuoteToCutWorkflowProps> = ({
   return (
     <div className="space-y-6">
       {/* Progress Indicator */}
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-300">Step {currentStep} of 4</span>
+              <span className="text-sm font-medium text-foreground">Step {currentStep} of 4</span>
               <Progress value={(currentStep / 4) * 100} className="flex-1 max-w-xs" />
             </div>
             <div className="flex gap-1">
@@ -135,13 +135,13 @@ export const QuoteToCutWorkflow: React.FC<QuoteToCutWorkflowProps> = ({
                       ? 'bg-amber-500'
                       : step === currentStep + 1
                         ? 'bg-amber-500/50'
-                        : 'bg-gray-700'
+                        : 'bg-muted'
                   }`}
                 />
               ))}
             </div>
           </div>
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-muted-foreground">
             {currentStep === 1 && 'Select project type'}
             {currentStep === 2 && 'Design your window'}
             {currentStep === 3 && 'Review costs & optimize'}
@@ -170,7 +170,7 @@ export const QuoteToCutWorkflow: React.FC<QuoteToCutWorkflowProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
             {/* Design Mode Toggle */}
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardContent className="p-4">
                 <div className="flex gap-2">
                   <Button
@@ -229,20 +229,20 @@ export const QuoteToCutWorkflow: React.FC<QuoteToCutWorkflowProps> = ({
       {currentStep === 3 && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2">
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardHeader>
                 <CardTitle>Review Your Design</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     {components.length} component{components.length !== 1 ? 's' : ''} generated
                   </p>
                   <div className="space-y-1">
                     {components.map((comp) => (
                       <div
                         key={comp.id}
-                        className="text-xs bg-gray-900 p-2 rounded flex justify-between"
+                        className="text-xs bg-background p-2 rounded flex justify-between"
                       >
                         <span>{comp.type}</span>
                         <span>
@@ -269,13 +269,13 @@ export const QuoteToCutWorkflow: React.FC<QuoteToCutWorkflowProps> = ({
 
       {/* Step 4: Generate Quote */}
       {currentStep === 4 && (
-        <Card className="bg-gray-800/50 border-gray-700">
+        <Card className="bg-card/50 border-border">
           <CardHeader>
             <CardTitle>Ready to Generate Quote</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-green-400">
+              <div className="flex items-center gap-2 text-success">
                 <CheckCircle2 className="h-5 w-5" />
                 <span>All steps completed successfully</span>
               </div>

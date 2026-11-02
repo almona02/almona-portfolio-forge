@@ -257,7 +257,7 @@ export function SwiftXRManager({
         <CardContent className="p-6">
           <div className="flex items-center justify-center space-x-3">
             <Loader2 className="h-5 w-5 animate-spin text-swiftxr-primary" />
-            <span className="text-sm text-gray-600">SwiftXR: Detecting AR capabilities...</span>
+            <span className="text-sm text-muted-foreground">SwiftXR: Detecting AR capabilities...</span>
           </div>
           <Progress value={loadingProgress} className="mt-3" />
         </CardContent>
@@ -285,7 +285,7 @@ export function SwiftXRManager({
           {/* Device Info */}
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-gray-500">Platform:</span>
+              <span className="text-muted-foreground">Platform:</span>
               <div className="flex items-center gap-2 mt-1">
                 {deviceInfo?.platform === 'ios' && <Smartphone className="h-4 w-4" />}
                 {deviceInfo?.platform === 'android' && <Smartphone className="h-4 w-4" />}
@@ -294,14 +294,14 @@ export function SwiftXRManager({
               </div>
             </div>
             <div>
-              <span className="text-gray-500">Browser:</span>
+              <span className="text-muted-foreground">Browser:</span>
               <div className="mt-1">{deviceInfo?.browser}</div>
             </div>
           </div>
 
           {/* AR Method */}
           <div>
-            <span className="text-gray-500 text-sm">AR Method:</span>
+            <span className="text-muted-foreground text-sm">AR Method:</span>
             <div className="mt-1 flex items-center gap-2">
               <Badge variant={deviceInfo?.supportsAR ? "default" : "secondary"} className="swiftxr-method-badge">
                 {currentARMethod || deviceInfo?.preferredARMethod || 'None available'}
@@ -333,7 +333,7 @@ export function SwiftXRManager({
                 {capabilities.webXR ? (
                   <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-500" />
+                  <XCircle className="h-4 w-4 text-destructive" />
                 )}
                 <span>WebXR</span>
               </div>
@@ -341,7 +341,7 @@ export function SwiftXRManager({
                 {capabilities.hitTest ? (
                   <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-500" />
+                  <XCircle className="h-4 w-4 text-destructive" />
                 )}
                 <span>Hit Test</span>
               </div>
@@ -349,7 +349,7 @@ export function SwiftXRManager({
                 {capabilities.sceneViewer ? (
                   <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-500" />
+                  <XCircle className="h-4 w-4 text-destructive" />
                 )}
                 <span>Scene Viewer</span>
               </div>
@@ -357,7 +357,7 @@ export function SwiftXRManager({
                 {capabilities.quickLook ? (
                   <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-500" />
+                  <XCircle className="h-4 w-4 text-destructive" />
                 )}
                 <span>Quick Look</span>
               </div>

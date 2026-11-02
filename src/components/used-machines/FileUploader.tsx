@@ -33,12 +33,12 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onNext, onBack }) => {
   return (
     <div>
       <h3 className="typography-h3 mb-4">Upload Machine Photos & Videos</h3>
-      <p className="text-gray-400 mb-6">
+      <p className="text-muted-foreground mb-6">
         Upload clear photos from multiple angles, and a short video of the machine in operation if possible.
         This increases the chances of selling your machine by 70%.
       </p>
       <input type="file" multiple onChange={handleFileChange} />
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {error && <p className="text-destructive mt-2">{error}</p>}
       <div className="flex justify-between mt-8">
         <Button variant="outline" onClick={onBack}>Back</Button>
         <Button onClick={handleNextClick}>Next</Button>

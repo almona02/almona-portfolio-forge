@@ -82,15 +82,15 @@ export const PresetIntelligencePanel: React.FC<PresetIntelligencePanelProps> = (
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <Lightbulb className="w-6 h-6 text-amber-500" />
-        <h2 className="typography-h2 text-gray-900">Apply Project Intelligence</h2>
+        <Lightbulb className="w-6 h-6 text-warning" />
+        <h2 className="typography-h2 text-foreground">Apply Project Intelligence</h2>
       </div>
 
       {/* Matching Recommendations */}
       {matchingPresets.length > 0 && (
         <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-4 h-4 text-amber-600" />
+            <TrendingUp className="w-4 h-4 text-warning" />
             <span className="text-sm font-semibold text-amber-900">
               Recommended Based on Your Selection
             </span>
@@ -114,14 +114,14 @@ export const PresetIntelligencePanel: React.FC<PresetIntelligencePanelProps> = (
                 "hover:shadow-xl hover:-translate-y-1",
                 isSelected
                   ? "border-2 border-amber-500 bg-gradient-to-br from-amber-50 to-white shadow-xl"
-                  : "border border-gray-200 hover:border-amber-300"
+                  : "border border-border hover:border-amber-300"
               )}
             >
               {/* Selection Indicator */}
               {isSelected && (
                 <div className="absolute top-4 right-4 z-10">
                   <div className="btn-primary">
-                    <CheckCircle2 className="w-5 h-5 text-white" />
+                    <CheckCircle2 className="w-5 h-5 text-foreground" />
                   </div>
                 </div>
               )}
@@ -139,30 +139,30 @@ export const PresetIntelligencePanel: React.FC<PresetIntelligencePanelProps> = (
               <CardContent className="p-6">
                 {/* Image/Visual */}
                 {preset.image && (
-                  <div className="mb-4 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                  <div className="mb-4 h-32 bg-gradient-to-br from-muted to-muted rounded-lg flex items-center justify-center overflow-hidden">
                     {preset.image}
                   </div>
                 )}
 
                 {/* Header */}
                 <div className="mb-4">
-                  <h3 className="typography-h3 text-lg text-gray-900 mb-2">
+                  <h3 className="typography-h3 text-lg text-foreground mb-2">
                     {preset.title}
                   </h3>
-                  <p className="text-xs text-gray-600 leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {preset.description}
                   </p>
                 </div>
 
                 {/* Applications */}
                 <div className="mb-4">
-                  <h4 className="typography-h4 text-xs text-gray-700 mb-2">Applications</h4>
+                  <h4 className="typography-h4 text-xs text-foreground mb-2">Applications</h4>
                   <div className="flex flex-wrap gap-1.5">
                     {preset.applications.map((app, i) => (
                       <Badge 
                         key={i} 
                         variant="secondary" 
-                        className="text-xs bg-gray-100 text-gray-700"
+                        className="text-xs bg-muted text-foreground"
                       >
                         {app}
                       </Badge>
@@ -173,24 +173,24 @@ export const PresetIntelligencePanel: React.FC<PresetIntelligencePanelProps> = (
                 {/* Recommendations */}
                 <div className="mb-4 space-y-2">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-500">System:</span>
-                    <span className="font-semibold text-gray-900">{preset.systemRecommendation}</span>
+                    <span className="text-muted-foreground">System:</span>
+                    <span className="font-semibold text-foreground">{preset.systemRecommendation}</span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-500">Material:</span>
-                    <span className="font-semibold text-gray-900">{preset.materialRecommendation}</span>
+                    <span className="text-muted-foreground">Material:</span>
+                    <span className="font-semibold text-foreground">{preset.materialRecommendation}</span>
                   </div>
-                  <div className="pt-2 border-t border-gray-200">
+                  <div className="pt-2 border-t border-border">
                     <div className="flex items-center gap-2">
-                      <Sparkles className="w-3 h-3 text-amber-500" />
-                      <span className="text-xs text-gray-600">{preset.optimization}</span>
+                      <Sparkles className="w-3 h-3 text-warning" />
+                      <span className="text-xs text-muted-foreground">{preset.optimization}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Select Count */}
                 {preset.selectCount && (
-                  <div className="mb-4 p-2 bg-gray-50 rounded text-xs text-gray-600">
+                  <div className="mb-4 p-2 bg-background rounded text-xs text-muted-foreground">
                     {preset.selectCount}
                   </div>
                 )}

@@ -186,7 +186,7 @@ export function MultiSelectGrid<T>({
         : `${selectedCount} of ${items.length} selected`;
 
     return (
-      <div className="flex items-center gap-4 px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
+      <div className="flex items-center gap-4 px-4 py-3 border-b border-border/50 bg-card/50">
         <div className="flex items-center gap-2">
           <Checkbox
             checked={selectAllState === 'all' ? true : selectAllState === 'some' ? 'indeterminate' : false}
@@ -194,7 +194,7 @@ export function MultiSelectGrid<T>({
             aria-label="Select all items"
             className="h-4 w-4"
           />
-          <span className="text-sm text-slate-300" aria-live="polite">
+          <span className="text-sm text-foreground" aria-live="polite">
             {selectionText}
           </span>
         </div>
@@ -203,7 +203,7 @@ export function MultiSelectGrid<T>({
             {columns.map((column) => (
               <div
                 key={column.id}
-                className="text-xs font-medium text-slate-400 uppercase tracking-wider"
+                className="text-xs font-medium text-muted-foreground uppercase tracking-wider"
                 style={{ width: column.width }}
               >
                 {column.header}
@@ -218,12 +218,12 @@ export function MultiSelectGrid<T>({
   // Render non-virtualized list
   if (!virtualized || items.length < VIRTUALIZATION_THRESHOLD) {
     return (
-      <div className={cn('flex flex-col bg-slate-900/50 border border-slate-700/50 rounded-lg', className)}>
+      <div className={cn('flex flex-col bg-background/50 border border-border/50 rounded-lg', className)}>
         {renderHeader()}
         <ScrollArea className="flex-1">
           <div role="grid" aria-label="Multi-select grid" aria-multiselectable="true">
             {items.length === 0 ? (
-              <div className="p-8 text-center text-slate-400">
+              <div className="p-8 text-center text-muted-foreground">
                 No items to display
               </div>
             ) : (
@@ -241,9 +241,9 @@ export function MultiSelectGrid<T>({
                     onClick={(e) => handleRowClick(item, e)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
                     className={cn(
-                      'flex items-center gap-4 px-4 py-3 border-b border-slate-700/30 transition-colors',
-                      'hover:bg-slate-800/50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-900',
-                      isSelected && 'bg-slate-800/70',
+                      'flex items-center gap-4 px-4 py-3 border-b border-border/30 transition-colors',
+                      'hover:bg-card/50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-900',
+                      isSelected && 'bg-card/70',
                       isFocused && 'ring-2 ring-amber-400'
                     )}
                     style={{ minHeight: `${rowHeight}px` }}
@@ -273,7 +273,7 @@ export function MultiSelectGrid<T>({
   const virtualItems = virtualizer.getVirtualItems();
 
   return (
-    <div className={cn('flex flex-col bg-slate-900/50 border border-slate-700/50 rounded-lg', className)}>
+    <div className={cn('flex flex-col bg-background/50 border border-border/50 rounded-lg', className)}>
       {renderHeader()}
       <div
         ref={parentRef}
@@ -292,7 +292,7 @@ export function MultiSelectGrid<T>({
           }}
         >
           {items.length === 0 ? (
-            <div className="p-8 text-center text-slate-400">
+            <div className="p-8 text-center text-muted-foreground">
               No items to display
             </div>
           ) : (
@@ -312,9 +312,9 @@ export function MultiSelectGrid<T>({
                   onClick={(e) => handleRowClick(item, e)}
                   onKeyDown={(e) => handleKeyDown(e, virtualItem.index)}
                   className={cn(
-                    'flex items-center gap-4 px-4 py-3 border-b border-slate-700/30 transition-colors absolute left-0 right-0',
-                    'hover:bg-slate-800/50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-900',
-                    isSelected && 'bg-slate-800/70',
+                    'flex items-center gap-4 px-4 py-3 border-b border-border/30 transition-colors absolute left-0 right-0',
+                    'hover:bg-card/50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-slate-900',
+                    isSelected && 'bg-card/70',
                     isFocused && 'ring-2 ring-amber-400'
                   )}
                   style={{

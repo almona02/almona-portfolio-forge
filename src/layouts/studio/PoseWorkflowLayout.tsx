@@ -33,7 +33,7 @@ class PoseRouteBoundary extends Component<{ children: ReactNode }, { failed: boo
               {this.state.message}
             </p>
           )}
-          <a href="/fabricator/studio/projects" className="rounded-md border border-amber-500/40 px-4 py-2 text-sm text-amber-300 hover:bg-amber-500/10">Return to projects</a>
+          <a href="/fabricator/studio/projects" className="rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-amber-500/10">Return to projects</a>
         </div>
       );
     }
@@ -50,7 +50,7 @@ const PoseWorkflowCoordinator: React.FC = () => {
     if (isHydrated && data?.position) dispatch({ type: 'SET_CURRENT_PROJECT', payload: data.position });
   }, [data?.position, dispatch, isHydrated]);
   if (!projectId || !poseId) return <div role="alert" className="p-8 text-red-300">Authoritative project and position identifiers are required.</div>;
-  if (isLoading || (data && !isHydrated)) return <div className="flex h-full items-center justify-center bg-slate-950 text-amber-300">Loading authoritative position…</div>;
+  if (isLoading || (data && !isHydrated)) return <div className="flex h-full items-center justify-center bg-slate-950 text-foreground">Loading authoritative position…</div>;
   if (error || !data) return <div role="alert" className="p-8 text-red-300">{error instanceof Error ? error.message : 'Position hydration failed.'}</div>;
   return (
     <div className="flex flex-col h-full overflow-hidden">

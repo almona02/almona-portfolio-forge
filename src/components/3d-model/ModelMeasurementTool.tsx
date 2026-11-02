@@ -205,7 +205,7 @@ export function ModelMeasurementTool({
       animate="visible"
       exit="exit"
     >
-      <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700 shadow-2xl">
+      <Card className="bg-gradient-to-br from-background to-black border-border shadow-2xl">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-white flex items-center gap-2">
@@ -217,7 +217,7 @@ export function ModelMeasurementTool({
                 size="sm"
                 variant="ghost"
                 onClick={() => setShowSettings(!showSettings)}
-                className="text-gray-400 hover:text-white"
+                className="text-muted-foreground hover:text-white"
               >
                 <Settings className="w-4 h-4" />
               </Button>
@@ -225,7 +225,7 @@ export function ModelMeasurementTool({
                 size="sm"
                 variant="ghost"
                 onClick={onToggle}
-                className="text-gray-400 hover:text-white"
+                className="text-muted-foreground hover:text-white"
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -236,8 +236,8 @@ export function ModelMeasurementTool({
         <CardContent className="space-y-4">
           {/* Measurement Mode */}
           <div className="space-y-2">
-            <label className="typography-label text-sm font-medium text-gray-300">Measurement Mode</label>
-            <div className="flex gap-1 bg-gray-800 rounded-lg p-1">
+            <label className="typography-label text-sm font-medium text-foreground">Measurement Mode</label>
+            <div className="flex gap-1 bg-card rounded-lg p-1">
               <Button
                 size="sm"
                 variant={measurementMode === 'distance' ? 'default' : 'ghost'}
@@ -272,8 +272,8 @@ export function ModelMeasurementTool({
 
           {/* Unit Selection */}
           <div className="space-y-2">
-            <label className="typography-label text-sm font-medium text-gray-300">Unit</label>
-            <div className="flex gap-1 bg-gray-800 rounded-lg p-1">
+            <label className="typography-label text-sm font-medium text-foreground">Unit</label>
+            <div className="flex gap-1 bg-card rounded-lg p-1">
               {(['mm', 'cm', 'm', 'in', 'ft'] as const).map((unitOption) => (
                 <Button
                   key={unitOption}
@@ -291,18 +291,18 @@ export function ModelMeasurementTool({
           {/* Model Dimensions */}
           {modelDimensions && (
             <div className="space-y-2">
-              <label className="typography-label text-sm font-medium text-gray-300">Model Dimensions</label>
-              <div className="bg-gray-800 p-3 rounded-lg space-y-1">
+              <label className="typography-label text-sm font-medium text-foreground">Model Dimensions</label>
+              <div className="bg-card p-3 rounded-lg space-y-1">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Length:</span>
+                  <span className="text-muted-foreground">Length:</span>
                   <span className="text-white">{convertUnit(modelDimensions.length, 'mm', unit).toFixed(2)} {unit}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Width:</span>
+                  <span className="text-muted-foreground">Width:</span>
                   <span className="text-white">{convertUnit(modelDimensions.width, 'mm', unit).toFixed(2)} {unit}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Height:</span>
+                  <span className="text-muted-foreground">Height:</span>
                   <span className="text-white">{convertUnit(modelDimensions.height, 'mm', unit).toFixed(2)} {unit}</span>
                 </div>
               </div>
@@ -334,7 +334,7 @@ export function ModelMeasurementTool({
                 size="sm"
                 variant="outline"
                 onClick={clearAllMeasurements}
-                className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                className="border-border text-foreground hover:bg-card hover:text-white"
                 disabled={measurements.length === 0}
               >
                 <RotateCcw className="w-4 h-4" />
@@ -354,7 +354,7 @@ export function ModelMeasurementTool({
               </Button>
               {autoRotateEnabled && (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400">Speed:</span>
+                  <span className="text-xs text-muted-foreground">Speed:</span>
                   <input
                     type="range"
                     min="0.5"
@@ -362,7 +362,7 @@ export function ModelMeasurementTool({
                     step="0.5"
                     value={autoRotateSpeed}
                     onChange={(e) => setAutoRotateSpeed(Number(e.target.value))}
-                    className="w-16 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                    className="w-16 h-2 bg-muted rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
               )}
@@ -373,7 +373,7 @@ export function ModelMeasurementTool({
           <LazyAnimatePresence>
             {showSettings && (
               <LazyMotionDiv
-                className="space-y-3 p-3 bg-gray-800 rounded-lg"
+                className="space-y-3 p-3 bg-card rounded-lg"
                 variants={itemVariants}
                 initial="hidden"
                 animate="visible"
@@ -383,36 +383,36 @@ export function ModelMeasurementTool({
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Show Labels</span>
+                    <span className="text-sm text-foreground">Show Labels</span>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => setShowLabels(!showLabels)}
-                      className="text-gray-400 hover:text-white"
+                      className="text-muted-foreground hover:text-white"
                     >
                       {showLabels ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                     </Button>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Snap to Grid</span>
+                    <span className="text-sm text-foreground">Snap to Grid</span>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => setSnapToGrid(!snapToGrid)}
-                      className="text-gray-400 hover:text-white"
+                      className="text-muted-foreground hover:text-white"
                     >
                       {snapToGrid ? <Zap className="w-4 h-4" /> : <Zap className="w-4 h-4 opacity-50" />}
                     </Button>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Show Grid</span>
+                    <span className="text-sm text-foreground">Show Grid</span>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => setShowGrid(!showGrid)}
-                      className="text-gray-400 hover:text-white"
+                      className="text-muted-foreground hover:text-white"
                     >
                       {showGrid ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                     </Button>
@@ -420,13 +420,13 @@ export function ModelMeasurementTool({
                 </div>
 
                 <div className="space-y-2">
-                  <label className="typography-label text-sm text-gray-300">Measurement Color</label>
+                  <label className="typography-label text-sm text-foreground">Measurement Color</label>
                   <div className="flex gap-2">
                     {['#ff6b35', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'].map((color) => (
                       <button
                         key={color}
                         className={`w-6 h-6 rounded-full border-2 ${
-                          measurementColor === color ? 'border-white' : 'border-gray-600'
+                          measurementColor === color ? 'border-white' : 'border-border'
                         }`}
                         style={{ backgroundColor: color }}
                         onClick={() => setMeasurementColor(color)}
@@ -442,8 +442,8 @@ export function ModelMeasurementTool({
           {measurements.length > 0 && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="typography-label text-sm font-medium text-gray-300">Measurements</label>
-                <Badge variant="secondary" className="bg-gray-800 text-gray-300">
+                <label className="typography-label text-sm font-medium text-foreground">Measurements</label>
+                <Badge variant="secondary" className="bg-card text-foreground">
                   {measurements.length}
                 </Badge>
               </div>
@@ -460,7 +460,7 @@ export function ModelMeasurementTool({
                       className={`p-2 rounded-lg border cursor-pointer transition-colors ${
                         selectedMeasurement === measurement.id
                           ? 'bg-amber-500/20 border-amber-500'
-                          : 'bg-gray-800 border-gray-600 hover:border-gray-500'
+                          : 'bg-card border-border hover:border-border'
                       }`}
                       onClick={() => setSelectedMeasurement(
                         selectedMeasurement === measurement.id ? null : measurement.id
@@ -483,7 +483,7 @@ export function ModelMeasurementTool({
                             e.stopPropagation();
                             removeMeasurement(measurement.id);
                           }}
-                          className="text-gray-400 hover:text-red-400 p-1"
+                          className="text-muted-foreground hover:text-destructive p-1"
                         >
                           <X className="w-3 h-3" />
                         </Button>
@@ -497,12 +497,12 @@ export function ModelMeasurementTool({
 
           {/* Export Actions */}
           {measurements.length > 0 && (
-            <div className="flex gap-2 pt-2 border-t border-gray-700">
+            <div className="flex gap-2 pt-2 border-t border-border">
               <Button
                 size="sm"
                 variant="outline"
                 onClick={exportMeasurements}
-                className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                className="flex-1 border-border text-foreground hover:bg-card hover:text-white"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Export
@@ -519,7 +519,7 @@ export function ModelMeasurementTool({
                     description: "Measurement data copied",
                   });
                 }}
-                className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                className="border-border text-foreground hover:bg-card hover:text-white"
               >
                 <Share2 className="w-4 h-4" />
               </Button>
@@ -527,7 +527,7 @@ export function ModelMeasurementTool({
           )}
 
           {/* Instructions */}
-          <div className="text-xs text-gray-500 space-y-1 pt-2 border-t border-gray-700">
+          <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t border-border">
             <p>• Click "Measure" to start measuring</p>
             <p>• Click two points to measure distance</p>
             <p>• Use settings to customize display</p>

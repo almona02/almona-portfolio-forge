@@ -47,7 +47,7 @@ export const ProjectPositionNavigator: React.FC<ProjectPositionNavigatorProps> =
 
   return (
     <div
-      className={cn('h-full flex flex-col min-h-0 bg-[#0d0d0d]', className)}
+      className={cn('h-full flex flex-col min-h-0 bg-background', className)}
       data-testid="project-position-navigator"
     >
       <div className="p-2 border-b border-amber-600/20 space-y-2">
@@ -65,14 +65,14 @@ export const ProjectPositionNavigator: React.FC<ProjectPositionNavigatorProps> =
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t('industrial.positions.search', 'Search positions')}
-            className="w-full bg-black/40 border border-amber-900/40 rounded ps-7 pe-2 py-1.5 text-xs text-amber-100 placeholder:text-amber-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500"
+            className="w-full bg-background border border-border rounded ps-7 pe-2 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
         </div>
         {onAdd && (
           <button
             type="button"
             onClick={onAdd}
-            className="w-full flex items-center justify-center gap-1 text-[11px] py-1.5 border border-amber-700/40 text-amber-300 hover:bg-amber-500/10 rounded"
+            className="w-full flex items-center justify-center gap-1 text-[11px] py-1.5 border border-amber-700/40 text-warning hover:bg-amber-500/10 rounded"
           >
             <Plus size={12} aria-hidden />
             {t('industrial.positions.add', 'Add position')}
@@ -81,7 +81,7 @@ export const ProjectPositionNavigator: React.FC<ProjectPositionNavigatorProps> =
       </div>
       <ul className="flex-1 overflow-y-auto" role="list">
         {filtered.length === 0 && (
-          <li className="px-3 py-4 text-[11px] text-slate-500">
+          <li className="px-3 py-4 text-[11px] text-muted-foreground">
             {t('industrial.positions.empty', 'No positions recorded')}
           </li>
         )}
@@ -100,17 +100,17 @@ export const ProjectPositionNavigator: React.FC<ProjectPositionNavigatorProps> =
                 aria-current={active ? 'true' : undefined}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-xs text-amber-100" dir="ltr">
+                  <span className="font-mono text-xs text-warning" dir="ltr">
                     {pos.posNumber || pos.id.slice(0, 8)}
                   </span>
                   <span
-                    className="text-[10px] uppercase tracking-wide text-amber-500/80"
+                    className="text-[10px] uppercase tracking-wide text-warning/80"
                     title={STATUS_LABEL[pos.status] ?? pos.status}
                   >
                     {STATUS_LABEL[pos.status] ?? pos.status}
                   </span>
                 </div>
-                <div className="text-[10px] text-slate-500 font-mono" dir="ltr">
+                <div className="text-[10px] text-muted-foreground font-mono" dir="ltr">
                   {pos.overallWidth && pos.overallHeight
                     ? `${pos.overallWidth} × ${pos.overallHeight} mm`
                     : NOT_RECORDED}

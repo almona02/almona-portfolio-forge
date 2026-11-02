@@ -67,7 +67,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
   if (skeleton) {
     return (
       <div
-        className={`${overlay ? 'absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-50' : ''} ${config.containerPadding} ${className}`}
+        className={`${overlay ? 'absolute inset-0 bg-background/80 backdrop-blur-sm z-50' : ''} ${config.containerPadding} ${className}`}
         role="status"
         aria-live="polite"
         aria-label="Loading"
@@ -77,7 +77,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
             {Array.from({ length: skeletonLines }).map((_, i) => (
               <div
                 key={i}
-                className="h-4 bg-slate-700/50 rounded animate-pulse"
+                className="h-4 bg-muted/50 rounded animate-pulse"
                 style={{
                   width: i === skeletonLines - 1 ? '60%' : '100%',
                   animationDelay: `${i * 100}ms`,
@@ -94,18 +94,18 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
   // Spinner with optional progress
   return (
     <div
-      className={`flex flex-col items-center justify-center ${config.containerPadding} ${getGap('normal')} ${overlay ? 'absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-50' : ''} ${className}`}
+      className={`flex flex-col items-center justify-center ${config.containerPadding} ${getGap('normal')} ${overlay ? 'absolute inset-0 bg-background/80 backdrop-blur-sm z-50' : ''} ${className}`}
       role="status"
       aria-live="polite"
       aria-label={message}
     >
       <Loader2
-        className="animate-spin text-amber-400"
+        className="animate-spin text-warning"
         size={config.spinnerSize}
         aria-hidden="true"
       />
       {message && (
-        <p className={`${config.messageClass} text-slate-400 text-center`}>
+        <p className={`${config.messageClass} text-muted-foreground text-center`}>
           {message}
         </p>
       )}
@@ -116,7 +116,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
             className="h-1.5"
             aria-label={`${Math.round(progress)}% complete`}
           />
-          <p className={`${getTypographyPreset('caption')} text-slate-500 text-center mt-1`}>
+          <p className={`${getTypographyPreset('caption')} text-muted-foreground text-center mt-1`}>
             {Math.round(progress)}%
           </p>
         </div>

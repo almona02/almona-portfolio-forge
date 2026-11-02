@@ -550,7 +550,7 @@ export const PartnerOnboarding: React.FC = () => {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+                <CheckCircle className="h-6 w-6 text-success" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Status</p>
@@ -578,7 +578,7 @@ export const PartnerOnboarding: React.FC = () => {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <DollarSign className="h-6 w-6 text-blue-600" />
+                <DollarSign className="h-6 w-6 text-info" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Commission Rate</p>
@@ -611,7 +611,7 @@ export const PartnerOnboarding: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${partner?.metrics.totalSales.toLocaleString()}</div>
-            <div className="flex items-center text-xs text-green-600">
+            <div className="flex items-center text-xs text-success">
               <TrendingUp className="h-3 w-3 mr-1" />
               +{partner?.metrics.monthlyGrowth}% from last month
             </div>
@@ -736,7 +736,7 @@ export const PartnerOnboarding: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="typography-h2 tracking-tight flex items-center gap-2">
-            <Store className="h-8 w-8 text-blue-600" />
+            <Store className="h-8 w-8 text-info" />
             Partner Marketplace
           </h2>
           <p className="text-muted-foreground">

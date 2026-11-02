@@ -156,7 +156,7 @@ export const DigitalTwinDashboard = () => {
         });
     }, [asset]);
 
-    const healthColor = !healthValues ? 'bg-gray-500' :
+    const healthColor = !healthValues ? 'bg-muted' :
         healthValues.status === 'optimal' ? 'bg-green-500' :
             healthValues.status === 'good' ? 'bg-blue-500' :
                 healthValues.status === 'warning' ? 'bg-amber-500' : 'bg-red-500';
@@ -168,9 +168,9 @@ export const DigitalTwinDashboard = () => {
     if (error || !asset) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
-                <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
+                <AlertCircle className="w-12 h-12 text-destructive mb-4" />
                 <h2 className="text-xl font-bold">Asset Not Found</h2>
-                <p className="text-gray-400 mb-4">We couldn't locate the digital twin data for this ID.</p>
+                <p className="text-muted-foreground mb-4">We couldn't locate the digital twin data for this ID.</p>
                 <Button onClick={() => void navigate('/portal')}>Return to Portal</Button>
             </div>
         );
@@ -179,9 +179,9 @@ export const DigitalTwinDashboard = () => {
     const isWarrantyActive = isWithinStandardWarranty(asset.installation_date || '');
 
     return (
-        <div className="min-h-screen bg-almona-dark pb-12">
+        <div className="min-h-screen bg-background pb-12">
             {/* Header */}
-            <header className="bg-almona-darker border-b border-almona-light/10 sticky top-0 z-10 backdrop-blur-md bg-opacity-80">
+            <header className="bg-card border-b border-border/10 sticky top-0 z-10 backdrop-blur-md bg-opacity-80">
                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Button variant="ghost" size="icon" onClick={() => void navigate(-1)}>
@@ -190,12 +190,12 @@ export const DigitalTwinDashboard = () => {
                         <div>
                             <h1 className="text-xl font-bold flex items-center gap-2">
                                 {asset.name}
-                                <Badge variant="outline" className={asset.status === 'online' ? 'text-green-400 border-green-500/30' : 'text-gray-400'}>
+                                <Badge variant="outline" className={asset.status === 'online' ? 'text-success border-green-500/30' : 'text-muted-foreground'}>
                                     {asset.status === 'online' ? <Activity className="w-3 h-3 mr-1" /> : <Zap className="w-3 h-3 mr-1" />}
                                     {asset.status}
                                 </Badge>
                                 {isWarrantyActive ? (
-                                    <Badge variant="outline" className="text-blue-400 border-blue-500/30 flex items-center gap-1">
+                                    <Badge variant="outline" className="text-info border-blue-500/30 flex items-center gap-1">
                                         <ShieldCheck className="w-3 h-3" /> Warranty Active
                                     </Badge>
                                 ) : (
@@ -204,7 +204,7 @@ export const DigitalTwinDashboard = () => {
                                     </Badge>
                                 )}
                             </h1>
-                            <p className="text-sm text-gray-400 font-mono">SN: {asset.serial_number}</p>
+                            <p className="text-sm text-muted-foreground font-mono">SN: {asset.serial_number}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -218,7 +218,7 @@ export const DigitalTwinDashboard = () => {
                             <DropdownMenuContent align="end">
                                 <DropdownMenuItem>View Contract</DropdownMenuItem>
                                 <DropdownMenuItem>Download Manual</DropdownMenuItem>
-                                <DropdownMenuItem className="text-red-400">Decommission</DropdownMenuItem>
+                                <DropdownMenuItem className="text-destructive">Decommission</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
@@ -230,20 +230,20 @@ export const DigitalTwinDashboard = () => {
                 <div className="lg:col-span-1 space-y-6">
 
                     {/* 3D Visualizer / Image placeholder */}
-                    <Card className="bg-gradient-to-br from-gray-900 to-black border-almona-light/20 overflow-hidden relative group">
+                    <Card className="bg-gradient-to-br from-background to-black border-border/20 overflow-hidden relative group">
                         <div className="aspect-square flex items-center justify-center bg-grid-pattern relative">
                             {/* Placeholder for real 3D model */}
                             {asset.image_url || catalog?.imageUrl ? (
                                 <img src={asset.image_url || catalog?.imageUrl} alt={catalog?.name || asset.name} className="w-3/4 object-contain drop-shadow-2xl" />
                             ) : (
-                                <Cpu className="w-32 h-32 text-almona-light/20 group-hover:text-almona-orange/50 transition-colors duration-500" />
+                                <Cpu className="w-32 h-32 text-foreground/20 group-hover:text-almona-orange/50 transition-colors duration-500" />
                             )}
                             <div className="absolute bottom-4 right-4 animate-pulse">
                                 <div className="w-3 h-3 bg-green-500 rounded-full shadow-[0_0_10px_#22c55e]"></div>
                             </div>
                         </div>
-                        <CardContent className="p-4 bg-almona-darker border-t border-almona-light/10 space-y-2">
-                            <p className="text-sm text-gray-400 text-center">{catalog ? catalog.description : 'Catalog product not linked to this model.'}</p>
+                        <CardContent className="p-4 bg-card border-t border-border/10 space-y-2">
+                            <p className="text-sm text-muted-foreground text-center">{catalog ? catalog.description : 'Catalog product not linked to this model.'}</p>
                             {catalog?.specPdf && (
                                 <Button variant="outline" className="w-full" asChild>
                                     <a href={catalog.specPdf} target="_blank" rel="noreferrer">Open product catalog</a>
@@ -257,45 +257,45 @@ export const DigitalTwinDashboard = () => {
 
                     {/* Quick Stats */}
                     <div className="grid grid-cols-2 gap-4">
-                        <Card className="bg-almona-darker border-almona-light/10">
+                        <Card className="bg-card border-border/10">
                             <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                                 <Zap className="w-6 h-6 text-yellow-400 mb-2" />
                                 <span className="text-2xl font-bold">98%</span>
-                                <span className="text-xs text-gray-500">Efficiency</span>
+                                <span className="text-xs text-muted-foreground">Efficiency</span>
                             </CardContent>
                         </Card>
-                        <Card className="bg-almona-darker border-almona-light/10">
+                        <Card className="bg-card border-border/10">
                             <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                                <RefreshCw className="w-6 h-6 text-blue-400 mb-2" />
+                                <RefreshCw className="w-6 h-6 text-info mb-2" />
                                 <span className="text-2xl font-bold">450h</span>
-                                <span className="text-xs text-gray-500">Uptime</span>
+                                <span className="text-xs text-muted-foreground">Uptime</span>
                             </CardContent>
                         </Card>
                     </div>
 
                     {/* Specifications */}
-                    <Card className="bg-almona-dark/60 border-almona-light/10">
+                    <Card className="bg-background/60 border-border/10">
                         <CardHeader>
                             <CardTitle className="text-lg">Specifications</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2">
                             {Object.entries(productSpecs).filter(([, value]) => value).map(([key, value]) => (
-                                <div key={key} className="flex justify-between text-sm py-1 border-b border-gray-800 last:border-0">
-                                    <span className="text-gray-400 capitalize">{key.replace(/_/g, ' ')}</span>
-                                    <span className="font-mono text-almona-light">{String(value)}</span>
+                                <div key={key} className="flex justify-between text-sm py-1 border-b border-border last:border-0">
+                                    <span className="text-muted-foreground capitalize">{key.replace(/_/g, ' ')}</span>
+                                    <span className="font-mono text-foreground">{String(value)}</span>
                                 </div>
                             ))}
-                            {!catalog && <p className="text-gray-500 italic">No product catalog match for this model.</p>}
+                            {!catalog && <p className="text-muted-foreground italic">No product catalog match for this model.</p>}
                         </CardContent>
                     </Card>
 
                     {/* QR Code Identity */}
-                    <Card className="bg-white text-black">
+                    <Card className="bg-card text-foreground">
                         <CardContent className="p-6 flex flex-col items-center gap-4">
                             <QRCodeSVG value={`https://almona.io/asset/${asset.serial_number}`} size={120} />
                             <div className="text-center">
                                 <p className="font-bold text-lg">Asset Tag</p>
-                                <p className="text-xs text-gray-500 max-w-[200px]">Scan to access service history and manuals instantly.</p>
+                                <p className="text-xs text-muted-foreground max-w-[200px]">Scan to access service history and manuals instantly.</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -305,7 +305,7 @@ export const DigitalTwinDashboard = () => {
                 {/* Right Column: Timeline & Tabs */}
                 <div className="lg:col-span-2 space-y-6">
                     <Tabs defaultValue="timeline" className="w-full">
-                        <TabsList className="bg-almona-darker p-1 w-full justify-start rounded-lg border border-almona-light/10">
+                        <TabsList className="bg-card p-1 w-full justify-start rounded-lg border border-border/10">
                             <TabsTrigger value="timeline" className="flex-1">Timeline</TabsTrigger>
                             <TabsTrigger value="health" className="flex-1">Health & IoT</TabsTrigger>
                             <TabsTrigger value="docs" className="flex-1">Documents</TabsTrigger>
@@ -313,13 +313,13 @@ export const DigitalTwinDashboard = () => {
 
                         <TabsContent value="timeline" className="mt-6 space-y-6">
                             <ServiceTimeline events={passportEvents} />
-                            <Card className="bg-almona-darker border-almona-light/10">
+                            <Card className="bg-card border-border/10">
                                 <CardHeader><CardTitle>Spare parts log</CardTitle></CardHeader>
                                 <CardContent className="space-y-3">
-                                    {spareParts.length === 0 && <p className="text-sm text-gray-400">No spare parts have been logged against tickets for this machine.</p>}
+                                    {spareParts.length === 0 && <p className="text-sm text-muted-foreground">No spare parts have been logged against tickets for this machine.</p>}
                                     {spareParts.map((entry) => (
-                                        <div key={entry.id} className="border-b border-gray-800 pb-2">
-                                            <p className="text-xs text-gray-500">{new Date(entry.created_at).toLocaleDateString()}</p>
+                                        <div key={entry.id} className="border-b border-border pb-2">
+                                            <p className="text-xs text-muted-foreground">{new Date(entry.created_at).toLocaleDateString()}</p>
                                             {entry.parts.map((part) => (
                                                 <p key={`${entry.id}-${part.sku}`} className="text-sm">{part.name} ({part.sku}) × {part.quantity}</p>
                                             ))}
@@ -331,7 +331,7 @@ export const DigitalTwinDashboard = () => {
 
                         <TabsContent value="health" className="mt-6 space-y-6">
                             {/* Health Score Card */}
-                            <Card className="bg-almona-darker border-almona-light/10">
+                            <Card className="bg-card border-border/10">
                                 <CardHeader>
                                     <div className="flex items-center justify-between">
                                         <CardTitle className="flex items-center gap-2">
@@ -340,8 +340,8 @@ export const DigitalTwinDashboard = () => {
                                         </CardTitle>
                                         {healthValues && (
                                             <Badge variant="outline" className={cn("uppercase",
-                                                healthValues.status === 'optimal' ? "text-green-400 border-green-500/30" :
-                                                    healthValues.status === 'warning' ? "text-amber-400 border-amber-500/30" : "text-red-400 border-red-500/30"
+                                                healthValues.status === 'optimal' ? "text-success border-green-500/30" :
+                                                    healthValues.status === 'warning' ? "text-amber-400 border-amber-500/30" : "text-destructive border-red-500/30"
                                             )}>
                                                 {healthValues.status} Status
                                             </Badge>
@@ -353,19 +353,19 @@ export const DigitalTwinDashboard = () => {
                                         <>
                                             <div className="space-y-2">
                                                 <div className="flex justify-between text-sm">
-                                                    <span className="text-gray-400">Overall Health Score</span>
-                                                    <span className="font-mono font-bold text-white">{healthValues.score}%</span>
+                                                    <span className="text-muted-foreground">Overall Health Score</span>
+                                                    <span className="font-mono font-bold text-foreground">{healthValues.score}%</span>
                                                 </div>
                                                 <Progress value={healthValues.score} className="h-2" indicatorClassName={healthColor} />
                                             </div>
 
                                             {/* Predictive Alerts */}
                                             <div className="space-y-3">
-                                                <h4 className="text-sm font-semibold text-gray-300">Predictive Insights</h4>
+                                                <h4 className="text-sm font-semibold text-foreground">Predictive Insights</h4>
                                                 {healthValues.actions.length === 0 ? (
                                                     <div className="flex items-center gap-3 p-3 bg-green-500/10 border border-green-500/20 rounded-md">
-                                                        <ShieldCheck className="w-5 h-5 text-green-400" />
-                                                        <p className="text-sm text-green-300">System running optimally. No predicted failures.</p>
+                                                        <ShieldCheck className="w-5 h-5 text-success" />
+                                                        <p className="text-sm text-success">System running optimally. No predicted failures.</p>
                                                     </div>
                                                 ) : (
                                                     healthValues.actions.map(action => (
@@ -374,15 +374,15 @@ export const DigitalTwinDashboard = () => {
                                                                 "border-l-amber-500 bg-amber-500/10 border-t-amber-500/20 border-r-amber-500/20 border-b-amber-500/20"
                                                         )}>
                                                             <div className="flex items-start gap-3">
-                                                                {action.priority === 'critical' ? <AlertCircle className="w-5 h-5 text-red-400" /> : <Zap className="w-5 h-5 text-amber-400" />}
+                                                                {action.priority === 'critical' ? <AlertCircle className="w-5 h-5 text-destructive" /> : <Zap className="w-5 h-5 text-amber-400" />}
                                                                 <div className="flex-1">
-                                                                    <AlertTitle className={cn("mb-1", action.priority === 'critical' ? "text-red-400" : "text-amber-400")}>
+                                                                    <AlertTitle className={cn("mb-1", action.priority === 'critical' ? "text-destructive" : "text-amber-400")}>
                                                                         {action.title}
                                                                     </AlertTitle>
-                                                                    <AlertDescription className="text-gray-400 text-xs">
+                                                                    <AlertDescription className="text-muted-foreground text-xs">
                                                                         {action.description}
                                                                         {action.dueInHours !== undefined && (
-                                                                            <div className="mt-2 font-mono text-almona-light">
+                                                                            <div className="mt-2 font-mono text-foreground">
                                                                                 Due in: {action.dueInHours} hours
                                                                             </div>
                                                                         )}
@@ -390,7 +390,7 @@ export const DigitalTwinDashboard = () => {
                                                                     <Button
                                                                         size="sm"
                                                                         variant="outline"
-                                                                        className="mt-3 h-7 text-xs border-almona-light/20 hover:bg-almona-light/10"
+                                                                        className="mt-3 h-7 text-xs border-border/20 hover:bg-almona-light/10"
                                                                         onClick={() => void navigate(`/support/tickets/new?machine=${asset.id}&issue=${encodeURIComponent(action.title)}&priority=${action.priority}`)}
                                                                     >
                                                                         Schedule Service
@@ -403,29 +403,29 @@ export const DigitalTwinDashboard = () => {
                                             </div>
                                         </>
                                     ) : (
-                                        <p className="text-gray-500">Loading intelligence data...</p>
+                                        <p className="text-muted-foreground">Loading intelligence data...</p>
                                     )}
                                 </CardContent>
                             </Card>
                         </TabsContent>
 
                         <TabsContent value="docs" className="mt-6">
-                            <Card className="bg-almona-darker border-almona-light/10">
+                            <Card className="bg-card border-border/10">
                                 <CardHeader><CardTitle>Product catalog</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
                                     {catalog?.specPdf ? (
-                                        <a href={catalog.specPdf} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 bg-almona-dark rounded-lg border border-almona-light/5 hover:border-almona-orange/30">
+                                        <a href={catalog.specPdf} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 bg-background rounded-lg border border-border/5 hover:border-almona-orange/30">
                                             <div className="flex items-center gap-3">
-                                                <FileText className="w-8 h-8 text-blue-400/80" />
+                                                <FileText className="w-8 h-8 text-info/80" />
                                                 <div>
                                                     <p className="font-medium">{catalog.name} catalog</p>
-                                                    <p className="text-xs text-gray-500">Product specification sheet</p>
+                                                    <p className="text-xs text-muted-foreground">Product specification sheet</p>
                                                 </div>
                                             </div>
                                             <span className="text-sm text-almona-orange">Open</span>
                                         </a>
                                     ) : (
-                                        <p className="text-sm text-gray-400">No catalog file is attached to this product.</p>
+                                        <p className="text-sm text-muted-foreground">No catalog file is attached to this product.</p>
                                     )}
                                 </CardContent>
                             </Card>

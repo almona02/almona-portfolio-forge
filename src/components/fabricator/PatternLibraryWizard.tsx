@@ -84,12 +84,12 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800 card-dark">
+        <Card className="bg-background border-border card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Pattern Library</CardTitle>
-            <p className="text-gray-400">Choose a smart pattern and customize it (2-3 minutes)</p>
+            <p className="text-muted-foreground">Choose a smart pattern and customize it (2-3 minutes)</p>
           </CardHeader>
           <CardContent className="space-y-6">
             {!selectedPattern ? (
@@ -100,10 +100,10 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
                   onChange={(e) => setPatternSearch(e.target.value)}
                   placeholder="Search patterns by name, category…"
                   aria-label="Search patterns"
-                  className="max-w-md bg-gray-950 border-gray-700 text-gray-100"
+                  className="max-w-md bg-background border-border text-foreground"
                 />
                 {filteredPatterns.length === 0 ? (
-                  <p className="text-sm text-gray-500">No patterns match this search.</p>
+                  <p className="text-sm text-muted-foreground">No patterns match this search.</p>
                 ) : (
                   <div className="grid grid-cols-3 gap-4">
                     {filteredPatterns.map((pattern: any) => (
@@ -124,27 +124,27 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="typography-label text-sm text-gray-400">Width (mm)</label>
+                        <label className="typography-label text-sm text-muted-foreground">Width (mm)</label>
                         <Input
                           type="number"
                           value={width}
                           onChange={(e) => setWidth(Number(e.target.value))}
-                          className="bg-gray-800 border-gray-700"
+                          className="bg-card border-border"
                         />
                       </div>
                       <div>
-                        <label className="typography-label text-sm text-gray-400">Height (mm)</label>
+                        <label className="typography-label text-sm text-muted-foreground">Height (mm)</label>
                         <Input
                           type="number"
                           value={height}
                           onChange={(e) => setHeight(Number(e.target.value))}
-                          className="bg-gray-800 border-gray-700"
+                          className="bg-card border-border"
                         />
                       </div>
                     </div>
                     {/* Parameters will be added in future enhancement */}
                     {selectedPattern.constraints && (
-                      <div className="text-sm text-gray-400">
+                      <div className="text-sm text-muted-foreground">
                         <div>Min sash width: {selectedPattern.constraints.minSashWidth || 'N/A'}mm</div>
                         <div>Max sash width: {selectedPattern.constraints.maxSashWidth || 'N/A'}mm</div>
                         {selectedPattern.constraints.windLoadCategory && (
@@ -156,20 +156,20 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
                 </div>
                 <div className="space-y-4">
                   <h3 className="typography-h3 text-lg">Preview</h3>
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Pattern:</span>
+                          <span className="text-muted-foreground">Pattern:</span>
                           <span className="font-semibold">{selectedPattern.name}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Dimensions:</span>
+                          <span className="text-muted-foreground">Dimensions:</span>
                           <span className="font-semibold">{width}mm × {height}mm</span>
                         </div>
                         {Object.entries(parameters).map(([key, value]) => (
                           <div key={key} className="flex justify-between">
-                            <span className="text-gray-400">{key}:</span>
+                            <span className="text-muted-foreground">{key}:</span>
                             <span className="font-semibold">{String(value)}</span>
                           </div>
                         ))}
@@ -192,7 +192,7 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
                     onCancel?.();
                   }
                 }}
-                className="bg-gray-800 border-gray-700"
+                className="bg-card border-border"
               >
                 {selectedPattern ? 'Back to Patterns' : 'Cancel'}
               </Button>

@@ -80,7 +80,7 @@ export const EnhancedImage: React.FC<EnhancedImageProps> = ({
     return (
       <div
         className={cn(
-          'flex items-center justify-center bg-gray-100 dark:bg-gray-800',
+          'flex items-center justify-center bg-muted dark:bg-card',
           aspectRatioClasses[aspectRatio],
           className
         )}
@@ -88,7 +88,7 @@ export const EnhancedImage: React.FC<EnhancedImageProps> = ({
         aria-label={`Failed to load: ${alt}`}
       >
         {fallback || (
-          <div className="flex flex-col items-center space-y-2 text-gray-500 dark:text-gray-400">
+          <div className="flex flex-col items-center space-y-2 text-muted-foreground dark:text-muted-foreground">
             <AlertCircle className="h-8 w-8" />
             <p className="text-sm">Failed to load image</p>
           </div>

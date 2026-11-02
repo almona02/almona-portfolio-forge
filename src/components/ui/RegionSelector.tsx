@@ -59,7 +59,7 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
           variant="outline"
           size="sm"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center space-x-2 border-gray-600 text-gray-300 hover:bg-gray-700"
+          className="flex items-center space-x-2 border-border text-foreground hover:bg-muted"
         >
           <span className="text-lg">{currentConfig.flag}</span>
           <span className="text-sm">{currentConfig.name}</span>
@@ -67,24 +67,24 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
         </Button>
 
         {isOpen && (
-          <div className="absolute top-full left-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50">
+          <div className="absolute top-full left-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-xl z-50">
             {Object.entries(regionConfigs).map(([code, config]) => (
               <button
                 key={code}
                 onClick={() => handleRegionSelect(code as RegionCode)}
                 className={cn(
-                  "w-full flex items-center justify-between px-3 py-2 text-left hover:bg-gray-700 transition-colors first:rounded-t-lg last:rounded-b-lg",
-                  currentRegion === code && "bg-gray-700"
+                  "w-full flex items-center justify-between px-3 py-2 text-left hover:bg-muted transition-colors first:rounded-t-lg last:rounded-b-lg",
+                  currentRegion === code && "bg-muted"
                 )}
               >
                 <div className="flex items-center space-x-3">
                   <span className="text-lg">{config.flag}</span>
                   <div>
-                    <div className="text-sm font-medium text-white">{config.name}</div>
-                    <div className="text-xs text-gray-400">{config.currency}</div>
+                    <div className="text-sm font-medium text-foreground">{config.name}</div>
+                    <div className="text-xs text-muted-foreground">{config.currency}</div>
                   </div>
                 </div>
-                {currentRegion === code && <Check className="w-4 h-4 text-green-400" />}
+                {currentRegion === code && <Check className="w-4 h-4 text-success" />}
               </button>
             ))}
           </div>
@@ -108,10 +108,10 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
           </Button>
           
           {isOpen && (
-            <div className="absolute bottom-full right-0 mb-2 w-64 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl p-4">
+            <div className="absolute bottom-full right-0 mb-2 w-64 bg-card border border-border rounded-xl shadow-2xl p-4">
               <div className="flex items-center space-x-2 mb-3">
                 <Sparkles className="w-4 h-4 text-yellow-400" />
-                <h3 className="typography-h3 text-sm text-white">Select Region</h3>
+                <h3 className="typography-h3 text-sm text-foreground">Select Region</h3>
               </div>
               
               <div className="space-y-2">
@@ -123,17 +123,17 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
                       "w-full flex items-center justify-between p-3 rounded-lg transition-all duration-200",
                       currentRegion === code 
                         ? `${config.bgColor} ${config.borderColor} border` 
-                        : "hover:bg-gray-700"
+                        : "hover:bg-muted"
                     )}
                   >
                     <div className="flex items-center space-x-3">
                       <span className="text-xl">{config.flag}</span>
                       <div>
-                        <div className="text-sm font-medium text-white">{config.name}</div>
-                        <div className="text-xs text-gray-400">{config.currency}</div>
+                        <div className="text-sm font-medium text-foreground">{config.name}</div>
+                        <div className="text-xs text-muted-foreground">{config.currency}</div>
                       </div>
                     </div>
-                    {currentRegion === code && <Check className="w-4 h-4 text-green-400" />}
+                    {currentRegion === code && <Check className="w-4 h-4 text-success" />}
                   </button>
                 ))}
               </div>
@@ -150,7 +150,7 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
       <Button
         variant="outline"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 border-gray-600 text-gray-300 hover:bg-gray-700"
+        className="flex items-center space-x-2 border-border text-foreground hover:bg-muted"
       >
         <span className="text-lg">{currentConfig.flag}</span>
         <span>{currentConfig.name}</span>
@@ -158,25 +158,25 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
       </Button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-56 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50">
+        <div className="absolute top-full left-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-xl z-50">
           <div className="p-2">
             {Object.entries(regionConfigs).map(([code, config]) => (
               <button
                 key={code}
                 onClick={() => handleRegionSelect(code as RegionCode)}
                 className={cn(
-                  "w-full flex items-center justify-between px-3 py-2 text-left hover:bg-gray-700 rounded-md transition-colors",
-                  currentRegion === code && "bg-gray-700"
+                  "w-full flex items-center justify-between px-3 py-2 text-left hover:bg-muted rounded-md transition-colors",
+                  currentRegion === code && "bg-muted"
                 )}
               >
                 <div className="flex items-center space-x-3">
                   <span className="text-lg">{config.flag}</span>
                   <div>
-                    <div className="text-sm font-medium text-white">{config.name}</div>
-                    <div className="text-xs text-gray-400">{config.currency}</div>
+                    <div className="text-sm font-medium text-foreground">{config.name}</div>
+                    <div className="text-xs text-muted-foreground">{config.currency}</div>
                   </div>
                 </div>
-                {currentRegion === code && <Check className="w-4 h-4 text-green-400" />}
+                {currentRegion === code && <Check className="w-4 h-4 text-success" />}
               </button>
             ))}
           </div>

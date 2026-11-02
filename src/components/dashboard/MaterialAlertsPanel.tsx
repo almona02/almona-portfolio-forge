@@ -41,22 +41,22 @@ const MaterialAlertsPanel: React.FC = () => {
   );
 
   return (
-    <Card className="bg-gray-900/70 border-gray-700 card-dark">
+    <Card className="bg-background/70 border-border card-dark">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-sm">
           <AlertTriangle className="h-4 w-4 text-yellow-400" />
           Material Alerts
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3 text-xs text-gray-400">
+      <CardContent className="space-y-3 text-xs text-muted-foreground">
         {!user?.id ? (
-          <p className="text-slate-400">Sign in to load owned inventory alerts.</p>
+          <p className="text-muted-foreground">Sign in to load owned inventory alerts.</p>
         ) : isLoading ? (
-          <p className="flex items-center gap-2 text-slate-400">
+          <p className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-3 w-3 animate-spin" /> Loading owned inventory…
           </p>
         ) : isError ? (
-          <p className="text-red-300">
+          <p className="text-destructive">
             Inventory unavailable: {error instanceof Error ? error.message : 'Unknown error'}
           </p>
         ) : profiles.length === 0 ? (
@@ -64,7 +64,7 @@ const MaterialAlertsPanel: React.FC = () => {
             No owned profiles recorded. Configure stock before treating availability as known.
           </p>
         ) : lowStockItems.length === 0 ? (
-          <p className="text-slate-300">
+          <p className="text-foreground">
             Tracked owned profiles are above their minimum stock levels ({profiles.length} profiles).
           </p>
         ) : (
@@ -74,11 +74,11 @@ const MaterialAlertsPanel: React.FC = () => {
               {lowStockItems.slice(0, 3).map((item) => (
                 <div key={item.id} className="flex justify-between items-center">
                   <span className="truncate">{item.name}</span>
-                  <span className="text-red-400 font-semibold">{item.stockQuantity ?? 0}m</span>
+                  <span className="text-destructive font-semibold">{item.stockQuantity ?? 0}m</span>
                 </div>
               ))}
               {lowStockItems.length > 3 && (
-                <p className="text-[11px] text-gray-500">
+                <p className="text-[11px] text-muted-foreground">
                   +{lowStockItems.length - 3} more profiles below threshold
                 </p>
               )}

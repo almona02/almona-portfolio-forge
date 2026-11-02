@@ -70,49 +70,49 @@ const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
 
     return (
         <Card
-            className="w-full border-2 border-slate-100 dark:border-slate-800 shadow-sm"
+            className="w-full border-2 border-border dark:border-border shadow-sm"
             aria-label="Visual cutting plan with bar layout and segment lengths"
         >
-            <CardHeader className="pb-4 bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
+            <CardHeader className="pb-4 bg-background/50 dark:bg-background/50 border-b border-border dark:border-border">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2 text-slate-800 dark:text-slate-100">
-                            <Ruler className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" aria-hidden />
+                        <CardTitle className="text-xl font-semibold tracking-tight flex items-center gap-2 text-foreground dark:text-foreground">
+                            <Ruler className="h-5 w-5 text-info dark:text-info shrink-0" aria-hidden />
                             Visual Cutting Plan
                         </CardTitle>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                        <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">
                             Scroll to pan, zoom to inspect. Hover a segment for length.
                         </p>
                     </div>
-                    <div className="flex items-center gap-2 bg-white dark:bg-slate-800 p-1 rounded-lg border shadow-sm">
+                    <div className="flex items-center gap-2 bg-card dark:bg-card p-1 rounded-lg border shadow-sm">
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 hover:bg-slate-100 dark:hover:bg-slate-700"
+                            className="h-8 w-8 hover:bg-muted dark:hover:bg-muted"
                             onClick={() => setZoomLevel(Math.max(0.2, zoomLevel - 0.2))}
                             disabled={zoomLevel <= 0.2}
                             aria-label="Zoom out"
                         >
                             <ZoomOut className="h-4 w-4" />
                         </Button>
-                        <span className="text-sm font-mono font-semibold w-16 text-center select-none text-slate-700 dark:text-slate-300 tabular-nums">
+                        <span className="text-sm font-mono font-semibold w-16 text-center select-none text-foreground dark:text-foreground tabular-nums">
                             {Math.round(zoomLevel * 100)}%
                         </span>
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 hover:bg-slate-100 dark:hover:bg-slate-700"
+                            className="h-8 w-8 hover:bg-muted dark:hover:bg-muted"
                             onClick={() => setZoomLevel(Math.min(4, zoomLevel + 0.2))}
                             disabled={zoomLevel >= 4}
                             aria-label="Zoom in"
                         >
                             <ZoomIn className="h-4 w-4" />
                         </Button>
-                        <div className="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1" aria-hidden />
+                        <div className="w-px h-4 bg-muted dark:bg-muted mx-1" aria-hidden />
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 hover:bg-slate-100 dark:hover:bg-slate-700"
+                            className="h-8 w-8 hover:bg-muted dark:hover:bg-muted"
                             onClick={() => setZoomLevel(1)}
                             title="Reset zoom to 100%"
                             aria-label="Reset zoom"
@@ -153,15 +153,15 @@ const VisualCuttingPlanInner: React.FC<VisualCuttingPlanProps> = ({
                         // In a real app, this comes from the window unit ID.
 
                         return (
-                            <div key={barNum} className="flex items-center gap-4 py-2 border-b border-slate-200 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-900/20 transition-colors">
+                            <div key={barNum} className="flex items-center gap-4 py-2 border-b border-border dark:border-border last:border-0 hover:bg-background dark:hover:bg-background/20 transition-colors">
                                 {/* Quantity */}
-                                <div className="w-12 font-mono text-lg font-bold text-slate-700 dark:text-slate-300 text-center shrink-0">
+                                <div className="w-12 font-mono text-lg font-bold text-foreground dark:text-foreground text-center shrink-0">
                                     1 x
                                 </div>
 
                                 {/* Profile Icon (Placeholder SVG) */}
                                 <div className="w-8 shrink-0 opacity-70" title={cuts[0]?.profileName}>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-slate-500">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-muted-foreground">
                                         <rect x="4" y="4" width="16" height="16" rx="2" />
                                         <path d="M9 4v16M15 4v16" />
                                     </svg>

@@ -101,18 +101,18 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
         {/* Animated background */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-amber-600/20 to-amber-600/20 rounded-2xl blur-xl animate-pulse" />
 
-        <Card className="relative bg-almona-dark border-gray-700 shadow-2xl overflow-hidden">
+        <Card className="relative bg-background border-border shadow-2xl overflow-hidden">
           <CardHeader className="text-center pb-4">
             <div className="flex items-center justify-center mb-4">
               <div className="relative">
-                <Globe className="w-12 h-12 text-blue-400 animate-spin" style={{ animationDuration: '3s' }} />
+                <Globe className="w-12 h-12 text-info animate-spin" style={{ animationDuration: '3s' }} />
                 <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-yellow-400 animate-pulse" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-white mb-2">
+            <CardTitle className="text-2xl font-bold text-foreground mb-2">
               Choose Your Region
             </CardTitle>
-            <p className="text-gray-400">
+            <p className="text-muted-foreground">
               Select your region to get personalized experience, local pricing, and regional support
             </p>
           </CardHeader>
@@ -121,13 +121,13 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
             {showSuccess ? (
               <div className="text-center py-12">
                 <div className="relative mb-6">
-                  <CheckCircle className="w-16 h-16 text-green-400 mx-auto animate-bounce" />
+                  <CheckCircle className="w-16 h-16 text-success mx-auto animate-bounce" />
                   <div className="absolute inset-0 bg-green-400/20 rounded-full blur-xl animate-ping" />
                 </div>
-                <h3 className="typography-h3 text-white mb-2">
+                <h3 className="typography-h3 text-foreground mb-2">
                   Region Selected Successfully!
                 </h3>
-                <p className="text-gray-400">
+                <p className="text-muted-foreground">
                   Redirecting to {regionConfigs[selectedRegion].name} experience...
                 </p>
               </div>
@@ -152,19 +152,19 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
                       "relative border-2 transition-all duration-300",
                       selectedRegion === code 
                         ? `${config.borderColor} ${config.bgColor} shadow-lg` 
-                        : "border-gray-700 hover:border-gray-600"
+                        : "border-border hover:border-border"
                     )}>
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
                             <span className="text-3xl">{config.flag}</span>
                             <div>
-                              <h3 className="typography-h3 text-white">{config.name}</h3>
-                              <p className="text-sm text-gray-400">{config.language}</p>
+                              <h3 className="typography-h3 text-foreground">{config.name}</h3>
+                              <p className="text-sm text-muted-foreground">{config.language}</p>
                             </div>
                           </div>
                           {selectedRegion === code && (
-                            <CheckCircle className="w-6 h-6 text-green-400 animate-pulse" />
+                            <CheckCircle className="w-6 h-6 text-success animate-pulse" />
                           )}
                         </div>
                       </CardHeader>
@@ -172,25 +172,25 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
                       <CardContent className="space-y-4">
                         {/* Currency */}
                         <div className="flex items-center space-x-2">
-                          <CreditCard className="w-4 h-4 text-blue-400" />
-                          <span className="text-sm text-gray-300">{config.currency}</span>
+                          <CreditCard className="w-4 h-4 text-info" />
+                          <span className="text-sm text-foreground">{config.currency}</span>
                         </div>
 
                         {/* Timezone */}
                         <div className="flex items-center space-x-2">
-                          <Clock className="w-4 h-4 text-green-400" />
-                          <span className="text-sm text-gray-300">{config.timezone}</span>
+                          <Clock className="w-4 h-4 text-success" />
+                          <span className="text-sm text-foreground">{config.timezone}</span>
                         </div>
 
                         {/* Working Hours */}
                         <div className="flex items-center space-x-2">
                           <MapPin className="w-4 h-4 text-amber-400" />
-                          <span className="text-sm text-gray-300">{config.workingHours}</span>
+                          <span className="text-sm text-foreground">{config.workingHours}</span>
                         </div>
 
                         {/* Features */}
                         <div>
-                          <h4 className="typography-h4 text-xs font-medium text-gray-400 mb-2">Features</h4>
+                          <h4 className="typography-h4 text-xs font-medium text-muted-foreground mb-2">Features</h4>
                           <div className="flex flex-wrap gap-1">
                             {config.features.slice(0, 2).map((feature, index) => (
                               <Badge key={index} variant="secondary" className="text-xs">
@@ -202,10 +202,10 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
 
                         {/* Compliance */}
                         <div>
-                          <h4 className="typography-h4 text-xs font-medium text-gray-400 mb-2">Compliance</h4>
+                          <h4 className="typography-h4 text-xs font-medium text-muted-foreground mb-2">Compliance</h4>
                           <div className="flex items-center space-x-1">
-                            <Shield className="w-3 h-3 text-green-400" />
-                            <span className="text-xs text-gray-300">
+                            <Shield className="w-3 h-3 text-success" />
+                            <span className="text-xs text-foreground">
                               {config.compliance.slice(0, 2).join(', ')}
                             </span>
                           </div>
@@ -222,7 +222,7 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
                 <Button
                   variant="outline"
                   onClick={onClose}
-                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  className="border-border text-foreground hover:bg-muted"
                 >
                   Cancel
                 </Button>

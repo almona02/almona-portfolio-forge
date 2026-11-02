@@ -278,7 +278,7 @@ export const CustomerSegmentsManager: React.FC<CustomerSegmentsManagerProps> = (
                                             {segment.is_dynamic ? (
                                                 <Sparkles className="h-4 w-4 text-amber-500" />
                                             ) : (
-                                                <Filter className="h-4 w-4 text-blue-500" />
+                                                <Filter className="h-4 w-4 text-info" />
                                             )}
                                             {segment.name}
                                         </CardTitle>

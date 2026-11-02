@@ -310,11 +310,11 @@ const Services = () => {
   // Memoize status helpers to prevent recreation on every render
   const getStatusColor = useCallback((status: MachineHealth['status']) => {
     switch (status) {
-      case 'optimal': return 'text-green-400';
+      case 'optimal': return 'text-success';
       case 'degraded': return 'text-yellow-400';
       case 'maintenance_required': return 'text-amber-400';
-      case 'critical': return 'text-red-400';
-      default: return 'text-gray-400';
+      case 'critical': return 'text-destructive';
+      default: return 'text-muted-foreground';
     }
   }, []);
 
@@ -349,7 +349,7 @@ const Services = () => {
         url={currentUrl}
         keywords="industrial services, automation advisor, machine training, fabrication services, maintenance services Egypt"
       />
-      <main className="flex-grow pt-20 bg-[#0a0a0a]">
+      <main className="flex-grow pt-20 bg-background">
         <div id="top" className="sr-only" aria-hidden="true" />
         <div className="container mx-auto px-4 py-12 fade-in-up">
           {/* View Toggle and Language Toggle */}
@@ -378,7 +378,7 @@ const Services = () => {
                 <h1 className="typography-h1 md:text-6xl mb-6 bg-gradient-to-r from-amber-400 via-amber-500 to-red-500 bg-clip-text text-transparent">
                   {t('services.title')}
                 </h1>
-                <p className="text-xl text-gray-400 max-w-4xl mx-auto leading-relaxed">
+                <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
                   {t('services.subtitle_enhanced')}
                 </p>
               </div>
@@ -400,13 +400,13 @@ const Services = () => {
                   {realTimeData ? 'Sample animation active' : 'Animate sample data'}
                 </Button>
                 <Link to="/portal">
-                  <Button variant="outline" className="text-white electric-border">
+                  <Button variant="outline" className="text-foreground electric-border">
                     <Gauge className="h-4 w-4 mr-2" />
                     {t('services.customer_portal')}
                   </Button>
                 </Link>
                 <Link to="/support">
-                  <Button variant="outline" className="text-white electric-border">
+                  <Button variant="outline" className="text-foreground electric-border">
                     <Shield className="h-4 w-4 mr-2" />
                     {t('services.ai_support')}
                   </Button>
@@ -415,58 +415,58 @@ const Services = () => {
 
               {/* Predictive Maintenance Overview Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                <Card className="bg-gradient-to-br from-gray-900 to-black border-amber-500/20">
+                <Card className="bg-gradient-to-br from-background to-black border-amber-500/20">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">{t('services.active_alerts')}</CardTitle>
                     <AlertTriangle className="h-4 w-4 text-amber-400" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-amber-400">{predictiveAlerts.length}</div>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-muted-foreground">
                       {predictiveAlerts.filter(a => a.severity === 'critical').length} {t('services.critical')}
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-gray-900 to-black border-green-500/20">
+                <Card className="bg-gradient-to-br from-background to-black border-green-500/20">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">{t('services.healthy_machines')}</CardTitle>
-                    <CheckCircle2 className="h-4 w-4 text-green-400" />
+                    <CheckCircle2 className="h-4 w-4 text-success" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-green-400">
+                    <div className="text-2xl font-bold text-success">
                       {machineHealth.filter(m => m.status === 'optimal').length}
                     </div>
-                    <p className="text-xs text-gray-400">{t('services.optimal_performance')}</p>
+                    <p className="text-xs text-muted-foreground">{t('services.optimal_performance')}</p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-gray-900 to-black border-blue-500/20">
+                <Card className="bg-gradient-to-br from-background to-black border-blue-500/20">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">{t('services.predictive_accuracy')}</CardTitle>
-                    <Brain className="h-4 w-4 text-blue-400" />
+                    <Brain className="h-4 w-4 text-info" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-blue-400">94%</div>
-                    <p className="text-xs text-gray-400">{t('services.ml_model_confidence')}</p>
+                    <div className="text-2xl font-bold text-info">94%</div>
+                    <p className="text-xs text-muted-foreground">{t('services.ml_model_confidence')}</p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-gray-900 to-black border-amber-500/20">
+                <Card className="bg-gradient-to-br from-background to-black border-amber-500/20">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">{t('services.cost_savings')}</CardTitle>
                     <TrendingUp className="h-4 w-4 text-amber-400" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-amber-400">37%</div>
-                    <p className="text-xs text-gray-400">{t('services.reduced_downtime')}</p>
+                    <p className="text-xs text-muted-foreground">{t('services.reduced_downtime')}</p>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Main Services Content */}
               <Tabs value={activeTab} onValueChange={handleTabChange}>
-                <TabsList className="grid w-full grid-cols-1 sm:grid-cols-7 max-w-6xl mx-auto mb-12 bg-gradient-to-r from-gray-900 to-black border 500/20 p-2 rounded-xl card-glass-dark">
+                <TabsList className="grid w-full grid-cols-1 sm:grid-cols-7 max-w-6xl mx-auto mb-12 bg-gradient-to-r from-background to-black border 500/20 p-2 rounded-xl card-glass-dark">
                   <TabsTrigger value="overview" className="flex items-center gap-2">
                     <Activity className="h-4 w-4" />
                     {t('services.ai_overview')}
@@ -501,7 +501,7 @@ const Services = () => {
                 <TabsContent value="overview">
                   <div className="space-y-8 fade-in-up">
                     {/* Predictive Alerts Section */}
-                    <Card className="bg-gradient-to-br from-gray-900 to-black border-amber-500/20">
+                    <Card className="bg-gradient-to-br from-background to-black border-amber-500/20">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-amber-400">
                           <AlertTriangle className="h-5 w-5" />
@@ -534,7 +534,7 @@ const Services = () => {
                                     </Badge>
                                   </div>
                                   <p className="text-sm mb-2">{alert.component}: {alert.issue}</p>
-                                  <div className="flex items-center gap-4 text-xs text-gray-400">
+                                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
                                     <span>{t('services.predicted_failure_date')}: {alert.predictedFailureDate}</span>
                                     <span>{t('services.confidence')}: {alert.confidence}%</span>
                                     <div className="flex items-center gap-1">
@@ -623,7 +623,7 @@ const Services = () => {
                     </div>
 
                     {/* Machine Health Dashboard */}
-                    <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+                    <Card className="bg-gradient-to-br from-background to-black border-border">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <CircuitBoard className="h-5 w-5 text-amber-400" />
@@ -639,7 +639,7 @@ const Services = () => {
                                 machine.status === 'degraded' ? 'border-yellow-500/30' :
                                   machine.status === 'maintenance_required' ? 'border-amber-500/30' :
                                     'border-red-500/30'
-                                } bg-gradient-to-br from-gray-800/50 to-gray-900/50`}
+                                } bg-gradient-to-br from-card/50 to-background/50`}
                             >
                               <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
@@ -673,8 +673,8 @@ const Services = () => {
                                         <span className="capitalize">{t(`services.${sensor.type}`)}:</span>
                                       </div>
                                       <span className={
-                                        sensor.status === 'normal' ? 'text-green-400' :
-                                          sensor.status === 'warning' ? 'text-yellow-400' : 'text-red-400'
+                                        sensor.status === 'normal' ? 'text-success' :
+                                          sensor.status === 'warning' ? 'text-yellow-400' : 'text-destructive'
                                       }>
                                         {sensor.value} {sensor.unit} ({t(`services.${sensor.status}`)})
                                       </span>
@@ -731,55 +731,55 @@ const Services = () => {
                   <div className="space-y-8 fade-in-up">
                     {/* KPI Highlights */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                      <Card className="bg-gradient-to-br from-gray-900 to-black border-green-500/20">
+                      <Card className="bg-gradient-to-br from-background to-black border-green-500/20">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                           <CardTitle className="text-sm font-medium">Machine Uptime</CardTitle>
-                          <CheckCircle2 className="h-4 w-4 text-green-400" />
+                          <CheckCircle2 className="h-4 w-4 text-success" />
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-green-400">
+                          <div className="text-2xl font-bold text-success">
                             {machineHealth.length > 0 ? Math.round((machineHealth.filter(m => m.status === 'optimal').length / machineHealth.length) * 100) : 0}%
                           </div>
-                          <p className="text-xs text-gray-400">Based on current fleet</p>
+                          <p className="text-xs text-muted-foreground">Based on current fleet</p>
                         </CardContent>
                       </Card>
 
-                      <Card className="bg-gradient-to-br from-gray-900 to-black border-yellow-500/20">
+                      <Card className="bg-gradient-to-br from-background to-black border-yellow-500/20">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                           <CardTitle className="text-sm font-medium">Avg Response Time</CardTitle>
                           <Clock className="h-4 w-4 text-yellow-400" />
                         </CardHeader>
                         <CardContent>
                           <div className="text-2xl font-bold text-yellow-400">2h</div>
-                          <p className="text-xs text-gray-400">Emergency service last 30d</p>
+                          <p className="text-xs text-muted-foreground">Emergency service last 30d</p>
                         </CardContent>
                       </Card>
 
-                      <Card className="bg-gradient-to-br from-gray-900 to-black border-amber-500/20">
+                      <Card className="bg-gradient-to-br from-background to-black border-amber-500/20">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                           <CardTitle className="text-sm font-medium">Maintenance Costs</CardTitle>
                           <TrendingUp className="h-4 w-4 text-amber-400" />
                         </CardHeader>
                         <CardContent>
                           <div className="text-2xl font-bold text-amber-400">EGP 120k</div>
-                          <p className="text-xs text-gray-400">Rolling 30d estimate</p>
+                          <p className="text-xs text-muted-foreground">Rolling 30d estimate</p>
                         </CardContent>
                       </Card>
 
-                      <Card className="bg-gradient-to-br from-gray-900 to-black border-blue-500/20">
+                      <Card className="bg-gradient-to-br from-background to-black border-blue-500/20">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                           <CardTitle className="text-sm font-medium">Customer Satisfaction</CardTitle>
-                          <Shield className="h-4 w-4 text-blue-400" />
+                          <Shield className="h-4 w-4 text-info" />
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-blue-400">98%</div>
-                          <p className="text-xs text-gray-400">Last 90 days</p>
+                          <div className="text-2xl font-bold text-info">98%</div>
+                          <p className="text-xs text-muted-foreground">Last 90 days</p>
                         </CardContent>
                       </Card>
                     </div>
 
                     {/* Full BI Dashboard */}
-                    <div className="bg-gradient-to-br from-gray-900 to-black border border-amber-500/20 rounded-xl p-4">
+                    <div className="bg-gradient-to-br from-background to-black border border-amber-500/20 rounded-xl p-4">
                       <Suspense fallback={<FormSkeleton />}>
                         <BusinessKPIDashboard />
                       </Suspense>
@@ -790,7 +790,7 @@ const Services = () => {
                 {/* ROI Analytics */}
                 <TabsContent value="roi-analytics">
                   <div className="space-y-8 fade-in-up">
-                    <div className="bg-gradient-to-br from-gray-900 to-black border border-amber-500/20 rounded-xl p-6">
+                    <div className="bg-gradient-to-br from-background to-black border border-amber-500/20 rounded-xl p-6">
                       <Suspense fallback={<FormSkeleton />}>
                         <ServiceROIAnalytics />
                       </Suspense>

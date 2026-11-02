@@ -14,9 +14,9 @@ const sizeClasses = {
 };
 
 const variantClasses = {
-  default: 'bg-gray-600',
+  default: 'bg-muted',
   primary: 'bg-blue-600',
-  secondary: 'bg-gray-400',
+  secondary: 'bg-muted',
   accent: 'bg-amber-600'
 };
 

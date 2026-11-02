@@ -145,10 +145,10 @@ export const TicketForm: React.FC<TicketFormProps> = ({
           type="button"
           key={value}
           onClick={() => setValue('type', value as TicketType)}
-          className={`text-left p-3 rounded-md border transition group ${selectedType === value ? 'border-almona-orange bg-almona-orange/10' : 'border-almona-light/20 hover:border-almona-orange/40'}`}
+          className={`text-left p-3 rounded-md border transition group ${selectedType === value ? 'border-almona-orange bg-almona-orange/10' : 'border-border/20 hover:border-almona-orange/40'}`}
         >
           <div className="font-medium group-hover:text-almona-orange text-sm">{meta.label}</div>
-          <div className="text-[11px] mt-1 text-gray-400 leading-snug">{meta.desc}</div>
+          <div className="text-[11px] mt-1 text-muted-foreground leading-snug">{meta.desc}</div>
         </button>
       ))}
     </div>
@@ -161,10 +161,10 @@ export const TicketForm: React.FC<TicketFormProps> = ({
           key={p.value}
             type="button"
             onClick={() => setValue('priority', p.value)}
-            className={`px-3 py-2 rounded-md border text-sm transition ${selectedPriority === p.value ? 'border-almona-orange bg-almona-orange/20' : 'border-almona-light/20 hover:border-almona-orange/40'}`}
+            className={`px-3 py-2 rounded-md border text-sm transition ${selectedPriority === p.value ? 'border-almona-orange bg-almona-orange/20' : 'border-border/20 hover:border-almona-orange/40'}`}
         >
           <div className="font-medium">{p.label}</div>
-          <div className="text-[10px] text-gray-400">{p.desc}</div>
+          <div className="text-[10px] text-muted-foreground">{p.desc}</div>
         </button>
       ))}
     </div>
@@ -173,9 +173,9 @@ export const TicketForm: React.FC<TicketFormProps> = ({
   return (
     <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-6">
       {mode === 'page' && showAttachments && (
-        <div className="flex gap-4 border-b border-almona-light/10 pb-2 text-sm">
+        <div className="flex gap-4 border-b border-border/10 pb-2 text-sm">
           {(['details','attachments','preview'] as const).map(t => (
-            <button key={t} type="button" onClick={() => setActiveTab(t)} className={`uppercase tracking-wide ${activeTab===t ? 'text-almona-orange' : 'text-gray-400 hover:text-white'}`}>{t}</button>
+            <button key={t} type="button" onClick={() => setActiveTab(t)} className={`uppercase tracking-wide ${activeTab===t ? 'text-almona-orange' : 'text-muted-foreground hover:text-foreground'}`}>{t}</button>
           ))}
         </div>
       )}
@@ -187,12 +187,12 @@ export const TicketForm: React.FC<TicketFormProps> = ({
               <div className="space-y-2">
                 <Label>Ticket Type</Label>
                 <TypePills />
-                {errors.type && <p className="text-xs text-red-500">{errors.type.message}</p>}
+                {errors.type && <p className="text-xs text-destructive">{errors.type.message}</p>}
               </div>
               <div className="space-y-2">
                 <Label>Priority</Label>
                 <PriorityPills />
-                {errors.priority && <p className="text-xs text-red-500">{errors.priority.message}</p>}
+                {errors.priority && <p className="text-xs text-destructive">{errors.priority.message}</p>}
               </div>
             </div>
 
@@ -215,17 +215,17 @@ export const TicketForm: React.FC<TicketFormProps> = ({
             <div className="space-y-2">
               <Label htmlFor="title" className="typography-label">Title</Label>
               <Controller name="title" control={control} render={({ field }) => (
-                <Input id="title" {...field} placeholder="Brief description" className={clsx("bg-almona-darker border-almona-light/30 focus:border-almona-orange/50", { "border-red-500 focus:border-red-500": errors.title })} />
+                <Input id="title" {...field} placeholder="Brief description" className={clsx("bg-card border-border/30 focus:border-almona-orange/50", { "border-red-500 focus:border-red-500": errors.title })} />
               )} />
-              {errors.title && <p className="text-xs text-red-500">{errors.title.message}</p>}
+              {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="description" className="typography-label">Description</Label>
               <Controller name="description" control={control} render={({ field }) => (
-                <Textarea id="description" rows={6} {...field} placeholder="Details, steps to reproduce, error messages..." className={clsx("bg-almona-darker border-almona-light/30 focus:border-almona-orange/50", { "border-red-500 focus:border-red-500": errors.description })} />
+                <Textarea id="description" rows={6} {...field} placeholder="Details, steps to reproduce, error messages..." className={clsx("bg-card border-border/30 focus:border-almona-orange/50", { "border-red-500 focus:border-red-500": errors.description })} />
               )} />
-              {errors.description && <p className="text-xs text-red-500">{errors.description.message}</p>}
+              {errors.description && <p className="text-xs text-destructive">{errors.description.message}</p>}
             </div>
 
             {showContactFields && (
@@ -233,13 +233,13 @@ export const TicketForm: React.FC<TicketFormProps> = ({
                 <div className="space-y-2">
                   <Label>Contact Phone</Label>
                   <Controller name="contact_phone" control={control} render={({ field }) => (
-                    <Input {...field} placeholder="+20 123 456 789" className="bg-almona-darker border-almona-light/30" />
+                    <Input {...field} placeholder="+20 123 456 789" className="bg-card border-border/30" />
                   )} />
                 </div>
                 <div className="space-y-2">
                   <Label>Contact Email</Label>
                   <Controller name="contact_email" control={control} render={({ field }) => (
-                    <Input type="email" {...field} placeholder="user@example.com" className="bg-almona-darker border-almona-light/30" />
+                    <Input type="email" {...field} placeholder="user@example.com" className="bg-card border-border/30" />
                   )} />
                 </div>
                 <div className="space-y-2">
@@ -258,13 +258,13 @@ export const TicketForm: React.FC<TicketFormProps> = ({
                 <div className="space-y-2">
                   <Label>Site Location</Label>
                   <Controller name="site_location" control={control} render={({ field }) => (
-                    <Input {...field} placeholder="Cairo Workshop" className="bg-almona-darker border-almona-light/30" />
+                    <Input {...field} placeholder="Cairo Workshop" className="bg-card border-border/30" />
                   )} />
                 </div>
                 <div className="space-y-2">
                   <Label>Machine Serial</Label>
                   <Controller name="machine_serial_number" control={control} render={({ field }) => (
-                    <Input {...field} placeholder="ALM-2024-001" className="bg-almona-darker border-almona-light/30" />
+                    <Input {...field} placeholder="ALM-2024-001" className="bg-card border-border/30" />
                   )} />
                 </div>
               </div>
@@ -280,7 +280,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
 
         {mode === 'page' && showAttachments && activeTab==='attachments' && (
           <LazyMotionDiv key="attachments" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
-            <p className="text-sm text-gray-400">Attachment handling to be implemented (placeholder).</p>
+            <p className="text-sm text-muted-foreground">Attachment handling to be implemented (placeholder).</p>
             <div className="flex justify-between">
               <Button type="button" variant="outline" onClick={()=>setActiveTab('details')}>Back</Button>
               <Button type="button" onClick={()=>setActiveTab('preview')}>Preview</Button>
@@ -291,11 +291,11 @@ export const TicketForm: React.FC<TicketFormProps> = ({
         {mode === 'page' && showAttachments && activeTab==='preview' && (
           <LazyMotionDiv key="preview" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
             <h3 className="typography-h3 text-lg">Preview</h3>
-            <div className="bg-almona-darker/40 p-4 rounded border border-almona-light/20 text-sm space-y-2">
+            <div className="bg-card/40 p-4 rounded border border-border/20 text-sm space-y-2">
               <div><strong>Title:</strong> {watch('title')}</div>
               <div><strong>Type:</strong> {watch('type')}</div>
               <div><strong>Priority:</strong> {watch('priority')}</div>
-              <div><strong>Description:</strong><pre className="whitespace-pre-wrap mt-1 text-gray-300 text-xs">{watch('description')}</pre></div>
+              <div><strong>Description:</strong><pre className="whitespace-pre-wrap mt-1 text-foreground text-xs">{watch('description')}</pre></div>
             </div>
             <div className="flex justify-between">
               <Button type="button" variant="outline" onClick={()=>setActiveTab('attachments')}>Back</Button>

@@ -348,12 +348,12 @@ export const NoDXFTuningStudio: React.FC = () => {
     ].filter((p): p is { id: string; name: string } => Boolean(p.id));
     return (
       <div
-        className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-8 text-white"
+        className="min-h-screen bg-gradient-to-br from-background via-background to-background p-8 text-white"
         data-testid="nodxf-tuning-pack-picker"
       >
-        <h1 className="text-xl font-semibold text-amber-200 mb-2">Select a system pack to tune</h1>
-        <p className="text-sm text-slate-400 mb-6">Choose a pack for No-DXF tuning, or open the system library.</p>
-        <Button variant="outline" className="mb-6 border-slate-600 text-slate-200" onClick={() => void navigate(fabricatorRoutes.studioData())}>
+        <h1 className="text-xl font-semibold text-warning mb-2">Select a system pack to tune</h1>
+        <p className="text-sm text-muted-foreground mb-6">Choose a pack for No-DXF tuning, or open the system library.</p>
+        <Button variant="outline" className="mb-6 border-border text-foreground" onClick={() => void navigate(fabricatorRoutes.studioData())}>
           Open system library
         </Button>
         <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl">
@@ -361,12 +361,12 @@ export const NoDXFTuningStudio: React.FC = () => {
             <li key={pack.id}>
               <button
                 type="button"
-                className="w-full text-left px-4 py-3 rounded border border-slate-700 hover:border-amber-600/50 bg-slate-900/60 truncate"
+                className="w-full text-left px-4 py-3 rounded border border-border hover:border-amber-600/50 bg-background/60 truncate"
                 onClick={() => {
                   void navigate(`${fabricatorRoutes.studioData('tuning-no-dxf')}?systemPackId=${encodeURIComponent(pack.id)}`);
                 }}
               >
-                <span className="block text-sm text-amber-100 truncate">{pack.name || pack.id}</span>
+                <span className="block text-sm text-warning truncate">{pack.name || pack.id}</span>
               </button>
             </li>
           ))}
@@ -377,8 +377,8 @@ export const NoDXFTuningStudio: React.FC = () => {
 
   if (!systemPack) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
-        <div className="text-center text-white">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-background flex items-center justify-center">
+        <div className="text-center text-foreground">
           <p>Loading system pack...</p>
         </div>
       </div>
@@ -390,7 +390,7 @@ export const NoDXFTuningStudio: React.FC = () => {
   const sashProfile = profiles.find(p => p.role === 'sash');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background p-4 sm:p-6 lg:p-8">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <LazyMotionDiv
@@ -399,11 +399,11 @@ export const NoDXFTuningStudio: React.FC = () => {
           className="flex items-center justify-between"
         >
           <div>
-            <h1 className="typography-h1 text-2xl text-white flex items-center gap-2">
-              <Settings className="h-6 w-6 text-amber-400" />
+            <h1 className="typography-h1 text-2xl text-foreground flex items-center gap-2">
+              <Settings className="h-6 w-6 text-warning" />
               Tune System: {systemPack.meta.name}
             </h1>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Configure profiles and parameters for accurate cut lists (No DXF required)
             </p>
           </div>
@@ -425,7 +425,7 @@ export const NoDXFTuningStudio: React.FC = () => {
 
         {saveSuccess && (
           <Alert className="bg-green-900/20 border-green-500/50">
-            <CheckCircle2 className="h-4 w-4 text-green-400" />
+            <CheckCircle2 className="h-4 w-4 text-success" />
             <AlertDescription>
               System tuned successfully! Returning to project wizard...
             </AlertDescription>
@@ -444,7 +444,7 @@ export const NoDXFTuningStudio: React.FC = () => {
           {/* Profiles Tab */}
           <TabsContent value="profiles" className="space-y-4">
             <Alert className="bg-blue-900/20 border-blue-500/50">
-              <AlertCircle className="h-4 w-4 text-blue-400" />
+              <AlertCircle className="h-4 w-4 text-info" />
               <AlertDescription>
                 Define Frame and Sash profiles. These will be used for cut list generation.
               </AlertDescription>
@@ -452,13 +452,13 @@ export const NoDXFTuningStudio: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {profiles.map((profile) => (
-                <Card key={profile.id} className="bg-gray-900/60 border-gray-700 card-dark">
+                <Card key={profile.id} className="bg-background/60 border-border card-dark">
                   <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
                       {profile.role === 'frame' ? (
-                        <Layers className="h-5 w-5 text-blue-400" />
+                        <Layers className="h-5 w-5 text-info" />
                       ) : (
-                        <BoxSelect className="h-5 w-5 text-green-400" />
+                        <BoxSelect className="h-5 w-5 text-success" />
                       )}
                       {profile.name}
                       <Badge variant={profile.role === 'frame' ? 'default' : 'secondary'}>
@@ -474,7 +474,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                           type="number"
                           value={profile.width}
                           onChange={(e) => handleProfileUpdate(profile.id, { width: Number(e.target.value) })}
-                          className="bg-gray-800 border-gray-700"
+                          className="bg-card border-border"
                         />
                       </div>
                       <div className="space-y-2">
@@ -483,7 +483,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                           type="number"
                           value={profile.height}
                           onChange={(e) => handleProfileUpdate(profile.id, { height: Number(e.target.value) })}
-                          className="bg-gray-800 border-gray-700"
+                          className="bg-card border-border"
                         />
                       </div>
                       <div className="space-y-2">
@@ -492,7 +492,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                           type="number"
                           value={profile.thickness}
                           onChange={(e) => handleProfileUpdate(profile.id, { thickness: Number(e.target.value) })}
-                          className="bg-gray-800 border-gray-700"
+                          className="bg-card border-border"
                         />
                       </div>
                       <div className="space-y-2 col-span-2">
@@ -501,11 +501,11 @@ export const NoDXFTuningStudio: React.FC = () => {
                           value={profile.role}
                           onValueChange={(val) => handleProfileUpdate(profile.id, { role: val as any })}
                         >
-                          <SelectTrigger className="bg-gray-800 border-gray-700">
+                          <SelectTrigger className="bg-card border-border">
                             <SelectValue placeholder="Select role" />
                           </SelectTrigger>
                           <SelectContent className="max-h-[400px]">
-                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 border-b border-gray-700">Frame Roles</div>
+                            <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b border-border">Frame Roles</div>
                             <SelectItem value="frame">Frame (Main)</SelectItem>
                             <SelectItem value="frame_architrave">Frame with Architrave</SelectItem>
                             <SelectItem value="architrave">Architrave (Standalone)</SelectItem>
@@ -514,7 +514,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                             <SelectItem value="head">Head</SelectItem>
                             <SelectItem value="jamb">Jamb</SelectItem>
                             
-                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 border-b border-gray-700 mt-2">Sash Roles</div>
+                            <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b border-border mt-2">Sash Roles</div>
                             <SelectItem value="sash">Sash (Standard)</SelectItem>
                             <SelectItem value="sash_sliding">Sliding Sash</SelectItem>
                             <SelectItem value="sash_door">Door Sash</SelectItem>
@@ -522,19 +522,19 @@ export const NoDXFTuningStudio: React.FC = () => {
                             <SelectItem value="sash_casement">Casement Sash</SelectItem>
                             <SelectItem value="screen_sash">Screen Sash</SelectItem>
                             
-                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 border-b border-gray-700 mt-2">Structural Roles</div>
+                            <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b border-border mt-2">Structural Roles</div>
                             <SelectItem value="mullion">Mullion (True)</SelectItem>
                             <SelectItem value="mullion_false">False Mullion</SelectItem>
                             <SelectItem value="transom">Transom</SelectItem>
                             <SelectItem value="reinforcement">Reinforcement</SelectItem>
                             <SelectItem value="corner_cleat">Corner Cleat</SelectItem>
                             
-                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 border-b border-gray-700 mt-2">Glazing Roles</div>
+                            <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b border-border mt-2">Glazing Roles</div>
                             <SelectItem value="glazing_bead">Glazing Bead (Standard)</SelectItem>
                             <SelectItem value="glazing_bead_inner">Glazing Bead (Inner)</SelectItem>
                             <SelectItem value="glazing_bead_outer">Glazing Bead (Outer)</SelectItem>
                             
-                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 border-b border-gray-700 mt-2">Accessory Roles</div>
+                            <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground border-b border-border mt-2">Accessory Roles</div>
                             <SelectItem value="interlock">Interlock</SelectItem>
                             <SelectItem value="accessory">Accessory Profile</SelectItem>
                             <SelectItem value="screen_adapter">Screen Adapter (Barour Shabaak)</SelectItem>
@@ -554,7 +554,7 @@ export const NoDXFTuningStudio: React.FC = () => {
           {/* Micron Parameters Tab */}
           <TabsContent value="micron" className="space-y-4">
             <Alert className="bg-amber-900/20 border-amber-500/50">
-              <AlertCircle className="h-4 w-4 text-amber-400" />
+              <AlertCircle className="h-4 w-4 text-warning" />
               <AlertDescription>
                 These parameters control 99.8% manufacturing accuracy. Used in optimization and cut list calculations.
               </AlertDescription>
@@ -562,7 +562,7 @@ export const NoDXFTuningStudio: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {profiles.map((profile) => (
-                <Card key={profile.id} className="bg-gray-900/60 border-gray-700 card-dark">
+                <Card key={profile.id} className="bg-background/60 border-border card-dark">
                   <CardHeader>
                     <CardTitle className="text-sm">{profile.name} - Micron Parameters</CardTitle>
                   </CardHeader>
@@ -575,9 +575,9 @@ export const NoDXFTuningStudio: React.FC = () => {
                           step="0.1"
                           value={profile.sawKerf}
                           onChange={(e) => handleProfileUpdate(profile.id, { sawKerf: Number(e.target.value) })}
-                          className="bg-gray-800 border-gray-700"
+                          className="bg-card border-border"
                         />
-                        <p className="text-[10px] text-gray-500">Default: {isUPVC ? '4.5' : '4.2'}mm</p>
+                        <p className="text-[10px] text-muted-foreground">Default: {isUPVC ? '4.5' : '4.2'}mm</p>
                       </div>
                       <div className="space-y-2">
                         <Label className="typography-label text-xs">Bar End Trim (mm)</Label>
@@ -585,9 +585,9 @@ export const NoDXFTuningStudio: React.FC = () => {
                           type="number"
                           value={profile.barEndTrim}
                           onChange={(e) => handleProfileUpdate(profile.id, { barEndTrim: Number(e.target.value) })}
-                          className="bg-gray-800 border-gray-700"
+                          className="bg-card border-border"
                         />
-                        <p className="text-[10px] text-gray-500">Default: {isUPVC ? '20' : '15'}mm</p>
+                        <p className="text-[10px] text-muted-foreground">Default: {isUPVC ? '20' : '15'}mm</p>
                       </div>
                       {isUPVC && (
                         <div className="space-y-2">
@@ -597,9 +597,9 @@ export const NoDXFTuningStudio: React.FC = () => {
                             step="0.1"
                             value={profile.weldingLoss || 3}
                             onChange={(e) => handleProfileUpdate(profile.id, { weldingLoss: Number(e.target.value) })}
-                            className="bg-gray-800 border-gray-700"
+                            className="bg-card border-border"
                           />
-                          <p className="text-[10px] text-gray-500">Per corner</p>
+                          <p className="text-[10px] text-muted-foreground">Per corner</p>
                         </div>
                       )}
                       <div className="space-y-2">
@@ -608,14 +608,14 @@ export const NoDXFTuningStudio: React.FC = () => {
                           type="number"
                           value={profile.barLength}
                           onChange={(e) => handleProfileUpdate(profile.id, { barLength: Number(e.target.value) })}
-                          className="bg-gray-800 border-gray-700"
+                          className="bg-card border-border"
                         />
-                        <p className="text-[10px] text-gray-500">Default: {isUPVC ? '5800' : '6000'}mm</p>
+                        <p className="text-[10px] text-muted-foreground">Default: {isUPVC ? '5800' : '6000'}mm</p>
                       </div>
                     </div>
                     {isUPVC && profile.role === 'sash' && (
-                      <div className="pt-2 border-t border-gray-700">
-                        <Label className="typography-label text-xs text-yellow-400 mb-2 block">Reinforcement Settings</Label>
+                      <div className="pt-2 border-t border-border">
+                        <Label className="typography-label text-xs text-warning mb-2 block">Reinforcement Settings</Label>
                         <div className="grid grid-cols-2 gap-3">
                           <div className="space-y-2">
                             <Label className="typography-label text-xs">Deduction (mm)</Label>
@@ -624,9 +624,9 @@ export const NoDXFTuningStudio: React.FC = () => {
                               step="0.1"
                               value={profile.reinforcementDeduction || 12}
                               onChange={(e) => handleProfileUpdate(profile.id, { reinforcementDeduction: Number(e.target.value) })}
-                              className="bg-gray-800 border-gray-700"
+                              className="bg-card border-border"
                             />
-                            <p className="text-[10px] text-gray-500">Steel = Dimension - Deduction</p>
+                            <p className="text-[10px] text-muted-foreground">Steel = Dimension - Deduction</p>
                           </div>
                           <div className="space-y-2">
                             <Label className="typography-label text-xs">Thickness (mm)</Label>
@@ -635,7 +635,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                               step="0.1"
                               value={profile.reinforcementThickness || 1.2}
                               onChange={(e) => handleProfileUpdate(profile.id, { reinforcementThickness: Number(e.target.value) })}
-                              className="bg-gray-800 border-gray-700"
+                              className="bg-card border-border"
                             />
                           </div>
                         </div>
@@ -650,7 +650,7 @@ export const NoDXFTuningStudio: React.FC = () => {
           {/* Cutting Rules Tab */}
           <TabsContent value="cutting" className="space-y-4">
             <Alert className="bg-amber-900/20 border-amber-500/50">
-              <AlertCircle className="h-4 w-4 text-amber-400" />
+              <AlertCircle className="h-4 w-4 text-warning" />
               <AlertDescription>
                 Cutting allowances and rules applied to all cuts in the optimization engine.
               </AlertDescription>
@@ -658,7 +658,7 @@ export const NoDXFTuningStudio: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {profiles.map((profile) => (
-                <Card key={profile.id} className="bg-gray-900/60 border-gray-700 card-dark">
+                <Card key={profile.id} className="bg-background/60 border-border card-dark">
                   <CardHeader>
                     <CardTitle className="text-sm">{profile.name} - Cutting Rules</CardTitle>
                   </CardHeader>
@@ -670,9 +670,9 @@ export const NoDXFTuningStudio: React.FC = () => {
                         step="0.1"
                         value={profile.cuttingAllowance}
                         onChange={(e) => handleProfileUpdate(profile.id, { cuttingAllowance: Number(e.target.value) })}
-                        className="bg-gray-800 border-gray-700"
+                        className="bg-card border-border"
                       />
-                      <p className="text-[10px] text-gray-500">
+                      <p className="text-[10px] text-muted-foreground">
                         {profile.role === 'frame' ? 'Added to frame length' : 'Deducted from sash length'}
                       </p>
                     </div>
@@ -684,7 +684,7 @@ export const NoDXFTuningStudio: React.FC = () => {
 
           {/* Summary Tab */}
           <TabsContent value="summary" className="space-y-4">
-            <Card className="bg-gray-900/60 border-gray-700 card-dark">
+            <Card className="bg-background/60 border-border card-dark">
               <CardHeader>
                 <CardTitle className="text-base">Tuning Summary</CardTitle>
                 <CardDescription>
@@ -693,28 +693,28 @@ export const NoDXFTuningStudio: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 {profiles.map((profile) => (
-                  <div key={profile.id} className="p-4 rounded border border-gray-700 bg-gray-800/40">
+                  <div key={profile.id} className="p-4 rounded border border-border bg-card/40">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="typography-h4 text-white">{profile.name}</h4>
+                      <h4 className="typography-h4 text-foreground">{profile.name}</h4>
                       <Badge>{profile.role.toUpperCase()}</Badge>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                       <div>
-                        <span className="text-gray-400">Dimensions:</span>
-                        <div className="text-white">{profile.width} × {profile.height} × {profile.thickness}mm</div>
+                        <span className="text-muted-foreground">Dimensions:</span>
+                        <div className="text-foreground">{profile.width} × {profile.height} × {profile.thickness}mm</div>
                       </div>
                       <div>
-                        <span className="text-gray-400">Saw Kerf:</span>
-                        <div className="text-white">{profile.sawKerf}mm</div>
+                        <span className="text-muted-foreground">Saw Kerf:</span>
+                        <div className="text-foreground">{profile.sawKerf}mm</div>
                       </div>
                       <div>
-                        <span className="text-gray-400">Bar Trim:</span>
-                        <div className="text-white">{profile.barEndTrim}mm</div>
+                        <span className="text-muted-foreground">Bar Trim:</span>
+                        <div className="text-foreground">{profile.barEndTrim}mm</div>
                       </div>
                       {isUPVC && (
                         <div>
-                          <span className="text-gray-400">Welding Loss:</span>
-                          <div className="text-white">{profile.weldingLoss}mm</div>
+                          <span className="text-muted-foreground">Welding Loss:</span>
+                          <div className="text-foreground">{profile.weldingLoss}mm</div>
                         </div>
                       )}
                     </div>
@@ -726,15 +726,15 @@ export const NoDXFTuningStudio: React.FC = () => {
         </Tabs>
 
         {/* Save Button */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-700">
-          <div className="text-sm text-gray-400">
+        <div className="flex items-center justify-between pt-4 border-t border-border">
+          <div className="text-sm text-muted-foreground">
             {frameProfile && sashProfile ? (
-              <span className="text-green-400 flex items-center gap-2">
+              <span className="text-success flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4" />
                 Frame and Sash profiles configured
               </span>
             ) : (
-              <span className="text-yellow-400 flex items-center gap-2">
+              <span className="text-warning flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4" />
                 Configure Frame and Sash profiles
               </span>

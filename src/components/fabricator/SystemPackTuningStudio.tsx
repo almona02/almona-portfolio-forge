@@ -605,16 +605,16 @@ export const SystemPackTuningStudio: React.FC = () => {
     ];
     return (
       <div
-        className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-8 text-white"
+        className="min-h-screen bg-gradient-to-br from-background via-background to-background p-8 text-white"
         data-testid="tuning-pack-picker"
       >
-        <h1 className="text-xl font-semibold text-amber-200 mb-2">Select a system pack to tune</h1>
-        <p className="text-sm text-slate-400 mb-6">
+        <h1 className="text-xl font-semibold text-warning mb-2">Select a system pack to tune</h1>
+        <p className="text-sm text-muted-foreground mb-6">
           Operation templates need a pack. Choose one below or open the system library.
         </p>
         <Button
           variant="outline"
-          className="mb-6 border-slate-600 text-slate-200"
+          className="mb-6 border-border text-foreground"
           onClick={() => void navigate(fabricatorRoutes.studioData())}
         >
           Open system library
@@ -624,13 +624,13 @@ export const SystemPackTuningStudio: React.FC = () => {
             <li key={pack.id}>
               <button
                 type="button"
-                className="w-full text-left px-4 py-3 rounded border border-slate-700 hover:border-amber-600/50 bg-slate-900/60 truncate"
+                className="w-full text-left px-4 py-3 rounded border border-border hover:border-amber-600/50 bg-background/60 truncate"
                 onClick={() => {
                   void navigate(`${fabricatorRoutes.studioData('tuning')}?systemPackId=${encodeURIComponent(pack.id)}`);
                 }}
               >
-                <span className="block text-sm text-amber-100 truncate">{pack.name}</span>
-                <span className="block text-[10px] text-slate-500 font-mono truncate" dir="ltr">
+                <span className="block text-sm text-warning truncate">{pack.name}</span>
+                <span className="block text-[10px] text-muted-foreground font-mono truncate" dir="ltr">
                   {pack.id}
                 </span>
               </button>
@@ -643,8 +643,8 @@ export const SystemPackTuningStudio: React.FC = () => {
 
   if (!systemPack) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
-        <div className="text-center text-white">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-background flex items-center justify-center">
+        <div className="text-center text-foreground">
           <p>Loading system pack...</p>
         </div>
       </div>
@@ -652,32 +652,32 @@ export const SystemPackTuningStudio: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Card className="bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-slate-700/50 shadow-2xl shadow-amber-500/5">
+          <Card className="bg-gradient-to-br from-background/95 via-card/90 to-background/95 border-border/50 shadow-2xl shadow-amber-500/5">
             <CardHeader className="pb-4">
               <div className="flex items-start justify-between">
                 <div className="space-y-3">
                   <div className="flex items-center gap-4">
                     <div className="btn-primary-gradient">
-                      <Settings className="h-6 w-6 text-white" />
+                      <Settings className="h-6 w-6 text-foreground" />
                     </div>
                     <div>
                       <div className="flex items-center gap-3 mb-1">
                         <CardTitle className="text-3xl font-bold bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 bg-clip-text text-transparent">
                           System Pack Tuning Studio
                         </CardTitle>
-                        <Badge className="bg-gradient-to-r from-amber-500/20 to-amber-500/20 border-amber-500/40 text-amber-300 px-3 py-1">
+                        <Badge className="bg-gradient-to-r from-amber-500/20 to-amber-500/20 border-amber-500/40 text-warning px-3 py-1">
                           <Sparkles className="h-3 w-3 mr-1" />
                           PRO
                         </Badge>
                       </div>
-                      <CardDescription className="text-base text-slate-300 max-w-2xl leading-relaxed">
+                      <CardDescription className="text-base text-foreground max-w-2xl leading-relaxed">
                         Tune and verify all profiles in your system pack. Complete tuning for Frame and Sash to proceed to design.
                       </CardDescription>
                     </div>
@@ -733,18 +733,18 @@ export const SystemPackTuningStudio: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="bg-slate-800/50 border-slate-700 /50 card-dark">
+          <Card className="bg-card/50 border-border /50 card-dark">
             <CardContent className="pt-6">
               {systemPackId && userId && <PackPatternAdvancedEditor packId={systemPackId} ownerId={userId} />}
               {systemPackId && userId && <WorkshopBOMRulesEditor packId={systemPackId} ownerId={userId} />}
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="typography-h3 text-white mb-1">{systemPack.name}</h3>
+                  <h3 className="typography-h3 text-foreground mb-1">{systemPack.name}</h3>
                   {systemPackId?.startsWith('custom-pack-')&&<Button variant="outline" onClick={()=>void saveProfileNames()}>Save profile changes</Button>}
-                  <p className="text-slate-400 text-sm">{systemPack.manufacturer} • {systemPack.region.toUpperCase()}</p>
+                  <p className="text-muted-foreground text-sm">{systemPack.manufacturer} • {systemPack.region.toUpperCase()}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge className={allProfilesTuned ? 'bg-green-500/20 text-green-300 border-green-500/40' : 'bg-amber-500/20 text-amber-300 border-amber-500/40'}>
+                  <Badge className={allProfilesTuned ? 'bg-green-500/20 text-success border-green-500/40' : 'bg-amber-500/20 text-warning border-amber-500/40'}>
                     {allProfilesTuned ? 'All Tuned' : `${tunedProfiles.size}/${systemPack.profiles.length} Tuned`}
                   </Badge>
                   <Button
@@ -826,7 +826,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                     return (
                       <Card
                         key={profile.id}
-                        className={`bg-slate-900/50 border-slate-700/50 hover:border-amber-500/50 transition-colors ${isTuned ? 'ring-2 ring-green-500/30' : ''
+                        className={`bg-background/50 border-border/50 hover:border-amber-500/50 transition-colors ${isTuned ? 'ring-2 ring-green-500/30' : ''
                           }`}
                       >
                         <CardHeader>
@@ -836,22 +836,22 @@ export const SystemPackTuningStudio: React.FC = () => {
                                 profile.type === 'sash' ? 'bg-green-500/20' :
                                   'bg-amber-500/20'
                                 }`}>
-                                <IconComponent className={`h-5 w-5 ${profile.type === 'frame' ? 'text-blue-400' :
-                                  profile.type === 'sash' ? 'text-green-400' :
-                                    'text-amber-400'
+                                <IconComponent className={`h-5 w-5 ${profile.type === 'frame' ? 'text-info' :
+                                  profile.type === 'sash' ? 'text-success' :
+                                    'text-warning'
                                   }`} />
                               </div>
                               <div>
-                                <CardTitle className="text-base text-white capitalize">
+                                <CardTitle className="text-base text-foreground capitalize">
                                   <Input aria-label={'Profile name '+profile.id} value={profile.name} disabled={!systemPackId?.startsWith('custom-pack-')} onChange={event=>{setSystemPack(previous=>previous?{...previous,profiles:previous.profiles.map(p=>p.id===profile.id?{...p,name:event.target.value}:p)}:previous);setHasUnsavedChanges(true);}} />
                                 </CardTitle>
-                                <CardDescription className="text-xs text-slate-400">
+                                <CardDescription className="text-xs text-muted-foreground">
                                   {profile.type} • {profile.material}
                                 </CardDescription>
                               </div>
                             </div>
                             {isTuned && (
-                              <Badge className="bg-green-500/20 text-green-300 border-green-500/40">
+                              <Badge className="bg-green-500/20 text-success border-green-500/40">
                                 <CheckCircle2 className="h-3 w-3 mr-1" />
                                 Tuned
                               </Badge>
@@ -859,7 +859,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                           </div>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                          <div className="text-xs text-slate-400 space-y-1">
+                          <div className="text-xs text-muted-foreground space-y-1">
                             {profile.width && profile.height && (
                               <div>Dimensions: {profile.width} × {profile.height} mm</div>
                             )}
@@ -910,7 +910,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                               }}
                               variant="outline"
                               size="sm"
-                              className="border-red-600/50 text-red-300 hover:bg-red-500/10"
+                              className="border-red-600/50 text-destructive hover:bg-red-500/10"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -920,7 +920,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                             <Button
                               onClick={() => handleProfileTuned(profile.id)}
                               variant="outline"
-                              className="w-full border-green-500/40 text-green-300 hover:bg-green-500/10"
+                              className="w-full border-green-500/40 text-success hover:bg-green-500/10"
                               size="sm"
                             >
                               <Zap className="h-4 w-4 mr-2" />
@@ -937,7 +937,7 @@ export const SystemPackTuningStudio: React.FC = () => {
               {/* Profile Tabs View (Existing) */}
               {viewMode === 'tabs' && (
                 <Tabs value={selectedProfileIndex.toString()} onValueChange={(v) => setSelectedProfileIndex(Number(v))}>
-                  <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-2 bg-slate-900/50">
+                  <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-2 bg-background/50">
                     {systemPack.profiles.map((profile, index) => (
                       <TabsTrigger
                         key={profile.id}
@@ -947,7 +947,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <span className="capitalize">{profile.type}</span>
                           {tunedProfiles.has(profile.id) && (
-                            <CheckCircle2 className="h-4 w-4 text-green-400" />
+                            <CheckCircle2 className="h-4 w-4 text-success" />
                           )}
                         </div>
                       </TabsTrigger>
@@ -956,20 +956,20 @@ export const SystemPackTuningStudio: React.FC = () => {
 
                   {systemPack.profiles.map((profile, index) => (
                     <TabsContent key={profile.id} value={index.toString()} className="mt-6">
-                      <Card className="bg-slate-900/50 border-slate-700/50">
+                      <Card className="bg-background/50 border-border/50">
                         <CardHeader>
                           <div className="flex items-center justify-between">
                             <div>
-                              <CardTitle className="text-xl text-white capitalize">
+                              <CardTitle className="text-xl text-foreground capitalize">
                                 {profile.type} Profile: {profile.name}
                               </CardTitle>
-                              <CardDescription className="text-slate-400 mt-1">
+                              <CardDescription className="text-muted-foreground mt-1">
                                 {profile.material} • {profile.unitWeight ? `${profile.unitWeight} kg/m` : 'Weight not set'}
                                 {profile.width && profile.height && ` • ${profile.width} × ${profile.height} mm`}
                               </CardDescription>
                             </div>
                             {tunedProfiles.has(profile.id) ? (
-                              <Badge className="bg-green-500/20 text-green-300 border-green-500/40">
+                              <Badge className="bg-green-500/20 text-success border-green-500/40">
                                 <CheckCircle2 className="h-4 w-4 mr-1" />
                                 Tuned
                               </Badge>
@@ -983,8 +983,8 @@ export const SystemPackTuningStudio: React.FC = () => {
                         <CardContent>
                           <div className="space-y-4">
                             <Alert className="bg-blue-500/10 border-blue-500/30">
-                              <Gauge className="h-4 w-4 text-blue-400" />
-                              <AlertDescription className="text-blue-300">
+                              <Gauge className="h-4 w-4 text-info" />
+                              <AlertDescription className="text-info">
                                 Configure cutting rules, machining zones, and calibration for this profile.
                                 Mark as "Tuned" when ready.
                               </AlertDescription>
@@ -992,21 +992,21 @@ export const SystemPackTuningStudio: React.FC = () => {
 
                             {/* Profile Tuning Interface */}
                             <div className="space-y-4">
-                              <div className="border border-slate-700/50 rounded-lg p-4 bg-slate-800 /30 card-dark">
-                                <p className="text-sm text-slate-400 mb-4">
+                              <div className="border border-border/50 rounded-lg p-4 bg-card /30 card-dark">
+                                <p className="text-sm text-muted-foreground mb-4">
                                   Configure cutting rules, machining zones, and calibration for this profile:
                                 </p>
-                                <ul className="text-sm text-slate-300 space-y-2 mb-4">
+                                <ul className="text-sm text-foreground space-y-2 mb-4">
                                   <li className="flex items-center gap-2">
-                                    <span className="text-amber-400">•</span>
+                                    <span className="text-warning">•</span>
                                     <span>Cutting rules (kerf: {profile.micronConfig?.sawKerf || 4.5}mm, bar length: {profile.barLength || 6500}mm)</span>
                                   </li>
                                   <li className="flex items-center gap-2">
-                                    <span className="text-amber-400">•</span>
+                                    <span className="text-warning">•</span>
                                     <span>Machining zones (slots, holes, milling operations)</span>
                                   </li>
                                   <li className="flex items-center gap-2">
-                                    <span className="text-amber-400">•</span>
+                                    <span className="text-warning">•</span>
                                     <span>Calibration data (cut tolerances, assembly tolerances)</span>
                                   </li>
                                 </ul>
@@ -1023,7 +1023,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                                     onClick={() => handleProfileTuned(profile.id)}
                                     disabled={tunedProfiles.has(profile.id)}
                                     variant="outline"
-                                    className="border-green-500/40 text-green-300 hover:bg-green-500/10"
+                                    className="border-green-500/40 text-success hover:bg-green-500/10"
                                   >
                                     {tunedProfiles.has(profile.id) ? (
                                       <>
@@ -1056,20 +1056,20 @@ export const SystemPackTuningStudio: React.FC = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex items-center justify-between pt-4 border-t border-slate-700/50"
+          className="flex items-center justify-between pt-4 border-t border-border/50"
         >
           <div className="flex-1">
             {allProfilesTuned ? (
               <Alert className="bg-green-500/10 border-green-500/30">
-                <CheckCircle2 className="h-4 w-4 text-green-400" />
-                <AlertDescription className="text-green-300">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                <AlertDescription className="text-success">
                   All profiles tuned. Manufacturing still requires approved rules and a qualified BOM.
                 </AlertDescription>
               </Alert>
             ) : (
               <Alert className="btn-primary">
-                <AlertTriangle className="h-4 w-4 text-amber-400" />
-                <AlertDescription className="text-amber-300">
+                <AlertTriangle className="h-4 w-4 text-warning" />
+                <AlertDescription className="text-warning">
                   {systemPack.profiles.length === 0 ? 'Add and tune the required profiles before continuing.' : `Tune all profiles (${tunedProfiles.size}/${systemPack.profiles.length} complete) before proceeding to design.`}
                 </AlertDescription>
               </Alert>
@@ -1271,10 +1271,10 @@ export const SystemPackTuningStudio: React.FC = () => {
 
       {/* Delete Profile Confirmation Dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent className="bg-slate-900 border-slate-700">
+        <AlertDialogContent className="bg-background border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Delete Profile</AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-300">
+            <AlertDialogTitle className="text-foreground">Delete Profile</AlertDialogTitle>
+            <AlertDialogDescription className="text-foreground">
               Are you sure you want to delete the profile "{deletingProfile?.name}"? This action cannot be undone and will remove all tuning data associated with this profile.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -1295,12 +1295,12 @@ export const SystemPackTuningStudio: React.FC = () => {
       {/* Calibration Wizard Dialog */}
       {calibrationProfile && systemPack && (
         <AlertDialog open={showCalibrationDialog} onOpenChange={setShowCalibrationDialog}>
-          <AlertDialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border-slate-700">
+          <AlertDialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-background border-border">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-white">
+              <AlertDialogTitle className="text-foreground">
                 Calibration: {calibrationProfile.name}
               </AlertDialogTitle>
-              <AlertDialogDescription className="text-slate-300">
+              <AlertDialogDescription className="text-foreground">
                 Configure cutting parameters for this profile. Changes will apply immediately to all windows using this profile.
               </AlertDialogDescription>
             </AlertDialogHeader>
