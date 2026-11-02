@@ -67,10 +67,10 @@ const ConditionBadge: React.FC<ConditionBadgeProps> = ({
       borderColor: 'border-amber-400'
     },
     'As-Is': {
-      color: 'bg-gray-600 hover:bg-gray-700 text-white',
+      color: 'bg-muted hover:bg-muted text-foreground',
       icon: '📋',
       description: 'Sold in current condition',
-      borderColor: 'border-gray-400'
+      borderColor: 'border-border'
     }
   };
 
@@ -104,8 +104,8 @@ const ConditionBadge: React.FC<ConditionBadgeProps> = ({
       </Badge>
 
       {/* Tooltip on hover */}
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-almona-darker border border-almona-light/20 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
-        <div className="text-xs text-almona-light font-medium">
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-card border border-border/20 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
+        <div className="text-xs text-foreground font-medium">
           {copy(config.description)}
         </div>
         {/* Arrow pointing down */}

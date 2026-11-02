@@ -184,7 +184,7 @@ export const ReportingDashboard: React.FC<ReportingDashboardProps> = ({
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-[#0f0f0f]/60 border-amber-600/20 w-full justify-start">
+        <TabsList className="bg-background/60 border-amber-600/20 w-full justify-start">
           <TabsTrigger value="revenue" className="text-amber-300 data-[state=active]:text-amber-200">
             <TrendingUp className="w-4 h-4 mr-2" />
             Revenue
@@ -222,7 +222,7 @@ export const ReportingDashboard: React.FC<ReportingDashboardProps> = ({
           
           {/* Revenue Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+            <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm text-amber-300/70">Total Revenue</CardTitle>
               </CardHeader>
@@ -233,7 +233,7 @@ export const ReportingDashboard: React.FC<ReportingDashboardProps> = ({
                 <p className="text-xs text-amber-600/50 mt-1">Last 6 months</p>
               </CardContent>
             </Card>
-            <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+            <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm text-amber-300/70">Average Revenue</CardTitle>
               </CardHeader>
@@ -244,7 +244,7 @@ export const ReportingDashboard: React.FC<ReportingDashboardProps> = ({
                 <p className="text-xs text-amber-600/50 mt-1">Per period</p>
               </CardContent>
             </Card>
-            <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+            <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm text-amber-300/70">Growth Rate</CardTitle>
               </CardHeader>
@@ -252,8 +252,8 @@ export const ReportingDashboard: React.FC<ReportingDashboardProps> = ({
                 <p className={`text-2xl font-bold ${
                   revenueSummary.growthRate !== null
                     ? revenueSummary.growthRate >= 0
-                      ? 'text-green-400'
-                      : 'text-red-400'
+                      ? 'text-success'
+                      : 'text-destructive'
                     : 'text-amber-200'
                 }`}>
                   {revenueSummary.growthRate !== null

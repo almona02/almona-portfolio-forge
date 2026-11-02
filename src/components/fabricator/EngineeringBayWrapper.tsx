@@ -164,11 +164,11 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
     const recent = jobs.slice(0, 12);
     return (
       <div
-        className="h-full w-full bg-[#0a0a0a] p-8 text-amber-100 overflow-auto"
+        className="h-full w-full bg-background p-8 text-warning overflow-auto"
         data-testid="design-pose-picker"
       >
-        <h1 className="text-xl font-semibold text-amber-200 mb-2">Select a project position</h1>
-        <p className="text-sm text-slate-400 mb-6">
+        <h1 className="text-xl font-semibold text-warning mb-2">Select a project position</h1>
+        <p className="text-sm text-muted-foreground mb-6">
           Design Studio needs a project and position. Open Projects or pick a recent unit below.
         </p>
         <Link
@@ -205,7 +205,7 @@ export const EngineeringBayWrapper: React.FC<EngineeringBayWrapperProps> = () =>
   }
 
   if (useV2 && (!effectivePoseId || !currentProject)) {
-    return <div role="alert" className="h-full w-full bg-[#0a0a0a] p-8 text-red-300">Authoritative project and position data is unavailable.</div>;
+    return <div role="alert" className="h-full w-full bg-background p-8 text-destructive">Authoritative project and position data is unavailable.</div>;
   }
 
   return (

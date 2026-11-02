@@ -36,9 +36,9 @@ export const AssignSystemPackDialog: React.FC<AssignSystemPackDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-gray-900 border-gray-700 text-gray-200 sm:max-w-sm">
+      <DialogContent className="bg-background border-border text-foreground sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-amber-200">Assign System Pack</DialogTitle>
+          <DialogTitle className="text-warning">Assign System Pack</DialogTitle>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-2">
           <ul className="space-y-1" role="listbox">
@@ -47,7 +47,7 @@ export const AssignSystemPackDialog: React.FC<AssignSystemPackDialogProps> = ({
                 <Button
                   type="button"
                   variant="ghost"
-                  className="w-full justify-start text-left text-gray-200 hover:bg-gray-800 hover:text-amber-200"
+                  className="w-full justify-start text-left text-foreground hover:bg-card hover:text-warning"
                   onClick={() => handlePick(pack.meta.id)}
                 >
                   {pack.meta.name}
@@ -60,7 +60,7 @@ export const AssignSystemPackDialog: React.FC<AssignSystemPackDialogProps> = ({
           <Button
             type="button"
             variant="outline"
-            className="border-gray-600 text-gray-300"
+            className="border-border text-foreground"
             onClick={() => onOpenChange(false)}
           >
             Cancel

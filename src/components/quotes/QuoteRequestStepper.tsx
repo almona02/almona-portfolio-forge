@@ -135,13 +135,13 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
                   aria-current={active ? 'step' : undefined}
                   aria-disabled={submitting}
                   className={`group flex items-center flex-shrink-0 rounded-full border transition px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70
-                    ${active ? 'bg-amber-600/20 border-amber-500 text-amber-300 shadow-inner' : complete ? 'bg-almona-dark/70 border-amber-800 text-amber-500' : 'bg-almona-dark/40 border-almona-light/10 text-gray-400'}
+                    ${active ? 'bg-amber-600/20 border-amber-500 text-amber-300 shadow-inner' : complete ? 'bg-background/70 border-amber-800 text-amber-500' : 'bg-background/40 border-border/10 text-muted-foreground'}
                     ${submitting ? 'opacity-60 cursor-not-allowed' : 'hover:border-amber-500/70 hover:text-amber-300'}
                   `}
                 >
                   <span
                     className={`mr-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition
-                      ${active ? 'bg-amber-600 text-white' : complete ? 'bg-amber-700/70 text-white' : 'bg-almona-darker text-gray-400'}
+                      ${active ? 'bg-amber-600 text-white' : complete ? 'bg-amber-700/70 text-white' : 'bg-card text-muted-foreground'}
                     `}
                   >
                     {complete ? '✓' : index + 1}
@@ -157,7 +157,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
         </div>
         <div className="flex items-center gap-3 self-start md:self-auto">
           {relatedServiceTicketId && (
-            <Badge variant="outline" className="border-blue-500 text-blue-400" title="Linked Service Ticket">
+            <Badge variant="outline" className="border-blue-500 text-info" title="Linked Service Ticket">
               Ticket {relatedServiceTicketId.slice(0,8)}…
             </Badge>
           )}
@@ -194,16 +194,16 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
             <div>
               <h3 className="typography-h3 text-lg font-medium mb-4">Selected Items</h3>
               {selectedProducts.length === 0 && selectedServices.length === 0 ? (
-                <p className="text-gray-400">No items selected yet</p>
+                <p className="text-muted-foreground">No items selected yet</p>
               ) : (
                 <div className="space-y-2">
                   {selectedProducts.map((product) => (
-                    <div key={product.id} className="flex justify-between items-center p-3 bg-almona-dark rounded">
+                    <div key={product.id} className="flex justify-between items-center p-3 bg-background rounded">
                       <span>{product.name}</span>
                     </div>
                   ))}
                   {selectedServices.map((service) => (
-                    <div key={service.id} className="flex justify-between items-center p-3 bg-almona-dark rounded">
+                    <div key={service.id} className="flex justify-between items-center p-3 bg-background rounded">
                       <span>{service.name}</span>
                     </div>
                   ))}

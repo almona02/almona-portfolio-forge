@@ -31,7 +31,7 @@ export const Step3SystemPacks: React.FC<Step3SystemPacksProps> = ({
     <div className="space-y-6">
       <div>
         <h3 className="typography-h3 text-lg mb-4">System Pack Selection</h3>
-        <p className="text-gray-400 mb-6">Choose your primary window system pack</p>
+        <p className="text-muted-foreground mb-6">Choose your primary window system pack</p>
       </div>
 
       <div className="space-y-2">
@@ -40,7 +40,7 @@ export const Step3SystemPacks: React.FC<Step3SystemPacksProps> = ({
           value={data.systemPack}
           onValueChange={(v) => onUpdate({ systemPack: v })}
         >
-          <SelectTrigger className="bg-gray-800 border-gray-700">
+          <SelectTrigger className="bg-card border-border">
             <SelectValue placeholder="Select a system pack" />
           </SelectTrigger>
           <SelectContent>
@@ -48,7 +48,7 @@ export const Step3SystemPacks: React.FC<Step3SystemPacksProps> = ({
               <SelectItem key={pack.id} value={pack.id}>
                 <div>
                   <div className="font-semibold">{pack.name}</div>
-                  <div className="text-xs text-gray-400">{pack.description}</div>
+                  <div className="text-xs text-muted-foreground">{pack.description}</div>
                 </div>
               </SelectItem>
             ))}
@@ -57,8 +57,8 @@ export const Step3SystemPacks: React.FC<Step3SystemPacksProps> = ({
       </div>
 
       {data.systemPack && (
-        <div className="p-4 bg-gray-800 rounded-lg">
-          <div className="text-sm text-gray-300">
+        <div className="p-4 bg-card rounded-lg">
+          <div className="text-sm text-foreground">
             Selected: {SYSTEM_PACKS.find(p => p.id === data.systemPack)?.name}
           </div>
         </div>

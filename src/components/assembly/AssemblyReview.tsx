@@ -89,9 +89,9 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
     const colors: Record<string, string> = {
       sliding: "bg-blue-100 text-blue-800 border-blue-300",
       casement: "bg-amber-100 text-amber-800 border-amber-300",
-      fixed: "bg-gray-100 text-gray-800 border-gray-300",
+      fixed: "bg-muted text-foreground border-border",
       tilt_turn: "bg-cyan-100 text-cyan-800 border-cyan-300",
-      unknown: "bg-gray-100 text-gray-800 border-gray-300",
+      unknown: "bg-muted text-foreground border-border",
     };
     return colors[systemType] || colors.unknown;
   };
@@ -101,9 +101,9 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
       <Card className="w-full max-w-4xl mx-auto">
         <CardContent className="pt-6">
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-            <p className="text-gray-600">Analyzing assembly structure...</p>
-            <p className="text-sm text-gray-500">
+            <Loader2 className="h-8 w-8 animate-spin text-info" />
+            <p className="text-muted-foreground">Analyzing assembly structure...</p>
+            <p className="text-sm text-muted-foreground">
               Detecting components and connections
             </p>
           </div>
@@ -117,8 +117,8 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
       <Card className="w-full max-w-4xl mx-auto">
         <CardContent className="pt-6">
           <div className="flex flex-col items-center justify-center py-12 space-y-4">
-            <Eye className="h-12 w-12 text-gray-400" />
-            <p className="text-gray-600">
+            <Eye className="h-12 w-12 text-muted-foreground" />
+            <p className="text-muted-foreground">
               Upload a shop drawing to begin assembly analysis
             </p>
           </div>
@@ -228,7 +228,7 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
               </div>
 
               {component.crop_image_url && (
-                <div className="border rounded-lg p-2 bg-gray-50">
+                <div className="border rounded-lg p-2 bg-background">
                   <img
                     src={component.crop_image_url}
                     alt="Component"
@@ -238,7 +238,7 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
               )}
 
               {(component.metadata as any)?.hardware_type && (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-muted-foreground">
                   Hardware type:{" "}
                   <span className="font-medium">{(component.metadata as any).hardware_type}</span>
                 </div>
@@ -259,7 +259,7 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
               {connections.map((conn, idx) => (
                 <div
                   key={`${conn.from_component}-${conn.to_component}-${idx}`}
-                  className="flex items-center p-3 bg-gray-50 rounded-lg"
+                  className="flex items-center p-3 bg-background rounded-lg"
                 >
                   <div className="w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-800 rounded-full mr-3">
                     {idx + 1}
@@ -267,12 +267,12 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
                   <div className="flex-1">
                     <div className="flex items-center">
                       <span className="font-medium">{conn.from_component}</span>
-                      <div className="mx-3 text-gray-400">
+                      <div className="mx-3 text-muted-foreground">
                         <ArrowRight className="h-4 w-4" />
                       </div>
                       <span className="font-medium">{conn.to_component}</span>
                     </div>
-                    <div className="text-sm text-gray-600 mt-1">
+                    <div className="text-sm text-muted-foreground mt-1">
                       {conn.connection_type}
                       {conn.location_hint && ` · ${conn.location_hint}`}
                     </div>
@@ -333,7 +333,7 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
       <Separator />
 
       <div className="flex flex-col sm:flex-row justify-between gap-4 pt-2">
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-muted-foreground">
           {components.length} components detected • {connections.length} connections
           {assemblyData.processing_time_ms > 0 && (
             <span> • Processed in {assemblyData.processing_time_ms}ms</span>

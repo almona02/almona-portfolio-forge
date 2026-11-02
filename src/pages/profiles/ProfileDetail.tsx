@@ -44,7 +44,7 @@ const ProfileDetail: React.FC = () => {
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <h1 className="typography-h1 mb-4">Profile Not Found</h1>
         <p className="mb-4">The profile you are looking for does not exist.</p>
-        <Link to="/products/profiles" className="text-blue-600 underline">
+        <Link to="/products/profiles" className="text-info underline">
           Back to Profiles
         </Link>
       </div>
@@ -75,7 +75,7 @@ const ProfileDetail: React.FC = () => {
           ))}
         </ul>
       </div>
-      <Link to="/products/profiles" className="text-blue-600 underline">
+      <Link to="/products/profiles" className="text-info underline">
         Back to Profiles
       </Link>
 

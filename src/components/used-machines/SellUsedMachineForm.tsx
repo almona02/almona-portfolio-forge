@@ -93,16 +93,16 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
     }
   };
 
-  const inputCls = 'bg-almona-dark border-almona-light text-white';
+  const inputCls = 'bg-background border-border text-foreground';
 
   return (
-    <form onSubmit={(e) => void handleSubmit(e)} className="bg-almona-darker rounded-xl p-6 space-y-6 text-left">
+    <form onSubmit={(e) => void handleSubmit(e)} className="bg-card rounded-xl p-6 space-y-6 text-left">
       <div className="text-center mb-2">
         <h2 className="typography-h2">{copy('Post your machine — free, in 2 minutes')}</h2>
-        <p className="text-gray-400 text-sm mt-1">{copy('No account needed. Buyers will contact you directly by phone or WhatsApp.')}</p>
+        <p className="text-muted-foreground text-sm mt-1">{copy('No account needed. Buyers will contact you directly by phone or WhatsApp.')}</p>
       </div>
 
-      <div className="text-sm text-gray-300 space-y-2" role="status">
+      <div className="text-sm text-foreground space-y-2" role="status">
         <p>{copy(draftSaved ? (restored ? 'Your saved machine details have been restored. Please add the photos again.' : 'Machine details are saved on this device for 7 days. Photos must be added again after reopening.') : 'Draft saving is unavailable on this browser. Keep this page open until publishing finishes.')}</p>
         <label htmlFor="seller-remember-contact" className="flex gap-2 items-center">
           <input id="seller-remember-contact" type="checkbox" checked={rememberContact} onChange={event => setRememberContact(event.target.checked)} />
@@ -112,25 +112,25 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
       </div>
       <fieldset disabled={submitting} className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
-          <Label htmlFor="seller-title" className="text-gray-300">{copy('Machine title *')}</Label>
+          <Label htmlFor="seller-title" className="text-foreground">{copy('Machine title *')}</Label>
           <Input id="seller-title" className={inputCls} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={copy('Cutting Machine')} maxLength={160} />
         </div>
 
         <div>
-          <Label htmlFor="seller-category" className="text-gray-300">{copy('Category *')}</Label>
+          <Label htmlFor="seller-category" className="text-foreground">{copy('Category *')}</Label>
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger id="seller-category" className={inputCls}><SelectValue placeholder={copy('Select category')} /></SelectTrigger>
-            <SelectContent className="bg-almona-darker text-white">
+            <SelectContent className="bg-card text-foreground">
               {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{copy(c)}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
 
         <div>
-          <Label htmlFor="seller-condition" className="text-gray-300">{copy('Condition *')}</Label>
+          <Label htmlFor="seller-condition" className="text-foreground">{copy('Condition *')}</Label>
           <Select value={condition} onValueChange={setCondition}>
             <SelectTrigger id="seller-condition" className={inputCls}><SelectValue placeholder={copy('Select condition')} /></SelectTrigger>
-            <SelectContent className="bg-almona-darker text-white">
+            <SelectContent className="bg-card text-foreground">
               {CONDITIONS.map((c) => <SelectItem key={c} value={c}>{copy(c)}</SelectItem>)}
             </SelectContent>
           </Select>
@@ -138,14 +138,14 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
 
         <div className="flex gap-2">
           <div className="flex-1">
-            <Label htmlFor="seller-price" className="text-gray-300">{copy('Price *')}</Label>
+            <Label htmlFor="seller-price" className="text-foreground">{copy('Price *')}</Label>
             <Input id="seller-price" className={inputCls} type="number" min={0} value={price} onChange={(e) => setPrice(e.target.value)} placeholder="180000" />
           </div>
           <div className="w-28">
-            <Label htmlFor="seller-currency" className="text-gray-300">{copy('Currency')}</Label>
+            <Label htmlFor="seller-currency" className="text-foreground">{copy('Currency')}</Label>
             <Select value={currency} onValueChange={setCurrency}>
               <SelectTrigger id="seller-currency" className={inputCls}><SelectValue /></SelectTrigger>
-              <SelectContent className="bg-almona-darker text-white">
+              <SelectContent className="bg-card text-foreground">
                 {['EGP', 'USD', 'EUR', 'SAR', 'AED', 'TRY'].map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
               </SelectContent>
             </Select>
@@ -153,42 +153,42 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
         </div>
 
         <div>
-          <Label htmlFor="seller-location" className="text-gray-300">{copy('Location *')}</Label>
+          <Label htmlFor="seller-location" className="text-foreground">{copy('Location *')}</Label>
           <Select value={location} onValueChange={setLocation}>
             <SelectTrigger id="seller-location" className={inputCls}><SelectValue placeholder={copy('Select governorate')} /></SelectTrigger>
-            <SelectContent className="bg-almona-darker text-white">
+            <SelectContent className="bg-card text-foreground">
               {GOVERNORATES.map((g) => <SelectItem key={g} value={g}>{copy(g)}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
 
         <div>
-          <Label htmlFor="seller-year" className="text-gray-300">{copy('Year')}</Label>
+          <Label htmlFor="seller-year" className="text-foreground">{copy('Year')}</Label>
           <Input id="seller-year" className={inputCls} type="number" min={1970} max={2035} value={year} onChange={(e) => setYear(e.target.value)} placeholder="2020" />
         </div>
 
         <div>
-          <Label htmlFor="seller-hours" className="text-gray-300">{copy('Operating hours (optional)')}</Label>
+          <Label htmlFor="seller-hours" className="text-foreground">{copy('Operating hours (optional)')}</Label>
           <Input id="seller-hours" className={inputCls} type="number" min={0} value={hours} onChange={(e) => setHours(e.target.value)} placeholder="3200" />
         </div>
 
         <div className="md:col-span-2">
-          <Label htmlFor="seller-description" className="text-gray-300">{copy('Description *')}</Label>
+          <Label htmlFor="seller-description" className="text-foreground">{copy('Description *')}</Label>
           <Textarea id="seller-description" className={inputCls} value={description} onChange={(e) => setDescription(e.target.value)} placeholder={copy('Good')} rows={4} maxLength={2000} />
         </div>
 
         <div className="md:col-span-2">
-          <Label className="text-gray-300">{copy('Photos * (1–8)')}</Label>
-          <p className="text-xs text-gray-500 mb-2">{copy('The first photo is the main cover photo.')}</p>
+          <Label className="text-foreground">{copy('Photos * (1–8)')}</Label>
+          <p className="text-xs text-muted-foreground mb-2">{copy('The first photo is the main cover photo.')}</p>
           <div className="grid grid-cols-2 gap-2">
-            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-almona-light/40 rounded-lg p-5 cursor-pointer hover:border-amber-500/60">
+            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border/40 rounded-lg p-5 cursor-pointer hover:border-amber-500/60">
               <Camera className="h-7 w-7 text-amber-400" />
-              <span className="text-sm text-gray-300 text-center">{copy('Take photo')}</span>
+              <span className="text-sm text-foreground text-center">{copy('Take photo')}</span>
               <input type="file" accept="image/*" capture="environment" onChange={handleFiles} className="hidden" />
             </label>
-            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-almona-light/40 rounded-lg p-5 cursor-pointer hover:border-amber-500/60">
+            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border/40 rounded-lg p-5 cursor-pointer hover:border-amber-500/60">
               <Upload className="h-7 w-7 text-amber-400" />
-              <span className="text-sm text-gray-300 text-center">{copy('Upload from gallery')}</span>
+              <span className="text-sm text-foreground text-center">{copy('Upload from gallery')}</span>
               <input type="file" multiple accept="image/*" onChange={handleFiles} className="hidden" />
             </label>
           </div>
@@ -196,7 +196,7 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
             <div className="flex flex-wrap gap-2 mt-2">
               {files.map((_, i) => (
                 <div key={i} className="relative">
-                  <img src={previewUrls[i]} alt="" className="w-20 h-20 object-cover rounded border border-almona-light/40" />
+                  <img src={previewUrls[i]} alt="" className="w-20 h-20 object-cover rounded border border-border/40" />
                   <button type="button" onClick={() => setFiles((prev) => prev.filter((_, idx) => idx !== i))} className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-5 h-5 text-xs leading-none flex items-center justify-center">×</button>
                 </div>
               ))}
@@ -205,17 +205,17 @@ const SellUsedMachineForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }
         </div>
 
         <div>
-          <Label htmlFor="seller-contactName" className="text-gray-300">{copy('Your name *')}</Label>
+          <Label htmlFor="seller-contactName" className="text-foreground">{copy('Your name *')}</Label>
           <Input id="seller-contactName" className={inputCls} value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder={copy('Your name *')} maxLength={120} />
         </div>
 
         <div>
-          <Label htmlFor="seller-contactPhone" className="text-gray-300">{copy('Phone *')}</Label>
+          <Label htmlFor="seller-contactPhone" className="text-foreground">{copy('Phone *')}</Label>
           <Input id="seller-contactPhone" className={inputCls} value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="+20 1xx xxx xxxx" maxLength={30} />
         </div>
 
         <div>
-          <Label htmlFor="seller-contactWhatsapp" className="text-gray-300">{copy('WhatsApp (optional)')}</Label>
+          <Label htmlFor="seller-contactWhatsapp" className="text-foreground">{copy('WhatsApp (optional)')}</Label>
           <Input id="seller-contactWhatsapp" className={inputCls} value={contactWhatsapp} onChange={(e) => setContactWhatsapp(e.target.value)} placeholder={copy('Same as phone if blank')} maxLength={30} />
         </div>
       </fieldset>

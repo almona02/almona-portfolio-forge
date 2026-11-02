@@ -38,7 +38,7 @@ function isSelected(entry: AssemblyManifestEntry, selectedKey: string | null): b
 }
 
 function Badge({ children, tone }: { children: React.ReactNode; tone: 'warn' | 'muted' | 'bad' }) {
-  const cls = tone === 'warn' ? 'border-amber-500/60 text-amber-200' : tone === 'bad' ? 'border-red-500/60 text-red-200' : 'border-slate-600 text-slate-400';
+  const cls = tone === 'warn' ? 'border-amber-500/60 text-warning' : tone === 'bad' ? 'border-red-500/60 text-red-200' : 'border-border text-muted-foreground';
   return <span className={`rounded border px-1 py-px text-[10px] leading-tight ${cls}`}>{children}</span>;
 }
 
@@ -93,8 +93,8 @@ export const AssemblyPartList: React.FC<AssemblyPartListProps> = ({ manifest, se
   const { summary } = manifest;
 
   return (
-    <section aria-label="Part list" className={`flex h-full min-h-0 flex-col rounded-lg border border-slate-700 bg-slate-950/95 text-sm text-slate-100 shadow-lg ${className}`}>
-      <div className="border-b border-slate-800 p-3">
+    <section aria-label="Part list" className={`flex h-full min-h-0 flex-col rounded-lg border border-border bg-background/95 text-sm text-foreground shadow-lg ${className}`}>
+      <div className="border-b border-border p-3">
         <label htmlFor={`${listId}-search`} className="sr-only">Search parts</label>
         <input
           id={`${listId}-search`}
@@ -108,9 +108,9 @@ export const AssemblyPartList: React.FC<AssemblyPartListProps> = ({ manifest, se
           aria-controls={listId}
           aria-activedescendant={activeEntry ? `${listId}-${activeEntry.id}` : undefined}
           aria-autocomplete="list"
-          className="h-9 w-full rounded border border-slate-700 bg-slate-900 px-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-amber-400 focus:outline-none"
+          className="h-9 w-full rounded border border-border bg-background px-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-amber-400 focus:outline-none"
         />
-        <p className="mt-2 text-[11px] text-slate-400" aria-live="polite">
+        <p className="mt-2 text-[11px] text-muted-foreground" aria-live="polite">
           {results.length} of {summary.total} parts
           {summary.unmodelled > 0 && ` · ${summary.unmodelled} not drawn`}
           {summary.unknownCodes > 0 && ` · ${summary.unknownCodes} without code`}
@@ -127,10 +127,10 @@ export const AssemblyPartList: React.FC<AssemblyPartListProps> = ({ manifest, se
         onKeyDown={handleKeyDown}
         className="min-h-0 flex-1 overflow-y-auto p-1 focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-400"
       >
-        {results.length === 0 && <li className="px-2 py-3 text-xs text-slate-400">No parts match “{query}”.</li>}
+        {results.length === 0 && <li className="px-2 py-3 text-xs text-muted-foreground">No parts match “{query}”.</li>}
         {grouped.map(({ category, entries }) => (
           <li key={category} role="presentation">
-            <div role="presentation" className="sticky top-0 bg-slate-950/95 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+            <div role="presentation" className="sticky top-0 bg-background/95 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
               {CATEGORY_LABEL[category]} ({entries.length})
             </div>
             <ul role="group" aria-label={CATEGORY_LABEL[category]}>
@@ -147,7 +147,7 @@ export const AssemblyPartList: React.FC<AssemblyPartListProps> = ({ manifest, se
                     data-active={active ? 'true' : undefined}
                     data-entry-id={entry.id}
                     onClick={() => { setActiveIndex(index); onSelect(selectionKeyForEntry(entry)); }}
-                    className={`cursor-pointer rounded px-2 py-1.5 ${selected ? 'bg-amber-500/20 text-amber-100' : active ? 'bg-slate-800' : 'hover:bg-slate-800/70'}`}
+                    className={`cursor-pointer rounded px-2 py-1.5 ${selected ? 'bg-amber-500/20 text-warning' : active ? 'bg-card' : 'hover:bg-card/70'}`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="truncate">{entry.name}</span>
@@ -158,7 +158,7 @@ export const AssemblyPartList: React.FC<AssemblyPartListProps> = ({ manifest, se
                         {entry.source === 'system_pack' && <Badge tone="muted">system</Badge>}
                       </span>
                     </div>
-                    <div className="truncate text-[11px] text-slate-400">
+                    <div className="truncate text-[11px] text-muted-foreground">
                       {entry.catalogueCode === UNKNOWN_CODE ? 'Code not assigned' : entry.catalogueCode}
                       {entry.material ? ` · ${entry.material}` : ''}
                       {mode === 'manufacturing' && entry.dimensions.designLengthMm != null ? ` · ${entry.dimensions.designLengthMm.toFixed(1)} mm` : ''}
@@ -171,7 +171,7 @@ export const AssemblyPartList: React.FC<AssemblyPartListProps> = ({ manifest, se
         ))}
         {visualOnly.length > 0 && (
           <li role="presentation">
-            <div role="presentation" className="sticky top-0 bg-slate-950/95 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+            <div role="presentation" className="sticky top-0 bg-background/95 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
               Visual only ({visualOnly.length})
             </div>
             <ul role="group" aria-label="Visual only parts">
@@ -181,7 +181,7 @@ export const AssemblyPartList: React.FC<AssemblyPartListProps> = ({ manifest, se
                   role="option"
                   aria-selected={selectedKey === part.partRefKey}
                   onClick={() => onSelect(part.partRefKey)}
-                  className={`cursor-pointer rounded px-2 py-1.5 text-slate-400 ${selectedKey === part.partRefKey ? 'bg-amber-500/20 text-amber-100' : 'hover:bg-slate-800/70'}`}
+                  className={`cursor-pointer rounded px-2 py-1.5 text-muted-foreground ${selectedKey === part.partRefKey ? 'bg-amber-500/20 text-warning' : 'hover:bg-card/70'}`}
                 >
                   <span className="truncate">{part.name}</span>
                   <span className="ml-2"><Badge tone="muted">no record</Badge></span>

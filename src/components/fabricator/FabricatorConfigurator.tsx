@@ -119,7 +119,7 @@ export const FabricatorConfigurator: React.FC = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         {loadError && (
-          <p role="alert" className="rounded-md border border-red-500/40 bg-red-500/10 p-2 text-sm text-red-300" data-testid="fabricator-configurator-load-error">
+          <p role="alert" className="rounded-md border border-red-500/40 bg-red-500/10 p-2 text-sm text-destructive" data-testid="fabricator-configurator-load-error">
             {loadError}
           </p>
         )}
@@ -135,7 +135,7 @@ export const FabricatorConfigurator: React.FC = () => {
                   <tr key={p.id} className="border-b">
                     <td className="p-2 font-medium">{p.name}</td><td className="p-2 capitalize">{p.material}</td><td className="p-2">{p.system_brand || '—'}</td>
                     <td className="p-2">{Number(p.cost_per_meter)}</td><td className="p-2">{Number(p.cutting_allowance ?? 0)}</td>
-                    <td className="p-2"><Button size="sm" variant="ghost" aria-label={`Delete profile ${p.name}`} onClick={() => void run(() => fabricatorConfigApi.deleteProfile(p.id), 'Profile deleted', 'Delete failed')}><Trash2 className="h-4 w-4 text-red-500" /></Button></td>
+                    <td className="p-2"><Button size="sm" variant="ghost" aria-label={`Delete profile ${p.name}`} onClick={() => void run(() => fabricatorConfigApi.deleteProfile(p.id), 'Profile deleted', 'Delete failed')}><Trash2 className="h-4 w-4 text-destructive" /></Button></td>
                   </tr>
                 ))}</tbody></table></div>
             )}
@@ -153,7 +153,7 @@ export const FabricatorConfigurator: React.FC = () => {
                 <tbody>{accessories.map((a) => (
                   <tr key={a.id} className="border-b">
                     <td className="p-2 font-medium">{a.name}</td><td className="p-2 capitalize">{a.type}</td><td className="p-2">{Number(a.unit_price)}</td><td className="p-2">{Number(a.base_cost)}</td>
-                    <td className="p-2"><Button size="sm" variant="ghost" aria-label={`Delete accessory ${a.name}`} onClick={() => void run(() => fabricatorConfigApi.deleteAccessory(a.id), 'Accessory deleted', 'Delete failed')}><Trash2 className="h-4 w-4 text-red-500" /></Button></td>
+                    <td className="p-2"><Button size="sm" variant="ghost" aria-label={`Delete accessory ${a.name}`} onClick={() => void run(() => fabricatorConfigApi.deleteAccessory(a.id), 'Accessory deleted', 'Delete failed')}><Trash2 className="h-4 w-4 text-destructive" /></Button></td>
                   </tr>
                 ))}</tbody></table></div>
             )}
@@ -174,7 +174,7 @@ export const FabricatorConfigurator: React.FC = () => {
                   {kitAccessories.map((a) => (
                     <Badge key={a.id} variant="secondary" className="gap-1 capitalize">
                       {a.name} ({a.type})
-                      <button onClick={() => void unlink(a.id)} className="ml-1 text-red-400">×</button>
+                      <button onClick={() => void unlink(a.id)} className="ml-1 text-destructive">×</button>
                     </Badge>
                   ))}
                   {kitAccessories.length === 0 && <span className="text-sm text-muted-foreground">No accessories linked.</span>}
@@ -208,7 +208,7 @@ export const FabricatorConfigurator: React.FC = () => {
                     <Badge variant={r.status === 'approved' ? 'default' : r.status === 'rejected' ? 'destructive' : 'secondary'}>{r.status}</Badge>
                     {r.status !== 'approved' && <Button size="sm" variant="outline" onClick={() => void setRuleStatus(r.id, 'approved')}><CheckCircle2 className="mr-1 h-4 w-4" /> Approve</Button>}
                     {r.status !== 'rejected' && <Button size="sm" variant="ghost" onClick={() => void setRuleStatus(r.id, 'rejected')}><XCircle className="mr-1 h-4 w-4" /> Reject</Button>}
-                    <Button size="sm" variant="ghost" aria-label={`Delete rule ${r.name}`} onClick={() => void run(() => fabricatorConfigApi.deleteRule(r.id), 'Rule deleted', 'Delete failed')}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                    <Button size="sm" variant="ghost" aria-label={`Delete rule ${r.name}`} onClick={() => void run(() => fabricatorConfigApi.deleteRule(r.id), 'Rule deleted', 'Delete failed')}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                   </div>
                 ))}
               </div>
@@ -250,7 +250,7 @@ export const FabricatorConfigurator: React.FC = () => {
                       {owned ? (
                         <>
                           <Button size="sm" variant="outline" onClick={() => void run(() => fabricatorConfigApi.togglePack(pk.id, !pk.is_active), pk.is_active ? 'Pack deactivated' : 'Pack activated', 'Update failed')}>{pk.is_active ? 'Deactivate' : 'Activate'}</Button>
-                          <Button size="sm" variant="ghost" aria-label={`Delete pack ${pk.label}`} onClick={() => void run(() => fabricatorConfigApi.deletePack(pk.id), 'Pack deleted', 'Delete failed')}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                          <Button size="sm" variant="ghost" aria-label={`Delete pack ${pk.label}`} onClick={() => void run(() => fabricatorConfigApi.deletePack(pk.id), 'Pack deleted', 'Delete failed')}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                         </>
                       ) : (
                         <Badge variant="outline">read-only</Badge>
@@ -364,7 +364,7 @@ const TuningRow: React.FC<{ def: TuningParamDef; tuning: TuningParam[]; onSave: 
       <Label htmlFor={inputId} className="w-52 text-sm">{def.label} ({def.unit})</Label>
       <Input id={inputId} type="number" inputMode="decimal" min={def.min} max={def.max} step="0.1" value={val} onChange={(e) => { setTouched(true); setVal(e.target.value) }} className="w-32" aria-invalid={problem ? true : undefined} aria-describedby={`${inputId}-help`} />
       <Button size="sm" variant="outline" disabled={Boolean(problem) || val === '' || !dirty} onClick={() => void onSave(def.key, Number(val)).then(() => setTouched(false))}>Save</Button>
-      <span id={`${inputId}-help`} className={`text-xs ${problem ? 'text-red-400' : 'text-muted-foreground'}`}>
+      <span id={`${inputId}-help`} className={`text-xs ${problem ? 'text-destructive' : 'text-muted-foreground'}`}>
         {problem ?? (current ? `saved: ${current.value} ${current.unit}` : `not set · allowed ${def.min}–${def.max} ${def.unit}`)}
       </span>
       <span className="basis-full text-xs text-muted-foreground sm:basis-auto">{def.description}</span>

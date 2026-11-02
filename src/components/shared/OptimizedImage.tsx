@@ -63,9 +63,9 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     <div className={cn("relative overflow-hidden", className)}>
       {/* Loading placeholder */}
       {!imageLoaded && !imageError && (
-        <div className="absolute inset-0 bg-gradient-to-r from-almona-darker via-almona-dark to-almona-darker animate-pulse">
+        <div className="absolute inset-0 bg-gradient-to-r from-almona-darker via-background to-almona-darker animate-pulse">
           <div className="flex items-center justify-center h-full">
-            <div className="text-almona-light/50">Loading...</div>
+            <div className="text-foreground/50">Loading...</div>
           </div>
         </div>
       )}
@@ -109,8 +109,8 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
       {/* Error fallback */}
       {imageError && (
-        <div className="absolute inset-0 bg-almona-darker flex items-center justify-center">
-          <div className="text-center text-almona-light/70">
+        <div className="absolute inset-0 bg-card flex items-center justify-center">
+          <div className="text-center text-foreground/70">
             <div className="text-4xl mb-2">📷</div>
             <div className="text-sm">Image not available</div>
           </div>

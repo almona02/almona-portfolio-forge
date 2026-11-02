@@ -67,7 +67,7 @@ export const ZoomPresets: React.FC<ZoomPresetsProps> = ({
               'transition-all duration-150',
               'hover:scale-105 active:scale-95',
               'focus:outline-none focus:ring-2 focus:ring-amber-500/50',
-              isActive && 'bg-amber-900/30 border-amber-500/50 text-amber-200'
+              isActive && 'bg-amber-900/30 border-amber-500/50 text-warning'
             )}
             aria-label={`Zoom to ${option.label}`}
             aria-pressed={isActive}

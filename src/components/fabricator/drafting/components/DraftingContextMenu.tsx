@@ -123,7 +123,7 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="min-w-[12rem] bg-gray-900 border-gray-700 text-gray-200"
+        className="min-w-[12rem] bg-background border-border text-foreground"
         align="start"
         sideOffset={4}
         alignOffset={0}
@@ -135,7 +135,7 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
         {/* ----- On rectangle (plain or frame), not when on sash cell ----- */}
         {isRectangle && !isSash && onSize && (
           <DropdownMenuItem
-            className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+            className="focus:bg-card focus:text-warning cursor-pointer"
             onClick={() => { if (target) onSize(target); onOpenChange(false); }}
           >
             Size
@@ -143,7 +143,7 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
         )}
         {isRectangle && !isSash && isPlainRect && onDefineAsFrame && (
           <DropdownMenuItem
-            className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="focus:bg-card focus:text-warning cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             onClick={() => { if (target && !getDefineAsFrameWarning?.(target)) { onDefineAsFrame(target); onOpenChange(false); } }}
             disabled={!!(target && getDefineAsFrameWarning?.(target))}
             title={target ? (getDefineAsFrameWarning?.(target) ?? undefined) : undefined}
@@ -153,7 +153,7 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
         )}
         {isRectangle && !isSash && onAssignSystemPack && (
           <DropdownMenuItem
-            className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+            className="focus:bg-card focus:text-warning cursor-pointer"
             onClick={() => { if (target) onAssignSystemPack(target); onOpenChange(false); }}
           >
             Assign System Pack...
@@ -161,7 +161,7 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
         )}
         {isRectangle && !isSash && isDefinedFrame && onAddMullion && (
           <DropdownMenuItem
-            className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+            className="focus:bg-card focus:text-warning cursor-pointer"
             onClick={() => { if (target) onAddMullion(target); onOpenChange(false); }}
           >
             Add Mullion
@@ -169,7 +169,7 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
         )}
         {isRectangle && !isSash && isDefinedFrame && onAddSash && (
           <DropdownMenuItem
-            className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="focus:bg-card focus:text-warning cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             onClick={() => { if (target && !getAddSashWarning?.(target)) { onAddSash(target); onOpenChange(false); } }}
             disabled={!!(target && getAddSashWarning?.(target))}
             title={target ? (getAddSashWarning?.(target) ?? undefined) : undefined}
@@ -179,7 +179,7 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
         )}
         {isRectangle && !isSash && isDefinedFrame && onQuickAddTwoSashes && (
           <DropdownMenuItem
-            className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="focus:bg-card focus:text-warning cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             onClick={() => { if (target && !getAddSashWarning?.(target)) { onQuickAddTwoSashes(target); onOpenChange(false); } }}
             disabled={!!(target && getAddSashWarning?.(target))}
             title={target ? (getAddSashWarning?.(target) ?? undefined) : undefined}
@@ -189,16 +189,16 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
         )}
         {isSash && onAssignGlazing && (
           <>
-            <DropdownMenuSeparator className="bg-gray-700" />
+            <DropdownMenuSeparator className="bg-muted" />
             <DropdownMenuItem
-              className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+              className="focus:bg-card focus:text-warning cursor-pointer"
               onClick={() => { if (target) onAssignGlazing(target); onOpenChange(false); }}
             >
               Assign Glazing...
             </DropdownMenuItem>
             {onGlassColor && (
               <DropdownMenuItem
-                className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+                className="focus:bg-card focus:text-warning cursor-pointer"
                 onClick={() => { if (target) onGlassColor(target); onOpenChange(false); }}
               >
                 Glass Color...
@@ -206,7 +206,7 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
             )}
             {onGlassType && (
               <DropdownMenuItem
-                className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+                className="focus:bg-card focus:text-warning cursor-pointer"
                 onClick={() => { if (target) onGlassType(target); onOpenChange(false); }}
               >
                 Glass Type...
@@ -215,11 +215,11 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
           </>
         )}
         {(isRectangle && !isSash && (onSize || onDefineAsFrame || onAddMullion || onAddSash)) && (
-          <DropdownMenuSeparator className="bg-gray-700" />
+          <DropdownMenuSeparator className="bg-muted" />
         )}
         {onProperties && (
           <DropdownMenuItem
-            className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+            className="focus:bg-card focus:text-warning cursor-pointer"
             onClick={() => { onProperties(target); onOpenChange(false); }}
           >
             Properties
@@ -227,7 +227,7 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
         )}
         {isRectangle && !isSash && onDuplicate && (
           <DropdownMenuItem
-            className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+            className="focus:bg-card focus:text-warning cursor-pointer"
             onClick={() => { if (target) onDuplicate(target); onOpenChange(false); }}
           >
             Duplicate
@@ -235,15 +235,15 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
         )}
         {onOpenPoseQuickEdit && (
           <>
-            <DropdownMenuSeparator className="bg-gray-700" />
+            <DropdownMenuSeparator className="bg-muted" />
             <DropdownMenuItem
-              className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+              className="focus:bg-card focus:text-warning cursor-pointer"
               onClick={() => { onOpenPoseQuickEdit(); onOpenChange(false); }}
             >
               Profile color...
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+              className="focus:bg-card focus:text-warning cursor-pointer"
               onClick={() => { onOpenPoseQuickEdit(); onOpenChange(false); }}
             >
               Quantity of this pos...
@@ -260,7 +260,7 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
         )}
         {onMoveToNext && (
           <>
-            <DropdownMenuSeparator className="bg-gray-700" />
+            <DropdownMenuSeparator className="bg-muted" />
             <DropdownMenuItem
               className="focus:bg-cyan-900/30 focus:text-cyan-200 cursor-pointer"
               onClick={() => {
@@ -280,20 +280,20 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
         {!target && (
           <>
             <DropdownMenuItem
-              className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+              className="focus:bg-card focus:text-warning cursor-pointer"
               onClick={() => { onResetView(); onOpenChange(false); }}
             >
               Reset View
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+              className="focus:bg-card focus:text-warning cursor-pointer"
               onClick={() => { onZoomToFit(); onOpenChange(false); }}
             >
               Zoom to Fit
             </DropdownMenuItem>
             {onProperties && (
               <DropdownMenuItem
-                className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+                className="focus:bg-card focus:text-warning cursor-pointer"
                 onClick={() => { onProperties(null); onOpenChange(false); }}
               >
                 Properties
@@ -301,9 +301,9 @@ export const DraftingContextMenu: React.FC<DraftingContextMenuProps> = ({
             )}
             {onEgyptianStandards && (
               <>
-                <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuSeparator className="bg-muted" />
                 <DropdownMenuItem
-                  className="focus:bg-gray-800 focus:text-amber-200 cursor-pointer"
+                  className="focus:bg-card focus:text-warning cursor-pointer"
                   onClick={() => { onEgyptianStandards(); onOpenChange(false); }}
                 >
                   Egyptian Standards...

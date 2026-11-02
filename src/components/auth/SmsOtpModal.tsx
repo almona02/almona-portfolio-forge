@@ -75,10 +75,10 @@ export const SmsOtpModal: React.FC<SmsOtpModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-white dark:bg-almona-dark text-gray-900 dark:text-white rounded-lg shadow-lg">
+      <DialogContent className="sm:max-w-[425px] bg-card dark:bg-background text-foreground dark:text-foreground rounded-lg shadow-lg">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">Phone Number Login</DialogTitle>
-          <DialogDescription className="text-center text-gray-600 dark:text-gray-300">
+          <DialogDescription className="text-center text-muted-foreground dark:text-foreground">
             {step === 'request'
               ? 'Enter your phone number to receive an OTP.'
               : 'Enter the OTP sent to your phone number.'}
@@ -95,25 +95,25 @@ export const SmsOtpModal: React.FC<SmsOtpModalProps> = ({
           {step === 'request' ? (
             <LazyMotionDiv initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <div className="space-y-2">
-                <Label htmlFor="countryCode" className="typography-label text-gray-700 dark:text-gray-200">Country Code</Label>
+                <Label htmlFor="countryCode" className="typography-label text-foreground dark:text-foreground">Country Code</Label>
                 <Input
                   id="countryCode"
                   value={countryCode}
                   onChange={(e) => setCountryCode(e.target.value)}
-                  className="bg-white/80 dark:bg-almona-dark/80 border-gray-300 dark:border-almona-light focus:ring-2 focus:ring-almona-light"
+                  className="bg-foreground/80 dark:bg-background/80 border-border dark:border-border focus:ring-2 focus:ring-almona-light"
                 />
               </div>
               <div className="space-y-2 mt-4">
-                <Label htmlFor="phoneNumber" className="typography-label text-gray-700 dark:text-gray-200">Phone Number</Label>
+                <Label htmlFor="phoneNumber" className="typography-label text-foreground dark:text-foreground">Phone Number</Label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input
                     id="phoneNumber"
                     type="tel"
                     placeholder="e.g., 501234567"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="pl-10 bg-white/80 dark:bg-almona-dark/80 border-gray-300 dark:border-almona-light focus:ring-2 focus:ring-almona-light"
+                    className="pl-10 bg-foreground/80 dark:bg-background/80 border-border dark:border-border focus:ring-2 focus:ring-almona-light"
                   />
                 </div>
               </div>
@@ -124,23 +124,23 @@ export const SmsOtpModal: React.FC<SmsOtpModalProps> = ({
           ) : (
             <LazyMotionDiv initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <div className="space-y-2">
-                <Label htmlFor="otp" className="typography-label text-gray-700 dark:text-gray-200">OTP</Label>
+                <Label htmlFor="otp" className="typography-label text-foreground dark:text-foreground">OTP</Label>
                 <div className="relative">
-                  <MessageSquare className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <MessageSquare className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                   <Input
                     id="otp"
                     type="text"
                     placeholder="Enter 6-digit OTP"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
-                    className="pl-10 bg-white/80 dark:bg-almona-dark/80 border-gray-300 dark:border-almona-light focus:ring-2 focus:ring-almona-light"
+                    className="pl-10 bg-foreground/80 dark:bg-background/80 border-border dark:border-border focus:ring-2 focus:ring-almona-light"
                   />
                 </div>
               </div>
               <Button onClick={() => void handleVerifyOtp()} disabled={loading} className="w-full mt-6 bg-gradient-to-r from-blue-500 to-amber-500 text-white hover:from-blue-600 hover:to-amber-600">
                 {loading ? 'Verifying OTP...' : 'Verify OTP'}
               </Button>
-              <Button variant="link" onClick={() => setStep('request')} className="w-full mt-2 text-almona-light">
+              <Button variant="link" onClick={() => setStep('request')} className="w-full mt-2 text-foreground">
                 Resend OTP
               </Button>
             </LazyMotionDiv>

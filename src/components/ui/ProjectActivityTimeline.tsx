@@ -165,21 +165,21 @@ function getActivityIcon(type: ActivityType) {
 function getActivityColor(type: ActivityType): string {
   switch (type) {
     case 'project_created':
-      return 'text-green-400';
+      return 'text-success';
     case 'field_changed':
-      return 'text-blue-400';
+      return 'text-info';
     case 'status_changed':
       return 'text-amber-400';
     case 'file_uploaded':
       return 'text-amber-400';
     case 'comment_added':
-      return 'text-cyan-400';
+      return 'text-info';
     case 'bulk_operation':
       return 'text-orange-400';
     case 'reverted':
-      return 'text-red-400';
+      return 'text-destructive';
     default:
-      return 'text-slate-400';
+      return 'text-muted-foreground';
   }
 }
 
@@ -459,7 +459,7 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
       <Card
         key={activity.id}
         className={cn(
-          'bg-slate-800/50 border-slate-700/50 relative',
+          'bg-card/50 border-border/50 relative',
           'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1',
           'before:bg-amber-400/30'
         )}
@@ -468,22 +468,22 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
           <div className="flex gap-4">
             {/* Timeline line connector */}
             <div className="flex flex-col items-center">
-              <div className={cn('p-2 rounded-full border-2 bg-slate-900/50', iconColor.replace('text-', 'border-'))}>
+              <div className={cn('p-2 rounded-full border-2 bg-background/50', iconColor.replace('text-', 'border-'))}>
                 <Icon className={cn('h-4 w-4', iconColor)} />
               </div>
-              <div className="w-0.5 h-full bg-slate-700/50 mt-2" />
+              <div className="w-0.5 h-full bg-muted/50 mt-2" />
             </div>
 
             {/* Activity content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <span className="font-medium text-slate-200">{activity.title}</span>
-                  <Badge variant="outline" className="bg-slate-900/50 border-slate-700 text-slate-400 text-xs">
+                  <span className="font-medium text-foreground">{activity.title}</span>
+                  <Badge variant="outline" className="bg-background/50 border-border text-muted-foreground text-xs">
                     {activity.type.replace('_', ' ')}
                   </Badge>
                 </div>
-                <span className="text-xs text-slate-500 whitespace-nowrap ml-2">
+                <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
                   {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
                 </span>
               </div>
@@ -492,46 +492,46 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
               <div className="flex items-center gap-2 mb-2">
                 <Avatar className="h-6 w-6">
                   <AvatarImage src={activity.userAvatar} />
-                  <AvatarFallback className="bg-slate-700 text-slate-300 text-xs">
+                  <AvatarFallback className="bg-muted text-foreground text-xs">
                     {activity.userName.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-sm text-slate-400">{activity.userName}</span>
+                <span className="text-sm text-muted-foreground">{activity.userName}</span>
               </div>
 
               {/* Description */}
               {activity.description && (
-                <p className="text-sm text-slate-300 mb-2">{activity.description}</p>
+                <p className="text-sm text-foreground mb-2">{activity.description}</p>
               )}
 
               {/* Details */}
               {activity.details && isExpanded && (
-                <div className="mt-3 p-3 bg-slate-900/50 rounded border border-slate-700/50">
+                <div className="mt-3 p-3 bg-background/50 rounded border border-border/50">
                   {activity.details.field && (
                     <div className="text-sm">
-                      <span className="text-slate-400">Field: </span>
-                      <span className="text-slate-200 font-mono">{activity.details.field}</span>
+                      <span className="text-muted-foreground">Field: </span>
+                      <span className="text-foreground font-mono">{activity.details.field}</span>
                     </div>
                   )}
                   {activity.details.oldValue !== undefined && activity.details.newValue !== undefined && (
                     <div className="text-sm mt-2">
-                      <span className="text-red-400 line-through">{String(activity.details.oldValue)}</span>
-                      <ArrowRight className="h-3 w-3 inline mx-2 text-slate-500" />
-                      <span className="text-green-400">{String(activity.details.newValue)}</span>
+                      <span className="text-destructive line-through">{String(activity.details.oldValue)}</span>
+                      <ArrowRight className="h-3 w-3 inline mx-2 text-muted-foreground" />
+                      <span className="text-success">{String(activity.details.newValue)}</span>
                     </div>
                   )}
                   {activity.details.file && (
                     <div className="text-sm mt-2">
-                      <span className="text-slate-400">File: </span>
-                      <span className="text-slate-200">{activity.details.file.name}</span>
-                      <span className="text-slate-500 ml-2">({(activity.details.file.size / 1024).toFixed(1)} KB)</span>
+                      <span className="text-muted-foreground">File: </span>
+                      <span className="text-foreground">{activity.details.file.name}</span>
+                      <span className="text-muted-foreground ml-2">({(activity.details.file.size / 1024).toFixed(1)} KB)</span>
                     </div>
                   )}
                   {activity.details.operation && (
                     <div className="text-sm mt-2">
-                      <span className="text-slate-400">Operation: </span>
-                      <span className="text-slate-200">{activity.details.operation.type}</span>
-                      <span className="text-slate-500 ml-2">({activity.details.operation.count} items)</span>
+                      <span className="text-muted-foreground">Operation: </span>
+                      <span className="text-foreground">{activity.details.operation.type}</span>
+                      <span className="text-muted-foreground ml-2">({activity.details.operation.count} items)</span>
                     </div>
                   )}
                 </div>
@@ -541,21 +541,21 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
               {activity.comments && activity.comments.length > 0 && (
                 <div className="mt-3 space-y-2">
                   {activity.comments.map(comment => (
-                    <div key={comment.id} className="flex gap-2 p-2 bg-slate-900/30 rounded">
+                    <div key={comment.id} className="flex gap-2 p-2 bg-background/30 rounded">
                       <Avatar className="h-6 w-6">
                         <AvatarImage src={comment.userAvatar} />
-                        <AvatarFallback className="bg-slate-700 text-slate-300 text-xs">
+                        <AvatarFallback className="bg-muted text-foreground text-xs">
                           {comment.userName.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-slate-300">{comment.userName}</span>
-                          <span className="text-xs text-slate-500">
+                          <span className="text-sm font-medium text-foreground">{comment.userName}</span>
+                          <span className="text-xs text-muted-foreground">
                             {formatDistanceToNow(new Date(comment.timestamp), { addSuffix: true })}
                           </span>
                         </div>
-                        <p className="text-sm text-slate-400 mt-1">{comment.text}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{comment.text}</p>
                       </div>
                     </div>
                   ))}
@@ -569,7 +569,7 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
                     placeholder="Add a comment..."
-                    className="bg-slate-900/50 border-slate-700 text-slate-200"
+                    className="bg-background/50 border-border text-foreground"
                     rows={2}
                   />
                   <div className="flex gap-2">
@@ -588,7 +588,7 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
                         setShowCommentInput(null);
                         setCommentText('');
                       }}
-                      className="text-slate-400 hover:text-slate-200"
+                      className="text-muted-foreground hover:text-foreground"
                     >
                       Cancel
                     </Button>
@@ -603,7 +603,7 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
                     variant="ghost"
                     size="sm"
                     onClick={() => toggleExpansion(activity.id)}
-                    className="text-slate-400 hover:text-slate-200"
+                    className="text-muted-foreground hover:text-foreground"
                   >
                     {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                     {isExpanded ? 'Hide' : 'Show'} Details
@@ -614,7 +614,7 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowCommentInput(activity.id)}
-                    className="text-slate-400 hover:text-slate-200"
+                    className="text-muted-foreground hover:text-foreground"
                   >
                     <MessageSquare className="h-4 w-4 mr-2" />
                     Comment
@@ -625,7 +625,7 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowRevertConfirm(activity.id)}
-                    className="text-slate-400 hover:text-slate-200"
+                    className="text-muted-foreground hover:text-foreground"
                   >
                     <RotateCcw className="h-4 w-4 mr-2" />
                     Revert
@@ -648,18 +648,18 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
     return (
       <div
         key={`group-${groupName}`}
-        className="flex items-center gap-2 py-3 sticky top-0 bg-slate-900 z-10"
+        className="flex items-center gap-2 py-3 sticky top-0 bg-background z-10"
       >
         <Button
           variant="ghost"
           size="sm"
           onClick={() => toggleGroup(groupName)}
-          className="text-slate-300 hover:text-slate-200"
+          className="text-foreground hover:text-foreground"
         >
           {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
         </Button>
-        <h3 className="text-lg font-semibold text-slate-200">{groupName}</h3>
-        <Badge variant="outline" className="bg-slate-800 border-slate-700 text-slate-400">
+        <h3 className="text-lg font-semibold text-foreground">{groupName}</h3>
+        <Badge variant="outline" className="bg-card border-border text-muted-foreground">
           {count}
         </Badge>
       </div>
@@ -672,7 +672,7 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Search activities..."
@@ -681,14 +681,14 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
                 setSearchQuery(e.target.value);
                 debouncedSearch(e.target.value);
               }}
-              className="pl-10 bg-slate-800 border-slate-700 text-slate-200"
+              className="pl-10 bg-card border-border text-foreground"
             />
           </div>
           <Select value={selectedActivityType} onValueChange={setSelectedActivityType}>
-            <SelectTrigger className="w-40 bg-slate-800 border-slate-700 text-slate-200">
+            <SelectTrigger className="w-40 bg-card border-border text-foreground">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-700">
+            <SelectContent className="bg-card border-border">
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="project_created">Created</SelectItem>
               <SelectItem value="field_changed">Changed</SelectItem>
@@ -705,13 +705,13 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
       {/* Timeline */}
       <ScrollArea
         ref={parentRef}
-        className={cn('flex-1 border border-slate-700/50 rounded-lg bg-slate-900/50', shouldVirtualize && 'h-[600px]')}
+        className={cn('flex-1 border border-border/50 rounded-lg bg-background/50', shouldVirtualize && 'h-[600px]')}
       >
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="flex flex-col items-center gap-4">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-600 border-t-transparent" />
-              <p className="text-slate-400">Loading activities...</p>
+              <p className="text-muted-foreground">Loading activities...</p>
             </div>
           </div>
         ) : shouldVirtualize ? (
@@ -776,7 +776,7 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
           <Button
             variant="outline"
             onClick={onLoadMore}
-            className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+            className="bg-card border-border text-foreground hover:bg-muted"
           >
             Load More
           </Button>
@@ -785,15 +785,15 @@ export const ProjectActivityTimeline: React.FC<ProjectActivityTimelineProps> = (
 
       {/* Revert confirmation dialog */}
       <AlertDialog open={!!showRevertConfirm} onOpenChange={(open) => !open && setShowRevertConfirm(null)}>
-        <AlertDialogContent className="bg-slate-900 border-slate-700">
+        <AlertDialogContent className="bg-background border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-red-400">Revert this change?</AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-300">
+            <AlertDialogTitle className="text-destructive">Revert this change?</AlertDialogTitle>
+            <AlertDialogDescription className="text-foreground">
               This will undo the selected change. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
+            <AlertDialogCancel className="bg-card border-border text-foreground hover:bg-muted">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction

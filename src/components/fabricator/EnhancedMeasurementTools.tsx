@@ -217,10 +217,10 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
    */
   const ValidationIcon = ({ isValid, hasError }: { isValid: boolean; hasError: boolean }) => {
     if (hasError) {
-      return <AlertCircle className="h-4 w-4 text-red-500" />;
+      return <AlertCircle className="h-4 w-4 text-destructive" />;
     }
     if (isValid && width && height) {
-      return <CheckCircle2 className="h-4 w-4 text-emerald-500" />;
+      return <CheckCircle2 className="h-4 w-4 text-success" />;
     }
     return null;
   };
@@ -233,7 +233,7 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
       {/* Common Sizes Quick Select */}
       {commonSizes.length > 0 && (
         <div className="flex items-center gap-2 flex-wrap">
-          <Label className="text-xs text-amber-500/80 font-semibold">
+          <Label className="text-xs text-warning/80 font-semibold">
             {t('smart_measuring.common_sizes', 'Common Sizes:')}
           </Label>
           <Popover open={showCommonSizes} onOpenChange={setShowCommonSizes}>
@@ -241,19 +241,19 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
               <Button
                 variant="outline"
                 size="sm"
-                className="h-7 text-xs bg-amber-900/20 border-amber-600/30 text-amber-300 hover:bg-amber-900/30"
+                className="h-7 text-xs bg-amber-900/20 border-amber-600/30 text-warning hover:bg-amber-900/30"
               >
                 <Sparkles className="h-3 w-3 mr-1" />
                 Quick Select
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className="w-80 bg-[#0f0f0f]/95 backdrop-blur-xl border-amber-600/30"
+              className="w-80 bg-background/95 backdrop-blur-xl border-amber-600/30"
               align="start"
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-amber-200">
+                  <span className="text-xs font-semibold text-warning">
                     {t('smart_measuring.select_common_size', 'Select Common Size')}
                   </span>
                   <Button
@@ -271,13 +271,13 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
                       key={`${size.width}-${size.height}`}
                       variant="outline"
                       size="sm"
-                      className="h-auto py-2 px-3 flex flex-col items-start bg-[#1a1a1a] border-amber-600/20 hover:border-amber-500/50 hover:bg-amber-900/20"
+                      className="h-auto py-2 px-3 flex flex-col items-start bg-background border-amber-600/20 hover:border-amber-500/50 hover:bg-amber-900/20"
                       onClick={() => handleCommonSizeSelect(size)}
                     >
-                      <span className="text-xs font-semibold text-amber-300">
+                      <span className="text-xs font-semibold text-warning">
                         {size.width}×{size.height}mm
                       </span>
-                      <span className="text-[10px] text-amber-600/80 mt-0.5">
+                      <span className="text-[10px] text-warning/80 mt-0.5">
                         {size.name}
                       </span>
                     </Button>
@@ -294,7 +294,7 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
         <div className="flex items-center justify-between mb-2">
           <Label
             htmlFor="measuring-width-mm"
-            className="text-xs uppercase tracking-[0.15em] text-amber-500/80 group-focus-within:text-amber-400 transition-colors font-semibold"
+            className="text-xs uppercase tracking-[0.15em] text-warning/80 group-focus-within:text-warning transition-colors font-semibold"
           >
             {t('smart_measuring.dimensions.width', 'Total Width (mm)')}
           </Label>
@@ -303,7 +303,7 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
               <TooltipTrigger asChild>
                 <div className="flex items-center gap-1">
                   {systemConstraints?.minWidthMm && systemConstraints?.maxWidthMm && (
-                    <span className="text-[10px] text-amber-600/60">
+                    <span className="text-[10px] text-warning/60">
                       {systemConstraints.minWidthMm}-{systemConstraints.maxWidthMm}mm
                     </span>
                   )}
@@ -337,7 +337,7 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
             aria-invalid={!!widthError}
             aria-describedby={widthError ? "width-error" : undefined}
           />
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-amber-600/70 text-sm">
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-warning/70 text-sm">
             mm
           </span>
         </div>
@@ -349,7 +349,7 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
               exit={{ opacity: 0, height: 0 }}
               className="mt-1"
             >
-              <p id="width-error" className="text-sm text-red-400 flex items-center gap-1" role="alert">
+              <p id="width-error" className="text-sm text-destructive flex items-center gap-1" role="alert">
                 <AlertCircle className="h-3 w-3" />
                 {widthError}
               </p>
@@ -363,7 +363,7 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
         <div className="flex items-center justify-between mb-2">
           <Label
             htmlFor="measuring-height-mm"
-            className="text-xs uppercase tracking-[0.15em] text-amber-500/80 group-focus-within:text-amber-400 transition-colors font-semibold"
+            className="text-xs uppercase tracking-[0.15em] text-warning/80 group-focus-within:text-warning transition-colors font-semibold"
           >
             {t('smart_measuring.dimensions.height', 'Total Height (mm)')}
           </Label>
@@ -372,7 +372,7 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
               <TooltipTrigger asChild>
                 <div className="flex items-center gap-1">
                   {systemConstraints?.minHeightMm && systemConstraints?.maxHeightMm && (
-                    <span className="text-[10px] text-amber-600/60">
+                    <span className="text-[10px] text-warning/60">
                       {systemConstraints.minHeightMm}-{systemConstraints.maxHeightMm}mm
                     </span>
                   )}
@@ -406,7 +406,7 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
             aria-invalid={!!heightError}
             aria-describedby={heightError ? "height-error" : undefined}
           />
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-amber-600/70 text-sm">
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-warning/70 text-sm">
             mm
           </span>
         </div>
@@ -418,7 +418,7 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
               exit={{ opacity: 0, height: 0 }}
               className="mt-1"
             >
-              <p id="height-error" className="text-sm text-red-400 flex items-center gap-1" role="alert">
+              <p id="height-error" className="text-sm text-destructive flex items-center gap-1" role="alert">
                 <AlertCircle className="h-3 w-3" />
                 {heightError}
               </p>
@@ -436,7 +436,7 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
             exit={{ opacity: 0, y: -10 }}
           >
             <Alert className="bg-emerald-900/20 border-emerald-500/50">
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+              <CheckCircle2 className="h-4 w-4 text-success" />
               <AlertDescription className="text-sm text-emerald-200">
                 {t('smart_measuring.measurements_valid', 'Measurements are valid and ready')}
               </AlertDescription>
@@ -450,7 +450,7 @@ export const EnhancedMeasurementTools: React.FC<EnhancedMeasurementToolsProps> =
             exit={{ opacity: 0, y: -10 }}
           >
             <Alert className="bg-red-900/20 border-red-500/50">
-              <AlertCircle className="h-4 w-4 text-red-500" />
+              <AlertCircle className="h-4 w-4 text-destructive" />
               <AlertDescription className="text-sm text-red-200">
                 {validationState.error}
               </AlertDescription>

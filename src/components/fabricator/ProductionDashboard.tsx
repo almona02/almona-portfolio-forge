@@ -221,7 +221,7 @@ export function ProductionDashboard() {
             <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-1">
               {metrics.workflow.withinTarget ? (
                 <>
-                  <CheckCircle className={`${UI_DIMENSIONS.ICON_SMALL} text-green-500`} />
+                  <CheckCircle className={`${UI_DIMENSIONS.ICON_SMALL} text-success`} />
                   <span>
                     {locale === 'ar'
                       ? 'ضمن الهدف'
@@ -230,7 +230,7 @@ export function ProductionDashboard() {
                 </>
               ) : (
                 <>
-                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-yellow-500`} />
+                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-warning`} />
                   <span>
                     {locale === 'ar'
                       ? 'يتجاوز الهدف'
@@ -255,7 +255,7 @@ export function ProductionDashboard() {
             <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-1">
               {metrics.accuracy.withinTarget ? (
                 <>
-                  <CheckCircle className={`${UI_DIMENSIONS.ICON_SMALL} text-green-500`} />
+                  <CheckCircle className={`${UI_DIMENSIONS.ICON_SMALL} text-success`} />
                   <span>
                     {locale === 'ar'
                       ? `الهدف: ${metrics.accuracy.targetAccuracy}%`
@@ -264,7 +264,7 @@ export function ProductionDashboard() {
                 </>
               ) : (
                 <>
-                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-red-500`} />
+                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-destructive`} />
                   <span>
                     {locale === 'ar'
                       ? `أقل من الهدف (${metrics.accuracy.targetAccuracy}%)`
@@ -297,17 +297,17 @@ export function ProductionDashboard() {
             <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-1">
               {metrics.memory.isCriticalMemory ? (
                 <>
-                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-red-500`} />
+                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-destructive`} />
                   <span>{locale === 'ar' ? 'حرج' : 'Critical'}</span>
                 </>
               ) : metrics.memory.isLowMemory ? (
                 <>
-                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-yellow-500`} />
+                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-warning`} />
                   <span>{locale === 'ar' ? 'منخفض' : 'Low'}</span>
                 </>
               ) : (
                 <>
-                  <CheckCircle className={`${UI_DIMENSIONS.ICON_SMALL} text-green-500`} />
+                  <CheckCircle className={`${UI_DIMENSIONS.ICON_SMALL} text-success`} />
                   <span>{locale === 'ar' ? 'طبيعي' : 'Normal'}</span>
                 </>
               )}
@@ -334,7 +334,7 @@ export function ProductionDashboard() {
             <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-1">
               {metrics.security.criticalEvents > 0 ? (
                 <>
-                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-red-500`} />
+                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-destructive`} />
                   <span>
                     {locale === 'ar'
                       ? `${metrics.security.criticalEvents} حرجة`
@@ -343,7 +343,7 @@ export function ProductionDashboard() {
                 </>
               ) : (
                 <>
-                  <CheckCircle className={`${UI_DIMENSIONS.ICON_SMALL} text-green-500`} />
+                  <CheckCircle className={`${UI_DIMENSIONS.ICON_SMALL} text-success`} />
                   <span>{locale === 'ar' ? 'لا توجد أحداث حرجة' : 'No critical events'}</span>
                 </>
               )}
@@ -378,7 +378,7 @@ export function ProductionDashboard() {
               <div className="text-sm text-muted-foreground">
                 {locale === 'ar' ? 'تقليل هدر المواد' : 'Material Waste Reduction'}
               </div>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-success">
                 {metrics.egyptianWorkshop.materialWasteReduction}%
               </div>
             </div>
@@ -386,7 +386,7 @@ export function ProductionDashboard() {
               <div className="text-sm text-muted-foreground">
                 {locale === 'ar' ? 'توفير الوقت' : 'Time Savings'}
               </div>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-success">
                 {metrics.egyptianWorkshop.timeSavings}%
               </div>
             </div>
@@ -461,22 +461,22 @@ export function ProductionDashboard() {
                 <div className="flex items-center space-x-2">
                   {metrics.performance.trend === 'improving' ? (
                     <>
-                      <TrendingUp className={UI_DIMENSIONS.ICON_LARGE + ' text-green-500'} />
-                      <span className="text-green-600 font-semibold">
+                      <TrendingUp className={UI_DIMENSIONS.ICON_LARGE + ' text-success'} />
+                      <span className="text-success font-semibold">
                         {locale === 'ar' ? 'تحسن' : 'Improving'}
                       </span>
                     </>
                   ) : metrics.performance.trend === 'degrading' ? (
                     <>
-                      <TrendingDown className={UI_DIMENSIONS.ICON_LARGE + ' text-red-500'} />
-                      <span className="text-red-600 font-semibold">
+                      <TrendingDown className={UI_DIMENSIONS.ICON_LARGE + ' text-destructive'} />
+                      <span className="text-destructive font-semibold">
                         {locale === 'ar' ? 'تدهور' : 'Degrading'}
                       </span>
                     </>
                   ) : (
                     <>
-                      <BarChart3 className={UI_DIMENSIONS.ICON_LARGE + ' text-gray-500'} />
-                      <span className="text-gray-600 font-semibold">
+                      <BarChart3 className={UI_DIMENSIONS.ICON_LARGE + ' text-muted-foreground'} />
+                      <span className="text-muted-foreground font-semibold">
                         {locale === 'ar' ? 'مستقر' : 'Stable'}
                       </span>
                     </>
@@ -516,7 +516,7 @@ export function ProductionDashboard() {
                   <div>
                     <div className="flex justify-between text-sm mb-1">
                       <span>{locale === 'ar' ? 'سير العمل' : 'Workflow'}</span>
-                      <span className={metrics.workflow.withinTarget ? 'text-green-600' : 'text-red-600'}>
+                      <span className={metrics.workflow.withinTarget ? 'text-success' : 'text-destructive'}>
                         {metrics.workflow.withinTarget
                           ? locale === 'ar'
                             ? 'صحي'
@@ -534,7 +534,7 @@ export function ProductionDashboard() {
                   <div>
                     <div className="flex justify-between text-sm mb-1">
                       <span>{locale === 'ar' ? 'الدقة' : 'Accuracy'}</span>
-                      <span className={metrics.accuracy.withinTarget ? 'text-green-600' : 'text-red-600'}>
+                      <span className={metrics.accuracy.withinTarget ? 'text-success' : 'text-destructive'}>
                         {metrics.accuracy.withinTarget
                           ? locale === 'ar'
                             ? 'صحي'
@@ -552,10 +552,10 @@ export function ProductionDashboard() {
                       <span
                         className={
                           metrics.memory.isCriticalMemory
-                            ? 'text-red-600'
+                            ? 'text-destructive'
                             : metrics.memory.isLowMemory
-                              ? 'text-yellow-600'
-                              : 'text-green-600'
+                              ? 'text-warning'
+                              : 'text-success'
                         }
                       >
                         {metrics.memory.isCriticalMemory

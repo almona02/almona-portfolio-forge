@@ -458,7 +458,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
             >
               <Flashlight
                 className={cn(
-                  "h-6 w-6 text-white",
+                  "h-6 w-6 text-foreground",
                   state.torchEnabled && "text-yellow-400"
                 )}
               />
@@ -472,7 +472,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
             className="p-3 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-black/70 transition-colors"
             aria-label="Switch camera"
           >
-            <RotateCcw className="h-6 w-6 text-white" />
+            <RotateCcw className="h-6 w-6 text-foreground" />
           </button>
 
           {/* Close button */}
@@ -482,7 +482,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
             className="p-3 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 hover:bg-black/70 transition-colors"
             aria-label="Close scanner"
           >
-            <X className="h-6 w-6 text-white" />
+            <X className="h-6 w-6 text-foreground" />
           </button>
         </div>
       )}
@@ -492,7 +492,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
         <div className="absolute inset-0 flex items-center justify-center bg-black">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
-            <p className="text-white text-sm">Initializing camera...</p>
+            <p className="text-foreground text-sm">Initializing camera...</p>
           </div>
         </div>
       )}
@@ -501,9 +501,9 @@ const QRScanner: React.FC<QRScannerProps> = ({
       {!state.hasPermission && state.error && (
         <div className="absolute inset-0 flex items-center justify-center bg-black p-8">
           <div className="text-center">
-            <Camera className="h-12 w-12 text-red-400 mx-auto mb-4" />
-            <h3 className="text-white text-lg font-medium mb-2">Camera Access Required</h3>
-            <p className="text-gray-300 text-sm mb-4">
+            <Camera className="h-12 w-12 text-destructive mx-auto mb-4" />
+            <h3 className="text-foreground text-lg font-medium mb-2">Camera Access Required</h3>
+            <p className="text-foreground text-sm mb-4">
               Please allow camera access to scan QR codes.
             </p>
             <button

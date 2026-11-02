@@ -57,7 +57,7 @@ export const MachinesAdminPanel: React.FC = () => {
                     <td className="p-2">{m.power_consumption || '—'}</td>
                     <td className="p-2">
                       <Button size="sm" variant="ghost" onClick={() => void toggleFeatured(m)} title="Toggle featured">
-                        <Star className={`h-4 w-4 ${m.is_featured ? 'fill-amber-400 text-amber-400' : ''}`} />
+                        <Star className={`h-4 w-4 ${m.is_featured ? 'fill-amber-400 text-warning' : ''}`} />
                       </Button>
                     </td>
                     <td className="p-2"><Button size="sm" variant="outline" onClick={() => setEdit(m)}>Edit</Button></td>

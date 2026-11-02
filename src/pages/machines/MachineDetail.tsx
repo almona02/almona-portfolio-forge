@@ -84,7 +84,7 @@ const MachineDetail: React.FC = () => {
         <SEO noindex title="Machine not found" />
         <h1 className="typography-h1 mb-4">{copy("Machine Not Found")}</h1>
         <p className="mb-4">{copy("The machine you are looking for does not exist.")}</p>
-        <Link to="/products/machines" className="text-blue-600 underline">{copy("Back to Machines")}</Link>
+        <Link to="/products/machines" className="text-info underline">{copy("Back to Machines")}</Link>
       </div>
     );
   }
@@ -146,7 +146,7 @@ const MachineDetail: React.FC = () => {
       <p className="mb-6 text-lg">{copy(machine.description)}</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-background p-4 rounded-lg">
           <h3 className="typography-h3 text-lg mb-2">{copy("Technical Details")}</h3>
           <div className="space-y-2">
             <div><strong>{copy("Type:")}</strong> {copy(machine.type)}</div>
@@ -155,7 +155,7 @@ const MachineDetail: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-background p-4 rounded-lg">
           <h3 className="typography-h3 text-lg mb-2">{copy("Specifications")}</h3>
           <ul className="list-disc list-inside space-y-1">
             {(machine.specifications ?? []).map((spec, index) => (
@@ -179,15 +179,15 @@ const MachineDetail: React.FC = () => {
       )}
 
       <div className="flex gap-4">
-        <Link to="/products/machines" className="text-blue-600 underline">{copy("Back to Machines")}</Link>
+        <Link to="/products/machines" className="text-info underline">{copy("Back to Machines")}</Link>
       </div>
 
       {/* SwiftXR Iframe for FR222 */}
       {isFR222 && (
         <div className="mt-8 mb-8">
-          <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700">
+          <Card className="bg-gradient-to-br from-card to-background border-border">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <Eye className="w-5 h-5 text-amber-500" />{copy("SwiftXR Interactive Experience")}</CardTitle>
             </CardHeader>
             <CardContent>

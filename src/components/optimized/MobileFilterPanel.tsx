@@ -63,12 +63,12 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
       {/* Mobile Search Bar */}
       <div className="mb-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             placeholder={copy("Search machines...")}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 placeholder:text-gray-400"
+            className="pl-10 bg-black/90 md:bg-black/70 border-border focus:border-amber-500 placeholder:text-muted-foreground"
           />
         </div>
       </div>
@@ -81,7 +81,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
               <Button
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-2 bg-black/90 md:bg-black/70 border-gray-600 hover:bg-black/95 md:hover:bg-black/80"
+                className="flex items-center gap-2 bg-black/90 md:bg-black/70 border-border hover:bg-black/95 md:hover:bg-black/80"
               >
                 <Filter className="h-4 w-4" />{copy("Filters")}{hasActiveFilters && (
                   <span className="btn-primary" />
@@ -89,11 +89,11 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
               </Button>
             </SheetTrigger>
             
-            <SheetContent side="bottom" className="h-[80vh] bg-gray-900/95 md:bg-gray-900 border-gray-800 card-dark">
+            <SheetContent side="bottom" className="h-[80vh] bg-background/95 md:bg-background border-border card-dark">
               <div className="flex flex-col h-full">
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-800">
-                  <h3 className="typography-h3 text-lg text-white">{copy("Filters")}</h3>
+                <div className="flex items-center justify-between p-4 border-b border-border">
+                  <h3 className="typography-h3 text-lg text-foreground">{copy("Filters")}</h3>
                   <div className="flex items-center gap-2">
                     {hasActiveFilters && (
                       <Button
@@ -118,17 +118,17 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
                 <div className="flex-1 p-4 space-y-6 overflow-y-auto">
                   {/* Category Filter */}
                   <div>
-                    <label className="typography-label block text-sm font-medium text-gray-300 mb-2">{copy("Category")}</label>
+                    <label className="typography-label block text-sm font-medium text-foreground mb-2">{copy("Category")}</label>
                     <Select value={categoryFilter} onValueChange={onCategoryChange}>
-                      <SelectTrigger className="bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500">
+                      <SelectTrigger className="bg-black/90 md:bg-black/70 border-border focus:border-amber-500">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-800/95 md:bg-gray-800 border-gray-700 backdrop-blur-sm">
+                      <SelectContent className="bg-card/95 md:bg-card border-border backdrop-blur-sm">
                         {categories.map((category) => (
                           <SelectItem
                             key={category.value}
                             value={category.value}
-                            className="text-white hover:bg-gray-700"
+                            className="text-foreground hover:bg-muted"
                           >
                             {category.label}
                           </SelectItem>
@@ -139,17 +139,17 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
 
                   {/* Sort Options */}
                   <div>
-                    <label className="typography-label block text-sm font-medium text-gray-300 mb-2">{copy("Sort By")}</label>
+                    <label className="typography-label block text-sm font-medium text-foreground mb-2">{copy("Sort By")}</label>
                     <Select value={sortOption} onValueChange={onSortChange}>
-                      <SelectTrigger className="bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500">
+                      <SelectTrigger className="bg-black/90 md:bg-black/70 border-border focus:border-amber-500">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-800/95 md:bg-gray-800 border-gray-700 backdrop-blur-sm">
+                      <SelectContent className="bg-card/95 md:bg-card border-border backdrop-blur-sm">
                         {sortOptions.map((option) => (
                           <SelectItem
                             key={option.value}
                             value={option.value}
-                            className="text-white hover:bg-gray-700"
+                            className="text-foreground hover:bg-muted"
                           >
                             {option.label}
                           </SelectItem>
@@ -160,7 +160,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
                 </div>
 
                 {/* Footer */}
-                <div className="p-4 border-t border-gray-800">
+                <div className="p-4 border-t border-border">
                   <Button
                     onClick={() => setIsOpen(false)}
                     className="w-full bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600"
@@ -172,7 +172,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
         </div>
 
         {/* Results Count */}
-        <div className="text-sm text-gray-400">
+        <div className="text-sm text-muted-foreground">
           {resultCount} {copy(resultCount === 1 ? 'machine' : 'machines')}
         </div>
       </div>

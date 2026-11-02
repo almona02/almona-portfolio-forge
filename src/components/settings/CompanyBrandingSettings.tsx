@@ -12,7 +12,7 @@ export const CompanyBrandingSettings: React.FC = () => {
   const { branding, setBranding } = useCompanyBranding();
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700">
+    <Card className="bg-card/50 border-border">
       <CardHeader>
         <CardTitle className="text-lg">Company Profile & Branding</CardTitle>
       </CardHeader>

@@ -56,7 +56,7 @@ export const ProjectStudioWrapper: React.FC = () => {
                     </p>
                 </div>
                 <Tabs value={view} onValueChange={(v) => setView(v as 'summary' | 'studio')}>
-                    <TabsList className="bg-slate-900/60 border-amber-600/20">
+                    <TabsList className="bg-background/60 border-amber-600/20">
                         <TabsTrigger value="summary" className="text-amber-300 data-[state=active]:text-amber-100 text-xs">
                             <BarChart3 size={14} className="mr-1" /> Summary
                         </TabsTrigger>

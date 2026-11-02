@@ -111,21 +111,21 @@ export function HardenerApprovalsPanel() {
   return (
     <section className="space-y-3" data-testid="hardener-approvals-panel">
       <header>
-        <h2 className="text-lg font-semibold text-amber-200">Hardener verification</h2>
-        <p className="text-sm text-slate-400">
+        <h2 className="text-lg font-semibold text-warning">Hardener verification</h2>
+        <p className="text-sm text-muted-foreground">
           Manufacturing stays stopped until verification or a permitted, audited override.
           Failed compatibility checks and missing evidence are shown below.
         </p>
       </header>
 
       {message && (
-        <p role="status" className="text-sm text-amber-200 break-words">
+        <p role="status" className="text-sm text-warning break-words">
           {message}
         </p>
       )}
 
       {rows.length === 0 ? (
-        <p className="text-sm text-slate-500">No pending hardener proposals.</p>
+        <p className="text-sm text-muted-foreground">No pending hardener proposals.</p>
       ) : (
         <ul className="space-y-4">
           {rows.map((row) => {
@@ -134,18 +134,18 @@ export function HardenerApprovalsPanel() {
             return (
               <li
                 key={row.id}
-                className="rounded-lg border border-slate-700/60 bg-slate-950/40 p-4 space-y-3"
+                className="rounded-lg border border-border/60 bg-background/40 p-4 space-y-3"
                 data-testid={`hardener-proposal-${row.id}`}
               >
                 <div className="flex flex-wrap justify-between gap-2">
                   <div>
-                    <div className="font-mono text-amber-100">{row.proposed_hardener_code}</div>
-                    <div className="text-xs text-slate-500 mt-1">
+                    <div className="font-mono text-warning">{row.proposed_hardener_code}</div>
+                    <div className="text-xs text-muted-foreground mt-1">
                       {row.system_pack_id} · pose {row.position_id.slice(0, 8)}… · rev{' '}
                       {row.position_revision}
                     </div>
                   </div>
-                  <div className="text-xs text-slate-400 space-y-0.5 text-right">
+                  <div className="text-xs text-muted-foreground space-y-0.5 text-right">
                     <div>opening: {row.opening_type || '—'}</div>
                     <div>material: {row.material || '—'}</div>
                     <div>glass: {row.glass_thickness_mm ?? '—'} mm</div>
@@ -157,14 +157,14 @@ export function HardenerApprovalsPanel() {
                 </div>
 
                 <div className="text-xs space-y-1">
-                  <div className="text-slate-400">Compatibility checks</div>
+                  <div className="text-muted-foreground">Compatibility checks</div>
                   {row.compatibility_checks.length === 0 ? (
-                    <p className="text-yellow-200/80">No checks submitted (missing evidence).</p>
+                    <p className="text-warning/80">No checks submitted (missing evidence).</p>
                   ) : (
                     row.compatibility_checks.map((c, idx) => (
                       <div
                         key={`${c.check}-${idx}`}
-                        className={c.passed ? 'text-emerald-300/90' : 'text-red-300'}
+                        className={c.passed ? 'text-success/90' : 'text-destructive'}
                       >
                         {c.passed ? 'PASS' : 'FAIL'} · {c.check || 'check'}
                         {c.detail ? ` — ${c.detail}` : ''}
@@ -172,10 +172,10 @@ export function HardenerApprovalsPanel() {
                     ))
                   )}
                   {missing.length > 0 && (
-                    <p className="text-yellow-200/90">Missing evidence: {missing.join(', ')}</p>
+                    <p className="text-warning/90">Missing evidence: {missing.join(', ')}</p>
                   )}
                   {failed.length > 0 && (
-                    <p className="text-red-300/90">
+                    <p className="text-destructive/90">
                       {failed.length} failed check(s) — approve blocked; override permitted with
                       audit.
                     </p>
@@ -183,7 +183,7 @@ export function HardenerApprovalsPanel() {
                 </div>
 
                 {/* bottom-* clears production FABs + manufacturing status bar */}
-                <div className="sticky bottom-20 z-10 -mx-1 flex flex-wrap gap-2 rounded-md border border-amber-600/30 bg-[#0f0f0f]/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-[#0f0f0f]/80 sm:bottom-16">
+                <div className="sticky bottom-20 z-10 -mx-1 flex flex-wrap gap-2 rounded-md border border-amber-600/30 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:bottom-16">
                   <Button
                     size="sm"
                     disabled={busyId === row.id || failed.length > 0 || missing.length > 0}
@@ -223,8 +223,8 @@ export function HardenerApprovalsPanel() {
                   </Button>
                 </div>
 
-                <div className="space-y-2 border-t border-slate-800 pt-3">
-                  <div className="text-xs text-slate-400">Scoped override (audited)</div>
+                <div className="space-y-2 border-t border-border pt-3">
+                  <div className="text-xs text-muted-foreground">Scoped override (audited)</div>
                   <Input
                     placeholder="Reason (min 8 chars)"
                     value={overrideReason[row.id] ?? ''}

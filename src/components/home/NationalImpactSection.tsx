@@ -15,12 +15,12 @@ export const NationalImpactSection = () => {
     ['Training', 'Ask about training topics, schedules and fees.', '/services/training'],
     ['Talk to ALMONA', 'Request a written quote for your machine and site.', '/contact'],
   ];
-  return <section className="py-20 bg-slate-950" dir={ar ? 'rtl' : 'ltr'}>
+  return <section className="py-20 bg-background" dir={ar ? 'rtl' : 'ltr'}>
     <div className="container mx-auto px-4">
-      <h2 className="typography-h2 text-white mb-8 text-center">{ar ? 'دعم احتياجات ورشتك' : 'Support for your workshop'}</h2>
+      <h2 className="typography-h2 text-foreground mb-8 text-center">{ar ? 'دعم احتياجات ورشتك' : 'Support for your workshop'}</h2>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">{items.map(([title, text, href]) =>
         <Link key={title} to={href} className="block rounded-2xl border border-amber-500/20 p-6 hover:border-amber-400">
-          <h3 className="text-xl text-amber-400 mb-3">{title}</h3><p className="text-slate-300">{text}</p>
+          <h3 className="text-xl text-amber-400 mb-3">{title}</h3><p className="text-foreground">{text}</p>
         </Link>)}</div>
     </div>
   </section>;

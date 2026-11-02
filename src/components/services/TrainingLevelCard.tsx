@@ -26,7 +26,7 @@ export const TrainingLevelCard = ({
 }: TrainingLevelCardProps) => (
   <LazyMotionDiv 
     whileHover={{ scale: 1.02 }}
-    className={`relative border rounded-lg p-6 ${isPopular ? 'border-amber-500 bg-almona-darker/50' : 'border-almona-light/20'}`}
+    className={`relative border rounded-lg p-6 ${isPopular ? 'border-amber-500 bg-card/50' : 'border-border/20'}`}
   >
     {isPopular && (
       <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -36,12 +36,12 @@ export const TrainingLevelCard = ({
       </div>
     )}
     <h3 className="typography-h3 mb-2">{title}</h3>
-    <p className="text-gray-400 text-sm mb-4">{description}</p>
+    <p className="text-muted-foreground text-sm mb-4">{description}</p>
     
     <div className="flex items-center justify-between mb-6">
       <div>
         <span className="text-2xl font-bold text-amber-500">{price}</span>
-        <span className="text-gray-400 text-sm ml-1">EGP</span>
+        <span className="text-muted-foreground text-sm ml-1">EGP</span>
       </div>
       <Badge variant="outline">{duration}</Badge>
     </div>
@@ -56,7 +56,7 @@ export const TrainingLevelCard = ({
     </ul>
     
     <Button 
-      className={`w-full ${isPopular ? 'bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600' : 'bg-almona-darker'}`}
+      className={`w-full ${isPopular ? 'bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600' : 'bg-card'}`}
       onClick={onClick}
     >
       Enroll Now

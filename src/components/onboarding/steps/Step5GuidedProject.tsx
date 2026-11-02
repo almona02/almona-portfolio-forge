@@ -52,14 +52,14 @@ export const Step5GuidedProject: React.FC<Step5GuidedProjectProps> = ({
     <div className="space-y-6">
       <div>
         <h3 className="typography-h3 text-lg mb-4">Create Your First Project</h3>
-        <p className="text-gray-400 mb-6">Follow these steps to create your first window project</p>
+        <p className="text-muted-foreground mb-6">Follow these steps to create your first window project</p>
       </div>
 
       <div className="space-y-4">
         {GUIDED_STEPS.map((step, index) => (
           <Card
             key={step.id}
-            className={`bg-gray-800 border-gray-700 ${
+            className={`bg-card border-border ${
               completedSteps.has(index) ? 'border-green-600' : ''
             }`}
           >
@@ -71,17 +71,17 @@ export const Step5GuidedProject: React.FC<Step5GuidedProjectProps> = ({
                       ? 'bg-green-600'
                       : index === currentStep
                       ? 'bg-blue-600'
-                      : 'bg-gray-700'
+                      : 'bg-muted'
                   }`}>
                     {completedSteps.has(index) ? (
-                      <CheckCircle2 className="h-5 w-5 text-white" />
+                      <CheckCircle2 className="h-5 w-5 text-foreground" />
                     ) : (
-                      <span className="text-white">{step.id}</span>
+                      <span className="text-foreground">{step.id}</span>
                     )}
                   </div>
                   <div>
                     <div className="font-semibold">{step.title}</div>
-                    <div className="text-sm text-gray-400">{step.description}</div>
+                    <div className="text-sm text-muted-foreground">{step.description}</div>
                   </div>
                 </div>
                 {index === currentStep && !completedSteps.has(index) && (
@@ -107,7 +107,7 @@ export const Step5GuidedProject: React.FC<Step5GuidedProjectProps> = ({
 
       {data.firstProject.completed && (
         <div className="p-4 bg-green-900/20 border border-green-600 rounded-lg">
-          <div className="flex items-center gap-2 text-green-400">
+          <div className="flex items-center gap-2 text-success">
             <CheckCircle2 className="h-5 w-5" />
             <span className="font-semibold">Congratulations! Your first project is complete.</span>
           </div>

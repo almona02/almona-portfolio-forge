@@ -117,9 +117,9 @@ export const SmartWizard: React.FC<SmartWizardProps> = ({
   }, [step, onCancel]);
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-2xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800 card-dark">
+        <Card className="bg-background border-border card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Smart Window Wizard</CardTitle>
             <CardDescription>
@@ -199,7 +199,7 @@ export const SmartWizard: React.FC<SmartWizardProps> = ({
                 variant="outline"
                 onClick={handleBack}
                 disabled={loading}
-                className="bg-gray-800 border-gray-700"
+                className="bg-card border-border"
               >
                 {step === 1 ? 'Cancel' : 'Back'}
               </Button>

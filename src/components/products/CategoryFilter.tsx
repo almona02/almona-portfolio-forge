@@ -66,12 +66,12 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
     return (
       <div className={`relative ${className}`}>
         <Select value={selectedCategory} onValueChange={onCategoryChange}>
-          <SelectTrigger className="w-full bg-black/70 border-gray-600 focus:border-amber-500 focus:ring-0 hover:bg-black/80 transition-colors">
+          <SelectTrigger className="w-full bg-black/70 border-border focus:border-amber-500 focus:ring-0 hover:bg-black/80 transition-colors">
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
-          <SelectContent className="bg-[linear-gradient(160deg,rgba(0,0,0,0.95)_0%,rgba(28,28,28,0.95)_60%,rgba(46,46,46,0.9)_100%)] border border-gray-700">
+          <SelectContent className="bg-[linear-gradient(160deg,rgba(0,0,0,0.95)_0%,rgba(28,28,28,0.95)_60%,rgba(46,46,46,0.9)_100%)] border border-border">
             {showAllOption && (
-              <SelectItem value="all" className="text-white hover:bg-gray-700">
+              <SelectItem value="all" className="text-foreground hover:bg-muted">
                 All Categories
               </SelectItem>
             )}
@@ -79,7 +79,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
               <React.Fragment key={category.id}>
                 <SelectItem 
                   value={category.id} 
-                  className="text-white hover:bg-gray-700 font-medium"
+                  className="text-foreground hover:bg-muted font-medium"
                 >
                   {category.name}
                 </SelectItem>
@@ -87,7 +87,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                   <SelectItem 
                     key={subCategory.id} 
                     value={subCategory.id} 
-                    className="text-white hover:bg-gray-700 pl-6"
+                    className="text-foreground hover:bg-muted pl-6"
                   >
                     {subCategory.name}
                   </SelectItem>
@@ -105,7 +105,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
       <Button
         variant="outline"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full justify-between bg-black/70 border-gray-600 hover:bg-black/80 hover:border-amber-500/50 transition-colors"
+        className="w-full justify-between bg-black/70 border-border hover:bg-black/80 hover:border-amber-500/50 transition-colors"
       >
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4" />
@@ -131,7 +131,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 mt-2 bg-[linear-gradient(160deg,rgba(0,0,0,0.95)_0%,rgba(28,28,28,0.95)_60%,rgba(46,46,46,0.9)_100%)] border border-gray-700 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto"
+            className="absolute top-full left-0 right-0 mt-2 bg-[linear-gradient(160deg,rgba(0,0,0,0.95)_0%,rgba(28,28,28,0.95)_60%,rgba(46,46,46,0.9)_100%)] border border-border rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto"
           >
             <div className="p-2">
               {showAllOption && (
@@ -141,7 +141,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                     w-full text-left p-3 rounded-lg transition-colors
                     ${selectedCategory === 'all' 
                       ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
-                      : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+                      : 'text-foreground hover:bg-muted/50 hover:text-foreground'
                     }
                   `}
                   whileHover={{ scale: 1.02 }}
@@ -149,7 +149,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-medium">All Categories</span>
-                    <Badge variant="secondary" className="text-xs bg-gray-600/50 text-gray-300">
+                    <Badge variant="secondary" className="text-xs bg-muted/50 text-foreground">
                       {getSelectedCategoryCount()}
                     </Badge>
                   </div>
@@ -165,7 +165,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                         w-full text-left p-3 rounded-lg transition-colors
                         ${selectedCategory === category.id 
                           ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
-                          : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+                          : 'text-foreground hover:bg-muted/50 hover:text-foreground'
                         }
                       `}
                       whileHover={{ scale: 1.02 }}
@@ -173,13 +173,13 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-medium">{category.name}</span>
-                        <Badge variant="secondary" className="text-xs bg-gray-600/50 text-gray-300">
+                        <Badge variant="secondary" className="text-xs bg-muted/50 text-foreground">
                           {category.children?.reduce((total, subCat) => 
                             total + (subCat.machineCount || 0), 0) || 0}
                         </Badge>
                       </div>
                       {category.description && (
-                        <p className="text-xs text-gray-400 mt-1">{category.description}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{category.description}</p>
                       )}
                     </LazyMotionButton>
 
@@ -193,7 +193,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                             w-full text-left p-2 rounded-lg transition-colors text-sm
                             ${selectedCategory === subCategory.id 
                               ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
-                              : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-200'
+                              : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                             }
                           `}
                           whileHover={{ scale: 1.02 }}
@@ -202,7 +202,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                           <div className="flex items-center justify-between">
                             <span>{subCategory.name}</span>
                             {subCategory.machineCount && (
-                              <Badge variant="secondary" className="text-xs bg-gray-600/50 text-gray-300">
+                              <Badge variant="secondary" className="text-xs bg-muted/50 text-foreground">
                                 {subCategory.machineCount}
                               </Badge>
                             )}

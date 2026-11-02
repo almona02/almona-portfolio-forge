@@ -35,12 +35,12 @@ const UsedMachineFilters: React.FC<UsedMachineFiltersProps> = ({
   onMachineTypeChange,
 }) => {
   return (
-    <div className="mb-8 bg-almona-darker p-6 rounded-lg text-right">
+    <div className="mb-8 bg-card p-6 rounded-lg text-right">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="md:col-span-2">
           <Input
             placeholder="ابحث عن ماكينة (نسخ، قطع، CNC...)"
-            className="bg-almona-dark border-almona-light text-right"
+            className="bg-background border-border text-right"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
           />

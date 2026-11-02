@@ -94,17 +94,17 @@ export const DesignWorkflowWrapper: React.FC = () => {
 
   // Drafting workbench
   const draftingWorkbench = mode === 'drafting' ? (
-    <div className="fixed inset-0 z-[100] bg-[#0a0a0a]">
+    <div className="fixed inset-0 z-[100] bg-background">
       <div className="h-full flex flex-col">
-        <div className="p-4 border-b border-amber-600/30 bg-[#0a0a0a] flex items-center justify-between card-glass-dark flex-shrink-0">
+        <div className="p-4 border-b border-amber-600/30 bg-background flex items-center justify-between card-glass-dark flex-shrink-0">
           <div className="flex items-center gap-3">
             <button
               onClick={() => handleModeChange('smartdraw')}
-              className="btn-secondary flex items-center gap-2 px-3 py-1.5 rounded border border-amber-600/30 text-amber-400 hover:bg-amber-500/10"
+              className="btn-secondary flex items-center gap-2 px-3 py-1.5 rounded border border-amber-600/30 text-warning hover:bg-amber-500/10"
             >
               ← Back to SmartDraw
             </button>
-            <span className="text-sm text-amber-400 font-semibold">
+            <span className="text-sm text-warning font-semibold">
               ALMONA Drafting Mode - Tier 0 Visual Drafting
             </span>
           </div>

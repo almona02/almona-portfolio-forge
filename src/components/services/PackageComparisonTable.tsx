@@ -7,9 +7,9 @@ export function PackageComparisonTable({ className = '' }: { className?: string 
   const { t, language } = useLanguage();
   const packages = getServicePackages(language);
   return (
-    <Card className={`bg-slate-800/50 border border-white/10 overflow-hidden ${className}`}>
+    <Card className={`bg-card/50 border border-white/10 overflow-hidden ${className}`}>
       <CardHeader>
-        <CardTitle className="text-white text-center">{t('services.service_package_comparison')}</CardTitle>
+        <CardTitle className="text-foreground text-center">{t('services.service_package_comparison')}</CardTitle>
       </CardHeader>
       <CardContent className="p-0">
         <div className="overflow-x-auto" role="region" aria-label={t('services.service_package_comparison')} tabIndex={0}>
@@ -18,8 +18,8 @@ export function PackageComparisonTable({ className = '' }: { className?: string 
               <tr className="border-b border-white/10">
                 {SERVICE_PACKAGE_IDS.map(id => (
                   <th key={id} scope="col" className="p-4 text-start min-w-[240px] align-top">
-                    <div className="font-bold text-white">{packages[id].title}</div>
-                    <div className="text-sm text-gray-300 mt-2">{packages[id].machines}</div>
+                    <div className="font-bold text-foreground">{packages[id].title}</div>
+                    <div className="text-sm text-foreground mt-2">{packages[id].machines}</div>
                     <div className="text-lg text-amber-400 mt-2">{packages[id].price}</div>
                     {packages[id].popular && <Badge className="mt-2">{t('services.most_popular')}</Badge>}
                   </th>
@@ -29,7 +29,7 @@ export function PackageComparisonTable({ className = '' }: { className?: string 
             <tbody>
               <tr>
                 {SERVICE_PACKAGE_IDS.map(id => (
-                  <td key={id} className="p-4 align-top text-sm text-gray-300">
+                  <td key={id} className="p-4 align-top text-sm text-foreground">
                     <ul className="list-disc ps-4 space-y-3">
                       {packages[id].features.map(feature => <li key={feature}>{feature}</li>)}
                     </ul>

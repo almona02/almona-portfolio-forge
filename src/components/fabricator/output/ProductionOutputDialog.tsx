@@ -46,12 +46,12 @@ export const ProductionOutputDialog: React.FC<ProductionOutputDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="bg-[#111] border-amber-600/30 text-amber-100 sm:max-w-lg"
+        className="bg-[#111] border-amber-600/30 text-warning sm:max-w-lg"
         data-testid="production-output-dialog"
       >
         <DialogHeader>
           <DialogTitle>{t('industrial.output.title', 'Production output')}</DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogDescription className="text-muted-foreground">
             {t(
               'industrial.output.subtitle',
               'Only formats that exist in ALMONA are enabled. Unsupported formats stay disabled.',
@@ -69,12 +69,12 @@ export const ProductionOutputDialog: React.FC<ProductionOutputDialogProps> = ({
                 <div>
                   <div className="text-sm">{cap.label}</div>
                   {!cap.available && (
-                    <p className="text-[11px] text-slate-500" data-testid={`output-reason-${cap.id}`}>
+                    <p className="text-[11px] text-muted-foreground" data-testid={`output-reason-${cap.id}`}>
                       {cap.reason}
                     </p>
                   )}
                   {cap.available && !available && (
-                    <p className="text-[11px] text-slate-500">
+                    <p className="text-[11px] text-muted-foreground">
                       {t('industrial.output.needs_data', 'Requires optimization or BOM data')}
                     </p>
                   )}
@@ -104,7 +104,7 @@ export const ProductionOutputDialog: React.FC<ProductionOutputDialogProps> = ({
           })}
         </ul>
         {lastAttempt && (
-          <p className="text-[10px] text-slate-500" data-testid="output-last-attempt">
+          <p className="text-[10px] text-muted-foreground" data-testid="output-last-attempt">
             {lastAttempt}
           </p>
         )}

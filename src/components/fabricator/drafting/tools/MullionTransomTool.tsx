@@ -75,7 +75,7 @@ export const MullionTransomTool: React.FC<MullionTransomToolProps> = ({
   return (
     <div className="flex flex-col gap-2 p-3 bg-green-50 rounded border border-green-200">
       <div className="flex items-center gap-2">
-        <Ruler size={16} className="text-green-600" />
+        <Ruler size={16} className="text-success" />
         <span className="text-sm font-medium text-green-800">
           {structuralType === 'mullion' ? 'Mullion' : structuralType === 'transom' ? 'Transom' : 'Reinforcement'} Tool
         </span>

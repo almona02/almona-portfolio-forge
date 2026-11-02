@@ -494,7 +494,7 @@ export const FabricationWorkflowWizard: React.FC<FabricationWorkflowWizardProps>
         if (!windowUnit) {
           return (
             <Card className="card-glass-dark">
-              <CardContent className="p-6 text-center text-amber-600/70">
+              <CardContent className="p-6 text-center text-warning/70">
                 {t('fabrication_wizard.no_measurement', 'Please complete measurement step first')}
               </CardContent>
             </Card>
@@ -514,7 +514,7 @@ export const FabricationWorkflowWizard: React.FC<FabricationWorkflowWizardProps>
         if (!windowUnit) {
           return (
             <Card className="card-glass-dark">
-              <CardContent className="p-6 text-center text-amber-600/70">
+              <CardContent className="p-6 text-center text-warning/70">
                 {t('fabrication_wizard.no_design', 'Please complete design step first')}
               </CardContent>
             </Card>
@@ -543,12 +543,12 @@ export const FabricationWorkflowWizard: React.FC<FabricationWorkflowWizardProps>
       <Card className="card-glass-dark rounded-b-none border-b-2 border-amber-600/30">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-amber-200">
+            <CardTitle className="flex items-center gap-2 text-warning">
               <span className="text-sm font-semibold">
                 {t('fabrication_wizard.title', 'Fabrication Workflow')}
               </span>
               {isSaving && (
-                <Badge variant="outline" className="bg-amber-950/30 border-amber-500/40 text-amber-300 text-xs">
+                <Badge variant="outline" className="bg-amber-950/30 border-amber-500/40 text-warning text-xs">
                   <Save className="h-3 w-3 mr-1" />
                   {t('fabrication_wizard.saving', 'Saving...')}
                 </Badge>
@@ -558,14 +558,14 @@ export const FabricationWorkflowWizard: React.FC<FabricationWorkflowWizardProps>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-amber-400 hover:text-amber-300">
+                    <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-warning hover:text-warning">
                       <HelpCircle className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-sm">
                     <div className="space-y-2">
-                      <div className="font-semibold text-amber-200">{STEP_HELP[currentStep]}</div>
-                      <div className="text-xs text-amber-400/80 border-t border-amber-600/30 pt-2">
+                      <div className="font-semibold text-warning">{STEP_HELP[currentStep]}</div>
+                      <div className="text-xs text-warning/80 border-t border-amber-600/30 pt-2">
                         <div className="flex items-center gap-2 mb-1">
                           <Keyboard className="h-3 w-3" />
                           <span className="font-semibold">Keyboard Shortcuts:</span>
@@ -614,10 +614,10 @@ export const FabricationWorkflowWizard: React.FC<FabricationWorkflowWizardProps>
                     className={cn(
                       'relative w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300',
                       isCompleted
-                        ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
+                        ? 'bg-emerald-500/20 border-emerald-500 text-success'
                         : isCurrent
-                        ? 'bg-amber-500/20 border-amber-500 text-amber-400 scale-110 shadow-lg shadow-amber-500/50'
-                        : 'bg-gray-800/50 border-amber-600/30 text-amber-600/50'
+                        ? 'bg-amber-500/20 border-amber-500 text-warning scale-110 shadow-lg shadow-amber-500/50'
+                        : 'bg-card/50 border-amber-600/30 text-warning/50'
                     )}
                   >
                     {isCompleted ? (
@@ -630,12 +630,12 @@ export const FabricationWorkflowWizard: React.FC<FabricationWorkflowWizardProps>
                     <div
                       className={cn(
                         'text-xs font-semibold',
-                        isCurrent ? 'text-amber-200' : isCompleted ? 'text-emerald-400' : 'text-amber-600/50'
+                        isCurrent ? 'text-warning' : isCompleted ? 'text-success' : 'text-warning/50'
                       )}
                     >
                       {step.title}
                     </div>
-                    <div className="text-[10px] text-amber-600/70 mt-0.5">{step.description}</div>
+                    <div className="text-[10px] text-warning/70 mt-0.5">{step.description}</div>
                   </div>
                 </div>
               );
@@ -664,7 +664,7 @@ export const FabricationWorkflowWizard: React.FC<FabricationWorkflowWizardProps>
             </Button>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs text-amber-600/70">
+              <span className="text-xs text-warning/70">
                 {t('fabrication_wizard.step', 'Step')} {currentStepIndex + 1} {t('fabrication_wizard.of', 'of')}{' '}
                 {WORKFLOW_STEPS.length}
               </span>

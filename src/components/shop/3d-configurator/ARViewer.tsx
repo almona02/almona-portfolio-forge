@@ -405,11 +405,11 @@ export const ARViewer = ({
   if (isLoading && isSupported === null) {
     return (
       <div className="ar-skeleton">
-        <div className="flex items-center justify-center h-64 bg-gradient-to-br from-gray-900 to-black rounded-lg border border-amber-500/20">
+        <div className="flex items-center justify-center h-64 bg-gradient-to-br from-background to-black rounded-lg border border-amber-500/20">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-gray-300 font-medium">Checking AR capabilities...</p>
-            <p className="text-gray-500 text-sm mt-2">Detecting device sensors and AR support</p>
+            <p className="text-foreground font-medium">Checking AR capabilities...</p>
+            <p className="text-muted-foreground text-sm mt-2">Detecting device sensors and AR support</p>
           </div>
         </div>
       </div>
@@ -430,23 +430,23 @@ export const ARViewer = ({
             <Badge variant="outline" className="btn-primary">
               Premium Feature
             </Badge>
-            <p className="text-gray-300">
+            <p className="text-foreground">
               For the full Augmented Reality experience, use a compatible mobile device.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="space-y-2">
-              <h4 className="typography-h4 text-gray-200">Recommended Devices</h4>
-              <ul className="text-gray-400 space-y-1">
+              <h4 className="typography-h4 text-foreground">Recommended Devices</h4>
+              <ul className="text-muted-foreground space-y-1">
                 <li>• iPhone with iOS 12+</li>
                 <li>• Android with ARCore</li>
                 <li>• iPad with iPadOS 13+</li>
               </ul>
             </div>
             <div className="space-y-2">
-              <h4 className="typography-h4 text-gray-200">Current Options</h4>
-              <ul className="text-gray-400 space-y-1">
+              <h4 className="typography-h4 text-foreground">Current Options</h4>
+              <ul className="text-muted-foreground space-y-1">
                 <li>• Interactive 3D Preview</li>
                 <li>• Virtual Measurement Tools</li>
                 <li>• automation Maintenance Insights</li>
@@ -465,7 +465,7 @@ export const ARViewer = ({
             <Button 
               variant="outline"
               onClick={() => setSelectedMachine(null)}
-              className="border-gray-600"
+              className="border-border"
             >
               <X className="w-4 h-4 mr-2" />
               Close
@@ -480,7 +480,7 @@ export const ARViewer = ({
     <TooltipProvider>
       <div className="space-y-6">
         {/* Machine Selection */}
-        <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+        <Card className="bg-gradient-to-br from-background to-black border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Cpu className="h-5 w-5 text-amber-400" />
@@ -504,7 +504,7 @@ export const ARViewer = ({
                       </div>
                       <div>
                         <div className="font-medium text-white">{machine.id}</div>
-                        <div className="text-xs text-gray-400">{machine.powerRequired} • {machine.minWidth}x{machine.minLength}x{machine.minHeight}m</div>
+                        <div className="text-xs text-muted-foreground">{machine.powerRequired} • {machine.minWidth}x{machine.minLength}x{machine.minHeight}m</div>
                       </div>
                     </div>
                   </SelectItem>
@@ -517,10 +517,10 @@ export const ARViewer = ({
         {selectedMachine && (
           <>
             {/* AR Controls & Information */}
-            <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
+            <Card className="bg-gradient-to-br from-background to-black border-border">
               <CardContent className="p-6">
                 <Tabs defaultValue="preview" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+                  <TabsList className="grid w-full grid-cols-3 bg-card">
                     <TabsTrigger value="preview">3D Preview</TabsTrigger>
                     <TabsTrigger value="specs">Specifications</TabsTrigger>
                     <TabsTrigger value="maintenance">automation Insights</TabsTrigger>
@@ -529,7 +529,7 @@ export const ARViewer = ({
                   <TabsContent value="preview" className="space-y-4 mt-4">
                     <div 
                       ref={arContainerRef}
-                      className="relative h-64 bg-gradient-to-br from-gray-800 to-black rounded-lg border border-amber-500/20 overflow-hidden"
+                      className="relative h-64 bg-gradient-to-br from-card to-black rounded-lg border border-amber-500/20 overflow-hidden"
                     >
                       <WorkshopARView 
                         machine={MACHINE_PRESETS[selectedMachine]} 
@@ -543,7 +543,7 @@ export const ARViewer = ({
                               <Button
                                 size="icon"
                                 variant="secondary"
-                                className="bg-gray-800/80 backdrop-blur-sm border-gray-700"
+                                className="bg-card/80 backdrop-blur-sm border-border"
                                 onClick={() => adjustScale(1.2)}
                               >
                                 <Maximize2 className="h-4 w-4" />
@@ -557,7 +557,7 @@ export const ARViewer = ({
                               <Button
                                 size="icon"
                                 variant="secondary"
-                                className="bg-gray-800/80 backdrop-blur-sm border-gray-700"
+                                className="bg-card/80 backdrop-blur-sm border-border"
                                 onClick={() => adjustScale(0.8)}
                               >
                                 <Ruler className="h-4 w-4" />
@@ -567,7 +567,7 @@ export const ARViewer = ({
                           </Tooltip>
                         </div>
 
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-muted-foreground">
                           Scale: {currentScale}x
                         </div>
                       </div>
@@ -580,7 +580,7 @@ export const ARViewer = ({
                         variant={arMode === 'measure' ? 'default' : 'outline'}
                         size="sm"
                         className={cn(
-                          "border-gray-600",
+                          "border-border",
                           arMode === 'measure' && "bg-amber-500 hover:bg-amber-600"
                         )}
                       >
@@ -593,7 +593,7 @@ export const ARViewer = ({
                         variant={arMode === 'inspect' ? 'default' : 'outline'}
                         size="sm"
                         className={cn(
-                          "border-gray-600",
+                          "border-border",
                           arMode === 'inspect' && "bg-amber-500 hover:bg-amber-600"
                         )}
                       >
@@ -605,7 +605,7 @@ export const ARViewer = ({
                         onClick={() => captureSnapshot()}
                         variant="outline"
                         size="sm"
-                        className="border-gray-600"
+                        className="border-border"
                       >
                         <Camera className="h-4 w-4 mr-2" />
                         Capture
@@ -618,25 +618,25 @@ export const ARViewer = ({
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div className="space-y-2">
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Length:</span>
+                            <span className="text-muted-foreground">Length:</span>
                             <span className="text-white">{measurements.length}m</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Width:</span>
+                            <span className="text-muted-foreground">Width:</span>
                             <span className="text-white">{measurements.width}m</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Height:</span>
+                            <span className="text-muted-foreground">Height:</span>
                             <span className="text-white">{measurements.height}m</span>
                           </div>
                         </div>
                         <div className="space-y-2">
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Weight:</span>
+                            <span className="text-muted-foreground">Weight:</span>
                             <span className="text-white">{measurements.weight}kg</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Scale:</span>
+                            <span className="text-muted-foreground">Scale:</span>
                             <span className="text-white">{measurements.scale}x</span>
                           </div>
                         </div>
@@ -646,17 +646,17 @@ export const ARViewer = ({
 
                   <TabsContent value="maintenance" className="space-y-4 mt-4">
                     {maintenanceInfo ? (
-                      <div className="bg-gray-800/50 rounded-lg p-4">
+                      <div className="bg-card/50 rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-3">
                           <Zap className="h-4 w-4 text-amber-400" />
                           <span className="font-medium text-amber-400">software-assisted Insights</span>
                         </div>
-                        <p className="text-gray-300 text-sm leading-relaxed">
+                        <p className="text-foreground text-sm leading-relaxed">
                           {maintenanceInfo}
                         </p>
                       </div>
                     ) : (
-                      <div className="text-center py-8 text-gray-500">
+                      <div className="text-center py-8 text-muted-foreground">
                         <Wrench className="h-8 w-8 mx-auto mb-2" />
                         <p>Loading maintenance insights...</p>
                       </div>
@@ -681,7 +681,7 @@ export const ARViewer = ({
               <Button 
                 onClick={() => void shareExperience()}
                 variant="outline"
-                className="h-12 border-gray-600"
+                className="h-12 border-border"
                 size="lg"
               >
                 <Share2 className="w-5 h-5 mr-2" />
@@ -698,10 +698,10 @@ export const ARViewer = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="fixed bottom-4 right-4 bg-gray-900/90 backdrop-blur-sm border border-gray-700 rounded-lg p-3 space-y-2 min-w-48"
+              className="fixed bottom-4 right-4 bg-background/90 backdrop-blur-sm border border-border rounded-lg p-3 space-y-2 min-w-48"
             >
               <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-400">Performance</span>
+                <span className="text-muted-foreground">Performance</span>
                 <Badge 
                   variant={
                     performanceMetrics.trackingQuality === 'excellent' ? 'default' :
@@ -716,27 +716,27 @@ export const ARViewer = ({
 
               <div className="space-y-1 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">FPS:</span>
+                  <span className="text-muted-foreground">FPS:</span>
                   <span className={
-                    performanceMetrics.fps > 50 ? 'text-green-400' :
-                    performanceMetrics.fps > 30 ? 'text-yellow-400' : 'text-red-400'
+                    performanceMetrics.fps > 50 ? 'text-success' :
+                    performanceMetrics.fps > 30 ? 'text-yellow-400' : 'text-destructive'
                   }>
                     {performanceMetrics.fps}
                   </span>
                 </div>
 
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Memory:</span>
+                  <span className="text-muted-foreground">Memory:</span>
                   <span className={
-                    performanceMetrics.memoryUsage < 60 ? 'text-green-400' :
-                    performanceMetrics.memoryUsage < 80 ? 'text-yellow-400' : 'text-red-400'
+                    performanceMetrics.memoryUsage < 60 ? 'text-success' :
+                    performanceMetrics.memoryUsage < 80 ? 'text-yellow-400' : 'text-destructive'
                   }>
                     {performanceMetrics.memoryUsage}%
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Battery className="h-3 w-3 text-gray-400" />
+                  <Battery className="h-3 w-3 text-muted-foreground" />
                   <Progress 
                     value={
                       performanceMetrics.batteryImpact === 'low' ? 25 :
@@ -752,13 +752,13 @@ export const ARViewer = ({
 
         {/* AR Session Dialog */}
         <AlertDialog open={isOpen} onOpenChange={(open) => { if (!open) { stopAR(); } else { setIsOpen(true); } }}>
-          <AlertDialogContent className="max-w-4xl bg-gray-900 border border-gray-700">
+          <AlertDialogContent className="max-w-4xl bg-background border border-border">
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center gap-2">
                 <Scan className="h-5 w-5 text-amber-400" />
                 AR Experience - {selectedMachine}
               </AlertDialogTitle>
-              <AlertDialogDescription className="text-gray-300">
+              <AlertDialogDescription className="text-foreground">
                 Position the machine in your space using your device&apos;s camera.
                 Move around to view from different angles.
               </AlertDialogDescription>
@@ -766,7 +766,7 @@ export const ARViewer = ({
 
             <div className="relative h-96 bg-black rounded-lg overflow-hidden">
               {/* AR view would be rendered here */}
-              <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+              <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
                 <div className="text-center">
                   <Scan className="h-16 w-16 mx-auto mb-4 text-amber-400" />
                   <p>AR View Active</p>
@@ -782,7 +782,7 @@ export const ARViewer = ({
                       <Button
                         size="icon"
                         variant="secondary"
-                        className="bg-gray-800/80 backdrop-blur-sm"
+                        className="bg-card/80 backdrop-blur-sm"
                         onClick={() => setIsMuted(!isMuted)}
                       >
                         {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -796,7 +796,7 @@ export const ARViewer = ({
                       <Button
                         size="icon"
                         variant="secondary"
-                        className="bg-gray-800/80 backdrop-blur-sm"
+                        className="bg-card/80 backdrop-blur-sm"
                         onClick={() => captureSnapshot()}
                       >
                         <Camera className="h-4 w-4" />

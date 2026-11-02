@@ -69,26 +69,26 @@ const ConstraintErrorItem: React.FC<{
 
   return (
     <div
-      className="text-xs text-red-300/90 flex items-start gap-2 p-2 rounded-md hover:bg-red-950/30 transition-colors duration-200 focus-within:ring-2 focus-within:ring-amber-500/50 focus-within:outline-none"
+      className="text-xs text-destructive/90 flex items-start gap-2 p-2 rounded-md hover:bg-red-950/30 transition-colors duration-200 focus-within:ring-2 focus-within:ring-amber-500/50 focus-within:outline-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       tabIndex={0}
     >
-      <AlertCircle className={`h-3 w-3 mt-0.5 flex-shrink-0 transition-transform duration-200 ${isHovered ? 'scale-110 text-red-400' : ''}`} />
+      <AlertCircle className={`h-3 w-3 mt-0.5 flex-shrink-0 transition-transform duration-200 ${isHovered ? 'scale-110 text-destructive' : ''}`} />
       <div className="flex-1">
         <div className="font-medium transition-colors duration-200">{constraint.constraintName}</div>
         {constraint.error && (
-          <div className="text-red-400/70 mt-0.5 ml-4 transition-opacity duration-200">{constraint.error}</div>
+          <div className="text-destructive/70 mt-0.5 ml-4 transition-opacity duration-200">{constraint.error}</div>
         )}
         <div className="flex items-center gap-2 mt-1 flex-wrap">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="text-red-500/60 text-[10px] font-mono hover:text-red-400/80 cursor-help transition-colors duration-200">
+                <div className="text-destructive/60 text-[10px] font-mono hover:text-destructive/80 cursor-help transition-colors duration-200">
                   {constraint.constraintId}
                 </div>
               </TooltipTrigger>
-              <TooltipContent className="bg-slate-900 border-amber-500/30 text-xs font-mono max-w-xs">
+              <TooltipContent className="bg-background border-amber-500/30 text-xs font-mono max-w-xs">
                 <p>Constraint ID: {constraint.constraintId}</p>
               </TooltipContent>
             </Tooltip>
@@ -97,14 +97,14 @@ const ConstraintErrorItem: React.FC<{
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1 text-amber-500/80 hover:text-amber-400 text-[10px] font-semibold px-1.5 py-0.5 bg-amber-950/20 border border-amber-500/30 rounded hover:bg-amber-950/30 hover:border-amber-500/50 transition-all duration-200 cursor-help">
+                  <div className="flex items-center gap-1 text-warning/80 hover:text-warning text-[10px] font-semibold px-1.5 py-0.5 bg-amber-950/20 border border-amber-500/30 rounded hover:bg-amber-950/30 hover:border-amber-500/50 transition-all duration-200 cursor-help">
                     <FileText className="h-2.5 w-2.5" />
                     <span>AICS-001 Section {sectionRef}</span>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent className="bg-slate-900 border-amber-500/30 text-xs max-w-xs">
+                <TooltipContent className="bg-background border-amber-500/30 text-xs max-w-xs">
                   <p>Reference: {ruleId}</p>
-                  <p className="text-amber-400/80 mt-1">AICS-001 Section {sectionRef}</p>
+                  <p className="text-warning/80 mt-1">AICS-001 Section {sectionRef}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -136,12 +136,12 @@ export const ValidationEnvelopeErrorDisplay: React.FC<ValidationEnvelopeErrorDis
         <div className="font-semibold">
           Failed Categories: {envelopeResult.failedCategories.map(cat => getCategoryName(cat)).join(', ')}
         </div>
-        <div className="text-red-400/80">
+        <div className="text-destructive/80">
           {errorReport.slice(0, 2).map((error, idx) => (
             <div key={idx} className="truncate">{error}</div>
           ))}
           {errorReport.length > 2 && (
-            <div className="text-red-400/60">... and {errorReport.length - 2} more errors</div>
+            <div className="text-destructive/60">... and {errorReport.length - 2} more errors</div>
           )}
         </div>
       </div>
@@ -153,12 +153,12 @@ export const ValidationEnvelopeErrorDisplay: React.FC<ValidationEnvelopeErrorDis
     <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
       {/* Summary */}
       <div className="text-sm p-3 bg-red-950/20 border border-red-500/30 rounded-md">
-        <span className="font-semibold text-slate-200">Validation failed:</span>{' '}
-        <span className="text-red-400 font-medium">
+        <span className="font-semibold text-foreground">Validation failed:</span>{' '}
+        <span className="text-destructive font-medium">
           {envelopeResult.metadata.failedCategories} of {envelopeResult.metadata.totalCategories} categories failed
         </span>
         {' '}
-        <span className="text-slate-400">
+        <span className="text-muted-foreground">
           ({envelopeResult.metadata.totalConstraints - envelopeResult.allConstraintResults.filter(r => r.passed).length} of {envelopeResult.metadata.totalConstraints} constraints failed)
         </span>
       </div>
@@ -177,7 +177,7 @@ export const ValidationEnvelopeErrorDisplay: React.FC<ValidationEnvelopeErrorDis
               className="bg-red-950/20 border-red-500/30 hover:border-red-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-red-500/10 animate-in slide-in-from-left-5 fade-in"
             >
               <CardHeader className="pb-2 pt-3 px-4">
-                <CardTitle className="text-sm font-semibold text-red-400 flex items-center gap-2">
+                <CardTitle className="text-sm font-semibold text-destructive flex items-center gap-2">
                   <XCircle className="h-4 w-4 animate-pulse" />
                   {getCategoryName(category)} (Failed)
                 </CardTitle>
@@ -196,7 +196,7 @@ export const ValidationEnvelopeErrorDisplay: React.FC<ValidationEnvelopeErrorDis
 
       {/* Metadata */}
       {import.meta.env.DEV && (
-        <div className="text-[10px] text-slate-500 mt-2 pt-2 border-t border-slate-700/50">
+        <div className="text-[10px] text-muted-foreground mt-2 pt-2 border-t border-border/50">
           Validation timestamp: {envelopeResult.timestamp.toISOString()}
         </div>
       )}

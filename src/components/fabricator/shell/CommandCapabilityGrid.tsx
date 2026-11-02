@@ -149,7 +149,7 @@ export const CommandCapabilityGrid: React.FC<{ className?: string }> = ({ classN
 
   return (
     <div className={cn('space-y-7', className)} data-testid="command-capability-grid">
-      <p className="text-[11px] text-slate-500">
+      <p className="text-[11px] text-muted-foreground">
         Labels show surface availability only — not shop readiness, stock, or machine connection.
       </p>
       <CapabilitySection title="Workshop engines" items={fabricator} />
@@ -167,7 +167,7 @@ function CapabilitySection({
 }) {
   return (
     <section>
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-amber-500/90">
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-warning/90">
         {title}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2.5">
@@ -184,11 +184,11 @@ function CapabilitySection({
             data-testid={`command-capability-${item.id}`}
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center border border-amber-600/30 text-amber-400 group-hover:text-amber-200">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center border border-amber-600/30 text-warning group-hover:text-warning">
                 {item.icon}
               </span>
               <div className="min-w-0">
-                <div className="text-sm font-medium text-amber-100 truncate">
+                <div className="text-sm font-medium text-warning truncate">
                   {item.title}
                 </div>
                 <div className="text-[10px] uppercase tracking-widest text-amber-700 font-mono truncate">
@@ -199,9 +199,9 @@ function CapabilitySection({
             <span
               className={cn(
                 'shrink-0 text-[10px] uppercase tracking-wider font-mono px-1.5 py-0.5 border',
-                item.availability === 'in_use' && 'border-emerald-500/40 text-emerald-400',
-                item.availability === 'available' && 'border-amber-600/40 text-amber-500',
-                item.availability === 'not_recorded' && 'border-slate-600 text-slate-500',
+                item.availability === 'in_use' && 'border-emerald-500/40 text-success',
+                item.availability === 'available' && 'border-amber-600/40 text-warning',
+                item.availability === 'not_recorded' && 'border-border text-muted-foreground',
               )}
             >
               {availabilityLabel(item.availability)}

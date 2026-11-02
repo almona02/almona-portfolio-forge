@@ -346,10 +346,10 @@ export const InteractiveUserGuide: React.FC<{
   // Get difficulty color
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return 'bg-green-500/20 text-green-300 border-green-500/50';
+      case 'beginner': return 'bg-green-500/20 text-success border-green-500/50';
       case 'intermediate': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50';
-      case 'advanced': return 'bg-red-500/20 text-red-300 border-red-500/50';
-      default: return 'bg-gray-500/20 text-gray-300 border-gray-500/50';
+      case 'advanced': return 'bg-red-500/20 text-destructive border-red-500/50';
+      default: return 'bg-muted/20 text-foreground border-border/50';
     }
   };
 
@@ -385,7 +385,7 @@ export const InteractiveUserGuide: React.FC<{
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="w-full max-w-4xl max-h-[90vh] bg-almona-dark rounded-2xl shadow-2xl overflow-hidden"
+          className="w-full max-w-4xl max-h-[90vh] bg-background rounded-2xl shadow-2xl overflow-hidden"
         >
           {!selectedModule ? (
             // Module Selection Screen
@@ -393,7 +393,7 @@ export const InteractiveUserGuide: React.FC<{
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="typography-h2 text-almona-orange">Interactive Training Center</h2>
-                  <p className="text-gray-400 mt-1">Master the new features with hands-on tutorials</p>
+                  <p className="text-muted-foreground mt-1">Master the new features with hands-on tutorials</p>
                 </div>
                 <Button variant="ghost" onClick={onClose}>
                   <X className="h-5 w-5" />
@@ -408,7 +408,7 @@ export const InteractiveUserGuide: React.FC<{
                     whileTap={{ scale: 0.98 }}
                   >
                     <Card 
-                      className="bg-almona-dark/60 border-almona-light/20 cursor-pointer hover:border-almona-orange/50 transition-colors h-full"
+                      className="bg-background/60 border-border/20 cursor-pointer hover:border-almona-orange/50 transition-colors h-full"
                       onClick={() => setSelectedModule(module)}
                     >
                       <CardHeader className="pb-3">
@@ -423,7 +423,7 @@ export const InteractiveUserGuide: React.FC<{
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-3">
-                        <p className="text-sm text-gray-400">{module.description}</p>
+                        <p className="text-sm text-muted-foreground">{module.description}</p>
 
                         <div className="flex items-center justify-between text-xs">
                           <div className="flex items-center gap-2">
@@ -437,7 +437,7 @@ export const InteractiveUserGuide: React.FC<{
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-muted-foreground">
                             {module.steps.length} steps
                           </span>
                           <div className="flex items-center gap-1 text-almona-orange">
@@ -455,7 +455,7 @@ export const InteractiveUserGuide: React.FC<{
             // Training Module Screen
             <div className="flex flex-col h-full">
               {/* Header */}
-              <div className="p-6 border-b border-almona-light/20">
+              <div className="p-6 border-b border-border/20">
                 <div className="flex items-center justify-between mb-4">
                   <Button
                     variant="ghost"
@@ -477,7 +477,7 @@ export const InteractiveUserGuide: React.FC<{
                   {selectedModule.icon}
                   <div>
                     <h3 className="typography-h3">{selectedModule.title}</h3>
-                    <p className="text-sm text-gray-400">{selectedModule.description}</p>
+                    <p className="text-sm text-muted-foreground">{selectedModule.description}</p>
                   </div>
                 </div>
 
@@ -506,13 +506,13 @@ export const InteractiveUserGuide: React.FC<{
                         <h4 className="typography-h4 mb-2">
                           {selectedModule.steps[currentStep].title}
                         </h4>
-                        <p className="text-gray-400">
+                        <p className="text-muted-foreground">
                           {selectedModule.steps[currentStep].description}
                         </p>
                       </div>
 
                       {/* Step Content */}
-                      <Card className="bg-almona-dark/40 border-almona-light/20">
+                      <Card className="bg-background/40 border-border/20">
                         <CardContent className="p-6">
                           <p className="text-sm leading-relaxed">
                             {selectedModule.steps[currentStep].content}
@@ -524,10 +524,10 @@ export const InteractiveUserGuide: React.FC<{
                               <img
                                 src={selectedModule.steps[currentStep].media.url}
                                 alt={selectedModule.steps[currentStep].media.caption}
-                                className="rounded-lg border border-almona-light/20"
+                                className="rounded-lg border border-border/20"
                               />
                               {selectedModule.steps[currentStep].media.caption && (
-                                <p className="text-xs text-gray-500 mt-2 text-center">
+                                <p className="text-xs text-muted-foreground mt-2 text-center">
                                   {selectedModule.steps[currentStep].media.caption}
                                 </p>
                               )}
@@ -538,8 +538,8 @@ export const InteractiveUserGuide: React.FC<{
                           {selectedModule.steps[currentStep].hints && (
                             <div className="mt-4 p-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
                               <div className="flex items-center gap-2 mb-2">
-                                <HelpCircle className="h-4 w-4 text-blue-400" />
-                                <span className="text-sm font-medium text-blue-300">Hints</span>
+                                <HelpCircle className="h-4 w-4 text-info" />
+                                <span className="text-sm font-medium text-info">Hints</span>
                               </div>
                               <ul className="text-xs text-blue-200 space-y-1">
                                 {selectedModule.steps[currentStep].hints.map((hint, index) => (
@@ -576,13 +576,13 @@ export const InteractiveUserGuide: React.FC<{
               </div>
 
               {/* Footer Navigation */}
-              <div className="p-6 border-t border-almona-light/20">
+              <div className="p-6 border-t border-border/20">
                 <div className="flex justify-between">
                   <Button
                     variant="outline"
                     onClick={previousStep}
                     disabled={currentStep === 0}
-                    className="border-almona-light/30"
+                    className="border-border/30"
                   >
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     Previous
@@ -595,10 +595,10 @@ export const InteractiveUserGuide: React.FC<{
                         onClick={() => setCurrentStep(index)}
                         className={`w-8 h-8 rounded-full text-xs transition-colors ${
                           index === currentStep
-                            ? 'bg-almona-orange text-white'
+                            ? 'bg-almona-orange text-primary-foreground'
                             : index < currentStep
                             ? 'bg-green-500 text-white'
-                            : 'bg-almona-light/20 text-gray-400'
+                            : 'bg-almona-light/20 text-muted-foreground'
                         }`}
                       >
                         {index + 1}
@@ -610,7 +610,7 @@ export const InteractiveUserGuide: React.FC<{
                     variant="outline"
                     onClick={nextStep}
                     disabled={currentStep === selectedModule.steps.length - 1}
-                    className="border-almona-light/30"
+                    className="border-border/30"
                   >
                     Next
                     <ArrowRight className="h-4 w-4 ml-2" />

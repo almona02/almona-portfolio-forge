@@ -143,7 +143,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
 
   if (loading || loadedFor !== customerId) {
     return (
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-8">
           <div className="text-center text-amber-600/70">Loading quotes...</div>
         </CardContent>
@@ -154,7 +154,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
   return (
     <div className="space-y-6">
       {/* Search Bar */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-4">
           <div className="flex gap-2">
             <div className="relative flex-1">
@@ -164,7 +164,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
                 placeholder="Search quotes..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                className="pl-10 bg-background/60 border-amber-600/30 text-amber-200"
               />
             </div>
             <Button
@@ -179,7 +179,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
       </Card>
 
       {/* Quotes Table */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Your Quotes</CardTitle>
           <CardDescription className="text-sm text-amber-600/70">
@@ -192,7 +192,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#0f0f0f]/60 border-amber-600/20">
+                <TableRow className="bg-background/60 border-amber-600/20">
                   <TableHead className="text-amber-300/70">Quote Number</TableHead>
                   <TableHead className="text-amber-300/70">Date</TableHead>
                   <TableHead className="text-amber-300/70">Amount</TableHead>
@@ -223,7 +223,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
                           quote.status === 'accepted' ? 'bg-green-500/20 text-green-200' :
                           quote.status === 'pending' ? 'bg-amber-500/20 text-amber-200' :
                           quote.status === 'rejected' ? 'bg-red-500/20 text-red-200' :
-                          'bg-gray-500/20 text-gray-200'
+                          'bg-muted/20 text-foreground'
                         )}
                       >
                         {quote.status || 'draft'}
@@ -269,7 +269,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
       {/* Quote Detail Modal */}
       {selectedQuote && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <Card className="bg-[#0f0f0f]/95 border-amber-600/30 card-glass-dark max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <Card className="bg-background/95 border-amber-600/30 card-glass-dark max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
@@ -299,7 +299,7 @@ export const ClientQuoteViewer: React.FC<ClientQuoteViewerProps> = ({ customerId
                       'border-amber-600/30',
                       selectedQuote.status === 'accepted' ? 'bg-green-500/20 text-green-200' :
                       selectedQuote.status === 'pending' ? 'bg-amber-500/20 text-amber-200' :
-                      'bg-gray-500/20 text-gray-200'
+                      'bg-muted/20 text-foreground'
                     )}
                   >
                     {selectedQuote.status || 'draft'}

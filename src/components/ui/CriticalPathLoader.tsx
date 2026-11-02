@@ -50,16 +50,16 @@ export const CriticalPathLoader: React.FC<CriticalPathLoaderProps> = ({ children
         variant="fullscreen"
       >
         <div className="w-full max-w-xs">
-          <div className="bg-gray-700 rounded-full h-2 mb-4">
+          <div className="bg-muted rounded-full h-2 mb-4">
             <div 
               className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
               style={{ width: `${loadingProgress}%` }}
             />
           </div>
-          <p className="text-sm text-gray-400 text-center">
+          <p className="text-sm text-muted-foreground text-center">
             {loadingProgress}% complete
           </p>
-          <p className="text-xs text-gray-500 text-center mt-2">
+          <p className="text-xs text-muted-foreground text-center mt-2">
             Loading only essential resources first...
           </p>
         </div>

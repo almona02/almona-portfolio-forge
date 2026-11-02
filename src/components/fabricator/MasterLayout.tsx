@@ -307,7 +307,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
         <UniversalNavSidebar />
 
       {/* Main Layout Content - Existing MasterLayout structure */}
-      <div className="flex flex-col flex-1 h-screen bg-[#0a0a0a] font-sans text-amber-200 overflow-hidden relative">
+      <div className="flex flex-col flex-1 h-screen bg-background font-sans text-warning overflow-hidden relative">
       {/* Classical Textured Background */}
       <div className="absolute inset-0 opacity-30" style={{
         backgroundImage: `
@@ -351,18 +351,18 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
               className="flex-shrink-0" 
             />
             <div className="flex-shrink-0 flex flex-col justify-center">
-              <div className="text-lg font-bold text-amber-400 tracking-wider text-shadow-glow-subtle leading-none">
+              <div className="text-lg font-bold text-warning tracking-wider text-shadow-glow-subtle leading-none">
                 ALMONA
               </div>
-              <div className="text-[10px] text-amber-600/90 tracking-[0.2em] uppercase font-semibold leading-none mt-0.5">Prestige Edition</div>
+              <div className="text-[10px] text-warning/90 tracking-[0.2em] uppercase font-semibold leading-none mt-0.5">Prestige Edition</div>
             </div>
           </div>
 
           <div className="h-6 w-px bg-gradient-to-b from-transparent via-amber-600/60 to-transparent flex-shrink-0" />
 
           <div className="flex flex-col min-w-0 flex-1 justify-center">
-            <div className="text-xs text-amber-200 font-medium truncate leading-tight">{pageTitle}</div>
-            <div className="text-[10px] text-amber-600/70 truncate leading-tight">{pageDescription}</div>
+            <div className="text-xs text-warning font-medium truncate leading-tight">{pageTitle}</div>
+            <div className="text-[10px] text-warning/70 truncate leading-tight">{pageDescription}</div>
           </div>
         </div>
 
@@ -372,8 +372,8 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
           <NotificationCenterWrapper />
 
           <div className="flex items-center gap-1.5 px-2 py-1 card-dark rounded">
-            <Gem className="w-3 h-3 text-amber-400 text-shadow-glow flex-shrink-0" />
-            <span className="text-xs text-amber-200 font-semibold tracking-wide whitespace-nowrap">AICS-001</span>
+            <Gem className="w-3 h-3 text-warning text-shadow-glow flex-shrink-0" />
+            <span className="text-xs text-warning font-semibold tracking-wide whitespace-nowrap">AICS-001</span>
           </div>
 
           {shouldShowWorkflowStepper && (
@@ -402,7 +402,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
       {/* ===== PREMIUM WORKSPACE ===== */}
       <div className="flex-1 flex overflow-hidden">
         {/* ===== CENTER CANVAS - Premium Design Space ===== */}
-        <div className="flex-1 flex flex-col bg-[#0a0a0a] relative overflow-hidden">
+        <div className="flex-1 flex flex-col bg-background relative overflow-hidden">
           {/* Classical textured grid pattern */}
           <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
             backgroundImage: `
@@ -453,8 +453,8 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
 
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                           <div className="text-center">
-                            <div className="text-sm font-bold text-amber-300 mb-1 text-shadow-glow">Opening {i + 1}</div>
-                            <div className="text-xs text-amber-600/70">Click to configure</div>
+                            <div className="text-sm font-bold text-warning mb-1 text-shadow-glow">Opening {i + 1}</div>
+                            <div className="text-xs text-warning/70">Click to configure</div>
                           </div>
                         </div>
 
@@ -466,7 +466,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                   </div>
 
                   {/* Dimension Labels */}
-                  <div className="mt-6 flex justify-between text-sm text-amber-600/80">
+                  <div className="mt-6 flex justify-between text-sm text-warning/80">
                     <span className="flex items-center gap-2">
                       <div className="btn-working-green" />
                       800mm per column
@@ -491,8 +491,8 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
             <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-600/20 via-amber-500/10 to-amber-600/20" />
             {/* Panel Header */}
             <div className="h-16 border-b border-amber-600/30 flex items-center px-6 justify-between">
-              <h3 className="typography-h3 text-sm text-amber-300 tracking-[0.15em] flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-amber-500 text-shadow-glow" />
+              <h3 className="typography-h3 text-sm text-warning tracking-[0.15em] flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-warning text-shadow-glow" />
                 Intelligence Hub
               </h3>
               <div className="flex gap-1">
@@ -504,8 +504,8 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                       onClick={() => setActiveTab(tabId as any)}
                       className={`px-3 py-1 text-xs rounded border transition-all duration-300 ${
                         activeTab === tabId
-                          ? 'bg-[#1a1a1a]/80 text-amber-300 border-amber-600/50 shadow-glow' 
-                          : 'text-amber-600/60 hover:text-amber-500 border-amber-600/20 hover:border-amber-500/40'
+                          ? 'bg-background/80 text-warning border-amber-600/50 shadow-glow'
+                          : 'text-warning/60 hover:text-warning border-amber-600/20 hover:border-amber-500/40'
                       }`}
                     >
                       {tab}
@@ -517,13 +517,13 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
 
             {/* 3D Preview Window */}
             {activeTab === '3d' && (
-              <div className="h-64 border-b border-amber-600/30 bg-[#0a0a0a] relative overflow-hidden">
+              <div className="h-64 border-b border-amber-600/30 bg-background relative overflow-hidden">
                 {workspaceState.currentProject ? (
                   <React.Suspense fallback={
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b border-amber-500 mx-auto mb-2"></div>
-                        <div className="text-sm text-amber-600/70">Loading 3D Preview...</div>
+                        <div className="text-sm text-warning/70">Loading 3D Preview...</div>
                       </div>
                     </div>
                   }>
@@ -539,9 +539,9 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <Box className="w-16 h-16 text-amber-600/40 mx-auto mb-3 animate-pulse" />
-                      <div className="text-sm text-amber-600/70">3D Preview Loading...</div>
-                      <div className="text-xs text-amber-600/50 mt-1">Three.js Renderer</div>
+                      <Box className="w-16 h-16 text-warning/40 mx-auto mb-3 animate-pulse" />
+                      <div className="text-sm text-warning/70">3D Preview Loading...</div>
+                      <div className="text-xs text-warning/50 mt-1">Three.js Renderer</div>
                     </div>
                   </div>
                 )}
@@ -554,14 +554,14 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
             {activeTab === 'properties' && (
               <div className="p-6 border-b border-amber-600/20">
                 <div className="flex items-center gap-2 mb-4">
-                  <Shield className="w-4 h-4 text-amber-500 text-shadow-glow" />
-                  <span className="text-xs font-bold text-amber-300 uppercase tracking-[0.15em]">Validation Status</span>
+                  <Shield className="w-4 h-4 text-warning text-shadow-glow" />
+                  <span className="text-xs font-bold text-warning uppercase tracking-[0.15em]">Validation Status</span>
                 </div>
 
                 <div className="space-y-2">
                   {validationItems.map((item, i) => (
                     <div key={i} className="flex items-center justify-between py-2 px-3 card-dark rounded">
-                      <span className="text-sm text-amber-200 font-medium">{item.label}</span>
+                      <span className="text-sm text-warning font-medium">{item.label}</span>
                       <span className={`${item.status === 'valid' ? 'status-valid-dot' : item.status === 'warning' ? 'status-warning-dot' : 'status-error-dot'}`} />
                     </div>
                   ))}
@@ -573,29 +573,29 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
             {activeTab === 'bom' && (
               <div className="flex-1 p-6 overflow-auto">
                 <div className="flex items-center gap-2 mb-4">
-                  <FileCheck className="w-4 h-4 text-amber-500 text-shadow-glow" />
-                  <span className="text-xs font-bold text-amber-300 uppercase tracking-[0.15em]">Bill of Materials</span>
+                  <FileCheck className="w-4 h-4 text-warning text-shadow-glow" />
+                  <span className="text-xs font-bold text-warning uppercase tracking-[0.15em]">Bill of Materials</span>
                 </div>
 
                 <div className="space-y-3">
                   {bomItems.map(item => (
                     <div key={item.category} className="card-dark p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-semibold text-amber-200">{item.category}</span>
-                        <span className="text-xs text-amber-500 font-semibold">{item.qty}</span>
+                        <span className="text-sm font-semibold text-warning">{item.category}</span>
+                        <span className="text-xs text-warning font-semibold">{item.qty}</span>
                       </div>
-                      <div className="text-lg font-bold text-amber-400 text-shadow-glow-strong">{item.value}</div>
+                      <div className="text-lg font-bold text-warning text-shadow-glow-strong">{item.value}</div>
                     </div>
                   ))}
                 </div>
 
                 <div className="mt-6 p-4 card-dark shadow-glow-strong">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-amber-600/80 font-semibold">Total Project Value</span>
-                    <Crown className="w-5 h-5 text-amber-500 text-shadow-glow-strong" />
+                    <span className="text-sm text-warning/80 font-semibold">Total Project Value</span>
+                    <Crown className="w-5 h-5 text-warning text-shadow-glow-strong" />
                   </div>
-                  <div className="text-3xl font-bold text-amber-400 text-shadow-glow-intense">{totalProjectValue}</div>
-                  <div className="text-xs text-amber-600/70 mt-1">Including 14% VAT</div>
+                  <div className="text-3xl font-bold text-warning text-shadow-glow-intense">{totalProjectValue}</div>
+                  <div className="text-xs text-warning/70 mt-1">Including 14% VAT</div>
                 </div>
               </div>
             )}
@@ -626,14 +626,14 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
         {/* Decorative horizontal bar */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-0.5 bg-gradient-to-r from-transparent via-amber-600/50 to-transparent" />
 
-        <div className="flex items-center gap-4 text-amber-600/80">
+        <div className="flex items-center gap-4 text-warning/80">
           <span className="flex items-center gap-1.5">
-            <Gem className="w-2.5 h-2.5 text-amber-500 text-shadow-glow" />
+            <Gem className="w-2.5 h-2.5 text-warning text-shadow-glow" />
             <span className="font-semibold">AICS-001 v1.0.0</span>
           </span>
-          <span className="text-amber-600/30">|</span>
+          <span className="text-warning/30">|</span>
           <span className="font-medium">99.8% Accuracy</span>
-          <span className="text-amber-600/30">|</span>
+          <span className="text-warning/30">|</span>
           <span className="font-medium">Tier 3 Determinism</span>
         </div>
 
@@ -666,19 +666,19 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                   <Zap className="w-2.5 h-2.5 text-[#0a0a0a]" />
                 </div>
                 <div className="flex-shrink-0">
-                  <div className="text-[9px] text-amber-500 uppercase tracking-[0.1em] font-bold leading-tight">Algorithm</div>
-                  <div className="text-[10px] font-bold text-amber-200 leading-tight">Greedy Heuristic</div>
+                  <div className="text-[9px] text-warning uppercase tracking-[0.1em] font-bold leading-tight">Algorithm</div>
+                  <div className="text-[10px] font-bold text-warning leading-tight">Greedy Heuristic</div>
                 </div>
                 {showAlgorithmPanel && (
                   <div className="flex items-center gap-2 ml-2 pl-2 border-l border-amber-600/30">
-                    <div className="text-[9px] text-amber-400 font-semibold">Waste: 15-20%</div>
-                    <span className="text-amber-600/30">|</span>
-                    <div className="text-[9px] text-amber-400 font-semibold">&lt;100ms</div>
+                    <div className="text-[9px] text-warning font-semibold">Waste: 15-20%</div>
+                    <span className="text-warning/30">|</span>
+                    <div className="text-[9px] text-warning font-semibold">&lt;100ms</div>
                   </div>
                 )}
                 <button
                   onClick={() => setShowAlgorithmPanel(!showAlgorithmPanel)}
-                  className="ml-2 text-amber-600/70 hover:text-amber-400 transition-colors"
+                  className="ml-2 text-warning/70 hover:text-warning transition-colors"
                 >
                   <Sparkles className="w-3 h-3" />
                 </button>
@@ -688,10 +688,10 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
 
           <div className="flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
-            <span className="text-amber-400 font-bold">System Active</span>
+            <span className="text-warning font-bold">System Active</span>
           </div>
-          <span className="text-amber-600/30">|</span>
-          <span className="text-amber-600/70 font-medium">47ms</span>
+          <span className="text-warning/30">|</span>
+          <span className="text-warning/70 font-medium">47ms</span>
         </div>
       </div>
       </div>

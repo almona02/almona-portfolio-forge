@@ -43,10 +43,10 @@ const statusOptions: { value: TicketStatus; label: string }[] = [
 ]
 
 const priorityOptions: { value: TicketPriority; label: string; color: string }[] = [
-  { value: 'low', label: 'Low', color: 'text-green-600' },
-  { value: 'medium', label: 'Medium', color: 'text-blue-600' },
+  { value: 'low', label: 'Low', color: 'text-success' },
+  { value: 'medium', label: 'Medium', color: 'text-info' },
   { value: 'high', label: 'High', color: 'text-amber-600' },
-  { value: 'critical', label: 'Critical', color: 'text-red-600' },
+  { value: 'critical', label: 'Critical', color: 'text-destructive' },
   { value: 'urgent', label: 'Urgent', color: 'text-red-700' }
 ]
 
@@ -167,12 +167,12 @@ export const TicketStatusUpdateDialog: React.FC<TicketStatusUpdateDialogProps> =
               <span className="font-medium">Current Priority:</span> 
               <span className={`ml-1 capitalize ${
                 ticket.priority === 'urgent' || ticket.priority === 'critical' 
-                  ? 'text-red-600' 
+                  ? 'text-destructive'
                   : ticket.priority === 'high' 
                   ? 'text-amber-600' 
                   : ticket.priority === 'medium'
-                  ? 'text-blue-600'
-                  : 'text-green-600'
+                  ? 'text-info'
+                  : 'text-success'
               }`}>
                 {ticket.priority}
               </span>
@@ -237,7 +237,7 @@ export const TicketStatusUpdateDialog: React.FC<TicketStatusUpdateDialogProps> =
           {isResolutionRequired && (
             <div className="space-y-2">
               <Label htmlFor="resolution" className="typography-label">
-                Resolution Summary {isResolutionRequired && <span className="text-red-500">*</span>}
+                Resolution Summary {isResolutionRequired && <span className="text-destructive">*</span>}
               </Label>
               <Textarea
                 id="resolution"
@@ -247,7 +247,7 @@ export const TicketStatusUpdateDialog: React.FC<TicketStatusUpdateDialogProps> =
                 rows={3}
               />
               {isResolutionRequired && !resolutionSummary.trim() && (
-                <p className="text-sm text-red-500">Resolution summary is required when resolving or closing tickets</p>
+                <p className="text-sm text-destructive">Resolution summary is required when resolving or closing tickets</p>
               )}
             </div>
           )}

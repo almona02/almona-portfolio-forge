@@ -157,16 +157,16 @@ export const SpecialPresetSelector: React.FC<SpecialPresetSelectorProps> = ({
 
   // Default: Show preset selection interface
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="typography-h1 text-white flex items-center gap-3">
-              <Shield className="h-8 w-8 text-amber-500" />
+            <h1 className="typography-h1 text-foreground flex items-center gap-3">
+              <Shield className="h-8 w-8 text-warning" />
               Special Preset Designer
             </h1>
-            <p className="text-gray-400 mt-2">
+            <p className="text-muted-foreground mt-2">
               Design complex window assemblies with preset-aware accuracy
             </p>
           </div>
@@ -182,29 +182,29 @@ export const SpecialPresetSelector: React.FC<SpecialPresetSelectorProps> = ({
           {PRESET_OPTIONS.map((option) => (
             <Card
               key={option.id}
-              className={`bg-gray-900/50 border-gray-800 cursor-pointer transition-all hover:border-amber-500/50 ${
+              className={`bg-background/50 border-border cursor-pointer transition-all hover:border-amber-500/50 ${
                 !option.available ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               onClick={() => handlePresetSelect(option.id)}
             >
               <CardHeader>
                 <div className="flex items-start justify-between">
-                  <div className="text-amber-500">{option.icon}</div>
+                  <div className="text-warning">{option.icon}</div>
                   {option.badge && (
                     <Badge 
                       variant="outline" 
                       className={`${
                         option.available 
-                          ? 'bg-green-900/30 text-green-400 border-green-800' 
-                          : 'bg-gray-800 text-gray-500 border-gray-700'
+                          ? 'bg-green-900/30 text-success border-green-800'
+                          : 'bg-card text-muted-foreground border-border'
                       }`}
                     >
                       {option.badge}
                     </Badge>
                   )}
                 </div>
-                <CardTitle className="text-white mt-4">{option.name}</CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardTitle className="text-foreground mt-4">{option.name}</CardTitle>
+                <CardDescription className="text-muted-foreground">
                   {option.description}
                 </CardDescription>
               </CardHeader>
@@ -232,14 +232,14 @@ export const SpecialPresetSelector: React.FC<SpecialPresetSelectorProps> = ({
         </div>
 
         {/* Info Section */}
-        <Card className="bg-gray-900/50 border-gray-800 card-dark">
+        <Card className="bg-background/50 border-border card-dark">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Thermometer className="h-5 w-5 text-amber-500" />
+            <CardTitle className="text-foreground flex items-center gap-2">
+              <Thermometer className="h-5 w-5 text-warning" />
               About Special Presets
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-gray-300">
+          <CardContent className="space-y-3 text-foreground">
             <p>
               Special presets provide intelligent, preset-aware design for complex window assemblies
               that require specialized engineering knowledge.
@@ -266,7 +266,7 @@ export const SpecialPresetSelector: React.FC<SpecialPresetSelectorProps> = ({
                 protection and thermal break optimization.
               </li>
             </ul>
-            <p className="text-xs text-gray-500 mt-4">
+            <p className="text-xs text-muted-foreground mt-4">
               All special presets integrate with the existing 99.8% accurate DualOutputGenerator 
               for production-ready BOMs and cut lists.
             </p>

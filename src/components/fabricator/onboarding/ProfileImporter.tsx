@@ -99,10 +99,10 @@ export const ProfileImporter: React.FC<ProfileImporterProps> = ({ onImport, user
   }, []);
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700">
+    <Card className="bg-card/50 border-border">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Upload className="h-5 w-5 text-amber-400" />
+          <Upload className="h-5 w-5 text-warning" />
           Import Profiles
         </CardTitle>
         <CardDescription>
@@ -116,16 +116,16 @@ export const ProfileImporter: React.FC<ProfileImporterProps> = ({ onImport, user
           <div
             onDrop={handleDrop}
             onDragOver={handleDragOver}
-            className="border-dashed border-gray-700 rounded-lg p-8 text-center /50 transition-colors cursor-pointer mt-2 card-premium"
+            className="border-dashed border-border rounded-lg p-8 text-center /50 transition-colors cursor-pointer mt-2 card-premium"
           >
             {loading ? (
               <div className="flex flex-col items-center gap-2">
-                <Loader2 className="h-8 w-8 animate-spin text-amber-400" />
-                <p className="text-sm text-gray-400">Parsing file...</p>
+                <Loader2 className="h-8 w-8 animate-spin text-warning" />
+                <p className="text-sm text-muted-foreground">Parsing file...</p>
               </div>
             ) : file ? (
               <div className="flex flex-col items-center gap-2">
-                <CheckCircle2 className="h-8 w-8 text-green-400" />
+                <CheckCircle2 className="h-8 w-8 text-success" />
                 <p className="text-sm font-medium">{file.name}</p>
                 <Button
                   variant="ghost"
@@ -142,11 +142,11 @@ export const ProfileImporter: React.FC<ProfileImporterProps> = ({ onImport, user
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2">
-                <Upload className="h-8 w-8 text-gray-400" />
-                <p className="text-sm text-gray-300">
+                <Upload className="h-8 w-8 text-muted-foreground" />
+                <p className="text-sm text-foreground">
                   Drag and drop your file here, or click to browse
                 </p>
-                <p className="text-xs text-gray-500">Excel (.xlsx) or CSV format</p>
+                <p className="text-xs text-muted-foreground">Excel (.xlsx) or CSV format</p>
                 <Input
                   type="file"
                   accept=".xlsx,.csv"
@@ -175,17 +175,17 @@ export const ProfileImporter: React.FC<ProfileImporterProps> = ({ onImport, user
         {/* Error Display */}
         {error && (
           <Alert className="bg-red-500/10 border-red-500/30">
-            <AlertCircle className="h-4 w-4 text-red-400" />
-            <AlertDescription className="text-red-300 text-sm">{error}</AlertDescription>
+            <AlertCircle className="h-4 w-4 text-destructive" />
+            <AlertDescription className="text-destructive text-sm">{error}</AlertDescription>
           </Alert>
         )}
 
         {/* Validation Errors */}
         {validationErrors.length > 0 && (
           <Alert className="bg-yellow-500/10 border-yellow-500/30">
-            <AlertCircle className="h-4 w-4 text-yellow-400" />
+            <AlertCircle className="h-4 w-4 text-warning" />
             <AlertDescription>
-              <div className="text-yellow-300 text-sm">
+              <div className="text-warning text-sm">
                 <p className="font-medium mb-2">Validation Errors:</p>
                 <ul className="list-disc list-inside space-y-1">
                   {validationErrors.map((err, idx) => (
@@ -203,20 +203,20 @@ export const ProfileImporter: React.FC<ProfileImporterProps> = ({ onImport, user
         {preview.length > 0 && Object.keys(columnMapping).length > 0 && (
           <div className="space-y-2">
             <Label>Column Mapping</Label>
-            <div className="space-y-2 p-3 bg-gray-900/50 rounded">
+            <div className="space-y-2 p-3 bg-background/50 rounded">
               {Object.entries(columnMapping).map(([csvColumn, profileField]) => (
                 <div key={csvColumn} className="flex items-center justify-between text-sm">
-                  <span className="text-gray-400">{csvColumn}</span>
+                  <span className="text-muted-foreground">{csvColumn}</span>
                   <Select
                     value={profileField}
                     onValueChange={(value) => {
                       setColumnMapping({ ...columnMapping, [csvColumn]: value });
                     }}
                   >
-                    <SelectTrigger className="w-40 bg-gray-800 border-gray-700">
+                    <SelectTrigger className="w-40 bg-card border-border">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-gray-700">
+                    <SelectContent className="bg-background border-border">
                       <SelectItem value="name">Name</SelectItem>
                       <SelectItem value="code">Code</SelectItem>
                       <SelectItem value="width">Width</SelectItem>
@@ -239,10 +239,10 @@ export const ProfileImporter: React.FC<ProfileImporterProps> = ({ onImport, user
             <Label>Preview (first 5 rows)</Label>
             <div className="max-h-48 overflow-y-auto">
               <table className="w-full text-xs">
-                <thead className="bg-gray-900/50 sticky top-0">
+                <thead className="bg-background/50 sticky top-0">
                   <tr>
                     {Object.keys(preview[0] || {}).map((key) => (
-                      <th key={key} className="p-2 text-left border-b border-gray-700">
+                      <th key={key} className="p-2 text-left border-b border-border">
                         {key}
                       </th>
                     ))}
@@ -250,9 +250,9 @@ export const ProfileImporter: React.FC<ProfileImporterProps> = ({ onImport, user
                 </thead>
                 <tbody>
                   {preview.map((row, idx) => (
-                    <tr key={idx} className="border-b border-gray-800">
+                    <tr key={idx} className="border-b border-border">
                       {Object.values(row).map((value: any, colIdx) => (
-                        <td key={colIdx} className="p-2 text-gray-300">
+                        <td key={colIdx} className="p-2 text-foreground">
                           {String(value || '')}
                         </td>
                       ))}

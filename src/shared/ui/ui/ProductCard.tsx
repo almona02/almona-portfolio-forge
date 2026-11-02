@@ -68,7 +68,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <Card
-      className={`bg-almona-dark-lighter border-gray-800 overflow-hidden hover:border-almona-orange/30 transition-all group ${isSelected ? 'ring-2 ring-almona-orange' : ''}`}
+      className={`bg-background border-border overflow-hidden hover:border-almona-orange/30 transition-all group ${isSelected ? 'ring-2 ring-almona-orange' : ''}`}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
     >
@@ -85,7 +85,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               />
               <button
                 type="button"
-                className="absolute top-3 right-3 inline-flex items-center justify-center h-9 w-9 rounded-full bg-white/90 text-slate-800 shadow-md shadow-black/20 ring-1 ring-white/70 hover:bg-white transition"
+                className="absolute top-3 right-3 inline-flex items-center justify-center h-9 w-9 rounded-full bg-foreground/90 text-foreground shadow-md shadow-black/20 ring-1 ring-white/70 hover:bg-card transition"
                 onClick={() => setShowVideo(false)}
                 aria-label="Close video"
               >
@@ -110,7 +110,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               onClick={() => setShowVideo(true)}
               aria-label={`Play video for ${title}`}
             >
-              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/30">
+              <div className="flex items-center gap-2 bg-foreground/10 px-4 py-2 rounded-full border border-white/30">
                 <span className="text-sm font-semibold">Play Video</span>
               </div>
             </button>
@@ -121,7 +121,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       
       <CardHeader className="pt-4 pb-2 px-4">
         <div className="flex items-center gap-2">
-          <h3 className="typography-h3 text-lg text-white hover:text-almona-orange transition-colors">
+          <h3 className="typography-h3 text-lg text-foreground hover:text-almona-orange transition-colors">
             {title}
           </h3>
           {/* Inline play trigger removed; use overlay only */}
@@ -140,9 +140,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </CardHeader>
       
       <CardContent className="px-4 py-2">
-        <p className="text-gray-400 text-sm line-clamp-2 mb-3">{description}</p>
+        <p className="text-muted-foreground text-sm line-clamp-2 mb-3">{description}</p>
         {features && features.length > 0 && (
-          <ul className="text-xs text-gray-300 space-y-1">
+          <ul className="text-xs text-foreground space-y-1">
             {features.map((feature, index) => (
               <li key={index} className="flex items-center">
                 <span className="w-1 h-1 bg-almona-orange rounded-full mr-2"></span>
@@ -153,7 +153,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
       </CardContent>
       
-      <CardFooter className="px-4 py-4 border-t border-gray-800 flex flex-col gap-2">
+      <CardFooter className="px-4 py-4 border-t border-border flex flex-col gap-2">
         {ctaText && (
           onCtaClick ? (
             <Button 

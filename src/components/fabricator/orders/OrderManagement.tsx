@@ -38,14 +38,14 @@ interface OrderRow {
 }
 
 const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; icon: React.ReactNode }> = {
-  draft: { label: 'Draft', color: 'bg-slate-500/20 text-slate-300 border-slate-500/40', icon: <FileText size={12} /> },
-  pending: { label: 'Pending', color: 'bg-amber-500/20 text-amber-300 border-amber-500/40', icon: <Clock size={12} /> },
-  confirmed: { label: 'Confirmed', color: 'bg-blue-500/20 text-blue-300 border-blue-500/40', icon: <CheckCircle2 size={12} /> },
-  paid: { label: 'Paid', color: 'bg-green-500/20 text-green-300 border-green-500/40', icon: <CheckCircle2 size={12} /> },
+  draft: { label: 'Draft', color: 'bg-muted/20 text-foreground border-border/40', icon: <FileText size={12} /> },
+  pending: { label: 'Pending', color: 'bg-amber-500/20 text-warning border-amber-500/40', icon: <Clock size={12} /> },
+  confirmed: { label: 'Confirmed', color: 'bg-blue-500/20 text-info border-blue-500/40', icon: <CheckCircle2 size={12} /> },
+  paid: { label: 'Paid', color: 'bg-green-500/20 text-success border-green-500/40', icon: <CheckCircle2 size={12} /> },
   processing: { label: 'In Production', color: 'bg-purple-500/20 text-purple-300 border-purple-500/40', icon: <Package size={12} /> },
-  shipped: { label: 'Shipped', color: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40', icon: <Truck size={12} /> },
-  delivered: { label: 'Delivered', color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40', icon: <CheckCircle2 size={12} /> },
-  cancelled: { label: 'Cancelled', color: 'bg-red-500/20 text-red-300 border-red-500/40', icon: <XCircle size={12} /> },
+  shipped: { label: 'Shipped', color: 'bg-cyan-500/20 text-info border-cyan-500/40', icon: <Truck size={12} /> },
+  delivered: { label: 'Delivered', color: 'bg-emerald-500/20 text-success border-emerald-500/40', icon: <CheckCircle2 size={12} /> },
+  cancelled: { label: 'Cancelled', color: 'bg-red-500/20 text-destructive border-red-500/40', icon: <XCircle size={12} /> },
   refunded: { label: 'Refunded', color: 'bg-orange-500/20 text-orange-300 border-orange-500/40', icon: <XCircle size={12} /> },
 };
 
@@ -131,7 +131,7 @@ export const OrderManagement: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 size={24} className="text-amber-400 animate-spin" />
+        <Loader2 size={24} className="text-warning animate-spin" />
       </div>
     );
   }
@@ -161,9 +161,9 @@ export const OrderManagement: React.FC = () => {
       </div>
 
       {/* Orders List */}
-      <Card className="bg-slate-900/40 border-amber-600/20">
+      <Card className="bg-background/40 border-amber-600/20">
         <CardHeader className="pb-2 space-y-3">
-          <CardTitle className="text-sm text-amber-200 flex items-center gap-2">
+          <CardTitle className="text-sm text-warning flex items-center gap-2">
             <Package size={16} />
             Orders ({filteredOrders.length}
             {orderSearch.trim() ? ` of ${orders.length}` : ''})
@@ -174,21 +174,21 @@ export const OrderManagement: React.FC = () => {
               onChange={(e) => setOrderSearch(e.target.value)}
               placeholder="Search orders by id, status, currency…"
               aria-label="Search orders"
-              className="max-w-md bg-slate-950 border-amber-600/30 text-amber-100"
+              className="max-w-md bg-background border-amber-600/30 text-warning"
             />
           ) : null}
         </CardHeader>
         <CardContent>
           {orders.length === 0 ? (
-            <div className="text-center py-12 text-slate-500">
+            <div className="text-center py-12 text-muted-foreground">
               <Package size={40} className="mx-auto mb-3 opacity-30" />
               <p className="text-sm">No orders yet.</p>
-              <p className="text-xs text-slate-600 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Convert a priced pose quote from Commercial (Save → Convert to Order).
               </p>
             </div>
           ) : filteredOrders.length === 0 ? (
-            <div className="text-center py-8 text-slate-500 text-sm">No orders match this search.</div>
+            <div className="text-center py-8 text-muted-foreground text-sm">No orders match this search.</div>
           ) : (
             <div className="space-y-3">
               {filteredOrders.map((order) => {
@@ -196,14 +196,14 @@ export const OrderManagement: React.FC = () => {
                 const isExpanded = selectedOrder === order.id;
 
                 return (
-                  <div key={order.id} className="border border-slate-800/50 rounded-lg overflow-hidden">
+                  <div key={order.id} className="border border-border/50 rounded-lg overflow-hidden">
                     {/* Order row */}
                     <div
                       className="flex items-center justify-between px-4 py-3 hover:bg-amber-500/5 cursor-pointer"
                       onClick={() => setSelectedOrder(isExpanded ? null : order.id)}
                     >
                       <div className="flex items-center gap-4">
-                        <div className="text-amber-300 font-mono text-xs">
+                        <div className="text-warning font-mono text-xs">
                           {order.id.substring(0, 8).toUpperCase()}
                         </div>
                         <Badge className={`${cfg.color} text-[10px] flex items-center gap-1`}>
@@ -211,43 +211,43 @@ export const OrderManagement: React.FC = () => {
                         </Badge>
                       </div>
                       <div className="flex items-center gap-4">
-                        <span className="text-amber-200 font-bold text-sm">
+                        <span className="text-warning font-bold text-sm">
                           {formatCurrency(order.total_amount, 'en', order.currency || 'EGP')}
                         </span>
-                        <span className="text-slate-500 text-xs">
+                        <span className="text-muted-foreground text-xs">
                           {new Date(order.created_at).toLocaleDateString()}
                         </span>
-                        <ChevronRight size={14} className={`text-slate-500 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                        <ChevronRight size={14} className={`text-muted-foreground transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                       </div>
                     </div>
 
                     {/* Expanded detail */}
                     {isExpanded && (
-                      <div className="border-t border-slate-800/50 px-4 py-4 bg-slate-900/30 space-y-4">
+                      <div className="border-t border-border/50 px-4 py-4 bg-background/30 space-y-4">
                         {/* Timeline */}
                         <OrderTimeline currentStatus={order.status} />
 
                         {/* Cost breakdown */}
                         <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
-                          <div className="bg-slate-800/30 rounded p-2">
-                            <span className="text-slate-500">Subtotal</span>
-                            <p className="text-amber-200 font-mono">{formatCurrency(order.subtotal, 'en', order.currency)}</p>
+                          <div className="bg-card/30 rounded p-2">
+                            <span className="text-muted-foreground">Subtotal</span>
+                            <p className="text-warning font-mono">{formatCurrency(order.subtotal, 'en', order.currency)}</p>
                           </div>
-                          <div className="bg-slate-800/30 rounded p-2">
-                            <span className="text-slate-500">Tax</span>
-                            <p className="text-amber-200 font-mono">{formatCurrency(order.tax_amount, 'en', order.currency)}</p>
+                          <div className="bg-card/30 rounded p-2">
+                            <span className="text-muted-foreground">Tax</span>
+                            <p className="text-warning font-mono">{formatCurrency(order.tax_amount, 'en', order.currency)}</p>
                           </div>
-                          <div className="bg-slate-800/30 rounded p-2">
-                            <span className="text-slate-500">Discount</span>
-                            <p className="text-green-300 font-mono">-{formatCurrency(order.discount_amount, 'en', order.currency)}</p>
+                          <div className="bg-card/30 rounded p-2">
+                            <span className="text-muted-foreground">Discount</span>
+                            <p className="text-success font-mono">-{formatCurrency(order.discount_amount, 'en', order.currency)}</p>
                           </div>
-                          <div className="bg-slate-800/30 rounded p-2">
-                            <span className="text-slate-500">Shipping</span>
-                            <p className="text-amber-200 font-mono">{formatCurrency(order.shipping_cost, 'en', order.currency)}</p>
+                          <div className="bg-card/30 rounded p-2">
+                            <span className="text-muted-foreground">Shipping</span>
+                            <p className="text-warning font-mono">{formatCurrency(order.shipping_cost, 'en', order.currency)}</p>
                           </div>
                           <div className="bg-amber-500/10 rounded p-2 border border-amber-500/30">
-                            <span className="text-amber-500">Total</span>
-                            <p className="text-amber-300 font-bold font-mono">{formatCurrency(order.total_amount, 'en', order.currency)}</p>
+                            <span className="text-warning">Total</span>
+                            <p className="text-warning font-bold font-mono">{formatCurrency(order.total_amount, 'en', order.currency)}</p>
                           </div>
                         </div>
 
@@ -259,18 +259,18 @@ export const OrderManagement: React.FC = () => {
                             </Button>
                           )}
                           {!['delivered', 'cancelled', 'refunded'].includes(order.status) && (
-                            <Button size="sm" variant="outline" className="border-red-500/30 text-red-300 text-xs" onClick={() => void handleUpdateStatus(order.id, 'cancelled')}>
+                            <Button size="sm" variant="outline" className="border-red-500/30 text-destructive text-xs" onClick={() => void handleUpdateStatus(order.id, 'cancelled')}>
                               Cancel
                             </Button>
                           )}
-                          <p className="text-[10px] text-slate-500 self-center">
+                          <p className="text-[10px] text-muted-foreground self-center">
                             Payment / ship / deliver updates are admin-only.
                           </p>
                         </div>
 
                         {/* Notes */}
                         {order.customer_notes && (
-                          <p className="text-xs text-slate-500"><span className="text-slate-400">Notes:</span> {order.customer_notes}</p>
+                          <p className="text-xs text-muted-foreground"><span className="text-muted-foreground">Notes:</span> {order.customer_notes}</p>
                         )}
                       </div>
                     )}
@@ -299,14 +299,14 @@ const OrderTimeline: React.FC<{ currentStatus: OrderStatus }> = ({ currentStatus
         return (
           <React.Fragment key={step}>
             {i > 0 && (
-              <div className={`h-px w-6 flex-shrink-0 ${isPast ? 'bg-green-500/60' : 'bg-slate-700/40'}`} />
+              <div className={`h-px w-6 flex-shrink-0 ${isPast ? 'bg-green-500/60' : 'bg-muted/40'}`} />
             )}
             <div className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] whitespace-nowrap flex-shrink-0 ${
               isCancelled ? 'opacity-30' :
-              isCurrent ? 'bg-amber-500/15 text-amber-200 border border-amber-500/40' :
-              isPast ? 'text-green-400/70' : 'text-slate-600'
+              isCurrent ? 'bg-amber-500/15 text-warning border border-amber-500/40' :
+              isPast ? 'text-success/70' : 'text-muted-foreground'
             }`}>
-              {isPast ? <CheckCircle2 size={10} className="text-green-500" /> : cfg.icon}
+              {isPast ? <CheckCircle2 size={10} className="text-success" /> : cfg.icon}
               {cfg.label}
             </div>
           </React.Fragment>
@@ -315,7 +315,7 @@ const OrderTimeline: React.FC<{ currentStatus: OrderStatus }> = ({ currentStatus
       {isCancelled && (
         <>
           <div className="h-px w-6 flex-shrink-0 bg-red-500/40" />
-          <div className="flex items-center gap-1 px-2 py-1 rounded text-[10px] bg-red-500/15 text-red-300 border border-red-500/40 whitespace-nowrap flex-shrink-0">
+          <div className="flex items-center gap-1 px-2 py-1 rounded text-[10px] bg-red-500/15 text-destructive border border-red-500/40 whitespace-nowrap flex-shrink-0">
             <XCircle size={10} /> {STATUS_CONFIG[currentStatus].label}
           </div>
         </>
@@ -325,10 +325,10 @@ const OrderTimeline: React.FC<{ currentStatus: OrderStatus }> = ({ currentStatus
 };
 
 const KPI: React.FC<{ label: string; value: string | number }> = ({ label, value }) => (
-  <Card className="bg-slate-900/40 border-amber-600/20">
+  <Card className="bg-background/40 border-amber-600/20">
     <CardContent className="pt-3 pb-2 px-3">
-      <p className="text-[10px] uppercase tracking-wider text-slate-500">{label}</p>
-      <p className="text-lg font-bold text-amber-200 mt-0.5">{value}</p>
+      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-lg font-bold text-warning mt-0.5">{value}</p>
     </CardContent>
   </Card>
 );

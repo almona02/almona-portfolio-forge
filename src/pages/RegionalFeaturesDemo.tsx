@@ -46,18 +46,18 @@ const RegionalFeaturesDemo: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="typography-h1 text-white mb-4">
+          <h1 className="typography-h1 text-foreground mb-4">
             {t('demo.regionalFeatures.title', 'Regional Features Demo')}
           </h1>
-          <p className="text-gray-300 text-lg max-w-3xl mx-auto">
+          <p className="text-foreground text-lg max-w-3xl mx-auto">
             {t('demo.regionalFeatures.subtitle', 'Comprehensive demonstration of Turkish and Egyptian market features including dynamic region detection, multi-currency support, tax calculations, and compliance documentation.')}
           </p>
         </div>
 
         {/* Current Region Status */}
-        <Card className="bg-almona-dark border-almona-light/20 mb-8">
+        <Card className="bg-background border-border/20 mb-8">
           <CardHeader>
-            <CardTitle className="text-white flex items-center justify-between">
+            <CardTitle className="text-foreground flex items-center justify-between">
               <span>{t('demo.regionStatus.title', 'Current Region Status')}</span>
               <div className="flex items-center space-x-2">
                 <Badge variant="outline" className="text-amber-400 border-amber-400">
@@ -67,7 +67,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => void refreshRegion()}
-                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  className="border-border text-foreground hover:bg-muted"
                 >
                   {t('demo.regionStatus.refresh', 'Refresh')}
                 </Button>
@@ -80,57 +80,57 @@ const RegionalFeaturesDemo: React.FC = () => {
                 <div className="text-2xl mb-2">
                   {regionState.region === 'TR' ? '🇹🇷' : regionState.region === 'EG' ? '🇪🇬' : '🌍'}
                 </div>
-                <h3 className="typography-h3 text-white">
+                <h3 className="typography-h3 text-foreground">
                   {regionState.region === 'TR' ? 'Turkey' : 
                    regionState.region === 'EG' ? 'Egypt' : 'International'}
                 </h3>
-                <p className="text-gray-400 text-sm">
+                <p className="text-muted-foreground text-sm">
                   {t('demo.regionStatus.detectedBy', 'Detected by')}: {regionState.detectedBy}
                 </p>
               </div>
               
               <div className="text-center">
                 <div className="text-2xl mb-2">💱</div>
-                <h3 className="typography-h3 text-white">
+                <h3 className="typography-h3 text-foreground">
                   {_config.currency.symbol} {_config.currency.code}
                 </h3>
-                <p className="text-gray-400 text-sm">
+                <p className="text-muted-foreground text-sm">
                   {t('demo.regionStatus.currency', 'Currency')}
                 </p>
               </div>
               
               <div className="text-center">
                 <div className="text-2xl mb-2">📊</div>
-                <h3 className="typography-h3 text-white">
+                <h3 className="typography-h3 text-foreground">
                   {_config.tax.vatRate * 100}% {_config.tax.vatName}
                 </h3>
-                <p className="text-gray-400 text-sm">
+                <p className="text-muted-foreground text-sm">
                   {t('demo.regionStatus.taxRate', 'Tax Rate')}
                 </p>
               </div>
             </div>
             
-            <Separator className="my-4 bg-gray-700" />
+            <Separator className="my-4 bg-muted" />
             
             <div className="flex justify-center space-x-4">
               <Button
                 onClick={() => handleRegionChange('TR')}
                 variant={regionState.region === 'TR' ? 'default' : 'outline'}
-                className={regionState.region === 'TR' ? 'bg-amber-500 hover:bg-amber-600' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
+                className={regionState.region === 'TR' ? 'bg-amber-500 hover:bg-amber-600' : 'border-border text-foreground hover:bg-muted'}
               >
                 🇹🇷 Turkey
               </Button>
               <Button
                 onClick={() => handleRegionChange('EG')}
                 variant={regionState.region === 'EG' ? 'default' : 'outline'}
-                className={regionState.region === 'EG' ? 'bg-amber-500 hover:bg-amber-600' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
+                className={regionState.region === 'EG' ? 'bg-amber-500 hover:bg-amber-600' : 'border-border text-foreground hover:bg-muted'}
               >
                 🇪🇬 Egypt
               </Button>
               <Button
                 onClick={() => handleRegionChange('DEFAULT')}
                 variant={regionState.region === 'DEFAULT' ? 'default' : 'outline'}
-                className={regionState.region === 'DEFAULT' ? 'bg-amber-500 hover:bg-amber-600' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
+                className={regionState.region === 'DEFAULT' ? 'bg-amber-500 hover:bg-amber-600' : 'border-border text-foreground hover:bg-muted'}
               >
                 🌍 International
               </Button>
@@ -140,17 +140,17 @@ const RegionalFeaturesDemo: React.FC = () => {
 
         {/* Feature Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-gray-800">
-            <TabsTrigger value="overview" className="text-gray-300 data-[state=active]:text-white">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-card">
+            <TabsTrigger value="overview" className="text-foreground data-[state=active]:text-foreground">
               {t('demo.tabs.overview', 'Overview')}
             </TabsTrigger>
-            <TabsTrigger value="currency" className="text-gray-300 data-[state=active]:text-white">
+            <TabsTrigger value="currency" className="text-foreground data-[state=active]:text-foreground">
               {t('demo.tabs.currency', 'Currency')}
             </TabsTrigger>
-            <TabsTrigger value="3d" className="text-gray-300 data-[state=active]:text-white">
+            <TabsTrigger value="3d" className="text-foreground data-[state=active]:text-foreground">
               {t('demo.tabs.3d', '3D Models')}
             </TabsTrigger>
-            <TabsTrigger value="compliance" className="text-gray-300 data-[state=active]:text-white">
+            <TabsTrigger value="compliance" className="text-foreground data-[state=active]:text-foreground">
               {t('demo.tabs.compliance', 'Compliance')}
             </TabsTrigger>
           </TabsList>
@@ -158,24 +158,24 @@ const RegionalFeaturesDemo: React.FC = () => {
           {/* Overview Tab */}
           <TabsContent value="overview" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-almona-dark border-almona-light/20">
+              <Card className="bg-background border-border/20">
                 <CardHeader>
-                  <CardTitle className="text-white">
+                  <CardTitle className="text-foreground">
                     {t('demo.overview.regionDetection.title', 'Region Detection')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <h4 className="typography-h4 text-gray-300 font-medium">
+                    <h4 className="typography-h4 text-foreground font-medium">
                       {t('demo.overview.regionDetection.currentRegion', 'Current Region')}
                     </h4>
-                    <p className="text-white">
+                    <p className="text-foreground">
                       {regionState.region} - {t('demo.overview.regionDetection.detectedBy', 'Detected by')}: {regionState.detectedBy}
                     </p>
                   </div>
                   
                   <div className="space-y-2">
-                    <h4 className="typography-h4 text-gray-300 font-medium">
+                    <h4 className="typography-h4 text-foreground font-medium">
                       {t('demo.overview.regionDetection.features', 'Enabled Features')}
                     </h4>
                     <div className="flex flex-wrap gap-2">
@@ -183,7 +183,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                         <Badge
                           key={feature}
                           variant={enabled ? 'default' : 'secondary'}
-                          className={enabled ? 'bg-green-500' : 'bg-gray-600'}
+                          className={enabled ? 'bg-green-500' : 'bg-muted'}
                         >
                           {feature}: {enabled ? '✓' : '✗'}
                         </Badge>
@@ -192,22 +192,22 @@ const RegionalFeaturesDemo: React.FC = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <h4 className="typography-h4 text-gray-300 font-medium">
+                    <h4 className="typography-h4 text-foreground font-medium">
                       {t('demo.overview.regionDetection.businessHours', 'Business Hours')}
                     </h4>
-                    <p className="text-white">
+                    <p className="text-foreground">
                       {_config.business.workingHours.start} - {_config.business.workingHours.end} ({_config.business.workingHours.timezone})
                     </p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       {utils.isBusinessHours() ? t('demo.overview.regionDetection.open', 'Currently Open') : t('demo.overview.regionDetection.closed', 'Currently Closed')}
                     </p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-almona-dark border-almona-light/20">
+              <Card className="bg-background border-border/20">
                 <CardHeader>
-                  <CardTitle className="text-white">
+                  <CardTitle className="text-foreground">
                     {t('demo.overview.turkishFeatures.title', 'Turkish Features')}
                   </CardTitle>
                 </CardHeader>
@@ -215,30 +215,30 @@ const RegionalFeaturesDemo: React.FC = () => {
                   {turkishTaxUtils.isTurkish ? (
                     <>
                       <div className="space-y-2">
-                        <h4 className="typography-h4 text-gray-300 font-medium">
+                        <h4 className="typography-h4 text-foreground font-medium">
                           {t('demo.overview.turkishFeatures.kdv', 'KDV (VAT)')}
                         </h4>
-                        <p className="text-white">
+                        <p className="text-foreground">
                           {turkishTaxUtils.kdvRate * 100}% {turkishTaxUtils.kdvName}
                         </p>
                       </div>
                       
                       <div className="space-y-2">
-                        <h4 className="typography-h4 text-gray-300 font-medium">
+                        <h4 className="typography-h4 text-foreground font-medium">
                           {t('demo.overview.turkishFeatures.currency', 'Currency Formatting')}
                         </h4>
-                        <p className="text-white">
+                        <p className="text-foreground">
                           {turkishTaxUtils.formatTurkishCurrency(1234.56, { showSymbol: true })}
                         </p>
                       </div>
                       
                       <div className="space-y-2">
-                        <h4 className="typography-h4 text-gray-300 font-medium">
+                        <h4 className="typography-h4 text-foreground font-medium">
                           {t('demo.overview.turkishFeatures.compliance', 'Compliance Standards')}
                         </h4>
                         <div className="flex flex-wrap gap-2">
                           {_config.compliance.standards.map(standard => (
-                            <Badge key={standard} variant="outline" className="text-blue-400 border-blue-400">
+                            <Badge key={standard} variant="outline" className="text-info border-blue-400">
                               {standard}
                             </Badge>
                           ))}
@@ -246,7 +246,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                       </div>
                     </>
                   ) : (
-                    <p className="text-gray-400">
+                    <p className="text-muted-foreground">
                       {t('demo.overview.turkishFeatures.notTurkish', 'Turkish features are only available when Turkey region is selected.')}
                     </p>
                   )}
@@ -281,21 +281,21 @@ const RegionalFeaturesDemo: React.FC = () => {
                 <TurkishComplianceDocs />
               )}
               
-              <Card className="bg-almona-dark border-almona-light/20">
+              <Card className="bg-background border-border/20">
                 <CardHeader>
-                  <CardTitle className="text-white">
+                  <CardTitle className="text-foreground">
                     {t('demo.compliance.standards.title', 'Compliance Standards')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <h4 className="typography-h4 text-gray-300 font-medium mb-2">
+                      <h4 className="typography-h4 text-foreground font-medium mb-2">
                         {t('demo.compliance.standards.required', 'Required Standards')}
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {_config.compliance.standards.map(standard => (
-                          <Badge key={standard} variant="outline" className="text-green-400 border-green-400">
+                          <Badge key={standard} variant="outline" className="text-success border-green-400">
                             {standard}
                           </Badge>
                         ))}
@@ -303,12 +303,12 @@ const RegionalFeaturesDemo: React.FC = () => {
                     </div>
                     
                     <div>
-                      <h4 className="typography-h4 text-gray-300 font-medium mb-2">
+                      <h4 className="typography-h4 text-foreground font-medium mb-2">
                         {t('demo.compliance.standards.certifications', 'Certifications')}
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {_config.compliance.certifications.map(cert => (
-                          <Badge key={cert} variant="outline" className="text-blue-400 border-blue-400">
+                          <Badge key={cert} variant="outline" className="text-info border-blue-400">
                             {cert}
                           </Badge>
                         ))}
@@ -316,13 +316,13 @@ const RegionalFeaturesDemo: React.FC = () => {
                     </div>
                     
                     <div>
-                      <h4 className="typography-h4 text-gray-300 font-medium mb-2">
+                      <h4 className="typography-h4 text-foreground font-medium mb-2">
                         {t('demo.compliance.standards.documents', 'Required Documents')}
                       </h4>
-                      <ul className="text-white space-y-1">
+                      <ul className="text-foreground space-y-1">
                         {_config.compliance.documentation.required.map(doc => (
                           <li key={doc} className="flex items-center space-x-2">
-                            <span className="text-green-400">✓</span>
+                            <span className="text-success">✓</span>
                             <span>{doc}</span>
                           </li>
                         ))}

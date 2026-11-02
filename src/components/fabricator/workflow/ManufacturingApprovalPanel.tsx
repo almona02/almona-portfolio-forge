@@ -103,30 +103,30 @@ export function ManufacturingApprovalPanel() {
       setMessage(error instanceof Error ? error.message : 'Approval request failed.');
     } finally { setBusy(false); }
   };
-  return <section className="rounded-lg border border-amber-600/30 bg-slate-900 p-4 space-y-3" aria-label="Catalogue and manufacturing approval">
-    <h3 className="font-semibold text-amber-200">Catalogue & manufacturing rules</h3>
-    <p className="text-sm text-slate-300">{currentProject?.systemPackId ?? 'Select a system'} · saved revision {workflowIdentity?.revision ?? 'required'}. Submit the catalogue and rule document references for authorized review.</p>
-    <p className="text-xs text-slate-400">
+  return <section className="rounded-lg border border-amber-600/30 bg-background p-4 space-y-3" aria-label="Catalogue and manufacturing approval">
+    <h3 className="font-semibold text-warning">Catalogue & manufacturing rules</h3>
+    <p className="text-sm text-foreground">{currentProject?.systemPackId ?? 'Select a system'} · saved revision {workflowIdentity?.revision ?? 'required'}. Submit the catalogue and rule document references for authorized review.</p>
+    <p className="text-xs text-muted-foreground">
       Blocked? Open{' '}
-      <a className="text-amber-300 underline" href="/fabricator/studio/approvals">Admin Approvals</a>
+      <a className="text-warning underline" href="/fabricator/studio/approvals">Admin Approvals</a>
       {' · '}
-      <a className="text-amber-300 underline" href="/fabricator/studio/data/tuning">Pack qualification</a>
+      <a className="text-warning underline" href="/fabricator/studio/data/tuning">Pack qualification</a>
       {' · '}
-      <a className="text-amber-300 underline" href="/fabricator/studio/data/stock">Stock</a>
+      <a className="text-warning underline" href="/fabricator/studio/data/stock">Stock</a>
     </p>
-    <label className="block text-sm text-slate-300">Catalogue document / version
-      <input className="block w-full rounded border border-slate-600 bg-slate-950 p-2" maxLength={1000} value={catalogue} onChange={event => setCatalogue(event.target.value)} />
+    <label className="block text-sm text-foreground">Catalogue document / version
+      <input className="block w-full rounded border border-border bg-background p-2" maxLength={1000} value={catalogue} onChange={event => setCatalogue(event.target.value)} />
     </label>
-    <label className="block text-sm text-slate-300">Cutting rules document / version
-      <input className="block w-full rounded border border-slate-600 bg-slate-950 p-2" maxLength={1000} value={rules} onChange={event => setRules(event.target.value)} />
+    <label className="block text-sm text-foreground">Cutting rules document / version
+      <input className="block w-full rounded border border-border bg-background p-2" maxLength={1000} value={rules} onChange={event => setRules(event.target.value)} />
     </label>
-    <label className="block text-sm text-slate-300">Review notes
-      <textarea className="block w-full rounded border border-slate-600 bg-slate-950 p-2" maxLength={10000} value={notes} onChange={event => setNotes(event.target.value)} />
+    <label className="block text-sm text-foreground">Review notes
+      <textarea className="block w-full rounded border border-border bg-background p-2" maxLength={10000} value={notes} onChange={event => setNotes(event.target.value)} />
     </label>
     <div className="flex flex-wrap gap-2">
       <Button disabled={busy || !workflowIdentity || catalogue.trim().length < 3 || rules.trim().length < 3} onClick={() => void run(true)}>Request approval</Button>
       <Button variant="outline" disabled={busy || !workflowIdentity} onClick={() => void run(false)}>Check approved versions</Button>
     </div>
-    {message && <p role="status" className="text-sm text-amber-200 break-words">{message}</p>}
+    {message && <p role="status" className="text-sm text-warning break-words">{message}</p>}
   </section>;
 }

@@ -19,13 +19,13 @@ const neonButtonVariants = cva(
         success:
           "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-[0_0_20px_rgba(34,197,94,0.5)] hover:shadow-[0_0_30px_rgba(34,197,94,0.8)] border border-green-400/50 hover:border-green-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-green-400/20 before:to-emerald-400/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
         outline:
-          "border-2 border-cyan-400 text-cyan-400 bg-transparent shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:bg-cyan-400/10 hover:shadow-[0_0_25px_rgba(6,182,212,0.6)] hover:text-cyan-300 before:absolute before:inset-0 before:bg-cyan-400/5 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
+          "border-2 border-cyan-400 text-info bg-transparent shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:bg-cyan-400/10 hover:shadow-[0_0_25px_rgba(6,182,212,0.6)] hover:text-info before:absolute before:inset-0 before:bg-cyan-400/5 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
         ghost:
-          "text-cyan-400 hover:bg-cyan-400/10 hover:text-cyan-300 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] before:absolute before:inset-0 before:bg-cyan-400/5 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
+          "text-info hover:bg-cyan-400/10 hover:text-info hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] before:absolute before:inset-0 before:bg-cyan-400/5 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
         destructive:
           "bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.5)] hover:shadow-[0_0_30px_rgba(239,68,68,0.8)] border border-red-400/50 hover:border-red-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-red-400/20 before:to-rose-400/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
         industrial:
-          "bg-gradient-to-r from-gray-800 to-gray-900 text-cyan-400 shadow-[0_0_15px_rgba(0,255,255,0.7)] hover:shadow-[0_0_25px_rgba(0,255,255,1)] border border-cyan-500 hover:border-cyan-400 before:absolute before:inset-0 before:bg-gradient-to-r before:from-cyan-500/20 before:to-cyan-400/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
+          "bg-gradient-to-r from-card to-background text-info shadow-[0_0_15px_rgba(0,255,255,0.7)] hover:shadow-[0_0_25px_rgba(0,255,255,1)] border border-cyan-500 hover:border-cyan-400 before:absolute before:inset-0 before:bg-gradient-to-r before:from-cyan-500/20 before:to-cyan-400/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
       },
       size: {
         default: "h-10 px-4 py-2",

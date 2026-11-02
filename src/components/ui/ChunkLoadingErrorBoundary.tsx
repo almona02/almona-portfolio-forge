@@ -57,13 +57,13 @@ export class ChunkLoadingErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasChunkError) {
       return (
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-gray-800 rounded-lg p-6 text-center">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-card rounded-lg p-6 text-center">
             <div className="text-yellow-500 text-6xl mb-4">🔄</div>
-            <h1 className="typography-h1 text-xl text-white mb-2">
+            <h1 className="typography-h1 text-xl text-foreground mb-2">
               Loading Error
             </h1>
-            <p className="text-gray-300 mb-4">
+            <p className="text-foreground mb-4">
               Failed to load application resources. This might be due to a network issue or outdated cache.
             </p>
 
@@ -71,7 +71,7 @@ export class ChunkLoadingErrorBoundary extends Component<Props, State> {
               <button
                 onClick={this.handleRetry}
                 disabled={this.state.retryCount >= 3}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded transition-colors"
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-muted disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded transition-colors"
               >
                 {this.state.retryCount >= 3 ? 'Max Retries Reached' : `Retry (${this.state.retryCount}/3)`}
               </button>
@@ -88,7 +88,7 @@ export class ChunkLoadingErrorBoundary extends Component<Props, State> {
                   }
                   window.location.reload();
                 }}
-                className="w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded transition-colors"
+                className="w-full bg-muted hover:bg-muted text-foreground font-medium py-2 px-4 rounded transition-colors"
               >
                 Clear Cache & Reload
               </button>
@@ -102,7 +102,7 @@ export class ChunkLoadingErrorBoundary extends Component<Props, State> {
             </div>
 
             {this.state.retryCount >= 3 && (
-              <p className="text-red-400 text-sm mt-4">
+              <p className="text-destructive text-sm mt-4">
                 If the problem persists, please check your internet connection or try again later.
               </p>
             )}

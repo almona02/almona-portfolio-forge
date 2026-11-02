@@ -70,7 +70,7 @@ export const StudioIntegrationsPage: React.FC = () => {
       <h2 className="text-sm font-semibold text-amber-100 mb-1">
         {t('industrial.master.integrations', 'Integrations')}
       </h2>
-      <p className="text-xs text-slate-500 mb-4">
+      <p className="text-xs text-muted-foreground mb-4">
         {t(
           'industrial.erp.disclaimer',
           'Capability registry only. Native rows open Studio surfaces that already exist. External ERP connectors are not configured — no SAP/Odoo product is claimed until a connector contract is approved.',
@@ -94,14 +94,14 @@ export const StudioIntegrationsPage: React.FC = () => {
                   {r.record}
                 </Badge>
               </td>
-              <td className="py-2 text-slate-400">{r.note}</td>
+              <td className="py-2 text-muted-foreground">{r.note}</td>
               <td className="py-2">
                 {r.href ? (
                   <Button asChild variant="outline" size="sm" className="h-7 text-[10px]">
                     <Link to={r.href}>Open</Link>
                   </Button>
                 ) : (
-                  <span className="text-slate-600">—</span>
+                  <span className="text-muted-foreground">—</span>
                 )}
               </td>
             </tr>

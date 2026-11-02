@@ -24,12 +24,12 @@ export default function MeasuringMobilePreview() {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[10000] bg-slate-950 text-amber-100 flex justify-center">
+    <div className="fixed inset-0 z-[10000] bg-background text-amber-100 flex justify-center">
       <div className="h-full w-full max-w-md flex flex-col border-x border-amber-600/20">
-        <div className="shrink-0 px-3 py-2 border-b border-amber-600/25 text-xs text-slate-400">
+        <div className="shrink-0 px-3 py-2 border-b border-amber-600/25 text-xs text-muted-foreground">
           DEV mobile measuring preview
           {last ? (
-            <span className="ml-2 text-emerald-400" data-testid="measuring-mobile-saved">
+            <span className="ml-2 text-success" data-testid="measuring-mobile-saved">
               Saved {last.width}×{last.height} → Design/BOM
             </span>
           ) : null}

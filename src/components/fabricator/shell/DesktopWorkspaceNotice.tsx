@@ -17,13 +17,13 @@ export const DesktopWorkspaceNotice: React.FC<{ feature?: string }> = ({
       role="status"
     >
       <div className="max-w-sm text-center space-y-3">
-        <Monitor className="w-8 h-8 text-amber-500 mx-auto" aria-hidden />
-        <h2 className="text-sm font-semibold text-amber-100">
+        <Monitor className="w-8 h-8 text-warning mx-auto" aria-hidden />
+        <h2 className="text-sm font-semibold text-warning">
           {t('industrial.mobile_cad.title', '{{feature}} needs a larger display', {
             feature,
           })}
         </h2>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-muted-foreground">
           {t(
             'industrial.mobile_cad.body',
             'The engineering canvas is not compressed onto phones. Use Measure, status, quote, or open this workspace on a tablet landscape / desktop.',

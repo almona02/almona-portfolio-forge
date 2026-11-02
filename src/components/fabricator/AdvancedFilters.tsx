@@ -97,15 +97,15 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
     (constraintFilters.categoryStatus && Object.keys(constraintFilters.categoryStatus).length > 0);
 
   return (
-    <Card className={`bg-slate-900/50 border-slate-700/50 ${className}`}>
+    <Card className={`bg-background/50 border-border/50 ${className}`}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-lg font-bold text-amber-200 flex items-center gap-2">
-              <Filter className="h-4 w-4 text-amber-500" />
+            <CardTitle className="text-lg font-bold text-warning flex items-center gap-2">
+              <Filter className="h-4 w-4 text-warning" />
               Advanced Filters
             </CardTitle>
-            <CardDescription className="text-slate-400 mt-1">
+            <CardDescription className="text-muted-foreground mt-1">
               AICS-001 constraint compliance filtering
             </CardDescription>
           </div>
@@ -114,7 +114,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               variant="ghost"
               size="sm"
               onClick={clearAllFilters}
-              className="text-amber-400 hover:text-amber-300"
+              className="text-warning hover:text-warning"
             >
               <X className="h-3 w-3 mr-1" />
               Clear
@@ -125,7 +125,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
       <CardContent className="space-y-6">
         {/* Validation Status Filter */}
         <div>
-          <Label className="text-sm font-semibold text-slate-300 mb-2 block">
+          <Label className="text-sm font-semibold text-foreground mb-2 block">
             Validation Status
           </Label>
           <Select
@@ -136,10 +136,10 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               });
             }}
           >
-            <SelectTrigger className="bg-slate-800/50 border-amber-500/30 text-slate-200">
+            <SelectTrigger className="bg-card/50 border-amber-500/30 text-foreground">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-amber-500/30">
+            <SelectContent className="bg-card border-amber-500/30">
               <SelectItem value="all">All Projects</SelectItem>
               <SelectItem value="compliant">Compliant</SelectItem>
               <SelectItem value="non-compliant">Non-Compliant</SelectItem>
@@ -150,7 +150,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
         {/* Failed Categories Filter */}
         <div>
-          <Label className="text-sm font-semibold text-slate-300 mb-2 block">
+          <Label className="text-sm font-semibold text-foreground mb-2 block">
             Failed Constraint Categories
           </Label>
           <div className="space-y-2">
@@ -164,7 +164,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                 />
                 <Label
                   htmlFor={`failed-category-${category}`}
-                  className="text-sm text-slate-300 cursor-pointer"
+                  className="text-sm text-foreground cursor-pointer"
                 >
                   {getCategoryName(category)}
                 </Label>
@@ -175,7 +175,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
         {/* Category-Specific Status Filters */}
         <div>
-          <Label className="text-sm font-semibold text-slate-300 mb-2 block">
+          <Label className="text-sm font-semibold text-foreground mb-2 block">
             Category Validation Status
           </Label>
           <div className="space-y-3">
@@ -183,7 +183,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               const currentStatus = constraintFilters.categoryStatus?.[category];
               return (
                 <div key={category} className="flex items-center justify-between">
-                  <Label className="text-xs text-slate-400">{getCategoryName(category)}</Label>
+                  <Label className="text-xs text-muted-foreground">{getCategoryName(category)}</Label>
                   <div className="flex items-center gap-2">
                     <Button
                       variant={currentStatus === 'pass' ? 'default' : 'outline'}
@@ -192,7 +192,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                       className={`h-7 px-2 text-xs ${
                         currentStatus === 'pass'
                           ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                          : 'border-emerald-500/30 text-emerald-400 hover:bg-emerald-950/30'
+                          : 'border-emerald-500/30 text-success hover:bg-emerald-950/30'
                       }`}
                     >
                       Pass
@@ -204,7 +204,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                       className={`h-7 px-2 text-xs ${
                         currentStatus === 'fail'
                           ? 'bg-red-600 hover:bg-red-700 text-white'
-                          : 'border-red-500/30 text-red-400 hover:bg-red-950/30'
+                          : 'border-red-500/30 text-destructive hover:bg-red-950/30'
                       }`}
                     >
                       Fail
@@ -218,8 +218,8 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
         {/* Audit Trail Filters */}
         <div>
-            <Label className="text-sm font-semibold text-slate-300 mb-2 flex items-center gap-2">
-            <Shield className="h-3 w-3 text-amber-500" />
+            <Label className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+            <Shield className="h-3 w-3 text-warning" />
             Audit Trail
           </Label>
           <div className="space-y-2">
@@ -234,7 +234,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                 }}
                 className="border-amber-500/30 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-500"
               />
-              <Label htmlFor="audit-trail-complete" className="text-sm text-slate-300 cursor-pointer">
+              <Label htmlFor="audit-trail-complete" className="text-sm text-foreground cursor-pointer">
                 Has Complete Audit Trail
               </Label>
             </div>
@@ -249,7 +249,7 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                 }}
                 className="border-amber-500/30 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-500"
               />
-              <Label htmlFor="has-replay-metadata" className="text-sm text-slate-300 cursor-pointer">
+              <Label htmlFor="has-replay-metadata" className="text-sm text-foreground cursor-pointer">
                 Has Replay Metadata
               </Label>
             </div>
@@ -258,28 +258,28 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
         {/* Active Filters Summary */}
         {hasActiveFilters && (
-          <div className="pt-4 border-t border-slate-700/50">
-            <Label className="text-xs text-slate-400 uppercase tracking-wider mb-2 block">
+          <div className="pt-4 border-t border-border/50">
+            <Label className="text-xs text-muted-foreground uppercase tracking-wider mb-2 block">
               Active Filters
             </Label>
             <div className="flex flex-wrap gap-2">
               {constraintFilters.validationStatus && (
-                <Badge variant="outline" className="bg-amber-950/30 border-amber-500/30 text-amber-400 text-xs">
+                <Badge variant="outline" className="bg-amber-950/30 border-amber-500/30 text-warning text-xs">
                   Status: {constraintFilters.validationStatus}
                 </Badge>
               )}
               {constraintFilters.failedCategories && constraintFilters.failedCategories.length > 0 && (
-                <Badge variant="outline" className="bg-red-950/30 border-red-500/30 text-red-400 text-xs">
+                <Badge variant="outline" className="bg-red-950/30 border-red-500/30 text-destructive text-xs">
                   {constraintFilters.failedCategories.length} Failed Categories
                 </Badge>
               )}
               {constraintFilters.auditTrailComplete && (
-                <Badge variant="outline" className="bg-emerald-950/30 border-emerald-500/30 text-emerald-400 text-xs">
+                <Badge variant="outline" className="bg-emerald-950/30 border-emerald-500/30 text-success text-xs">
                   Audit Trail Complete
                 </Badge>
               )}
               {constraintFilters.hasReplayMetadata && (
-                <Badge variant="outline" className="bg-cyan-950/30 border-cyan-500/30 text-cyan-400 text-xs">
+                <Badge variant="outline" className="bg-cyan-950/30 border-cyan-500/30 text-info text-xs">
                   Has Replay Metadata
                 </Badge>
               )}

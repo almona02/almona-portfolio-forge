@@ -224,7 +224,7 @@ export const SilkRoadTracker: React.FC<SilkRoadTrackerProps> = ({
       case 'delayed':
         return 'bg-red-500';
       case 'pending':
-        return 'bg-gray-300';
+        return 'bg-muted';
     }
   };
 
@@ -253,7 +253,7 @@ export const SilkRoadTracker: React.FC<SilkRoadTrackerProps> = ({
         {/* Timeline */}
         <div className="relative">
           {/* Connection Line */}
-          <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200" />
+          <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-muted" />
 
           <div className="space-y-6 relative">
             <LazyAnimatePresence>
@@ -272,8 +272,8 @@ export const SilkRoadTracker: React.FC<SilkRoadTrackerProps> = ({
                     {/* Node Icon */}
                     <div className={`
                       relative z-10 flex items-center justify-center w-12 h-12 rounded-full
-                      ${isActive ? getNodeColor(node.status) : 'bg-gray-200'}
-                      ${isActive ? 'text-white' : 'text-gray-400'}
+                      ${isActive ? getNodeColor(node.status) : 'bg-muted'}
+                      ${isActive ? 'text-foreground' : 'text-muted-foreground'}
                       ${isCurrent ? 'ring-4 ring-primary/20' : ''}
                     `}>
                       {getNodeIcon(node.type)}
@@ -291,7 +291,7 @@ export const SilkRoadTracker: React.FC<SilkRoadTrackerProps> = ({
                         </div>
                         <div className="text-right">
                           {node.status === 'completed' && node.actualArrival && (
-                            <div className="flex items-center gap-1 text-green-600">
+                            <div className="flex items-center gap-1 text-success">
                               <CheckCircle2 className="h-4 w-4" />
                               <span className="text-xs">
                                 {node.actualArrival.toLocaleDateString()}
@@ -299,13 +299,13 @@ export const SilkRoadTracker: React.FC<SilkRoadTrackerProps> = ({
                             </div>
                           )}
                           {node.status === 'delayed' && (
-                            <div className="flex items-center gap-1 text-red-600">
+                            <div className="flex items-center gap-1 text-destructive">
                               <AlertCircle className="h-4 w-4" />
                               <span className="text-xs">Delayed</span>
                             </div>
                           )}
                           {node.status === 'in_transit' && node.estimatedArrival && (
-                            <div className="flex items-center gap-1 text-blue-600">
+                            <div className="flex items-center gap-1 text-info">
                               <Clock className="h-4 w-4" />
                               <span className="text-xs">
                                 ETA: {node.estimatedArrival.toLocaleDateString()}
@@ -317,7 +317,7 @@ export const SilkRoadTracker: React.FC<SilkRoadTrackerProps> = ({
 
                       {node.delayReason && (
                         <Alert className="mt-2 bg-red-50 border-red-200">
-                          <AlertCircle className="h-4 w-4 text-red-600" />
+                          <AlertCircle className="h-4 w-4 text-destructive" />
                           <p className="text-xs text-red-800">{node.delayReason}</p>
                         </Alert>
                       )}
@@ -342,7 +342,7 @@ export const SilkRoadTracker: React.FC<SilkRoadTrackerProps> = ({
             <span className="font-mono font-semibold">{journey.estimatedTotalDays} days</span>
           </div>
           {journey.isDelayed && (
-            <div className="flex justify-between text-sm text-red-600">
+            <div className="flex justify-between text-sm text-destructive">
               <span>Delay:</span>
               <span className="font-mono font-semibold">+{journey.delayDays} days</span>
             </div>

@@ -84,19 +84,19 @@ export const MachineTestExporter: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800 card-dark">
+        <Card className="bg-background border-border card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Machine Test Exporter</CardTitle>
-            <p className="text-gray-400">Generate test windows for physical validation</p>
+            <p className="text-muted-foreground">Generate test windows for physical validation</p>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="typography-label text-sm text-gray-400">Machine Type</label>
+                <label className="typography-label text-sm text-muted-foreground">Machine Type</label>
                 <Select value={machineType} onValueChange={(v) => setMachineType(v as any)}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
+                  <SelectTrigger className="bg-card border-border">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -107,9 +107,9 @@ export const MachineTestExporter: React.FC = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="typography-label text-sm text-gray-400">Test Window Type</label>
+                <label className="typography-label text-sm text-muted-foreground">Test Window Type</label>
                 <Select value={testType} onValueChange={(v) => setTestType(v as any)}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
+                  <SelectTrigger className="bg-card border-border">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -136,7 +136,7 @@ export const MachineTestExporter: React.FC = () => {
                 <CheckCircle2 className="h-4 w-4" />
                 <AlertDescription>
                   <div className="font-semibold mb-2">Export Complete!</div>
-                  <div className="text-sm text-gray-400">
+                  <div className="text-sm text-muted-foreground">
                     Files downloaded:
                     <ul className="list-disc list-inside mt-2">
                       <li>G-code file (.gcode)</li>
@@ -148,9 +148,9 @@ export const MachineTestExporter: React.FC = () => {
               </Alert>
             )}
 
-            <div className="bg-gray-800 p-4 rounded-lg">
+            <div className="bg-card p-4 rounded-lg">
               <h3 className="typography-h3 mb-2">Physical Validation Checklist</h3>
-              <ul className="text-sm text-gray-400 space-y-1">
+              <ul className="text-sm text-muted-foreground space-y-1">
                 <li>✓ Hinge Positions: 150mm from top/bottom (±0.5mm)</li>
                 <li>✓ Handle Height: 1100mm from bottom (±10mm)</li>
                 <li>✓ Glass Fit: 25mm pocket (±2mm)</li>

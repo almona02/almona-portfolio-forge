@@ -43,11 +43,11 @@ export const JobRiskIndicator: React.FC<JobRiskIndicatorProps> = ({ riskScore, p
   const getRiskColor = (level: 'low' | 'medium' | 'high') => {
     switch (level) {
       case 'low':
-        return 'bg-green-500/10 border-green-500/30 text-green-400';
+        return 'bg-green-500/10 border-green-500/30 text-success';
       case 'medium':
-        return 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400';
+        return 'bg-yellow-500/10 border-yellow-500/30 text-warning';
       case 'high':
-        return 'bg-red-500/10 border-red-500/30 text-red-400';
+        return 'bg-red-500/10 border-red-500/30 text-destructive';
     }
   };
 
@@ -76,7 +76,7 @@ export const JobRiskIndicator: React.FC<JobRiskIndicatorProps> = ({ riskScore, p
       <CardContent className="space-y-4">
         {/* Risk Score */}
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-300">Risk Score</span>
+          <span className="text-sm text-foreground">Risk Score</span>
           <Badge
             variant="outline"
             className={`${getRiskColor(riskLevel)} text-lg font-bold px-3 py-1`}
@@ -88,7 +88,7 @@ export const JobRiskIndicator: React.FC<JobRiskIndicatorProps> = ({ riskScore, p
         {/* Warnings */}
         {riskScore.warnings.length > 0 && (
           <div className="space-y-2">
-            <h4 className="typography-h4 text-sm text-gray-300">Warnings</h4>
+            <h4 className="typography-h4 text-sm text-foreground">Warnings</h4>
             {riskScore.warnings.map((warning, idx) => (
               <Alert
                 key={idx}
@@ -108,11 +108,11 @@ export const JobRiskIndicator: React.FC<JobRiskIndicatorProps> = ({ riskScore, p
         {/* Recommendations */}
         {riskScore.recommendations.length > 0 && (
           <div className="space-y-2">
-            <h4 className="typography-h4 text-sm text-gray-300">Recommendations</h4>
+            <h4 className="typography-h4 text-sm text-foreground">Recommendations</h4>
             <ul className="space-y-1">
               {riskScore.recommendations.map((rec, idx) => (
-                <li key={idx} className="text-sm text-gray-400 flex items-start gap-2">
-                  <Info className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
+                  <Info className="h-4 w-4 text-info flex-shrink-0 mt-0.5" />
                   <span>{rec}</span>
                 </li>
               ))}
@@ -123,25 +123,25 @@ export const JobRiskIndicator: React.FC<JobRiskIndicatorProps> = ({ riskScore, p
         {/* Optimal Parameters */}
         {riskScore.optimalParameters && (
           <div className="space-y-2">
-            <h4 className="typography-h4 text-sm text-gray-300">Optimal Parameters</h4>
+            <h4 className="typography-h4 text-sm text-foreground">Optimal Parameters</h4>
             <div className="grid grid-cols-3 gap-2 text-xs">
               {riskScore.optimalParameters.bladeSpeed && (
-                <div className="p-2 bg-gray-900/50 rounded">
-                  <div className="text-gray-400">Blade Speed</div>
+                <div className="p-2 bg-background/50 rounded">
+                  <div className="text-muted-foreground">Blade Speed</div>
                   <div className="font-medium">{riskScore.optimalParameters.bladeSpeed} RPM</div>
                 </div>
               )}
               {riskScore.optimalParameters.clampingPressure && (
-                <div className="p-2 bg-gray-900/50 rounded">
-                  <div className="text-gray-400">Clamping</div>
+                <div className="p-2 bg-background/50 rounded">
+                  <div className="text-muted-foreground">Clamping</div>
                   <div className="font-medium">
                     {riskScore.optimalParameters.clampingPressure} bar
                   </div>
                 </div>
               )}
               {riskScore.optimalParameters.feedRate && (
-                <div className="p-2 bg-gray-900/50 rounded">
-                  <div className="text-gray-400">Feed Rate</div>
+                <div className="p-2 bg-background/50 rounded">
+                  <div className="text-muted-foreground">Feed Rate</div>
                   <div className="font-medium">{riskScore.optimalParameters.feedRate} mm/min</div>
                 </div>
               )}

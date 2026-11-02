@@ -21,16 +21,16 @@ export const PatternCard: React.FC<PatternCardProps> = ({
 }) => {
   return (
     <Card
-      className="cursor-pointer transition-all hover:border-blue-500 bg-gray-800 border-gray-700"
+      className="cursor-pointer transition-all hover:border-blue-500 bg-card border-border"
       onClick={onClick}
     >
       <CardContent className="p-4">
         <div className="font-semibold mb-2">{pattern.name}</div>
-        <div className="text-sm text-gray-400 mb-2">{pattern.layout}</div>
+        <div className="text-sm text-muted-foreground mb-2">{pattern.layout}</div>
         {pattern.notes && (
-          <div className="text-xs text-gray-500">{pattern.notes}</div>
+          <div className="text-xs text-muted-foreground">{pattern.notes}</div>
         )}
-        <div className="text-xs text-gray-500 mt-2">
+        <div className="text-xs text-muted-foreground mt-2">
           {pattern.type.replace('_', ' ')} • {pattern.compatibleSystems.length} compatible systems
         </div>
       </CardContent>

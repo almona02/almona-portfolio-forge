@@ -257,7 +257,7 @@ export const QuoteBuilder: React.FC = () => {
 
   if (!currentProject) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center text-slate-400">
+      <div className="flex flex-col items-center justify-center p-12 text-center text-muted-foreground">
         <FileText className="h-16 w-16 mb-4 opacity-50" />
         <p>No project data. Complete design and optimization first.</p>
       </div>
@@ -267,7 +267,7 @@ export const QuoteBuilder: React.FC = () => {
   const hasCostData = optimizationResult || bom?.cost;
   if (!hasCostData) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center text-slate-400">
+      <div className="flex flex-col items-center justify-center p-12 text-center text-muted-foreground">
         <Receipt className="h-16 w-16 mb-4 opacity-50" />
         <p>No cost data yet. Complete optimization to generate quote.</p>
         <Button variant="outline" onClick={() => void navigate(projectId && poseId ? fabricatorRoutes.poseOptimization(projectId, poseId) : fabricatorRoutes.studioProjects())}>Go to optimization</Button>
@@ -277,13 +277,13 @@ export const QuoteBuilder: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-slate-900/50 border-amber-600/30">
+      <Card className="bg-background/50 border-amber-600/30">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-amber-200">
+          <CardTitle className="flex items-center gap-2 text-warning">
             <Receipt className="h-5 w-5" />
             {isEstimateOnly ? 'Estimate Quotation' : 'Quotation'}
           </CardTitle>
-          <p className="text-slate-400 text-sm">
+          <p className="text-muted-foreground text-sm">
             {currentProject.orderNumber || currentProject.id} · {currentProject.type}
             {isEstimateOnly
               ? ' · Estimate only — Convert to Order blocked until optimization is approved'
@@ -294,28 +294,28 @@ export const QuoteBuilder: React.FC = () => {
           {/* Markup & Tax */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="quote-markup" className="text-slate-400">Markup %</Label>
+              <Label htmlFor="quote-markup" className="text-muted-foreground">Markup %</Label>
               <div className="flex items-center gap-2 mt-1">
-                <Percent className="h-4 w-4 text-amber-500" />
+                <Percent className="h-4 w-4 text-warning" />
                 <Input
                   type="number"
                   value={markupPercent}
                   id="quote-markup"
                   onChange={(e) => setMarkupPercent(Number(e.target.value) || 0)}
-                  className="bg-slate-800 border-amber-600/30 text-amber-100"
+                  className="bg-card border-amber-600/30 text-warning"
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="quote-vat" className="text-slate-400">VAT %</Label>
+              <Label htmlFor="quote-vat" className="text-muted-foreground">VAT %</Label>
               <div className="flex items-center gap-2 mt-1">
-                <Percent className="h-4 w-4 text-amber-500" />
+                <Percent className="h-4 w-4 text-warning" />
                 <Input
                   type="number"
                   value={taxRate}
                   id="quote-vat"
                   onChange={(e) => setTaxRate(Number(e.target.value) || 0)}
-                  className="bg-slate-800 border-amber-600/30 text-amber-100"
+                  className="bg-card border-amber-600/30 text-warning"
                 />
               </div>
             </div>
@@ -326,7 +326,7 @@ export const QuoteBuilder: React.FC = () => {
             <div className="border border-amber-600/20 rounded-lg overflow-x-auto">
               <table className="w-full min-w-[420px] text-sm">
                 <thead>
-                  <tr className="bg-amber-900/20 text-amber-300">
+                  <tr className="bg-amber-900/20 text-warning">
                     <th className="text-left p-3">Description</th>
                     <th className="text-right p-3">Qty</th>
                     <th className="text-right p-3">Unit</th>
@@ -335,7 +335,7 @@ export const QuoteBuilder: React.FC = () => {
                 </thead>
                 <tbody>
                   {quote.lineItems.map((item, i) => (
-                    <tr key={i} className="border-t border-amber-600/10 text-slate-300">
+                    <tr key={i} className="border-t border-amber-600/10 text-foreground">
                       <td className="p-3">{item.description}</td>
                       <td className="text-right p-3">{item.quantity}</td>
                       <td className="text-right p-3">{formatCurrency(item.unitPrice, 'EGP')}</td>
@@ -351,14 +351,14 @@ export const QuoteBuilder: React.FC = () => {
           {quote && (
             <div className="flex flex-col items-end gap-1 text-right">
               <div className="flex justify-between w-48">
-                <span className="text-slate-400">Subtotal</span>
+                <span className="text-muted-foreground">Subtotal</span>
                 <span>{formatCurrency(quote.subtotal ?? 0, quote.currency)}</span>
               </div>
               <div className="flex justify-between w-48">
-                <span className="text-slate-400">VAT</span>
+                <span className="text-muted-foreground">VAT</span>
                 <span>{formatCurrency(quote.tax ?? 0, quote.currency)}</span>
               </div>
-              <div className="flex justify-between w-48 font-bold text-amber-200 text-lg pt-2 border-t border-amber-600/30">
+              <div className="flex justify-between w-48 font-bold text-warning text-lg pt-2 border-t border-amber-600/30">
                 <span>Total</span>
                 <span>{formatCurrency(quote.total, quote.currency)}</span>
               </div>
@@ -371,7 +371,7 @@ export const QuoteBuilder: React.FC = () => {
               variant="outline"
               onClick={() => void handleSaveQuote()}
               disabled={isSaving || isConverting || !quote}
-              className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
+              className="border-amber-600/30 text-warning hover:bg-amber-500/10"
             >
               {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               {isEstimateOnly ? 'Save Estimate' : 'Save Quote'}
@@ -385,7 +385,7 @@ export const QuoteBuilder: React.FC = () => {
                   ? 'Create order from approved optimization quote'
                   : 'Blocked until optimization is approved'
               }
-              className="border-emerald-600/40 text-emerald-300 hover:bg-emerald-500/10 disabled:opacity-40"
+              className="border-emerald-600/40 text-success hover:bg-emerald-500/10 disabled:opacity-40"
               data-testid="convert-to-order"
             >
               {isConverting ? (
@@ -399,7 +399,7 @@ export const QuoteBuilder: React.FC = () => {
               variant="outline"
               onClick={() => void handleExportPDF()}
               disabled={isExporting}
-              className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
+              className="border-amber-600/30 text-warning hover:bg-amber-500/10"
             >
               {isExporting ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />

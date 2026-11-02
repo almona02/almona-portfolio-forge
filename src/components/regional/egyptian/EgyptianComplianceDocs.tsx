@@ -61,26 +61,26 @@ export const EgyptianComplianceDocs: React.FC = () => {
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
         <FileText className="w-5 h-5 text-amber-500" />
-        <h3 className="typography-h3 text-gray-900 dark:text-white">
+        <h3 className="typography-h3 text-foreground dark:text-foreground">
           Egyptian Compliance Documents
         </h3>
       </div>
       
       <div className="grid gap-3">
         {complianceDocs.map((doc) => (
-          <Card key={doc.id} className="border border-gray-200 dark:border-gray-700">
+          <Card key={doc.id} className="border border-border dark:border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-900 dark:text-white">
+              <CardTitle className="text-sm font-medium text-foreground dark:text-foreground">
                 {doc.title}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+              <p className="text-xs text-muted-foreground dark:text-muted-foreground mb-3">
                 {doc.description}
               </p>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="px-2 py-1 bg-muted dark:bg-muted rounded text-xs">
                     {doc.type}
                   </span>
                   <span>{doc.size}</span>
@@ -110,7 +110,7 @@ export const EgyptianComplianceDocs: React.FC = () => {
         ))}
       </div>
       
-      <div className="text-xs text-gray-500 dark:text-gray-400 text-center pt-2">
+      <div className="text-xs text-muted-foreground dark:text-muted-foreground text-center pt-2">
         All documents are in compliance with Egyptian regulations
       </div>
     </div>

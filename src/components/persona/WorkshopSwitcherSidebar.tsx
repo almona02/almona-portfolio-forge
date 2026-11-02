@@ -17,7 +17,7 @@ export const WorkshopSwitcherSidebar: React.FC = () => {
       'fixed top-20 right-4 w-80 z-30',
       'max-h-[calc(100vh-6rem)] overflow-y-auto'
     )}>
-      <Card className="bg-gray-900/95 border-gray-700 card-dark">
+      <Card className="bg-background/95 border-border card-dark">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
             <Factory className="h-5 w-5 text-amber-400" />
@@ -26,14 +26,14 @@ export const WorkshopSwitcherSidebar: React.FC = () => {
         </CardHeader>
         <CardContent>
           {workshops.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-muted-foreground">
               <Factory className="h-12 w-12 mx-auto mb-3 opacity-50" />
               <p className="text-sm">No workshops available</p>
             </div>
           ) : (
             <div className="space-y-2">
               {/* Placeholder for workshop items */}
-              <p className="text-xs text-gray-500">Workshop switcher coming soon</p>
+              <p className="text-xs text-muted-foreground">Workshop switcher coming soon</p>
             </div>
           )}
         </CardContent>

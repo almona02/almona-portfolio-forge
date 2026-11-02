@@ -320,7 +320,7 @@ export const EnhancedGLBViewer = forwardRef<{ resetCamera: () => void }, Enhance
               )}
             </div>
             {enableWebXR && !xrSupported && (
-              <span className="text-[10px] text-gray-400">SwiftXR WebXR not supported</span>
+              <span className="text-[10px] text-muted-foreground">SwiftXR WebXR not supported</span>
             )}
           </div>
         )}

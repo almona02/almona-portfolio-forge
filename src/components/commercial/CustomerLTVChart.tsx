@@ -89,7 +89,7 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
 
   if (loading) {
     return (
-      <Card className={`p-6 bg-slate-900/50 border-amber-500/20 ${className}`}>
+      <Card className={`p-6 bg-background/50 border-amber-500/20 ${className}`}>
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
         </div>
@@ -99,30 +99,30 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
 
   if (data.length === 0) {
     return (
-      <Card className={`p-6 bg-slate-900/50 border-amber-500/20 ${className}`}>
+      <Card className={`p-6 bg-background/50 border-amber-500/20 ${className}`}>
         <div className="text-center py-12">
-          <Users className="w-16 h-16 mx-auto mb-4 text-slate-500 opacity-50" />
-          <h3 className="text-lg font-semibold text-slate-300 mb-2">No Customer Data</h3>
-          <p className="text-slate-500">No customer lifetime value data available for the selected period.</p>
+          <Users className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+          <h3 className="text-lg font-semibold text-foreground mb-2">No Customer Data</h3>
+          <p className="text-muted-foreground">No customer lifetime value data available for the selected period.</p>
         </div>
       </Card>
     );
   }
 
   return (
-    <Card className={`p-6 bg-slate-900/50 border-amber-500/20 backdrop-blur-sm ${className}`}>
+    <Card className={`p-6 bg-background/50 border-amber-500/20 backdrop-blur-sm ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-xl font-bold text-amber-400 mb-1">Customer Lifetime Value</h3>
-          <p className="text-sm text-slate-400">Top customers by total revenue</p>
+          <p className="text-sm text-muted-foreground">Top customers by total revenue</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => handleDateRangeChange(3)}
-            className="bg-slate-800/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
+            className="bg-card/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
           >
             3M
           </Button>
@@ -130,7 +130,7 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
             variant="outline"
             size="sm"
             onClick={() => handleDateRangeChange(6)}
-            className="bg-slate-800/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
+            className="bg-card/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
           >
             6M
           </Button>
@@ -138,7 +138,7 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
             variant="outline"
             size="sm"
             onClick={() => handleDateRangeChange(12)}
-            className="bg-slate-800/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
+            className="bg-card/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
           >
             12M
           </Button>
@@ -146,7 +146,7 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
             variant="outline"
             size="sm"
             onClick={() => setSelectedRange(undefined)}
-            className="bg-slate-800/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
+            className="bg-card/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
           >
             All
           </Button>
@@ -155,24 +155,24 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-slate-800/50 rounded-lg p-4 border border-amber-500/10">
-          <p className="text-sm text-slate-400 mb-1">Total Customers</p>
+        <div className="bg-card/50 rounded-lg p-4 border border-amber-500/10">
+          <p className="text-sm text-muted-foreground mb-1">Total Customers</p>
           <p className="text-2xl font-bold text-amber-400">{data.length}</p>
         </div>
-        <div className="bg-slate-800/50 rounded-lg p-4 border border-amber-500/10">
-          <p className="text-sm text-slate-400 mb-1">Total Revenue</p>
+        <div className="bg-card/50 rounded-lg p-4 border border-amber-500/10">
+          <p className="text-sm text-muted-foreground mb-1">Total Revenue</p>
           <p className="text-2xl font-bold text-amber-400">
             {formatCurrency(totalRevenue, data[0]?.currency || 'EGP')}
           </p>
         </div>
-        <div className="bg-slate-800/50 rounded-lg p-4 border border-amber-500/10">
-          <p className="text-sm text-slate-400 mb-1">Avg LTV</p>
+        <div className="bg-card/50 rounded-lg p-4 border border-amber-500/10">
+          <p className="text-sm text-muted-foreground mb-1">Avg LTV</p>
           <p className="text-2xl font-bold text-amber-400">
             {formatCurrency(avgLTV, data[0]?.currency || 'EGP')}
           </p>
         </div>
-        <div className="bg-slate-800/50 rounded-lg p-4 border border-amber-500/10">
-          <p className="text-sm text-slate-400 mb-1">Avg Order Value</p>
+        <div className="bg-card/50 rounded-lg p-4 border border-amber-500/10">
+          <p className="text-sm text-muted-foreground mb-1">Avg Order Value</p>
           <p className="text-2xl font-bold text-amber-400">
             {formatCurrency(avgOrderValue, data[0]?.currency || 'EGP')}
           </p>
@@ -242,20 +242,20 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
       <div className="mt-6 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-700">
-              <th className="text-left py-3 px-4 text-slate-400 font-semibold">Customer</th>
-              <th className="text-right py-3 px-4 text-slate-400 font-semibold">Revenue</th>
-              <th className="text-right py-3 px-4 text-slate-400 font-semibold">Orders</th>
-              <th className="text-right py-3 px-4 text-slate-400 font-semibold">Avg Order</th>
+            <tr className="border-b border-border">
+              <th className="text-left py-3 px-4 text-muted-foreground font-semibold">Customer</th>
+              <th className="text-right py-3 px-4 text-muted-foreground font-semibold">Revenue</th>
+              <th className="text-right py-3 px-4 text-muted-foreground font-semibold">Orders</th>
+              <th className="text-right py-3 px-4 text-muted-foreground font-semibold">Avg Order</th>
             </tr>
           </thead>
           <tbody>
             {data.slice(0, 10).map((customer, index) => (
               <tr
                 key={customer.customerId}
-                className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"
+                className="border-b border-border/50 hover:bg-card/30 transition-colors"
               >
-                <td className="py-3 px-4 text-slate-300">
+                <td className="py-3 px-4 text-foreground">
                   <div className="flex items-center gap-2">
                     <span className="text-amber-400 font-mono text-xs">#{index + 1}</span>
                     {customer.customerName}
@@ -264,10 +264,10 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
                 <td className="py-3 px-4 text-right text-amber-400 font-semibold">
                   {formatCurrency(customer.totalRevenue, customer.currency)}
                 </td>
-                <td className="py-3 px-4 text-right text-slate-300">
+                <td className="py-3 px-4 text-right text-foreground">
                   {customer.orderCount}
                 </td>
-                <td className="py-3 px-4 text-right text-slate-400">
+                <td className="py-3 px-4 text-right text-muted-foreground">
                   {formatCurrency(customer.averageOrderValue, customer.currency)}
                 </td>
               </tr>

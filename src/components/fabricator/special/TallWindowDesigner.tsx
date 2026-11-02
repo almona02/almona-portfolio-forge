@@ -93,16 +93,16 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
   }, [totalHeight, segmentHeight, needsSegmentation]);
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="typography-h1 text-white flex items-center gap-3">
-              <MoveVertical className="h-8 w-8 text-amber-500" />
+            <h1 className="typography-h1 text-foreground flex items-center gap-3">
+              <MoveVertical className="h-8 w-8 text-warning" />
               Tall Segmented Window Designer
             </h1>
-            <p className="text-gray-400 mt-2">
+            <p className="text-muted-foreground mt-2">
               Automatic segmentation for windows {'>'} 2.4m with 99.7% accuracy
             </p>
           </div>
@@ -115,8 +115,8 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
 
         {!needsSegmentation ? (
           <Alert className="bg-yellow-900/20 border-yellow-800">
-            <AlertTriangle className="h-4 w-4 text-yellow-500" />
-            <AlertDescription className="text-yellow-300">
+            <AlertTriangle className="h-4 w-4 text-warning" />
+            <AlertDescription className="text-warning">
               Window height ({totalHeight}mm) is ≤ 2400mm. Segmentation is not required.
               Tall window segmentation is only needed for windows taller than 2.4m.
             </AlertDescription>
@@ -124,34 +124,34 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left: Parameters */}
-            <Card className="bg-gray-900/50 border-gray-800 card-dark">
+            <Card className="bg-background/50 border-border card-dark">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Ruler className="h-5 w-5 text-amber-500" />
+                <CardTitle className="text-foreground flex items-center gap-2">
+                  <Ruler className="h-5 w-5 text-warning" />
                   Segmentation Parameters
                 </CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardDescription className="text-muted-foreground">
                   Configure segmentation for tall window
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Window Height (Read-only) */}
                 <div className="space-y-2">
-                  <Label className="typography-label text-gray-300">Total Window Height</Label>
+                  <Label className="typography-label text-foreground">Total Window Height</Label>
                   <Input
                     type="number"
                     value={totalHeight}
                     disabled
-                    className="bg-gray-800 border-gray-700 text-gray-400"
+                    className="bg-card border-border text-muted-foreground"
                   />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     Window exceeds 2.4m - segmentation required
                   </p>
                 </div>
 
                 {/* Segment Height */}
                 <div className="space-y-2">
-                  <Label className="typography-label text-gray-300">
+                  <Label className="typography-label text-foreground">
                     Segment Height: {segmentHeight}mm ({segmentCount} segments)
                   </Label>
                   <Input
@@ -163,7 +163,7 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
                     onChange={(e) => setSegmentHeight(Number(e.target.value))}
                     className="w-full"
                   />
-                  <div className="flex justify-between text-xs text-gray-400">
+                  <div className="flex justify-between text-xs text-muted-foreground">
                     <span>1800mm</span>
                     <span>2400mm (max)</span>
                   </div>
@@ -171,26 +171,26 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
                     type="number"
                     value={segmentHeight}
                     onChange={(e) => setSegmentHeight(Number(e.target.value))}
-                    className="bg-gray-800 border-gray-700 text-white mt-2"
+                    className="bg-card border-border text-foreground mt-2"
                     min={1800}
                     max={2400}
                   />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     Recommended: 2400mm per segment (Egyptian standard)
                   </p>
                 </div>
 
                 {/* Opening Type */}
                 <div className="space-y-2">
-                  <Label className="typography-label text-gray-300">Opening Type</Label>
+                  <Label className="typography-label text-foreground">Opening Type</Label>
                   <Select
                     value={openingType}
                     onValueChange={setOpeningType}
                   >
-                    <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                    <SelectTrigger className="bg-card border-border text-foreground">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-gray-700">
+                    <SelectContent className="bg-background border-border">
                       <SelectItem value="sliding_window">Sliding Window</SelectItem>
                       <SelectItem value="casement">Casement</SelectItem>
                       <SelectItem value="tilt_turn">Tilt & Turn</SelectItem>
@@ -200,21 +200,21 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
                 </div>
 
                 {/* Segment Preview */}
-                <div className="bg-gray-800/50 p-4 rounded">
-                  <p className="text-sm font-medium text-gray-300 mb-2">Segmentation Preview</p>
+                <div className="bg-card/50 p-4 rounded">
+                  <p className="text-sm font-medium text-foreground mb-2">Segmentation Preview</p>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Total Segments:</span>
-                      <span className="text-white font-semibold">{segmentCount}</span>
+                      <span className="text-muted-foreground">Total Segments:</span>
+                      <span className="text-foreground font-semibold">{segmentCount}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Height per Segment:</span>
-                      <span className="text-white">{segmentHeight}mm</span>
+                      <span className="text-muted-foreground">Height per Segment:</span>
+                      <span className="text-foreground">{segmentHeight}mm</span>
                     </div>
                     {totalHeight % segmentHeight > 0 && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Last Segment:</span>
-                        <span className="text-yellow-400">
+                        <span className="text-muted-foreground">Last Segment:</span>
+                        <span className="text-warning">
                           {totalHeight % segmentHeight}mm (adjusted)
                         </span>
                       </div>
@@ -244,7 +244,7 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
                 {error && (
                   <Alert variant="destructive" className="bg-red-900/20 border-red-800">
                     <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription className="text-red-300">{error}</AlertDescription>
+                    <AlertDescription className="text-destructive">{error}</AlertDescription>
                   </Alert>
                 )}
               </CardContent>
@@ -255,9 +255,9 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
               {design ? (
                 <>
                   {/* Design Summary */}
-                  <Card className="bg-gray-900/50 border-gray-800 card-dark">
+                  <Card className="bg-background/50 border-border card-dark">
                     <CardHeader>
-                      <CardTitle className="text-white flex items-center gap-2">
+                      <CardTitle className="text-foreground flex items-center gap-2">
                         <CheckCircle2 className="h-5 w-5 status-valid" />
                         Segmented Design Summary
                       </CardTitle>
@@ -265,42 +265,42 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
                     <CardContent className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p className="text-sm text-gray-400">Total Height</p>
-                          <p className="text-lg font-semibold text-white">
+                          <p className="text-sm text-muted-foreground">Total Height</p>
+                          <p className="text-lg font-semibold text-foreground">
                             {design.totalHeight}mm
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-400">Segments</p>
-                          <p className="text-lg font-semibold text-white">
+                          <p className="text-sm text-muted-foreground">Segments</p>
+                          <p className="text-lg font-semibold text-foreground">
                             {design.segments.length}
                           </p>
                         </div>
                       </div>
 
-                      <Badge variant="outline" className="bg-green-900/30 text-green-400">
+                      <Badge variant="outline" className="bg-green-900/30 text-success">
                         99.7% Accuracy
                       </Badge>
                     </CardContent>
                   </Card>
 
                   {/* Segments Detail */}
-                  <Card className="bg-gray-900/50 border-gray-800 card-dark">
+                  <Card className="bg-background/50 border-border card-dark">
                     <CardHeader>
-                      <CardTitle className="text-white flex items-center gap-2">
-                        <Layers className="h-5 w-5 text-amber-500" />
+                      <CardTitle className="text-foreground flex items-center gap-2">
+                        <Layers className="h-5 w-5 text-warning" />
                         Segments Detail
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
                         {design.segments.map((segment) => (
-                          <div key={segment.segment} className="bg-gray-800/50 p-4 rounded">
+                          <div key={segment.segment} className="bg-card/50 p-4 rounded">
                             <div className="flex items-center justify-between mb-3">
-                              <h4 className="typography-h4 text-white">
+                              <h4 className="typography-h4 text-foreground">
                                 Segment {segment.segment}
                               </h4>
-                              <Badge variant="outline" className="bg-gray-700 text-gray-300">
+                              <Badge variant="outline" className="bg-muted text-foreground">
                                 {segment.height}mm
                               </Badge>
                             </div>
@@ -309,10 +309,10 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
                             {segment.reinforcement.required && (
                               <div className="mb-3">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <Shield className="h-3 w-3 text-blue-500" />
-                                  <p className="text-xs text-gray-400">Reinforcement</p>
+                                  <Shield className="h-3 w-3 text-info" />
+                                  <p className="text-xs text-muted-foreground">Reinforcement</p>
                                 </div>
-                                <p className="text-sm text-white">
+                                <p className="text-sm text-foreground">
                                   {segment.reinforcement.type} ({segment.reinforcement.dimensions?.width}mm)
                                 </p>
                               </div>
@@ -321,25 +321,25 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
                             {/* Hardware */}
                             <div className="space-y-2 text-sm">
                               <div>
-                                <span className="text-gray-400">Hinges: </span>
-                                <span className="text-white">{segment.hardware.hinges.length}</span>
+                                <span className="text-muted-foreground">Hinges: </span>
+                                <span className="text-foreground">{segment.hardware.hinges.length}</span>
                               </div>
                               <div>
-                                <span className="text-gray-400">Handles: </span>
-                                <span className="text-white">
+                                <span className="text-muted-foreground">Handles: </span>
+                                <span className="text-foreground">
                                   {segment.hardware.handles.length} @ {segment.hardware.handles[0]?.position}mm
                                 </span>
                               </div>
                               <div>
-                                <span className="text-gray-400">Locks: </span>
-                                <span className="text-white">{segment.hardware.locks.length}</span>
+                                <span className="text-muted-foreground">Locks: </span>
+                                <span className="text-foreground">{segment.hardware.locks.length}</span>
                               </div>
                             </div>
 
                             {/* Mullion Connection */}
                             {segment.mullionConnection && (
-                              <div className="mt-3 pt-3 border-t border-gray-700">
-                                <p className="text-xs text-gray-400">
+                              <div className="mt-3 pt-3 border-t border-border">
+                                <p className="text-xs text-muted-foreground">
                                   Connection: {segment.mullionConnection.type} ({segment.mullionConnection.connector})
                                 </p>
                               </div>
@@ -351,10 +351,10 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
                   </Card>
 
                   {/* Assembly Sequence */}
-                  <Card className="bg-gray-900/50 border-gray-800 card-dark">
+                  <Card className="bg-background/50 border-border card-dark">
                     <CardHeader>
-                      <CardTitle className="text-white flex items-center gap-2">
-                        <Wrench className="h-5 w-5 text-amber-500" />
+                      <CardTitle className="text-foreground flex items-center gap-2">
+                        <Wrench className="h-5 w-5 text-warning" />
                         Assembly Sequence
                       </CardTitle>
                     </CardHeader>
@@ -366,8 +366,8 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
                               {step.step}
                             </div>
                             <div className="flex-1">
-                              <p className="text-white">{step.operation}</p>
-                              <p className="text-gray-400 text-xs">
+                              <p className="text-foreground">{step.operation}</p>
+                              <p className="text-muted-foreground text-xs">
                                 {step.estimatedTime} min
                                 {step.segment && ` • Segment ${step.segment}`}
                               </p>
@@ -379,10 +379,10 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
                   </Card>
                 </>
               ) : (
-                <Card className="bg-gray-900/50 border-gray-800 card-dark">
+                <Card className="bg-background/50 border-border card-dark">
                   <CardContent className="py-12 text-center">
-                    <MoveVertical className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-400">
+                    <MoveVertical className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">
                       Configure parameters and click "Generate Segmented Design"
                     </p>
                   </CardContent>

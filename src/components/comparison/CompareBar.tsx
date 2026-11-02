@@ -32,12 +32,12 @@ const CompareBar: React.FC<CompareBarProps> = ({
             <Badge 
               key={machine.id}
               variant="outline"
-              className="flex items-center gap-2 py-1 px-3 flex-shrink-0 bg-white/5 border-white/20 text-white text-xs"
+              className="flex items-center gap-2 py-1 px-3 flex-shrink-0 bg-foreground/5 border-white/20 text-foreground text-xs"
             >
               <span className="truncate max-w-[120px]">{machine.name}</span>
               <button 
                 onClick={() => onRemove(machine.id)}
-                className="text-white/70 hover:text-white transition-colors"
+                className="text-foreground/70 hover:text-foreground transition-colors"
                 aria-label={`Remove ${machine.name} from comparison`}
               >
                 <X size={14} />
@@ -51,7 +51,7 @@ const CompareBar: React.FC<CompareBarProps> = ({
             variant="outline"
             size="sm"
             onClick={onClear}
-            className="bg-white/5 border-white/20 text-white hover:bg-white/10 w-full"
+            className="bg-foreground/5 border-white/20 text-foreground hover:bg-foreground/10 w-full"
           >
             {copy("Clear")}
           </Button>
@@ -61,7 +61,7 @@ const CompareBar: React.FC<CompareBarProps> = ({
             onClick={onCompare}
             disabled={machines.length < 2}
             aria-label="Open machine comparison"
-            className="w-full text-base sm:text-sm py-3 sm:py-2 rounded-lg bg-gradient-to-r from-amber-500 to-red-600 text-white hover:from-amber-400 hover:to-red-500 disabled:from-gray-600 disabled:to-gray-600 shadow-lg shadow-amber-500/25 ring-1 ring-amber-400/60 hover:ring-amber-300/70 transition-all active:translate-y-[1px]"
+            className="w-full text-base sm:text-sm py-3 sm:py-2 rounded-lg bg-gradient-to-r from-amber-500 to-red-600 text-white hover:from-amber-400 hover:to-red-500 disabled:from-muted disabled:to-muted shadow-lg shadow-amber-500/25 ring-1 ring-amber-400/60 hover:ring-amber-300/70 transition-all active:translate-y-[1px]"
           >
             <BarChart2 size={14} className="mr-1" />
             {copy("Compare")} ({machines.length})

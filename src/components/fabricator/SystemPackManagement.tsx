@@ -110,7 +110,7 @@ export const SystemPackManagement: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <LazyMotionDiv
@@ -119,27 +119,27 @@ export const SystemPackManagement: React.FC = () => {
           className="flex items-center justify-between"
         >
           <div>
-            <h1 className="typography-h1 text-white flex items-center gap-3">
-              <Package className="h-8 w-8 text-amber-400" />
+            <h1 className="typography-h1 text-foreground flex items-center gap-3">
+              <Package className="h-8 w-8 text-warning" />
               System Pack Management
             </h1>
-            <p className="text-sm text-gray-400 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               View all system packs, check tuning status, and configure profiles for accurate cut lists
             </p>
           </div>
         </LazyMotionDiv>
 
         {/* Filters */}
-        <Card className="bg-gray-900/60 border-gray-700 card-dark">
+        <Card className="bg-background/60 border-border card-dark">
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search system packs..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-gray-800 border-gray-700"
+                  className="pl-10 bg-card border-border"
                 />
               </div>
               <div className="flex gap-2">
@@ -190,7 +190,7 @@ export const SystemPackManagement: React.FC = () => {
             return (
               <Card 
                 key={system.meta.id} 
-                className={`bg-gray-900/60 border-gray-700 hover:border-amber-500/50 transition-colors ${
+                className={`bg-background/60 border-border hover:border-amber-500/50 transition-colors ${
                   tuningStatus.isTuned ? 'ring-2 ring-green-500/30' : ''
                 }`}
               >
@@ -206,7 +206,7 @@ export const SystemPackManagement: React.FC = () => {
                           </Badge>
                         )}
                         {tuningStatus.needsTuning && (
-                          <Badge variant="outline" className="border-yellow-500 text-yellow-400">
+                          <Badge variant="outline" className="border-yellow-500 text-warning">
                             <AlertTriangle className="h-3 w-3 mr-1" />
                             Needs Tuning
                           </Badge>
@@ -214,8 +214,8 @@ export const SystemPackManagement: React.FC = () => {
                       </CardTitle>
                       <CardDescription className="text-xs mt-1">
                         {system.meta.brands?.join(', ') || 'Custom System'}
-                        {isUPVC && <span className="ml-2 text-green-400">• UPVC</span>}
-                        {!isUPVC && <span className="ml-2 text-blue-400">• Aluminum</span>}
+                        {isUPVC && <span className="ml-2 text-success">• UPVC</span>}
+                        {!isUPVC && <span className="ml-2 text-info">• Aluminum</span>}
                       </CardDescription>
                     </div>
                   </div>
@@ -224,25 +224,25 @@ export const SystemPackManagement: React.FC = () => {
                   {/* Profile Status */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-400">Frame Profiles:</span>
-                      <span className={frameProfiles.length > 0 ? 'text-green-400' : 'text-gray-500'}>
+                      <span className="text-muted-foreground">Frame Profiles:</span>
+                      <span className={frameProfiles.length > 0 ? 'text-success' : 'text-muted-foreground'}>
                         {frameProfiles.length > 0 ? `${frameProfiles.length} configured` : 'Not configured'}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-400">Sash Profiles:</span>
-                      <span className={sashProfiles.length > 0 ? 'text-green-400' : 'text-gray-500'}>
+                      <span className="text-muted-foreground">Sash Profiles:</span>
+                      <span className={sashProfiles.length > 0 ? 'text-success' : 'text-muted-foreground'}>
                         {sashProfiles.length > 0 ? `${sashProfiles.length} configured` : 'Not configured'}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-400">Total Profiles:</span>
-                      <span className="text-gray-300">{profiles.length}</span>
+                      <span className="text-muted-foreground">Total Profiles:</span>
+                      <span className="text-foreground">{profiles.length}</span>
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col gap-2 pt-2 border-t border-gray-700">
+                  <div className="flex flex-col gap-2 pt-2 border-t border-border">
                     {tuningStatus.needsTuning ? (
                       <Button
                         size="sm"
@@ -257,7 +257,7 @@ export const SystemPackManagement: React.FC = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="w-full border-gray-600"
+                        className="w-full border-border"
                         onClick={() => handleTuneProfile(system.meta.id)}
                       >
                         <Wrench className="h-3.5 w-3.5 mr-2" />
@@ -284,8 +284,8 @@ export const SystemPackManagement: React.FC = () => {
         </div>
 
         {filteredSystems.length === 0 && (
-          <Alert className="bg-gray-900/60 border-gray-700">
-            <AlertTriangle className="h-4 w-4 text-gray-400" />
+          <Alert className="bg-background/60 border-border">
+            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             <AlertDescription>
               No system packs found matching your search criteria.
             </AlertDescription>

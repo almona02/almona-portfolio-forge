@@ -262,15 +262,15 @@ export const SafetyVerificationFlow: React.FC<SafetyVerificationFlowProps> = ({
     <>
       {/* Cancel Confirmation Dialog */}
       <AlertDialog open={showCancelConfirm} onOpenChange={setShowCancelConfirm}>
-        <AlertDialogContent className="bg-gray-900 border-gray-700 text-white">
+        <AlertDialogContent className="bg-background border-border text-foreground">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-amber-400">Cancel Safety Verification?</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-300">
+            <AlertDialogTitle className="text-warning">Cancel Safety Verification?</AlertDialogTitle>
+            <AlertDialogDescription className="text-foreground">
               Are you sure you want to cancel? Safety verification will not be completed and G-code generation will be blocked.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-gray-600 text-gray-300 hover:bg-gray-800">
+            <AlertDialogCancel className="border-border text-foreground hover:bg-card">
               Continue Verification
             </AlertDialogCancel>
             <AlertDialogAction

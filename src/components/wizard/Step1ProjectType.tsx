@@ -29,42 +29,42 @@ export const Step1ProjectType: React.FC<Step1ProjectTypeProps> = ({
           className={`cursor-pointer transition-all ${
             selectedType === 'residential'
               ? 'border-blue-500 bg-blue-500/10'
-              : 'border-gray-700 bg-gray-800 hover:border-gray-600'
+              : 'border-border bg-card hover:border-border'
           }`}
           onClick={() => onSelect('residential')}
         >
           <CardContent className="p-6 text-center">
-            <Home className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <Home className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             <div className="font-semibold">Residential</div>
-            <div className="text-sm text-gray-400 mt-2">Homes, apartments</div>
+            <div className="text-sm text-muted-foreground mt-2">Homes, apartments</div>
           </CardContent>
         </Card>
         <Card
           className={`cursor-pointer transition-all ${
             selectedType === 'commercial'
               ? 'border-blue-500 bg-blue-500/10'
-              : 'border-gray-700 bg-gray-800 hover:border-gray-600'
+              : 'border-border bg-card hover:border-border'
           }`}
           onClick={() => onSelect('commercial')}
         >
           <CardContent className="p-6 text-center">
-            <Building2 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <Building2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             <div className="font-semibold">Commercial</div>
-            <div className="text-sm text-gray-400 mt-2">Offices, shops</div>
+            <div className="text-sm text-muted-foreground mt-2">Offices, shops</div>
           </CardContent>
         </Card>
         <Card
           className={`cursor-pointer transition-all ${
             selectedType === 'industrial'
               ? 'border-blue-500 bg-blue-500/10'
-              : 'border-gray-700 bg-gray-800 hover:border-gray-600'
+              : 'border-border bg-card hover:border-border'
           }`}
           onClick={() => onSelect('industrial')}
         >
           <CardContent className="p-6 text-center">
-            <Factory className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <Factory className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             <div className="font-semibold">Industrial</div>
-            <div className="text-sm text-gray-400 mt-2">Factories, warehouses</div>
+            <div className="text-sm text-muted-foreground mt-2">Factories, warehouses</div>
           </CardContent>
         </Card>
       </div>

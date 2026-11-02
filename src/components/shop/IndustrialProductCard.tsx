@@ -7,7 +7,7 @@ import { EnhancedImage } from "@/components/ui/EnhancedImage";
 import { LazyMotionDiv } from '@/utils/lazyMotion';
 
 const EgyptCertificationBadge = ({ standard }: { standard: string }) => (
-  <div className="flex items-center bg-[#ce1126] text-white px-1.5 py-0.5 rounded-full text-[10px]">
+  <div className="flex items-center bg-[#ce1126] text-primary-foreground px-1.5 py-0.5 rounded-full text-[10px]">
     <span className="mr-0.5">🇪🇬</span>
     <span>{standard}</span>
   </div>
@@ -77,7 +77,7 @@ export const IndustrialProductCard = ({
       } : {}}
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >
-      <Card className="bg-almona-darker border-almona-light/20 hover:border-almona-light/40 transition-colors h-full flex flex-col">
+      <Card className="bg-card border-border/20 hover:border-border/40 transition-colors h-full flex flex-col">
       <CardHeader className="p-0 relative">
         {/* Taller aspect ratio (4:3) for better image visibility on narrow cards */}
         <div className="aspect-[4/3] relative overflow-hidden">
@@ -107,7 +107,7 @@ export const IndustrialProductCard = ({
             {badges.length > 2 && (
               <Badge
                 variant="secondary"
-                className="bg-gray-600/90 text-[10px] px-1.5 py-0.5"
+                className="bg-muted/90 text-[10px] px-1.5 py-0.5"
               >
                 +{badges.length - 2}
               </Badge>
@@ -126,7 +126,7 @@ export const IndustrialProductCard = ({
               variant="secondary"
               className={`text-[10px] px-1.5 py-0.5 ${
                 stock === undefined
-                  ? "bg-slate-600/90"
+                  ? "bg-muted/90"
                   : stock === 0
                   ? "bg-red-600/90"
                   : stock <= 5
@@ -141,7 +141,7 @@ export const IndustrialProductCard = ({
       </CardHeader>
       <CardContent className="p-3 sm:p-4 flex-grow flex flex-col">
         <h3 className="typography-h3 text-sm sm:text-base lg:text-lg mb-1 line-clamp-2">{title}</h3>
-        <p className="text-gray-400 text-xs sm:text-sm mb-2 line-clamp-2">{copy(description)}</p>
+        <p className="text-muted-foreground text-xs sm:text-sm mb-2 line-clamp-2">{copy(description)}</p>
         <div className="space-y-1 mb-3 flex-grow">
           {features.slice(0, 3).map((feature, i) => (
             <div key={`feature-${i}-${feature.slice(0, 20)}-${title.slice(0, 10)}`} className="flex items-start">
@@ -158,15 +158,15 @@ export const IndustrialProductCard = ({
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              <span className="text-gray-300 text-xs line-clamp-1">{copy(feature)}</span>
+              <span className="text-foreground text-xs line-clamp-1">{copy(feature)}</span>
             </div>
           ))}
         </div>
         {durabilityInfo && (
-          <div className="mt-2 pt-2 border-t border-almona-light/20">
+          <div className="mt-2 pt-2 border-t border-border/20">
             <div className="flex items-center mb-1">
               <span className="text-amber-500 font-bold text-sm mr-1">{durabilityInfo.score}/5</span>
-              <span className="text-gray-300 text-xs">Durability</span>
+              <span className="text-foreground text-xs">Durability</span>
             </div>
           </div>
         )}

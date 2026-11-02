@@ -69,21 +69,21 @@ const features: Feature[] = [
 
 export const FabricatorProFeatures: React.FC = () => {
   return (
-    <section className="py-16 px-4 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
+    <section className="py-16 px-4 bg-gradient-to-b from-background via-card to-background">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-full mb-4">
-            <Zap className="h-5 w-5 text-blue-400" />
-            <span className="text-blue-400 font-semibold">Fabricator Pro</span>
+            <Zap className="h-5 w-5 text-info" />
+            <span className="text-info font-semibold">Fabricator Pro</span>
           </div>
-          <h2 className="typography-h2 text-4xl md:text-5xl text-white mb-4">
+          <h2 className="typography-h2 text-4xl md:text-5xl text-foreground mb-4">
             Built for Fabricators,{' '}
             <span className="bg-gradient-to-r from-blue-400 to-amber-400 bg-clip-text text-transparent">
               Powered by Intelligence
             </span>
           </h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             A self-learning platform that adapts to your workshop, learns from your expertise, and
             helps you achieve perfect cuts every time.
           </p>
@@ -96,7 +96,7 @@ export const FabricatorProFeatures: React.FC = () => {
             return (
               <Card
                 key={index}
-                className={`bg-gray-800/50 border-gray-700 hover:border-blue-500/50 transition-all duration-300 ${
+                className={`bg-card/50 border-border hover:border-blue-500/50 transition-all duration-300 ${
                   feature.highlight
                     ? 'ring-2 ring-blue-500/20 shadow-lg shadow-blue-500/10'
                     : 'hover:shadow-xl'
@@ -108,19 +108,19 @@ export const FabricatorProFeatures: React.FC = () => {
                       className={`p-3 rounded-lg ${
                         feature.highlight
                           ? 'bg-gradient-to-br from-blue-500/20 to-amber-500/20'
-                          : 'bg-gray-700/50'
+                          : 'bg-muted/50'
                       }`}
                     >
                       <Icon
                         className={`h-6 w-6 ${
-                          feature.highlight ? 'text-blue-400' : 'text-gray-300'
+                          feature.highlight ? 'text-info' : 'text-foreground'
                         }`}
                       />
                     </div>
                     <div className="flex-1">
-                      <CardTitle className="text-xl text-white mb-2">{feature.title}</CardTitle>
+                      <CardTitle className="text-xl text-foreground mb-2">{feature.title}</CardTitle>
                       {feature.highlight && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-500/10 border border-blue-500/30 rounded text-xs text-blue-400 mb-2">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-500/10 border border-blue-500/30 rounded text-xs text-info mb-2">
                           <TrendingUp className="h-3 w-3" />
                           Featured
                         </span>
@@ -129,7 +129,7 @@ export const FabricatorProFeatures: React.FC = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-gray-300 leading-relaxed">
+                  <CardDescription className="text-foreground leading-relaxed">
                     {feature.description}
                   </CardDescription>
                 </CardContent>
@@ -143,12 +143,12 @@ export const FabricatorProFeatures: React.FC = () => {
           <Card className="bg-gradient-to-r from-blue-900/30 to-amber-900/30 border-blue-500/30 max-w-2xl mx-auto">
             <CardContent className="p-8">
               <div className="flex items-center justify-center gap-3 mb-4">
-                <Shield className="h-8 w-8 text-blue-400" />
-                <h3 className="typography-h3 text-white">
+                <Shield className="h-8 w-8 text-info" />
+                <h3 className="typography-h3 text-foreground">
                   Ready to Transform Your Workshop?
                 </h3>
               </div>
-              <p className="text-gray-300 mb-6">
+              <p className="text-foreground mb-6">
                 Join fabricators who are already reducing waste, improving accuracy, and growing
                 their business with intelligent automation.
               </p>
@@ -161,7 +161,7 @@ export const FabricatorProFeatures: React.FC = () => {
                 </a>
                 <a
                   href="/demo"
-                  className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors border border-gray-600"
+                  className="px-6 py-3 bg-muted hover:bg-muted text-foreground font-semibold rounded-lg transition-colors border border-border"
                 >
                   Watch Demo
                 </a>

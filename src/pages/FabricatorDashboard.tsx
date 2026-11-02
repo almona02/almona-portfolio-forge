@@ -30,7 +30,7 @@ const FabricatorDashboard: React.FC = () => {
 
   return (
     <div
-      className="h-full overflow-auto bg-[#0a0a0a] text-amber-200 relative"
+      className="h-full overflow-auto bg-background text-amber-200 relative"
       data-testid="fabricator-command-center"
     >
       <div

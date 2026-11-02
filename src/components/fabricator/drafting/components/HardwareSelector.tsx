@@ -162,20 +162,20 @@ export const HardwareSelector: React.FC<HardwareSelectorProps> = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <Package className="w-5 h-5 text-amber-500" />
-        <h3 className="text-sm font-semibold text-slate-200">Hardware Library</h3>
+        <Package className="w-5 h-5 text-warning" />
+        <h3 className="text-sm font-semibold text-foreground">Hardware Library</h3>
       </div>
 
       {/* Search and Filters */}
       <div className="space-y-3">
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search hardware..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-10 bg-slate-800/50 border-slate-700/50 text-slate-200 placeholder:text-slate-500 focus:border-amber-600/50 focus:ring-amber-600/20"
+            className="pl-10 bg-card/50 border-border/50 text-foreground placeholder:text-muted-foreground focus:border-amber-600/50 focus:ring-amber-600/20"
           />
         </div>
 
@@ -183,14 +183,14 @@ export const HardwareSelector: React.FC<HardwareSelectorProps> = ({
         <div className="grid grid-cols-3 gap-2">
           {/* Category Filter */}
           <Select value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as HardwareCategory | 'all')}>
-            <SelectTrigger className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50">
+            <SelectTrigger className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50">
               <Filter className="w-3 h-3 mr-2" />
               <SelectValue placeholder="Category" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-amber-600/30">
-              <SelectItem value="all" className="text-slate-200 focus:bg-amber-500/20">All Categories</SelectItem>
+            <SelectContent className="bg-card border-amber-600/30">
+              <SelectItem value="all" className="text-foreground focus:bg-amber-500/20">All Categories</SelectItem>
               {filterOptions.categories.map(cat => (
-                <SelectItem key={cat} value={cat} className="text-slate-200 focus:bg-amber-500/20">
+                <SelectItem key={cat} value={cat} className="text-foreground focus:bg-amber-500/20">
                   {cat.charAt(0).toUpperCase() + cat.slice(1)}
                 </SelectItem>
               ))}
@@ -199,13 +199,13 @@ export const HardwareSelector: React.FC<HardwareSelectorProps> = ({
 
           {/* Supplier Filter */}
           <Select value={selectedSupplier} onValueChange={setSelectedSupplier}>
-            <SelectTrigger className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50">
+            <SelectTrigger className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50">
               <SelectValue placeholder="Supplier" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-amber-600/30">
-              <SelectItem value="all" className="text-slate-200 focus:bg-amber-500/20">All Suppliers</SelectItem>
+            <SelectContent className="bg-card border-amber-600/30">
+              <SelectItem value="all" className="text-foreground focus:bg-amber-500/20">All Suppliers</SelectItem>
               {filterOptions.suppliers.map(supplier => (
-                <SelectItem key={supplier} value={supplier} className="text-slate-200 focus:bg-amber-500/20">
+                <SelectItem key={supplier} value={supplier} className="text-foreground focus:bg-amber-500/20">
                   {supplier}
                 </SelectItem>
               ))}
@@ -214,13 +214,13 @@ export const HardwareSelector: React.FC<HardwareSelectorProps> = ({
 
           {/* Origin Filter */}
           <Select value={selectedOrigin} onValueChange={setSelectedOrigin}>
-            <SelectTrigger className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50">
+            <SelectTrigger className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50">
               <SelectValue placeholder="Origin" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-amber-600/30">
-              <SelectItem value="all" className="text-slate-200 focus:bg-amber-500/20">All Origins</SelectItem>
+            <SelectContent className="bg-card border-amber-600/30">
+              <SelectItem value="all" className="text-foreground focus:bg-amber-500/20">All Origins</SelectItem>
               {filterOptions.origins.map(origin => (
-                <SelectItem key={origin} value={origin} className="text-slate-200 focus:bg-amber-500/20">
+                <SelectItem key={origin} value={origin} className="text-foreground focus:bg-amber-500/20">
                   {origin}
                 </SelectItem>
               ))}
@@ -232,7 +232,7 @@ export const HardwareSelector: React.FC<HardwareSelectorProps> = ({
       {/* Hardware List */}
       <div className="space-y-2 max-h-96 overflow-y-auto">
         {filteredHardware.length === 0 ? (
-          <div className="text-center py-8 text-slate-400 text-sm">
+          <div className="text-center py-8 text-muted-foreground text-sm">
             <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
             <p>No hardware found matching your filters.</p>
           </div>
@@ -247,27 +247,27 @@ export const HardwareSelector: React.FC<HardwareSelectorProps> = ({
                 className={`cursor-pointer transition-all ${
                   isSelected
                     ? 'bg-amber-500/20 border-amber-500/50 ring-2 ring-amber-500/30'
-                    : 'bg-slate-800/50 border-slate-700/50 hover:bg-slate-800/70 hover:border-amber-600/30'
+                    : 'bg-card/50 border-border/50 hover:bg-card/70 hover:border-amber-600/30'
                 }`}
                 onClick={() => handleSelect(hardware)}
               >
                 <CardHeader className="p-3 pb-2">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-start gap-2 flex-1 min-w-0">
-                      <CategoryIcon className="w-4 h-4 mt-0.5 text-amber-500 flex-shrink-0" />
+                      <CategoryIcon className="w-4 h-4 mt-0.5 text-warning flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <CardTitle className="text-xs font-semibold text-slate-200 truncate">
+                        <CardTitle className="text-xs font-semibold text-foreground truncate">
                           {hardware.name}
                         </CardTitle>
                         <div className="flex items-center gap-2 mt-1 flex-wrap">
-                          <Badge variant="outline" className="text-xs py-0 px-1.5 border-slate-600 text-slate-400">
+                          <Badge variant="outline" className="text-xs py-0 px-1.5 border-border text-muted-foreground">
                             {hardware.supplierCode}
                           </Badge>
-                          <Badge variant="outline" className="text-xs py-0 px-1.5 border-slate-600 text-slate-400">
+                          <Badge variant="outline" className="text-xs py-0 px-1.5 border-border text-muted-foreground">
                             {hardware.supplier}
                           </Badge>
                           {hardware.subCategory && (
-                            <Badge variant="outline" className="text-xs py-0 px-1.5 border-slate-600 text-slate-400">
+                            <Badge variant="outline" className="text-xs py-0 px-1.5 border-border text-muted-foreground">
                               {hardware.subCategory}
                             </Badge>
                           )}
@@ -275,7 +275,7 @@ export const HardwareSelector: React.FC<HardwareSelectorProps> = ({
                       </div>
                     </div>
                     {isSelected && (
-                      <CheckCircle2 className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-warning flex-shrink-0" />
                     )}
                   </div>
                 </CardHeader>
@@ -283,39 +283,39 @@ export const HardwareSelector: React.FC<HardwareSelectorProps> = ({
                   {/* Specifications */}
                   <div className="space-y-1.5 text-xs">
                     {/* Dimensions */}
-                    <div className="flex items-center justify-between text-slate-400">
+                    <div className="flex items-center justify-between text-muted-foreground">
                       <span>Dimensions:</span>
-                      <span className="text-slate-300">
+                      <span className="text-foreground">
                         {hardware.dimensions.width}×{hardware.dimensions.height}×{hardware.dimensions.depth}mm
                       </span>
                     </div>
 
                     {/* Load Capacity */}
                     {hardware.maxLoadKg && (
-                      <div className="flex items-center justify-between text-slate-400">
+                      <div className="flex items-center justify-between text-muted-foreground">
                         <span>Max Load:</span>
-                        <span className="text-slate-300">{hardware.maxLoadKg}kg</span>
+                        <span className="text-foreground">{hardware.maxLoadKg}kg</span>
                       </div>
                     )}
 
                     {/* Security Level */}
                     {hardware.securityLevel && (
-                      <div className="flex items-center justify-between text-slate-400">
+                      <div className="flex items-center justify-between text-muted-foreground">
                         <span>Security:</span>
-                        <span className="text-slate-300">Level {hardware.securityLevel}</span>
+                        <span className="text-foreground">Level {hardware.securityLevel}</span>
                       </div>
                     )}
 
                     {/* Cost and Lead Time */}
-                    <div className="flex items-center justify-between text-slate-400 pt-1 border-t border-slate-700/50">
+                    <div className="flex items-center justify-between text-muted-foreground pt-1 border-t border-border/50">
                       <div className="flex items-center gap-2">
                         {hardware.costEGP && (
-                          <span className="text-amber-400 font-medium">{hardware.costEGP} EGP</span>
+                          <span className="text-warning font-medium">{hardware.costEGP} EGP</span>
                         )}
-                        <span className="text-slate-500">•</span>
+                        <span className="text-muted-foreground">•</span>
                         <span>{hardware.leadTimeDays}d lead time</span>
                       </div>
-                      <div className="flex items-center gap-1 text-slate-500">
+                      <div className="flex items-center gap-1 text-muted-foreground">
                         <Package className="w-3 h-3" />
                         <span>{hardware.origin}</span>
                       </div>
@@ -330,7 +330,7 @@ export const HardwareSelector: React.FC<HardwareSelectorProps> = ({
 
       {/* Results count */}
       {filteredHardware.length > 0 && (
-        <div className="text-xs text-slate-500 text-center pt-2 border-t border-slate-700/50">
+        <div className="text-xs text-muted-foreground text-center pt-2 border-t border-border/50">
           Showing {filteredHardware.length} hardware item{filteredHardware.length !== 1 ? 's' : ''}
         </div>
       )}

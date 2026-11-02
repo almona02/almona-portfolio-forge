@@ -113,7 +113,7 @@ export const OptimizationSummary: React.FC<OptimizationSummaryProps> = ({
         <div key={c.label} className="bg-[#0d0d0d] px-3 py-2">
           <div className="text-[10px] uppercase tracking-wider text-amber-700">{c.label}</div>
           <div
-            className="text-sm font-mono text-amber-100 mt-0.5 tabular-nums"
+            className="text-sm font-mono text-warning mt-0.5 tabular-nums"
             dir="ltr"
             data-testid={c.testId}
           >

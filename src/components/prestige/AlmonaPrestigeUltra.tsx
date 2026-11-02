@@ -107,10 +107,10 @@ const AlmonaPrestigeUltra: React.FC = () => {
 
   const getColorClasses = (color: string) => {
     const colorMap: Record<string, { bg: string; border: string; text: string }> = {
-      blue: { bg: 'from-blue-500/10 to-blue-600/5', border: 'border-blue-500/20', text: 'text-blue-300' },
-      cyan: { bg: 'from-cyan-500/10 to-cyan-600/5', border: 'border-cyan-500/20', text: 'text-cyan-300' },
+      blue: { bg: 'from-blue-500/10 to-blue-600/5', border: 'border-blue-500/20', text: 'text-info' },
+      cyan: { bg: 'from-cyan-500/10 to-cyan-600/5', border: 'border-cyan-500/20', text: 'text-info' },
       amber: { bg: 'from-amber-500/10 to-amber-600/5', border: 'border-amber-500/20', text: 'text-amber-300' },
-      emerald: { bg: 'from-emerald-500/10 to-emerald-600/5', border: 'border-emerald-500/20', text: 'text-emerald-300' },
+      emerald: { bg: 'from-emerald-500/10 to-emerald-600/5', border: 'border-emerald-500/20', text: 'text-success' },
     };
     return colorMap[color] || colorMap.blue;
   };
@@ -124,14 +124,14 @@ const AlmonaPrestigeUltra: React.FC = () => {
       case 'error':
         return 'bg-red-400';
       default:
-        return 'bg-slate-400';
+        return 'bg-muted';
     }
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 font-sans text-slate-100 overflow-hidden">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-background via-card to-background font-sans text-foreground overflow-hidden">
       {/* Luxury Top Bar */}
-      <div className="h-20 bg-gradient-to-r from-slate-900/95 via-amber-900/20 to-slate-900/95 border-b 500/20 flex items-center px-8 justify-between relative overflow-hidden card-glass-dark">
+      <div className="h-20 bg-gradient-to-r from-background/95 via-amber-900/20 to-background/95 border-b 500/20 flex items-center px-8 justify-between relative overflow-hidden card-glass-dark">
         {/* Animated background gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/5 to-transparent animate-pulse" />
 
@@ -147,17 +147,17 @@ const AlmonaPrestigeUltra: React.FC = () => {
           </div>
           <div className="h-8 w-px bg-gradient-to-b from-transparent via-amber-500/50 to-transparent" />
           <div className="flex flex-col">
-            <div className="text-sm text-slate-300 font-medium">Villa Complex North - Unit A</div>
-            <div className="text-xs text-slate-500">Client: Elite Developments Ltd.</div>
+            <div className="text-sm text-foreground font-medium">Villa Complex North - Unit A</div>
+            <div className="text-xs text-muted-foreground">Client: Elite Developments Ltd.</div>
           </div>
         </div>
 
         <div className="flex items-center gap-4 relative z-10">
-          <div className="flex items-center gap-2 px-4 py-2 bg-slate-800/60 rounded-lg border border-slate-700 /50 card-dark">
-            <Gem className="w-4 h-4 text-cyan-400" />
-            <span className="text-sm text-slate-300">AICS-001 Certified</span>
+          <div className="flex items-center gap-2 px-4 py-2 bg-card/60 rounded-lg border border-border /50 card-dark">
+            <Gem className="w-4 h-4 text-info" />
+            <span className="text-sm text-foreground">AICS-001 Certified</span>
           </div>
-          <button className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-lg transition-all duration-300">
+          <button className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-card/50 rounded-lg transition-all duration-300">
             Save Draft
           </button>
           <button className="btn-primary-gradient">
@@ -167,7 +167,7 @@ const AlmonaPrestigeUltra: React.FC = () => {
       </div>
 
       {/* Elite Progress Bar */}
-      <div className="bg-slate-900/80 backdrop-blur-sm border-b border-slate-700/50 px-8 py-6">
+      <div className="bg-background/80 backdrop-blur-sm border-b border-border/50 px-8 py-6">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           {steps.map((step, idx) => (
             <React.Fragment key={step.id}>
@@ -181,11 +181,11 @@ const AlmonaPrestigeUltra: React.FC = () => {
                   className={`w-16 h-16 rounded-2xl flex items-center justify-center relative transition-all duration-500 ${
                     activeStep === step.id
                       ? 'bg-gradient-to-br from-amber-400 to-amber-600 shadow-2xl shadow-amber-500/50'
-                      : 'bg-slate-800 border border-slate-700 group-hover:border-amber-500/30'
+                      : 'bg-card border border-border group-hover:border-amber-500/30'
                   }`}
                 >
                   <step.icon
-                    className={`w-7 h-7 ${activeStep === step.id ? 'text-slate-900' : 'text-slate-400'}`}
+                    className={`w-7 h-7 ${activeStep === step.id ? 'text-foreground' : 'text-muted-foreground'}`}
                   />
                   {activeStep === step.id && (
                     <div className="absolute -inset-1 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl blur-xl opacity-50 animate-pulse" />
@@ -194,14 +194,14 @@ const AlmonaPrestigeUltra: React.FC = () => {
                 <div className="flex flex-col items-center">
                   <div
                     className={`text-xs tracking-wider uppercase ${
-                      activeStep === step.id ? 'text-amber-400 font-semibold' : 'text-slate-500'
+                      activeStep === step.id ? 'text-amber-400 font-semibold' : 'text-muted-foreground'
                     }`}
                   >
                     Phase {step.id}
                   </div>
                   <div
                     className={`text-sm font-medium ${
-                      activeStep === step.id ? 'text-slate-100' : 'text-slate-400'
+                      activeStep === step.id ? 'text-foreground' : 'text-muted-foreground'
                     }`}
                   >
                     {step.name}
@@ -209,7 +209,7 @@ const AlmonaPrestigeUltra: React.FC = () => {
                 </div>
               </div>
               {idx < steps.length - 1 && (
-                <div className="flex-1 h-px bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 mx-4 relative">
+                <div className="flex-1 h-px bg-gradient-to-r from-muted via-muted to-muted mx-4 relative">
                   {activeStep > step.id && (
                     <div className="btn-primary-gradient" />
                   )}
@@ -223,25 +223,25 @@ const AlmonaPrestigeUltra: React.FC = () => {
       {/* Premium Workspace - Three Column Layout */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Quick Actions & Stats */}
-        <div className="w-72 bg-slate-900/50 border-r border-slate-700/30 flex flex-col backdrop-blur-sm overflow-y-auto">
+        <div className="w-72 bg-background/50 border-r border-border/30 flex flex-col backdrop-blur-sm overflow-y-auto">
           {/* Project Stats */}
-          <div className="p-6 border-b border-slate-700/30">
+          <div className="p-6 border-b border-border/30">
             <div className="flex items-center gap-2 mb-4">
               <Award className="w-5 h-5 text-amber-400" />
-              <h3 className="typography-h3 text-sm text-slate-200">Project Intelligence</h3>
+              <h3 className="typography-h3 text-sm text-foreground">Project Intelligence</h3>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 rounded-xl p-3">
-                <div className="text-xs text-blue-300 mb-1">Total Units</div>
-                <div className="text-2xl font-bold text-blue-400">{projectStats.totalUnits}</div>
+                <div className="text-xs text-info mb-1">Total Units</div>
+                <div className="text-2xl font-bold text-info">{projectStats.totalUnits}</div>
               </div>
               <div className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 rounded-xl p-3">
                 <div className="text-xs text-amber-300 mb-1">Openings</div>
                 <div className="text-2xl font-bold text-amber-400">{projectStats.openings}</div>
               </div>
               <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 rounded-xl p-3">
-                <div className="text-xs text-emerald-300 mb-1">Area</div>
+                <div className="text-xs text-success mb-1">Area</div>
                 <div className="text-2xl font-bold status-valid">{projectStats.area}m²</div>
               </div>
               <div className="btn-primary-gradient">
@@ -252,22 +252,22 @@ const AlmonaPrestigeUltra: React.FC = () => {
           </div>
 
           {/* System Pack */}
-          <div className="p-6 border-b border-slate-700/30">
-            <label className="typography-label text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3 block">
+          <div className="p-6 border-b border-border/30">
+            <label className="typography-label text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3 block">
               System Pack
             </label>
-            <div className="border border-slate-700 rounded-xl p-4 hover:border-amber- 500/30 transition-all duration-300 cursor-pointer card-premium">
+            <div className="border border-border rounded-xl p-4 hover:border-amber- 500/30 transition-all duration-300 cursor-pointer card-premium">
               <div className="flex items-center gap-3 mb-2">
                 <div className="btn-primary-gradient">
-                  <span className="text-slate-900 font-bold text-sm">PS</span>
+                  <span className="text-foreground font-bold text-sm">PS</span>
                 </div>
                 <div>
-                  <div className="text-sm font-semibold text-slate-200">Caluminium PS v3</div>
-                  <div className="text-xs text-slate-500">Premium Series 60mm</div>
+                  <div className="text-sm font-semibold text-foreground">Caluminium PS v3</div>
+                  <div className="text-xs text-muted-foreground">Premium Series 60mm</div>
                 </div>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500">Thermal: U=1.2</span>
+                <span className="text-muted-foreground">Thermal: U=1.2</span>
                 <span className="status-valid">✓ Selected</span>
               </div>
             </div>
@@ -275,39 +275,39 @@ const AlmonaPrestigeUltra: React.FC = () => {
 
           {/* Profile Assignments */}
           <div className="p-6 flex-1 overflow-auto">
-            <label className="typography-label text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3 block">
+            <label className="typography-label text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3 block">
               Profile Matrix
             </label>
             <div className="space-y-2">
               {profileMatrix.map((profile) => (
                 <div
                   key={profile.role}
-                  className="bg-slate-800/30 border border-slate-700 /50 rounded-lg p-3 hover:border-slate-600 transition-all duration-300 group card-dark"
+                  className="bg-card/30 border border-border /50 rounded-lg p-3 hover:border-border transition-all duration-300 group card-dark"
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-slate-300 font-medium">{profile.role}</span>
+                    <span className="text-sm text-foreground font-medium">{profile.role}</span>
                     <div className={`w-2 h-2 rounded-full bg-${profile.color}-400`} />
                   </div>
-                  <div className="text-xs text-slate-500 font-mono">{profile.code}</div>
+                  <div className="text-xs text-muted-foreground font-mono">{profile.code}</div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Constitutional Badge */}
-          <div className="p-6 border-t border-slate-700/30 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10">
+          <div className="p-6 border-t border-border/30 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10">
             <div className="flex items-center gap-3 mb-2">
               <Shield className="w-5 h-5 status-valid" />
-              <span className="text-sm font-semibold text-emerald-300">Tier 3 Protected</span>
+              <span className="text-sm font-semibold text-success">Tier 3 Protected</span>
             </div>
-            <div className="text-xs text-slate-400 leading-relaxed">
+            <div className="text-xs text-muted-foreground leading-relaxed">
               100% deterministic execution. Zero advisory inference in critical path. AICS-001 v1.0.0 certified.
             </div>
           </div>
         </div>
 
         {/* Center Canvas - Premium Design Space */}
-        <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-800/30 to-slate-900/30 relative overflow-hidden">
+        <div className="flex-1 flex flex-col bg-gradient-to-br from-card/30 to-background/30 relative overflow-hidden">
           {/* Subtle grid pattern */}
           <div
             className="absolute inset-0 opacity-5"
@@ -318,7 +318,7 @@ const AlmonaPrestigeUltra: React.FC = () => {
           />
 
           {/* Premium Toolbar */}
-          <div className="h-16 bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50 flex items-center px-6 gap-4 relative z-10">
+          <div className="h-16 bg-background/80 backdrop-blur-xl border-b border-border/50 flex items-center px-6 gap-4 relative z-10">
             <div className="flex items-center gap-2">
               <button className="btn-secondary">
                 <Grid3x3 className="w-4 h-4" />
@@ -328,7 +328,7 @@ const AlmonaPrestigeUltra: React.FC = () => {
               {cellTypes.map((type) => (
                 <button
                   key={type}
-                  className="px-3 py-2 text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 rounded-lg transition-all duration-300"
+                  className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-card/50 rounded-lg transition-all duration-300"
                 >
                   {type}
                 </button>
@@ -338,16 +338,16 @@ const AlmonaPrestigeUltra: React.FC = () => {
             <div className="flex-1" />
 
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 px-4 py-2 bg-slate-800/60 rounded-lg border border-slate-700 /50 card-dark">
+              <div className="flex items-center gap-2 px-4 py-2 bg-card/60 rounded-lg border border-border /50 card-dark">
                 <Ruler className="w-4 h-4 text-amber-400" />
-                <span className="text-sm text-slate-300">2400mm × 1600mm</span>
+                <span className="text-sm text-foreground">2400mm × 1600mm</span>
               </div>
               <button
                 onClick={() => setShow3DPreview(!show3DPreview)}
                 className={`px-4 py-2 text-sm rounded-lg transition-all duration-300 ${
                   show3DPreview
-                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-900'
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-foreground'
+                    : 'bg-card text-muted-foreground hover:bg-muted'
                 }`}
               >
                 <Box className="w-4 h-4 inline mr-2" />
@@ -359,7 +359,7 @@ const AlmonaPrestigeUltra: React.FC = () => {
           {/* Canvas Area */}
           <div className="flex-1 p-8 overflow-auto relative z-10">
             <div className="max-w-5xl mx-auto">
-              <div className="bg-slate-900/60 -xl rounded-2xl shadow-2xl p-12 border border-slate-700/50 relative overflow-hidden card-glass-dark">
+              <div className="bg-background/60 -xl rounded-2xl shadow-2xl p-12 border border-border/50 relative overflow-hidden card-glass-dark">
                 {/* Luxury corner accents */}
                 <div className="absolute top-0 left-0 w-24 h-24 border-t-2 border-l-2 border-amber-500/30 rounded-tl-2xl" />
                 <div className="absolute bottom-0 right-0 w-24 h-24 border-b-2 border-r-2 border-amber-500/30 rounded-br-2xl" />
@@ -383,8 +383,8 @@ const AlmonaPrestigeUltra: React.FC = () => {
 
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                         <div className="text-center">
-                          <div className="text-sm font-semibold text-cyan-300 mb-1">Opening {i + 1}</div>
-                          <div className="text-xs text-slate-400">Click to configure</div>
+                          <div className="text-sm font-semibold text-info mb-1">Opening {i + 1}</div>
+                          <div className="text-xs text-muted-foreground">Click to configure</div>
                         </div>
                       </div>
 
@@ -396,7 +396,7 @@ const AlmonaPrestigeUltra: React.FC = () => {
                 </div>
 
                 {/* Dimension Labels */}
-                <div className="mt-6 flex justify-between text-sm text-slate-400">
+                <div className="mt-6 flex justify-between text-sm text-muted-foreground">
                   <span className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-cyan-400 rounded-full" />
                     {Math.round(2400 / gridSize.cols)}mm per column
@@ -420,11 +420,11 @@ const AlmonaPrestigeUltra: React.FC = () => {
             <div className="p-5">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-slate-900" />
+                  <Zap className="w-5 h-5 text-foreground" />
                 </div>
                 <div>
                   <div className="text-xs text-amber-400 uppercase tracking-wider">Algorithm</div>
-                  <div className="text-sm font-bold text-slate-100 capitalize">{algorithmInfo.algorithm} Heuristic</div>
+                  <div className="text-sm font-bold text-foreground capitalize">{algorithmInfo.algorithm} Heuristic</div>
                 </div>
               </div>
 
@@ -433,24 +433,24 @@ const AlmonaPrestigeUltra: React.FC = () => {
                   showAlgorithmPanel ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                 }`}
               >
-                <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
-                  <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700 /50 card-dark">
-                    <div className="text-cyan-400 font-semibold mb-1">Selection Rationale:</div>
+                <div className="space-y-3 text-xs text-foreground leading-relaxed">
+                  <div className="bg-card/50 rounded-lg p-3 border border-border /50 card-dark">
+                    <div className="text-info font-semibold mb-1">Selection Rationale:</div>
                     <p>{algorithmInfo.rationale}</p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-2">
                       <div className="text-xs mb-1 status-valid">Waste</div>
-                      <div className="text-lg font-bold text-emerald-300">{algorithmInfo.wastePercentage}%</div>
+                      <div className="text-lg font-bold text-success">{algorithmInfo.wastePercentage}%</div>
                     </div>
                     <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-2">
-                      <div className="text-blue-400 text-xs mb-1">Duration</div>
-                      <div className="text-lg font-bold text-blue-300">{algorithmInfo.duration}ms</div>
+                      <div className="text-info text-xs mb-1">Duration</div>
+                      <div className="text-lg font-bold text-info">{algorithmInfo.duration}ms</div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Sparkles className="w-3 h-3" />
                     <span>Deterministic • Auditable • Constitutional</span>
                   </div>
@@ -461,10 +461,10 @@ const AlmonaPrestigeUltra: React.FC = () => {
         </div>
 
         {/* Right Panel - Intelligence Dashboard */}
-        <div className="w-96 bg-slate-900/50 border-l border-slate-700/30 flex flex-col backdrop-blur-sm overflow-y-auto">
+        <div className="w-96 bg-background/50 border-l border-border/30 flex flex-col backdrop-blur-sm overflow-y-auto">
           {/* Panel Header */}
-          <div className="h-16 border-b border-slate-700/30 flex items-center px-6 justify-between">
-            <h3 className="typography-h3 text-sm text-slate-200 flex items-center gap-2">
+          <div className="h-16 border-b border-border/30 flex items-center px-6 justify-between">
+            <h3 className="typography-h3 text-sm text-foreground flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-amber-400" />
               Intelligence Hub
             </h3>
@@ -475,7 +475,7 @@ const AlmonaPrestigeUltra: React.FC = () => {
                   className={`px-3 py-1 text-xs rounded-lg transition-all duration-300 ${
                     i === 0
                       ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                      : 'text-slate-500 hover:text-slate-300'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {tab}
@@ -486,12 +486,12 @@ const AlmonaPrestigeUltra: React.FC = () => {
 
           {/* 3D Preview Window */}
           {show3DPreview && (
-            <div className="h-64 border-b border-slate-700/30 bg-gradient-to-br from-slate-800 to-slate-900 relative overflow-hidden">
+            <div className="h-64 border-b border-border/30 bg-gradient-to-br from-card to-background relative overflow-hidden">
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <Box className="w-16 h-16 text-slate-600 mx-auto mb-3 animate-pulse" />
-                  <div className="text-sm text-slate-500">3D Preview Loading...</div>
-                  <div className="text-xs text-slate-600 mt-1">Three.js Renderer</div>
+                  <Box className="w-16 h-16 text-muted-foreground mx-auto mb-3 animate-pulse" />
+                  <div className="text-sm text-muted-foreground">3D Preview Loading...</div>
+                  <div className="text-xs text-muted-foreground mt-1">Three.js Renderer</div>
                 </div>
               </div>
               {/* Scan line effect */}
@@ -500,19 +500,19 @@ const AlmonaPrestigeUltra: React.FC = () => {
           )}
 
           {/* Validation Status */}
-          <div className="p-6 border-b border-slate-700/30">
+          <div className="p-6 border-b border-border/30">
             <div className="flex items-center gap-2 mb-4">
               <Shield className="w-4 h-4 status-valid" />
-              <span className="text-xs font-semibold text-slate-300 uppercase tracking-wide">Validation Status</span>
+              <span className="text-xs font-semibold text-foreground uppercase tracking-wide">Validation Status</span>
             </div>
 
             <div className="space-y-2">
               {validationItems.map((item, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between py-2 px-3 bg-slate-800/30 rounded-lg border border-slate-700 /50 card-dark"
+                  className="flex items-center justify-between py-2 px-3 bg-card/30 rounded-lg border border-border /50 card-dark"
                 >
-                  <span className="text-sm text-slate-300">{item.label}</span>
+                  <span className="text-sm text-foreground">{item.label}</span>
                   <div className={`w-2 h-2 rounded-full ${getStatusColor(item.status)}`} />
                 </div>
               ))}
@@ -522,8 +522,8 @@ const AlmonaPrestigeUltra: React.FC = () => {
           {/* BOM Preview */}
           <div className="flex-1 p-6 overflow-auto">
             <div className="flex items-center gap-2 mb-4">
-              <FileCheck className="w-4 h-4 text-cyan-400" />
-              <span className="text-xs font-semibold text-slate-300 uppercase tracking-wide">Bill of Materials</span>
+              <FileCheck className="w-4 h-4 text-info" />
+              <span className="text-xs font-semibold text-foreground uppercase tracking-wide">Bill of Materials</span>
             </div>
 
             <div className="space-y-3">
@@ -535,10 +535,10 @@ const AlmonaPrestigeUltra: React.FC = () => {
                     className={`bg-gradient-to-r ${colors.bg} border ${colors.border} rounded-xl p-4`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-slate-300">{item.category}</span>
+                      <span className="text-sm font-medium text-foreground">{item.category}</span>
                       <span className={`text-xs ${colors.text}`}>{item.qty}</span>
                     </div>
-                    <div className="text-lg font-bold text-slate-100">{item.value}</div>
+                    <div className="text-lg font-bold text-foreground">{item.value}</div>
                   </div>
                 );
               })}
@@ -546,16 +546,16 @@ const AlmonaPrestigeUltra: React.FC = () => {
 
             <div className="btn-primary-gradient">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-slate-400">Total Project Value</span>
+                <span className="text-sm text-muted-foreground">Total Project Value</span>
                 <Crown className="w-5 h-5 text-amber-400" />
               </div>
               <div className="text-3xl font-bold text-amber-400">€{projectStats.value}</div>
-              <div className="text-xs text-slate-500 mt-1">Including 14% VAT</div>
+              <div className="text-xs text-muted-foreground mt-1">Including 14% VAT</div>
             </div>
           </div>
 
           {/* Export Actions */}
-          <div className="p-6 border-t border-slate-700/30 bg-slate-900/80">
+          <div className="p-6 border-t border-border/30 bg-background/80">
             <div className="grid grid-cols-2 gap-2">
               <button className="btn-secondary">
                 Export DXF
@@ -575,15 +575,15 @@ const AlmonaPrestigeUltra: React.FC = () => {
       </div>
 
       {/* Prestige Status Bar */}
-      <div className="h-10 bg-gradient-to-r from-slate-900 via-amber-900/10 to-slate-900 border-t flex items-center px-8 text-xs justify-between -xl card-glass-dark">
-        <div className="flex items-center gap-6 text-slate-500">
+      <div className="h-10 bg-gradient-to-r from-background via-amber-900/10 to-background border-t flex items-center px-8 text-xs justify-between -xl card-glass-dark">
+        <div className="flex items-center gap-6 text-muted-foreground">
           <span className="flex items-center gap-2">
             <Gem className="w-3 h-3 text-amber-400" />
             AICS-001 v1.0.0 Certified
           </span>
-          <span className="text-slate-700">|</span>
+          <span className="text-foreground">|</span>
           <span>99.8% Accuracy Framework</span>
-          <span className="text-slate-700">|</span>
+          <span className="text-foreground">|</span>
           <span>Tier 3 Protected Determinism</span>
         </div>
         <div className="flex items-center gap-3">
@@ -591,8 +591,8 @@ const AlmonaPrestigeUltra: React.FC = () => {
             <div className="w-2 h-2 rounded-full animate-pulse status-valid" />
             <span className="font-medium status-valid">System Active</span>
           </div>
-          <span className="text-slate-700">|</span>
-          <span className="text-slate-400">Response: 47ms</span>
+          <span className="text-foreground">|</span>
+          <span className="text-muted-foreground">Response: 47ms</span>
         </div>
       </div>
     </div>

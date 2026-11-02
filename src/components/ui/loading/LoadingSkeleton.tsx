@@ -12,7 +12,7 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
   variant = 'rectangular',
   animation = 'pulse'
 }) => {
-  const baseClasses = 'bg-gray-200 dark:bg-gray-700';
+  const baseClasses = 'bg-muted dark:bg-muted';
   
   const variantClasses = {
     default: 'rounded',
@@ -22,7 +22,7 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
 
   const animationClasses = {
     pulse: 'animate-pulse',
-    wave: 'animate-pulse bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700',
+    wave: 'animate-pulse bg-gradient-to-r from-muted via-muted to-muted dark:from-muted dark:via-muted dark:to-muted',
     none: ''
   };
 

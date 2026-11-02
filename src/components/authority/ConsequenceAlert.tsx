@@ -39,7 +39,7 @@ const CONSEQUENCE_COLORS: Record<ConsequenceType, { bg: string; border: string; 
   machine: {
     bg: 'bg-red-950/90',
     border: 'border-red-500/50',
-    text: 'text-red-300',
+    text: 'text-destructive',
   },
   compliance: {
     bg: 'bg-amber-950/90',
@@ -59,7 +59,7 @@ const CONSEQUENCE_COLORS: Record<ConsequenceType, { bg: string; border: string; 
   financial: {
     bg: 'bg-blue-950/90',
     border: 'border-blue-500/50',
-    text: 'text-blue-300',
+    text: 'text-info',
   },
 };
 
@@ -148,10 +148,10 @@ export const ConsequenceAlert: React.FC<ConsequenceAlertProps> = ({
                 className={cn(
                   'text-xs',
                   primary.severity === 'critical'
-                    ? 'border-red-500 text-red-300'
+                    ? 'border-red-500 text-destructive'
                     : primary.severity === 'warning'
                     ? 'border-yellow-500 text-yellow-300'
-                    : 'border-blue-500 text-blue-300'
+                    : 'border-blue-500 text-info'
                 )}
               >
                 {primary.severity}

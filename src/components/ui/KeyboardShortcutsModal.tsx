@@ -246,7 +246,7 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="sm:max-w-4xl bg-slate-950 border-amber-600/30 text-slate-200 max-h-[90vh] flex flex-col p-0"
+        className="sm:max-w-4xl bg-background border-amber-600/30 text-foreground max-h-[90vh] flex flex-col p-0"
         aria-labelledby="keyboard-shortcuts-title"
         aria-describedby="keyboard-shortcuts-description"
       >
@@ -257,15 +257,15 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
               <div>
                 <DialogTitle 
                   id="keyboard-shortcuts-title"
-                  className="text-2xl font-bold text-slate-200"
+                  className="text-2xl font-bold text-foreground"
                 >
                   Keyboard Shortcuts
                 </DialogTitle>
                 <DialogDescription 
                   id="keyboard-shortcuts-description"
-                  className="text-slate-400 mt-1"
+                  className="text-muted-foreground mt-1"
                 >
-                  All available keyboard shortcuts for ALMONA. Press <kbd className="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-xs font-mono">?</kbd> to open this modal.
+                  All available keyboard shortcuts for ALMONA. Press <kbd className="px-1.5 py-0.5 bg-card border border-border rounded text-xs font-mono">?</kbd> to open this modal.
                 </DialogDescription>
               </div>
             </div>
@@ -274,7 +274,7 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={handlePrint}
-                className="text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                className="text-muted-foreground hover:text-foreground hover:bg-card"
                 aria-label="Print keyboard shortcuts cheat sheet"
               >
                 <Printer className="h-4 w-4 mr-2" aria-hidden="true" />
@@ -285,15 +285,15 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
         </DialogHeader>
 
         {/* Search */}
-        <div className="px-6 py-4 border-b border-amber-600/30 bg-slate-900/30">
+        <div className="px-6 py-4 border-b border-amber-600/30 bg-background/30">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" aria-hidden="true" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
             <Input
               type="text"
               placeholder="Search shortcuts..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className="pl-9 bg-slate-900 border-amber-600/30 text-slate-200 placeholder:text-slate-500"
+              className="pl-9 bg-background border-amber-600/30 text-foreground placeholder:text-muted-foreground"
               aria-label="Search keyboard shortcuts"
             />
           </div>
@@ -311,19 +311,19 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
                   {category.shortcuts.map((shortcut) => (
                     <div
                       key={shortcut.id}
-                      className="flex items-start justify-between p-3 bg-slate-900/50 rounded-lg border border-slate-800 hover:border-amber-600/30 transition-colors"
+                      className="flex items-start justify-between p-3 bg-background/50 rounded-lg border border-border hover:border-amber-600/30 transition-colors"
                     >
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-slate-200 mb-1">
+                        <div className="text-sm font-medium text-foreground mb-1">
                           {shortcut.description}
                         </div>
                         {shortcut.context && (
-                          <div className="text-xs text-slate-500 mb-2">
+                          <div className="text-xs text-muted-foreground mb-2">
                             {shortcut.context}
                           </div>
                         )}
                       </div>
-                      <kbd className="ml-4 px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded text-xs font-mono text-amber-300 whitespace-nowrap flex-shrink-0">
+                      <kbd className="ml-4 px-2.5 py-1.5 bg-card border border-border rounded text-xs font-mono text-amber-300 whitespace-nowrap flex-shrink-0">
                         {formatShortcut(shortcut.key, platform)}
                       </kbd>
                     </div>
@@ -334,16 +334,16 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
           </div>
 
           {filteredCategories.length === 0 && (
-            <div className="text-center py-12 text-slate-400">
+            <div className="text-center py-12 text-muted-foreground">
               No shortcuts found. Try a different search.
             </div>
           )}
         </ScrollArea>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-amber-600/30 bg-slate-900/30 text-xs text-slate-400">
+        <div className="px-6 py-4 border-t border-amber-600/30 bg-background/30 text-xs text-muted-foreground">
           <p>
-            <strong className="text-slate-300">Platform:</strong> {platform === 'macos' ? 'macOS (⌘ = Command)' : platform === 'windows' ? 'Windows/Linux (Ctrl = Control)' : 'Linux (Ctrl = Control)'}
+            <strong className="text-foreground">Platform:</strong> {platform === 'macos' ? 'macOS (⌘ = Command)' : platform === 'windows' ? 'Windows/Linux (Ctrl = Control)' : 'Linux (Ctrl = Control)'}
           </p>
           <p className="mt-1">
             Shortcuts are context-aware. Some shortcuts may be disabled in text inputs or modals.

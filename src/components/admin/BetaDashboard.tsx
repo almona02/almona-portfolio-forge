@@ -34,11 +34,11 @@ export const BetaDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 p-6">
+      <div className="min-h-screen bg-background p-6">
         <div className="max-w-6xl mx-auto">
-          <Card className="bg-gray-900 border-gray-800 card-dark">
+          <Card className="bg-background border-border card-dark">
             <CardContent className="p-6 text-center">
-              <div className="text-gray-400">Loading metrics...</div>
+              <div className="text-muted-foreground">Loading metrics...</div>
             </CardContent>
           </Card>
         </div>
@@ -48,11 +48,11 @@ export const BetaDashboard: React.FC = () => {
 
   if (!metrics) {
     return (
-      <div className="min-h-screen bg-gray-950 p-6">
+      <div className="min-h-screen bg-background p-6">
         <div className="max-w-6xl mx-auto">
-          <Card className="bg-gray-900 border-gray-800 card-dark">
+          <Card className="bg-background border-border card-dark">
             <CardContent className="p-6 text-center">
-              <div className="text-gray-400">No metrics available yet</div>
+              <div className="text-muted-foreground">No metrics available yet</div>
             </CardContent>
           </Card>
         </div>
@@ -61,12 +61,12 @@ export const BetaDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        <Card className="bg-gray-900 border-gray-800 card-dark">
+        <Card className="bg-background border-border card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Beta Testing Dashboard</CardTitle>
-            <p className="text-gray-400">Real-time monitoring of beta testing program</p>
+            <p className="text-muted-foreground">Real-time monitoring of beta testing program</p>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="overview">
@@ -79,27 +79,27 @@ export const BetaDashboard: React.FC = () => {
 
               <TabsContent value="overview" className="mt-6">
                 <div className="grid grid-cols-4 gap-4">
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">Total Workshops</div>
+                      <div className="text-sm text-muted-foreground">Total Workshops</div>
                       <div className="text-2xl font-bold">{metrics.totalWorkshops}</div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">Total Projects</div>
+                      <div className="text-sm text-muted-foreground">Total Projects</div>
                       <div className="text-2xl font-bold">{metrics.totalProjects}</div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">Overall Accuracy</div>
+                      <div className="text-sm text-muted-foreground">Overall Accuracy</div>
                       <div className="text-2xl font-bold">{metrics.overallAccuracy.overall.toFixed(1)}%</div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">Recommendation Rate</div>
+                      <div className="text-sm text-muted-foreground">Recommendation Rate</div>
                       <div className="text-2xl font-bold">{metrics.recommendationRate.toFixed(1)}%</div>
                     </CardContent>
                   </Card>
@@ -109,16 +109,16 @@ export const BetaDashboard: React.FC = () => {
               <TabsContent value="workshops" className="mt-6">
                 <div className="space-y-4">
                   {metrics.workshops.map((workshop) => (
-                    <Card key={workshop.workshopId} className="bg-gray-800 border-gray-700">
+                    <Card key={workshop.workshopId} className="bg-card border-border">
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start">
                           <div>
                             <div className="font-semibold">{workshop.workshopName}</div>
-                            <div className="text-sm text-gray-400">{workshop.location}</div>
+                            <div className="text-sm text-muted-foreground">{workshop.location}</div>
                           </div>
                           <div className="text-right">
-                            <div className="text-sm text-gray-400">Projects: {workshop.projectsCompleted}</div>
-                            <div className="text-sm text-gray-400">Accuracy: {workshop.averageAccuracy.overall.toFixed(1)}%</div>
+                            <div className="text-sm text-muted-foreground">Projects: {workshop.projectsCompleted}</div>
+                            <div className="text-sm text-muted-foreground">Accuracy: {workshop.averageAccuracy.overall.toFixed(1)}%</div>
                           </div>
                         </div>
                       </CardContent>
@@ -129,21 +129,21 @@ export const BetaDashboard: React.FC = () => {
 
               <TabsContent value="features" className="mt-6">
                 <div className="grid grid-cols-3 gap-4">
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">Smart Wizard (Tier 1)</div>
+                      <div className="text-sm text-muted-foreground">Smart Wizard (Tier 1)</div>
                       <div className="text-2xl font-bold">{metrics.tierAdoption.wizard.toFixed(1)}%</div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">Pattern Library (Tier 2)</div>
+                      <div className="text-sm text-muted-foreground">Pattern Library (Tier 2)</div>
                       <div className="text-2xl font-bold">{metrics.tierAdoption.pattern_library.toFixed(1)}%</div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">Expert Canvas (Tier 3)</div>
+                      <div className="text-sm text-muted-foreground">Expert Canvas (Tier 3)</div>
                       <div className="text-2xl font-bold">{metrics.tierAdoption.expert_canvas.toFixed(1)}%</div>
                     </CardContent>
                   </Card>
@@ -152,27 +152,27 @@ export const BetaDashboard: React.FC = () => {
 
               <TabsContent value="accuracy" className="mt-6">
                 <div className="grid grid-cols-4 gap-4">
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">BOM Accuracy</div>
+                      <div className="text-sm text-muted-foreground">BOM Accuracy</div>
                       <div className="text-2xl font-bold">{metrics.overallAccuracy.bom.toFixed(1)}%</div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">Hardware Accuracy</div>
+                      <div className="text-sm text-muted-foreground">Hardware Accuracy</div>
                       <div className="text-2xl font-bold">{metrics.overallAccuracy.hardware.toFixed(1)}%</div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">Pricing Accuracy</div>
+                      <div className="text-sm text-muted-foreground">Pricing Accuracy</div>
                       <div className="text-2xl font-bold">{metrics.averagePricingAccuracy.toFixed(1)}%</div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">Visual Accuracy</div>
+                      <div className="text-sm text-muted-foreground">Visual Accuracy</div>
                       <div className="text-2xl font-bold">{metrics.averageVisualAccuracy.toFixed(1)}%</div>
                     </CardContent>
                   </Card>

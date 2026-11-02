@@ -26,15 +26,15 @@ export const EventStatusDisplay: React.FC<EventStatusDisplayProps> = ({
   const getEventTypeIcon = (eventType: CoreEventType) => {
     switch (eventType) {
       case 'ON':
-        return <CheckCircle2 className="h-5 w-5 text-green-400" />;
+        return <CheckCircle2 className="h-5 w-5 text-success" />;
       case 'OFF':
-        return <XCircle className="h-5 w-5 text-red-400" />;
+        return <XCircle className="h-5 w-5 text-destructive" />;
       case 'FAULT':
-        return <AlertTriangle className="h-5 w-5 text-red-400" />;
+        return <AlertTriangle className="h-5 w-5 text-destructive" />;
       case 'INSPECTION':
         return <Clock className="h-5 w-5 text-amber-400" />;
       case 'VERIFICATION':
-        return <ShieldCheck className="h-5 w-5 text-green-400" />;
+        return <ShieldCheck className="h-5 w-5 text-success" />;
       default:
         return <Clock className="h-5 w-5 text-amber-400" />;
     }
@@ -43,15 +43,15 @@ export const EventStatusDisplay: React.FC<EventStatusDisplayProps> = ({
   const getEventTypeBadge = (eventType: CoreEventType) => {
     switch (eventType) {
       case 'ON':
-        return <Badge variant="default" className="bg-green-600/20 text-green-400 border-green-600/50">ON</Badge>;
+        return <Badge variant="default" className="bg-green-600/20 text-success border-green-600/50">ON</Badge>;
       case 'OFF':
-        return <Badge variant="outline" className="border-red-600/50 text-red-400">OFF</Badge>;
+        return <Badge variant="outline" className="border-red-600/50 text-destructive">OFF</Badge>;
       case 'FAULT':
-        return <Badge variant="outline" className="border-red-600/50 text-red-400">FAULT</Badge>;
+        return <Badge variant="outline" className="border-red-600/50 text-destructive">FAULT</Badge>;
       case 'INSPECTION':
         return <Badge variant="outline" className="border-amber-600/50 text-amber-400">INSPECTION</Badge>;
       case 'VERIFICATION':
-        return <Badge variant="default" className="bg-green-600/20 text-green-400 border-green-600/50">VERIFICATION</Badge>;
+        return <Badge variant="default" className="bg-green-600/20 text-success border-green-600/50">VERIFICATION</Badge>;
       default:
         return <Badge variant="outline">UNKNOWN</Badge>;
     }

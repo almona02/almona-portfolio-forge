@@ -169,13 +169,13 @@ export const SupportPortal = () => {
             <Check className="absolute right-3 top-3 h-4 w-4  status-valid" />
           )}
           {serialValid === false && (
-            <AlertTriangle className="absolute right-3 top-3 h-4 w-4 text-red-500" />
+            <AlertTriangle className="absolute right-3 top-3 h-4 w-4 text-destructive" />
           )}
         </div>
       </div>
 
       {machineInfo && (
-        <div className="bg-almona-darker/50 p-4 rounded-lg border border-almona-light/10">
+        <div className="bg-card/50 p-4 rounded-lg border border-border/10">
           <div className="flex justify-between items-start">
             <div>
               <h3 className="typography-h3 text-lg">{machineInfo.model}</h3>
@@ -196,7 +196,7 @@ export const SupportPortal = () => {
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-almona-darker">
+        <TabsList className="grid w-full grid-cols-3 bg-card">
           <TabsTrigger value="troubleshooting">Troubleshooting</TabsTrigger>
           <TabsTrigger value="ar">AR Guides</TabsTrigger>
           <TabsTrigger value="parts">Spare Parts</TabsTrigger>
@@ -211,7 +211,7 @@ export const SupportPortal = () => {
                 {troubleshootingSteps.map(step => (
                   <div 
                     key={step.id} 
-                    className={`p-4 rounded-lg border ${selectedStep === step.id ? 'border-almona-orange bg-almona-darker/30' : 'border-almona-light/10'}`}
+                    className={`p-4 rounded-lg border ${selectedStep === step.id ? 'border-almona-orange bg-card/30' : 'border-border/10'}`}
                     onClick={() => setSelectedStep(step.id === selectedStep ? null : step.id)}
                   >
                     <div className="flex items-center justify-between cursor-pointer">
@@ -219,9 +219,9 @@ export const SupportPortal = () => {
                       <Wrench className="h-4 w-4 text-almona-orange" />
                     </div>
                     {selectedStep === step.id && (
-                      <div className="mt-3 pt-3 border-t border-almona-light/10">
-                        <p className="text-sm text-gray-400 mb-2">{step.description}</p>
-                        <div className="bg-almona-darker/50 p-3 rounded">
+                      <div className="mt-3 pt-3 border-t border-border/10">
+                        <p className="text-sm text-muted-foreground mb-2">{step.description}</p>
+                        <div className="bg-card/50 p-3 rounded">
                           <p className="font-medium text-almona-orange">Solution:</p>
                           <p className="text-sm">{step.solution}</p>
                         </div>
@@ -239,7 +239,7 @@ export const SupportPortal = () => {
               </div>
             </div>
           ) : (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-muted-foreground">
               <Search className="mx-auto h-8 w-8 mb-4" />
               <p>Enter your machine serial number to access troubleshooting guides</p>
             </div>
@@ -248,10 +248,10 @@ export const SupportPortal = () => {
 
         <TabsContent value="ar" className="mt-6">
           <div className="text-center py-12">
-            <div className="bg-almona-darker/50 h-64 rounded-lg flex items-center justify-center mb-4">
-              <p className="text-gray-500">AR Viewer Placeholder</p>
+            <div className="bg-card/50 h-64 rounded-lg flex items-center justify-center mb-4">
+              <p className="text-muted-foreground">AR Viewer Placeholder</p>
             </div>
-            <p className="text-gray-500">
+            <p className="text-muted-foreground">
               Point your camera at your machine to access interactive AR guides
             </p>
             <Button className="mt-4">
@@ -265,9 +265,9 @@ export const SupportPortal = () => {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {parts.map(part => (
-                  <div key={part.id} className="border border-almona-light/10 rounded-lg p-4">
+                  <div key={part.id} className="border border-border/10 rounded-lg p-4">
                     <div className="font-medium">{part.name}</div>
-                    <div className="text-sm text-gray-400 mb-2">Part #: {part.partNumber}</div>
+                    <div className="text-sm text-muted-foreground mb-2">Part #: {part.partNumber}</div>
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="font-bold">{part.price} EGP</span>
@@ -289,14 +289,14 @@ export const SupportPortal = () => {
               </div>
 
               {cart.length > 0 && (
-                <div className="border-t border-almona-light/10 pt-4">
+                <div className="border-t border-border/10 pt-4">
                   <h4 className="typography-h4 font-medium mb-3">Your Cart ({cart.length})</h4>
                   <div className="space-y-3">
                     {cart.map(item => (
                       <div key={item.id} className="flex justify-between items-center">
                         <div>
                           <span className="font-medium">{item.name}</span>
-                          <span className="text-sm text-gray-400 ml-2">{item.partNumber}</span>
+                          <span className="text-sm text-muted-foreground ml-2">{item.partNumber}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="font-bold">{item.price} EGP</span>
@@ -311,7 +311,7 @@ export const SupportPortal = () => {
                       </div>
                     ))}
                   </div>
-                  <div className="flex justify-between items-center mt-4 pt-4 border-t border-almona-light/10">
+                  <div className="flex justify-between items-center mt-4 pt-4 border-t border-border/10">
                     <div className="font-bold">Total:</div>
                     <div className="font-bold">
                       {cart.reduce((sum, item) => sum + item.price, 0)} EGP
@@ -348,7 +348,7 @@ export const SupportPortal = () => {
               )}
             </div>
           ) : (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-muted-foreground">
               <Search className="mx-auto h-8 w-8 mb-4" />
               <p>Enter your machine serial number to view compatible spare parts</p>
             </div>

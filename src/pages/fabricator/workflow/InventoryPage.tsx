@@ -59,10 +59,10 @@ export const InventoryPage: React.FC = () => {
 
     // ✅ GOLD-TIER: Premium loading state
     const LoadingFallback = (
-        <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900">
+        <div className="flex items-center justify-center h-full bg-gradient-to-br from-background to-background">
             <div className="text-center space-y-4">
                 <Loader2 className="w-12 h-12 text-amber-400 animate-spin mx-auto" />
-                <p className="text-slate-400 text-sm">Loading inventory dashboard...</p>
+                <p className="text-muted-foreground text-sm">Loading inventory dashboard...</p>
             </div>
         </div>
     );
@@ -70,11 +70,11 @@ export const InventoryPage: React.FC = () => {
     // ✅ GOLD-TIER: Error state
     if (!hasRequiredData) {
         return (
-            <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
-                <div className="max-w-md w-full bg-slate-900/50 border border-amber-600/30 rounded-lg p-8 text-center space-y-4">
+            <div className="flex items-center justify-center h-full bg-gradient-to-br from-background to-background p-6">
+                <div className="max-w-md w-full bg-background/50 border border-amber-600/30 rounded-lg p-8 text-center space-y-4">
                     <AlertCircle className="w-16 h-16 text-amber-500 mx-auto" />
                     <h2 className="text-2xl font-bold text-amber-200">Project Required</h2>
-                    <p className="text-slate-400">
+                    <p className="text-muted-foreground">
                         Please complete the design and optimization steps before checking inventory.
                     </p>
                     <button

@@ -56,12 +56,12 @@ export const BentProfileDesigner: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800 card-dark">
+        <Card className="bg-background border-border card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Bent Profile Designer</CardTitle>
-            <p className="text-gray-400">Design curved profiles for domes, arches, and custom curves</p>
+            <p className="text-muted-foreground">Design curved profiles for domes, arches, and custom curves</p>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
@@ -72,7 +72,7 @@ export const BentProfileDesigner: React.FC = () => {
                   type="number"
                   value={radius}
                   onChange={(e) => setRadius(Number(e.target.value))}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-card border-border"
                   min={500}
                   max={5000}
                 />
@@ -84,7 +84,7 @@ export const BentProfileDesigner: React.FC = () => {
                   type="number"
                   value={angle}
                   onChange={(e) => setAngle(Number(e.target.value))}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-card border-border"
                   min={30}
                   max={180}
                 />
@@ -108,7 +108,7 @@ export const BentProfileDesigner: React.FC = () => {
                   type="number"
                   value={profileWidth}
                   onChange={(e) => setProfileWidth(Number(e.target.value))}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-card border-border"
                   min={50}
                   max={150}
                 />
@@ -130,14 +130,14 @@ export const BentProfileDesigner: React.FC = () => {
                   {validation.isBendable ? (
                     <div>
                       <div>Bend is feasible</div>
-                      <div className="text-sm text-gray-400 mt-1">
+                      <div className="text-sm text-muted-foreground mt-1">
                         Minimum radius: {validation.minBendRadius.toFixed(0)}mm
                       </div>
                     </div>
                   ) : (
                     <div>
                       <div>Bend is not feasible with current parameters</div>
-                      <div className="text-sm text-gray-400 mt-1">
+                      <div className="text-sm text-muted-foreground mt-1">
                         Minimum required radius: {validation.minBendRadius.toFixed(0)}mm
                       </div>
                     </div>
@@ -147,27 +147,27 @@ export const BentProfileDesigner: React.FC = () => {
             )}
 
             {design && (
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="text-lg">Design Results</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-400">Bending Method:</span>
+                      <span className="text-muted-foreground">Bending Method:</span>
                       <span className="ml-2 font-semibold">{design.manufacturing.bendingMethod}</span>
                     </div>
                     <div>
-                      <span className="text-gray-400">Springback Compensation:</span>
+                      <span className="text-muted-foreground">Springback Compensation:</span>
                       <span className="ml-2 font-semibold">{design.manufacturing.springbackCompensation.toFixed(2)}°</span>
                     </div>
                     <div>
-                      <span className="text-gray-400">Bend Allowance:</span>
+                      <span className="text-muted-foreground">Bend Allowance:</span>
                       <span className="ml-2 font-semibold">{design.manufacturing.bendAllowance.toFixed(2)}mm</span>
                     </div>
                     {design.manufacturing.segments && (
                       <div>
-                        <span className="text-gray-400">Segments:</span>
+                        <span className="text-muted-foreground">Segments:</span>
                         <span className="ml-2 font-semibold">{design.manufacturing.segments}</span>
                       </div>
                     )}

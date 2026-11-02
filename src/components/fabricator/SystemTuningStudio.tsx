@@ -89,29 +89,29 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className={`${DIALOG_DIMENSIONS.MAX_WIDTH} bg-gray-950 border-gray-800 text-white`}>
+      <DialogContent className={`${DIALOG_DIMENSIONS.MAX_WIDTH} bg-background border-border text-foreground`}>
         <DialogHeader className="flex flex-row items-center justify-between">
           <div>
             <DialogTitle className="flex items-center gap-2">
               <Badge variant="outline" className="btn-primary">
                 System Tuning Studio
               </Badge>
-              <span className="text-sm text-gray-400">Import → Tag → Hardware → Machining → Review</span>
+              <span className="text-sm text-muted-foreground">Import → Tag → Hardware → Machining → Review</span>
             </DialogTitle>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="text-gray-400 hover:text-white">
+          <Button variant="ghost" size="icon" onClick={onClose} className="text-muted-foreground hover:text-foreground">
             <X className={UI_DIMENSIONS.ICON_MEDIUM} />
           </Button>
         </DialogHeader>
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <label className="text-xs text-gray-400" htmlFor="system-pack-name">System pack name</label>
+          <label className="text-xs text-muted-foreground" htmlFor="system-pack-name">System pack name</label>
           <Input
             id="system-pack-name"
             value={packName}
             onChange={(event) => setPackName(event.target.value)}
-            className="bg-gray-900 border-gray-700 text-white"
+            className="bg-background border-border text-foreground"
           />
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
@@ -121,7 +121,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
               variant="outline"
               disabled={isSaving}
               onClick={handleCreateStarterPack}
-              className="border-amber-500/50 text-amber-100"
+              className="border-amber-500/50 text-warning"
             >
               {isSaving ? 'Saving…' : 'Create with frame + sash'}
             </Button>
@@ -133,13 +133,13 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         </div>
       </div>
       {allowStarterPack && (
-        <p className="text-xs text-slate-400">
-          No DXF? Use <span className="text-amber-300">Create with frame + sash</span> to start a workshop pack, then tune dimensions.
+        <p className="text-xs text-muted-foreground">
+          No DXF? Use <span className="text-warning">Create with frame + sash</span> to start a workshop pack, then tune dimensions.
         </p>
       )}
 
       <Tabs defaultValue="import" className="w-full">
-        <TabsList className={`grid ${GRID_LAYOUT.TABS_COLS} bg-gray-900`}>
+        <TabsList className={`grid ${GRID_LAYOUT.TABS_COLS} bg-background`}>
           <TabsTrigger value="import" className="text-xs">
             <Scan className={`${UI_DIMENSIONS.ICON_SMALL} mr-1`} /> Import
           </TabsTrigger>
@@ -158,7 +158,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         </TabsList>
 
         <TabsContent value="import" className="mt-4">
-          <Card className="bg-gray-900/60 border-gray-800 card-dark">
+          <Card className="bg-background/60 border-border card-dark">
             <CardHeader>
               <CardTitle className="text-base">DXF Import</CardTitle>
               <CardDescription>Upload supplier DXF/DWG. We’ll extract basic dims and preview.</CardDescription>
@@ -182,7 +182,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         </TabsContent>
 
         <TabsContent value="roles" className="mt-4">
-          <Card className="bg-gray-900/60 border-gray-800 card-dark">
+          <Card className="bg-background/60 border-border card-dark">
             <CardHeader>
               <CardTitle className="text-base">Role Tagging</CardTitle>
               <CardDescription>Assign Frame, Sash, Mullion, Transom, Screen Adapter, etc.</CardDescription>
@@ -198,7 +198,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         </TabsContent>
 
         <TabsContent value="hardware" className="mt-4">
-          <Card className="bg-gray-900/60 border-gray-800 card-dark">
+          <Card className="bg-background/60 border-border card-dark">
             <CardHeader>
               <CardTitle className="text-base">Hardware Linking</CardTitle>
               <CardDescription>Link hinges, locks, rollers; validate compatibility.</CardDescription>
@@ -214,7 +214,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         </TabsContent>
 
         <TabsContent value="machining" className="mt-4">
-          <Card className="bg-gray-900/60 border-gray-800 card-dark">
+          <Card className="bg-background/60 border-border card-dark">
             <CardHeader>
               <CardTitle className="text-base">Machining Zones</CardTitle>
               <CardDescription>Define hinge slots and lock pockets with safe offsets.</CardDescription>
@@ -231,25 +231,25 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         </TabsContent>
 
         <TabsContent value="review" className="mt-4">
-          <Card className="bg-gray-900/60 border-gray-800 card-dark">
+          <Card className="bg-background/60 border-border card-dark">
             <CardHeader>
               <CardTitle className="text-base">Review & Save</CardTitle>
               <CardDescription>Confirm roles and readiness before saving as a system pack.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {importedProfiles.length === 0 && (
-                <Alert className="bg-gray-800 border-gray-700">
+                <Alert className="bg-card border-border">
                   <AlertDescription>Import at least one profile DXF to proceed.</AlertDescription>
                 </Alert>
               )}
               {importedProfiles.map((p) => (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between rounded border border-gray-800 bg-gray-900 /50 px-3 py-2 text-sm card-dark"
+                  className="flex items-center justify-between rounded border border-border bg-background /50 px-3 py-2 text-sm card-dark"
                 >
                   <div>
-                    <div className="font-semibold text-white">{p.name || p.fileName}</div>
-                    <div className="text-xs text-gray-400">
+                    <div className="font-semibold text-foreground">{p.name || p.fileName}</div>
+                    <div className="text-xs text-muted-foreground">
                       {p.widthMm} × {p.heightMm} mm · {p.fileName}
                     </div>
                   </div>

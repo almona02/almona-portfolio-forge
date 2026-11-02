@@ -116,23 +116,23 @@ export const PilotSurvey: React.FC<PilotSurveyProps> = ({
 
   if (submitted) {
     return (
-      <Card className="bg-gray-900 border-gray-800 card-dark">
+      <Card className="bg-background border-border card-dark">
         <CardContent className="p-6 text-center">
           <CheckCircle2 className="h-16 w-16 mx-auto mb-4  status-valid" />
           <h3 className="typography-h3 mb-2">Thank You!</h3>
-          <p className="text-gray-400">Your survey has been submitted successfully.</p>
+          <p className="text-muted-foreground">Your survey has been submitted successfully.</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800 card-dark">
+        <Card className="bg-background border-border card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">{surveyTitles[surveyType]}</CardTitle>
-            <p className="text-gray-400">Your feedback helps us improve</p>
+            <p className="text-muted-foreground">Your feedback helps us improve</p>
           </CardHeader>
           <CardContent className="space-y-6">
             {questions.map((question) => (
@@ -150,7 +150,7 @@ export const PilotSurvey: React.FC<PilotSurveyProps> = ({
                           className={`w-12 h-12 rounded ${
                             responses[question.id] === value
                               ? 'bg-blue-600 text-white'
-                              : 'bg-gray-800 text-gray-400'
+                              : 'bg-card text-muted-foreground'
                           }`}
                         >
                           {value}
@@ -163,7 +163,7 @@ export const PilotSurvey: React.FC<PilotSurveyProps> = ({
                   <Input
                     value={responses[question.id] || ''}
                     onChange={(e) => updateResponse(question.id, e.target.value)}
-                    className="bg-gray-800 border-gray-700"
+                    className="bg-card border-border"
                   />
                 )}
                 {question.type === 'select' && (
@@ -171,7 +171,7 @@ export const PilotSurvey: React.FC<PilotSurveyProps> = ({
                     value={responses[question.id] || ''}
                     onValueChange={(v) => updateResponse(question.id, v)}
                   >
-                    <SelectTrigger className="bg-gray-800 border-gray-700">
+                    <SelectTrigger className="bg-card border-border">
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -185,7 +185,7 @@ export const PilotSurvey: React.FC<PilotSurveyProps> = ({
                   <Textarea
                     value={responses[question.id] || ''}
                     onChange={(e) => updateResponse(question.id, e.target.value)}
-                    className="bg-gray-800 border-gray-700"
+                    className="bg-card border-border"
                     rows={4}
                   />
                 )}

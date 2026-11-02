@@ -155,18 +155,18 @@ export class ConstitutionalErrorBoundary extends Component<Props, State> {
 
             // Default fallback UI
             return (
-                <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-6">
-                    <Card className="max-w-2xl w-full bg-slate-800/50 border-red-500/30 backdrop-blur-sm">
+                <div className="min-h-screen bg-gradient-to-br from-background to-card flex items-center justify-center p-6">
+                    <Card className="max-w-2xl w-full bg-card/50 border-red-500/30 backdrop-blur-sm">
                         <CardHeader>
                             <div className="flex items-center gap-3 mb-2">
                                 <div className="p-3 bg-red-500/10 rounded-lg border border-red-500/30">
-                                    <Shield className="h-6 w-6 text-red-400" />
+                                    <Shield className="h-6 w-6 text-destructive" />
                                 </div>
-                                <CardTitle className="text-xl text-red-400">
+                                <CardTitle className="text-xl text-destructive">
                                     Constitutional Integrity Compromised
                                 </CardTitle>
                             </div>
-                            <p className="text-sm text-slate-400">
+                            <p className="text-sm text-muted-foreground">
                                 AICS-001 §9.3 Violation Detected – Tier 3 Protected Component Error
                             </p>
                         </CardHeader>
@@ -181,19 +181,19 @@ export class ConstitutionalErrorBoundary extends Component<Props, State> {
 
                             {errorCount > 1 && (
                                 <Alert className="bg-amber-500/10 border-amber-500/30">
-                                    <AlertCircle className="h-4 w-4 text-amber-400" />
-                                    <AlertDescription className="text-sm text-amber-200">
+                                    <AlertCircle className="h-4 w-4 text-warning" />
+                                    <AlertDescription className="text-sm text-warning">
                                         This error has occurred <strong>{errorCount}</strong> times.
                                         Consider refreshing the page if the issue persists.
                                     </AlertDescription>
                                 </Alert>
                             )}
 
-                            <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50">
-                                <h4 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wide">
+                            <div className="bg-background/50 p-4 rounded-lg border border-border/50">
+                                <h4 className="text-xs font-semibold text-foreground mb-2 uppercase tracking-wide">
                                     What happened?
                                 </h4>
-                                <p className="text-sm text-slate-400 leading-relaxed">
+                                <p className="text-sm text-muted-foreground leading-relaxed">
                                     A critical error occurred in the constitutional state management layer.
                                     Your work has been preserved in the audit trail, but the component cannot continue.
                                 </p>
@@ -211,18 +211,18 @@ export class ConstitutionalErrorBoundary extends Component<Props, State> {
                                 <Button
                                     onClick={this.handleRefresh}
                                     variant="outline"
-                                    className="flex-1 border-slate-600 hover:bg-slate-700"
+                                    className="flex-1 border-border hover:bg-muted"
                                 >
                                     Refresh Page
                                 </Button>
                             </div>
 
-                            <div className="pt-4 border-t border-slate-700/50">
-                                <details className="text-xs text-slate-500">
-                                    <summary className="cursor-pointer hover:text-slate-400 font-medium">
+                            <div className="pt-4 border-t border-border/50">
+                                <details className="text-xs text-muted-foreground">
+                                    <summary className="cursor-pointer hover:text-muted-foreground font-medium">
                                         Technical Details (for support)
                                     </summary>
-                                    <pre className="mt-2 p-3 bg-slate-950 rounded text-[10px] overflow-x-auto border border-slate-800">
+                                    <pre className="mt-2 p-3 bg-background rounded text-[10px] overflow-x-auto border border-border">
                                         {error?.stack || 'No stack trace available'}
                                     </pre>
                                 </details>

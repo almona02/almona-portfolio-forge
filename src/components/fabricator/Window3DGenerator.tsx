@@ -279,8 +279,8 @@ function SectionViewGizmo({ plane, setPlane }: { plane: Plane, setPlane: (p: Pla
                     pointerEvents: 'auto'
                 }}
             >
-                <div className="flex items-center gap-2 p-2 bg-gray-900/80 rounded-full border border-amber-500 text-white select-none whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2">
-                    <Scissors className="h-4 w-4 text-amber-400" />
+                <div className="flex items-center gap-2 p-2 bg-background/80 rounded-full border border-amber-500 text-foreground select-none whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2">
+                    <Scissors className="h-4 w-4 text-warning" />
                     <span className="text-xs font-mono">{t('window_3d_generator.section_label', 'Section: {position}mm', { position: (-plane.constant * 1000).toFixed(0) })}</span>
                 </div>
             </div>
@@ -317,7 +317,7 @@ function ErrorHighlighter({ validation }: { validation: ValidationResult }) {
     return (
         <Html center>
             <div role="alert" className="p-4 bg-red-900/80 border-2 border-red-500 rounded-lg text-white text-center pointer-events-none backdrop-blur-sm">
-                <AlertTriangle className="h-8 w-8 text-red-400 mx-auto mb-2" />
+                <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-2" />
                 <h3 className="typography-h3">Design Error</h3>
                 <p className="text-xs">{validation.errors[0].message}</p>
             </div>
@@ -1358,8 +1358,8 @@ const Window3DModelComponent = (props: {
         return (
             <group ref={groupRef}>
                 <Html center>
-                    <div className="p-4 bg-gray-900/80 rounded border border-gray-700">
-                        <div className="flex items-center gap-2 text-white">
+                    <div className="p-4 bg-background/80 rounded border border-border">
+                        <div className="flex items-center gap-2 text-foreground">
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-500"></div>
                             <span className="text-sm">{t('window_3d_generator.generating_model', 'Generating 3D model...')}</span>
                         </div>
@@ -1625,10 +1625,10 @@ function WindowControls({
     return (
         <TooltipProvider>
             <div className="absolute top-4 right-4 z-10 space-y-3">
-                <Card className="bg-gray-900/95 border-gray-600 shadow-2xl card-dark">
+                <Card className="bg-background/95 border-border shadow-2xl card-dark">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-sm flex items-center gap-2">
-                            <Sparkles className="h-4 w-4 text-amber-400" />
+                            <Sparkles className="h-4 w-4 text-warning" />
                             {t('window_3d_generator.3d_controls', '3D Controls')}
                         </CardTitle>
                     </CardHeader>
@@ -1685,7 +1685,7 @@ function WindowControls({
                             </div>
 
                             {/* Animation Progress */}
-                            <div className="flex items-center gap-2 text-xs text-gray-400">
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                 <div className="flex-1">
                                     <Progress value={animationProgress * 100} className="h-1" />
                                 </div>
@@ -1732,8 +1732,8 @@ function WindowControls({
 
                         {/* Quality Settings */}
                         {setQuality && (
-                            <div className="space-y-2 pt-2 border-t border-gray-700">
-                                <label className="typography-label text-xs text-gray-400 font-medium">
+                            <div className="space-y-2 pt-2 border-t border-border">
+                                <label className="typography-label text-xs text-muted-foreground font-medium">
                                     {t('window_3d_generator.material_quality', 'Material Quality')}
                                 </label>
                                 <div className="flex gap-1">
@@ -1790,16 +1790,16 @@ function WindowControls({
 
                         {/* Shadow Toggle */}
                         {setEnableShadows && (
-                            <div className="space-y-4 pt-4 border-t border-gray-700">
+                            <div className="space-y-4 pt-4 border-t border-border">
                                 <div className="space-y-2">
-                                    <label className="typography-label text-xs text-gray-400 font-medium">
+                                    <label className="typography-label text-xs text-muted-foreground font-medium">
                                         {t('window_3d_generator.lighting', 'Lighting')}
                                     </label>
                                     <Select value={lightingPreset} onValueChange={(v: any) => setLightingPreset?.(v)}>
-                                        <SelectTrigger className="w-full bg-gray-800 border-gray-600 text-xs">
+                                        <SelectTrigger className="w-full bg-card border-border text-xs">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-gray-800 border-gray-600">
+                                        <SelectContent className="bg-card border-border">
                                             <SelectItem value="cairoMidday" className="text-xs">
                                                 {t('window_3d_generator.cairo_midday', 'Cairo Midday')}
                                             </SelectItem>
@@ -1836,10 +1836,10 @@ function WindowControls({
                                     </Tooltip>
 
                                     <Select value={shadowQuality} onValueChange={(v: any) => setShadowQuality?.(v)}>
-                                        <SelectTrigger className="w-full bg-gray-800 border-gray-600 text-xs">
+                                        <SelectTrigger className="w-full bg-card border-border text-xs">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-gray-800 border-gray-600">
+                                        <SelectContent className="bg-card border-border">
                                             <SelectItem value="low" className="text-xs">
                                                 {t('window_3d_generator.low', 'Low Shadows')}
                                             </SelectItem>
@@ -1857,12 +1857,12 @@ function WindowControls({
 
                         {/* Details Config */}
                         {setDetailConfig && (
-                            <div className="space-y-2 pt-4 border-t border-gray-700">
-                                <label className="typography-label text-xs text-gray-400 font-medium">
+                            <div className="space-y-2 pt-4 border-t border-border">
+                                <label className="typography-label text-xs text-muted-foreground font-medium">
                                     {t('window_3d_generator.details', 'Detail Components')}
                                 </label>
                                 <div className="space-y-1">
-                                    <div className="flex items-center justify-between text-xs text-gray-300">
+                                    <div className="flex items-center justify-between text-xs text-foreground">
                                         <span>{t('window_3d_generator.seals', 'Weather Seals')}</span>
                                         <Toggle
                                             pressed={detailConfig.enableWeatherSeals}
@@ -1871,7 +1871,7 @@ function WindowControls({
                                             className="h-5 w-8 data-[state=on]:bg-amber-600"
                                         />
                                     </div>
-                                    <div className="flex items-center justify-between text-xs text-gray-300">
+                                    <div className="flex items-center justify-between text-xs text-foreground">
                                         <span>{t('window_3d_generator.fasteners', 'Fasteners')}</span>
                                         <Toggle
                                             pressed={detailConfig.enableFasteners}
@@ -1880,7 +1880,7 @@ function WindowControls({
                                             className="h-5 w-8 data-[state=on]:bg-amber-600"
                                         />
                                     </div>
-                                    <div className="flex items-center justify-between text-xs text-gray-300">
+                                    <div className="flex items-center justify-between text-xs text-foreground">
                                         <span>{t('window_3d_generator.drainage', 'Drainage')}</span>
                                         <Toggle
                                             pressed={detailConfig.enableDrainage}
@@ -1894,12 +1894,12 @@ function WindowControls({
                         )}
 
                         {/* Export Section */}
-                        <div className="space-y-2 pt-2 border-t border-gray-700">
+                        <div className="space-y-2 pt-2 border-t border-border">
                             <Select value={exportFormat} onValueChange={(v) => setExportFormat(v as 'GLB' | 'STL' | 'OBJ')}>
-                                <SelectTrigger className="w-full bg-gray-800 border-gray-600 text-xs">
+                                <SelectTrigger className="w-full bg-card border-border text-xs">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-gray-800 border-gray-600">
+                                <SelectContent className="bg-card border-border">
                                     <SelectItem value="GLB" className="text-xs">GLB (Recommended)</SelectItem>
                                     <SelectItem value="STL" className="text-xs">STL (3D Print)</SelectItem>
                                     <SelectItem value="OBJ" className="text-xs">OBJ (Legacy)</SelectItem>
@@ -1948,7 +1948,7 @@ function WindowControls({
                 </Card>
 
                 {/* Quick Actions Card */}
-                <Card className="bg-gray-900/95 border-gray-600 shadow-2xl card-dark">
+                <Card className="bg-background/95 border-border shadow-2xl card-dark">
                     <CardContent className="p-3">
                         <div className="grid grid-cols-3 gap-2">
                             <Tooltip>
@@ -2265,9 +2265,9 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                 <div className="absolute inset-0 bg-black/50 z-20 flex items-center justify-center backdrop-blur-sm">
                     <Card className="shadow-2xl card-premium">
                         <CardContent className="p-6 text-center">
-                            <Download className="h-8 w-8 text-amber-400 mx-auto mb-4 animate-bounce" />
-                            <h3 className="typography-h3 text-lg text-white mb-2">{t('window_3d_generator.exporting_model', 'Exporting Model')}</h3>
-                            <p className="text-gray-400 text-sm mb-4">{t('window_3d_generator.preparing_file', 'Preparing {format} file...', { format: exportFormat })}</p>
+                            <Download className="h-8 w-8 text-warning mx-auto mb-4 animate-bounce" />
+                            <h3 className="typography-h3 text-lg text-foreground mb-2">{t('window_3d_generator.exporting_model', 'Exporting Model')}</h3>
+                            <p className="text-muted-foreground text-sm mb-4">{t('window_3d_generator.preparing_file', 'Preparing {format} file...', { format: exportFormat })}</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -2287,13 +2287,13 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                     frameloop={isAnimating ? "always" : "demand"}
                     camera={{ position: [0, 0, 3], fov: 50 }}
                     performance={{ min: 0.5 }}
-                    className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+                    className="bg-gradient-to-br from-background via-card to-background"
                     onCreated={({ gl }) => {
                         glRef.current = gl;
                         gl.setClearColor(0x000000, 0);
                     }}
                 >
-                    <Suspense fallback={<Html center><div className="text-white">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</div></Html>}>
+                    <Suspense fallback={<Html center><div className="text-foreground">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</div></Html>}>
                         {/* --- SCENE SETUP --- */}
                         <Environment preset="apartment">
                           <Lightformer form="rect" intensity={2} position={[0, 5, -2]} scale={[12, 2, 1]} />
@@ -2371,7 +2371,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                         aria-label={t('window_3d_generator.view_toolbar', '3D view tools')}
                         className="flex w-full items-center justify-end gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                     >
-                        <div role="radiogroup" aria-label={t('window_3d_generator.view_mode', 'View mode')} className="flex h-9 shrink-0 overflow-hidden rounded border border-gray-700 bg-gray-900/80 text-xs">
+                        <div role="radiogroup" aria-label={t('window_3d_generator.view_mode', 'View mode')} className="flex h-9 shrink-0 overflow-hidden rounded border border-border bg-background/80 text-xs">
                             {(['customer', 'manufacturing'] as PartViewMode[]).map(modeOption => (
                                 <button
                                     key={modeOption}
@@ -2379,7 +2379,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                                     role="radio"
                                     aria-checked={viewMode === modeOption}
                                     onClick={() => setViewMode(modeOption)}
-                                    className={`px-2.5 sm:px-3 ${viewMode === modeOption ? 'bg-amber-500/20 text-amber-100' : 'text-gray-300 hover:text-white'}`}
+                                    className={`px-2.5 sm:px-3 ${viewMode === modeOption ? 'bg-amber-500/20 text-warning' : 'text-foreground hover:text-foreground'}`}
                                 >
                                     {modeOption === 'customer'
                                         ? t('window_3d_generator.view_customer', 'Customer')
@@ -2406,7 +2406,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                         )}
                         <button
                             type="button"
-                            className="h-9 shrink-0 rounded border border-gray-700 bg-gray-900/80 px-2.5 text-xs text-gray-200 hover:border-amber-500 sm:px-3"
+                            className="h-9 shrink-0 rounded border border-border bg-background/80 px-2.5 text-xs text-foreground hover:border-amber-500 sm:px-3"
                             onClick={() => {
                                 controlsRef.current?.reset?.();
                                 setSelectedKey(null);
@@ -2421,7 +2421,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                                 type="button"
                                 aria-pressed={partListOpen}
                                 aria-controls="window-3d-part-list"
-                                className={`h-9 shrink-0 rounded border px-2.5 text-xs hover:border-amber-500 sm:px-3 ${partListOpen ? 'border-amber-500 bg-amber-500/20 text-amber-100' : 'border-gray-700 bg-gray-900/80 text-gray-200'}`}
+                                className={`h-9 shrink-0 rounded border px-2.5 text-xs hover:border-amber-500 sm:px-3 ${partListOpen ? 'border-amber-500 bg-amber-500/20 text-warning' : 'border-border bg-background/80 text-foreground'}`}
                                 onClick={() => setPartListOpen(open => !open)}
                             >
                                 <ListTree className="inline h-3.5 w-3.5 sm:mr-1" />
@@ -2432,7 +2432,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                         {viewMode === 'manufacturing' && (
                             <button
                                 type="button"
-                                className="h-9 shrink-0 rounded border border-gray-700 bg-gray-900/80 px-2.5 text-xs text-gray-200 hover:border-amber-500 sm:px-3"
+                                className="h-9 shrink-0 rounded border border-border bg-background/80 px-2.5 text-xs text-foreground hover:border-amber-500 sm:px-3"
                                 onClick={() => setControlsVisible(true)}
                             >
                                 <span className="sm:hidden">{t('window_3d_generator.3d_controls_short', 'Controls')}</span>
@@ -2442,24 +2442,24 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                     </div>
                 ) : undefined}
                 disclaimer={viewMode === 'customer' ? (
-                    <div className="rounded border border-slate-700 bg-slate-950/80 px-3 py-2 text-[11px] text-slate-300 backdrop-blur-sm">
+                    <div className="rounded border border-border bg-background/80 px-3 py-2 text-[11px] text-foreground backdrop-blur-sm">
                         {t('window_3d_generator.customer_preview_note', 'Visual preview of your window. Colours and proportions are indicative; part names and codes come from the saved order.')}
                         {manifest.summary.unmodelled > 0 && (
-                            <span className="block text-amber-200">
+                            <span className="block text-warning">
                                 {`${manifest.summary.unmodelled} ${t('window_3d_generator.customer_unmodelled_note', 'listed parts are not drawn in 3D — see the Parts list.')}`}
                             </span>
                         )}
                     </div>
                 ) : (
-                    <div className="rounded border border-amber-500/50 bg-gray-900/80 px-3 py-2 text-xs shadow-xl backdrop-blur-sm">
+                    <div className="rounded border border-amber-500/50 bg-background/80 px-3 py-2 text-xs shadow-xl backdrop-blur-sm">
                         <div className="mb-1 flex items-center gap-2">
-                            <AlertTriangle className="h-3 w-3 text-amber-500" />
-                            <span className="font-bold text-amber-500">CONSTITUTIONAL DISCLAIMER</span>
+                            <AlertTriangle className="h-3 w-3 text-warning" />
+                            <span className="font-bold text-warning">CONSTITUTIONAL DISCLAIMER</span>
                         </div>
-                        <p className="mb-1 leading-tight text-gray-300">
+                        <p className="mb-1 leading-tight text-foreground">
                             Visualization for manufacturability check only. Not a substitute for engineering structural analysis.
                         </p>
-                        <div className="mt-1 flex items-center justify-between border-t border-gray-700 pt-1 text-[10px] text-gray-500">
+                        <div className="mt-1 flex items-center justify-between border-t border-border pt-1 text-[10px] text-muted-foreground">
                             <span>Accuracy: 99.8% (Tier 3 Protected)</span>
                             <span>Requires Human Validation</span>
                         </div>
@@ -2484,9 +2484,9 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                     <div className="space-y-2">
                         {chromeStatus}
                         {showControls && viewMode === 'manufacturing' && !partListOpen ? (
-                            <Card className="border-gray-600 bg-gray-900/90 card-dark">
+                            <Card className="border-border bg-background/90 card-dark">
                                 <CardContent className="p-3">
-                                    <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
+                                    <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                                         <div className="flex items-center gap-1">
                                             <Layers className="h-3 w-3" />
                                             <span>{t('window_3d_generator.quality_label', '{quality} Quality', { quality: quality.charAt(0).toUpperCase() + quality.slice(1) })}</span>
@@ -2496,13 +2496,13 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                                             <span>{enableShadows ? t('window_3d_generator.shadows_on', 'Shadows On') : t('window_3d_generator.shadows_off', 'Shadows Off')}</span>
                                         </div>
                                         {sectionViewEnabled && (
-                                            <div className="flex items-center gap-1 text-amber-400">
+                                            <div className="flex items-center gap-1 text-warning">
                                                 <Scissors className="h-3 w-3" />
                                                 <span>{t('window_3d_generator.section_view', 'Section View')}</span>
                                             </div>
                                         )}
                                         {validation.errors.length > 0 && (
-                                            <div className="flex items-center gap-1 text-red-400">
+                                            <div className="flex items-center gap-1 text-destructive">
                                                 <AlertTriangle className="h-3 w-3" />
                                                 <span>{t('window_3d_generator.issues', '{count} Issues', { count: validation.errors.length })}</span>
                                             </div>

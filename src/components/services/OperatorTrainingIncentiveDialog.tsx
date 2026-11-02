@@ -25,7 +25,7 @@ export const OperatorTrainingIncentiveDialog = ({
 }: OperatorTrainingIncentiveDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-almona-dark border-almona-light/20 text-white">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-background border-border/20 text-foreground">
         <DialogHeader>
           <DialogTitle className="text-3xl font-bold flex items-center gap-2">
             <GraduationCap className="h-8 w-8 text-amber-500" />
@@ -33,7 +33,7 @@ export const OperatorTrainingIncentiveDialog = ({
               Operator Training & Certification Programs
             </span>
           </DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogDescription className="text-muted-foreground">
             Comprehensive training programs for aluminium and UPVC window fabrication with Egyptian market incentives
           </DialogDescription>
         </DialogHeader>
@@ -41,14 +41,14 @@ export const OperatorTrainingIncentiveDialog = ({
         <OperatorTrainingSection />
 
         <DialogFooter className="sm:justify-between">
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-muted-foreground">
             * Special government subsidies available for Egyptian manufacturers
           </div>
           <div className="flex gap-2">
             <Button 
               variant="outline" 
               onClick={() => onOpenChange(false)}
-              className="border-almona-light/20"
+              className="border-border/20"
             >
               Close
             </Button>

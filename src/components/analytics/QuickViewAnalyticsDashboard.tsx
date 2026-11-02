@@ -97,10 +97,10 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
     return (
       <div className="p-6 space-y-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-700 rounded w-1/4 mb-6"></div>
+          <div className="h-8 bg-muted rounded w-1/4 mb-6"></div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-32 bg-gray-700 rounded"></div>
+              <div key={i} className="h-32 bg-muted rounded"></div>
             ))}
           </div>
         </div>
@@ -111,7 +111,7 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
   if (!analyticsData) {
     return (
       <div className="p-6 text-center">
-        <p className="text-gray-400">Failed to load analytics data</p>
+        <p className="text-muted-foreground">Failed to load analytics data</p>
         <Button onClick={() => void fetchAnalyticsData()} className="mt-4">
           Retry
         </Button>
@@ -124,8 +124,8 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="typography-h1 text-2xl text-white">Quick View Analytics</h1>
-          <p className="text-gray-400">Enhanced ProductQuickView Performance Metrics</p>
+          <h1 className="typography-h1 text-2xl text-foreground">Quick View Analytics</h1>
+          <p className="text-muted-foreground">Enhanced ProductQuickView Performance Metrics</p>
         </div>
         <div className="flex gap-2">
           {(['24h', '7d', '30d'] as const).map((range) => (
@@ -143,59 +143,59 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-500/20 rounded-lg">
-                <Eye className="w-5 h-5 text-blue-400" />
+                <Eye className="w-5 h-5 text-info" />
               </div>
               <div>
-                <p className="text-sm text-gray-400">Quick View Opens</p>
-                <p className="text-2xl font-bold text-white">{analyticsData.quickViewOpens.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">Quick View Opens</p>
+                <p className="text-2xl font-bold text-foreground">{analyticsData.quickViewOpens.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-green-500/20 rounded-lg">
-                <MousePointer className="w-5 h-5 text-green-400" />
+                <MousePointer className="w-5 h-5 text-success" />
               </div>
               <div>
-                <p className="text-sm text-gray-400">Hover Previews</p>
-                <p className="text-2xl font-bold text-white">{analyticsData.hoverPreviews.toLocaleString()}</p>
-                <p className="text-xs text-green-400">{getHoverEffectiveness()}% of opens</p>
+                <p className="text-sm text-muted-foreground">Hover Previews</p>
+                <p className="text-2xl font-bold text-foreground">{analyticsData.hoverPreviews.toLocaleString()}</p>
+                <p className="text-xs text-success">{getHoverEffectiveness()}% of opens</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="btn-primary">
                 <TrendingUp className="w-5 h-5 text-amber-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-400">Conversion Rate</p>
-                <p className="text-2xl font-bold text-white">{getConversionRate()}%</p>
+                <p className="text-sm text-muted-foreground">Conversion Rate</p>
+                <p className="text-2xl font-bold text-foreground">{getConversionRate()}%</p>
                 <p className="text-xs text-amber-400">All actions</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-amber-500/20 rounded-lg">
                 <BarChart3 className="w-5 h-5 text-amber-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-400">Avg. Session</p>
-                <p className="text-2xl font-bold text-white">{analyticsData.averageSessionTime}m</p>
+                <p className="text-sm text-muted-foreground">Avg. Session</p>
+                <p className="text-2xl font-bold text-foreground">{analyticsData.averageSessionTime}m</p>
                 <p className="text-xs text-amber-400">Time in quick view</p>
               </div>
             </div>
@@ -214,35 +214,35 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
 
         <TabsContent value="conversions" className="space-y-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardContent className="p-4 text-center">
                 <ShoppingCart className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-white">{analyticsData.conversions.quoteRequests}</p>
-                <p className="text-sm text-gray-400">Quote Requests</p>
+                <p className="text-2xl font-bold text-foreground">{analyticsData.conversions.quoteRequests}</p>
+                <p className="text-sm text-muted-foreground">Quote Requests</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardContent className="p-4 text-center">
-                <GitCompare className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-white">{analyticsData.conversions.comparisons}</p>
-                <p className="text-sm text-gray-400">Comparisons</p>
+                <GitCompare className="w-8 h-8 text-info mx-auto mb-2" />
+                <p className="text-2xl font-bold text-foreground">{analyticsData.conversions.comparisons}</p>
+                <p className="text-sm text-muted-foreground">Comparisons</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardContent className="p-4 text-center">
-                <Eye className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-white">{analyticsData.conversions.threeDViews}</p>
-                <p className="text-sm text-gray-400">3D Views</p>
+                <Eye className="w-8 h-8 text-info mx-auto mb-2" />
+                <p className="text-2xl font-bold text-foreground">{analyticsData.conversions.threeDViews}</p>
+                <p className="text-sm text-muted-foreground">3D Views</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardContent className="p-4 text-center">
-                <Download className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-white">{analyticsData.conversions.brochureDownloads}</p>
-                <p className="text-sm text-gray-400">Downloads</p>
+                <Download className="w-8 h-8 text-success mx-auto mb-2" />
+                <p className="text-2xl font-bold text-foreground">{analyticsData.conversions.brochureDownloads}</p>
+                <p className="text-sm text-muted-foreground">Downloads</p>
               </CardContent>
             </Card>
           </div>
@@ -250,29 +250,29 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
 
         <TabsContent value="devices" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardContent className="p-4 text-center">
-                <Smartphone className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-white">{analyticsData.deviceBreakdown.mobile}%</p>
-                <p className="text-sm text-gray-400">Mobile</p>
-                <Badge className="mt-2 bg-blue-500/20 text-blue-400">Factory Floor</Badge>
+                <Smartphone className="w-8 h-8 text-info mx-auto mb-2" />
+                <p className="text-2xl font-bold text-foreground">{analyticsData.deviceBreakdown.mobile}%</p>
+                <p className="text-sm text-muted-foreground">Mobile</p>
+                <Badge className="mt-2 bg-blue-500/20 text-info">Factory Floor</Badge>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardContent className="p-4 text-center">
-                <Monitor className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-white">{analyticsData.deviceBreakdown.tablet}%</p>
-                <p className="text-sm text-gray-400">Tablet</p>
-                <Badge className="mt-2 bg-green-500/20 text-green-400">Portable</Badge>
+                <Monitor className="w-8 h-8 text-success mx-auto mb-2" />
+                <p className="text-2xl font-bold text-foreground">{analyticsData.deviceBreakdown.tablet}%</p>
+                <p className="text-sm text-muted-foreground">Tablet</p>
+                <Badge className="mt-2 bg-green-500/20 text-success">Portable</Badge>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardContent className="p-4 text-center">
                 <Monitor className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-white">{analyticsData.deviceBreakdown.desktop}%</p>
-                <p className="text-sm text-gray-400">Desktop</p>
+                <p className="text-2xl font-bold text-foreground">{analyticsData.deviceBreakdown.desktop}%</p>
+                <p className="text-sm text-muted-foreground">Desktop</p>
                 <Badge className="mt-2 bg-amber-500/20 text-amber-400">Office</Badge>
               </CardContent>
             </Card>
@@ -280,21 +280,21 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="products" className="space-y-4">
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white">Top Performing Products</CardTitle>
+              <CardTitle className="text-foreground">Top Performing Products</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {analyticsData.topProducts.map((product, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                     <div>
-                      <p className="font-medium text-white">{product.name}</p>
-                      <p className="text-sm text-gray-400">{product.views} views</p>
+                      <p className="font-medium text-foreground">{product.name}</p>
+                      <p className="text-sm text-muted-foreground">{product.views} views</p>
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-bold text-amber-400">{product.conversions}</p>
-                      <p className="text-xs text-gray-400">conversions</p>
+                      <p className="text-xs text-muted-foreground">conversions</p>
                     </div>
                   </div>
                 ))}
@@ -305,18 +305,18 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
 
         <TabsContent value="insights" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-white">Key Insights</CardTitle>
+                <CardTitle className="text-foreground">Key Insights</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                  <p className="text-sm text-green-400">
+                  <p className="text-sm text-success">
                     <strong>Hover previews are {getHoverEffectiveness()}% effective</strong> - Users are engaging with micro-previews before opening full quick view
                   </p>
                 </div>
                 <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                  <p className="text-sm text-blue-400">
+                  <p className="text-sm text-info">
                     <strong>Mobile usage is {analyticsData.deviceBreakdown.mobile}%</strong> - Factory floor users are actively using mobile devices
                   </p>
                 </div>
@@ -328,9 +328,9 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-white">Recommendations</CardTitle>
+                <CardTitle className="text-foreground">Recommendations</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
@@ -339,7 +339,7 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
                   </p>
                 </div>
                 <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-lg">
-                  <p className="text-sm text-cyan-400">
+                  <p className="text-sm text-info">
                     <strong>Enhance 3D integration</strong> - High 3D view usage suggests strong interest in technical visualization
                   </p>
                 </div>

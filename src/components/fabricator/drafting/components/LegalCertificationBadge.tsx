@@ -79,7 +79,7 @@ export const LegalCertificationBadge: React.FC<LegalCertificationBadgeProps> = (
         <TooltipContent className="max-w-md p-4">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-green-600" />
+              <Shield className="w-5 h-5 text-success" />
               <h4 className="font-semibold text-sm">Constitutionally Certified</h4>
             </div>
 
@@ -100,13 +100,13 @@ export const LegalCertificationBadge: React.FC<LegalCertificationBadgeProps> = (
 
             <div className="pt-2 border-t">
               <div className="text-xs font-medium mb-1">Scope:</div>
-              <div className="text-xs text-gray-600">{disclaimer.scope}</div>
+              <div className="text-xs text-muted-foreground">{disclaimer.scope}</div>
             </div>
 
             {disclaimer.limitations.length > 0 && (
               <div className="pt-2 border-t">
                 <div className="text-xs font-medium mb-1">Limitations:</div>
-                <ul className="text-xs text-gray-600 list-disc list-inside space-y-1">
+                <ul className="text-xs text-muted-foreground list-disc list-inside space-y-1">
                   {disclaimer.limitations.map((limitation, i) => (
                     <li key={i}>{limitation}</li>
                   ))}
@@ -116,7 +116,7 @@ export const LegalCertificationBadge: React.FC<LegalCertificationBadgeProps> = (
 
             {disclaimer.approvalRequired && (
               <div className="pt-2 border-t">
-                <div className="flex items-center gap-2 text-xs text-amber-600">
+                <div className="flex items-center gap-2 text-xs text-warning">
                   <AlertCircle className="w-4 h-4" />
                   <span className="font-medium">Human Approval Required</span>
                 </div>
@@ -124,7 +124,7 @@ export const LegalCertificationBadge: React.FC<LegalCertificationBadgeProps> = (
             )}
 
             <div className="pt-2 border-t">
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-muted-foreground">
                 Certified by: {certification.certification.certifiedBy}
                 <br />
                 Date: {certification.certification.certifiedDate.toLocaleDateString()}

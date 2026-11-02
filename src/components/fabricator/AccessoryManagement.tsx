@@ -656,13 +656,13 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
   const getTypeColor = (type: string) => {
     const colors: Record<string, string> = {
-      hinge: 'bg-blue-500/20 text-blue-400',
-      lock: 'bg-amber-500/20 text-amber-400',
-      handle: 'bg-green-500/20 text-green-400',
-      seal: 'bg-yellow-500/20 text-yellow-400',
-      spacer: 'bg-amber-500/20 text-amber-400',
-      corner: 'bg-red-500/20 text-red-400',
-      other: 'bg-gray-500/20 text-gray-400',
+      hinge: 'bg-blue-500/20 text-info',
+      lock: 'bg-amber-500/20 text-warning',
+      handle: 'bg-green-500/20 text-success',
+      seal: 'bg-yellow-500/20 text-warning',
+      spacer: 'bg-amber-500/20 text-warning',
+      corner: 'bg-red-500/20 text-destructive',
+      other: 'bg-muted/20 text-muted-foreground',
     };
     return colors[type] || colors.other;
   };
@@ -690,14 +690,14 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
       {conflictInfo && (
         <Alert className="bg-yellow-900/20 border-yellow-500">
-          <AlertCircle className="h-4 w-4 text-yellow-300" />
+          <AlertCircle className="h-4 w-4 text-warning" />
           <AlertTitle>Accessory Update Conflict</AlertTitle>
           <AlertDescription>
             <span className="font-semibold">{conflictInfo.name}</span> was modified by another user
             or process while you were editing. Please reload accessories and review the latest
             values before applying further changes.
             {conflictInfo.serverUpdatedAt && (
-              <span className="block text-xs text-yellow-200 mt-1">
+              <span className="block text-xs text-warning mt-1">
                 Server last updated at:{' '}
                 {new Date(conflictInfo.serverUpdatedAt).toLocaleString()}
               </span>
@@ -707,11 +707,11 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
       )}
 
       {/* Header with Actions */}
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5 text-amber-400" />
+              <Package className="h-5 w-5 text-warning" />
               {t('accessory_management.title', { count: accessories.length, defaultValue: `Accessory Management (${accessories.length})` })}
             </CardTitle>
             <div className="flex gap-2">
@@ -775,11 +775,11 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
       </Card>
 
       {/* Filters */}
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardContent className="p-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder={t('accessory_management.search_placeholder', 'Search accessories...')}
                 value={searchTerm}
@@ -824,7 +824,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
       </Card>
 
       {/* Accessory Form */}
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             {editingId ? <Edit2 className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
@@ -918,9 +918,9 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                 step="0.01"
                 value={formData.unitPrice || 0}
                 readOnly
-                className="bg-gray-700"
+                className="bg-muted"
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t('accessory_management.form.calculated', {
                   base: formData.baseCost || 0,
                   markup: formData.markupPercentage || 30,
@@ -1021,20 +1021,20 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
       </Card>
 
       {/* Accessories List */}
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardHeader>
           <CardTitle>Accessories ({filteredAccessories.length})</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {filteredAccessories.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8 text-muted-foreground">
                 <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>No accessories found. Add your first accessory to get started.</p>
               </div>
             ) : (
               filteredAccessories.map((accessory) => (
-                <div key={accessory.id} className="p-4 bg-gray-700 rounded-lg">
+                <div key={accessory.id} className="p-4 bg-muted rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -1042,24 +1042,24 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                         <Badge className={getTypeColor(accessory.type)}>{accessory.type}</Badge>
                         {accessory.category && <Badge variant="outline">{accessory.category}</Badge>}
                         {accessory.region.map((r) => (
-                          <Badge key={r} variant="outline" className="bg-blue-500/20 text-blue-400">
+                          <Badge key={r} variant="outline" className="bg-blue-500/20 text-info">
                             {r}
                           </Badge>
                         ))}
                       </div>
-                      <div className="grid grid-cols-4 gap-4 text-sm text-gray-400">
+                      <div className="grid grid-cols-4 gap-4 text-sm text-muted-foreground">
                         <div>Price: ${accessory.unitPrice.toFixed(2)}</div>
                         <div>Cost: ${accessory.baseCost.toFixed(2)}</div>
                         <div>Markup: {accessory.markupPercentage}%</div>
                         <div>Supplier: {accessory.supplier || 'N/A'}</div>
                       </div>
                       {accessory.compatibleMaterials.length > 0 && (
-                        <div className="mt-2 text-sm text-gray-400">
+                        <div className="mt-2 text-sm text-muted-foreground">
                           Compatible: {accessory.compatibleMaterials.join(', ')}
                         </div>
                       )}
                       {accessory.description && (
-                        <p className="text-sm text-gray-500 mt-2">{accessory.description}</p>
+                        <p className="text-sm text-muted-foreground mt-2">{accessory.description}</p>
                       )}
                       {compatibilityMode && selectedProfileForCompatibility && (
                         <div className="mt-2">
@@ -1086,7 +1086,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                         variant="ghost"
                         size="sm"
                         onClick={() => void handleDeleteAccessory(accessory.id)}
-                        className="text-red-400 hover:text-red-300"
+                        className="text-destructive hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

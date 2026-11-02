@@ -106,7 +106,7 @@ export default function Model3DGalleryPage() {
   }, [location.hash]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 pt-24">
+    <main className="min-h-screen bg-gradient-to-br from-background via-black to-background pt-24">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <motion.div 
@@ -118,7 +118,7 @@ export default function Model3DGalleryPage() {
           <h1 className="typography-h1 md:text-5xl mb-4">
             <span className="bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent">{copy("3D Model Gallery")}</span>
           </h1>
-          <p className="text-gray-400 text-lg max-w-3xl mx-auto mb-8">{copy("Explore our collection of interactive 3D models. View, measure, and interact with industrial machinery in immersive 3D environments with AR support.")}</p>
+          <p className="text-muted-foreground text-lg max-w-3xl mx-auto mb-8">{copy("Explore our collection of interactive 3D models. View, measure, and interact with industrial machinery in immersive 3D environments with AR support.")}</p>
 
           {/* Feature Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
@@ -127,13 +127,13 @@ export default function Model3DGalleryPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 hover:border-amber-400/50 transition-all duration-300">
+              <Card className="bg-gradient-to-br from-card to-background border-border hover:border-amber-400/50 transition-all duration-300">
                 <CardContent className="p-6 text-center">
                   <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Eye className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="typography-h3 text-lg text-white mb-2">{copy("Interactive 3D Viewing")}</h3>
-                  <p className="text-gray-400 text-sm">{copy("Rotate, zoom, and explore models with smooth controls and realistic lighting")}</p>
+                  <p className="text-muted-foreground text-sm">{copy("Rotate, zoom, and explore models with smooth controls and realistic lighting")}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -143,13 +143,13 @@ export default function Model3DGalleryPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 hover:border-amber-400/50 transition-all duration-300">
+              <Card className="bg-gradient-to-br from-card to-background border-border hover:border-amber-400/50 transition-all duration-300">
                 <CardContent className="p-6 text-center">
                   <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Ruler className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="typography-h3 text-lg text-white mb-2">{copy("Precision Measurements")}</h3>
-                  <p className="text-gray-400 text-sm">{copy("Measure distances, angles, and dimensions with professional-grade tools")}</p>
+                  <p className="text-muted-foreground text-sm">{copy("Measure distances, angles, and dimensions with professional-grade tools")}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -159,13 +159,13 @@ export default function Model3DGalleryPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 hover:border-amber-400/50 transition-all duration-300">
+              <Card className="bg-gradient-to-br from-card to-background border-border hover:border-amber-400/50 transition-all duration-300">
                 <CardContent className="p-6 text-center">
                   <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Move3D className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="typography-h3 text-lg text-white mb-2">{copy("AR Integration")}</h3>
-                  <p className="text-gray-400 text-sm">{copy("View models in augmented reality on supported devices")}</p>
+                  <p className="text-muted-foreground text-sm">{copy("View models in augmented reality on supported devices")}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -183,7 +183,7 @@ export default function Model3DGalleryPage() {
             <Badge className="bg-gradient-to-r from-amber-500 to-red-500 text-white border-0">
               <Star className="w-3 h-3 mr-1" />
               {featuredCount}{copy("Featured")}</Badge>
-            <Badge variant="secondary" className="bg-gray-800 text-gray-300">
+            <Badge variant="secondary" className="bg-card text-foreground">
               {modelsData.length}{copy("3D Models Available")}</Badge>
           </div>
 
@@ -192,13 +192,13 @@ export default function Model3DGalleryPage() {
               size="sm"
               variant="outline"
               onClick={handleToggleMeasurementTool}
-              className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+              className="border-border text-foreground hover:bg-card hover:text-white"
             >
               <Ruler className="w-4 h-4 mr-2" />{copy("Measurement Tool")}</Button>
             <Button
               size="sm"
               variant="outline"
-              className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+              className="border-border text-foreground hover:bg-card hover:text-white"
             >
               <Settings className="w-4 h-4 mr-2" />{copy("Settings")}</Button>
           </div>
@@ -274,7 +274,7 @@ export default function Model3DGalleryPage() {
           transition={{ duration: 0.8 }}
           className="mt-12 mb-8 scroll-mt-28"
         >
-          <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700">
+          <Card className="bg-gradient-to-br from-card to-background border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
                 <Move3D className="w-5 h-5 text-amber-500" />

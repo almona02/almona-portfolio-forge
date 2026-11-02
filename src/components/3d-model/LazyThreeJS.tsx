@@ -17,7 +17,7 @@ export const LazyThreeJS: React.FC<LazyThreeJSProps> = ({
     >
       <div className="flex flex-col items-center space-y-4">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        <p className="text-sm text-gray-400">Initializing WebGL...</p>
+        <p className="text-sm text-muted-foreground">Initializing WebGL...</p>
       </div>
     </PageLoadingWrapper>
   )

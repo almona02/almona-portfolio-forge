@@ -29,30 +29,30 @@ export const PaymentTermsDisplay: React.FC<PaymentTermsDisplayProps> = ({
   className
 }) => {
   return (
-    <Card className={`bg-gray-900 border-gray-800 ${className || ''}`}>
+    <Card className={`bg-background border-border ${className || ''}`}>
       <CardContent className="p-4 space-y-3">
-        <div className="text-gray-300 font-medium mb-3">خيارات الدفع</div>
+        <div className="text-foreground font-medium mb-3">خيارات الدفع</div>
         
         <div className="space-y-2">
           {/* Cash Option */}
           <div className={`p-3 rounded-lg border ${
             terms.recommended === 'cash' 
               ? 'border-green-500 bg-green-500/10' 
-              : 'border-gray-700 bg-gray-800'
+              : 'border-border bg-card'
           }`}>
             <div className="flex justify-between items-center mb-1">
-              <span className="text-white font-medium">نقداً</span>
+              <span className="text-foreground font-medium">نقداً</span>
               {terms.recommended === 'cash' && (
-                <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500">
+                <Badge variant="outline" className="bg-green-500/20 text-success border-green-500">
                   موصى به
                 </Badge>
               )}
             </div>
-            <div className="text-lg font-bold text-white">
+            <div className="text-lg font-bold text-foreground">
               {terms.cashPrice.toLocaleString()} ج.م
             </div>
             {terms.recommended === 'cash' && terms.recommendationReasonArabic && (
-              <div className="text-xs text-gray-400 mt-1">
+              <div className="text-xs text-muted-foreground mt-1">
                 {terms.recommendationReasonArabic}
               </div>
             )}
@@ -62,21 +62,21 @@ export const PaymentTermsDisplay: React.FC<PaymentTermsDisplayProps> = ({
           <div className={`p-3 rounded-lg border ${
             terms.recommended === 'credit30' 
               ? 'border-green-500 bg-green-500/10' 
-              : 'border-gray-700 bg-gray-800'
+              : 'border-border bg-card'
           }`}>
             <div className="flex justify-between items-center mb-1">
-              <span className="text-white font-medium">آجل 30 يوم</span>
+              <span className="text-foreground font-medium">آجل 30 يوم</span>
               {terms.recommended === 'credit30' && (
-                <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500">
+                <Badge variant="outline" className="bg-green-500/20 text-success border-green-500">
                   موصى به
                 </Badge>
               )}
             </div>
-            <div className="text-lg font-bold text-white">
+            <div className="text-lg font-bold text-foreground">
               {terms.credit30Days.toLocaleString()} ج.م
             </div>
             {terms.recommended === 'credit30' && terms.recommendationReasonArabic && (
-              <div className="text-xs text-gray-400 mt-1">
+              <div className="text-xs text-muted-foreground mt-1">
                 {terms.recommendationReasonArabic}
               </div>
             )}
@@ -86,21 +86,21 @@ export const PaymentTermsDisplay: React.FC<PaymentTermsDisplayProps> = ({
           <div className={`p-3 rounded-lg border ${
             terms.recommended === 'credit90' 
               ? 'border-green-500 bg-green-500/10' 
-              : 'border-gray-700 bg-gray-800'
+              : 'border-border bg-card'
           }`}>
             <div className="flex justify-between items-center mb-1">
-              <span className="text-white font-medium">آجل 90 يوم</span>
+              <span className="text-foreground font-medium">آجل 90 يوم</span>
               {terms.recommended === 'credit90' && (
-                <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500">
+                <Badge variant="outline" className="bg-green-500/20 text-success border-green-500">
                   موصى به
                 </Badge>
               )}
             </div>
-            <div className="text-lg font-bold text-white">
+            <div className="text-lg font-bold text-foreground">
               {terms.credit90Days.toLocaleString()} ج.م
             </div>
             {terms.recommended === 'credit90' && terms.recommendationReasonArabic && (
-              <div className="text-xs text-gray-400 mt-1">
+              <div className="text-xs text-muted-foreground mt-1">
                 {terms.recommendationReasonArabic}
               </div>
             )}

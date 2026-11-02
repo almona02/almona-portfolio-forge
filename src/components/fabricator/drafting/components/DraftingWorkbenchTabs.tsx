@@ -56,31 +56,31 @@ export const DraftingWorkbenchTabs: React.FC<DraftingWorkbenchTabsProps> = ({
       className="flex-1 flex flex-col min-h-0"
     >
       {/* Tab Navigation */}
-      <div className="border-b border-slate-700/50 bg-slate-900 flex-shrink-0">
+      <div className="border-b border-border/50 bg-background flex-shrink-0">
         <TabsList className="mx-0 px-2 h-8 border-0 bg-transparent gap-1">
           <TabsTrigger
             value="2d"
-            className="flex items-center gap-1.5 px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-slate-500"
+            className="flex items-center gap-1.5 px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-border"
           >
             <Grid3x3 size={14} />
             2D Drafting
           </TabsTrigger>
           <TabsTrigger
             value="3d"
-            className="flex items-center gap-1.5 px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-slate-500"
+            className="flex items-center gap-1.5 px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-border"
           >
             <Box size={14} />
             3D Preview
           </TabsTrigger>
           <TabsTrigger
             value="validation"
-            className="px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-slate-500"
+            className="px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-border"
           >
             Validation
           </TabsTrigger>
           <TabsTrigger
             value="templates"
-            className="flex items-center gap-1.5 px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-slate-500"
+            className="flex items-center gap-1.5 px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-border"
           >
             <Sparkles size={14} />
             Template Editor
@@ -141,7 +141,7 @@ export const DraftingWorkbenchTabs: React.FC<DraftingWorkbenchTabsProps> = ({
 
       <TabsContent value="templates" className="flex-1 overflow-y-auto overflow-x-hidden m-0">
         <Suspense fallback={
-          <div className="flex items-center justify-center h-full text-slate-400">
+          <div className="flex items-center justify-center h-full text-muted-foreground">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto mb-2"></div>
               <p className="text-sm">Loading template editor...</p>

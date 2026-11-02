@@ -14,8 +14,8 @@ interface Lazy3DWrapperProps {
 
 export const Lazy3DWrapper: React.FC<Lazy3DWrapperProps> = ({ 
   children, 
-  fallback = <div className="h-64 w-full bg-gray-100 animate-pulse rounded-lg flex items-center justify-center">
-    <div className="text-gray-500">Loading 3D viewer...</div>
+  fallback = <div className="h-64 w-full bg-muted animate-pulse rounded-lg flex items-center justify-center">
+    <div className="text-muted-foreground">Loading 3D viewer...</div>
   </div>
 }) => {
   return (

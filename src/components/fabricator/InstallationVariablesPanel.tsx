@@ -60,7 +60,7 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
     <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Wrench className="h-5 w-5 text-amber-500" />
+          <Wrench className="h-5 w-5 text-warning" />
           Installation Variables
         </CardTitle>
         <CardDescription>
@@ -78,16 +78,16 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
             value={variables.wallType}
             onValueChange={(value) => handleVariableChange('wallType', value)}
           >
-            <SelectTrigger className="bg-gray-800 border-gray-700">
+            <SelectTrigger className="bg-card border-border">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-gray-900 border-gray-700">
+            <SelectContent className="bg-background border-border">
               <SelectItem value="hollow-block">Hollow Block (جوفاء) - Standard</SelectItem>
               <SelectItem value="brick">Brick (طوب) - Traditional</SelectItem>
               <SelectItem value="concrete">Concrete (خرسانة) - Requires Drilling</SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted-foreground">
             {variables.wallType === 'brick' && 'Traditional brick walls require more preparation work (+25 EGP per opening)'}
             {variables.wallType === 'hollow-block' && 'Standard new construction - most common in Egypt'}
             {variables.wallType === 'concrete' && 'Concrete walls require drilling - higher preparation cost (+50 EGP per opening)'}
@@ -108,10 +108,10 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
               }
             }}
           >
-            <SelectTrigger className="bg-gray-800 border-gray-700">
+            <SelectTrigger className="bg-card border-border">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-gray-900 border-gray-700">
+            <SelectContent className="bg-background border-border">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(level => (
                 <SelectItem key={level} value={String(level)}>
                   {level === 1 ? 'Ground Floor' : `Floor ${level}`}
@@ -122,10 +122,10 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
         </div>
 
         {/* Scaffolding */}
-        <div className="space-y-3 p-4 bg-gray-800/40 rounded-lg border border-gray-700">
+        <div className="space-y-3 p-4 bg-card/40 rounded-lg border border-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-amber-500" />
+              <Building2 className="h-4 w-4 text-warning" />
               <Label className="typography-label font-medium">Scaffolding Required</Label>
             </div>
             <Checkbox
@@ -134,7 +134,7 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
               className="btn-primary"
             />
           </div>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted-foreground">
             Required for installations above ground floor or large projects (&gt;10 m²)
           </p>
 
@@ -142,9 +142,9 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
             <div className="space-y-2 mt-3">
               <div className="flex justify-between items-center">
                 <Label className="typography-label text-sm">
-                  Scaffolding Cost: <span className="text-amber-400 font-mono">{variables.scaffoldingCostPerM2} EGP/m²</span>
+                  Scaffolding Cost: <span className="text-warning font-mono">{variables.scaffoldingCostPerM2} EGP/m²</span>
                 </Label>
-                <Badge variant="outline" className="bg-amber-900/30 text-amber-400 border-amber-800">
+                <Badge variant="outline" className="bg-amber-900/30 text-warning border-amber-800">
                   {breakdown ? `${(breakdown.scaffoldingCost).toFixed(0)} EGP` : '0 EGP'}
                 </Badge>
               </div>
@@ -157,7 +157,7 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
                 onChange={(e) => handleVariableChange('scaffoldingCostPerM2', parseInt(e.target.value))}
                 className="w-full"
               />
-              <div className="flex justify-between text-xs text-gray-400">
+              <div className="flex justify-between text-xs text-muted-foreground">
                 <span>50 EGP (Simple)</span>
                 <span>100 EGP (Standard)</span>
                 <span>150 EGP (Complex)</span>
@@ -173,16 +173,16 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
             value={variables.installationComplexity}
             onValueChange={(value) => handleVariableChange('installationComplexity', value)}
           >
-            <SelectTrigger className="bg-gray-800 border-gray-700">
+            <SelectTrigger className="bg-card border-border">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-gray-900 border-gray-700">
+            <SelectContent className="bg-background border-border">
               <SelectItem value="simple">Simple - Standard windows only</SelectItem>
               <SelectItem value="standard">Standard - Doors + windows (default)</SelectItem>
               <SelectItem value="complex">Complex - Curtain walls, skylights, specialty</SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted-foreground">
             {variables.installationComplexity === 'simple' && '20% discount on labor'}
             {variables.installationComplexity === 'standard' && 'Standard Egyptian market rate'}
             {variables.installationComplexity === 'complex' && '50% premium for complex installations'}
@@ -196,60 +196,60 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
             value={variables.revealPreparation}
             onValueChange={(value) => handleVariableChange('revealPreparation', value)}
           >
-            <SelectTrigger className="bg-gray-800 border-gray-700">
+            <SelectTrigger className="bg-card border-border">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-gray-900 border-gray-700">
+            <SelectContent className="bg-background border-border">
               <SelectItem value="none">None - Square opening ready</SelectItem>
               <SelectItem value="basic">Basic - Minor adjustments needed</SelectItem>
               <SelectItem value="extensive">Extensive - Non-square walls, major prep</SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted-foreground">
             Egyptian walls rarely square - Rule 18 applies (15mm deduction standard)
           </p>
         </div>
 
         {/* Cost Breakdown */}
         {breakdown && (
-          <div className="mt-6 p-4 bg-gray-800/60 rounded-lg border border-gray-700">
+          <div className="mt-6 p-4 bg-card/60 rounded-lg border border-border">
             <div className="flex items-center gap-2 mb-3">
-              <Calculator className="h-4 w-4 text-green-400" />
-              <Label className="typography-label font-semibold text-green-400">Installation Cost Breakdown</Label>
+              <Calculator className="h-4 w-4 text-success" />
+              <Label className="typography-label font-semibold text-success">Installation Cost Breakdown</Label>
             </div>
             <div className="space-y-2 text-sm">
               {breakdown.scaffoldingCost > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Scaffolding</span>
-                  <span className="font-mono text-white">{breakdown.scaffoldingCost.toFixed(0)} EGP</span>
+                  <span className="text-muted-foreground">Scaffolding</span>
+                  <span className="font-mono text-foreground">{breakdown.scaffoldingCost.toFixed(0)} EGP</span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-gray-400">Wall Preparation</span>
-                <span className="font-mono text-white">{breakdown.wallPreparationCost.toFixed(0)} EGP</span>
+                <span className="text-muted-foreground">Wall Preparation</span>
+                <span className="font-mono text-foreground">{breakdown.wallPreparationCost.toFixed(0)} EGP</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Fixing Materials</span>
-                <span className="font-mono text-white">{breakdown.fixingMaterialsCost.toFixed(0)} EGP</span>
+                <span className="text-muted-foreground">Fixing Materials</span>
+                <span className="font-mono text-foreground">{breakdown.fixingMaterialsCost.toFixed(0)} EGP</span>
               </div>
-              <div className="flex justify-between text-xs text-gray-500 pl-4">
+              <div className="flex justify-between text-xs text-muted-foreground pl-4">
                 <span>• Screws: {breakdown.fixingMaterials.screws} pcs</span>
                 <span>• Anchors: {breakdown.fixingMaterials.anchors} pcs</span>
               </div>
-              <div className="flex justify-between text-xs text-gray-500 pl-4">
+              <div className="flex justify-between text-xs text-muted-foreground pl-4">
                 <span>• Silicon: {breakdown.fixingMaterials.siliconCartridges} cartridges</span>
                 <span>• Foam: {breakdown.fixingMaterials.foamCans} cans</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Labor</span>
-                <span className="font-mono text-white">{breakdown.laborCost.toFixed(0)} EGP</span>
+                <span className="text-muted-foreground">Labor</span>
+                <span className="font-mono text-foreground">{breakdown.laborCost.toFixed(0)} EGP</span>
               </div>
-              <div className="h-px bg-gray-700 my-2" />
+              <div className="h-px bg-muted my-2" />
               <div className="flex justify-between font-bold text-lg">
-                <span className="text-amber-400">Total Installation</span>
-                <span className="font-mono text-amber-400">{breakdown.totalInstallationCost.toFixed(0)} EGP</span>
+                <span className="text-warning">Total Installation</span>
+                <span className="font-mono text-warning">{breakdown.totalInstallationCost.toFixed(0)} EGP</span>
               </div>
-              <div className="flex justify-between text-xs text-gray-400 mt-2">
+              <div className="flex justify-between text-xs text-muted-foreground mt-2">
                 <span>Estimated Time</span>
                 <span className="font-mono">{breakdown.installationTimeDays} days</span>
               </div>

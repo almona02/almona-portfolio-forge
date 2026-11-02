@@ -118,12 +118,12 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg bg-[#0f0f0f] border-amber-600/30">
+      <DialogContent className="max-w-lg bg-background border-amber-600/30">
         <DialogHeader>
-          <DialogTitle className="text-amber-200">
+          <DialogTitle className="text-warning">
             Quick Edit: {pose.posNumber}
           </DialogTitle>
-          <DialogDescription className="text-amber-600/70">
+          <DialogDescription className="text-warning/70">
             {pose.orderNumber} &mdash; {pose.overallWidth} x {pose.overallHeight} mm
           </DialogDescription>
         </DialogHeader>
@@ -132,12 +132,12 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
           {/* Core properties */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label className="text-xs text-amber-300">Status</Label>
+              <Label className="text-xs text-warning">Status</Label>
               <Select value={status} onValueChange={(value) => setStatus(value as any)}>
-                <SelectTrigger className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs">
+                <SelectTrigger className="bg-background border-amber-600/30 text-warning h-8 text-xs">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0f0f0f] border-amber-600/30 text-amber-200">
+                <SelectContent className="bg-background border-amber-600/30 text-warning">
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="design">Design</SelectItem>
                   <SelectItem value="production">Production</SelectItem>
@@ -146,34 +146,34 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-amber-300">Quantity</Label>
+              <Label className="text-xs text-warning">Quantity</Label>
               <Input
                 type="number"
                 min={1}
                 value={quantity}
                 onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
-                className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs"
+                className="bg-background border-amber-600/30 text-warning h-8 text-xs"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label className="text-xs text-amber-300">Color / Material</Label>
+              <Label className="text-xs text-warning">Color / Material</Label>
               <Input
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
                 placeholder="e.g. RAL 9016"
-                className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs"
+                className="bg-background border-amber-600/30 text-warning h-8 text-xs"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-amber-300">System Pack</Label>
+              <Label className="text-xs text-warning">System Pack</Label>
               <Select value={systemPackId} onValueChange={setSystemPackId}>
-                <SelectTrigger className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-8 text-xs">
+                <SelectTrigger className="bg-background border-amber-600/30 text-warning h-8 text-xs">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 max-h-48">
+                <SelectContent className="bg-background border-amber-600/30 text-warning max-h-48">
                   {SYSTEM_PACKS.map((pack) => (
                     <SelectItem key={pack.meta.id} value={pack.meta.id}>
                       {pack.meta.name}
@@ -186,62 +186,62 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
 
           {/* Divider */}
           <div className="border-t border-amber-600/20 pt-3">
-            <span className="text-[10px] text-amber-600/70 uppercase tracking-wider">Position Metadata</span>
+            <span className="text-[10px] text-warning/70 uppercase tracking-wider">Position Metadata</span>
           </div>
 
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-[10px] text-amber-400/70">Flat #</Label>
+              <Label className="text-[10px] text-warning/70">Flat #</Label>
               <Input
                 value={flatNumber}
                 onChange={(e) => setFlatNumber(e.target.value)}
-                className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-7 text-xs"
+                className="bg-background border-amber-600/30 text-warning h-7 text-xs"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[10px] text-amber-400/70">Floor</Label>
+              <Label className="text-[10px] text-warning/70">Floor</Label>
               <Input
                 value={floor}
                 onChange={(e) => setFloor(e.target.value)}
-                className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-7 text-xs"
+                className="bg-background border-amber-600/30 text-warning h-7 text-xs"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[10px] text-amber-400/70">Building Block</Label>
+              <Label className="text-[10px] text-warning/70">Building Block</Label>
               <Input
                 value={buildingBlock}
                 onChange={(e) => setBuildingBlock(e.target.value)}
-                className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-7 text-xs"
+                className="bg-background border-amber-600/30 text-warning h-7 text-xs"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-[10px] text-amber-400/70">Room / Zone</Label>
+              <Label className="text-[10px] text-warning/70">Room / Zone</Label>
               <Input
                 value={roomOrZone}
                 onChange={(e) => setRoomOrZone(e.target.value)}
-                className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-7 text-xs"
+                className="bg-background border-amber-600/30 text-warning h-7 text-xs"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[10px] text-amber-400/70">Elevation</Label>
+              <Label className="text-[10px] text-warning/70">Elevation</Label>
               <Input
                 value={elevation}
                 onChange={(e) => setElevation(e.target.value)}
-                className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-7 text-xs"
+                className="bg-background border-amber-600/30 text-warning h-7 text-xs"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-[10px] text-amber-400/70">Remarks</Label>
+            <Label className="text-[10px] text-warning/70">Remarks</Label>
             <Input
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
               placeholder="Special notes for this position..."
-              className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-7 text-xs"
+              className="bg-background border-amber-600/30 text-warning h-7 text-xs"
             />
           </div>
         </div>
@@ -250,7 +250,7 @@ export const PoseQuickEditModal: React.FC<PoseQuickEditModalProps> = ({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="border-amber-600/30 text-amber-200 hover:bg-amber-900/20"
+            className="border-amber-600/30 text-warning hover:bg-amber-900/20"
           >
             Cancel
           </Button>

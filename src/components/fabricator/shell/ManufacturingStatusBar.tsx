@@ -73,12 +73,12 @@ export const ManufacturingStatusBar: React.FC = () => {
             index >= 3 && 'hidden sm:flex',
           )}
         >
-          <span className="text-amber-600/70" aria-hidden>
+          <span className="text-warning/70" aria-hidden>
             {c.icon}
           </span>
           <span className="uppercase tracking-wider hidden md:inline">{c.label}</span>
           <span
-            className="text-amber-200/80"
+            className="text-warning/80"
             dir={'ltr' in c && c.ltr ? 'ltr' : undefined}
             title={`${c.label}: ${c.value}`}
           >

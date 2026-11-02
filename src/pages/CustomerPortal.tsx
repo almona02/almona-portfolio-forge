@@ -214,9 +214,9 @@ const CustomerPortal = () => {
 
     // Use static classes instead of dynamic template strings
     const colorClasses: Record<string, string> = {
-      green: 'bg-green-500/20 text-green-300 border-green-500/50',
+      green: 'bg-green-500/20 text-success border-green-500/50',
       amber: 'bg-amber-500/20 text-amber-300 border-amber-500/50',
-      gray: 'bg-gray-500/20 text-gray-300 border-gray-500/50',
+      gray: 'bg-muted/20 text-foreground border-border/50',
     };
 
     return (
@@ -247,7 +247,7 @@ const CustomerPortal = () => {
   };
 
   const LoadingSkeleton = () => (
-    <div className="flex flex-col min-h-screen bg-almona-dark">
+    <div className="flex flex-col min-h-screen bg-background">
       <div className="flex-grow pt-24 pb-12">
         <div className="container mx-auto px-4 space-y-6">
           <Skeleton className="h-12 w-64 mb-8" />
@@ -267,7 +267,7 @@ const CustomerPortal = () => {
   if (initialLoading) return <LoadingSkeleton />;
 
   return (
-    <div className="flex flex-col min-h-screen bg-almona-dark text-white">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <main className="flex-grow pt-24 pb-12">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -283,7 +283,7 @@ const CustomerPortal = () => {
                 </div>
                 <div>
                   <h1 className="typography-h1">{t('portal.welcome_back')}, {stableDisplayEmail || user?.email}</h1>
-                  <p className="text-gray-400">{t('portal.manage_description')}</p>
+                  <p className="text-muted-foreground">{t('portal.manage_description')}</p>
                 </div>
               </div>
               <LanguageToggle />
@@ -291,20 +291,20 @@ const CustomerPortal = () => {
           </div>
 
           <Tabs defaultValue="health" className="mb-8">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 bg-almona-dark/80 rounded-lg p-1 mb-6">
-              <TabsTrigger value="health" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 bg-background/80 rounded-lg p-1 mb-6">
+              <TabsTrigger value="health" className="data-[state=active]:bg-almona-orange data-[state=active]:text-foreground rounded-md py-3">
                 <Activity className="h-4 w-4 mr-2" /> {t('portal.health_dashboard')}
               </TabsTrigger>
-              <TabsTrigger value="machines" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
+              <TabsTrigger value="machines" className="data-[state=active]:bg-almona-orange data-[state=active]:text-foreground rounded-md py-3">
                 <Package className="h-4 w-4 mr-2" /> {t('portal.my_machines')}
               </TabsTrigger>
-              <TabsTrigger value="support" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
+              <TabsTrigger value="support" className="data-[state=active]:bg-almona-orange data-[state=active]:text-foreground rounded-md py-3">
                 <FileText className="h-4 w-4 mr-2" /> {t('portal.support_tickets')}
               </TabsTrigger>
-              <TabsTrigger value="quotes" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
+              <TabsTrigger value="quotes" className="data-[state=active]:bg-almona-orange data-[state=active]:text-foreground rounded-md py-3">
                 <Receipt className="h-4 w-4 mr-2" /> {t('portal.my_quotes')}
               </TabsTrigger>
-              <TabsTrigger value="documents" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
+              <TabsTrigger value="documents" className="data-[state=active]:bg-almona-orange data-[state=active]:text-foreground rounded-md py-3">
                 <Download className="h-4 w-4 mr-2" /> {t('portal.documents')}
               </TabsTrigger>
             </TabsList>
@@ -317,9 +317,9 @@ const CustomerPortal = () => {
                 className="space-y-6"
               >
                 {/* <MachineHealthDashboard /> */}
-                <div className="bg-almona-darker p-6 rounded-lg border border-almona-light/20">
+                <div className="bg-card p-6 rounded-lg border border-border/20">
                   <h3 className="typography-h3 text-lg mb-4">{t('portal.machine_health_dashboard')}</h3>
-                  <p className="text-almona-light/70">{t('portal.health_monitoring_coming_soon')}</p>
+                  <p className="text-foreground/70">{t('portal.health_monitoring_coming_soon')}</p>
                 </div>
               </motion.div>
             </TabsContent>
@@ -333,10 +333,10 @@ const CustomerPortal = () => {
               >
                 <motion.div variants={itemVariants} className="flex justify-between items-center flex-wrap gap-4">
                   <div className="relative w-full md:w-64">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input 
                       placeholder={t('portal.search_machines')} 
-                      className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:border-almona-orange/50"
+                      className="pl-10 bg-background/60 border-border/30 focus:border-almona-orange/50"
                     />
                   </div>
                   <Button 
@@ -357,7 +357,7 @@ const CustomerPortal = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
                       >
-                        <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm hover:border-almona-orange/50 transition-colors h-full group">
+                        <Card className="bg-background/60 border-border/20 backdrop-blur-sm hover:border-almona-orange/50 transition-colors h-full group">
                           <CardHeader className="pb-3">
                             <div className="flex justify-between items-start">
                               <CardTitle className="text-xl group-hover:text-almona-orange transition-colors">
@@ -365,30 +365,30 @@ const CustomerPortal = () => {
                               </CardTitle>
                               {getMachineStatusBadge(machine.status)}
                             </div>
-                            <CardDescription className="text-gray-400">{machine.model}</CardDescription>
+                            <CardDescription className="text-muted-foreground">{machine.model}</CardDescription>
                           </CardHeader>
                           <CardContent>
                             <div className="space-y-3 text-sm">
                               <div className="flex justify-between">
-                                <span className="text-gray-400">{t('portal.serial_number')}:</span>
-                                <span className="font-mono text-almona-light">{machine.serial_number}</span>
+                                <span className="text-muted-foreground">{t('portal.serial_number')}:</span>
+                                <span className="font-mono text-foreground">{machine.serial_number}</span>
                               </div>
                               {machine.installation_date && (
                                 <div className="flex justify-between">
-                                  <span className="text-gray-400">{t('portal.installation')}:</span>
+                                  <span className="text-muted-foreground">{t('portal.installation')}:</span>
                                   <span>{new Date(machine.installation_date).toLocaleDateString()}</span>
                                 </div>
                               )}
                               <div className="flex justify-between">
-                                <span className="text-gray-400">{t('portal.status')}:</span>
+                                <span className="text-muted-foreground">{t('portal.status')}:</span>
                                 <span className="capitalize">{machine.status || 'active'}</span>
                               </div>
                             </div>
-                            <div className="flex gap-2 mt-4 pt-4 border-t border-almona-light/10">
+                            <div className="flex gap-2 mt-4 pt-4 border-t border-border/10">
                               <Button 
                                 variant="outline" 
                                 size="sm" 
-                                className="flex-1 border-almona-light/30 text-almona-light hover:bg-almona-light/10"
+                                className="flex-1 border-border/30 text-foreground hover:bg-almona-light/10"
                                 onClick={() => void navigate(`/machines/${machine.id}`)}
                               >
                                 <Wrench className="h-4 w-4 mr-2" /> Details
@@ -409,11 +409,11 @@ const CustomerPortal = () => {
                 ) : (
                   <motion.div 
                     variants={itemVariants}
-                    className="text-center py-16 border-2 border-dashed border-almona-light/20 rounded-lg bg-almona-dark/40"
+                    className="text-center py-16 border-2 border-dashed border-border/20 rounded-lg bg-background/40"
                   >
-                    <Package className="h-16 w-16 text-gray-500 mx-auto mb-4 opacity-60" />
-                    <h3 className="typography-h3 text-lg font-medium text-gray-400 mb-2">{t('portal.no_machines_registered')}</h3>
-                    <p className="text-gray-500 mb-6">{t('portal.register_first_machine')}</p>
+                    <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-60" />
+                    <h3 className="typography-h3 text-lg font-medium text-muted-foreground mb-2">{t('portal.no_machines_registered')}</h3>
+                    <p className="text-muted-foreground mb-6">{t('portal.register_first_machine')}</p>
                     <Button 
                       className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
                       onClick={() => void navigate('/portal/register-machine')}
@@ -434,10 +434,10 @@ const CustomerPortal = () => {
               >
                 <motion.div variants={itemVariants} className="flex justify-between items-center flex-wrap gap-4">
                   <div className="relative w-full md:w-64">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input 
                       placeholder={t('portal.search_tickets')} 
-                      className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:border-almona-orange/50"
+                      className="pl-10 bg-background/60 border-border/30 focus:border-almona-orange/50"
                     />
                   </div>
                   <Button 
@@ -449,7 +449,7 @@ const CustomerPortal = () => {
                 </motion.div>
                 <motion.div variants={itemVariants} className="mt-4">
                   <h3 className="typography-h3 text-lg mb-2 text-almona-orange">{t('portal.find_your_quotes')}</h3>
-                  <p className="text-sm text-gray-400 mb-3">{t('portal.quote_search_description')}</p>
+                  <p className="text-sm text-muted-foreground mb-3">{t('portal.quote_search_description')}</p>
                   <QuoteTwinSearchPanel onSelect={(quoteId) => void navigate(`/portal/quotes/${quoteId}`)} />
                 </motion.div>
 
@@ -474,11 +474,11 @@ const CustomerPortal = () => {
                 ) : (
                   <motion.div 
                     variants={itemVariants}
-                    className="text-center py-16 border-2 border-dashed border-almona-light/20 rounded-lg bg-almona-dark/40"
+                    className="text-center py-16 border-2 border-dashed border-border/20 rounded-lg bg-background/40"
                   >
-                    <FileText className="h-16 w-16 text-gray-500 mx-auto mb-4 opacity-60" />
-                    <h3 className="typography-h3 text-lg font-medium text-gray-400 mb-2">{t('portal.no_tickets_found')}</h3>
-                    <p className="text-gray-500 mb-6">{t('portal.create_first_ticket')}</p>
+                    <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-60" />
+                    <h3 className="typography-h3 text-lg font-medium text-muted-foreground mb-2">{t('portal.no_tickets_found')}</h3>
+                    <p className="text-muted-foreground mb-6">{t('portal.create_first_ticket')}</p>
                     <Button 
                       className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
                       onClick={() => setIsTicketWizardOpen(true)}
@@ -499,7 +499,7 @@ const CustomerPortal = () => {
               >
                 <motion.div variants={itemVariants}>
                   <h3 className="typography-h3 text-lg mb-2 text-almona-orange">{t('portal.my_quotes')}</h3>
-                  <p className="text-sm text-gray-400 mb-4">{t('portal.quote_requests_description')}</p>
+                  <p className="text-sm text-muted-foreground mb-4">{t('portal.quote_requests_description')}</p>
                   <QuoteTwinSearchPanel onSelect={(quoteId) => void navigate(`/portal/quotes/${quoteId}`)} />
                 </motion.div>
                 {quotes && quotes.length > 0 ? (
@@ -512,14 +512,14 @@ const CustomerPortal = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
                       >
-                        <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm hover:border-almona-orange/50 transition-colors">
+                        <Card className="bg-background/60 border-border/20 backdrop-blur-sm hover:border-almona-orange/50 transition-colors">
                           <CardContent className="p-6">
                             <div className="flex justify-between items-start mb-4">
                               <div>
                                 <h3 className="typography-h3 text-lg group-hover:text-almona-orange transition-colors">
                                   {quote.quote_number || `#${quote.id.slice(-8).toUpperCase()}`}
                                 </h3>
-                                <p className="text-gray-400 text-sm">
+                                <p className="text-muted-foreground text-sm">
                                   {quote.digital_twin_code || quote.portal_reference || '—'}
                                 </p>
                               </div>
@@ -527,7 +527,7 @@ const CustomerPortal = () => {
                                 {quote.status}
                               </Badge>
                             </div>
-                            <div className="flex justify-between items-center text-sm text-gray-400 mb-4">
+                            <div className="flex justify-between items-center text-sm text-muted-foreground mb-4">
                               <span>
                                 {quote.total_amount != null
                                   ? new Intl.NumberFormat('en-EG', { style: 'currency', currency: 'EGP' }).format(quote.total_amount)
@@ -535,7 +535,7 @@ const CustomerPortal = () => {
                               </span>
                               <span>{new Date(quote.created_at).toLocaleDateString()}</span>
                             </div>
-                            <div className="flex gap-2 pt-4 border-t border-almona-light/10">
+                            <div className="flex gap-2 pt-4 border-t border-border/10">
                               <Button
                                 size="sm"
                                 className="bg-almona-orange/20 text-almona-orange hover:bg-almona-orange/30 border-almona-orange/30"
@@ -546,7 +546,7 @@ const CustomerPortal = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="border-almona-light/30 text-almona-light hover:bg-almona-light/10"
+                                className="border-border/30 text-foreground hover:bg-almona-light/10"
                                 onClick={() => void navigate(`/portal/quotes/${quote.id}`)}
                               >
                                 View Details
@@ -560,11 +560,11 @@ const CustomerPortal = () => {
                 ) : (
                   <motion.div
                     variants={itemVariants}
-                    className="text-center py-16 border-2 border-dashed border-almona-light/20 rounded-lg bg-almona-dark/40"
+                    className="text-center py-16 border-2 border-dashed border-border/20 rounded-lg bg-background/40"
                   >
-                    <Receipt className="h-16 w-16 text-gray-500 mx-auto mb-4 opacity-60" />
-                    <h3 className="typography-h3 text-lg font-medium text-gray-400 mb-2">{t('portal.no_quotes_found')}</h3>
-                    <p className="text-gray-500">{t('portal.quote_requests_description')}</p>
+                    <Receipt className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-60" />
+                    <h3 className="typography-h3 text-lg font-medium text-muted-foreground mb-2">{t('portal.no_quotes_found')}</h3>
+                    <p className="text-muted-foreground">{t('portal.quote_requests_description')}</p>
                   </motion.div>
                 )}
               </motion.div>
@@ -578,10 +578,10 @@ const CustomerPortal = () => {
                 className="space-y-6"
               >
                 <motion.div variants={itemVariants} className="relative w-full md:w-64">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input 
                     placeholder={t('portal.search_documents')} 
-                    className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:border-almona-orange/50"
+                    className="pl-10 bg-background/60 border-border/30 focus:border-almona-orange/50"
                   />
                 </motion.div>
 
@@ -595,21 +595,21 @@ const CustomerPortal = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
                       >
-                        <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm hover:border-almona-orange/50 transition-colors h-full group">
+                        <Card className="bg-background/60 border-border/20 backdrop-blur-sm hover:border-almona-orange/50 transition-colors h-full group">
                           <CardHeader className="pb-3">
                             <CardTitle className="text-lg group-hover:text-almona-orange transition-colors">
                               {document.title}
                             </CardTitle>
-                            <CardDescription className="text-gray-400 capitalize">{document.type}</CardDescription>
+                            <CardDescription className="text-muted-foreground capitalize">{document.type}</CardDescription>
                           </CardHeader>
                           <CardContent>
-                            <div className="flex justify-between items-center text-sm text-gray-400 mb-4">
+                            <div className="flex justify-between items-center text-sm text-muted-foreground mb-4">
                               <span>{t('portal.uploaded')}: {new Date(document.upload_date).toLocaleDateString()}</span>
                               <span>{document.size}</span>
                             </div>
                             <Button 
                               variant="outline" 
-                              className="w-full border-almona-light/30 text-almona-light hover:bg-almona-light/10 group-hover:border-almona-orange/50"
+                              className="w-full border-border/30 text-foreground hover:bg-almona-light/10 group-hover:border-almona-orange/50"
                               onClick={() => window.open(document.url, '_blank')}
                             >
                               <Download className="h-4 w-4 mr-2" /> {t('portal.download')}
@@ -622,11 +622,11 @@ const CustomerPortal = () => {
                 ) : (
                   <motion.div 
                     variants={itemVariants}
-                    className="text-center py-16 border-2 border-dashed border-almona-light/20 rounded-lg bg-almona-dark/40"
+                    className="text-center py-16 border-2 border-dashed border-border/20 rounded-lg bg-background/40"
                   >
-                    <FileText className="h-16 w-16 text-gray-500 mx-auto mb-4 opacity-60" />
-                    <h3 className="typography-h3 text-lg font-medium text-gray-400 mb-2">{t('portal.no_documents_available')}</h3>
-                    <p className="text-gray-500">{t('portal.documents_description')}</p>
+                    <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-60" />
+                    <h3 className="typography-h3 text-lg font-medium text-muted-foreground mb-2">{t('portal.no_documents_available')}</h3>
+                    <p className="text-muted-foreground">{t('portal.documents_description')}</p>
                   </motion.div>
                 )}
               </motion.div>
@@ -639,7 +639,7 @@ const CustomerPortal = () => {
             transition={{ delay: 0.3, duration: 0.5 }}
             className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12"
           >
-            <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm">
+            <Card className="bg-background/60 border-border/20 backdrop-blur-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center">
                   <Package className="h-5 w-5 mr-2 text-almona-orange" /> {t('portal.registered_machines')}
@@ -647,11 +647,11 @@ const CustomerPortal = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold">{machines?.length || 0}</p>
-                <p className="text-sm text-gray-400 mt-1">{language === 'ar' ? 'إجمالي الماكينات في حسابك' : 'Total machines in your account'}</p>
+                <p className="text-sm text-muted-foreground mt-1">{language === 'ar' ? 'إجمالي الماكينات في حسابك' : 'Total machines in your account'}</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm">
+            <Card className="bg-background/60 border-border/20 backdrop-blur-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center">
                   <FileText className="h-5 w-5 mr-2 text-almona-orange" /> {t('portal.active_tickets')}
@@ -659,11 +659,11 @@ const CustomerPortal = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold">{tickets?.filter(t => t.status !== 'resolved' && t.status !== 'closed').length || 0}</p>
-                <p className="text-sm text-gray-400 mt-1">{language === 'ar' ? 'طلبات الدعم المفتوحة' : 'Open support requests'}</p>
+                <p className="text-sm text-muted-foreground mt-1">{language === 'ar' ? 'طلبات الدعم المفتوحة' : 'Open support requests'}</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm">
+            <Card className="bg-background/60 border-border/20 backdrop-blur-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center">
                   <Download className="h-5 w-5 mr-2 text-almona-orange" /> {t('portal.total_documents')}
@@ -671,7 +671,7 @@ const CustomerPortal = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold">{documents?.length || 0}</p>
-                <p className="text-sm text-gray-400 mt-1">{language === 'ar' ? 'الدلائل والموارد المتاحة' : 'Available manuals & resources'}</p>
+                <p className="text-sm text-muted-foreground mt-1">{language === 'ar' ? 'الدلائل والموارد المتاحة' : 'Available manuals & resources'}</p>
               </CardContent>
             </Card>
           </motion.div>

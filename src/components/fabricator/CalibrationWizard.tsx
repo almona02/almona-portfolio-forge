@@ -528,19 +528,19 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
               </div>
 
               {simulationResult && (
-                <div className="grid grid-cols-2 gap-4 p-4 bg-gray-900 rounded-lg">
+                <div className="grid grid-cols-2 gap-4 p-4 bg-background rounded-lg">
                   <div>
-                    <div className="text-sm text-gray-400">{t('calibration_wizard.test_results.expected', 'Expected Length')}</div>
+                    <div className="text-sm text-muted-foreground">{t('calibration_wizard.test_results.expected', 'Expected Length')}</div>
                     <div className="text-2xl font-bold">{simulationResult.baseLength.toFixed(2)} mm</div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-400">{t('calibration_wizard.simulation.adjusted_length', 'Adjusted Length')}</div>
-                    <div className="text-2xl font-bold text-green-400">
+                    <div className="text-sm text-muted-foreground">{t('calibration_wizard.simulation.adjusted_length', 'Adjusted Length')}</div>
+                    <div className="text-2xl font-bold text-success">
                       {simulationResult.adjustedLength.toFixed(2)} mm
                     </div>
                   </div>
                   <div className="col-span-2">
-                    <div className="text-sm text-gray-400 mb-2">{t('calibration_wizard.simulation.adjustments', 'Applied Adjustments:')}</div>
+                    <div className="text-sm text-muted-foreground mb-2">{t('calibration_wizard.simulation.adjustments', 'Applied Adjustments:')}</div>
                     <ul className="list-disc list-inside space-y-1">
                       {simulationResult.adjustments.map((adj, idx) => (
                         <li key={idx} className="text-sm">{adj}</li>
@@ -596,12 +596,12 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   <div className="text-sm font-semibold mb-2">{t('calibration_wizard.test_results.historical', 'Historical Test Results:')}</div>
                   <div className="space-y-2">
                     {testResults.map((result, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-2 bg-gray-900 rounded">
+                      <div key={idx} className="flex justify-between items-center p-2 bg-background rounded">
                         <span className="text-sm">
                           {t('calibration_wizard.test_results.expected_label', 'Expected')}: {result.expectedLength.toFixed(2)}mm → {t('calibration_wizard.test_results.actual_label', 'Actual')}: {result.actualLength.toFixed(2)}mm
                         </span>
                         <span
-                          className={`text-sm font-semibold ${Math.abs(result.difference) < 0.5 ? 'text-green-400' : 'text-yellow-400'
+                          className={`text-sm font-semibold ${Math.abs(result.difference) < 0.5 ? 'text-success' : 'text-warning'
                             }`}
                         >
                           {result.difference > 0 ? '+' : ''}

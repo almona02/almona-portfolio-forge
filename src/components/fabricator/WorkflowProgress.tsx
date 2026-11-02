@@ -58,7 +58,7 @@ const WorkflowProgressComponent: React.FC<WorkflowProgressProps> = ({
     const { activeStageIndex } = activeStageData!;
     
     return (
-      <div className="sticky top-0 z-50 w-full h-2 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-amber-600/20 shadow-sm">
+      <div className="sticky top-0 z-50 w-full h-2 bg-background/95 backdrop-blur-md border-b border-amber-600/20 shadow-sm">
         <div className="relative h-full max-w-6xl mx-auto px-4">
           {/* Progress line background */}
           <div className="absolute top-1/2 left-4 right-4 h-0.5 -translate-y-1/2 bg-amber-600/10"></div>
@@ -99,7 +99,7 @@ const WorkflowProgressComponent: React.FC<WorkflowProgressProps> = ({
   const currentIndex = legacyStatusFlow.indexOf(currentStatus);
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-gray-900/70 border border-gray-800 rounded-lg card-dark">
+    <div className="flex items-center justify-between px-4 py-3 bg-background/70 border border-border rounded-lg card-dark">
       {legacyStatusFlow.map((status, index) => {
         const isCompleted = index < currentIndex;
         const isCurrent = index === currentIndex;
@@ -113,7 +113,7 @@ const WorkflowProgressComponent: React.FC<WorkflowProgressProps> = ({
                     ? 'bg-green-500 text-white'
                     : isCurrent
                     ? 'bg-amber-500 text-white animate-pulse'
-                    : 'bg-gray-700 text-gray-400'
+                    : 'bg-muted text-muted-foreground'
                 }`}
               >
                 {isCompleted ? (
@@ -126,7 +126,7 @@ const WorkflowProgressComponent: React.FC<WorkflowProgressProps> = ({
               </div>
               <span
                 className={`text-[10px] mt-1 capitalize ${
-                  isCompleted || isCurrent ? 'text-white' : 'text-gray-500'
+                  isCompleted || isCurrent ? 'text-foreground' : 'text-muted-foreground'
                 }`}
               >
                 {status}
@@ -136,7 +136,7 @@ const WorkflowProgressComponent: React.FC<WorkflowProgressProps> = ({
             {index < legacyStatusFlow.length - 1 && (
               <div
                 className={`w-8 h-0.5 mx-2 ${
-                  isCompleted ? 'bg-green-500' : 'bg-gray-700'
+                  isCompleted ? 'bg-green-500' : 'bg-muted'
                 }`}
               />
             )}

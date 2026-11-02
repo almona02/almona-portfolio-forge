@@ -26,23 +26,23 @@ export const PRIMARY_COLORS = {
   
   // Secondary actions
   secondary: {
-    main: 'text-slate-300',      // Main secondary color
-    light: 'text-slate-200',     // Lighter variant
-    dark: 'text-slate-400',      // Darker variant
-    bg: 'bg-slate-700',          // Background
-    bgLight: 'bg-slate-800/50',  // Light background
-    border: 'border-slate-600',  // Border
-    borderLight: 'border-slate-600/30', // Light border
+    main: 'text-foreground',      // Main secondary color
+    light: 'text-foreground',     // Lighter variant
+    dark: 'text-muted-foreground',      // Darker variant
+    bg: 'bg-muted',          // Background
+    bgLight: 'bg-card/50',  // Light background
+    border: 'border-border',  // Border
+    borderLight: 'border-border/30', // Light border
   },
   
   // Tertiary/informational
   tertiary: {
-    main: 'text-slate-400',      // Main tertiary color
-    light: 'text-slate-500',     // Lighter variant
-    dark: 'text-slate-300',      // Darker variant
-    bg: 'bg-slate-800',          // Background
-    bgLight: 'bg-slate-900/50',  // Light background
-    border: 'border-slate-700',   // Border
+    main: 'text-muted-foreground',      // Main tertiary color
+    light: 'text-muted-foreground',     // Lighter variant
+    dark: 'text-foreground',      // Darker variant
+    bg: 'bg-card',          // Background
+    bgLight: 'bg-background/50',  // Light background
+    border: 'border-border',   // Border
   },
 } as const;
 
@@ -97,33 +97,33 @@ export const HIERARCHY_COLORS = {
   
   // Important information
   important: {
-    text: 'text-slate-200',
-    bg: 'bg-slate-800/50',
-    border: 'border-slate-600/30',
+    text: 'text-foreground',
+    bg: 'bg-card/50',
+    border: 'border-border/30',
     weight: 'font-medium',
   },
   
   // Standard information
   standard: {
-    text: 'text-slate-300',
-    bg: 'bg-slate-900/50',
-    border: 'border-slate-700/30',
+    text: 'text-foreground',
+    bg: 'bg-background/50',
+    border: 'border-border/30',
     weight: 'font-normal',
   },
   
   // Secondary information
   secondary: {
-    text: 'text-slate-400',
-    bg: 'bg-slate-900/30',
-    border: 'border-slate-800/20',
+    text: 'text-muted-foreground',
+    bg: 'bg-background/30',
+    border: 'border-border/20',
     weight: 'font-normal',
   },
   
   // Tertiary information (lowest priority)
   tertiary: {
-    text: 'text-slate-500',
-    bg: 'bg-slate-950/50',
-    border: 'border-slate-800/10',
+    text: 'text-muted-foreground',
+    bg: 'bg-background/50',
+    border: 'border-border/10',
     weight: 'font-light',
   },
 } as const;

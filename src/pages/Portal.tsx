@@ -158,7 +158,7 @@ const Portal = () => {
           statusInfo.color === 'blue' ? 'bg-blue-100 text-blue-800' :
           statusInfo.color === 'orange' ? 'bg-amber-100 text-amber-800' :
           statusInfo.color === 'red' ? 'bg-red-100 text-red-800' :
-          'bg-gray-100 text-gray-800'
+          'bg-muted text-foreground'
         }`}
       >
         {statusInfo.label}
@@ -219,7 +219,7 @@ const Portal = () => {
           <h1 className="typography-h1 mb-4">
             <span className="text-gradient-orange">بوابة العميل</span>
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-muted-foreground">
             مرحباً {user?.full_name}، يمكنك هنا تتبع جميع طلباتك وخدماتك
           </p>
         </motion.div>
@@ -232,7 +232,7 @@ const Portal = () => {
           className="mb-8"
         >
           <div className="relative max-w-md mx-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="ابحث برقم الطلب أو كود التتبع..."
               value={searchTerm}
@@ -286,23 +286,23 @@ const Portal = () => {
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                          <p className="text-sm text-gray-600">المبلغ الإجمالي</p>
+                          <p className="text-sm text-muted-foreground">المبلغ الإجمالي</p>
                           <p className="text-lg font-semibold">{formatCurrency(quote.total_amount)}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">عدد العناصر</p>
+                          <p className="text-sm text-muted-foreground">عدد العناصر</p>
                           <p className="text-lg font-semibold">{quote.items_count}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">تاريخ الإنشاء</p>
+                          <p className="text-sm text-muted-foreground">تاريخ الإنشاء</p>
                           <p className="text-lg font-semibold">{formatDate(quote.created_at)}</p>
                         </div>
                       </div>
                       {quote.digital_twin_code && (
-                        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                        <div className="mt-4 p-3 bg-background rounded-lg">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-sm text-gray-600">كود التتبع الرقمي</p>
+                              <p className="text-sm text-muted-foreground">كود التتبع الرقمي</p>
                               <p className="font-mono text-sm">{quote.digital_twin_code}</p>
                             </div>
                             <Button
@@ -343,15 +343,15 @@ const Portal = () => {
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                          <p className="text-sm text-gray-600">المبلغ الإجمالي</p>
+                          <p className="text-sm text-muted-foreground">المبلغ الإجمالي</p>
                           <p className="text-lg font-semibold">{formatCurrency(order.total_amount)}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">عدد العناصر</p>
+                          <p className="text-sm text-muted-foreground">عدد العناصر</p>
                           <p className="text-lg font-semibold">{order.items_count}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">تاريخ الطلب</p>
+                          <p className="text-sm text-muted-foreground">تاريخ الطلب</p>
                           <p className="text-lg font-semibold">{formatDate(order.created_at)}</p>
                         </div>
                       </div>
@@ -382,9 +382,9 @@ const Portal = () => {
                           <Badge 
                             variant="outline"
                             className={
-                              ticket.priority === 'high' ? 'border-red-500 text-red-500' :
+                              ticket.priority === 'high' ? 'border-red-500 text-destructive' :
                               ticket.priority === 'medium' ? 'border-yellow-500 text-yellow-500' :
-                              'border-green-500 text-green-500'
+                              'border-green-500 text-success'
                             }
                           >
                             {ticket.priority === 'high' ? 'عاجل' :
@@ -396,16 +396,16 @@ const Portal = () => {
                     <CardContent>
                       <div className="space-y-4">
                         <div>
-                          <p className="text-sm text-gray-600">عنوان الطلب</p>
+                          <p className="text-sm text-muted-foreground">عنوان الطلب</p>
                           <p className="text-lg font-semibold">{ticket.title}</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <p className="text-sm text-gray-600">تاريخ الإنشاء</p>
+                            <p className="text-sm text-muted-foreground">تاريخ الإنشاء</p>
                             <p className="text-lg font-semibold">{formatDate(ticket.created_at)}</p>
                           </div>
                           <div>
-                            <p className="text-sm text-gray-600">الأولوية</p>
+                            <p className="text-sm text-muted-foreground">الأولوية</p>
                             <p className="text-lg font-semibold">
                               {ticket.priority === 'high' ? 'عاجل' :
                                ticket.priority === 'medium' ? 'متوسط' : 'منخفض'}
@@ -413,10 +413,10 @@ const Portal = () => {
                           </div>
                         </div>
                         {ticket.digital_twin_code && (
-                          <div className="p-3 bg-gray-50 rounded-lg">
+                          <div className="p-3 bg-background rounded-lg">
                             <div className="flex items-center justify-between">
                               <div>
-                                <p className="text-sm text-gray-600">كود التتبع الرقمي</p>
+                                <p className="text-sm text-muted-foreground">كود التتبع الرقمي</p>
                                 <p className="font-mono text-sm">{ticket.digital_twin_code}</p>
                               </div>
                               <Button

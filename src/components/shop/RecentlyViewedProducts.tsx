@@ -19,7 +19,7 @@ export const RecentlyViewedProducts: React.FC = () => {
   }
 
   return (
-    <Card className="bg-almona-darker border-almona-light text-white mt-12">
+    <Card className="bg-card border-border text-foreground mt-12">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-gradient-orange">{t('recently_viewed.title')}</CardTitle>
       </CardHeader>
@@ -27,10 +27,10 @@ export const RecentlyViewedProducts: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map(product => (
             <Link to={`/products/machines/${product?.id}`} key={product?.id}>
-              <div className="flex flex-col items-center text-center bg-almona-dark p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+              <div className="flex flex-col items-center text-center bg-background p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
                 <img src={product?.imageUrl} alt={product?.name} className="w-24 h-24 object-cover rounded-md mb-2" loading="lazy" />
                 <h4 className="typography-h4">{product?.name}</h4>
-                <p className="text-sm text-gray-400">{product?.description.substring(0, 50)}...</p>
+                <p className="text-sm text-muted-foreground">{product?.description.substring(0, 50)}...</p>
               </div>
             </Link>
           ))}

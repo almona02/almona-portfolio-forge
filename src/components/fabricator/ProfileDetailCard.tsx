@@ -35,7 +35,7 @@ export const ProfileDetailCard: React.FC<ProfileDetailCardProps> = ({
   );
 
   return (
-    <Card className="bg-gray-800 border-gray-700">
+    <Card className="bg-card border-border">
       <CardHeader>
         <div className="flex justify-between items-start">
           <CardTitle className="flex items-center gap-2">
@@ -56,17 +56,17 @@ export const ProfileDetailCard: React.FC<ProfileDetailCardProps> = ({
               <img
                 src={profile.technicalDrawings[0].previewUrl}
                 alt={profile.name}
-                className="w-full h-32 object-contain border border-gray-600 rounded"
+                className="w-full h-32 object-contain border border-border rounded"
               />
             ) : profile.specifications?.previewImageUrl ? (
               <img
                 src={profile.specifications.previewImageUrl as string}
                 alt={profile.name}
-                className="w-full h-32 object-contain border border-gray-600 rounded"
+                className="w-full h-32 object-contain border border-border rounded"
               />
             ) : (
-              <div className="w-full h-32 bg-gray-700 border border-gray-600 rounded flex items-center justify-center">
-                <span className="text-gray-400">No preview</span>
+              <div className="w-full h-32 bg-muted border border-border rounded flex items-center justify-center">
+                <span className="text-muted-foreground">No preview</span>
               </div>
             )}
           </div>
@@ -74,7 +74,7 @@ export const ProfileDetailCard: React.FC<ProfileDetailCardProps> = ({
           <div className="space-y-2">
             <Label>Color</Label>
             <div
-              className="w-full h-8 rounded border border-gray-600"
+              className="w-full h-8 rounded border border-border"
               style={{ backgroundColor: profile.color }}
             />
           </div>
@@ -83,15 +83,15 @@ export const ProfileDetailCard: React.FC<ProfileDetailCardProps> = ({
         {/* Technical Specifications */}
         <div className="grid grid-cols-3 gap-4 text-sm">
           <div>
-            <span className="text-gray-400">Dimensions:</span>
+            <span className="text-muted-foreground">Dimensions:</span>
             <div>{profile.width}×{profile.height || 'N/A'}mm</div>
           </div>
           <div>
-            <span className="text-gray-400">Thickness:</span>
+            <span className="text-muted-foreground">Thickness:</span>
             <div>{profile.thickness || 'N/A'}mm</div>
           </div>
           <div>
-            <span className="text-gray-400">Weight:</span>
+            <span className="text-muted-foreground">Weight:</span>
             <div>{profile.weightPerMeter ? `${profile.weightPerMeter} kg/m` : 'N/A'}</div>
           </div>
         </div>
@@ -101,13 +101,13 @@ export const ProfileDetailCard: React.FC<ProfileDetailCardProps> = ({
           <div className="grid grid-cols-2 gap-4 text-sm">
             {profile.systemType && (
               <div>
-                <span className="text-gray-400">System Type:</span>
+                <span className="text-muted-foreground">System Type:</span>
                 <div className="capitalize">{profile.systemType.replace('_', ' ')}</div>
               </div>
             )}
             {profile.profileRole && (
               <div>
-                <span className="text-gray-400">Profile Role:</span>
+                <span className="text-muted-foreground">Profile Role:</span>
                 <div className="capitalize">{profile.profileRole.replace('_', ' ')}</div>
               </div>
             )}
@@ -120,10 +120,10 @@ export const ProfileDetailCard: React.FC<ProfileDetailCardProps> = ({
             <Label>Machining Operations</Label>
             <div className="space-y-2 mt-2">
               {profile.machiningMacros.map((macro) => (
-                <div key={macro.id} className="flex justify-between items-center p-2 bg-gray-700 rounded">
+                <div key={macro.id} className="flex justify-between items-center p-2 bg-muted rounded">
                   <div>
                     <div className="font-medium">{macro.name}</div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-muted-foreground">
                       {macro.operation} - {macro.dimensions.width}×{macro.dimensions.height}×{macro.dimensions.depth}mm
                     </div>
                   </div>

@@ -56,9 +56,9 @@ export const ValidationGate: React.FC = () => {
         : 'bg-amber-950/20 border-amber-600/20',
     )}>
       {!validation.passed ? (
-        <XCircle size={14} className="text-red-400 mt-0.5 flex-shrink-0" />
+        <XCircle size={14} className="text-destructive mt-0.5 flex-shrink-0" />
       ) : (
-        <AlertTriangle size={14} className="text-amber-400 mt-0.5 flex-shrink-0" />
+        <AlertTriangle size={14} className="text-warning mt-0.5 flex-shrink-0" />
       )}
 
       <div className="flex-1 flex flex-wrap gap-x-4 gap-y-1">
@@ -71,7 +71,7 @@ export const ValidationGate: React.FC = () => {
       </div>
 
       {validation.passed && (
-        <CheckCircle2 size={14} className="text-green-400 mt-0.5 flex-shrink-0" />
+        <CheckCircle2 size={14} className="text-success mt-0.5 flex-shrink-0" />
       )}
     </div>
   );
@@ -82,9 +82,9 @@ const IssueChip: React.FC<{ issue: ValidationIssue }> = ({ issue }) => {
     : issue.severity === 'warning' ? AlertTriangle
     : Info;
 
-  const color = issue.severity === 'error' ? 'text-red-300'
-    : issue.severity === 'warning' ? 'text-amber-300'
-    : 'text-slate-400';
+  const color = issue.severity === 'error' ? 'text-destructive'
+    : issue.severity === 'warning' ? 'text-warning'
+    : 'text-muted-foreground';
 
   return (
     <span className={cn('flex items-center gap-1', color)}>

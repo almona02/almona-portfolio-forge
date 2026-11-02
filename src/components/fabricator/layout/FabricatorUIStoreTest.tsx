@@ -150,15 +150,15 @@ export const FabricatorUIStoreTest: React.FC = () => {
     <Card className="w-full max-w-4xl mx-auto mt-8">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5 text-amber-500" />
+          <AlertCircle className="h-5 w-5 text-warning" />
           Fabricator UI Store Test
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Summary */}
-        <div className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg">
           <div>
-            <div className="text-sm text-gray-400">Test Results</div>
+            <div className="text-sm text-muted-foreground">Test Results</div>
             <div className="text-2xl font-bold">
               {passedCount}/{totalCount} Passed
             </div>
@@ -180,12 +180,12 @@ export const FabricatorUIStoreTest: React.FC = () => {
 
         {/* Current State Display */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 bg-gray-900/30 rounded-lg">
-            <div className="text-xs text-gray-400 mb-2">Current Theme</div>
+          <div className="p-4 bg-background/30 rounded-lg">
+            <div className="text-xs text-muted-foreground mb-2">Current Theme</div>
             <div className="text-lg font-semibold">{theme}</div>
           </div>
-          <div className="p-4 bg-gray-900/30 rounded-lg">
-            <div className="text-xs text-gray-400 mb-2">Fabrication Panel State</div>
+          <div className="p-4 bg-background/30 rounded-lg">
+            <div className="text-xs text-muted-foreground mb-2">Fabrication Panel State</div>
             <div className="text-sm">
               Left: {panelState.leftCollapsed ? 'Collapsed' : 'Expanded'} | 
               Right: {panelState.rightCollapsed ? 'Collapsed' : 'Expanded'}
@@ -194,8 +194,8 @@ export const FabricatorUIStoreTest: React.FC = () => {
         </div>
 
         {/* LocalStorage Status */}
-        <div className="p-4 bg-gray-900/30 rounded-lg">
-          <div className="text-xs text-gray-400 mb-2">LocalStorage Status</div>
+        <div className="p-4 bg-background/30 rounded-lg">
+          <div className="text-xs text-muted-foreground mb-2">LocalStorage Status</div>
           <div className="text-sm">{localStorageCheck}</div>
         </div>
 
@@ -214,7 +214,7 @@ export const FabricatorUIStoreTest: React.FC = () => {
 
         {/* Test Results List */}
         <div className="space-y-2">
-          <div className="text-sm font-semibold text-gray-300">Test Results:</div>
+          <div className="text-sm font-semibold text-foreground">Test Results:</div>
           {testResults.map((result, index) => (
             <div 
               key={index} 
@@ -223,21 +223,21 @@ export const FabricatorUIStoreTest: React.FC = () => {
               }`}
             >
               {result.passed ? (
-                <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0" />
               ) : (
-                <XCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                <XCircle className="h-5 w-5 text-destructive flex-shrink-0" />
               )}
               <div className="flex-1">
                 <div className="font-medium">{result.test}</div>
-                <div className="text-xs text-gray-400">{result.message}</div>
+                <div className="text-xs text-muted-foreground">{result.message}</div>
               </div>
             </div>
           ))}
         </div>
 
         {/* Raw Store State (for debugging) */}
-        <details className="p-4 bg-gray-900/30 rounded-lg">
-          <summary className="cursor-pointer text-sm font-semibold text-gray-300 mb-2">
+        <details className="p-4 bg-background/30 rounded-lg">
+          <summary className="cursor-pointer text-sm font-semibold text-foreground mb-2">
             Raw Store State (Debug)
           </summary>
           <pre className="text-xs overflow-auto mt-2 p-2 bg-black/50 rounded">

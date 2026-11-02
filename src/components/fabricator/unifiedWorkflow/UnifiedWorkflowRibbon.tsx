@@ -87,7 +87,7 @@ export const UnifiedWorkflowRibbon: React.FC<UnifiedWorkflowRibbonProps> = ({
       case 'modern':
         return 'from-blue-600 to-cyan-400';
       default:
-        return 'from-slate-600 to-slate-400';
+        return 'from-muted to-muted';
     }
   };
 
@@ -96,22 +96,22 @@ export const UnifiedWorkflowRibbon: React.FC<UnifiedWorkflowRibbonProps> = ({
       case 'ottoman':
         return {
           label: 'Ottoman Craft',
-          color: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+          color: 'bg-amber-500/20 text-warning border-amber-500/40',
         };
       case 'egyptian':
         return {
           label: 'Egyptian Precision',
-          color: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40',
+          color: 'bg-yellow-500/20 text-warning border-yellow-500/40',
         };
       case 'modern':
         return {
           label: 'YILMAZ Tech',
-          color: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
+          color: 'bg-blue-500/20 text-info border-blue-500/40',
         };
       default:
         return {
           label: 'Cross-Empire',
-          color: 'bg-slate-500/20 text-slate-300 border-slate-500/40',
+          color: 'bg-muted/20 text-foreground border-border/40',
         };
     }
   };
@@ -123,7 +123,7 @@ export const UnifiedWorkflowRibbon: React.FC<UnifiedWorkflowRibbonProps> = ({
       className="mb-8"
     >
       {/* Enhanced Header with Cross-Empire Branding */}
-      <div className="mb-5 rounded-3xl border border-amber-600/30 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950/95 p-5 shadow-[0_0_40px_rgba(245,158,11,0.2)] relative overflow-hidden">
+      <div className="mb-5 rounded-3xl border border-amber-600/30 bg-gradient-to-r from-background via-background to-background/95 p-5 shadow-[0_0_40px_rgba(245,158,11,0.2)] relative overflow-hidden">
         {/* Ancient Pattern Overlay */}
         <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(251,191,36,0.1),transparent_50%)]" />
@@ -133,18 +133,18 @@ export const UnifiedWorkflowRibbon: React.FC<UnifiedWorkflowRibbonProps> = ({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4 relative z-10">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <p className="text-[10px] md:text-[11px] uppercase tracking-[0.28em] text-amber-600/70">
+              <p className="text-[10px] md:text-[11px] uppercase tracking-[0.28em] text-warning/70">
                 {useUnified ? 'UNIFIED WORKFLOW' : 'CROSS-EMPIRE FABRICATOR BRIDGE'}
               </p>
               {useUnified && (
-                <Badge variant="outline" className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[9px]">
+                <Badge variant="outline" className="bg-amber-500/20 text-warning border-amber-500/40 text-[9px]">
                   UNIFIED
                 </Badge>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-3 text-xs text-slate-300">
+          <div className="flex items-center gap-3 text-xs text-foreground">
             <div className="hidden md:flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_0.6rem_rgba(245,158,11,0.9)]" />
               <span>Active Innovation</span>
@@ -152,7 +152,7 @@ export const UnifiedWorkflowRibbon: React.FC<UnifiedWorkflowRibbonProps> = ({
             {currentTypeLabel && (
               <Badge
                 variant="outline"
-                className="border-amber-500/50 bg-amber-500/20 text-[10px] text-amber-100"
+                className="border-amber-500/50 bg-amber-500/20 text-[10px] text-warning"
               >
                 {currentTypeLabel}
               </Badge>
@@ -162,27 +162,27 @@ export const UnifiedWorkflowRibbon: React.FC<UnifiedWorkflowRibbonProps> = ({
 
         {/* Cross-Empire Efficiency Metrics */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4 relative z-10">
-          <div className="bg-slate-800/40 rounded-lg p-3 border border-amber-600/30 card-dark">
-            <div className="text-xs text-slate-400 mb-1">Efficiency</div>
-            <div className="text-lg font-bold text-emerald-400">{efficiency}%</div>
+          <div className="bg-card/40 rounded-lg p-3 border border-amber-600/30 card-dark">
+            <div className="text-xs text-muted-foreground mb-1">Efficiency</div>
+            <div className="text-lg font-bold text-success">{efficiency}%</div>
           </div>
-          <div className="bg-slate-800/40 rounded-lg p-3 border border-amber-600/30 card-dark">
-            <div className="text-xs text-slate-400 mb-1">Waste</div>
-            <div className="text-lg font-bold text-red-400">{wastePercentage}%</div>
+          <div className="bg-card/40 rounded-lg p-3 border border-amber-600/30 card-dark">
+            <div className="text-xs text-muted-foreground mb-1">Waste</div>
+            <div className="text-lg font-bold text-destructive">{wastePercentage}%</div>
           </div>
-          <div className="bg-slate-800/40 rounded-lg p-3 border border-amber-600/30 card-dark">
-            <div className="text-xs text-slate-400 mb-1">Stage Progress</div>
-            <div className="text-lg font-bold text-amber-400">{Math.round(progressPercent)}%</div>
+          <div className="bg-card/40 rounded-lg p-3 border border-amber-600/30 card-dark">
+            <div className="text-xs text-muted-foreground mb-1">Stage Progress</div>
+            <div className="text-lg font-bold text-warning">{Math.round(progressPercent)}%</div>
           </div>
-          <div className="bg-slate-800/40 rounded-lg p-3 border border-amber-600/30 card-dark">
-            <div className="text-xs text-slate-400 mb-1">Innovation Score</div>
-            <div className="text-lg font-bold text-blue-400">94.2</div>
+          <div className="bg-card/40 rounded-lg p-3 border border-amber-600/30 card-dark">
+            <div className="text-xs text-muted-foreground mb-1">Innovation Score</div>
+            <div className="text-lg font-bold text-info">94.2</div>
           </div>
         </div>
 
         {/* Enhanced Bridge deck with empire symbolism */}
         <div className="relative mb-5">
-          <div className="h-2 rounded-full bg-slate-800/80 overflow-hidden relative">
+          <div className="h-2 rounded-full bg-card/80 overflow-hidden relative">
             {/* Base bridge structure */}
             <div
               className="h-full rounded-full bg-gradient-to-r from-amber-500 via-blue-500 to-emerald-400 shadow-[0_0_18px_rgba(245,158,11,0.5)] relative"
@@ -222,10 +222,10 @@ export const UnifiedWorkflowRibbon: React.FC<UnifiedWorkflowRibbonProps> = ({
                 onClick={() => onStageChange(step.id)}
                 className={`group relative min-w-[180px] md:min-w-0 px-4 pt-4 pb-5 rounded-2xl border text-left transition-all duration-300 backdrop-blur-sm ${
                   isCurrent
-                    ? 'border-amber-400/90 bg-gradient-to-b from-amber-500/20 via-slate-950/95 to-slate-950 shadow-[0_0_30px_rgba(245,158,11,0.9)]'
+                    ? 'border-amber-400/90 bg-gradient-to-b from-amber-500/20 via-background/95 to-background shadow-[0_0_30px_rgba(245,158,11,0.9)]'
                     : isCompleted
-                    ? 'border-emerald-400/80 bg-gradient-to-b from-emerald-500/15 via-slate-950/95 to-slate-950 shadow-[0_0_22px_rgba(16,185,129,0.8)]'
-                    : 'border-slate-700/80 bg-slate-950/90 hover:border-amber-500/50 hover:bg-slate-900/95'
+                    ? 'border-emerald-400/80 bg-gradient-to-b from-emerald-500/15 via-background/95 to-background shadow-[0_0_22px_rgba(16,185,129,0.8)]'
+                    : 'border-border/80 bg-background/90 hover:border-amber-500/50 hover:bg-background/95'
                 }`}
               >
                 {/* Empire Heritage Background */}
@@ -242,10 +242,10 @@ export const UnifiedWorkflowRibbon: React.FC<UnifiedWorkflowRibbonProps> = ({
                   <div
                     className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide ${
                       isCurrent
-                        ? 'bg-amber-500 text-slate-950 shadow-[0_0_14px_rgba(245,158,11,0.95)]'
+                        ? 'bg-amber-500 text-foreground shadow-[0_0_14px_rgba(245,158,11,0.95)]'
                         : isCompleted
-                        ? 'bg-emerald-500 text-slate-950 shadow-[0_0_10px_rgba(16,185,129,0.9)]'
-                        : 'bg-slate-800 text-slate-200'
+                        ? 'bg-emerald-500 text-foreground shadow-[0_0_10px_rgba(16,185,129,0.9)]'
+                        : 'bg-card text-foreground'
                     }`}
                   >
                     STAGE {index + 1}
@@ -266,16 +266,16 @@ export const UnifiedWorkflowRibbon: React.FC<UnifiedWorkflowRibbonProps> = ({
                         ? 'border-amber-300 bg-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.6)]'
                         : isCompleted
                         ? 'border-emerald-300 bg-emerald-500/15 shadow-[0_0_15px_rgba(16,185,129,0.5)]'
-                        : 'border-slate-600 bg-slate-900'
+                        : 'border-border bg-background'
                     }`}
                   >
                     <Icon
                       className={`h-5 w-5 ${
                         isCurrent
-                          ? 'text-amber-300'
+                          ? 'text-warning'
                           : isCompleted
-                          ? 'text-emerald-300'
-                          : 'text-slate-400 group-hover:text-amber-400'
+                          ? 'text-success'
+                          : 'text-muted-foreground group-hover:text-warning'
                       }`}
                     />
 
@@ -299,16 +299,16 @@ export const UnifiedWorkflowRibbon: React.FC<UnifiedWorkflowRibbonProps> = ({
                       ? 'text-amber-50'
                       : isCompleted
                       ? 'text-emerald-50'
-                      : 'text-slate-100'
+                      : 'text-foreground'
                   }`}>
                   {step.name}
                 </h3>
 
-                <p className="text-[11px] text-slate-400 line-clamp-2 mb-2">{step.description}</p>
+                <p className="text-[11px] text-muted-foreground line-clamp-2 mb-2">{step.description}</p>
 
                 {/* Innovation heritage */}
                 {step.innovation && (
-                  <div className="text-[10px] text-slate-500 italic border-t border-slate-700/50 pt-2">
+                  <div className="text-[10px] text-muted-foreground italic border-t border-border/50 pt-2">
                     {step.innovation}
                   </div>
                 )}
@@ -320,20 +320,20 @@ export const UnifiedWorkflowRibbon: React.FC<UnifiedWorkflowRibbonProps> = ({
         {/* Enhanced Progress with Empire Legacy - Collapsible */}
         <Collapsible open={isProgressOpen} onOpenChange={setIsProgressOpen}>
           <CollapsibleTrigger asChild>
-            <div className="mt-4 bg-slate-950/90 rounded-xl p-4 border border-amber-600/30 backdrop-blur-sm cursor-pointer hover:bg-slate-900/90 transition-colors">
+            <div className="mt-4 bg-background/90 rounded-xl p-4 border border-amber-600/30 backdrop-blur-sm cursor-pointer hover:bg-background/90 transition-colors">
               <div className="flex justify-between items-center">
-                <span className="text-xs font-medium text-amber-200">
+                <span className="text-xs font-medium text-warning">
                   {useUnified ? 'Unified Workflow Progress' : 'Cross-Empire Innovation Index'}
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-300">
+                  <span className="text-xs text-foreground">
                     Stage {currentStepIndex + 1} of {effectiveTotalSteps}{' '}
-                    <span className="ml-1 text-amber-300 font-semibold">
+                    <span className="ml-1 text-warning font-semibold">
                       {Math.round(progressPercent)}%
                     </span>
                   </span>
                   <ChevronDown 
-                    className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
+                    className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
                       isProgressOpen ? 'rotate-180' : ''
                     }`} 
                   />
@@ -342,14 +342,14 @@ export const UnifiedWorkflowRibbon: React.FC<UnifiedWorkflowRibbonProps> = ({
             </div>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="mt-2 bg-slate-950/90 rounded-xl p-4 border border-amber-600/30 backdrop-blur-sm">
-              <Progress value={progressPercent} className="h-2 bg-slate-800 mb-3">
+            <div className="mt-2 bg-background/90 rounded-xl p-4 border border-amber-600/30 backdrop-blur-sm">
+              <Progress value={progressPercent} className="h-2 bg-card mb-3">
                 <div className="h-full bg-gradient-to-r from-amber-500 via-blue-500 to-emerald-400 rounded-full relative">
                   <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_45%,rgba(255,255,255,0.3)_50%,transparent_55%)] bg-[length:20px_100%] animate-pulse" />
                 </div>
               </Progress>
 
-              <div className="mt-1 flex justify-between text-[11px] text-slate-500 mb-4">
+              <div className="mt-1 flex justify-between text-[11px] text-muted-foreground mb-4">
                 <span className="flex items-center gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                   Ottoman Craft
@@ -366,20 +366,20 @@ export const UnifiedWorkflowRibbon: React.FC<UnifiedWorkflowRibbonProps> = ({
 
               {/* Istanbul Skyline SVG - Adjusted for unified stages */}
               <div className="mt-4 rounded-lg border-t border-amber-600/30 pt-4">
-                <div className="flex items-center justify-between text-[11px] text-slate-400 mb-2">
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-2">
                   <span>
                     {useUnified 
                       ? 'Unified Workflow – progress through 4 stages from Measure & Design to Quality & Delivery.'
                       : 'Istanbul Skyline – lights react as you progress from Measuring to Quality.'
                     }
                   </span>
-                  <span className="font-medium text-amber-300">
+                  <span className="font-medium text-warning">
                     {Math.round(clamped * 100)}% journey complete
                   </span>
                 </div>
                 <svg
                   viewBox="0 0 400 80"
-                  className="mt-1 h-16 w-full text-slate-700"
+                  className="mt-1 h-16 w-full text-foreground"
                   aria-hidden="true"
                 >
                   <defs>

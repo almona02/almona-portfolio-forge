@@ -48,7 +48,7 @@ export const RegionalConfigExample: React.FC = () => {
           <button
             onClick={() => handleRegionChange('TR')}
             className={`px-4 py-2 rounded ${
-              region === 'TR' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+              region === 'TR' ? 'bg-blue-500 text-white' : 'bg-muted'
             }`}
           >
             Turkey (TR)
@@ -56,7 +56,7 @@ export const RegionalConfigExample: React.FC = () => {
           <button
             onClick={() => handleRegionChange('EG')}
             className={`px-4 py-2 rounded ${
-              region === 'EG' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+              region === 'EG' ? 'bg-blue-500 text-white' : 'bg-muted'
             }`}
           >
             Egypt (EG)
@@ -64,13 +64,13 @@ export const RegionalConfigExample: React.FC = () => {
           <button
             onClick={() => handleRegionChange('DEFAULT')}
             className={`px-4 py-2 rounded ${
-              region === 'DEFAULT' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+              region === 'DEFAULT' ? 'bg-blue-500 text-white' : 'bg-muted'
             }`}
           >
             Default
           </button>
         </div>
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-muted-foreground">
           <p>Region: {region}</p>
           <p>Detected by: {regionState.detectedBy}</p>
           <p>Language: {config.language}</p>
@@ -90,15 +90,15 @@ export const RegionalConfigExample: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-3 border rounded">
             <p className="font-medium">Price: {utils.formatCurrency(1234.56)}</p>
-            <p className="text-sm text-gray-600">With symbol</p>
+            <p className="text-sm text-muted-foreground">With symbol</p>
           </div>
           <div className="p-3 border rounded">
             <p className="font-medium">Price: {utils.formatCurrency(1234.56, { showSymbol: false })}</p>
-            <p className="text-sm text-gray-600">Without symbol</p>
+            <p className="text-sm text-muted-foreground">Without symbol</p>
           </div>
           <div className="p-3 border rounded">
             <p className="font-medium">Price: {utils.formatCurrency(1234.56, { showCode: true })}</p>
-            <p className="text-sm text-gray-600">With currency code</p>
+            <p className="text-sm text-muted-foreground">With currency code</p>
           </div>
         </div>
       </div>
@@ -109,11 +109,11 @@ export const RegionalConfigExample: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-3 border rounded">
             <p className="font-medium">Date: {utils.formatDate(new Date())}</p>
-            <p className="text-sm text-gray-600">Date only</p>
+            <p className="text-sm text-muted-foreground">Date only</p>
           </div>
           <div className="p-3 border rounded">
             <p className="font-medium">Date & Time: {utils.formatDate(new Date(), { includeTime: true })}</p>
-            <p className="text-sm text-gray-600">With time</p>
+            <p className="text-sm text-muted-foreground">With time</p>
           </div>
         </div>
       </div>
@@ -126,7 +126,7 @@ export const RegionalConfigExample: React.FC = () => {
             <p className="font-medium">
               Business Hours: 9:00 - 17:00
             </p>
-            <p className="text-sm text-gray-600">Timezone: UTC</p>
+            <p className="text-sm text-muted-foreground">Timezone: UTC</p>
             <p className="text-sm">
               Currently: {utils.isBusinessHours() ? 'Open' : 'Closed'}
             </p>
@@ -144,25 +144,25 @@ export const RegionalConfigExample: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="p-3 border rounded text-center">
             <p className="font-medium">WhatsApp</p>
-            <p className={utils.isFeatureEnabled('whatsappEnabled') ? 'text-green-600' : 'text-red-600'}>
+            <p className={utils.isFeatureEnabled('whatsappEnabled') ? 'text-success' : 'text-destructive'}>
               {utils.isFeatureEnabled('whatsappEnabled') ? 'Enabled' : 'Disabled'}
             </p>
           </div>
           <div className="p-3 border rounded text-center">
             <p className="font-medium">Local Shipping</p>
-            <p className={utils.isFeatureEnabled('localShipping') ? 'text-green-600' : 'text-red-600'}>
+            <p className={utils.isFeatureEnabled('localShipping') ? 'text-success' : 'text-destructive'}>
               {utils.isFeatureEnabled('localShipping') ? 'Enabled' : 'Disabled'}
             </p>
           </div>
           <div className="p-3 border rounded text-center">
             <p className="font-medium">Cash on Delivery</p>
-            <p className={utils.isFeatureEnabled('cashOnDelivery') ? 'text-green-600' : 'text-red-600'}>
+            <p className={utils.isFeatureEnabled('cashOnDelivery') ? 'text-success' : 'text-destructive'}>
               {utils.isFeatureEnabled('cashOnDelivery') ? 'Enabled' : 'Disabled'}
             </p>
           </div>
           <div className="p-3 border rounded text-center">
             <p className="font-medium">RTL Layout</p>
-            <p className={utils.isFeatureEnabled('rtl') ? 'text-green-600' : 'text-red-600'}>
+            <p className={utils.isFeatureEnabled('rtl') ? 'text-success' : 'text-destructive'}>
               {utils.isFeatureEnabled('rtl') ? 'Enabled' : 'Disabled'}
             </p>
           </div>

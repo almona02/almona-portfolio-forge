@@ -207,7 +207,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
       case 'anchor':
         return 'bg-amber-500/30 border-amber-400';
       default:
-        return 'bg-gray-500/30 border-gray-400';
+        return 'bg-muted/30 border-border';
     }
   };
 
@@ -216,16 +216,16 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
       {/* Joystick Controls Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="typography-h3 text-lg text-white flex items-center gap-2">
-            <Target className="h-5 w-5 text-amber-400" />
+          <h3 className="typography-h3 text-lg text-foreground flex items-center gap-2">
+            <Target className="h-5 w-5 text-warning" />
             Interactive Zone Calibration
           </h3>
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Drag zones to adjust position, drag corners to resize
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Label className="typography-label text-xs text-gray-400">Sensitivity:</Label>
+          <Label className="typography-label text-xs text-muted-foreground">Sensitivity:</Label>
           <Input
             type="number"
             min="0.1"
@@ -233,13 +233,13 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
             step="0.1"
             value={sensitivity}
             onChange={(e) => setSensitivity(parseFloat(e.target.value) || 1)}
-            className="w-20 h-8 text-xs bg-gray-800 border-gray-600 text-white"
+            className="w-20 h-8 text-xs bg-card border-border text-foreground"
           />
           <Button
             variant="outline"
             size="sm"
             onClick={handleAddZone}
-            className="text-gray-300 border-gray-600 hover:bg-gray-700"
+            className="text-foreground border-border hover:bg-muted"
           >
             <Plus className="h-4 w-4 mr-1" />
             Add Zone
@@ -250,20 +250,20 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Visual Canvas - Joystick Area */}
         <div className="lg:col-span-2">
-          <Card className="bg-gray-900/80 border-gray-700 card-dark">
+          <Card className="bg-background/80 border-border card-dark">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">
-                <Grid className="h-4 w-4 text-amber-400" />
+                <Grid className="h-4 w-4 text-warning" />
                 Visual Zone Editor
               </CardTitle>
-              <CardDescription className="text-xs text-gray-400">
+              <CardDescription className="text-xs text-muted-foreground">
                 Click and drag zones to position, drag corners to resize
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div
                 ref={canvasRef}
-                className="relative w-full h-[400px] bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg border-2 border-gray-700 overflow-hidden"
+                className="relative w-full h-[400px] bg-gradient-to-br from-background to-card rounded-lg border-2 border-border overflow-hidden"
                 style={{ minHeight: '400px' }}
               >
                 {/* Grid Background */}
@@ -280,7 +280,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
 
                 {/* Profile Outline */}
                 <div
-                  className="absolute border-2 border-gray-600 rounded"
+                  className="absolute border-2 border-border rounded"
                   style={{
                     left: '50%',
                     top: '50%',
@@ -289,16 +289,16 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                     height: `${profileHeight * scale}px`,
                   }}
                 >
-                  <div className="absolute -top-6 left-0 text-xs text-gray-400">
+                  <div className="absolute -top-6 left-0 text-xs text-muted-foreground">
                     {profileWidth}mm × {profileHeight}mm
                   </div>
                 </div>
 
                 {/* Reference Corner Indicators */}
-                <div className="absolute top-2 left-2 text-[10px] text-gray-500">TL</div>
-                <div className="absolute top-2 right-2 text-[10px] text-gray-500">TR</div>
-                <div className="absolute bottom-2 left-2 text-[10px] text-gray-500">BL</div>
-                <div className="absolute bottom-2 right-2 text-[10px] text-gray-500">BR</div>
+                <div className="absolute top-2 left-2 text-[10px] text-muted-foreground">TL</div>
+                <div className="absolute top-2 right-2 text-[10px] text-muted-foreground">TR</div>
+                <div className="absolute bottom-2 left-2 text-[10px] text-muted-foreground">BL</div>
+                <div className="absolute bottom-2 right-2 text-[10px] text-muted-foreground">BR</div>
 
                 {/* Zones */}
                 <LazyAnimatePresence>
@@ -343,13 +343,13 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                         }}
                       >
                         {/* Zone Label */}
-                        <div className="absolute -top-6 left-0 text-xs font-semibold text-white whitespace-nowrap">
+                        <div className="absolute -top-6 left-0 text-xs font-semibold text-foreground whitespace-nowrap">
                           {zone.zoneName}
                         </div>
 
                         {/* Zone Info */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-[10px] text-white/80 text-center">
+                          <div className="text-[10px] text-foreground/80 text-center">
                             <div>{zone.width.toFixed(1)}×{zone.height.toFixed(1)}mm</div>
                             {zone.depth && <div>D: {zone.depth}mm</div>}
                           </div>
@@ -363,7 +363,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                             handlePointerDown(e, zone, 'resize');
                           }}
                         >
-                          <Maximize2 className="w-3 h-3 text-white m-0.5" />
+                          <Maximize2 className="w-3 h-3 text-foreground m-0.5" />
                         </div>
 
                         {/* Position Indicator */}
@@ -373,7 +373,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                             animate={{ scale: 1 }}
                             className="absolute -top-2 -left-2 w-6 h-6 bg-amber-500 rounded-full border-2 border-white flex items-center justify-center"
                           >
-                            <Move className="w-3 h-3 text-white" />
+                            <Move className="w-3 h-3 text-foreground" />
                           </LazyMotionDiv>
                         )}
                       </LazyMotionDiv>
@@ -409,13 +409,13 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
         {/* Zone List & Editor */}
         <div className="space-y-4">
           {/* Zone List */}
-          <Card className="bg-gray-900/80 border-gray-700 card-dark">
+          <Card className="bg-background/80 border-border card-dark">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm">Zones ({zones.length})</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 max-h-[200px] overflow-y-auto">
               {zones.length === 0 ? (
-                <div className="text-center text-gray-400 text-sm py-4">
+                <div className="text-center text-muted-foreground text-sm py-4">
                   No zones defined
                 </div>
               ) : (
@@ -425,7 +425,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                     className={`p-2 rounded border cursor-pointer transition-colors ${
                       selectedZone?.id === zone.id
                         ? 'bg-amber-500/20 border-amber-400'
-                        : 'bg-gray-800/50 border-gray-700 hover:border-gray-600'
+                        : 'bg-card/50 border-border hover:border-border'
                     }`}
                     onClick={() => {
                       setSelectedZone(zone);
@@ -434,8 +434,8 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-white truncate">{zone.zoneName}</p>
-                        <p className="text-[10px] text-gray-400">
+                        <p className="text-xs font-semibold text-foreground truncate">{zone.zoneName}</p>
+                        <p className="text-[10px] text-muted-foreground">
                           {zone.zoneType.replace('_', ' ')} • {zone.width}×{zone.height}mm
                         </p>
                       </div>
@@ -446,7 +446,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                           e.stopPropagation();
                           handleDeleteZone(zone.id);
                         }}
-                        className="h-6 w-6 p-0 text-red-400 hover:text-red-300"
+                        className="h-6 w-6 p-0 text-destructive hover:text-destructive"
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
@@ -459,30 +459,30 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
 
           {/* Zone Editor */}
           {editingZone && (
-            <Card className="bg-gray-900/80 border-gray-700 card-dark">
+            <Card className="bg-background/80 border-border card-dark">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm">Edit Zone</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <Label className="typography-label text-xs text-gray-300">Zone Name</Label>
+                  <Label className="typography-label text-xs text-foreground">Zone Name</Label>
                   <Input
                     value={editingZone.zoneName}
                     onChange={(e) => setEditingZone({ ...editingZone, zoneName: e.target.value })}
-                    className="mt-1 h-8 text-xs bg-gray-800 border-gray-600 text-white"
+                    className="mt-1 h-8 text-xs bg-card border-border text-foreground"
                   />
                 </div>
 
                 <div>
-                  <Label className="typography-label text-xs text-gray-300">Type</Label>
+                  <Label className="typography-label text-xs text-foreground">Type</Label>
                   <Select
                     value={editingZone.zoneType}
                     onValueChange={(value) => setEditingZone({ ...editingZone, zoneType: value as any })}
                   >
-                    <SelectTrigger className="mt-1 h-8 text-xs bg-gray-800 border-gray-600 text-white">
+                    <SelectTrigger className="mt-1 h-8 text-xs bg-card border-border text-foreground">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
+                    <SelectContent className="bg-card border-border">
                       <SelectItem value="hinge_slot">Hinge Slot</SelectItem>
                       <SelectItem value="lock_pocket">Lock Pocket</SelectItem>
                       <SelectItem value="drainage">Drainage</SelectItem>
@@ -494,7 +494,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="typography-label text-xs text-gray-300">X Offset (mm)</Label>
+                    <Label className="typography-label text-xs text-foreground">X Offset (mm)</Label>
                     <Input
                       type="number"
                       step="0.1"
@@ -502,11 +502,11 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                       onChange={(e) =>
                         setEditingZone({ ...editingZone, xOffset: parseFloat(e.target.value) || 0 })
                       }
-                      className="mt-1 h-8 text-xs bg-gray-800 border-gray-600 text-white"
+                      className="mt-1 h-8 text-xs bg-card border-border text-foreground"
                     />
                   </div>
                   <div>
-                    <Label className="typography-label text-xs text-gray-300">Y Offset (mm)</Label>
+                    <Label className="typography-label text-xs text-foreground">Y Offset (mm)</Label>
                     <Input
                       type="number"
                       step="0.1"
@@ -514,14 +514,14 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                       onChange={(e) =>
                         setEditingZone({ ...editingZone, yOffset: parseFloat(e.target.value) || 0 })
                       }
-                      className="mt-1 h-8 text-xs bg-gray-800 border-gray-600 text-white"
+                      className="mt-1 h-8 text-xs bg-card border-border text-foreground"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="typography-label text-xs text-gray-300">Width (mm)</Label>
+                    <Label className="typography-label text-xs text-foreground">Width (mm)</Label>
                     <Input
                       type="number"
                       step="0.1"
@@ -529,11 +529,11 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                       onChange={(e) =>
                         setEditingZone({ ...editingZone, width: parseFloat(e.target.value) || 0 })
                       }
-                      className="mt-1 h-8 text-xs bg-gray-800 border-gray-600 text-white"
+                      className="mt-1 h-8 text-xs bg-card border-border text-foreground"
                     />
                   </div>
                   <div>
-                    <Label className="typography-label text-xs text-gray-300">Height (mm)</Label>
+                    <Label className="typography-label text-xs text-foreground">Height (mm)</Label>
                     <Input
                       type="number"
                       step="0.1"
@@ -541,23 +541,23 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                       onChange={(e) =>
                         setEditingZone({ ...editingZone, height: parseFloat(e.target.value) || 0 })
                       }
-                      className="mt-1 h-8 text-xs bg-gray-800 border-gray-600 text-white"
+                      className="mt-1 h-8 text-xs bg-card border-border text-foreground"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <Label className="typography-label text-xs text-gray-300">Reference Corner</Label>
+                  <Label className="typography-label text-xs text-foreground">Reference Corner</Label>
                   <Select
                     value={editingZone.referenceCorner}
                     onValueChange={(value) =>
                       setEditingZone({ ...editingZone, referenceCorner: value as any })
                     }
                   >
-                    <SelectTrigger className="mt-1 h-8 text-xs bg-gray-800 border-gray-600 text-white">
+                    <SelectTrigger className="mt-1 h-8 text-xs bg-card border-border text-foreground">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
+                    <SelectContent className="bg-card border-border">
                       <SelectItem value="top_left">Top Left</SelectItem>
                       <SelectItem value="top_right">Top Right</SelectItem>
                       <SelectItem value="bottom_left">Bottom Left</SelectItem>
@@ -580,8 +580,8 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
 
       {/* Info Alert */}
       <Alert className="bg-amber-500/10 border-amber-500/30">
-        <Info className="h-4 w-4 text-amber-400" />
-        <AlertDescription className="text-xs text-gray-300">
+        <Info className="h-4 w-4 text-warning" />
+        <AlertDescription className="text-xs text-foreground">
           <strong>Joystick Controls:</strong> Click and drag zones to move them, drag the corner handle to resize.
           Adjust sensitivity for fine-tuning. Changes are applied in real-time.
         </AlertDescription>

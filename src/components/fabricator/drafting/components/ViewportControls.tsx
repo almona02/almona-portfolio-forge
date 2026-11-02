@@ -124,10 +124,10 @@ export const ViewportControls: React.FC<ViewportControlsProps> = ({
   return (
     <div className={`space-y-3 ${className || ''}`}>
       {/* Viewport Presets */}
-      <div className="bg-slate-950/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-slate-700/50">
+      <div className="bg-background/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-border/50">
         <div className="flex items-center gap-2 mb-2">
-          <Navigation className="w-4 h-4 text-slate-400" />
-          <h3 className="text-xs font-semibold text-slate-100">Viewport Presets</h3>
+          <Navigation className="w-4 h-4 text-muted-foreground" />
+          <h3 className="text-xs font-semibold text-foreground">Viewport Presets</h3>
         </div>
         
         <div className="grid grid-cols-2 gap-2">
@@ -178,16 +178,16 @@ export const ViewportControls: React.FC<ViewportControlsProps> = ({
       </div>
       
       {/* Navigation Controls */}
-      <div className="bg-slate-950/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-slate-700/50">
+      <div className="bg-background/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-border/50">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <Navigation className="w-4 h-4 text-slate-400" />
-            <h3 className="text-xs font-semibold text-slate-100">Navigate</h3>
+            <Navigation className="w-4 h-4 text-muted-foreground" />
+            <h3 className="text-xs font-semibold text-foreground">Navigate</h3>
           </div>
           <select
             value={navAmount}
             onChange={(e) => setNavAmount(Number(e.target.value))}
-            className="h-6 w-16 text-xs border border-slate-700/50 rounded px-1 bg-slate-900/50 text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            className="h-6 w-16 text-xs border border-border/50 rounded px-1 bg-background/50 text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/50"
             title="Navigation Amount"
           >
             {navigationAmounts.map(amount => (
@@ -262,11 +262,11 @@ export const ViewportControls: React.FC<ViewportControlsProps> = ({
       
       {/* Viewport History */}
       {viewportHistory.length > 0 && (
-        <div className="bg-slate-950/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-slate-700/50">
+        <div className="bg-background/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-border/50">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <Layers className="w-4 h-4 text-slate-400" />
-              <h3 className="text-xs font-semibold text-slate-100">History</h3>
+              <Layers className="w-4 h-4 text-muted-foreground" />
+              <h3 className="text-xs font-semibold text-foreground">History</h3>
             </div>
             <Button
               onClick={() => setShowHistory(!showHistory)}
@@ -285,13 +285,13 @@ export const ViewportControls: React.FC<ViewportControlsProps> = ({
                 <button
                   key={index}
                   onClick={() => handleRestoreFromHistory(item)}
-                  className="w-full text-left px-2 py-1 text-xs hover:bg-slate-800/50 rounded flex items-center justify-between transition-colors"
+                  className="w-full text-left px-2 py-1 text-xs hover:bg-card/50 rounded flex items-center justify-between transition-colors"
                   title={`Restore viewport from ${item.timestamp.toLocaleTimeString()}`}
                 >
-                  <span className="text-slate-300">
+                  <span className="text-foreground">
                     {item.name || `Viewport ${index + 1}`}
                   </span>
-                  <span className="text-slate-400 text-xs font-mono">
+                  <span className="text-muted-foreground text-xs font-mono">
                     {formatZoomLevel(item.viewport)}
                   </span>
                 </button>
@@ -302,28 +302,28 @@ export const ViewportControls: React.FC<ViewportControlsProps> = ({
       )}
       
       {/* Current Viewport Info */}
-      <div className="bg-slate-950/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-slate-700/50">
+      <div className="bg-background/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-border/50">
         <div className="flex items-center gap-2 mb-2">
-          <Eye className="w-4 h-4 text-slate-400" />
-          <h3 className="text-xs font-semibold text-slate-100">Viewport Info</h3>
+          <Eye className="w-4 h-4 text-muted-foreground" />
+          <h3 className="text-xs font-semibold text-foreground">Viewport Info</h3>
         </div>
         
-        <div className="space-y-1 text-xs text-slate-300">
+        <div className="space-y-1 text-xs text-foreground">
           <div className="flex justify-between">
             <span>Zoom:</span>
-            <span className="font-mono font-medium text-amber-300">{formatZoomLevel(viewport)}</span>
+            <span className="font-mono font-medium text-warning">{formatZoomLevel(viewport)}</span>
           </div>
           <div className="flex justify-between">
             <span>Center X:</span>
-            <span className="font-mono text-amber-300">{Math.round(viewport.centerX)}mm</span>
+            <span className="font-mono text-warning">{Math.round(viewport.centerX)}mm</span>
           </div>
           <div className="flex justify-between">
             <span>Center Y:</span>
-            <span className="font-mono text-amber-300">{Math.round(viewport.centerY)}mm</span>
+            <span className="font-mono text-warning">{Math.round(viewport.centerY)}mm</span>
           </div>
           <div className="flex justify-between">
             <span>Elements:</span>
-            <span className="font-mono text-amber-300">
+            <span className="font-mono text-warning">
               {geometry.rectangles.length + geometry.circles.length + 
                geometry.lines.length + geometry.arcs.length + geometry.polygons.length}
             </span>

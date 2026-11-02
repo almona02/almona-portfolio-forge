@@ -202,20 +202,20 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
       </div>
 
       {/* System Constraints Display */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <h4 className="typography-h4 text-gray-700 text-sm mb-3">System Constraints</h4>
+      <div className="bg-background border border-border rounded-lg p-4">
+        <h4 className="typography-h4 text-foreground text-sm mb-3">System Constraints</h4>
         <div className="grid grid-cols-2 gap-4 text-xs">
           <div>
-            <span className="text-gray-500">Width Range:</span>
+            <span className="text-muted-foreground">Width Range:</span>
             <span className="font-mono font-bold ml-2">{constraints.minWidthMm} - {constraints.maxWidthMm} mm</span>
           </div>
           <div>
-            <span className="text-gray-500">Height Range:</span>
+            <span className="text-muted-foreground">Height Range:</span>
             <span className="font-mono font-bold ml-2">{constraints.minHeightMm} - {constraints.maxHeightMm} mm</span>
           </div>
           {constraints.maxSashWeightKg && (
             <div>
-              <span className="text-gray-500">Max Sash Weight:</span>
+              <span className="text-muted-foreground">Max Sash Weight:</span>
               <span className="font-mono font-bold ml-2">{constraints.maxSashWeightKg} kg</span>
             </div>
           )}
@@ -228,7 +228,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
         disabled={isRunning}
         className={`w-full py-4 rounded-lg font-bold text-white transition-all ${
           isRunning
-            ? 'bg-gray-400 cursor-not-allowed'
+            ? 'bg-muted cursor-not-allowed'
             : 'bg-[#003366] hover:bg-[#004488] shadow-lg hover:shadow-xl'
         }`}
       >
@@ -247,7 +247,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
 
       {/* Progress Bar */}
       {isRunning && (
-        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+        <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
           <div
             className="bg-[#003366] h-3 rounded-full transition-all duration-300"
             style={{ width: `${progress}%` }}
@@ -283,27 +283,27 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
             
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
-                <div className="text-gray-500 text-xs">Pass Rate</div>
+                <div className="text-muted-foreground text-xs">Pass Rate</div>
                 <div className="text-2xl font-mono font-bold text-[#003366]">
                   {currentReport.passRate.toFixed(1)}%
                 </div>
               </div>
               <div>
-                <div className="text-gray-500 text-xs">Passed</div>
-                <div className="text-2xl font-mono font-bold text-green-600">
+                <div className="text-muted-foreground text-xs">Passed</div>
+                <div className="text-2xl font-mono font-bold text-success">
                   {currentReport.passedTests}
                 </div>
               </div>
               <div>
-                <div className="text-gray-500 text-xs">Failed</div>
-                <div className="text-2xl font-mono font-bold text-red-600">
+                <div className="text-muted-foreground text-xs">Failed</div>
+                <div className="text-2xl font-mono font-bold text-destructive">
                   {currentReport.failedTests}
                 </div>
               </div>
             </div>
 
             {currentReport.validatedAt && (
-              <div className="text-xs text-gray-500 mt-3">
+              <div className="text-xs text-muted-foreground mt-3">
                 Validated: {currentReport.validatedAt.toLocaleString()}
               </div>
             )}
@@ -329,7 +329,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
               </h4>
               <div className="space-y-2 text-xs">
                 {currentReport.failures.slice(0, 10).map((failure, i) => (
-                  <div key={i} className="bg-white rounded p-2 border border-red-200">
+                  <div key={i} className="bg-card rounded p-2 border border-red-200">
                     <div className="font-mono font-bold">
                       {failure.dimensions.width} × {failure.dimensions.height} mm
                     </div>
@@ -339,7 +339,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
                   </div>
                 ))}
                 {currentReport.failures.length > 10 && (
-                  <div className="text-red-600 text-center">
+                  <div className="text-destructive text-center">
                     ... and {currentReport.failures.length - 10} more
                   </div>
                 )}

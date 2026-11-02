@@ -446,11 +446,11 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col bg-slate-900 border-amber-600/30">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col bg-background border-amber-600/30">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-amber-200 flex items-center gap-2">
-              <Settings className="h-5 w-5 text-amber-400" />
+            <DialogTitle className="text-warning flex items-center gap-2">
+              <Settings className="h-5 w-5 text-warning" />
               Enhanced Pricing Configuration
             </DialogTitle>
             <div className="flex gap-2">
@@ -458,7 +458,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                 variant="outline"
                 size="sm"
                 onClick={handleExport}
-                className="border-amber-500/30 text-amber-300"
+                className="border-amber-500/30 text-warning"
               >
                 <Download className="h-4 w-4 mr-1" />
                 Export
@@ -467,7 +467,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                 variant="outline"
                 size="sm"
                 onClick={() => onOpenChange(false)}
-                className="border-slate-700 text-slate-400"
+                className="border-border text-muted-foreground"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -476,7 +476,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="grid w-full grid-cols-5 bg-slate-800/50">
+          <TabsList className="grid w-full grid-cols-5 bg-card/50">
             <TabsTrigger value="general" className="text-xs">General</TabsTrigger>
             <TabsTrigger value="quantity" className="text-xs">Quantity Breaks</TabsTrigger>
             <TabsTrigger value="history" className="text-xs">Price History</TabsTrigger>
@@ -504,19 +504,19 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
 
             {/* Quantity Breaks Tab */}
             <TabsContent value="quantity" className="m-0 space-y-4">
-              <Card className="bg-slate-800/50 border-slate-700/50">
+              <Card className="bg-card/50 border-border/50">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="text-amber-200 text-sm">Volume Discount Tiers</CardTitle>
-                      <CardDescription className="text-xs text-slate-400">
+                      <CardTitle className="text-warning text-sm">Volume Discount Tiers</CardTitle>
+                      <CardDescription className="text-xs text-muted-foreground">
                         Configure quantity-based pricing discounts
                       </CardDescription>
                     </div>
                     <Button
                       size="sm"
                       onClick={handleAddQuantityBreak}
-                      className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30"
+                      className="bg-amber-500/20 hover:bg-amber-500/30 text-warning border border-amber-500/30"
                     >
                       <Plus className="h-3 w-3 mr-1" />
                       Add Tier
@@ -526,23 +526,23 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                 <CardContent>
                   <Table>
                     <TableHeader>
-                      <TableRow className="border-slate-700/50">
-                        <TableHead className="text-amber-200 text-xs">Min Qty</TableHead>
-                        <TableHead className="text-amber-200 text-xs">Max Qty</TableHead>
-                        <TableHead className="text-amber-200 text-xs">Discount %</TableHead>
-                        <TableHead className="text-amber-200 text-xs">Customer Type</TableHead>
-                        <TableHead className="text-amber-200 text-xs">Actions</TableHead>
+                      <TableRow className="border-border/50">
+                        <TableHead className="text-warning text-xs">Min Qty</TableHead>
+                        <TableHead className="text-warning text-xs">Max Qty</TableHead>
+                        <TableHead className="text-warning text-xs">Discount %</TableHead>
+                        <TableHead className="text-warning text-xs">Customer Type</TableHead>
+                        <TableHead className="text-warning text-xs">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {quantityBreaks.map((qb) => (
-                        <TableRow key={qb.id} className="border-slate-700/50">
+                        <TableRow key={qb.id} className="border-border/50">
                           <TableCell>
                             <Input
                               type="number"
                               value={qb.minQuantity}
                               onChange={(e) => handleUpdateQuantityBreak(qb.id, 'minQuantity', parseInt(e.target.value) || 0)}
-                              className="w-20 h-8 bg-slate-900/50 border-slate-700 text-amber-200 text-xs"
+                              className="w-20 h-8 bg-background/50 border-border text-warning text-xs"
                             />
                           </TableCell>
                           <TableCell>
@@ -551,7 +551,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                               value={qb.maxQuantity || ''}
                               onChange={(e) => handleUpdateQuantityBreak(qb.id, 'maxQuantity', e.target.value ? parseInt(e.target.value) : undefined)}
                               placeholder="∞"
-                              className="w-20 h-8 bg-slate-900/50 border-slate-700 text-amber-200 text-xs"
+                              className="w-20 h-8 bg-background/50 border-border text-warning text-xs"
                             />
                           </TableCell>
                           <TableCell>
@@ -560,7 +560,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                               step="0.1"
                               value={qb.discountPercent}
                               onChange={(e) => handleUpdateQuantityBreak(qb.id, 'discountPercent', parseFloat(e.target.value) || 0)}
-                              className="w-20 h-8 bg-slate-900/50 border-slate-700 text-amber-200 text-xs"
+                              className="w-20 h-8 bg-background/50 border-border text-warning text-xs"
                             />
                           </TableCell>
                           <TableCell>
@@ -568,7 +568,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                               value={qb.customerType || 'retail'}
                               onValueChange={(value) => handleUpdateQuantityBreak(qb.id, 'customerType', value)}
                             >
-                              <SelectTrigger className="w-32 h-8 bg-slate-900/50 border-slate-700 text-amber-200 text-xs">
+                              <SelectTrigger className="w-32 h-8 bg-background/50 border-border text-warning text-xs">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -584,7 +584,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                               variant="ghost"
                               size="sm"
                               onClick={() => handleDeleteQuantityBreak(qb.id)}
-                              className="h-6 w-6 p-0 text-red-400 hover:text-red-300"
+                              className="h-6 w-6 p-0 text-destructive hover:text-destructive"
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>
@@ -599,12 +599,12 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
 
             {/* Price History Tab */}
             <TabsContent value="history" className="m-0 space-y-4">
-              <Card className="bg-slate-800/50 border-slate-700/50">
+              <Card className="bg-card/50 border-border/50">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="text-amber-200 text-sm">Price History & Versioning</CardTitle>
-                      <CardDescription className="text-xs text-slate-400">
+                      <CardTitle className="text-warning text-sm">Price History & Versioning</CardTitle>
+                      <CardDescription className="text-xs text-muted-foreground">
                         Audit trail of all price changes with rollback capability
                       </CardDescription>
                     </div>
@@ -612,7 +612,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                       variant="outline"
                       size="sm"
                       onClick={handleExportCSV}
-                      className="border-amber-500/30 text-amber-300"
+                      className="border-amber-500/30 text-warning"
                     >
                       <Download className="h-3 w-3 mr-1" />
                       Export CSV
@@ -622,29 +622,29 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                 <CardContent>
                   <div className="space-y-2 max-h-96 overflow-y-auto">
                     {priceHistory.length === 0 ? (
-                      <div className="text-center py-8 text-slate-400 text-sm">No price history found</div>
+                      <div className="text-center py-8 text-muted-foreground text-sm">No price history found</div>
                     ) : (
                       priceHistory.map((entry) => (
                         <div
                           key={entry.id}
-                          className="p-3 bg-slate-900/50 rounded-lg border border-slate-700/50 flex items-center justify-between"
+                          className="p-3 bg-background/50 rounded-lg border border-border/50 flex items-center justify-between"
                         >
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-amber-200 font-semibold text-sm">{entry.entityName}</span>
-                              <Badge variant="outline" className="text-xs border-slate-700 text-slate-400">
+                              <span className="text-warning font-semibold text-sm">{entry.entityName}</span>
+                              <Badge variant="outline" className="text-xs border-border text-muted-foreground">
                                 {entry.entityType}
                               </Badge>
-                              <Badge variant="outline" className="text-xs border-slate-700 text-slate-400">
+                              <Badge variant="outline" className="text-xs border-border text-muted-foreground">
                                 v{entry.version}
                               </Badge>
                             </div>
-                            <div className="flex items-center gap-4 text-xs text-slate-400">
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
                               <span>
                                 {formatCurrency(entry.oldPrice, entry.currency)} → {formatCurrency(entry.newPrice, entry.currency)}
                               </span>
                               {entry.changePercent !== 0 && (
-                                <span className={`flex items-center gap-1 ${entry.changePercent > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                                <span className={`flex items-center gap-1 ${entry.changePercent > 0 ? 'text-destructive' : 'text-success'}`}>
                                   {entry.changePercent > 0 ? (
                                     <TrendingUp className="h-3 w-3" />
                                   ) : (
@@ -655,13 +655,13 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                               )}
                               <span>{entry.timestamp.toLocaleString()}</span>
                             </div>
-                            <div className="text-xs text-slate-500 mt-1">{entry.reason}</div>
+                            <div className="text-xs text-muted-foreground mt-1">{entry.reason}</div>
                           </div>
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => void handleRollbackPrice(entry)}
-                            className="ml-4 border-amber-500/30 text-amber-300 hover:bg-amber-500/10"
+                            className="ml-4 border-amber-500/30 text-warning hover:bg-amber-500/10"
                           >
                             <ArrowLeft className="h-3 w-3 mr-1" />
                             Rollback
@@ -676,12 +676,12 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
 
             {/* Exchange Rates Tab */}
             <TabsContent value="exchange" className="m-0 space-y-4">
-              <Card className="bg-slate-800/50 border-slate-700/50">
+              <Card className="bg-card/50 border-border/50">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="text-amber-200 text-sm">Exchange Rate Management</CardTitle>
-                      <CardDescription className="text-xs text-slate-400">
+                      <CardTitle className="text-warning text-sm">Exchange Rate Management</CardTitle>
+                      <CardDescription className="text-xs text-muted-foreground">
                         Real-time exchange rates with automatic currency conversion
                       </CardDescription>
                     </div>
@@ -690,7 +690,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                       size="sm"
                       onClick={() => void loadExchangeRates()}
                       disabled={loadingRates}
-                      className="border-amber-500/30 text-amber-300"
+                      className="border-amber-500/30 text-warning"
                     >
                       {loadingRates ? (
                         <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
@@ -704,34 +704,34 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                 <CardContent>
                   <div className="space-y-3">
                     {exchangeRates.length === 0 ? (
-                      <div className="text-center py-8 text-slate-400 text-sm">No exchange rates loaded</div>
+                      <div className="text-center py-8 text-muted-foreground text-sm">No exchange rates loaded</div>
                     ) : (
                       exchangeRates.map((rate, index) => (
                         <div
                           key={index}
-                          className="p-4 bg-slate-900/50 rounded-lg border border-slate-700/50 flex items-center justify-between"
+                          className="p-4 bg-background/50 rounded-lg border border-border/50 flex items-center justify-between"
                         >
                           <div className="flex items-center gap-3">
-                            <DollarSign className="h-4 w-4 text-amber-400" />
+                            <DollarSign className="h-4 w-4 text-warning" />
                             <div>
-                              <div className="text-amber-200 font-semibold text-sm">
+                              <div className="text-warning font-semibold text-sm">
                                 {rate.from} → {rate.to}
                               </div>
-                              <div className="text-xs text-slate-400">
+                              <div className="text-xs text-muted-foreground">
                                 Last updated: {rate.lastUpdated.toLocaleString()}
                               </div>
                             </div>
                           </div>
                           <div className="flex items-center gap-4">
                             <div className="text-right">
-                              <div className="text-amber-300 font-mono font-bold text-lg">
+                              <div className="text-warning font-mono font-bold text-lg">
                                 {rate.rate.toFixed(4)}
                               </div>
-                              <Badge variant="outline" className="text-xs border-slate-700 text-slate-400 mt-1">
+                              <Badge variant="outline" className="text-xs border-border text-muted-foreground mt-1">
                                 {rate.source}
                               </Badge>
                             </div>
-                            <div className="text-xs text-slate-500">
+                            <div className="text-xs text-muted-foreground">
                               {formatCurrency(100, rate.from)} = {formatCurrency(100 * rate.rate, rate.to)}
                             </div>
                           </div>
@@ -747,10 +747,10 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
             <TabsContent value="bulk" className="m-0 space-y-4">
               {/* Validation Alerts */}
               {validationAlerts.length > 0 && (
-                <Card className="bg-slate-800/50 border-slate-700/50">
+                <Card className="bg-card/50 border-border/50">
                   <CardHeader>
-                    <CardTitle className="text-amber-200 text-sm flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                    <CardTitle className="text-warning text-sm flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-warning" />
                       Price Validation Alerts ({validationAlerts.length})
                     </CardTitle>
                   </CardHeader>
@@ -777,16 +777,16 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
               )}
 
               {/* Bulk Import */}
-              <Card className="bg-slate-800/50 border-slate-700/50">
+              <Card className="bg-card/50 border-border/50">
                 <CardHeader>
-                  <CardTitle className="text-amber-200 text-sm">Bulk Price Import/Export</CardTitle>
-                  <CardDescription className="text-xs text-slate-400">
+                  <CardTitle className="text-warning text-sm">Bulk Price Import/Export</CardTitle>
+                  <CardDescription className="text-xs text-muted-foreground">
                     Import price updates from CSV or Excel files
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="border-2 border-dashed border-slate-700 rounded-lg p-8 text-center">
-                    <Upload className="h-12 w-12 mx-auto mb-4 text-slate-400" />
+                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                    <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                     <Label htmlFor="bulk-import-file" className="cursor-pointer">
                       <Input
                         ref={fileInputRef}
@@ -802,10 +802,10 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                     </Label>
                     {bulkImportFile && (
                       <div className="mt-4">
-                        <div className="text-sm text-slate-400">{bulkImportFile.name}</div>
+                        <div className="text-sm text-muted-foreground">{bulkImportFile.name}</div>
                         <Button
                           onClick={() => void handleBulkImport()}
-                          className="mt-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30"
+                          className="mt-2 bg-amber-500/20 hover:bg-amber-500/30 text-warning border border-amber-500/30"
                         >
                           <Upload className="h-4 w-4 mr-2" />
                           Import Prices
@@ -814,19 +814,19 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                     )}
                     {bulkImportProgress > 0 && (
                       <div className="mt-4">
-                        <div className="w-full bg-slate-900 rounded-full h-2">
+                        <div className="w-full bg-background rounded-full h-2">
                           <div
                             className="bg-amber-500 h-2 rounded-full transition-all"
                             style={{ width: `${bulkImportProgress}%` }}
                           />
                         </div>
-                        <div className="text-sm text-slate-400 text-center mt-2">
+                        <div className="text-sm text-muted-foreground text-center mt-2">
                           Processing... {Math.round(bulkImportProgress)}%
                         </div>
                       </div>
                     )}
                   </div>
-                  <div className="text-xs text-slate-400 p-4 bg-slate-900/50 rounded-lg">
+                  <div className="text-xs text-muted-foreground p-4 bg-background/50 rounded-lg">
                     <strong>CSV Format:</strong> Entity ID,Entity Type,Old Price,New Price,Reason
                     <br />
                     <strong>Example:</strong> profile-123,material,25.50,26.00,Supplier price increase

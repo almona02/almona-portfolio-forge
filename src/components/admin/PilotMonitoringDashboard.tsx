@@ -35,11 +35,11 @@ export const PilotMonitoringDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 p-6">
+      <div className="min-h-screen bg-background p-6">
         <div className="max-w-6xl mx-auto">
-          <Card className="bg-gray-900 border-gray-800 card-dark">
+          <Card className="bg-background border-border card-dark">
             <CardContent className="p-6 text-center">
-              <div className="text-gray-400">Loading metrics...</div>
+              <div className="text-muted-foreground">Loading metrics...</div>
             </CardContent>
           </Card>
         </div>
@@ -52,12 +52,12 @@ export const PilotMonitoringDashboard: React.FC = () => {
   const unresolvedIssues = issues.filter(i => !i.resolvedAt);
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        <Card className="bg-gray-900 border-gray-800 card-dark">
+        <Card className="bg-background border-border card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Pilot Monitoring Dashboard</CardTitle>
-            <p className="text-gray-400">Real-time monitoring of pilot program</p>
+            <p className="text-muted-foreground">Real-time monitoring of pilot program</p>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="overview">
@@ -69,28 +69,28 @@ export const PilotMonitoringDashboard: React.FC = () => {
 
               <TabsContent value="overview" className="mt-6">
                 <div className="grid grid-cols-4 gap-4">
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">Total Workshops</div>
+                      <div className="text-sm text-muted-foreground">Total Workshops</div>
                       <div className="text-2xl font-bold">{metrics?.totalWorkshops ?? 0}</div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-card border-border">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">Total Projects</div>
+                      <div className="text-sm text-muted-foreground">Total Projects</div>
                       <div className="text-2xl font-bold">{metrics?.totalProjects ?? 0}</div>
                     </CardContent>
                   </Card>
                   <Card className="bg-red-900/20 border-red-600">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">Critical Issues</div>
-                      <div className="text-2xl font-bold text-red-400">{criticalIssues.length}</div>
+                      <div className="text-sm text-muted-foreground">Critical Issues</div>
+                      <div className="text-2xl font-bold text-destructive">{criticalIssues.length}</div>
                     </CardContent>
                   </Card>
                   <Card className="bg-yellow-900/20 border-yellow-600">
                     <CardContent className="p-4">
-                      <div className="text-sm text-gray-400">High Priority</div>
-                      <div className="text-2xl font-bold text-yellow-400">{highIssues.length}</div>
+                      <div className="text-sm text-muted-foreground">High Priority</div>
+                      <div className="text-2xl font-bold text-warning">{highIssues.length}</div>
                     </CardContent>
                   </Card>
                 </div>
@@ -101,7 +101,7 @@ export const PilotMonitoringDashboard: React.FC = () => {
                   {unresolvedIssues.map((issue) => (
                     <Card
                       key={issue.id}
-                      className={`bg-gray-800 border-gray-700 ${
+                      className={`bg-card border-border ${
                         issue.severity === 'critical' ? 'border-red-600' :
                         issue.severity === 'high' ? 'border-yellow-600' : ''
                       }`}
@@ -110,18 +110,18 @@ export const PilotMonitoringDashboard: React.FC = () => {
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                              {issue.severity === 'critical' && <AlertCircle className="h-5 w-5 text-red-400" />}
-                              {issue.severity === 'high' && <Clock className="h-5 w-5 text-yellow-400" />}
+                              {issue.severity === 'critical' && <AlertCircle className="h-5 w-5 text-destructive" />}
+                              {issue.severity === 'high' && <Clock className="h-5 w-5 text-warning" />}
                               <span className="font-semibold capitalize">{issue.severity}</span>
-                              <span className="text-sm text-gray-400">- {issue.workshopId}</span>
+                              <span className="text-sm text-muted-foreground">- {issue.workshopId}</span>
                             </div>
-                            <div className="text-sm text-gray-300">{issue.description}</div>
-                            <div className="text-xs text-gray-500 mt-2">
+                            <div className="text-sm text-foreground">{issue.description}</div>
+                            <div className="text-xs text-muted-foreground mt-2">
                               Reported: {issue.reportedAt.toLocaleString()}
                             </div>
                           </div>
                           {issue.resolvedAt && (
-                            <CheckCircle2 className="h-5 w-5 text-green-400" />
+                            <CheckCircle2 className="h-5 w-5 text-success" />
                           )}
                         </div>
                       </CardContent>
@@ -133,21 +133,21 @@ export const PilotMonitoringDashboard: React.FC = () => {
               <TabsContent value="metrics" className="mt-6">
                 {metrics && (
                   <div className="grid grid-cols-3 gap-4">
-                    <Card className="bg-gray-800 border-gray-700">
+                    <Card className="bg-card border-border">
                       <CardContent className="p-4">
-                        <div className="text-sm text-gray-400">Average Accuracy</div>
+                        <div className="text-sm text-muted-foreground">Average Accuracy</div>
                         <div className="text-2xl font-bold">{Number(metrics.averageAccuracy).toFixed(1)}%</div>
                       </CardContent>
                     </Card>
-                    <Card className="bg-gray-800 border-gray-700">
+                    <Card className="bg-card border-border">
                       <CardContent className="p-4">
-                        <div className="text-sm text-gray-400">Time Savings</div>
+                        <div className="text-sm text-muted-foreground">Time Savings</div>
                         <div className="text-2xl font-bold">{Number(metrics.averageTimeSavings).toFixed(1)} hrs/week</div>
                       </CardContent>
                     </Card>
-                    <Card className="bg-gray-800 border-gray-700">
+                    <Card className="bg-card border-border">
                       <CardContent className="p-4">
-                        <div className="text-sm text-gray-400">Satisfaction</div>
+                        <div className="text-sm text-muted-foreground">Satisfaction</div>
                         <div className="text-2xl font-bold">{Number(metrics.averageSatisfaction).toFixed(1)}/10</div>
                       </CardContent>
                     </Card>

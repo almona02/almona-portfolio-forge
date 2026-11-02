@@ -47,28 +47,28 @@ export function CommandPalette({ defaultOpen = false }: { defaultOpen?: boolean 
       onOpenChange={setOpen}
       label="Global Command Menu"
       overlayClassName="fixed inset-0 z-[1999] bg-black/50"
-      contentClassName="public-command-dialog fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[640px] w-[calc(100%-2rem)] bg-slate-950/95 border border-slate-800 shadow-2xl rounded-xl z-[2000] overflow-hidden"
+      contentClassName="public-command-dialog fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[640px] w-[calc(100%-2rem)] bg-background/95 border border-border shadow-2xl rounded-xl z-[2000] overflow-hidden"
       className="w-full"
     >
-      <div className="flex items-center border-b border-slate-800 px-3 h-14">
+      <div className="flex items-center border-b border-border px-3 h-14">
         <Search className="mr-2 h-4 w-4 shrink-0 text-amber-500" />
         <Command.Input
           placeholder="Type a command or search..."
-          className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-slate-500 text-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground text-foreground disabled:cursor-not-allowed disabled:opacity-50"
         />
         <div className="hidden lg:flex items-center gap-1">
-          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-slate-700 bg-slate-900 px-1.5 font-mono text-[10px] font-medium text-slate-400 opacity-100">
+          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-border bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
             <span className="text-xs">CTRL</span>K
           </kbd>
         </div>
       </div>
 
       <Command.List className="max-h-[300px] overflow-y-auto overflow-x-hidden p-2 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
-        <Command.Empty className="py-6 text-center text-sm text-slate-500">
+        <Command.Empty className="py-6 text-center text-sm text-muted-foreground">
           No results found.
         </Command.Empty>
 
-        <Command.Group heading="Navigation" className="text-slate-400 px-2 py-1.5 text-xs font-medium uppercase tracking-wider [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:text-slate-500">
+        <Command.Group heading="Navigation" className="text-muted-foreground px-2 py-1.5 text-xs font-medium uppercase tracking-wider [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:text-muted-foreground">
           <CommandItem onSelect={() => runCommand(() => navigate('/'))}>
             <Home className="mr-2 h-4 w-4 text-amber-500" />
             Home
@@ -87,32 +87,32 @@ export function CommandPalette({ defaultOpen = false }: { defaultOpen?: boolean 
           </CommandItem>
         </Command.Group>
 
-        <Command.Group heading="Drafting Actions" className="text-slate-400 px-2 py-1.5 text-xs font-medium uppercase tracking-wider [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:text-slate-500">
+        <Command.Group heading="Drafting Actions" className="text-muted-foreground px-2 py-1.5 text-xs font-medium uppercase tracking-wider [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:text-muted-foreground">
           <CommandItem onSelect={() => runCommand(() => console.log('New Project'))}>
-            <Plus className="mr-2 h-4 w-4 text-emerald-500" />
+            <Plus className="mr-2 h-4 w-4 text-success" />
             New Project
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => console.log('Save Project'))}>
-            <Save className="mr-2 h-4 w-4 text-emerald-500" />
+            <Save className="mr-2 h-4 w-4 text-success" />
             Save Project
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => console.log('Export PDF'))}>
-            <Download className="mr-2 h-4 w-4 text-emerald-500" />
+            <Download className="mr-2 h-4 w-4 text-success" />
             Export to PDF
           </CommandItem>
         </Command.Group>
 
-        <Command.Group heading="Settings" className="text-slate-400 px-2 py-1.5 text-xs font-medium uppercase tracking-wider [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:text-slate-500">
+        <Command.Group heading="Settings" className="text-muted-foreground px-2 py-1.5 text-xs font-medium uppercase tracking-wider [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:text-muted-foreground">
           <CommandItem onSelect={() => runCommand(() => navigate('/settings'))}>
-            <User className="mr-2 h-4 w-4 text-slate-400" />
+            <User className="mr-2 h-4 w-4 text-muted-foreground" />
             Profile
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => navigate('/settings/system'))}>
-            <Settings className="mr-2 h-4 w-4 text-slate-400" />
+            <Settings className="mr-2 h-4 w-4 text-muted-foreground" />
             System Preferences
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => shortcutManager.handleKeyDown(new KeyboardEvent('keydown', { key: '?', bubbles: true })))}>
-            <span className="mr-2 h-4 w-4 flex items-center justify-center font-bold text-slate-400">?</span>
+            <span className="mr-2 h-4 w-4 flex items-center justify-center font-bold text-muted-foreground">?</span>
             Keyboard Shortcuts
           </CommandItem>
         </Command.Group>
@@ -127,7 +127,7 @@ function CommandItem({ children, onSelect }: { children: React.ReactNode, onSele
       onSelect={onSelect}
       className={cn(
         "relative flex cursor-default select-none items-center rounded-sm px-2 py-2 text-sm outline-none",
-        "text-slate-300 aria-selected:bg-amber-500/10 aria-selected:text-amber-400",
+        "text-foreground aria-selected:bg-amber-500/10 aria-selected:text-amber-400",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         "transition-colors duration-100 ease-in-out cursor-pointer"
       )}

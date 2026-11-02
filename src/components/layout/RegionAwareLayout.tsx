@@ -56,10 +56,10 @@ export const RegionAwareLayout: React.FC<RegionAwareLayoutProps> = ({
 
   if (error) {
     return (
-      <div className="min-h-screen bg-almona-dark text-white flex items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="text-center">
           <h2 className="typography-h2 text-xl font-semibold mb-2">Region Detection Error</h2>
-          <p className="text-gray-400 mb-4">{error}</p>
+          <p className="text-muted-foreground mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
             className="btn-primary"
@@ -239,14 +239,14 @@ const RegionalFeaturesOverlay: React.FC<RegionalFeaturesOverlayProps> = ({ regio
   }
 
   return (
-    <div className="regional-features-overlay fixed bottom-4 right-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 max-w-sm border border-gray-200 dark:border-gray-700">
+    <div className="regional-features-overlay fixed bottom-4 right-4 z-50 bg-card dark:bg-card rounded-lg shadow-xl p-4 max-w-sm border border-border dark:border-border">
       <div className="flex justify-between items-center mb-3">
-        <h3 className="typography-h3 text-gray-900 dark:text-white">
+        <h3 className="typography-h3 text-foreground dark:text-foreground">
           Regional Features ({region})
         </h3>
         <button
           onClick={() => setShowFeatures(false)}
-          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground transition-colors p-1 rounded hover:bg-muted dark:hover:bg-muted"
           title="Close"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -289,7 +289,7 @@ const RegionalFeaturesOverlay: React.FC<RegionalFeaturesOverlayProps> = ({ regio
         )}
 
         {/* Common features */}
-        <div className="text-sm text-gray-600 dark:text-gray-400">
+        <div className="text-sm text-muted-foreground dark:text-muted-foreground">
           <p>Currency: {config.currency.symbol} {config.currency.code}</p>
           <p>Language: {config.language}</p>
           <p>Tax Rate: {config.tax.vatRate * 100}%</p>

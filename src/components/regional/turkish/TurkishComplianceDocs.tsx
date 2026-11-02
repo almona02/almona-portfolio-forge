@@ -326,9 +326,9 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
   };
 
   return (
-    <Card className={`bg-almona-dark border-almona-light/20 ${className}`}>
+    <Card className={`bg-background border-border/20 ${className}`}>
       <CardHeader>
-        <CardTitle className="text-white flex items-center space-x-2">
+        <CardTitle className="text-foreground flex items-center space-x-2">
           <span>🇹🇷</span>
           <span>{t('turkish.compliance.title', 'Türk Uyumluluk Belgeleri')}</span>
         </CardTitle>
@@ -336,7 +336,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
       <CardContent className="space-y-6">
         {/* Document Type Selection */}
         <div className="space-y-2">
-          <Label className="typography-label text-gray-300">
+          <Label className="typography-label text-foreground">
             {t('turkish.compliance.documentType', 'Belge Türü')}
           </Label>
             <Select value={selectedDocument} onValueChange={setSelectedDocument}>
@@ -359,98 +359,98 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
 
         {/* Company Information */}
         <div className="space-y-3">
-          <h4 className="typography-h4 text-white font-medium">
+          <h4 className="typography-h4 text-foreground font-medium">
             {t('turkish.compliance.companyInfo', 'Firma Bilgileri')}
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="companyName" className="typography-label text-gray-300 text-sm">
+              <Label htmlFor="companyName" className="typography-label text-foreground text-sm">
                 {t('turkish.compliance.companyName', 'Firma Adı')}
               </Label>
               <Input
                 id="companyName"
                 value={companyInfo.name}
                 onChange={(e) => handleCompanyInfoChange('name', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white text-sm"
+                className="bg-muted border-border text-foreground text-sm"
               />
             </div>
             <div>
-              <Label htmlFor="companyTaxNumber" className="typography-label text-gray-300 text-sm">
+              <Label htmlFor="companyTaxNumber" className="typography-label text-foreground text-sm">
                 {t('turkish.compliance.taxNumber', 'Vergi Numarası')}
               </Label>
               <Input
                 id="companyTaxNumber"
                 value={companyInfo.taxNumber}
                 onChange={(e) => handleCompanyInfoChange('taxNumber', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white text-sm"
+                className="bg-muted border-border text-foreground text-sm"
               />
             </div>
             <div className="md:col-span-2">
-              <Label htmlFor="companyAddress" className="typography-label text-gray-300 text-sm">
+              <Label htmlFor="companyAddress" className="typography-label text-foreground text-sm">
                 {t('turkish.compliance.address', 'Adres')}
               </Label>
               <Textarea
                 id="companyAddress"
                 value={companyInfo.address}
                 onChange={(e) => handleCompanyInfoChange('address', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white text-sm"
+                className="bg-muted border-border text-foreground text-sm"
                 rows={2}
               />
             </div>
           </div>
         </div>
 
-        <Separator className="bg-gray-700" />
+        <Separator className="bg-muted" />
 
         {/* Customer Information */}
         <div className="space-y-3">
-          <h4 className="typography-h4 text-white font-medium">
+          <h4 className="typography-h4 text-foreground font-medium">
             {t('turkish.compliance.customerInfo', 'Müşteri Bilgileri')}
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="customerName" className="typography-label text-gray-300 text-sm">
+              <Label htmlFor="customerName" className="typography-label text-foreground text-sm">
                 {t('turkish.compliance.customerName', 'Müşteri Adı')}
               </Label>
               <Input
                 id="customerName"
                 value={customerInfo.name}
                 onChange={(e) => handleCustomerInfoChange('name', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white text-sm"
+                className="bg-muted border-border text-foreground text-sm"
               />
             </div>
             <div>
-              <Label htmlFor="customerTaxNumber" className="typography-label text-gray-300 text-sm">
+              <Label htmlFor="customerTaxNumber" className="typography-label text-foreground text-sm">
                 {t('turkish.compliance.taxNumber', 'Vergi Numarası')}
               </Label>
               <Input
                 id="customerTaxNumber"
                 value={customerInfo.taxNumber}
                 onChange={(e) => handleCustomerInfoChange('taxNumber', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white text-sm"
+                className="bg-muted border-border text-foreground text-sm"
               />
             </div>
             <div className="md:col-span-2">
-              <Label htmlFor="customerAddress" className="typography-label text-gray-300 text-sm">
+              <Label htmlFor="customerAddress" className="typography-label text-foreground text-sm">
                 {t('turkish.compliance.address', 'Adres')}
               </Label>
               <Textarea
                 id="customerAddress"
                 value={customerInfo.address}
                 onChange={(e) => handleCustomerInfoChange('address', e.target.value)}
-                className="bg-gray-700 border-gray-600 text-white text-sm"
+                className="bg-muted border-border text-foreground text-sm"
                 rows={2}
               />
             </div>
           </div>
         </div>
 
-        <Separator className="bg-gray-700" />
+        <Separator className="bg-muted" />
 
         {/* Products */}
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <h4 className="typography-h4 text-white font-medium">
+            <h4 className="typography-h4 text-foreground font-medium">
               {t('turkish.compliance.products', 'Ürünler')}
             </h4>
             <Button
@@ -463,38 +463,38 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
           </div>
           
           {products.map((product, index) => (
-            <div key={product.id} className="p-3 bg-gray-800/50 rounded border border-gray-700">
+            <div key={product.id} className="p-3 bg-card/50 rounded border border-border">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <Label className="typography-label text-gray-300 text-sm">
+                  <Label className="typography-label text-foreground text-sm">
                     {t('turkish.compliance.productName', 'Ürün Adı')}
                   </Label>
                   <Input
                     value={product.nameTr}
                     onChange={(e) => handleProductChange(index, 'nameTr', e.target.value)}
-                    className="bg-gray-700 border-gray-600 text-white text-sm"
+                    className="bg-muted border-border text-foreground text-sm"
                   />
                 </div>
                 <div>
-                  <Label className="typography-label text-gray-300 text-sm">
+                  <Label className="typography-label text-foreground text-sm">
                     {t('turkish.compliance.quantity', 'Miktar')}
                   </Label>
                   <Input
                     type="number"
                     value={product.quantity}
                     onChange={(e) => handleProductChange(index, 'quantity', parseInt(e.target.value) || 1)}
-                    className="bg-gray-700 border-gray-600 text-white text-sm"
+                    className="bg-muted border-border text-foreground text-sm"
                   />
                 </div>
                 <div>
-                  <Label className="typography-label text-gray-300 text-sm">
+                  <Label className="typography-label text-foreground text-sm">
                     {t('turkish.compliance.unitPrice', 'Birim Fiyat')}
                   </Label>
                   <Input
                     type="number"
                     value={product.unitPrice}
                     onChange={(e) => handleProductChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
-                    className="bg-gray-700 border-gray-600 text-white text-sm"
+                    className="bg-muted border-border text-foreground text-sm"
                   />
                 </div>
               </div>
@@ -506,7 +506,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
                   onClick={() => removeProduct(index)}
                   variant="ghost"
                   size="sm"
-                  className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                  className="text-destructive hover:text-destructive hover:bg-red-900/20"
                 >
                   {t('turkish.compliance.remove', 'Kaldır')}
                 </Button>
@@ -528,7 +528,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
             <Button
               onClick={downloadDocument}
               variant="outline"
-              className="border-gray-600 text-gray-300 hover:bg-gray-700"
+              className="border-border text-foreground hover:bg-muted"
             >
               {t('turkish.compliance.download', 'İndir')}
             </Button>
@@ -537,11 +537,11 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
 
         {/* Generated Document Preview */}
         {generatedDocument && (
-          <div className="mt-4 p-3 bg-gray-800/50 rounded border border-gray-700">
-            <h5 className="text-white font-medium mb-2">
+          <div className="mt-4 p-3 bg-card/50 rounded border border-border">
+            <h5 className="text-foreground font-medium mb-2">
               {t('turkish.compliance.generatedDocument', 'Oluşturulan Belge')}
             </h5>
-            <div className="text-sm text-gray-300">
+            <div className="text-sm text-foreground">
               <p><strong>{t('turkish.compliance.documentType', 'Belge Türü')}:</strong> {generatedDocument.type || 'invoice'}</p>
               <p><strong>{t('turkish.compliance.documentNumber', 'Belge No')}:</strong> {generatedDocument.invoiceNumber || generatedDocument.number}</p>
               <p><strong>{t('turkish.compliance.date', 'Tarih')}:</strong> {formatTurkishDate(generatedDocument.date)}</p>

@@ -62,7 +62,7 @@ export const AssignGlazingDialog: React.FC<AssignGlazingDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-gray-900 border-gray-700 text-gray-200">
+      <DialogContent className="bg-background border-border text-foreground">
         <DialogHeader>
           <DialogTitle>Assign Glazing</DialogTitle>
         </DialogHeader>
@@ -76,7 +76,7 @@ export const AssignGlazingDialog: React.FC<AssignGlazingDialogProps> = ({
                   name="glazingType"
                   checked={type === 'single'}
                   onChange={() => setType('single')}
-                  className="rounded border-gray-600 bg-gray-800 text-amber-500"
+                  className="rounded border-border bg-card text-warning"
                 />
                 Single glass
               </label>
@@ -86,7 +86,7 @@ export const AssignGlazingDialog: React.FC<AssignGlazingDialogProps> = ({
                   name="glazingType"
                   checked={type === 'double'}
                   onChange={() => setType('double')}
-                  className="rounded border-gray-600 bg-gray-800 text-amber-500"
+                  className="rounded border-border bg-card text-warning"
                 />
                 Double glass
               </label>
@@ -99,7 +99,7 @@ export const AssignGlazingDialog: React.FC<AssignGlazingDialogProps> = ({
                   type="checkbox"
                   checked={georgianBars}
                   onChange={(e) => setGeorgianBars(e.target.checked)}
-                  className="rounded border-gray-600 bg-gray-800 text-amber-500"
+                  className="rounded border-border bg-card text-warning"
                 />
                 <span>Georgian bars (Latish) inside double glazing</span>
               </label>
@@ -110,7 +110,7 @@ export const AssignGlazingDialog: React.FC<AssignGlazingDialogProps> = ({
             <select
               value={color}
               onChange={(e) => setColor(e.target.value)}
-              className="w-full rounded border border-gray-600 bg-gray-800 px-3 py-2 text-gray-200"
+              className="w-full rounded border border-border bg-card px-3 py-2 text-foreground"
             >
               {GLASS_COLORS.map((opt) => (
                 <option key={opt.value || 'clear'} value={opt.value}>
@@ -121,7 +121,7 @@ export const AssignGlazingDialog: React.FC<AssignGlazingDialogProps> = ({
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-gray-600">
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">
             Cancel
           </Button>
           <Button type="button" onClick={handleApply} className="bg-amber-600 hover:bg-amber-700">

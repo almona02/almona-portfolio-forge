@@ -197,13 +197,13 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
   return (
     <>
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`bg-gray-900 border-gray-700 text-white ${DIALOG_DIMENSIONS.MAX_WIDTH} ${DIALOG_DIMENSIONS.MAX_HEIGHT} overflow-y-auto`}>
+      <DialogContent className={`bg-background border-border text-foreground ${DIALOG_DIMENSIONS.MAX_WIDTH} ${DIALOG_DIMENSIONS.MAX_HEIGHT} overflow-y-auto`}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg">
-            <Factory className={`${UI_DIMENSIONS.ICON_LARGE} text-amber-400`} />
+            <Factory className={`${UI_DIMENSIONS.ICON_LARGE} text-warning`} />
             {t('new_project_wizard.title', 'New Project – Professional Header')}
           </DialogTitle>
-          <DialogDescription className="text-xs text-gray-400">
+          <DialogDescription className="text-xs text-muted-foreground">
             {t('new_project_wizard.description', 'Define client, site and system before measuring. This mirrors how mature technical offices structure projects and ensures consistent reports and exports.')}
           </DialogDescription>
         </DialogHeader>
@@ -231,10 +231,10 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
               <div className="btn-primary">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-amber-300">
+                    <p className="text-sm font-medium text-warning">
                       {t('new_project_wizard.project_type', 'Project Type: {name}', { name: getProjectTypeConfig(projectType)?.name || '' })}
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       {getProjectTypeConfig(projectType)?.description}
                     </p>
                   </div>
@@ -256,7 +256,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
               <div>
                 <Label className="typography-label text-xs flex items-center gap-1">
                   {t('new_project_wizard.project_system_packs', 'Project System Packs (multi-select)')}
-                  <span className="text-[10px] text-gray-500">({t('new_project_wizard.use_to_shortlist', 'use to shortlist relevant systems')})</span>
+                  <span className="text-[10px] text-muted-foreground">({t('new_project_wizard.use_to_shortlist', 'use to shortlist relevant systems')})</span>
                 </Label>
               </div>
               <Button
@@ -281,34 +281,34 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                     className={`w-full text-left p-3 rounded border transition-all ${
                       isSelected
                         ? 'border-amber-500 bg-amber-500/10 shadow-[0_0_8px_rgba(249,115,22,0.15)]'
-                        : 'border-gray-800 hover:bg-gray-800/50'
+                        : 'border-border hover:bg-card/50'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
                         <div
                           className={`${UI_DIMENSIONS.CHECKBOX_SIZE} rounded flex items-center justify-center border transition-colors ${
-                            isSelected ? 'bg-amber-500 border-amber-500' : 'border-gray-600 bg-gray-900'
+                            isSelected ? 'bg-amber-500 border-amber-500' : 'border-border bg-background'
                           }`}
                         >
                           {isSelected && (
-                            <svg viewBox="0 0 24 24" className={UI_DIMENSIONS.CHECKMARK_SIZE + ' text-white'} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <svg viewBox="0 0 24 24" className={UI_DIMENSIONS.CHECKMARK_SIZE + ' text-foreground'} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M5 13l4 4L19 7" />
                             </svg>
                           )}
                         </div>
                         <div>
-                          <p className={`text-sm font-semibold ${isSelected ? 'text-amber-100' : 'text-gray-100'}`}>
+                          <p className={`text-sm font-semibold ${isSelected ? 'text-warning' : 'text-foreground'}`}>
                             {pack.meta.name}
                           </p>
-                          <p className="text-[11px] text-gray-400">{pack.meta.brands?.join(', ')}</p>
+                          <p className="text-[11px] text-muted-foreground">{pack.meta.brands?.join(', ')}</p>
                         </div>
                       </div>
                       <div className="flex gap-2 items-center">
-                        <Badge variant="outline" className="text-[10px] border-gray-700">
+                        <Badge variant="outline" className="text-[10px] border-border">
                           {stats.profileCount} {t('new_project_wizard.profiles', 'Profiles')}
                         </Badge>
-                        <Badge variant="outline" className="text-[10px] border-gray-700">
+                        <Badge variant="outline" className="text-[10px] border-border">
                           {stats.accessoryCount} {t('new_project_wizard.accessories', 'Accessories')}
                         </Badge>
                         {pack.meta.id.startsWith('custom') && (
@@ -343,12 +343,12 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label className="typography-label text-xs flex items-center gap-1">
-                <Users className="h-3 w-3 text-amber-400" />
+                <Users className="h-3 w-3 text-warning" />
                 {t('new_project_wizard.client_company', 'Client / Company *')}
               </Label>
               {customers.length > 0 && (
                 <div className="mb-1">
-                  <Label className="typography-label text-[10px] text-gray-400">
+                  <Label className="typography-label text-[10px] text-muted-foreground">
                     {t('new_project_wizard.select_from_saved', 'Select from saved customers')}
                   </Label>
                   <Select
@@ -362,15 +362,15 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                       }
                     }}
                   >
-                    <SelectTrigger className="h-7 text-[11px] bg-gray-800 border-gray-700 mt-0.5">
+                    <SelectTrigger className="h-7 text-[11px] bg-card border-border mt-0.5">
                       <SelectValue placeholder={t('new_project_wizard.choose_saved', 'Choose saved customer (optional)')} />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-64">
+                    <SelectContent className="bg-background border-border text-xs max-h-64">
                       {customers.map((c) => (
                         <SelectItem key={c.id} value={c.id}>
                           <div className="flex flex-col gap-0.5">
-                            <span className="font-medium text-gray-100">{c.name}</span>
-                            <span className="text-[10px] text-gray-500">
+                            <span className="font-medium text-foreground">{c.name}</span>
+                            <span className="text-[10px] text-muted-foreground">
                               {c.contact_person || c.email || c.phone || 'Fabricator customer'}
                             </span>
                           </div>
@@ -384,7 +384,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
                 placeholder={t('new_project_wizard.client_placeholder', 'e.g. ABC Aluminium')}
-                className="h-8 text-xs bg-gray-800 border-gray-700"
+                className="h-8 text-xs bg-card border-border"
               />
             </div>
             <div>
@@ -393,21 +393,21 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
                 placeholder={t('new_project_wizard.project_placeholder', 'e.g. Cairo Compound – Tower B')}
-                className="h-8 text-xs bg-gray-800 border-gray-700"
+                className="h-8 text-xs bg-card border-border"
               />
             </div>
           </div>
 
           <div>
             <Label className="typography-label text-xs flex items-center gap-1">
-              <MapPin className="h-3 w-3 text-blue-400" />
+              <MapPin className="h-3 w-3 text-info" />
               {t('new_project_wizard.site_address', 'Site / Address')}
             </Label>
             <Input
               value={siteName}
               onChange={(e) => setSiteName(e.target.value)}
               placeholder={t('new_project_wizard.site_placeholder', 'e.g. New Cairo, Plot 17')}
-              className="h-8 text-xs bg-gray-800 border-gray-700"
+              className="h-8 text-xs bg-card border-border"
             />
           </div>
 
@@ -418,7 +418,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                 value={contactPhone}
                 onChange={(e) => setContactPhone(e.target.value)}
                 placeholder={t('new_project_wizard.phone_placeholder', '+20...')}
-                className="h-8 text-xs bg-gray-800 border-gray-700"
+                className="h-8 text-xs bg-card border-border"
               />
             </div>
             <div>
@@ -427,7 +427,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                 value={orderNumber}
                 onChange={(e) => setOrderNumber(e.target.value)}
                 placeholder={t('new_project_wizard.order_placeholder', 'Your internal order no.')}
-                className="h-8 text-xs bg-gray-800 border-gray-700"
+                className="h-8 text-xs bg-card border-border"
               />
             </div>
           </div>
@@ -438,7 +438,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
               type="date"
               value={orderDate}
               onChange={(e) => setOrderDate(e.target.value)}
-              className="h-8 text-xs bg-gray-800 border-gray-700"
+              className="h-8 text-xs bg-card border-border"
             />
           </div>
 
@@ -446,10 +446,10 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
             <div>
               <Label className="typography-label text-xs">{t('new_project_wizard.currency', 'Currency')}</Label>
               <Select value={currency} onValueChange={(v) => setCurrency(v)}>
-                <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
+                <SelectTrigger className="h-8 text-xs bg-card border-border">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-900 border-gray-700 text-xs">
+                <SelectContent className="bg-background border-border text-xs">
                   <SelectItem value="EGP">EGP – Egyptian Pound</SelectItem>
                   <SelectItem value="TRY">TRY – Turkish Lira</SelectItem>
                   <SelectItem value="SAR">SAR – Saudi Riyal</SelectItem>
@@ -468,10 +468,10 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                   setRegion(nextRegion);
                 }}
               >
-                <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
+                <SelectTrigger className="h-8 text-xs bg-card border-border">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-900 border-gray-700 text-xs">
+                <SelectContent className="bg-background border-border text-xs">
                   <SelectItem value="egypt">Egypt</SelectItem>
                   <SelectItem value="turkey">Turkey</SelectItem>
                   <SelectItem value="mena">MENA</SelectItem>

@@ -648,18 +648,18 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
             <div className="space-y-6 max-w-6xl mx-auto p-6">
                 <Card className="shadow-[0_0_30px_rgba(16,185,129,0.3)] bg-emerald-500/10 border-emerald-500/30">
                     <CardContent className="p-8 text-center">
-                        <CheckCircle2 className="h-16 w-16 text-emerald-400 mx-auto mb-4" />
+                        <CheckCircle2 className="h-16 w-16 text-success mx-auto mb-4" />
                         <h3 className="typography-h2 text-2xl mb-2 text-emerald-200">
                             {demo ? 'Delivery Completed Successfully' : 'Delivery Acknowledged'}
                         </h3>
-                        <p className="text-emerald-300 mb-4">
+                        <p className="text-success mb-4">
                             {demo
                                 ? 'Demo preview only — no delivery record was created.'
                                 : deliveryAcknowledgement
                                   ? `Server ack ${deliveryAcknowledgement.acknowledgementId.slice(0, 8)}… · R${deliveryAcknowledgement.revision}`
                                   : 'Server acknowledgement recorded.'}
                         </p>
-                        <div className="space-y-2 text-sm text-emerald-400/80">
+                        <div className="space-y-2 text-sm text-success/80">
                             <p>Project: {projectName} - {unitNumber}</p>
                             <p>Customer: {customerName}</p>
                             <p>Delivered to: {deliveryAddress}</p>
@@ -730,7 +730,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                                 variant="outline"
                                 className={
                                     proofValidation.isValid
-                                        ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300'
+                                        ? 'bg-emerald-500/20 border-emerald-500/50 text-success'
                                         : 'bg-amber-500/20 border-amber-500/50 text-amber-300'
                                 }
                             >
@@ -762,7 +762,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                 >
                     <CardContent className="p-4">
                         <MapPin
-                            className={`w-6 h-6 mb-2 ${gpsLocation ? 'text-emerald-400' : 'text-amber-400'}`}
+                            className={`w-6 h-6 mb-2 ${gpsLocation ? 'text-success' : 'text-amber-400'}`}
                         />
                         <p className="text-sm font-semibold text-amber-200">GPS Location</p>
                         <p className="text-xs text-amber-600/70">
@@ -780,7 +780,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                 >
                     <CardContent className="p-4">
                         <Camera
-                            className={`w-6 h-6 mb-2 ${deliveryPhotoHash ? 'text-emerald-400' : 'text-amber-400'}`}
+                            className={`w-6 h-6 mb-2 ${deliveryPhotoHash ? 'text-success' : 'text-amber-400'}`}
                         />
                         <p className="text-sm font-semibold text-amber-200">Photo Proof</p>
                         <p className="text-xs text-amber-600/70">
@@ -798,7 +798,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                 >
                     <CardContent className="p-4">
                         <QrCode
-                            className={`w-6 h-6 mb-2 ${productQR ? 'text-emerald-400' : 'text-amber-400'}`}
+                            className={`w-6 h-6 mb-2 ${productQR ? 'text-success' : 'text-amber-400'}`}
                         />
                         <p className="text-sm font-semibold text-amber-200">QR Code</p>
                         <p className="text-xs text-amber-600/70">{productQR ? 'Scanned' : 'Required'}</p>
@@ -814,7 +814,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                 >
                     <CardContent className="p-4">
                         <PenTool
-                            className={`w-6 h-6 mb-2 ${customerSignatureHash ? 'text-emerald-400' : 'text-amber-400'}`}
+                            className={`w-6 h-6 mb-2 ${customerSignatureHash ? 'text-success' : 'text-amber-400'}`}
                         />
                         <p className="text-sm font-semibold text-amber-200">Signature</p>
                         <p className="text-xs text-amber-600/70">
@@ -838,19 +838,19 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                             <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
                                     <Label className="text-amber-200 text-xs">Latitude</Label>
-                                    <p className="text-emerald-400 font-mono">{gpsLocation.latitude.toFixed(6)}</p>
+                                    <p className="text-success font-mono">{gpsLocation.latitude.toFixed(6)}</p>
                                 </div>
                                 <div>
                                     <Label className="text-amber-200 text-xs">Longitude</Label>
-                                    <p className="text-emerald-400 font-mono">{gpsLocation.longitude.toFixed(6)}</p>
+                                    <p className="text-success font-mono">{gpsLocation.longitude.toFixed(6)}</p>
                                 </div>
                                 <div>
                                     <Label className="text-amber-200 text-xs">Accuracy</Label>
-                                    <p className="text-emerald-400">{gpsLocation.accuracy?.toFixed(1)}m</p>
+                                    <p className="text-success">{gpsLocation.accuracy?.toFixed(1)}m</p>
                                 </div>
                                 <div>
                                     <Label className="text-amber-200 text-xs">Timestamp</Label>
-                                    <p className="text-emerald-400">
+                                    <p className="text-success">
                                         {new Date(gpsLocation.timestamp).toLocaleTimeString()}
                                     </p>
                                 </div>
@@ -868,8 +868,8 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                         <div className="space-y-2">
                             {gpsError && (
                                 <Alert className="bg-red-500/10 border-red-500/30">
-                                    <AlertCircle className="h-4 w-4 text-red-400" />
-                                    <AlertDescription className="text-red-300 text-sm">
+                                    <AlertCircle className="h-4 w-4 text-destructive" />
+                                    <AlertDescription className="text-destructive text-sm">
                                         {gpsError}
                                     </AlertDescription>
                                 </Alert>
@@ -923,7 +923,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                             {deliveryPhotoHash ? 'Retake Photo' : 'Capture Photo'}
                         </Button>
                         {deliveryPhotoHash && (
-                            <p className="text-xs text-green-400 font-mono break-all">
+                            <p className="text-xs text-success font-mono break-all">
                                 Hash: {deliveryPhotoHash.substring(0, 32)}...
                             </p>
                         )}
@@ -939,11 +939,11 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="h-48 flex items-center justify-center border border-amber-600/30 rounded bg-gray-900/50">
+                        <div className="h-48 flex items-center justify-center border border-amber-600/30 rounded bg-background/50">
                             {productQR ? (
                                 <div className="text-center">
-                                    <Package className="w-16 h-16 text-emerald-400 mx-auto mb-2" />
-                                    <p className="text-emerald-400 font-mono text-sm">{productQR}</p>
+                                    <Package className="w-16 h-16 text-success mx-auto mb-2" />
+                                    <p className="text-success font-mono text-sm">{productQR}</p>
                                 </div>
                             ) : (
                                 <QrCode className="w-16 h-16 text-amber-600/30" />
@@ -980,14 +980,14 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="border-2 border-dashed border-amber-600/30 rounded-lg p-2 bg-gray-900/50">
+                    <div className="border-2 border-dashed border-amber-600/30 rounded-lg p-2 bg-background/50">
                         <canvas
                             ref={signatureCanvasRef}
                             onMouseDown={handleSignatureStart}
                             onMouseMove={handleSignatureMove}
                             onMouseUp={() => void handleSignatureEnd()}
                             onMouseLeave={() => void handleSignatureEnd()}
-                            className="w-full h-48 cursor-crosshair bg-white/5 rounded"
+                            className="w-full h-48 cursor-crosshair bg-foreground/5 rounded"
                         />
                     </div>
                     <div className="flex gap-2">
@@ -1007,7 +1007,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                         )}
                     </div>
                     {customerSignatureHash && (
-                        <p className="text-xs text-green-400 font-mono break-all">
+                        <p className="text-xs text-success font-mono break-all">
                             Hash: {customerSignatureHash.substring(0, 32)}...
                         </p>
                     )}
@@ -1029,7 +1029,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                             value={deliveryNotes}
                             onChange={(e) => setDeliveryNotes(e.target.value)}
                             placeholder="Any special notes about the delivery..."
-                            className="bg-gray-800 border-amber-600/30 text-amber-200 min-h-[80px]"
+                            className="bg-card border-amber-600/30 text-amber-200 min-h-[80px]"
                         />
                     </div>
                     <div className="space-y-2">
@@ -1041,7 +1041,7 @@ export const DeliveryTrackingPage: React.FC<DeliveryTrackingPageProps> = ({
                             value={customerFeedback}
                             onChange={(e) => setCustomerFeedback(e.target.value)}
                             placeholder="Customer comments or feedback..."
-                            className="bg-gray-800 border-amber-600/30 text-amber-200 min-h-[80px]"
+                            className="bg-card border-amber-600/30 text-amber-200 min-h-[80px]"
                         />
                     </div>
                 </CardContent>

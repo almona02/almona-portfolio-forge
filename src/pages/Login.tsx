@@ -97,12 +97,12 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-almona-dark">
+    <div className="flex flex-col min-h-screen bg-background">
       <main 
         className="flex-grow flex items-center justify-center p-4 bg-cover bg-center relative" 
         style={{ backgroundImage: "url('/images/machines/cutting-machine.jpg')" }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-almona-dark/55 via-almona-dark/20 to-almona-dark/65 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-background/55 via-background/20 to-background/65 backdrop-blur-[1px]" />
 
         <motion.div 
           variants={SCALE_IN}
@@ -110,12 +110,12 @@ const Login = () => {
           animate="visible"
           className="w-full max-w-md mx-auto backdrop-blur-xl bg-black/40 rounded-2xl shadow-2xl border border-white/10 overflow-hidden"
         >
-          <Card className="bg-transparent border-0 text-white shadow-none">
+          <Card className="bg-transparent border-0 text-foreground shadow-none">
             <CardHeader className="text-center p-8 lg:mt-6">
               <motion.div variants={SLIDE_UP}>
                 <CardTitle className="text-4xl font-bold text-gradient-gold drop-shadow-sm">{t('auth.welcome_back', 'Welcome back')}</CardTitle>
               </motion.div>
-              <CardDescription className="text-gray-300 pt-2 font-medium">
+              <CardDescription className="text-foreground pt-2 font-medium">
                 {t('auth.sign_in_to_continue', 'Sign in to continue to Almona')}
               </CardDescription>
             </CardHeader>
@@ -139,7 +139,7 @@ const Login = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       leftIcon={<Mail className="h-4 w-4" />}
-                      className="bg-black/50 border-amber-500/20 focus:border-amber-400 text-white placeholder:text-gray-500"
+                      className="bg-black/50 border-amber-500/20 focus:border-amber-400 text-white placeholder:text-muted-foreground"
                     />
                   </div>
                 </motion.div>
@@ -153,7 +153,7 @@ const Login = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="bg-black/50 border-amber-500/20 focus:border-amber-400 text-white placeholder:text-gray-500"
+                      className="bg-black/50 border-amber-500/20 focus:border-amber-400 text-white placeholder:text-muted-foreground"
                     />
                   </div>
                 </motion.div>
@@ -164,9 +164,9 @@ const Login = () => {
                       id="remember-me"
                       checked={rememberMe}
                       onCheckedChange={(checked) => setRememberMe(checked === true)}
-                      className="border-amber-500/50 data-[state=checked]:bg-amber-500 data-[state=checked]:text-black"
+                      className="border-amber-500/50 data-[state=checked]:bg-amber-500 data-[state=checked]:text-foreground"
                     />
-                    <Label htmlFor="remember-me" className="text-sm text-gray-300 font-normal cursor-pointer">
+                    <Label htmlFor="remember-me" className="text-sm text-foreground font-normal cursor-pointer">
                       {t('auth.remember_me', 'Remember me')}
                     </Label>
                   </div>
@@ -190,7 +190,7 @@ const Login = () => {
                 </motion.div>
               </form>
 
-              <div className="mt-8 text-center text-sm text-gray-400">
+              <div className="mt-8 text-center text-sm text-muted-foreground">
                 {t('auth.dont_have_account', "Don't have an account?")}{' '}
                 <a href="/register" className="font-semibold text-amber-500 hover:text-amber-400 hover:underline transition-colors">
                   {t('auth.sign_up', 'Sign up')}

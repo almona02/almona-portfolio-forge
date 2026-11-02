@@ -223,7 +223,7 @@ const InventoryPage: React.FC = () => {
   if (!user) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <Card className="bg-gradient-to-br from-[#0a0a0a] to-[#0f0f0f] border-amber-600/30 card-glass-dark">
+        <Card className="bg-gradient-to-br from-background to-background border-amber-600/30 card-glass-dark">
           <CardContent className="py-16 text-center">
             <Package className="h-16 w-16 text-amber-600/70 mx-auto mb-4" />
             <h3 className="typography-h3 text-amber-300 mb-2">Authentication Required</h3>
@@ -292,7 +292,7 @@ const InventoryPage: React.FC = () => {
               {conflicts.map((p) => (
                 <li key={p.id}>
                   <span className="font-semibold">{p.name}</span>{' '}
-                  <span className="text-red-300">
+                  <span className="text-destructive">
                     (updated by another user or process – review before retrying)
                   </span>
                 </li>
@@ -302,7 +302,7 @@ const InventoryPage: React.FC = () => {
         </Card>
       )}
       {/* Enhanced Header Card */}
-      <Card className="bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] border-amber-600/30 shadow-2xl card-glass-dark">
+      <Card className="bg-gradient-to-br from-background via-background to-background border-amber-600/30 shadow-2xl card-glass-dark">
         <CardHeader className="pb-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="space-y-2">
@@ -338,7 +338,7 @@ const InventoryPage: React.FC = () => {
 
         <CardContent className="space-y-4">
           {/* User & Scope Info */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-4 bg-[#0f0f0f]/30 rounded-lg border border-amber-600/30 card-dark">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-4 bg-background/30 rounded-lg border border-amber-600/30 card-dark">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-amber-600/70">
                 <span>Workspace:</span>
@@ -358,7 +358,7 @@ const InventoryPage: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-4 text-xs">
-              <div className="flex items-center gap-2 text-green-400">
+              <div className="flex items-center gap-2 text-success">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                 <span>Live Data</span>
               </div>
@@ -368,30 +368,30 @@ const InventoryPage: React.FC = () => {
 
           {/* Quick Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="bg-[#0f0f0f]/40 rounded-lg p-4 border border-amber-600/30 card-dark">
+            <div className="bg-background/40 rounded-lg p-4 border border-amber-600/30 card-dark">
               <div className="text-2xl font-bold text-amber-200 mb-1">{inventoryStats.totalItems}</div>
               <div className="text-sm text-amber-600/70">Total Items</div>
             </div>
-            <div className="bg-[#0f0f0f]/40 rounded-lg p-4 border border-amber-600/30 card-dark">
+            <div className="bg-background/40 rounded-lg p-4 border border-amber-600/30 card-dark">
               <div className="text-2xl font-bold mb-1 status-valid">
                 {inventoryStats.tunedItems}
               </div>
               <div className="text-sm text-amber-600/70">Tuned Items</div>
             </div>
-            <div className="bg-[#0f0f0f]/40 rounded-lg p-4 border border-amber-600/30 card-dark">
+            <div className="bg-background/40 rounded-lg p-4 border border-amber-600/30 card-dark">
               <div className="text-2xl font-bold text-amber-400 mb-1">
                 {inventoryStats.lowStockItems}
               </div>
               <div className="text-sm text-amber-600/70">Low Stock</div>
             </div>
-            <div className="bg-[#0f0f0f]/40 rounded-lg p-4 border border-amber-600/30 card-dark">
-              <div className="text-2xl font-bold text-red-400 mb-1">
+            <div className="bg-background/40 rounded-lg p-4 border border-amber-600/30 card-dark">
+              <div className="text-2xl font-bold text-destructive mb-1">
                 {inventoryStats.outOfStockItems}
               </div>
               <div className="text-sm text-amber-600/70">Out of Stock</div>
             </div>
-            <div className="bg-[#0f0f0f]/40 rounded-lg p-4 border border-amber-600/30 card-dark">
-              <div className="text-2xl font-bold text-green-400 mb-1">
+            <div className="bg-background/40 rounded-lg p-4 border border-amber-600/30 card-dark">
+              <div className="text-2xl font-bold text-success mb-1">
                 ${inventoryStats.totalValue}
               </div>
               <div className="text-sm text-amber-600/70">Total Value</div>
@@ -401,7 +401,7 @@ const InventoryPage: React.FC = () => {
       </Card>
 
       {/* Enhanced Navigation & Search */}
-      <Card className="bg-[#0f0f0f]/50 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/50 border-amber-600/30 card-glass-dark">
         <CardContent className="p-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             {/* Tabs */}
@@ -438,7 +438,7 @@ const InventoryPage: React.FC = () => {
                   <SelectTrigger className="btn-secondary">
                     <SelectValue placeholder="Tuning status" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0f0f0f] border-amber-600/30 text-xs card-glass-dark">
+                  <SelectContent className="bg-background border-amber-600/30 text-xs card-glass-dark">
                     <SelectItem value="all">All Tuning</SelectItem>
                     <SelectItem value="tuned">Tuned Only</SelectItem>
                     <SelectItem value="in_progress">Tuning In Progress</SelectItem>
@@ -502,7 +502,7 @@ const InventoryPage: React.FC = () => {
       {/* Main Content */}
       <Suspense
         fallback={
-          <Card className="bg-[#0f0f0f]/50 border-amber-600/30 card-glass-dark">
+          <Card className="bg-background/50 border-amber-600/30 card-glass-dark">
             <CardContent className="p-12 text-center">
               <div className="flex flex-col items-center gap-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500" />
@@ -526,10 +526,10 @@ const InventoryPage: React.FC = () => {
         )}
 
         {activeTab === 'analytics' && (
-          <Card className="bg-[#0f0f0f]/50 border-amber-600/30 card-glass-dark">
+          <Card className="bg-background/50 border-amber-600/30 card-glass-dark">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-green-400" />
+                <TrendingUp className="h-5 w-5 text-success" />
                 {t('inventory.analytics.title', 'Inventory Analytics')}
               </CardTitle>
               <CardDescription>
@@ -550,7 +550,7 @@ const InventoryPage: React.FC = () => {
       </Suspense>
 
       {/* Enhanced Footer */}
-      <Card className="bg-[#0f0f0f]/30 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/30 border-amber-600/30 card-glass-dark">
         <CardContent className="p-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 text-xs text-amber-600/70">
             <div className="flex items-center gap-6">
@@ -562,7 +562,7 @@ const InventoryPage: React.FC = () => {
               <span>Fabricator Pro v4.0</span>
               <Badge
                 variant="outline"
-                className="bg-green-500/10 text-green-400 border-green-500/30"
+                className="bg-green-500/10 text-success border-green-500/30"
               >
                 Operational
               </Badge>

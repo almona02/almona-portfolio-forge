@@ -53,12 +53,12 @@ export const ValidationDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        <Card className="bg-gray-900 border-gray-800 card-dark">
+        <Card className="bg-background border-border card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Validation Dashboard</CardTitle>
-            <p className="text-gray-400">Track validation tests and calculate ROI</p>
+            <p className="text-muted-foreground">Track validation tests and calculate ROI</p>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
@@ -68,7 +68,7 @@ export const ValidationDashboard: React.FC = () => {
                   type="number"
                   value={materialWasteWith}
                   onChange={(e) => setMaterialWasteWith(Number(e.target.value))}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-card border-border"
                 />
               </div>
               <div className="space-y-2">
@@ -77,7 +77,7 @@ export const ValidationDashboard: React.FC = () => {
                   type="number"
                   value={materialWasteWithout}
                   onChange={(e) => setMaterialWasteWithout(Number(e.target.value))}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-card border-border"
                 />
               </div>
               <div className="space-y-2">
@@ -86,7 +86,7 @@ export const ValidationDashboard: React.FC = () => {
                   type="number"
                   value={timeWith}
                   onChange={(e) => setTimeWith(Number(e.target.value))}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-card border-border"
                 />
               </div>
               <div className="space-y-2">
@@ -95,7 +95,7 @@ export const ValidationDashboard: React.FC = () => {
                   type="number"
                   value={timeWithout}
                   onChange={(e) => setTimeWithout(Number(e.target.value))}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-card border-border"
                 />
               </div>
               <div className="space-y-2">
@@ -104,7 +104,7 @@ export const ValidationDashboard: React.FC = () => {
                   type="number"
                   value={projectsPerMonth}
                   onChange={(e) => setProjectsPerMonth(Number(e.target.value))}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-card border-border"
                 />
               </div>
               <div className="space-y-2">
@@ -113,7 +113,7 @@ export const ValidationDashboard: React.FC = () => {
                   type="number"
                   value={averageProjectValue}
                   onChange={(e) => setAverageProjectValue(Number(e.target.value))}
-                  className="bg-gray-800 border-gray-700"
+                  className="bg-card border-border"
                 />
               </div>
             </div>
@@ -124,29 +124,29 @@ export const ValidationDashboard: React.FC = () => {
 
             {metrics && (
               <div className="grid grid-cols-3 gap-4">
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-card border-border">
                   <CardContent className="p-4">
-                    <div className="text-sm text-gray-400">Material Savings</div>
+                    <div className="text-sm text-muted-foreground">Material Savings</div>
                     <div className="text-2xl font-bold">{metrics.materialSavings.percentage.toFixed(1)}%</div>
-                    <div className="text-sm text-gray-400 mt-1">
+                    <div className="text-sm text-muted-foreground mt-1">
                       {metrics.materialSavings.annualValue.toFixed(0)} EGP/year
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-card border-border">
                   <CardContent className="p-4">
-                    <div className="text-sm text-gray-400">Time Savings</div>
+                    <div className="text-sm text-muted-foreground">Time Savings</div>
                     <div className="text-2xl font-bold">{metrics.timeSavings.percentage.toFixed(1)}%</div>
-                    <div className="text-sm text-gray-400 mt-1">
+                    <div className="text-sm text-muted-foreground mt-1">
                       {metrics.timeSavings.capacityIncrease.toFixed(1)}x capacity
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-card border-border">
                   <CardContent className="p-4">
-                    <div className="text-sm text-gray-400">Total Annual Value</div>
+                    <div className="text-sm text-muted-foreground">Total Annual Value</div>
                     <div className="text-2xl font-bold">{metrics.totalROI.annualValue.toFixed(0)}</div>
-                    <div className="text-sm text-gray-400 mt-1">EGP/year</div>
+                    <div className="text-sm text-muted-foreground mt-1">EGP/year</div>
                   </CardContent>
                 </Card>
               </div>

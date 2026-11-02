@@ -88,7 +88,7 @@ export const RecentOrders: React.FC = () => {
             Loading...
           </div>
         ) : error ? (
-          <div className="h-32 flex items-center justify-center text-sm text-red-600">
+          <div className="h-32 flex items-center justify-center text-sm text-destructive">
             {error}
           </div>
         ) : orders.length === 0 ? (

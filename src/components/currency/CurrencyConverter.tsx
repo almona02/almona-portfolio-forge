@@ -118,10 +118,10 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
 
   const getRateSourceColor = (source: string) => {
     switch (source) {
-      case 'api': return 'text-green-500';
-      case 'cached': return 'text-blue-500';
+      case 'api': return 'text-success';
+      case 'cached': return 'text-info';
       case 'fallback': return 'text-yellow-500';
-      default: return 'text-gray-500';
+      default: return 'text-muted-foreground';
     }
   };
 
@@ -135,9 +135,9 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
   };
 
   return (
-    <Card className={`bg-almona-dark border-almona-light/20 ${className}`}>
+    <Card className={`bg-background border-border/20 ${className}`}>
       <CardHeader>
-        <CardTitle className="text-white flex items-center justify-between">
+        <CardTitle className="text-foreground flex items-center justify-between">
           <span className="flex items-center space-x-2">
             <span>💱</span>
             <span>{t('currency.converter.title', 'Döviz Çevirici')}</span>
@@ -156,7 +156,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
       <CardContent className="space-y-4">
         {error && (
           <Alert className="bg-red-900/20 border-red-700">
-            <AlertDescription className="text-red-300">
+            <AlertDescription className="text-destructive">
               {error}
             </AlertDescription>
           </Alert>
@@ -164,7 +164,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
 
         {/* Amount Input */}
         <div className="space-y-2">
-          <Label htmlFor="amount" className="typography-label text-gray-300">
+          <Label htmlFor="amount" className="typography-label text-foreground">
             {t('currency.converter.amount', 'Miktar')}
           </Label>
           <Input
@@ -173,14 +173,14 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="100"
-            className="bg-gray-700 border-gray-600 text-white text-lg"
+            className="bg-muted border-border text-foreground text-lg"
           />
         </div>
 
         {/* Currency Selection */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="typography-label text-gray-300">
+            <Label className="typography-label text-foreground">
               {t('currency.converter.from', 'Kaynak')}
             </Label>
             <Select value={fromCurrency} onValueChange={setFromCurrency}>
@@ -193,7 +193,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
                     <div className="flex items-center space-x-2">
                       <span>{currency.flag}</span>
                       <span>{currency.code}</span>
-                      <span className="text-gray-500">{currency.symbol}</span>
+                      <span className="text-muted-foreground">{currency.symbol}</span>
                     </div>
                   </SelectItem>
                 ))}
@@ -202,7 +202,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="typography-label text-gray-300">
+            <Label className="typography-label text-foreground">
               {t('currency.converter.to', 'Hedef')}
             </Label>
             <Select value={toCurrency} onValueChange={setToCurrency}>
@@ -215,7 +215,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
                     <div className="flex items-center space-x-2">
                       <span>{currency.flag}</span>
                       <span>{currency.code}</span>
-                      <span className="text-gray-500">{currency.symbol}</span>
+                      <span className="text-muted-foreground">{currency.symbol}</span>
                     </div>
                   </SelectItem>
                 ))}
@@ -230,7 +230,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
             variant="outline"
             size="sm"
             onClick={handleSwapCurrencies}
-            className="border-gray-600 text-gray-300 hover:bg-gray-700"
+            className="border-border text-foreground hover:bg-muted"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
@@ -239,12 +239,12 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
         </div>
 
         {/* Conversion Result */}
-        <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+        <div className="p-4 bg-card/50 rounded-lg border border-border">
           <div className="text-center">
             <div className="text-2xl font-bold text-amber-400 mb-2">
               {formatAmount(convertedAmount, toCurrency)}
             </div>
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-muted-foreground">
               {formatAmount(parseFloat(amount) || 0, fromCurrency)} = {formatAmount(convertedAmount, toCurrency)}
             </div>
           </div>
@@ -253,18 +253,18 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
         {/* Exchange Rate Info */}
         {showRateInfo && currentRate && (
           <div className="space-y-2">
-            <Separator className="bg-gray-700" />
+            <Separator className="bg-muted" />
             <div className="flex justify-between items-center text-sm">
-              <span className="text-gray-300">
+              <span className="text-foreground">
                 {t('currency.converter.exchangeRate', 'Döviz Kuru')}:
               </span>
-              <span className="text-white font-medium">
+              <span className="text-foreground font-medium">
                 1 {fromCurrency} = {currentRate.rate.toFixed(4)} {toCurrency}
               </span>
             </div>
             
             {lastUpdated && (
-              <div className="flex justify-between items-center text-xs text-gray-400">
+              <div className="flex justify-between items-center text-xs text-muted-foreground">
                 <span>
                   {t('currency.converter.lastUpdated', 'Son Güncelleme')}:
                 </span>
@@ -274,7 +274,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
               </div>
             )}
             
-            <div className="flex justify-between items-center text-xs text-gray-400">
+            <div className="flex justify-between items-center text-xs text-muted-foreground">
               <span>
                 {t('currency.converter.source', 'Kaynak')}:
               </span>
@@ -291,11 +291,11 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
             onClick={() => void handleRefreshRates()}
             disabled={loading}
             variant="outline"
-            className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+            className="flex-1 border-border text-foreground hover:bg-muted"
           >
             {loading ? (
               <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-4 h-4 border-2 border-border border-t-transparent rounded-full animate-spin"></div>
                 <span>{t('currency.converter.updating', 'Güncelleniyor')}</span>
               </div>
             ) : (
@@ -311,7 +311,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
 
         {/* Regional Info */}
         {autoDetectRegion && regionState.region && (
-          <div className="mt-4 p-2 bg-blue-900/20 border border-blue-700/30 rounded text-xs text-blue-300">
+          <div className="mt-4 p-2 bg-blue-900/20 border border-blue-700/30 rounded text-xs text-info">
             <p>
               {t('currency.converter.regionDetected', 'Bölge algılandı')}: {regionState.region} - 
               {t('currency.converter.autoSelected', 'Otomatik seçildi')}: {getCurrencyForRegion(regionState.region)}

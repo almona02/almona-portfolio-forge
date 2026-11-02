@@ -80,7 +80,7 @@ export const InvoiceManagementDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-8">
           <div className="text-center text-amber-600/70">Loading invoice management data...</div>
         </CardContent>
@@ -90,7 +90,7 @@ export const InvoiceManagementDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <CardTitle className="text-xl text-amber-200">Invoice Management</CardTitle>
           <CardDescription className="text-sm text-amber-600/70">
@@ -99,7 +99,7 @@ export const InvoiceManagementDashboard: React.FC = () => {
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList className="bg-[#0f0f0f]/60 border-amber-600/30">
+            <TabsList className="bg-background/60 border-amber-600/30">
               <TabsTrigger value="overview" className="text-amber-300 data-[state=active]:text-amber-200">
                 Overview
               </TabsTrigger>
@@ -116,7 +116,7 @@ export const InvoiceManagementDashboard: React.FC = () => {
 
             <TabsContent value="overview" className="space-y-4 mt-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="bg-[#0f0f0f]/60 border-amber-600/20">
+                <Card className="bg-background/60 border-amber-600/20">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -130,7 +130,7 @@ export const InvoiceManagementDashboard: React.FC = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-[#0f0f0f]/60 border-amber-600/20">
+                <Card className="bg-background/60 border-amber-600/20">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -142,30 +142,30 @@ export const InvoiceManagementDashboard: React.FC = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-[#0f0f0f]/60 border-amber-600/20">
+                <Card className="bg-background/60 border-amber-600/20">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-amber-600/70 mb-1">Overdue (90+ days)</p>
-                        <p className="text-2xl font-bold text-red-400">
+                        <p className="text-2xl font-bold text-destructive">
                           {overdueCount}
                         </p>
                       </div>
-                      <AlertTriangle className="w-8 h-8 text-red-500/50" />
+                      <AlertTriangle className="w-8 h-8 text-destructive/50" />
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
               {agingBuckets.length > 0 && (
-                <Card className="bg-[#0f0f0f]/60 border-amber-600/20">
+                <Card className="bg-background/60 border-amber-600/20">
                   <CardHeader>
                     <CardTitle className="text-lg text-amber-200">Aging Summary</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
                       {agingBuckets.map((bucket: any) => (
-                        <div key={bucket.bucket} className="flex items-center justify-between p-3 bg-[#0f0f0f]/40 rounded border border-amber-600/10">
+                        <div key={bucket.bucket} className="flex items-center justify-between p-3 bg-background/40 rounded border border-amber-600/10">
                           <div className="flex items-center gap-3">
                             <Badge variant="outline" className="bg-amber-500/20 text-amber-200 border-amber-500/30">
                               {bucket.bucket} days
@@ -184,7 +184,7 @@ export const InvoiceManagementDashboard: React.FC = () => {
             </TabsContent>
 
             <TabsContent value="recurring" className="mt-4">
-              <Card className="bg-[#0f0f0f]/60 border-amber-600/20">
+              <Card className="bg-background/60 border-amber-600/20">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg text-amber-200">Recurring Invoices</CardTitle>
@@ -207,7 +207,7 @@ export const InvoiceManagementDashboard: React.FC = () => {
                       {recurringSchedules.map((schedule) => (
                         <div
                           key={schedule.id}
-                          className="p-4 bg-[#0f0f0f]/40 rounded border border-amber-600/10 flex items-center justify-between"
+                          className="p-4 bg-background/40 rounded border border-amber-600/10 flex items-center justify-between"
                         >
                           <div>
                             <p className="text-amber-200 font-medium capitalize">{schedule.frequency}</p>
@@ -238,7 +238,7 @@ export const InvoiceManagementDashboard: React.FC = () => {
             </TabsContent>
 
             <TabsContent value="aging" className="mt-4">
-              <Card className="bg-[#0f0f0f]/60 border-amber-600/20">
+              <Card className="bg-background/60 border-amber-600/20">
                 <CardHeader>
                   <CardTitle className="text-lg text-amber-200">Aging Report</CardTitle>
                   <CardDescription className="text-sm text-amber-600/70">
@@ -257,7 +257,7 @@ export const InvoiceManagementDashboard: React.FC = () => {
             </TabsContent>
 
             <TabsContent value="reminders" className="mt-4">
-              <Card className="bg-[#0f0f0f]/60 border-amber-600/20">
+              <Card className="bg-background/60 border-amber-600/20">
                 <CardHeader>
                   <CardTitle className="text-lg text-amber-200">Invoice Reminders</CardTitle>
                   <CardDescription className="text-sm text-amber-600/70">

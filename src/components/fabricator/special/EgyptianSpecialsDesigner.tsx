@@ -91,16 +91,16 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
   }, [windowUnit, thermalBreakOptimizer, onDesignComplete]);
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="typography-h1 text-white flex items-center gap-3">
-              <Shield className="h-8 w-8 text-amber-500" />
+            <h1 className="typography-h1 text-foreground flex items-center gap-3">
+              <Shield className="h-8 w-8 text-warning" />
               Egyptian Special Presets
             </h1>
-            <p className="text-gray-400 mt-2">
+            <p className="text-muted-foreground mt-2">
               Climate-specific solutions for Egyptian market
             </p>
           </div>
@@ -112,40 +112,40 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
         </div>
 
         {/* Climate Analysis */}
-        <Card className="bg-gray-900/50 border-gray-800 card-dark">
+        <Card className="bg-background/50 border-border card-dark">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Sun className="h-5 w-5 text-amber-500" />
+            <CardTitle className="text-foreground flex items-center gap-2">
+              <Sun className="h-5 w-5 text-warning" />
               Climate Analysis
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <p className="text-sm text-gray-400">Region</p>
-                <p className="text-white font-semibold capitalize">{climate.region.replace('_', ' ')}</p>
+                <p className="text-sm text-muted-foreground">Region</p>
+                <p className="text-foreground font-semibold capitalize">{climate.region.replace('_', ' ')}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-400">Temperature</p>
-                <p className="text-white font-semibold">{climate.averageTemperature}°C</p>
+                <p className="text-sm text-muted-foreground">Temperature</p>
+                <p className="text-foreground font-semibold">{climate.averageTemperature}°C</p>
               </div>
               <div>
-                <p className="text-sm text-gray-400">Humidity</p>
-                <Badge variant="outline" className="bg-gray-800 text-gray-300 capitalize">
+                <p className="text-sm text-muted-foreground">Humidity</p>
+                <Badge variant="outline" className="bg-card text-foreground capitalize">
                   {climate.humidityLevel}
                 </Badge>
               </div>
               <div>
-                <p className="text-sm text-gray-400">Risks</p>
+                <p className="text-sm text-muted-foreground">Risks</p>
                 <div className="flex gap-1 flex-wrap">
                   {climate.hasSandDustRisk && (
-                    <Badge variant="outline" className="bg-yellow-900/30 text-yellow-400">
+                    <Badge variant="outline" className="bg-yellow-900/30 text-warning">
                       <Wind className="h-3 w-3 mr-1" />
                       Sand/Dust
                     </Badge>
                   )}
                   {climate.isCoastal && (
-                    <Badge variant="outline" className="bg-blue-900/30 text-blue-400">
+                    <Badge variant="outline" className="bg-blue-900/30 text-info">
                       <Droplets className="h-3 w-3 mr-1" />
                       Coastal
                     </Badge>
@@ -155,8 +155,8 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
             </div>
             {climate.recommendations.length > 0 && (
               <div className="mt-4">
-                <p className="text-sm font-medium text-gray-300 mb-2">Recommendations:</p>
-                <ul className="list-disc list-inside text-sm text-gray-400 space-y-1">
+                <p className="text-sm font-medium text-foreground mb-2">Recommendations:</p>
+                <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
                   {climate.recommendations.map((rec, idx) => (
                     <li key={idx}>{rec}</li>
                   ))}
@@ -168,7 +168,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
-          <TabsList className="bg-gray-900/50 border-gray-800 card-dark">
+          <TabsList className="bg-background/50 border-border card-dark">
             <TabsTrigger value="sand_dust" className="btn-primary">
               <Shield className="h-4 w-4 mr-2" />
               Sand/Dust Protection
@@ -181,10 +181,10 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
 
           {/* Sand/Dust Protection Tab */}
           <TabsContent value="sand_dust" className="space-y-6">
-            <Card className="bg-gray-900/50 border-gray-800 card-dark">
+            <Card className="bg-background/50 border-border card-dark">
               <CardHeader>
-                <CardTitle className="text-white">Sand/Dust Protection System</CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardTitle className="text-foreground">Sand/Dust Protection System</CardTitle>
+                <CardDescription className="text-muted-foreground">
                   Enhanced seals, gaskets, and fine mesh for desert conditions
                 </CardDescription>
               </CardHeader>
@@ -211,39 +211,39 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-gray-400">Seals</p>
-                        <p className="text-white font-semibold">{sandDustSpec.seals.length} types</p>
+                        <p className="text-sm text-muted-foreground">Seals</p>
+                        <p className="text-foreground font-semibold">{sandDustSpec.seals.length} types</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400">Gaskets</p>
-                        <p className="text-white font-semibold">{sandDustSpec.gaskets.length} types</p>
+                        <p className="text-sm text-muted-foreground">Gaskets</p>
+                        <p className="text-foreground font-semibold">{sandDustSpec.gaskets.length} types</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400">Total Cost</p>
-                        <p className="text-amber-400 font-semibold">{sandDustSpec.totalCost.toFixed(2)} EGP</p>
+                        <p className="text-sm text-muted-foreground">Total Cost</p>
+                        <p className="text-warning font-semibold">{sandDustSpec.totalCost.toFixed(2)} EGP</p>
                       </div>
                       {sandDustSpec.screenMesh && (
                         <div>
-                          <p className="text-sm text-gray-400">Fine Mesh</p>
-                          <p className="text-white font-semibold">{sandDustSpec.screenMesh.area.toFixed(2)} m²</p>
+                          <p className="text-sm text-muted-foreground">Fine Mesh</p>
+                          <p className="text-foreground font-semibold">{sandDustSpec.screenMesh.area.toFixed(2)} m²</p>
                         </div>
                       )}
                     </div>
 
                     {/* Details */}
-                    <div className="bg-gray-800/50 p-4 rounded space-y-3">
+                    <div className="bg-card/50 p-4 rounded space-y-3">
                       <div>
-                        <p className="text-sm font-medium text-gray-300 mb-2">Seals:</p>
+                        <p className="text-sm font-medium text-foreground mb-2">Seals:</p>
                         {sandDustSpec.seals.map((seal, idx) => (
-                          <div key={idx} className="text-sm text-gray-400">
+                          <div key={idx} className="text-sm text-muted-foreground">
                             {seal.type}: {seal.material} - {seal.dimensions.length.toFixed(0)}mm ({seal.cost.toFixed(2)} EGP)
                           </div>
                         ))}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-300 mb-2">Gaskets:</p>
+                        <p className="text-sm font-medium text-foreground mb-2">Gaskets:</p>
                         {sandDustSpec.gaskets.map((gasket, idx) => (
-                          <div key={idx} className="text-sm text-gray-400">
+                          <div key={idx} className="text-sm text-muted-foreground">
                             {gasket.type}: {gasket.material} - {gasket.dimensions.length.toFixed(0)}mm ({gasket.cost.toFixed(2)} EGP)
                           </div>
                         ))}
@@ -257,10 +257,10 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
 
           {/* Thermal Break Tab */}
           <TabsContent value="thermal_break" className="space-y-6">
-            <Card className="bg-gray-900/50 border-gray-800 card-dark">
+            <Card className="bg-background/50 border-border card-dark">
               <CardHeader>
-                <CardTitle className="text-white">Thermal Break Optimization</CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardTitle className="text-foreground">Thermal Break Optimization</CardTitle>
+                <CardDescription className="text-muted-foreground">
                   Energy-efficient thermal break solutions for Egyptian climate
                 </CardDescription>
               </CardHeader>
@@ -287,23 +287,23 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-gray-400">Type</p>
-                        <Badge variant="outline" className="bg-gray-800 text-gray-300 capitalize">
+                        <p className="text-sm text-muted-foreground">Type</p>
+                        <Badge variant="outline" className="bg-card text-foreground capitalize">
                           {thermalBreakSpec.type.replace('_', ' ')}
                         </Badge>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400">U-Value Improvement</p>
-                        <p className="text-green-400 font-semibold">-{thermalBreakSpec.uValueImprovement.toFixed(1)} W/m²K</p>
+                        <p className="text-sm text-muted-foreground">U-Value Improvement</p>
+                        <p className="text-success font-semibold">-{thermalBreakSpec.uValueImprovement.toFixed(1)} W/m²K</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400">Total Cost</p>
-                        <p className="text-amber-400 font-semibold">{thermalBreakSpec.totalCost.toFixed(2)} EGP</p>
+                        <p className="text-sm text-muted-foreground">Total Cost</p>
+                        <p className="text-warning font-semibold">{thermalBreakSpec.totalCost.toFixed(2)} EGP</p>
                       </div>
                       {thermalBreakSpec.paybackPeriod && (
                         <div>
-                          <p className="text-sm text-gray-400">Payback Period</p>
-                          <p className="text-white font-semibold">{thermalBreakSpec.paybackPeriod.toFixed(1)} years</p>
+                          <p className="text-sm text-muted-foreground">Payback Period</p>
+                          <p className="text-foreground font-semibold">{thermalBreakSpec.paybackPeriod.toFixed(1)} years</p>
                         </div>
                       )}
                     </div>
@@ -312,7 +312,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
                     {thermalBreakSpec.recommendations.length > 0 && (
                       <Alert className="bg-blue-900/20 border-blue-800">
                         <AlertDescription>
-                          <p className="text-blue-300 font-medium mb-2">Recommendations:</p>
+                          <p className="text-info font-medium mb-2">Recommendations:</p>
                           <ul className="list-disc list-inside text-blue-200 text-sm space-y-1">
                             {thermalBreakSpec.recommendations.map((rec, idx) => (
                               <li key={idx}>{rec}</li>
@@ -331,7 +331,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
         {error && (
           <Alert variant="destructive" className="bg-red-900/20 border-red-800">
             <AlertTriangle className="h-4 w-4" />
-            <AlertDescription className="text-red-300">{error}</AlertDescription>
+            <AlertDescription className="text-destructive">{error}</AlertDescription>
           </Alert>
         )}
       </div>

@@ -201,16 +201,16 @@ export function ProductionDashboard() {
       case 'healthy': return 'bg-green-500';
       case 'warning': return 'bg-yellow-500';
       case 'critical': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      default: return 'bg-muted';
     }
   };
 
   const getPerformanceColor = (status: string) => {
     switch (status) {
-      case 'good': return 'text-green-600';
+      case 'good': return 'text-success';
       case 'needs-improvement': return 'text-yellow-600';
-      case 'poor': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'poor': return 'text-destructive';
+      default: return 'text-muted-foreground';
     }
   };
 
@@ -268,7 +268,7 @@ export function ProductionDashboard() {
             <CardContent>
               <div className="text-2xl font-bold">{metric.value}</div>
               <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                <span className={metric.trend === 'up' ? 'text-green-600' : 'text-red-600'}>
+                <span className={metric.trend === 'up' ? 'text-success' : 'text-destructive'}>
                   {metric.trend === 'up' ? '+' : ''}{metric.change}%
                 </span>
                 <span>from last hour</span>

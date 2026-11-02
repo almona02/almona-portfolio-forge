@@ -134,11 +134,11 @@ export function EducationalValidationGate({
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
       case 'critical':
-        return <AlertCircle className="h-8 w-8 text-red-500" />;
+        return <AlertCircle className="h-8 w-8 text-destructive" />;
       case 'warning':
-        return <AlertTriangle className="h-8 w-8 text-amber-500" />;
+        return <AlertTriangle className="h-8 w-8 text-warning" />;
       case 'info':
-        return <Info className="h-8 w-8 text-blue-500" />;
+        return <Info className="h-8 w-8 text-info" />;
       default:
         return <AlertCircle className="h-8 w-8" />;
     }
@@ -153,7 +153,7 @@ export function EducationalValidationGate({
       case 'info':
         return 'border-blue-500 bg-blue-50 dark:bg-blue-950';
       default:
-        return 'border-gray-500 bg-gray-50 dark:bg-gray-950';
+        return 'border-border bg-background dark:bg-background';
     }
   };
 
@@ -219,7 +219,7 @@ export function EducationalValidationGate({
 
             <CardContent className="space-y-4">
               {/* Danger explanation */}
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-lg border border-dashed">
+              <div className="bg-card dark:bg-background p-4 rounded-lg border border-dashed">
                 <p className="text-lg font-medium mb-2">
                   {locale === 'ar' ? '⚠️ ليه ده خطر؟' : '⚠️ Why is this dangerous?'}
                 </p>
@@ -231,8 +231,8 @@ export function EducationalValidationGate({
               </div>
 
               {/* Solution */}
-              <div className="bg-white dark:bg-slate-900 p-4 rounded-lg border border-dashed">
-                <p className="text-lg font-medium mb-2 text-green-700 dark:text-green-400">
+              <div className="bg-card dark:bg-background p-4 rounded-lg border border-dashed">
+                <p className="text-lg font-medium mb-2 text-green-700 dark:text-success">
                   {locale === 'ar' ? '✅ الحل' : '✅ Solution'}
                 </p>
                 <p className="text-base">
@@ -269,7 +269,7 @@ export function EducationalValidationGate({
 
       {/* Summary footer */}
       {violations.length > 1 && (
-        <div className="text-center p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <div className="text-center p-4 bg-muted dark:bg-card rounded-lg">
           <p className="text-lg font-medium">
             {locale === 'ar'
               ? `عندك ${violations.length} مشاكل لازم تحلها`

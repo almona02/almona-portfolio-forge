@@ -55,7 +55,7 @@ export const WorkshopPerformanceWidget: React.FC<WorkshopPerformanceWidgetProps>
     return (
       <Card className="bg-gradient-to-br from-blue-900/20 to-amber-900/20">
         <CardContent className="p-4">
-          <div className="text-sm text-gray-400">Loading metrics...</div>
+          <div className="text-sm text-muted-foreground">Loading metrics...</div>
         </CardContent>
       </Card>
     );
@@ -63,11 +63,11 @@ export const WorkshopPerformanceWidget: React.FC<WorkshopPerformanceWidgetProps>
 
   const TrendIcon = ({ trend }: { trend: 'improving' | 'stable' | 'declining' }) => {
     if (trend === 'improving') {
-      return <TrendingUp className="h-4 w-4 text-green-400" />;
+      return <TrendingUp className="h-4 w-4 text-success" />;
     } else if (trend === 'declining') {
-      return <TrendingDown className="h-4 w-4 text-red-400" />;
+      return <TrendingDown className="h-4 w-4 text-destructive" />;
     }
-    return <Minus className="h-4 w-4 text-gray-400" />;
+    return <Minus className="h-4 w-4 text-muted-foreground" />;
   };
 
   return (
@@ -76,24 +76,24 @@ export const WorkshopPerformanceWidget: React.FC<WorkshopPerformanceWidgetProps>
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <div className="text-2xl font-bold text-green-400">{metrics.oee.toFixed(1)}%</div>
+              <div className="text-2xl font-bold text-success">{metrics.oee.toFixed(1)}%</div>
               <TrendIcon trend={metrics.trends.oee} />
             </div>
-            <div className="text-xs text-gray-400">OEE</div>
+            <div className="text-xs text-muted-foreground">OEE</div>
           </div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <div className="text-2xl font-bold text-amber-400">{metrics.wasteReduction.toFixed(1)}%</div>
+              <div className="text-2xl font-bold text-warning">{metrics.wasteReduction.toFixed(1)}%</div>
               <TrendIcon trend={metrics.trends.waste} />
             </div>
-            <div className="text-xs text-gray-400">Waste Reduction</div>
+            <div className="text-xs text-muted-foreground">Waste Reduction</div>
           </div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <div className="text-2xl font-bold text-blue-400">{metrics.costSavings.toFixed(1)}%</div>
+              <div className="text-2xl font-bold text-info">{metrics.costSavings.toFixed(1)}%</div>
               <TrendIcon trend={metrics.trends.cost} />
             </div>
-            <div className="text-xs text-gray-400">Cost Savings</div>
+            <div className="text-xs text-muted-foreground">Cost Savings</div>
           </div>
         </div>
       </CardContent>

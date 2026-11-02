@@ -195,7 +195,7 @@ const Hero = () => {
                     <motion.div
                       variants={SLIDE_UP}
                       className={`inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4 backdrop-blur-sm ${slide.nationalFocus
-                          ? "bg-green-500/20 border border-green-500/40 text-green-400"
+                          ? "bg-green-500/20 border border-green-500/40 text-success"
                           : "bg-amber-500/20 border border-amber-500/40 text-amber-400"
                         }`}>
                       {slide.nationalFocus ? (
@@ -306,13 +306,13 @@ const Hero = () => {
                       aria-selected={activeSlide === index}
                       role="tab"
                     >
-                      <span aria-hidden="true" className={`block w-2.5 h-2.5 rounded-full transition-transform duration-200 ${activeSlide === index ? 'bg-almona-orange scale-x-[2.4]' : 'bg-foreground/30 dark:bg-white/30'}`} />
+                      <span aria-hidden="true" className={`block w-2.5 h-2.5 rounded-full transition-transform duration-200 ${activeSlide === index ? 'bg-almona-orange scale-x-[2.4]' : 'bg-foreground/30 dark:bg-foreground/30'}`} />
                     </button>
                   ))}
                 </div>
 
                 {/* Progress Indicator - Optimized for mobile - Theme-aware */}
-                <div className="w-full sm:w-32 bg-foreground/15 dark:bg-white/15 sm:bg-foreground/20 dark:sm:bg-white/20 h-0.5 rounded-full overflow-hidden">
+                <div className="w-full sm:w-32 bg-foreground/15 dark:bg-foreground/15 sm:bg-foreground/20 dark:sm:bg-foreground/20 h-0.5 rounded-full overflow-hidden">
                   <div
                     className="bg-almona-orange h-full rounded-full"
                     style={{
@@ -335,7 +335,7 @@ const Hero = () => {
 
   return (
     <section
-      className="relative bg-background dark:bg-[#0a0a0a]"
+      className="relative bg-background dark:bg-background"
       style={{ minHeight: '-webkit-fill-available' }}
       role="region"
       aria-label="Hero carousel"
@@ -364,12 +364,12 @@ const Hero = () => {
       {/* Loading indicator for transition states - Theme-aware */}
       {isTransitioning && (
         <div className="absolute inset-0 z-[110] flex items-center justify-center bg-background/35 dark:bg-black/35 backdrop-blur-[2px] transition-opacity duration-300">
-          <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-foreground/10 dark:bg-white/10 border border-foreground/15 dark:border-white/15 shadow-xl shadow-amber-500/10">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-foreground/10 dark:bg-foreground/10 border border-foreground/15 dark:border-white/15 shadow-xl shadow-amber-500/10">
             <div className="flex flex-col gap-1">
               <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/80 dark:text-white/80">
                 {t('hero.transition.preparing')}
               </span>
-              <div className="w-28 h-1.5 bg-foreground/15 dark:bg-white/15 rounded-full overflow-hidden">
+              <div className="w-28 h-1.5 bg-foreground/15 dark:bg-foreground/15 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 transition-all duration-500 ease-out"
                   style={{ transform: `scaleX(${transitionProgress / 100})`, transformOrigin: "left" }}

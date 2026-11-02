@@ -52,7 +52,7 @@ export const CustomSystemManager: React.FC<CustomSystemManagerProps> = ({
         <div
           role="button"
           tabIndex={0}
-          className="inline-flex items-center justify-center rounded-md h-8 w-8 p-0 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
+          className="inline-flex items-center justify-center rounded-md h-8 w-8 p-0 hover:bg-card focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
@@ -79,7 +79,7 @@ export const CustomSystemManager: React.FC<CustomSystemManagerProps> = ({
           <Archive className="h-4 w-4 mr-2" />
           Archive
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleDelete} className="text-red-600">
+        <DropdownMenuItem onClick={handleDelete} className="text-destructive">
           <Trash2 className="h-4 w-4 mr-2" />
           Delete
         </DropdownMenuItem>

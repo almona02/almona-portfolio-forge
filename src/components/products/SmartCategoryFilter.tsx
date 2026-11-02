@@ -78,24 +78,24 @@ const SmartCategoryFilter: React.FC<SmartCategoryFilterProps> = ({
         {showSearch && (
           <div className="mb-2">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Smart search..."
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors text-sm"
+                className="pl-10 bg-black/90 md:bg-black/70 border-border focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors text-sm"
               />
             </div>
           </div>
         )}
         
         <Select value={selectedCategory} onValueChange={onCategoryChange}>
-          <SelectTrigger className="w-full bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors">
+          <SelectTrigger className="w-full bg-black/90 md:bg-black/70 border-border focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors">
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
-          <SelectContent className="bg-[linear-gradient(160deg,rgba(0,0,0,0.95)_0%,rgba(28,28,28,0.95)_60%,rgba(46,46,46,0.9)_100%)] border border-gray-700">
+          <SelectContent className="bg-[linear-gradient(160deg,rgba(0,0,0,0.95)_0%,rgba(28,28,28,0.95)_60%,rgba(46,46,46,0.9)_100%)] border border-border">
             {showAllOption && (
-              <SelectItem value="all" className="text-white hover:bg-gray-700">
+              <SelectItem value="all" className="text-foreground hover:bg-muted">
                 <div className="flex items-center gap-2">
                   <span>🏭</span>
                   All Machines
@@ -106,12 +106,12 @@ const SmartCategoryFilter: React.FC<SmartCategoryFilterProps> = ({
               <SelectItem 
                 key={category.id} 
                 value={category.id} 
-                className="text-white hover:bg-gray-700"
+                className="text-foreground hover:bg-muted"
               >
                 <div className="flex items-center gap-2">
                   <span>{category.icon}</span>
                   <span>{category.name}</span>
-                  <Badge variant="secondary" className="text-xs bg-gray-600/50 text-gray-300 ml-auto">
+                  <Badge variant="secondary" className="text-xs bg-muted/50 text-foreground ml-auto">
                     {categoryCounts[category.id] || 0}
                   </Badge>
                 </div>
@@ -128,7 +128,7 @@ const SmartCategoryFilter: React.FC<SmartCategoryFilterProps> = ({
       <Button
         variant="outline"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full justify-between bg-black/90 md:bg-black/70 border-gray-600 hover:bg-black/95 md:hover:bg-black/80 hover:border-amber-500/50 transition-colors"
+        className="w-full justify-between bg-black/90 md:bg-black/70 border-border hover:bg-black/95 md:hover:bg-black/80 hover:border-amber-500/50 transition-colors"
       >
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4" />
@@ -154,37 +154,37 @@ const SmartCategoryFilter: React.FC<SmartCategoryFilterProps> = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 mt-2 bg-[linear-gradient(160deg,rgba(0,0,0,0.98)_0%,rgba(28,28,28,0.98)_60%,rgba(46,46,46,0.95)_100%)] md:bg-[linear-gradient(160deg,rgba(0,0,0,0.95)_0%,rgba(28,28,28,0.95)_60%,rgba(46,46,46,0.9)_100%)] border border-gray-700 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto backdrop-blur-sm"
+            className="absolute top-full left-0 right-0 mt-2 bg-[linear-gradient(160deg,rgba(0,0,0,0.98)_0%,rgba(28,28,28,0.98)_60%,rgba(46,46,46,0.95)_100%)] md:bg-[linear-gradient(160deg,rgba(0,0,0,0.95)_0%,rgba(28,28,28,0.95)_60%,rgba(46,46,46,0.9)_100%)] border border-border rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto backdrop-blur-sm"
           >
             <div className="p-2">
               {/* Smart Search */}
               {showSearch && (
-                <div className="mb-4 p-2 border-b border-gray-700">
+                <div className="mb-4 p-2 border-b border-border">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
                       placeholder="Search machines... (e.g., 'aluminum cutting')"
                       value={searchQuery}
                       onChange={(e) => handleSearch(e.target.value)}
-                      className="pl-10 bg-gray-800/95 md:bg-gray-800 border-gray-600 focus:border-amber-500 focus:ring-0 text-sm"
+                      className="pl-10 bg-card/95 md:bg-card border-border focus:border-amber-500 focus:ring-0 text-sm"
                     />
                   </div>
                   
                   {/* Search Results */}
                   {searchQuery && searchResults.length > 0 && (
                     <div className="mt-2 space-y-1 max-h-32 overflow-y-auto">
-                      <p className="text-xs text-gray-400">Found {searchResults.length} machines</p>
+                      <p className="text-xs text-muted-foreground">Found {searchResults.length} machines</p>
                       {searchResults.slice(0, 3).map(machine => (
                         <div
                           key={machine.id}
-                          className="p-2 bg-gray-700/50 rounded text-xs cursor-pointer hover:bg-gray-700/70 transition-colors"
+                          className="p-2 bg-muted/50 rounded text-xs cursor-pointer hover:bg-muted/70 transition-colors"
                           onClick={() => {
                             onCategoryChange('all');
                             setIsOpen(false);
                           }}
                         >
-                          <div className="font-medium text-white truncate">{machine.name}</div>
-                          <div className="text-gray-400 truncate">{machine.description}</div>
+                          <div className="font-medium text-foreground truncate">{machine.name}</div>
+                          <div className="text-muted-foreground truncate">{machine.description}</div>
                         </div>
                       ))}
                     </div>
@@ -206,7 +206,7 @@ const SmartCategoryFilter: React.FC<SmartCategoryFilterProps> = ({
                         w-full text-left p-3 rounded-lg transition-colors
                         ${isSelected 
                           ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
-                          : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+                          : 'text-foreground hover:bg-muted/50 hover:text-foreground'
                         }
                       `}
                       whileHover={{ scale: 1.02 }}
@@ -217,10 +217,10 @@ const SmartCategoryFilter: React.FC<SmartCategoryFilterProps> = ({
                           <span className="text-lg">{category.icon}</span>
                           <div>
                             <div className="font-medium">{category.name}</div>
-                            <div className="text-xs text-gray-400">{category.description}</div>
+                            <div className="text-xs text-muted-foreground">{category.description}</div>
                           </div>
                         </div>
-                        <Badge variant="secondary" className="text-xs bg-gray-600/50 text-gray-300">
+                        <Badge variant="secondary" className="text-xs bg-muted/50 text-foreground">
                           {count}
                         </Badge>
                       </div>
@@ -230,12 +230,12 @@ const SmartCategoryFilter: React.FC<SmartCategoryFilterProps> = ({
               </div>
 
               {/* Clear Filter */}
-              <div className="mt-3 pt-2 border-t border-gray-700">
+              <div className="mt-3 pt-2 border-t border-border">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={clearFilter}
-                  className="w-full text-gray-400 hover:text-white"
+                  className="w-full text-muted-foreground hover:text-foreground"
                 >
                   Clear All Filters
                 </Button>

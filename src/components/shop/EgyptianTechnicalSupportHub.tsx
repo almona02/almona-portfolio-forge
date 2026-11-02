@@ -130,7 +130,7 @@ const EgyptianTechnicalSupportHub = () => {
       icon: <AlertCircle className="h-6 w-6" />,
       responseTime: '< 30 minutes',
       phone: '+20 2 2274 0000',
-      color: 'bg-red-500/20 text-red-400 border-red-500/30'
+      color: 'bg-red-500/20 text-destructive border-red-500/30'
     },
     {
       id: 'remote',
@@ -140,7 +140,7 @@ const EgyptianTechnicalSupportHub = () => {
       icon: <Video className="h-6 w-6" />,
       responseTime: '< 2 hours',
       phone: '+20 2 2274 0001',
-      color: 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+      color: 'bg-blue-500/20 text-info border-blue-500/30'
     },
     {
       id: 'training',
@@ -150,7 +150,7 @@ const EgyptianTechnicalSupportHub = () => {
       icon: <Users className="h-6 w-6" />,
       responseTime: '< 24 hours',
       phone: '+20 2 2274 0002',
-      color: 'bg-green-500/20 text-green-400 border-green-500/30'
+      color: 'bg-green-500/20 text-success border-green-500/30'
     },
     {
       id: 'parts',
@@ -191,20 +191,20 @@ const EgyptianTechnicalSupportHub = () => {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'main': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      case 'regional': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'specialized': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'main': return 'bg-red-500/20 text-destructive border-red-500/30';
+      case 'regional': return 'bg-blue-500/20 text-info border-blue-500/30';
+      case 'specialized': return 'bg-green-500/20 text-success border-green-500/30';
+      default: return 'bg-muted/20 text-muted-foreground border-border/30';
     }
   };
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
-      case 'critical': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'critical': return 'bg-red-500/20 text-destructive border-red-500/30';
       case 'high': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
       case 'medium': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'low': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'low': return 'bg-green-500/20 text-success border-green-500/30';
+      default: return 'bg-muted/20 text-muted-foreground border-border/30';
     }
   };
 
@@ -222,20 +222,20 @@ const EgyptianTechnicalSupportHub = () => {
             <span className="text-gradient-orange">Egyptian Technical Support Hub</span>
           </h1>
         </div>
-        <p className="text-xl text-gray-400 max-w-4xl mx-auto mb-6">
+        <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-6">
           Comprehensive technical support network across Egypt with local experts, service centers, and 24/7 emergency assistance
         </p>
         
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
           {supportStats.map((stat, index) => (
-            <Card key={index} className="bg-gray-800/50 border-gray-700">
+            <Card key={index} className="bg-card/50 border-border">
               <CardContent className="p-4 text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   {stat.icon}
                   <div className="text-2xl font-bold text-amber-400">{stat.value}</div>
                 </div>
-                <div className="text-sm text-gray-400">{stat.label}</div>
+                <div className="text-sm text-muted-foreground">{stat.label}</div>
               </CardContent>
             </Card>
           ))}
@@ -296,13 +296,13 @@ const EgyptianTechnicalSupportHub = () => {
                 className="cursor-pointer"
                 onClick={() => setSelectedCenter(center)}
               >
-                <Card className="bg-gray-800/50 border-gray-700 transition-colors card-premium">
+                <Card className="bg-card/50 border-border transition-colors card-premium">
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-lg">{center.name}</CardTitle>
-                        <p className="text-sm text-gray-400">{center.nameAr}</p>
-                        <p className="text-sm text-gray-500 mt-1">{center.location} • {center.locationAr}</p>
+                        <p className="text-sm text-muted-foreground">{center.nameAr}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{center.location} • {center.locationAr}</p>
                       </div>
                       <div className="flex flex-col items-end gap-2">
                         <Badge className={getTypeColor(center.type)}>
@@ -367,7 +367,7 @@ const EgyptianTechnicalSupportHub = () => {
 
         {/* Request Support Tab */}
         <TabsContent value="request" className="space-y-6">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageSquare className="h-6 w-6 text-amber-400" />
@@ -427,7 +427,7 @@ const EgyptianTechnicalSupportHub = () => {
                     <select
                       value={supportRequest.issueType}
                       onChange={(e) => setSupportRequest(prev => ({ ...prev, issueType: e.target.value }))}
-                      className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                      className="w-full p-2 bg-muted border border-border rounded-md text-foreground"
                       required
                     >
                       <option value="">Select issue type</option>
@@ -459,7 +459,7 @@ const EgyptianTechnicalSupportHub = () => {
                     <select
                       value={supportRequest.urgency}
                       onChange={(e) => setSupportRequest(prev => ({ ...prev, urgency: e.target.value as any }))}
-                      className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                      className="w-full p-2 bg-muted border border-border rounded-md text-foreground"
                       required
                     >
                       <option value="low">Low - Can wait 24-48 hours</option>
@@ -473,7 +473,7 @@ const EgyptianTechnicalSupportHub = () => {
                     <select
                       value={supportRequest.preferredContact}
                       onChange={(e) => setSupportRequest(prev => ({ ...prev, preferredContact: e.target.value as any }))}
-                      className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                      className="w-full p-2 bg-muted border border-border rounded-md text-foreground"
                       required
                     >
                       <option value="phone">Phone Call</option>
@@ -487,7 +487,7 @@ const EgyptianTechnicalSupportHub = () => {
                   <Badge className={getUrgencyColor(supportRequest.urgency)}>
                     {supportRequest.urgency.toUpperCase()} Priority
                   </Badge>
-                  <span className="text-sm text-gray-400">
+                  <span className="text-sm text-muted-foreground">
                     Expected response time: {
                       supportRequest.urgency === 'critical' ? '< 30 minutes' :
                       supportRequest.urgency === 'high' ? '< 2 hours' :
@@ -508,7 +508,7 @@ const EgyptianTechnicalSupportHub = () => {
         {/* Resources Tab */}
         <TabsContent value="resources" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="h-6 w-6 text-amber-400" />
@@ -517,28 +517,28 @@ const EgyptianTechnicalSupportHub = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded">
                     <span className="text-sm">User Manuals (Arabic)</span>
                     <Button size="sm" variant="outline">
                       <Download className="h-4 w-4 mr-2" />
                       Download
                     </Button>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded">
                     <span className="text-sm">Installation Guides</span>
                     <Button size="sm" variant="outline">
                       <Download className="h-4 w-4 mr-2" />
                       Download
                     </Button>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded">
                     <span className="text-sm">Maintenance Schedules</span>
                     <Button size="sm" variant="outline">
                       <Download className="h-4 w-4 mr-2" />
                       Download
                     </Button>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded">
                     <span className="text-sm">Safety Procedures</span>
                     <Button size="sm" variant="outline">
                       <Download className="h-4 w-4 mr-2" />
@@ -549,7 +549,7 @@ const EgyptianTechnicalSupportHub = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Video className="h-6 w-6 text-amber-400" />
@@ -558,28 +558,28 @@ const EgyptianTechnicalSupportHub = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded">
                     <span className="text-sm">Basic Operation Training</span>
                     <Button size="sm" variant="outline">
                       <Video className="h-4 w-4 mr-2" />
                       Watch
                     </Button>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded">
                     <span className="text-sm">Advanced Programming</span>
                     <Button size="sm" variant="outline">
                       <Video className="h-4 w-4 mr-2" />
                       Watch
                     </Button>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded">
                     <span className="text-sm">Troubleshooting Guide</span>
                     <Button size="sm" variant="outline">
                       <Video className="h-4 w-4 mr-2" />
                       Watch
                     </Button>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded">
                     <span className="text-sm">Safety Training</span>
                     <Button size="sm" variant="outline">
                       <Video className="h-4 w-4 mr-2" />
@@ -591,7 +591,7 @@ const EgyptianTechnicalSupportHub = () => {
             </Card>
           </div>
 
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-6 w-6 text-amber-400" />
@@ -600,20 +600,20 @@ const EgyptianTechnicalSupportHub = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-gray-700/30 rounded">
-                  <CheckCircle className="h-8 w-8 text-green-400 mx-auto mb-2" />
+                <div className="text-center p-4 bg-muted/30 rounded">
+                  <CheckCircle className="h-8 w-8 text-success mx-auto mb-2" />
                   <h4 className="typography-h4 mb-1">Response Guarantee</h4>
-                  <p className="text-sm text-gray-400">We guarantee response within our stated timeframes</p>
+                  <p className="text-sm text-muted-foreground">We guarantee response within our stated timeframes</p>
                 </div>
-                <div className="text-center p-4 bg-gray-700/30 rounded">
-                  <Shield className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+                <div className="text-center p-4 bg-muted/30 rounded">
+                  <Shield className="h-8 w-8 text-info mx-auto mb-2" />
                   <h4 className="typography-h4 mb-1">Quality Assurance</h4>
-                  <p className="text-sm text-gray-400">All work performed by certified technicians</p>
+                  <p className="text-sm text-muted-foreground">All work performed by certified technicians</p>
                 </div>
-                <div className="text-center p-4 bg-gray-700/30 rounded">
+                <div className="text-center p-4 bg-muted/30 rounded">
                   <Truck className="h-8 w-8 text-amber-400 mx-auto mb-2" />
                   <h4 className="typography-h4 mb-1">Parts Availability</h4>
-                  <p className="text-sm text-gray-400">Genuine parts available within 24-48 hours</p>
+                  <p className="text-sm text-muted-foreground">Genuine parts available within 24-48 hours</p>
                 </div>
               </div>
             </CardContent>
@@ -632,14 +632,14 @@ const EgyptianTechnicalSupportHub = () => {
           <LazyMotionDiv
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            className="bg-card rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
             onClick={(e: any) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="typography-h3">{selectedCenter.name}</h3>
-                <p className="text-gray-400">{selectedCenter.nameAr}</p>
-                <p className="text-sm text-gray-500">{selectedCenter.location}</p>
+                <p className="text-muted-foreground">{selectedCenter.nameAr}</p>
+                <p className="text-sm text-muted-foreground">{selectedCenter.location}</p>
               </div>
               <Button
                 variant="ghost"

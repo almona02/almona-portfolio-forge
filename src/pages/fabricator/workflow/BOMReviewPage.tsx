@@ -83,7 +83,7 @@ export const BOMReviewPage: React.FC = () => {
 
   if (!currentProject) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-12 text-center text-slate-400">
+      <div className="flex flex-col items-center justify-center h-full p-12 text-center text-muted-foreground">
         <Layers className="h-16 w-16 mb-4 opacity-50" />
         <p>No project data. Complete design first.</p>
         <Button variant="outline" className="mt-4" onClick={() => void navigate(fabricatorRoutes.studioProjects())}>
@@ -97,7 +97,7 @@ export const BOMReviewPage: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center h-full p-12">
         <Loader2 className="h-12 w-12 text-amber-400 animate-spin mb-4" />
-        <p className="text-slate-400">Generating Bill of Materials...</p>
+        <p className="text-muted-foreground">Generating Bill of Materials...</p>
       </div>
     );
   }
@@ -106,20 +106,20 @@ export const BOMReviewPage: React.FC = () => {
   const canContinue = WorkflowValidator.validateBOMToOptimization(bom).passed;
 
   return (
-    <div className="flex flex-col h-full bg-slate-950 p-6 overflow-y-auto">
-      <Card className="bg-slate-900/50 border-amber-600/30 flex-1">
+    <div className="flex flex-col h-full bg-background p-6 overflow-y-auto">
+      <Card className="bg-background/50 border-amber-600/30 flex-1">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2 text-amber-200">
               <Layers className="h-5 w-5" />
               Bill of Materials
             </CardTitle>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-muted-foreground text-sm mt-1">
               {currentProject.orderNumber || currentProject.id} · {currentProject.posNumber}
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleBackToDesign} className="border-slate-600 text-slate-300">
+            <Button variant="outline" onClick={handleBackToDesign} className="border-border text-foreground">
               Back to Design
             </Button>
             <Button onClick={handleContinue} className="bg-amber-600 hover:bg-amber-700" disabled={!canContinue}>
@@ -130,7 +130,7 @@ export const BOMReviewPage: React.FC = () => {
         <CardContent className="space-y-6">
           <ManufacturingApprovalPanel />
           {!hasBOM ? (
-            <div className="text-center py-12 text-slate-400">
+            <div className="text-center py-12 text-muted-foreground">
               <p>No BOM generated. Ensure design has grid and pattern.</p>
               <p className="text-sm mt-2">Optimization remains blocked until the BOM is manufacturing-qualified.</p>
             </div>
@@ -155,10 +155,10 @@ export const BOMReviewPage: React.FC = () => {
               {bom?.profiles && bom.profiles.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium text-amber-300 mb-2">Profiles</h4>
-                  <div className="border border-slate-700 rounded-lg overflow-hidden">
+                  <div className="border border-border rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="bg-slate-800/50 text-slate-400">
+                        <tr className="bg-card/50 text-muted-foreground">
                           <th className="text-left p-3">Role</th>
                           <th className="text-right p-3">Length (mm)</th>
                           <th className="text-right p-3">Qty</th>
@@ -166,7 +166,7 @@ export const BOMReviewPage: React.FC = () => {
                       </thead>
                       <tbody>
                         {bom.profiles.map((p, i) => (
-                          <tr key={i} className="border-t border-slate-700 text-slate-300">
+                          <tr key={i} className="border-t border-border text-foreground">
                             <td className="p-3">{p.role}</td>
                             <td className="text-right p-3">{p.length?.toFixed(0)}</td>
                             <td className="text-right p-3">{p.quantity}</td>
@@ -178,8 +178,8 @@ export const BOMReviewPage: React.FC = () => {
                 </div>
               )}
               {bom?.cost != null && (
-                <div className="bg-slate-800/30 rounded-lg p-4">
-                  <span className="text-slate-400">Estimated cost: </span>
+                <div className="bg-card/30 rounded-lg p-4">
+                  <span className="text-muted-foreground">Estimated cost: </span>
                   <span className="font-mono text-amber-300">
                     {bom.cost.totalCost != null
                       ? bom.cost.totalCost.toLocaleString('en-EG', { style: 'currency', currency: 'EGP' })

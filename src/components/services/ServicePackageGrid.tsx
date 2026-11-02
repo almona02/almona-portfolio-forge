@@ -19,10 +19,10 @@ export const ServicePackageGrid: React.FC<ServicePackageGridProps> = ({
     <div className={`space-y-12 ${className}`}>
       {/* Header */}
       <div className="text-center">
-        <h2 className="typography-h2 text-4xl text-white mb-4">
+        <h2 className="typography-h2 text-4xl text-foreground mb-4">
           {t('services.service_packages')}
         </h2>
-        <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           Discuss a service scope for your aluminium or UPVC workshop. Coverage, timing and fees require a written quotation.
         </p>
       </div>

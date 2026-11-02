@@ -391,11 +391,11 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
             onMouseDown={() => { if (!userInteractedRef.current) userInteractedRef.current = true; }}
             onClick={() => handleTypeClick(value)}
             aria-pressed={active}
-            className={`relative text-left p-3 rounded-md border transition group focus:outline-none focus-visible:ring-2 focus-visible:ring-almona-orange/60 ${active ? 'border-almona-orange bg-gradient-to-br from-almona-orange/20 to-almona-orange/5 shadow-[0_0_0_1px_rgba(255,95,31,0.4)]' : 'border-almona-light/20 hover:border-almona-orange/40'}`}
+            className={`relative text-left p-3 rounded-md border transition group focus:outline-none focus-visible:ring-2 focus-visible:ring-almona-orange/60 ${active ? 'border-almona-orange bg-gradient-to-br from-almona-orange/20 to-almona-orange/5 shadow-[0_0_0_1px_rgba(255,95,31,0.4)]' : 'border-border/20 hover:border-almona-orange/40'}`}
           >
             <div className={`font-medium text-sm ${active ? 'text-almona-orange' : 'group-hover:text-almona-orange'}`}>{meta.label}</div>
-            <div className="text-[11px] mt-1 text-gray-400 leading-snug pr-5">{meta.desc}</div>
-            {active && <span className="absolute top-2 right-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-almona-orange text-[10px] font-bold text-black">✓</span>}
+            <div className="text-[11px] mt-1 text-muted-foreground leading-snug pr-5">{meta.desc}</div>
+            {active && <span className="absolute top-2 right-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-almona-orange text-[10px] font-bold text-primary-foreground">✓</span>}
           </button>
         );
       })}
@@ -421,11 +421,11 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
             onMouseDown={() => { if (!userInteractedRef.current) userInteractedRef.current = true; }}
             onClick={() => handlePriorityClick(p.value)}
             aria-pressed={active}
-            className={`relative px-3 py-2 rounded-md border text-left text-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-almona-orange/60 ${active ? 'border-almona-orange bg-gradient-to-br from-almona-orange/25 to-almona-orange/5 shadow-[0_0_0_1px_rgba(255,95,31,0.4)]' : 'border-almona-light/20 hover:border-almona-orange/40'}`}
+            className={`relative px-3 py-2 rounded-md border text-left text-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-almona-orange/60 ${active ? 'border-almona-orange bg-gradient-to-br from-almona-orange/25 to-almona-orange/5 shadow-[0_0_0_1px_rgba(255,95,31,0.4)]' : 'border-border/20 hover:border-almona-orange/40'}`}
           >
             <div className={`font-medium ${active ? 'text-almona-orange' : ''}`}>{p.label}</div>
-            <div className="text-[10px] text-gray-400 pr-4">{p.desc}</div>
-            {active && <span className="absolute top-1.5 right-1.5 inline-flex h-4 w-4 items-center justify-center rounded-full bg-almona-orange text-[10px] font-bold text-black">✓</span>}
+            <div className="text-[10px] text-muted-foreground pr-4">{p.desc}</div>
+            {active && <span className="absolute top-1.5 right-1.5 inline-flex h-4 w-4 items-center justify-center rounded-full bg-almona-orange text-[10px] font-bold text-primary-foreground">✓</span>}
           </button>
         );
       })}
@@ -452,18 +452,18 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl w-full max-h-[92vh] overflow-y-auto p-0 flex flex-col">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b border-almona-light/10 sticky top-0 bg-almona-dark/80 backdrop-blur z-10">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/10 sticky top-0 bg-background/80 backdrop-blur z-10">
           <DialogTitle ref={headingRef} tabIndex={-1} className="text-2xl font-semibold tracking-tight outline-none">{t('ticket.create_support_ticket')}</DialogTitle>
-          <DialogDescription className="text-sm text-gray-400 mt-2">
+          <DialogDescription className="text-sm text-muted-foreground mt-2">
             {t('ticket.wizard_description')}
           </DialogDescription>
           <div className="mt-4">
-            <div className="h-2 w-full rounded-full bg-almona-dark/40 overflow-hidden">
+            <div className="h-2 w-full rounded-full bg-background/40 overflow-hidden">
               <div className="h-full bg-gradient-to-r from-amber-500 via-red-500 to-rose-500 transition-all" style={{ width: `${progressPercent}%` }} aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100} role="progressbar" />
             </div>
-            <ol className="flex flex-wrap gap-2 mt-3 text-[11px] uppercase tracking-wide text-gray-400" aria-label="Steps">
+            <ol className="flex flex-wrap gap-2 mt-3 text-[11px] uppercase tracking-wide text-muted-foreground" aria-label="Steps">
               {steps.map((s, idx) => (
-                <li key={s.id} className={`${idx === activeStepIndex ? 'text-amber-400 font-medium' : idx < activeStepIndex ? 'text-green-400' : ''}`}>{s.label}</li>
+                <li key={s.id} className={`${idx === activeStepIndex ? 'text-amber-400 font-medium' : idx < activeStepIndex ? 'text-success' : ''}`}>{s.label}</li>
               ))}
             </ol>
           </div>
@@ -484,15 +484,15 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                     <Label className="typography-label text-sm font-medium">Ticket Type</Label>
                     {/* Debug line removed for production cleanliness */}
                     <TypePills />
-                    {errors.type && <p className="text-xs text-red-500">{errors.type.message}</p>}
+                    {errors.type && <p className="text-xs text-destructive">{errors.type.message}</p>}
                   </div>
                   <div className="space-y-4">
                     <Label className="typography-label text-sm font-medium">Priority</Label>
                     {import.meta.env.DEV && (
-                      <div className="text-[10px] text-gray-500">debug: form.priority={selectedPriority} uiPriority={uiPriority}</div>
+                      <div className="text-[10px] text-muted-foreground">debug: form.priority={selectedPriority} uiPriority={uiPriority}</div>
                     )}
                     <PriorityPills />
-                    {errors.priority && <p className="text-xs text-red-500">{errors.priority.message}</p>}
+                    {errors.priority && <p className="text-xs text-destructive">{errors.priority.message}</p>}
                   </div>
                 </div>
                 {/* Maintenance Type selection removed - field doesn't exist in API */}
@@ -504,15 +504,15 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                 <div className="space-y-2">
                   <Label htmlFor="title" className="typography-label">{t('ticket.title')}</Label>
                   <Controller name="title" control={control} render={({ field }) => (
-                    <Input id="title" {...field} placeholder="Brief description" className="bg-almona-darker border-almona-light/30 focus:border-almona-orange/50" />
+                    <Input id="title" {...field} placeholder="Brief description" className="bg-card border-border/30 focus:border-almona-orange/50" />
                   )} />
-                  {errors.title && <p className="text-xs text-red-500">{errors.title.message}</p>}
+                  {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label>{t('ticket.description')} {richMode && <span className="text-xs text-gray-400 ml-1">({t('ticket.rich_editor')})</span>}</Label>
+                    <Label>{t('ticket.description')} {richMode && <span className="text-xs text-muted-foreground ml-1">({t('ticket.rich_editor')})</span>}</Label>
                     <div className="flex gap-2 items-center text-xs">
-                      <button type="button" onClick={() => setRichMode(m => !m)} className="px-2 py-1 rounded border border-almona-light/30 hover:border-almona-orange/50">
+                      <button type="button" onClick={() => setRichMode(m => !m)} className="px-2 py-1 rounded border border-border/30 hover:border-almona-orange/50">
                         {richMode ? t('ticket.plain_markdown') : t('ticket.rich_editor')}
                       </button>
                     </div>
@@ -520,8 +520,8 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                   <Controller name="description" control={control} render={({ field }) => {
                     if (richMode && RichEditor) {
                       return (
-                        <div className="border border-almona-light/30 rounded-md overflow-hidden bg-almona-darker">
-                          <Suspense fallback={<div className="p-4 text-xs text-gray-400">Loading editor...</div>}>
+                        <div className="border border-border/30 rounded-md overflow-hidden bg-card">
+                          <Suspense fallback={<div className="p-4 text-xs text-muted-foreground">Loading editor...</div>}>
                             <RichEditor value={field.value} onChange={(val: string) => field.onChange(val)} preview={mdMode === 'preview' ? 'preview' : 'edit'} height={300} textareaProps={{ placeholder: t('ticket.describe_issue_placeholder') }} />
                           </Suspense>
                         </div>
@@ -531,27 +531,27 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                     let previewHtml = '';
                     if (mdMode === 'preview' && mdRenderer && sanitizer) {
                       try { previewHtml = sanitizer(mdRenderer.render(field.value || '')); }
-                      catch { previewHtml = `<p class="text-red-400 text-xs">${t('ticket.preview_error')}</p>`; }
+                      catch { previewHtml = `<p class="text-destructive text-xs">${t('ticket.preview_error')}</p>`; }
                     }
                     return (
-                      <div className="border border-almona-light/30 rounded-md overflow-hidden">
-                        <div className="flex text-xs bg-almona-dark/60 border-b border-almona-light/10">
+                      <div className="border border-border/30 rounded-md overflow-hidden">
+                        <div className="flex text-xs bg-background/60 border-b border-border/10">
                           <button type="button" className={`px-3 py-2 transition-colors ${mdMode==='edit' ? 'text-amber-400' : 'hover:text-almona-orange'}`} onClick={() => setMdMode('edit')} aria-pressed={mdMode==='edit'}>{t('ticket.edit')}</button>
                           <button type="button" className={`px-3 py-2 transition-colors ${mdMode==='preview' ? 'text-amber-400' : 'hover:text-almona-orange'}`} onClick={() => setMdMode('preview')} aria-pressed={mdMode==='preview'} disabled={!mdRenderer && !sanitizer && mdMode==='preview'}>{t('ticket.preview')}</button>
                         </div>
                         {mdMode === 'edit' && (
-                          <Textarea rows={8} {...field} placeholder="Details, steps to reproduce, error messages... (Markdown supported)" className="bg-almona-darker border-0 focus-visible:ring-0 focus:border-0" />
+                          <Textarea rows={8} {...field} placeholder="Details, steps to reproduce, error messages... (Markdown supported)" className="bg-card border-0 focus-visible:ring-0 focus:border-0" />
                         )}
                         {mdMode === 'preview' && (
-                          <div className="prose prose-invert max-w-none p-4 bg-almona-darker/50 text-sm" dangerouslySetInnerHTML={{ __html: previewHtml || '<p class="text-gray-500">Nothing to preview.</p>' }} />
+                          <div className="prose prose-invert max-w-none p-4 bg-card/50 text-sm" dangerouslySetInnerHTML={{ __html: previewHtml || '<p class="text-muted-foreground">Nothing to preview.</p>' }} />
                         )}
                       </div>
                     );
                   }} />
-                  {errors.description && <p className="text-xs text-red-500">{errors.description.message}</p>}
+                  {errors.description && <p className="text-xs text-destructive">{errors.description.message}</p>}
                 </div>
                 {selectedType === 'maintenance' && ['critical','urgent'].includes(watch('priority') as string) && (
-                  <div className="p-4 rounded-md bg-red-500/10 border border-red-500/30 text-sm text-red-300">
+                  <div className="p-4 rounded-md bg-red-500/10 border border-red-500/30 text-sm text-destructive">
                     <strong>Emergency escalation:</strong> If production is halted, please call our 24/7 hotline +20-XX-XXX-XXXX after submitting.
                   </div>
                 )}
@@ -561,7 +561,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
             {!isSuccess && activeStep.id === 'attachments' && (
               <LazyMotionDiv key="attachments" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
                 <h3 className="typography-h3 text-lg">{t('ticket.attachments_optional')}</h3>
-                <p className="text-xs text-gray-400">{t('ticket.add_reference_files')}</p>
+                <p className="text-xs text-muted-foreground">{t('ticket.add_reference_files')}</p>
                 <input
                   type="file"
                   multiple
@@ -572,30 +572,30 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                   className="text-sm"
                 />
                 {attachments.length > 0 && (
-                  <ul className="text-xs space-y-1 max-h-40 overflow-y-auto border rounded-md p-2 border-almona-light/20">
+                  <ul className="text-xs space-y-1 max-h-40 overflow-y-auto border rounded-md p-2 border-border/20">
                     {attachments.map((f,i) => (
                       <li
                         key={i}
                         onClick={() => toggleSelectAttachment(i)}
-                        className={`flex items-center justify-between gap-2 rounded px-2 py-1 cursor-pointer border ${f.selected ? 'border-almona-orange bg-almona-orange/10' : 'border-transparent hover:border-almona-light/20'} transition-colors`}
+                        className={`flex items-center justify-between gap-2 rounded px-2 py-1 cursor-pointer border ${f.selected ? 'border-almona-orange bg-almona-orange/10' : 'border-transparent hover:border-border/20'} transition-colors`}
                         aria-selected={f.selected}
                       >
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="truncate inline-block max-w-[160px] align-middle" title={f.name}>{f.name}</span>
-                            <span className="text-gray-500 text-[10px]">{Math.round(f.size/1024)} KB</span>
-                            {f.error && <span className="text-red-400 text-[10px]">{f.error}</span>}
+                            <span className="text-muted-foreground text-[10px]">{Math.round(f.size/1024)} KB</span>
+                            {f.error && <span className="text-destructive text-[10px]">{f.error}</span>}
                           </div>
-                          <div className="h-1 mt-1 rounded bg-almona-dark/40 overflow-hidden">
+                          <div className="h-1 mt-1 rounded bg-background/40 overflow-hidden">
                             <div className={`h-full transition-all ${f.status==='error' ? 'bg-red-500' : f.status==='uploaded' ? 'bg-green-500' : 'bg-blue-500'}`} style={{ width: `${f.progress || 0}%` }} />
                           </div>
                         </div>
                         <div className="flex items-center gap-2 text-[10px]">
                           {f.status === 'pending' && <span className="text-amber-400">Queued</span>}
-                          {f.status === 'uploading' && <span className="text-blue-400">{f.progress ?? 0}%</span>}
-                          {f.status === 'uploaded' && <span className="text-green-400">100%</span>}
-                          {f.status === 'error' && <button type="button" className="text-red-400 underline" onClick={(e) => { e.stopPropagation(); setAttachments(a => a.map((at,idx) => idx===i ? { ...at, status: 'pending', error: undefined, progress: 0 } : at)); }}>{t('ticket.retry')}</button>}
-                          <button type="button" className="text-red-400 hover:underline" onClick={(e) => { e.stopPropagation(); setAttachments(a => a.filter((_,idx)=> idx!==i)); }}>{t('ticket.remove')}</button>
+                          {f.status === 'uploading' && <span className="text-info">{f.progress ?? 0}%</span>}
+                          {f.status === 'uploaded' && <span className="text-success">100%</span>}
+                          {f.status === 'error' && <button type="button" className="text-destructive underline" onClick={(e) => { e.stopPropagation(); setAttachments(a => a.map((at,idx) => idx===i ? { ...at, status: 'pending', error: undefined, progress: 0 } : at)); }}>{t('ticket.retry')}</button>}
+                          <button type="button" className="text-destructive hover:underline" onClick={(e) => { e.stopPropagation(); setAttachments(a => a.filter((_,idx)=> idx!==i)); }}>{t('ticket.remove')}</button>
                         </div>
                       </li>
                     ))}
@@ -616,16 +616,16 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
             {!isSuccess && activeStep.id === 'preview' && (
               <LazyMotionDiv key="preview" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
                 <h3 className="typography-h3 text-lg">{t('ticket.preview_title')}</h3>
-                <div className="bg-almona-darker/40 p-4 rounded border border-almona-light/20 text-sm space-y-2">
+                <div className="bg-card/40 p-4 rounded border border-border/20 text-sm space-y-2">
                   <div><strong>{t('ticket.preview_title_label')}</strong> {watch('title')}</div>
                   <div><strong>Type:</strong> {watch('type')}</div>
                   <div><strong>Priority:</strong> {watch('priority')}</div>
-                  <div><strong>{t('ticket.preview_description_label')}</strong><pre className="whitespace-pre-wrap mt-1 text-gray-300 text-xs">{watch('description')}</pre></div>
+                  <div><strong>{t('ticket.preview_description_label')}</strong><pre className="whitespace-pre-wrap mt-1 text-foreground text-xs">{watch('description')}</pre></div>
                   <div><strong>Contact:</strong> {watch('contact_email') || watch('contact_phone') || '—'}</div>
                   <div><strong>Machine Serial:</strong> {watch('machine_serial_number') || '—'}</div>
                   {['maintenance'].includes(watch('type') || '') && (
-                    <div className="mt-2 p-2 rounded bg-almona-dark/60 border border-dashed border-almona-light/20 text-xs text-gray-400">
-                      <strong className="text-gray-300">Digital Twin Code:</strong> Will be generated on submission.
+                    <div className="mt-2 p-2 rounded bg-background/60 border border-dashed border-border/20 text-xs text-muted-foreground">
+                      <strong className="text-foreground">Digital Twin Code:</strong> Will be generated on submission.
                     </div>
                   )}
                   {attachments.length > 0 && (
@@ -635,7 +635,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                         {attachments.map((a, idx) => (
                           <li key={idx} className="flex gap-2 items-center">
                             <span className={`truncate max-w-[160px] ${a.selected ? 'text-amber-400' : ''}`}>{a.name}</span>
-                            <span className="text-gray-500 text-[10px]">{a.status}{a.progress != null && a.status !== 'uploaded' ? ` ${a.progress}%` : ''}</span>
+                            <span className="text-muted-foreground text-[10px]">{a.status}{a.progress != null && a.status !== 'uploaded' ? ` ${a.progress}%` : ''}</span>
                             {a.uploadedUrl && <span className=" text-[10px] status-valid">linked</span>}
                           </li>
                         ))}
@@ -654,16 +654,16 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
             {isSuccess && (
               <LazyMotionDiv key="success" initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} exit={{opacity:0}} className="text-center py-12 space-y-6">
                 <div className="mx-auto w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center border border-green-500/30">
-                  <CheckCircle2 className="h-10 w-10 text-green-400" />
+                  <CheckCircle2 className="h-10 w-10 text-success" />
                 </div>
                 <div>
                   <h3 className="typography-h3 mb-2">{t('ticket.created')}</h3>
-                  <p className="text-gray-400 max-w-md mx-auto">{t('ticket.created_message')}</p>
+                  <p className="text-muted-foreground max-w-md mx-auto">{t('ticket.created_message')}</p>
                   {createdTicketTwin ? (
                     <div className="mt-4 inline-flex flex-col items-center gap-2">
                       <div className="flex flex-col items-center gap-1">
-                        <span className="text-xs uppercase tracking-wide text-gray-500">{t('ticket.digital_twin_code')}</span>
-                        <code className="px-3 py-1 rounded bg-almona-dark/60 border border-almona-light/20 text-almona-orange text-sm font-mono">{createdTicketTwin}</code>
+                        <span className="text-xs uppercase tracking-wide text-muted-foreground">{t('ticket.digital_twin_code')}</span>
+                        <code className="px-3 py-1 rounded bg-background/60 border border-border/20 text-almona-orange text-sm font-mono">{createdTicketTwin}</code>
                       </div>
                       <Button 
                         type="button" 
@@ -683,7 +683,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                   ) : (
                     <div className="mt-4 text-center">
                       <p className="text-sm text-yellow-400">Digital Twin Code: Not available</p>
-                      <p className="text-xs text-gray-500 mt-1">Debug: createdTicketTwin = {String(createdTicketTwin)}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Debug: createdTicketTwin = {String(createdTicketTwin)}</p>
                     </div>
                   )}
                 </div>
@@ -700,10 +700,10 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
         </form>
 
         {!isSuccess && (
-          <div className="px-6 pb-6 pt-4 border-t border-almona-light/10 flex flex-wrap gap-4 justify-between items-center bg-almona-dark/60 backdrop-blur">
+          <div className="px-6 pb-6 pt-4 border-t border-border/10 flex flex-wrap gap-4 justify-between items-center bg-background/60 backdrop-blur">
             <div className="flex items-center gap-4">
-              <div className="text-xs text-gray-500">{t('ticket.step_of').replace('{current}', String(activeStepIndex + 1)).replace('{total}', String(steps.length))}</div>
-              <button type="button" onClick={resetDraft} className="text-[11px] uppercase tracking-wide text-gray-400 hover:text-almona-orange transition-colors underline-offset-2 hover:underline">
+              <div className="text-xs text-muted-foreground">{t('ticket.step_of').replace('{current}', String(activeStepIndex + 1)).replace('{total}', String(steps.length))}</div>
+              <button type="button" onClick={resetDraft} className="text-[11px] uppercase tracking-wide text-muted-foreground hover:text-almona-orange transition-colors underline-offset-2 hover:underline">
 {t('ticket.reset_draft')}
               </button>
             </div>
@@ -742,13 +742,13 @@ const MachineAndContactSection: React.FC<{ control: any; setValue: any; userId: 
       <div className="space-y-2">
         <Label>Contact Phone</Label>
         <Controller name="contact_phone" control={control} render={({ field }) => (
-          <Input {...field} placeholder="+20 123 456 789" className="bg-almona-darker border-almona-light/30" />
+          <Input {...field} placeholder="+20 123 456 789" className="bg-card border-border/30" />
         )} />
       </div>
       <div className="space-y-2">
         <Label>Contact Email</Label>
         <Controller name="contact_email" control={control} render={({ field }) => (
-          <Input type="email" {...field} placeholder="user@example.com" className="bg-almona-darker border-almona-light/30" />
+          <Input type="email" {...field} placeholder="user@example.com" className="bg-card border-border/30" />
         )} />
       </div>
       <div className="space-y-2 md:col-span-2">
@@ -762,7 +762,7 @@ const MachineAndContactSection: React.FC<{ control: any; setValue: any; userId: 
                 type="button"
                 onClick={() => setValue('preferred_contact_method', method, { shouldDirty: true })}
                 aria-pressed={active}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-amber-400/60 hover:text-amber-300'}`}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-border/30 text-muted-foreground hover:border-amber-400/60 hover:text-amber-300'}`}
               >{method.toUpperCase()}</button>
             );
           })}
@@ -771,13 +771,13 @@ const MachineAndContactSection: React.FC<{ control: any; setValue: any; userId: 
       <div className="space-y-2">
         <Label>Site Location</Label>
         <Controller name="site_location" control={control} render={({ field }) => (
-          <Input {...field} placeholder="Cairo Workshop" className="bg-almona-darker border-almona-light/30" />
+          <Input {...field} placeholder="Cairo Workshop" className="bg-card border-border/30" />
         )} />
       </div>
       <div className="space-y-2">
         <Label>Machine Model</Label>
         {loading ? (
-          <div className="text-xs text-gray-400 py-2">Loading models...</div>
+          <div className="text-xs text-muted-foreground py-2">Loading models...</div>
         ) : models.length > 0 ? (
           <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Machine Model">
             {models.map(m => {
@@ -787,23 +787,23 @@ const MachineAndContactSection: React.FC<{ control: any; setValue: any; userId: 
                   key={m}
                   type="button"
                   onClick={() => { setValue('machine_model', active ? '' : m, { shouldDirty: true }); setValue('machine_serial_number',''); }}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-amber-400/60 hover:text-amber-300'}`}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-border/30 text-muted-foreground hover:border-amber-400/60 hover:text-amber-300'}`}
                   aria-pressed={active}
                 >{m}</button>
               );
             })}
-            {models.length === 0 && <div className="text-xs text-gray-500">No models</div>}
+            {models.length === 0 && <div className="text-xs text-muted-foreground">No models</div>}
           </div>
         ) : (
           <Controller name="machine_model" control={control} render={({ field }) => (
-            <Input {...field} placeholder="e.g. CNC-500" className="bg-almona-darker border-almona-light/30" />
+            <Input {...field} placeholder="e.g. CNC-500" className="bg-card border-border/30" />
           )} />
         )}
       </div>
       <div className="space-y-2">
-        <Label>Machine Serial{currentModel && <span className="text-[10px] ml-1 text-gray-400">(Filtered)</span>}</Label>
+        <Label>Machine Serial{currentModel && <span className="text-[10px] ml-1 text-muted-foreground">(Filtered)</span>}</Label>
         {loading ? (
-          <div className="text-xs text-gray-400 py-2">Loading machines...</div>
+          <div className="text-xs text-muted-foreground py-2">Loading machines...</div>
         ) : filteredSerials.length > 0 ? (
           <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Machine Serial">
             {filteredSerials.map(sn => {
@@ -814,19 +814,19 @@ const MachineAndContactSection: React.FC<{ control: any; setValue: any; userId: 
                   type="button"
                   onClick={() => setValue('machine_serial_number', active ? '' : sn, { shouldDirty: true })}
                   aria-pressed={active}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-amber-500/25 border-amber-400 text-amber-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-amber-400/60 hover:text-amber-300'}`}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-amber-500/25 border-amber-400 text-amber-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-border/30 text-muted-foreground hover:border-amber-400/60 hover:text-amber-300'}`}
                 >{sn}</button>
               );
             })}
             <button
               type="button"
               onClick={() => setValue('machine_serial_number','', { shouldDirty: true })}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${currentSerial === '' ? 'bg-amber-500/10 border-amber-400/70 text-amber-300' : 'border-almona-light/30 text-gray-400 hover:border-amber-400/60 hover:text-amber-300'}`}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${currentSerial === '' ? 'bg-amber-500/10 border-amber-400/70 text-amber-300' : 'border-border/30 text-muted-foreground hover:border-amber-400/60 hover:text-amber-300'}`}
             >(None)</button>
           </div>
         ) : (
           <Controller name="machine_serial_number" control={control} render={({ field }) => (
-            <Input {...field} placeholder={currentModel ? 'No serials for model' : 'ALM-2024-001'} className="bg-almona-darker border-almona-light/30" disabled={!!currentModel} />
+            <Input {...field} placeholder={currentModel ? 'No serials for model' : 'ALM-2024-001'} className="bg-card border-border/30" disabled={!!currentModel} />
           )} />
         )}
       </div>

@@ -118,10 +118,10 @@ export const ProductionPage: React.FC = () => {
     };
 
     const LoadingFallback = (
-        <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900">
+        <div className="flex items-center justify-center h-full bg-gradient-to-br from-background to-background">
             <div className="text-center space-y-4">
                 <Loader2 className="w-12 h-12 text-amber-400 animate-spin mx-auto" />
-                <p className="text-slate-400 text-sm">Loading production command center...</p>
+                <p className="text-muted-foreground text-sm">Loading production command center...</p>
             </div>
         </div>
     );
@@ -129,8 +129,8 @@ export const ProductionPage: React.FC = () => {
     if (!hasRequiredData || !productionValidation.valid) {
         const goBackTarget = !currentProject ? 'design' : 'optimization';
         return (
-            <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-950 to-slate-900 p-6">
-                <div className="max-w-md w-full bg-slate-900/50 border border-amber-600/30 rounded-lg p-8 space-y-6">
+            <div className="flex items-center justify-center h-full bg-gradient-to-br from-background to-background p-6">
+                <div className="max-w-md w-full bg-background/50 border border-amber-600/30 rounded-lg p-8 space-y-6">
                     <div className="text-center">
                         <AlertCircle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
                         <h2 className="text-2xl font-bold text-amber-200">
@@ -180,11 +180,11 @@ export const ProductionPage: React.FC = () => {
                 />
                 <div className="p-2 flex flex-col items-end gap-2">
                     {releaseError ? (
-                        <p role="alert" className="text-sm text-red-300 max-w-lg text-right">
+                        <p role="alert" className="text-sm text-destructive max-w-lg text-right">
                             {releaseError}
                         </p>
                     ) : (
-                        <p className="text-xs text-slate-500 max-w-lg text-right">
+                        <p className="text-xs text-muted-foreground max-w-lg text-right">
                             Manual production recording — freezes BOM, stock, and optimization for this
                             revision before QC. Does not claim CNC completion.
                         </p>

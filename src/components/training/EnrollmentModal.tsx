@@ -77,51 +77,51 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="public-enquiry-dialog max-w-2xl max-h-[90dvh] overflow-y-auto bg-almona-dark border-almona-light/20 text-white">
+      <DialogContent className="public-enquiry-dialog max-w-2xl max-h-[90dvh] overflow-y-auto bg-background border-border/20 text-foreground">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-amber-300">{copy("Training enquiry")}</DialogTitle>
-          <DialogDescription className="text-gray-400">{copy("Ask about fees, course scope and available dates. This enquiry does not confirm a booking or accredited certification.")}</DialogDescription>
+          <DialogDescription className="text-muted-foreground">{copy("Ask about fees, course scope and available dates. This enquiry does not confirm a booking or accredited certification.")}</DialogDescription>
         </DialogHeader>
         <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-5">
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="enrollment-name" className="typography-label text-sm font-medium">{t('trainingPage.form.name')}</label>
-              <Input id="enrollment-name" {...register('name')} className="mt-1 bg-almona-dark/50" />
-              {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>}
+              <Input id="enrollment-name" {...register('name')} className="mt-1 bg-background/50" />
+              {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
             </div>
             <div>
               <label htmlFor="enrollment-email" className="typography-label text-sm font-medium">{t('trainingPage.form.email')}</label>
-              <Input id="enrollment-email" type="email" dir="ltr" {...register('email')} className="mt-1 bg-almona-dark/50" />
-              {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>}
+              <Input id="enrollment-email" type="email" dir="ltr" {...register('email')} className="mt-1 bg-background/50" />
+              {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
             </div>
             <div>
               <label htmlFor="enrollment-company" className="typography-label text-sm font-medium">{t('trainingPage.form.company')}</label>
-              <Input id="enrollment-company" {...register('company')} className="mt-1 bg-almona-dark/50" />
+              <Input id="enrollment-company" {...register('company')} className="mt-1 bg-background/50" />
             </div>
             <div>
               <label htmlFor="enrollment-phone" className="typography-label text-sm font-medium">{t('trainingPage.form.phone')}</label>
-              <Input id="enrollment-phone" type="tel" dir="ltr" {...register('phone')} className="mt-1 bg-almona-dark/50" />
+              <Input id="enrollment-phone" type="tel" dir="ltr" {...register('phone')} className="mt-1 bg-background/50" />
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="enrollment-program" className="typography-label text-sm font-medium">{t('trainingPage.form.program')}</label>
-              <select id="enrollment-program" {...register('program')} className="mt-1 w-full bg-almona-dark/50 border border-almona-light/20 rounded px-2 py-2 text-sm">
+              <select id="enrollment-program" {...register('program')} className="mt-1 w-full bg-background/50 border border-border/20 rounded px-2 py-2 text-sm">
                 <option value="">{t('trainingPage.form.selectProgram')}</option>
                 {trainingLevels.map(p => <option key={p.level} value={p.level}>{copy(p.title)}</option>)}
               </select>
-              {errors.program && <p className="text-xs text-red-400 mt-1">{errors.program.message}</p>}
+              {errors.program && <p className="text-xs text-destructive mt-1">{errors.program.message}</p>}
             </div>
             <div>
               <label htmlFor="enrollment-material" className="typography-label text-sm font-medium">{t('trainingPage.form.material')}</label>
-              <select id="enrollment-material" {...register('material')} className="mt-1 w-full bg-almona-dark/50 border border-almona-light/20 rounded px-2 py-2 text-sm">
+              <select id="enrollment-material" {...register('material')} className="mt-1 w-full bg-background/50 border border-border/20 rounded px-2 py-2 text-sm">
                 <option value="aluminium">{t('trainingPage.material.aluminium')}</option>
                 <option value="upvc">{t('trainingPage.material.upvc')}</option>
               </select>
             </div>
             <div className="md:col-span-2">
               <label htmlFor="enrollment-cohort" className="typography-label text-sm font-medium flex items-center gap-2">{t('trainingPage.form.startDate')} <Badge variant="outline" className="border-amber-400/40 text-amber-300">{cohorts.length}</Badge></label>
-              <select id="enrollment-cohort" {...register('cohortId')} className="mt-1 w-full bg-almona-dark/50 border border-almona-light/20 rounded px-2 py-2 text-sm">
+              <select id="enrollment-cohort" {...register('cohortId')} className="mt-1 w-full bg-background/50 border border-border/20 rounded px-2 py-2 text-sm">
                 <option value="">{t('trainingPage.form.flexible')}</option>
                 {cohorts.map(c => (
                   <option value={c.id} key={c.id}>{c.start.toLocaleDateString()} ({c.levels.join(',')})</option>
@@ -130,11 +130,11 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
             </div>
             <div className="md:col-span-2">
               <label htmlFor="enrollment-notes" className="typography-label text-sm font-medium">{t('trainingPage.form.notes')}</label>
-              <Textarea rows={4} id="enrollment-notes" {...register('notes')} className="mt-1 bg-almona-dark/50" />
+              <Textarea rows={4} id="enrollment-notes" {...register('notes')} className="mt-1 bg-background/50" />
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={()=>onOpenChange(false)} className="border-almona-light/20">{t('trainingPage.form.cancel')}</Button>
+            <Button type="button" variant="outline" onClick={()=>onOpenChange(false)} className="border-border/20">{t('trainingPage.form.cancel')}</Button>
             <Button disabled={isSubmitting} type="submit" className="btn-primary-gradient">{isSubmitting? t('trainingPage.form.submitting'): t('trainingPage.form.submit')}</Button>
           </DialogFooter>
         </form>

@@ -80,7 +80,7 @@ export const SalesPipelineChart: React.FC<SalesPipelineChartProps> = ({
 
   if (data.length === 0) {
     return (
-      <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+      <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
         <CardContent className="p-8">
           <div className="text-center text-amber-600/70">
             No pipeline data available
@@ -94,7 +94,7 @@ export const SalesPipelineChart: React.FC<SalesPipelineChartProps> = ({
     <div className={cn('space-y-4', className)}>
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -108,7 +108,7 @@ export const SalesPipelineChart: React.FC<SalesPipelineChartProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -122,7 +122,7 @@ export const SalesPipelineChart: React.FC<SalesPipelineChartProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -134,7 +134,7 @@ export const SalesPipelineChart: React.FC<SalesPipelineChartProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -150,7 +150,7 @@ export const SalesPipelineChart: React.FC<SalesPipelineChartProps> = ({
       </div>
 
       {/* Pipeline Chart */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Sales Pipeline by Stage</CardTitle>
           <CardDescription className="text-sm text-amber-600/70">
@@ -240,7 +240,7 @@ export const SalesPipelineChart: React.FC<SalesPipelineChartProps> = ({
       </Card>
 
       {/* Stage Details Table */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Pipeline Stage Details</CardTitle>
         </CardHeader>

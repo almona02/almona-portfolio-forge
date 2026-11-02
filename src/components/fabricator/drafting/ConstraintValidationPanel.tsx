@@ -27,8 +27,8 @@ export const ConstraintValidationPanel: React.FC<ConstraintValidationPanelProps>
 
   if (constraints.length === 0) {
     return (
-      <div className="p-3 bg-slate-900/50 border border-slate-700/50 rounded-lg">
-        <div className="flex items-center gap-2 text-slate-400">
+      <div className="p-3 bg-background/50 border border-border/50 rounded-lg">
+        <div className="flex items-center gap-2 text-muted-foreground">
           <Info size={14} />
           <span className="text-xs">No constraints defined</span>
         </div>
@@ -39,7 +39,7 @@ export const ConstraintValidationPanel: React.FC<ConstraintValidationPanelProps>
   if (validationIssues.length === 0) {
     return (
       <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-        <div className="flex items-center gap-2 text-green-400">
+        <div className="flex items-center gap-2 text-success">
           <CheckCircle size={14} />
           <span className="text-xs font-medium">All constraints satisfied</span>
         </div>
@@ -53,14 +53,14 @@ export const ConstraintValidationPanel: React.FC<ConstraintValidationPanelProps>
       {errors.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle size={14} className="text-red-400" />
-            <span className="text-xs font-semibold text-red-400">Errors ({errors.length})</span>
+            <AlertTriangle size={14} className="text-destructive" />
+            <span className="text-xs font-semibold text-destructive">Errors ({errors.length})</span>
           </div>
           <div className="space-y-1">
             {errors.map((issue, index) => (
               <div
                 key={index}
-                className="p-2 bg-red-500/10 border border-red-500/20 rounded text-xs text-red-300"
+                className="p-2 bg-red-500/10 border border-red-500/20 rounded text-xs text-destructive"
               >
                 {issue.message}
               </div>
@@ -73,14 +73,14 @@ export const ConstraintValidationPanel: React.FC<ConstraintValidationPanelProps>
       {warnings.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle size={14} className="text-amber-400" />
-            <span className="text-xs font-semibold text-amber-400">Warnings ({warnings.length})</span>
+            <AlertTriangle size={14} className="text-warning" />
+            <span className="text-xs font-semibold text-warning">Warnings ({warnings.length})</span>
           </div>
           <div className="space-y-1">
             {warnings.map((issue, index) => (
               <div
                 key={index}
-                className="p-2 bg-amber-500/10 border border-amber-500/20 rounded text-xs text-amber-300"
+                className="p-2 bg-amber-500/10 border border-amber-500/20 rounded text-xs text-warning"
               >
                 {issue.message}
               </div>
@@ -93,14 +93,14 @@ export const ConstraintValidationPanel: React.FC<ConstraintValidationPanelProps>
       {infos.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Info size={14} className="text-blue-400" />
-            <span className="text-xs font-semibold text-blue-400">Info ({infos.length})</span>
+            <Info size={14} className="text-info" />
+            <span className="text-xs font-semibold text-info">Info ({infos.length})</span>
           </div>
           <div className="space-y-1">
             {infos.map((issue, index) => (
               <div
                 key={index}
-                className="p-2 bg-blue-500/10 border border-blue-500/20 rounded text-xs text-blue-300"
+                className="p-2 bg-blue-500/10 border border-blue-500/20 rounded text-xs text-info"
               >
                 {issue.message}
               </div>

@@ -131,7 +131,7 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
 
   if (loading) {
     return (
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-8">
           <div className="text-center text-amber-600/70">Loading messages...</div>
         </CardContent>
@@ -143,7 +143,7 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
     <div className="space-y-6">
       {/* Compose Message */}
       {showCompose ? (
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardHeader>
             <CardTitle className="text-lg text-amber-200">Compose Message</CardTitle>
             <CardDescription className="text-sm text-amber-600/70">
@@ -157,7 +157,7 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
                 value={newMessage.subject}
                 onChange={(e) => setNewMessage({ ...newMessage, subject: e.target.value })}
                 placeholder="Message subject"
-                className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                className="bg-background/60 border-amber-600/30 text-amber-200"
               />
             </div>
             <div>
@@ -167,7 +167,7 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
                 onChange={(e) => setNewMessage({ ...newMessage, content: e.target.value })}
                 placeholder="Your message..."
                 rows={6}
-                className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                className="bg-background/60 border-amber-600/30 text-amber-200"
               />
             </div>
             <div className="flex gap-2">
@@ -192,7 +192,7 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
           </CardContent>
         </Card>
       ) : (
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardContent className="p-4">
             <Button
               onClick={() => setShowCompose(true)}
@@ -206,7 +206,7 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
       )}
 
       {/* Messages List */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Messages</CardTitle>
           <CardDescription className="text-sm text-amber-600/70">
@@ -224,7 +224,7 @@ export const ClientCommunicationCenter: React.FC<ClientCommunicationCenterProps>
                   className={cn(
                     'p-4 rounded border',
                     message.from === 'customer'
-                      ? 'bg-[#0f0f0f]/60 border-amber-600/20'
+                      ? 'bg-background/60 border-amber-600/20'
                       : 'bg-amber-500/5 border-amber-600/30'
                   )}
                 >

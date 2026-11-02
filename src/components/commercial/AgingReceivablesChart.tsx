@@ -91,7 +91,7 @@ export const AgingReceivablesChart: React.FC<AgingReceivablesChartProps> = ({ cl
 
   if (loading) {
     return (
-      <Card className={`p-6 bg-slate-900/50 border-amber-500/20 ${className}`}>
+      <Card className={`p-6 bg-background/50 border-amber-500/20 ${className}`}>
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
         </div>
@@ -101,29 +101,29 @@ export const AgingReceivablesChart: React.FC<AgingReceivablesChartProps> = ({ cl
 
   if (data.length === 0) {
     return (
-      <Card className={`p-6 bg-slate-900/50 border-amber-500/20 ${className}`}>
+      <Card className={`p-6 bg-background/50 border-amber-500/20 ${className}`}>
         <div className="text-center py-12">
-          <FileText className="w-16 h-16 mx-auto mb-4 text-slate-500 opacity-50" />
-          <h3 className="text-lg font-semibold text-slate-300 mb-2">No Outstanding Receivables</h3>
-          <p className="text-slate-500">All invoices are paid up to date.</p>
+          <FileText className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+          <h3 className="text-lg font-semibold text-foreground mb-2">No Outstanding Receivables</h3>
+          <p className="text-muted-foreground">All invoices are paid up to date.</p>
         </div>
       </Card>
     );
   }
 
   return (
-    <Card className={`p-6 bg-slate-900/50 border-amber-500/20 backdrop-blur-sm ${className}`}>
+    <Card className={`p-6 bg-background/50 border-amber-500/20 backdrop-blur-sm ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-xl font-bold text-amber-400 mb-1">Aging Receivables</h3>
-          <p className="text-sm text-slate-400">Outstanding invoices by aging period</p>
+          <p className="text-sm text-muted-foreground">Outstanding invoices by aging period</p>
         </div>
         <Button
           variant="outline"
           size="sm"
           onClick={() => void loadData()}
-          className="bg-slate-800/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
+          className="bg-card/50 border-amber-500/20 text-amber-400 hover:bg-amber-500/10"
         >
           <RefreshCw className="w-4 h-4 mr-2" />
           Refresh
@@ -132,27 +132,27 @@ export const AgingReceivablesChart: React.FC<AgingReceivablesChartProps> = ({ cl
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-slate-800/50 rounded-lg p-4 border border-amber-500/10">
-          <p className="text-sm text-slate-400 mb-1">Total Outstanding</p>
+        <div className="bg-card/50 rounded-lg p-4 border border-amber-500/10">
+          <p className="text-sm text-muted-foreground mb-1">Total Outstanding</p>
           <p className="text-2xl font-bold text-amber-400">
             {formatCurrency(totalOutstanding, currency)}
           </p>
         </div>
-        <div className="bg-slate-800/50 rounded-lg p-4 border border-amber-500/10">
-          <p className="text-sm text-slate-400 mb-1">Total Invoices</p>
-          <p className="text-2xl font-bold text-slate-300">{totalCount}</p>
+        <div className="bg-card/50 rounded-lg p-4 border border-amber-500/10">
+          <p className="text-sm text-muted-foreground mb-1">Total Invoices</p>
+          <p className="text-2xl font-bold text-foreground">{totalCount}</p>
         </div>
         {bucketArray.map(bucket => (
           <div
             key={bucket.bucket}
-            className="bg-slate-800/50 rounded-lg p-4 border"
+            className="bg-card/50 rounded-lg p-4 border"
             style={{ borderColor: `${bucketColors[bucket.bucket]}40` }}
           >
-            <p className="text-sm text-slate-400 mb-1">{bucket.bucket} Days</p>
+            <p className="text-sm text-muted-foreground mb-1">{bucket.bucket} Days</p>
             <p className="text-2xl font-bold" style={{ color: bucketColors[bucket.bucket] }}>
               {formatCurrency(bucket.total, bucket.currency)}
             </p>
-            <p className="text-xs text-slate-500 mt-1">{bucket.count} invoices</p>
+            <p className="text-xs text-muted-foreground mt-1">{bucket.count} invoices</p>
           </div>
         ))}
       </div>
@@ -161,7 +161,7 @@ export const AgingReceivablesChart: React.FC<AgingReceivablesChartProps> = ({ cl
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Pie Chart */}
         <div>
-          <h4 className="text-sm font-semibold text-slate-400 mb-4">Distribution by Aging Bucket</h4>
+          <h4 className="text-sm font-semibold text-muted-foreground mb-4">Distribution by Aging Bucket</h4>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -201,7 +201,7 @@ export const AgingReceivablesChart: React.FC<AgingReceivablesChartProps> = ({ cl
 
         {/* Bar Chart */}
         <div>
-          <h4 className="text-sm font-semibold text-slate-400 mb-4">Amount by Bucket</h4>
+          <h4 className="text-sm font-semibold text-muted-foreground mb-4">Amount by Bucket</h4>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={bucketArray} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.1)" />
@@ -237,42 +237,42 @@ export const AgingReceivablesChart: React.FC<AgingReceivablesChartProps> = ({ cl
 
       {/* Detailed Table */}
       <div className="mt-6">
-        <h4 className="text-sm font-semibold text-slate-400 mb-4">Detailed Receivables</h4>
+        <h4 className="text-sm font-semibold text-muted-foreground mb-4">Detailed Receivables</h4>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-700">
-                <th className="text-left py-3 px-4 text-slate-400 font-semibold">Invoice</th>
-                <th className="text-left py-3 px-4 text-slate-400 font-semibold">Customer</th>
-                <th className="text-right py-3 px-4 text-slate-400 font-semibold">Total</th>
-                <th className="text-right py-3 px-4 text-slate-400 font-semibold">Paid</th>
-                <th className="text-right py-3 px-4 text-slate-400 font-semibold">Outstanding</th>
-                <th className="text-right py-3 px-4 text-slate-400 font-semibold">Days Old</th>
-                <th className="text-center py-3 px-4 text-slate-400 font-semibold">Bucket</th>
+              <tr className="border-b border-border">
+                <th className="text-left py-3 px-4 text-muted-foreground font-semibold">Invoice</th>
+                <th className="text-left py-3 px-4 text-muted-foreground font-semibold">Customer</th>
+                <th className="text-right py-3 px-4 text-muted-foreground font-semibold">Total</th>
+                <th className="text-right py-3 px-4 text-muted-foreground font-semibold">Paid</th>
+                <th className="text-right py-3 px-4 text-muted-foreground font-semibold">Outstanding</th>
+                <th className="text-right py-3 px-4 text-muted-foreground font-semibold">Days Old</th>
+                <th className="text-center py-3 px-4 text-muted-foreground font-semibold">Bucket</th>
               </tr>
             </thead>
             <tbody>
               {data.map((rec) => (
                 <tr
                   key={rec.invoiceId}
-                  className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"
+                  className="border-b border-border/50 hover:bg-card/30 transition-colors"
                 >
-                  <td className="py-3 px-4 text-slate-300 font-mono text-xs">
+                  <td className="py-3 px-4 text-foreground font-mono text-xs">
                     {rec.invoiceNumber}
                   </td>
-                  <td className="py-3 px-4 text-slate-300">
+                  <td className="py-3 px-4 text-foreground">
                     {rec.customerName}
                   </td>
-                  <td className="py-3 px-4 text-right text-slate-400">
+                  <td className="py-3 px-4 text-right text-muted-foreground">
                     {formatCurrency(rec.totalAmount, rec.currency)}
                   </td>
-                  <td className="py-3 px-4 text-right text-slate-400">
+                  <td className="py-3 px-4 text-right text-muted-foreground">
                     {formatCurrency(rec.paidAmount, rec.currency)}
                   </td>
                   <td className="py-3 px-4 text-right font-semibold" style={{ color: bucketColors[rec.agingBucket] }}>
                     {formatCurrency(rec.outstandingAmount, rec.currency)}
                   </td>
-                  <td className="py-3 px-4 text-right text-slate-400">
+                  <td className="py-3 px-4 text-right text-muted-foreground">
                     {rec.daysOld}
                   </td>
                   <td className="py-3 px-4 text-center">

@@ -269,8 +269,8 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
           to={item.href}
           className={cn(
             'flex items-center justify-between px-3 py-2 rounded-lg transition-colors',
-            'hover:bg-gray-800/50 active:bg-gray-800',
-            active ? 'bg-amber-900/30 text-amber-300' : 'text-gray-300 hover:text-gray-100'
+            'hover:bg-card/50 active:bg-card',
+            active ? 'bg-amber-900/30 text-warning' : 'text-foreground hover:text-foreground'
           )}
           onClick={(e) => {
             if (item.subItems && item.subItems.length > 0) {
@@ -284,7 +284,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
           <div className="flex items-center space-x-3">
             <div className={cn(
               'transition-colors',
-              active ? 'text-amber-400' : 'text-gray-400'
+              active ? 'text-warning' : 'text-muted-foreground'
             )}>
               {item.icon}
             </div>
@@ -326,10 +326,10 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
                   to={subItem.href}
                   className={cn(
                     'flex items-center justify-between px-3 py-1.5 rounded text-sm',
-                    'hover:bg-gray-800/30 transition-colors',
+                    'hover:bg-card/30 transition-colors',
                     subActive 
-                      ? 'text-amber-300 bg-amber-900/20' 
-                      : 'text-gray-400 hover:text-gray-200'
+                      ? 'text-warning bg-amber-900/20'
+                      : 'text-muted-foreground hover:text-foreground'
                   )}
                   aria-label={`Navigate to ${subItem.label}`}
                   aria-current={subActive ? 'page' : undefined}
@@ -340,7 +340,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
                   </div>
 
                   {subItem.badge !== undefined && (
-                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-gray-700 text-gray-300">
+                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-muted text-foreground">
                       {subItem.badge}
                     </span>
                   )}
@@ -365,19 +365,19 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
     >
       <div className="p-4">
         {/* User Profile Mini — from auth session, not placeholders */}
-        <div className="mb-6 p-3 rounded-lg bg-gray-800/30 border border-gray-700/50">
+        <div className="mb-6 p-3 rounded-lg bg-card/30 border border-border/50">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-full bg-amber-900/30 flex items-center justify-center">
-              <span className="text-sm font-semibold text-amber-300">{initials}</span>
+              <span className="text-sm font-semibold text-warning">{initials}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-100 truncate" title={displayName}>
+              <p className="text-sm font-medium text-foreground truncate" title={displayName}>
                 {displayName}
               </p>
-              <p className="text-xs text-gray-400 truncate" title={displayRole}>
+              <p className="text-xs text-muted-foreground truncate" title={displayRole}>
                 {displayRole}
               </p>
-              <button type="button" className="mt-2 text-xs text-amber-300 underline" onClick={() => {
+              <button type="button" className="mt-2 text-xs text-warning underline" onClick={() => {
                 void (async () => {
                 if (draftDirty) { toast.error('Save the current position before changing user.'); return; }
                 try { await signOut(); void publishActiveProject(null); useWorkflowStore.getState().clearWorkflow(); void navigate('/login', { replace: true }); }
@@ -385,7 +385,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
                 })();
               }}>Change user</button>
             </div>
-            <Bell size={16} className="text-gray-400" aria-hidden />
+            <Bell size={16} className="text-muted-foreground" aria-hidden />
           </div>
         </div>
 
@@ -396,8 +396,8 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
 
         {/* Contextual Tools Section - Shows section-specific tools */}
         {contextTools.length > 0 && contextSectionId && (
-          <div className="mt-6 pt-6 border-t border-gray-800/50">
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-3">
+          <div className="mt-6 pt-6 border-t border-border/50">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-3">
               {contextSectionId === 'fabrication' ? 'System Configuration' : 
                contextSectionId === 'drafting' ? 'Drafting Tools' :
                contextSectionId === 'commercial' ? 'Commercial Tools' : 'Tools'}
@@ -410,16 +410,16 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
                   disabled={tool.disabled}
                   className={cn(
                     'w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors',
-                    'hover:bg-gray-800/50 active:bg-gray-800',
+                    'hover:bg-card/50 active:bg-card',
                     tool.disabled 
-                      ? 'text-gray-500 cursor-not-allowed' 
-                      : 'text-gray-300 hover:text-gray-100'
+                      ? 'text-muted-foreground cursor-not-allowed'
+                      : 'text-foreground hover:text-foreground'
                   )}
                   title={tool.label}
                 >
                   <div className="flex items-center space-x-3 min-w-0 flex-1">
                     {tool.icon && (
-                      <div className="text-gray-400 shrink-0">
+                      <div className="text-muted-foreground shrink-0">
                         {tool.icon}
                       </div>
                     )}
@@ -443,21 +443,21 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
         )}
 
         {/* Manufacturing save chrome (UP-14) — same source as status bar */}
-        <div className="mt-8 pt-6 border-t border-gray-800/50">
+        <div className="mt-8 pt-6 border-t border-border/50">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-gray-400">Manufacturing save</span>
+            <span className="text-xs font-medium text-muted-foreground">Manufacturing save</span>
             <div className="flex items-center space-x-1">
               <div
                 className={cn(
                   'w-2 h-2 rounded-full',
-                  savedOk ? 'bg-green-500' : saveChrome.tone === 'dirty' ? 'bg-amber-500' : 'bg-slate-500',
+                  savedOk ? 'bg-green-500' : saveChrome.tone === 'dirty' ? 'bg-amber-500' : 'bg-muted',
                 )}
                 aria-hidden
               />
               <span
                 className={cn(
                   'text-xs',
-                  savedOk ? 'text-green-400' : saveChrome.tone === 'dirty' ? 'text-amber-400' : 'text-slate-400',
+                  savedOk ? 'text-success' : saveChrome.tone === 'dirty' ? 'text-warning' : 'text-muted-foreground',
                 )}
               >
                 {savedOk
@@ -470,7 +470,7 @@ export const UniversalNavSidebar: React.FC<UniversalNavSidebarProps> = ({ active
               </span>
             </div>
           </div>
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-muted-foreground">
             {savedLabel ?? 'Not recorded — open a saved position revision'}
           </div>
         </div>

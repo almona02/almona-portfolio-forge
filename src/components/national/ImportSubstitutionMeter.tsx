@@ -16,7 +16,7 @@ export const ImportSubstitutionMeter: React.FC<ImportMeterProps> = ({ savedUSD, 
   const progressPercent = Math.min((savedUSD / targetUSD) * 100, 100);
   
   return (
-    <Card className="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 text-white border-slate-800 overflow-hidden relative">
+    <Card className="bg-gradient-to-br from-background via-background to-background text-white border-border overflow-hidden relative">
       {/* Top accent bar */}
       <div className="h-1 bg-gradient-to-r from-amber-500 via-amber-500 to-amber-500" />
       
@@ -25,7 +25,7 @@ export const ImportSubstitutionMeter: React.FC<ImportMeterProps> = ({ savedUSD, 
       
       <CardHeader className="pb-2 relative z-10">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm uppercase tracking-wider text-slate-400 font-medium">
+          <CardTitle className="text-sm uppercase tracking-wider text-muted-foreground font-medium">
             Contribution to Foreign Reserves
           </CardTitle>
           <div className="btn-primary">
@@ -41,46 +41,46 @@ export const ImportSubstitutionMeter: React.FC<ImportMeterProps> = ({ savedUSD, 
             <span className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-400">
               ${savedUSD.toLocaleString()}
             </span>
-            <span className="text-sm text-slate-500 mb-2">USD Saved</span>
+            <span className="text-sm text-muted-foreground mb-2">USD Saved</span>
           </div>
           
           {/* Progress bar */}
           <div className="space-y-2">
-            <div className="flex justify-between text-xs text-slate-500">
+            <div className="flex justify-between text-xs text-muted-foreground">
               <span>Import Substitution Progress</span>
               <span className="text-amber-400">{progressPercent.toFixed(1)}%</span>
             </div>
-            <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div className="h-2 bg-card rounded-full overflow-hidden">
               <div 
                 className="h-full bg-gradient-to-r from-amber-500 to-amber-500 rounded-full transition-all duration-1000"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <div className="text-xs text-slate-600 text-right">
+            <div className="text-xs text-muted-foreground text-right">
               Target: $100M by 2026
             </div>
           </div>
           
           {/* Stats grid */}
-          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-800">
-            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 /50 card-dark">
+          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
+            <div className="bg-card/50 rounded-xl p-4 border border-border /50 card-dark">
               <div className="flex items-center gap-2 mb-2">
                 <DollarSign className="h-4 w-4 text-amber-400" />
-                <p className="text-xs text-slate-400 uppercase tracking-wide">EGP Equivalent</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">EGP Equivalent</p>
               </div>
-              <p className="font-mono text-xl text-white font-semibold">
+              <p className="font-mono text-xl text-foreground font-semibold">
                 {savedEGP.toLocaleString()}
-                <span className="text-sm text-slate-500 ml-1">EGP</span>
+                <span className="text-sm text-muted-foreground ml-1">EGP</span>
               </p>
             </div>
-            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700 /50 card-dark">
+            <div className="bg-card/50 rounded-xl p-4 border border-border /50 card-dark">
               <div className="flex items-center gap-2 mb-2">
                 <Recycle className="h-4 w-4 status-valid" />
-                <p className="text-xs text-slate-400 uppercase tracking-wide">Material Diverted</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Material Diverted</p>
               </div>
-              <p className="font-mono text-xl text-white font-semibold">
+              <p className="font-mono text-xl text-foreground font-semibold">
                 {materialTons.toLocaleString()}
-                <span className="text-sm text-slate-500 ml-1">Tons</span>
+                <span className="text-sm text-muted-foreground ml-1">Tons</span>
               </p>
             </div>
           </div>

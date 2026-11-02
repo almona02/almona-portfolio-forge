@@ -238,29 +238,29 @@ export const UnifiedDesignPage: React.FC = () => {
     }, [canonicalModel, designMode, setCanonicalModel, setCurrentProject, completeStep, navigate, setIsConverting]);
 
     return (
-        <div className="flex flex-col h-full bg-gradient-to-br from-slate-50 to-amber-50">
+        <div className="flex flex-col h-full bg-gradient-to-br from-background to-amber-50">
             {/* Header */}
-            <div className="border-b border-slate-200 bg-white/80 backdrop-blur-sm">
+            <div className="border-b border-border bg-foreground/80 backdrop-blur-sm">
                 <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-2xl font-bold text-slate-900">
+                            <h1 className="text-2xl font-bold text-foreground">
                                 {projectId ? 'Edit Project' : 'Create New Window'}
                             </h1>
-                            <p className="text-slate-600 mt-1">
+                            <p className="text-muted-foreground mt-1">
                                 Design using guided wizard or professional CAD tools
                             </p>
                         </div>
 
                         <div className="flex items-center gap-4">
                             {/* Mode switcher */}
-                            <div className="flex rounded-lg border border-slate-300 p-1 bg-slate-100">
+                            <div className="flex rounded-lg border border-border p-1 bg-muted">
                                 <button
                                     onClick={() => void handleModeSwitch('wizard')}
                                     disabled={isConverting}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${designMode === 'wizard'
-                                        ? 'bg-white text-slate-900 shadow-sm border border-slate-300'
-                                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                                        ? 'bg-card text-foreground shadow-sm border border-border'
+                                        : 'text-muted-foreground hover:text-foreground hover:bg-foreground/50'
                                         } ${isConverting ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                     <div className="flex items-center gap-2">
@@ -274,7 +274,7 @@ export const UnifiedDesignPage: React.FC = () => {
                                     disabled={isConverting}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${designMode === 'drafting'
                                         ? 'bg-amber-100 text-amber-900 shadow-sm border border-amber-300'
-                                        : 'text-slate-600 hover:text-amber-700 hover:bg-amber-50'
+                                        : 'text-muted-foreground hover:text-amber-700 hover:bg-amber-50'
                                         } ${isConverting ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                     <div className="flex items-center gap-2">
@@ -315,7 +315,7 @@ export const UnifiedDesignPage: React.FC = () => {
                     <div className="flex items-center justify-center h-full">
                         <div className="text-center">
                             <RefreshCw className="w-8 h-8 animate-spin mx-auto text-amber-600" />
-                            <p className="mt-4 text-slate-600">
+                            <p className="mt-4 text-muted-foreground">
                                 Converting design data...
                             </p>
                         </div>
@@ -354,30 +354,30 @@ export const UnifiedDesignPage: React.FC = () => {
                                                 {designMode === 'wizard' ? (
                                                     <>
                                                         <li className="flex items-center">
-                                                            <span className="text-green-500 mr-2">✓</span>
+                                                            <span className="text-success mr-2">✓</span>
                                                             Quick window designs
                                                         </li>
                                                         <li className="flex items-center">
-                                                            <span className="text-green-500 mr-2">✓</span>
+                                                            <span className="text-success mr-2">✓</span>
                                                             Standard window types
                                                         </li>
                                                         <li className="flex items-center">
-                                                            <span className="text-green-500 mr-2">✓</span>
+                                                            <span className="text-success mr-2">✓</span>
                                                             Measurement-first approach
                                                         </li>
                                                     </>
                                                 ) : (
                                                     <>
                                                         <li className="flex items-center">
-                                                            <span className="text-green-500 mr-2">✓</span>
+                                                            <span className="text-success mr-2">✓</span>
                                                             Complex custom designs
                                                         </li>
                                                         <li className="flex items-center">
-                                                            <span className="text-green-500 mr-2">✓</span>
+                                                            <span className="text-success mr-2">✓</span>
                                                             Professional CAD users
                                                         </li>
                                                         <li className="flex items-center">
-                                                            <span className="text-green-500 mr-2">✓</span>
+                                                            <span className="text-success mr-2">✓</span>
                                                             50+ Egyptian templates
                                                         </li>
                                                     </>
@@ -387,7 +387,7 @@ export const UnifiedDesignPage: React.FC = () => {
 
                                         <div>
                                             <h4 className="font-medium mb-2">Tips:</h4>
-                                            <p className="text-sm text-slate-600">
+                                            <p className="text-sm text-muted-foreground">
                                                 {designMode === 'wizard'
                                                     ? 'Start with overall dimensions, then configure individual cells.'
                                                     : 'Use templates for common window types, then customize with CAD tools.'}
@@ -405,14 +405,14 @@ export const UnifiedDesignPage: React.FC = () => {
                                         </Button>
 
                                         {/* Egyptian Standards Compliance */}
-                                        <div className="mt-6 pt-6 border-t border-slate-700">
-                                            <h4 className="font-medium text-slate-700 flex items-center gap-2 mb-3">
-                                                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div className="mt-6 pt-6 border-t border-border">
+                                            <h4 className="font-medium text-foreground flex items-center gap-2 mb-3">
+                                                <svg className="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                                 </svg>
                                                 Egyptian Standards
                                             </h4>
-                                            <div className="text-sm font-medium text-green-600 mb-2">100% Compliant</div>
+                                            <div className="text-sm font-medium text-success mb-2">100% Compliant</div>
                                             <div className="space-y-2">
                                                 {[
                                                     { id: 'thermal', name: 'EGP 301-2023 Thermal' },
@@ -423,18 +423,18 @@ export const UnifiedDesignPage: React.FC = () => {
                                                     <div key={standard.id} className="flex items-center justify-between">
                                                         <div className="flex items-center gap-2">
                                                             <div className="w-2 h-2 rounded-full bg-green-500" />
-                                                            <span className="text-sm text-slate-600">{standard.name}</span>
+                                                            <span className="text-sm text-muted-foreground">{standard.name}</span>
                                                         </div>
                                                         <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-800">✓</span>
                                                     </div>
                                                 ))}
                                             </div>
                                             <div className="mt-4">
-                                                <div className="flex justify-between text-xs text-slate-500 mb-1">
+                                                <div className="flex justify-between text-xs text-muted-foreground mb-1">
                                                     <span>Compliance</span>
                                                     <span>100%</span>
                                                 </div>
-                                                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                                                     <div className="h-full bg-gradient-to-r from-green-400 to-green-500 transition-all duration-500" style={{ width: '100%' }} />
                                                 </div>
                                             </div>
@@ -451,13 +451,13 @@ export const UnifiedDesignPage: React.FC = () => {
                                         <div className="space-y-2">
                                             <div className="flex justify-between text-sm">
                                                 <span>Window Structure</span>
-                                                <span className={canonicalModel?.geometry ? 'text-green-600' : 'text-slate-400'}>
+                                                <span className={canonicalModel?.geometry ? 'text-success' : 'text-muted-foreground'}>
                                                     {canonicalModel?.geometry ? '✓ Complete' : 'Pending'}
                                                 </span>
                                             </div>
                                             <div className="flex justify-between text-sm">
                                                 <span>Materials</span>
-                                                <span className={canonicalModel?.materials ? 'text-green-600' : 'text-slate-400'}>
+                                                <span className={canonicalModel?.materials ? 'text-success' : 'text-muted-foreground'}>
                                                     {canonicalModel?.materials ? '✓ Complete' : 'Pending'}
                                                 </span>
                                             </div>
@@ -468,7 +468,7 @@ export const UnifiedDesignPage: React.FC = () => {
 
                             {/* Right panel - Design interface */}
                             <div className="lg:col-span-2 h-full">
-                                <Card className="h-full border-2 border-slate-300">
+                                <Card className="h-full border-2 border-border">
                                     <CardContent className="p-0 h-full">
                                         {designMode === 'wizard' ? (
                                             <div className="h-full">
@@ -495,9 +495,9 @@ export const UnifiedDesignPage: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className="border-t border-slate-200 bg-white/80 backdrop-blur-sm py-3">
+            <div className="border-t border-border bg-foreground/80 backdrop-blur-sm py-3">
                 <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-                    <div className="text-sm text-slate-600">
+                    <div className="text-sm text-muted-foreground">
                         {canonicalModel ? (
                             <>
                                 Design last saved: {new Date(canonicalModel.metadata.modifiedAt).toLocaleTimeString()}

@@ -371,13 +371,13 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-4xl max-h-[95vh] overflow-y-auto bg-gray-900 border-gray-800 text-white sm:w-full card-dark">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[95vh] overflow-y-auto bg-background border-border text-foreground sm:w-full card-dark">
         <DialogHeader>
           <DialogTitle className="typography-h2 flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-amber-400" />
+            <MapPin className="h-5 w-5 text-warning" />
             Egyptian Project Wizard
           </DialogTitle>
-          <DialogDescription className="text-xs text-gray-400">
+          <DialogDescription className="text-xs text-muted-foreground">
             Captures Egyptian context (wind, floor, usage) and recommends the right system pack before measuring.
           </DialogDescription>
         </DialogHeader>
@@ -385,14 +385,14 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
         <div className="space-y-4">
           <Progress value={progress} className="h-2" />
 
-          <div className="flex items-center justify-between bg-gray-800/60 border border-gray-700 rounded-lg p-3">
+          <div className="flex items-center justify-between bg-card/60 border border-border rounded-lg p-3">
             <div className="text-sm">
-              <div className="font-semibold text-white">Use Egyptian engineering standards</div>
-              <div className="text-xs text-gray-400">Switch off to use the standard (international) wizard.</div>
+              <div className="font-semibold text-foreground">Use Egyptian engineering standards</div>
+              <div className="text-xs text-muted-foreground">Switch off to use the standard (international) wizard.</div>
             </div>
             <Button
               variant={useEgyptianStandards ? 'default' : 'outline'}
-              className={useEgyptianStandards ? 'bg-amber-600 hover:bg-amber-500' : 'border-gray-600'}
+              className={useEgyptianStandards ? 'bg-amber-600 hover:bg-amber-500' : 'border-border'}
               onClick={() => {
                 if (useEgyptianStandards) {
                   setUseEgyptianStandards(false);
@@ -416,38 +416,38 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                     className={`relative p-4 rounded-lg border cursor-pointer transition-all ${
                       materialPreference === 'aluminum' 
                         ? 'bg-blue-900/20 border-blue-500 shadow-lg shadow-blue-500/20' 
-                        : 'bg-gray-800/40 border-gray-700 hover:bg-gray-800'
+                        : 'bg-card/40 border-border hover:bg-card'
                     }`}
                     onClick={() => setMaterialPreference('aluminum')}
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <Layers className={`h-5 w-5 ${materialPreference === 'aluminum' ? 'text-blue-400' : 'text-gray-400'}`} />
-                      <span className={`text-base font-medium ${materialPreference === 'aluminum' ? 'text-blue-100' : 'text-gray-300'}`}>
+                      <Layers className={`h-5 w-5 ${materialPreference === 'aluminum' ? 'text-info' : 'text-muted-foreground'}`} />
+                      <span className={`text-base font-medium ${materialPreference === 'aluminum' ? 'text-blue-100' : 'text-foreground'}`}>
                         Aluminum
                       </span>
                     </div>
-                    <div className="text-xs text-gray-500 mb-2">Default: PS System Pack</div>
-                    <div className="text-[10px] text-gray-500">60% Market Share (Standard)</div>
+                    <div className="text-xs text-muted-foreground mb-2">Default: PS System Pack</div>
+                    <div className="text-[10px] text-muted-foreground">60% Market Share (Standard)</div>
                     {materialPreference === 'aluminum' && (
-                      <div className="absolute top-2 right-2 text-blue-500"><Check className="h-4 w-4" /></div>
+                      <div className="absolute top-2 right-2 text-info"><Check className="h-4 w-4" /></div>
                     )}
                   </div>
                   <div 
                     className={`relative p-4 rounded-lg border cursor-pointer transition-all ${
                       materialPreference === 'upvc' 
                         ? 'bg-green-900/20 border-green-500 shadow-lg shadow-green-500/20' 
-                        : 'bg-gray-800/40 border-gray-700 hover:bg-gray-800'
+                        : 'bg-card/40 border-border hover:bg-card'
                     }`}
                     onClick={() => setMaterialPreference('upvc')}
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <BoxSelect className={`h-5 w-5 ${materialPreference === 'upvc' ? 'text-green-400' : 'text-gray-400'}`} />
-                      <span className={`text-base font-medium ${materialPreference === 'upvc' ? 'text-green-100' : 'text-gray-300'}`}>
+                      <BoxSelect className={`h-5 w-5 ${materialPreference === 'upvc' ? 'text-success' : 'text-muted-foreground'}`} />
+                      <span className={`text-base font-medium ${materialPreference === 'upvc' ? 'text-green-100' : 'text-foreground'}`}>
                         UPVC (Welded)
                       </span>
                     </div>
-                    <div className="text-xs text-gray-500 mb-2">Default: FoxyWin System</div>
-                    <div className="text-[10px] text-gray-500">40% Market Share (Insulated)</div>
+                    <div className="text-xs text-muted-foreground mb-2">Default: FoxyWin System</div>
+                    <div className="text-[10px] text-muted-foreground">40% Market Share (Insulated)</div>
                     {materialPreference === 'upvc' && (
                       <div className="absolute top-2 right-2 status-valid"><Check className="h-4 w-4" /></div>
                     )}
@@ -456,14 +456,14 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
               </div>
 
               {/* Project Details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-800">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-border">
                 <div className="space-y-2">
                   <Label>Client Name</Label>
                   <Input
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
                     placeholder="El Sherif Aluminum"
-                    className="bg-gray-800 border-gray-700"
+                    className="bg-card border-border"
                   />
                 </div>
                 <div className="space-y-2">
@@ -472,7 +472,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
                     placeholder="Nasr City Tower"
-                    className="bg-gray-800 border-gray-700"
+                    className="bg-card border-border"
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
@@ -481,7 +481,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                     value={siteName}
                     onChange={(e) => setSiteName(e.target.value)}
                     placeholder="Nasr City, Cairo"
-                    className="bg-gray-800 border-gray-700"
+                    className="bg-card border-border"
                   />
                 </div>
               </div>
@@ -500,10 +500,10 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                     if (found) setWindZone(found.windZone);
                   }}
                 >
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
+                  <SelectTrigger className="bg-card border-border">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-gray-700">
+                  <SelectContent className="bg-background border-border">
                     {GOVERNORATES.map((g) => (
                       <SelectItem key={g.name} value={g.name}>
                         {g.name}
@@ -515,10 +515,10 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
               <div className="space-y-2">
                 <Label>Wind Zone</Label>
                 <Select value={windZone} onValueChange={(val) => setWindZone(val as WindZone)}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
+                  <SelectTrigger className="bg-card border-border">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-gray-700">
+                  <SelectContent className="bg-background border-border">
                     <SelectItem value="inland">Inland (Cairo/Delta)</SelectItem>
                     <SelectItem value="coastal">Coastal (Alexandria)</SelectItem>
                     <SelectItem value="high_wind">High Wind (North Coast)</SelectItem>
@@ -528,10 +528,10 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
               <div className="space-y-2">
                 <Label>Exposure</Label>
                 <Select value={exposure} onValueChange={(val) => setExposure(val as Exposure)}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
+                  <SelectTrigger className="bg-card border-border">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-gray-700">
+                  <SelectContent className="bg-background border-border">
                     <SelectItem value="street">Street / Wind-facing</SelectItem>
                     <SelectItem value="backyard">Backyard / Courtyard</SelectItem>
                     <SelectItem value="open_field">Open Field</SelectItem>
@@ -551,16 +551,16 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                     min={0}
                     value={floorLevel}
                     onChange={(e) => setFloorLevel(Number(e.target.value || 0))}
-                    className="bg-gray-800 border-gray-700"
+                    className="bg-card border-border"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>Usage Type</Label>
                   <Select value={usageType} onValueChange={(val) => setUsageType(val as UsageType)}>
-                    <SelectTrigger className="bg-gray-800 border-gray-700">
+                    <SelectTrigger className="bg-card border-border">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-gray-700">
+                    <SelectContent className="bg-background border-border">
                       <SelectItem value="residential">Residential</SelectItem>
                       <SelectItem value="commercial">Commercial</SelectItem>
                       <SelectItem value="hotel">Hotel</SelectItem>
@@ -571,10 +571,10 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                 <div className="space-y-2">
                   <Label>Opening Type</Label>
                   <Select value={openingType} onValueChange={(val) => setOpeningType(val as OpeningType)}>
-                    <SelectTrigger className="bg-gray-800 border-gray-700">
+                    <SelectTrigger className="bg-card border-border">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-gray-700">
+                    <SelectContent className="bg-background border-border">
                       <SelectItem value="sliding">Sliding</SelectItem>
                       <SelectItem value="casement">Casement</SelectItem>
                       <SelectItem value="tilt_turn">Tilt & Turn</SelectItem>
@@ -592,12 +592,12 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
               {/* Tuning Status Alert */}
               {showTuningPrompt && selectedSystemPack && (
                 <Alert className="bg-yellow-900/20 border-yellow-500/50">
-                  <AlertCircle className="h-4 w-4 text-yellow-400" />
+                  <AlertCircle className="h-4 w-4 text-warning" />
                   <AlertDescription className="text-sm">
                     <div className="flex items-center justify-between">
                       <div>
-                        <strong className="text-yellow-300">System needs tuning for accurate cut lists</strong>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <strong className="text-warning">System needs tuning for accurate cut lists</strong>
+                        <p className="text-xs text-muted-foreground mt-1">
                           Configure Frame and Sash profiles, welding parameters, and cutting rules for 99.8% accuracy.
                         </p>
                       </div>
@@ -630,10 +630,10 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                 <div className="space-y-2">
                   <Label>Base Shape</Label>
                   <Select value={baseShape} onValueChange={(val) => setBaseShape(val as BaseShape)}>
-                    <SelectTrigger className="bg-gray-800 border-gray-700">
+                    <SelectTrigger className="bg-card border-border">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-gray-700">
+                    <SelectContent className="bg-background border-border">
                       <SelectItem value="single">Single</SelectItem>
                       <SelectItem value="two_sash">Two Sash</SelectItem>
                       <SelectItem value="three_sash">Three Sash</SelectItem>
@@ -656,18 +656,18 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                           key={id}
                           onClick={() => setSelectedSystemId(id)}
                           className={`relative px-3 py-2 rounded border text-xs transition ${
-                            active ? 'border-amber-500 bg-amber-500/10 text-amber-200' : 'border-gray-700 hover:border-gray-500'
+                            active ? 'border-amber-500 bg-amber-500/10 text-warning' : 'border-border hover:border-border'
                           }`}
                         >
                           <span>{pack.meta.name}</span>
                           {!packTuningStatus.isTuned && packTuningStatus.hasProfiles && (
-                            <span className="ml-2 text-[10px] text-yellow-500">Needs Tuning</span>
+                            <span className="ml-2 text-[10px] text-warning">Needs Tuning</span>
                           )}
                           {packTuningStatus.isTuned && (
                             <span className="ml-2 text-[10px] status-valid">✓ Tuned</span>
                           )}
                           {pack.meta.id.startsWith('custom') && (
-                            <span className="ml-2 text-[10px] text-amber-500">Custom</span>
+                            <span className="ml-2 text-[10px] text-warning">Custom</span>
                           )}
                           {pack.meta.id.startsWith('custom') && (
                             <div
@@ -695,7 +695,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                       );
                     })}
                     {recommendedSystems.length === 0 && (
-                      <span className="text-[11px] text-gray-400">No recommendation; select manually.</span>
+                      <span className="text-[11px] text-muted-foreground">No recommendation; select manually.</span>
                     )}
                   </div>
                   <Button
@@ -721,22 +721,22 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
 
           {step === 4 && (
             <div className="space-y-3">
-              <Alert className="bg-gray-800 border-gray-700">
-                <AlertDescription className="text-sm text-gray-200">
+              <Alert className="bg-card border-border">
+                <AlertDescription className="text-sm text-foreground">
                   We will create a project with region Egypt, apply wind/floor/usage constraints, and shortlist recommended systems.
                 </AlertDescription>
               </Alert>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                <div className="p-3 rounded border border-gray-700 bg-gray-900/60 space-y-1">
-                  <div className="flex items-center gap-2 text-amber-300">
+                <div className="p-3 rounded border border-border bg-background/60 space-y-1">
+                  <div className="flex items-center gap-2 text-warning">
                     <MapPin className="h-4 w-4" /> Location
                   </div>
                   <div>Governorate: {governorate}</div>
                   <div>Wind Zone: {windZone}</div>
                   <div>Exposure: {exposure}</div>
                 </div>
-                <div className="p-3 rounded border border-gray-700 bg-gray-900/60 space-y-1">
-                  <div className="flex items-center gap-2 text-amber-300">
+                <div className="p-3 rounded border border-border bg-background/60 space-y-1">
+                  <div className="flex items-center gap-2 text-warning">
                     <Ruler className="h-4 w-4" /> Constraints
                   </div>
                   <div>Floor: {floorLevel}</div>
@@ -744,8 +744,8 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                   <div>Opening: {openingType}</div>
                   <div>Shape: {baseShape}</div>
                 </div>
-                <div className="p-3 rounded border border-gray-700 bg-gray-900/60 space-y-1 md:col-span-2">
-                  <div className="flex items-center gap-2 text-amber-300">
+                <div className="p-3 rounded border border-border bg-background/60 space-y-1 md:col-span-2">
+                  <div className="flex items-center gap-2 text-warning">
                     <Factory className="h-4 w-4" /> System
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -763,8 +763,8 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
         </div>
 
         <DialogFooter className="flex items-center justify-between gap-2">
-          <div className="text-xs text-gray-500 flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-green-400" />
+          <div className="text-xs text-muted-foreground flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-success" />
             Auto-applies Egyptian constraints and shortlists systems.
           </div>
           <div className="flex gap-2">

@@ -113,17 +113,17 @@ export class ErrorBoundary extends Component<Props, State> {
       // Critical errors show full page error
       if (level === 'critical') {
         return (
-          <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4">
+          <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <Alert variant="destructive" className="max-w-2xl bg-red-500/10 border-red-500/30">
-              <AlertTriangle className="h-6 w-6 text-red-400" />
-              <AlertTitle className="text-xl text-red-400 mb-2">Critical Error</AlertTitle>
-              <AlertDescription className="text-red-400/80 space-y-4">
+              <AlertTriangle className="h-6 w-6 text-destructive" />
+              <AlertTitle className="text-xl text-destructive mb-2">Critical Error</AlertTitle>
+              <AlertDescription className="text-destructive/80 space-y-4">
                 <p>
                   A critical error occurred. The application cannot continue safely.
                 </p>
                 {error && (
                   <div className="mt-4 p-3 bg-red-500/5 rounded border border-red-500/20">
-                    <p className="text-sm font-mono text-red-300/70">
+                    <p className="text-sm font-mono text-destructive/70">
                       {error.message || 'Unknown error'}
                     </p>
                   </div>
@@ -132,7 +132,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   <Button
                     onClick={this.handleReload}
                     variant="outline"
-                    className="border-red-500/30 text-red-300 hover:bg-red-500/10"
+                    className="border-red-500/30 text-destructive hover:bg-red-500/10"
                   >
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Reload Page
@@ -140,7 +140,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   <Button
                     onClick={this.handleGoHome}
                     variant="outline"
-                    className="border-red-500/30 text-red-300 hover:bg-red-500/10"
+                    className="border-red-500/30 text-destructive hover:bg-red-500/10"
                   >
                     <Home className="w-4 h-4 mr-2" />
                     Go Home
@@ -155,18 +155,18 @@ export class ErrorBoundary extends Component<Props, State> {
       // Component-level errors show inline error
       return (
         <Alert variant="destructive" className="bg-red-500/10 border-red-500/30">
-          <AlertTriangle className="h-4 w-4 text-red-400" />
-          <AlertTitle className="text-red-400">Error</AlertTitle>
-          <AlertDescription className="text-red-400/80 space-y-2">
+          <AlertTriangle className="h-4 w-4 text-destructive" />
+          <AlertTitle className="text-destructive">Error</AlertTitle>
+          <AlertDescription className="text-destructive/80 space-y-2">
             <p>
               {error?.message || 'Something went wrong. Please try again.'}
             </p>
             {import.meta.env.DEV && errorInfo && (
               <details className="mt-2">
-                <summary className="text-xs text-red-400/60 cursor-pointer">
+                <summary className="text-xs text-destructive/60 cursor-pointer">
                   Error Details (Development Only)
                 </summary>
-                <pre className="mt-2 p-2 bg-red-500/5 rounded text-xs font-mono text-red-300/70 overflow-auto max-h-40">
+                <pre className="mt-2 p-2 bg-red-500/5 rounded text-xs font-mono text-destructive/70 overflow-auto max-h-40">
                   {errorInfo.componentStack}
                 </pre>
               </details>
@@ -176,7 +176,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 onClick={this.handleReset}
                 size="sm"
                 variant="outline"
-                className="border-red-500/30 text-red-300 hover:bg-red-500/10"
+                className="border-red-500/30 text-destructive hover:bg-red-500/10"
               >
                 <RefreshCw className="w-3 h-3 mr-1" />
                 Retry

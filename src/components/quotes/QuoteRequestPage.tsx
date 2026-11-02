@@ -78,15 +78,15 @@ export const QuoteRequestPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-almona-dark text-white">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Navbar />
       <main className="flex-grow pt-24">
         <div className="container mx-auto px-4 py-12">
-          <div className="max-w-4xl mx-auto bg-almona-darker rounded-xl p-8 border border-almona-light/20">
+          <div className="max-w-4xl mx-auto bg-card rounded-xl p-8 border border-border/20">
             <h1 className="typography-h1 mb-2 text-gradient-orange">
               Request a Custom Quote
             </h1>
-            <p className="text-gray-400 mb-8">
+            <p className="text-muted-foreground mb-8">
               Complete this form to receive a personalized quote for your industrial needs. 
               Our team will review your request and respond within 24 hours.
             </p>

@@ -63,8 +63,8 @@ export const ProductionDocumentsPanel: React.FC = () => {
 
   if (!optimizationResult) {
     return (
-      <Card className="bg-slate-900/40 border-amber-600/20">
-        <CardContent className="py-8 text-center text-slate-500">
+      <Card className="bg-background/40 border-amber-600/20">
+        <CardContent className="py-8 text-center text-muted-foreground">
           Optimization results required to generate production documents.
         </CardContent>
       </Card>
@@ -74,26 +74,26 @@ export const ProductionDocumentsPanel: React.FC = () => {
   return (
     <div className="space-y-4">
       <Tabs defaultValue="cutsheets" className="w-full">
-        <TabsList className="bg-slate-900/60 border-amber-600/20 grid grid-cols-3 w-full max-w-md">
-          <TabsTrigger value="cutsheets" className="text-amber-300 data-[state=active]:text-amber-100 text-xs">
+        <TabsList className="bg-background/60 border-amber-600/20 grid grid-cols-3 w-full max-w-md">
+          <TabsTrigger value="cutsheets" className="text-warning data-[state=active]:text-warning text-xs">
             <Scissors className="w-3 h-3 mr-1" /> Cut Sheets
           </TabsTrigger>
-          <TabsTrigger value="bardrawings" className="text-amber-300 data-[state=active]:text-amber-100 text-xs">
+          <TabsTrigger value="bardrawings" className="text-warning data-[state=active]:text-warning text-xs">
             <Ruler className="w-3 h-3 mr-1" /> Bar Drawings
           </TabsTrigger>
-          <TabsTrigger value="labels" className="text-amber-300 data-[state=active]:text-amber-100 text-xs">
+          <TabsTrigger value="labels" className="text-warning data-[state=active]:text-warning text-xs">
             <QrCode className="w-3 h-3 mr-1" /> Labels
           </TabsTrigger>
         </TabsList>
 
         {/* Cut Sheets Tab */}
         <TabsContent value="cutsheets" className="mt-4">
-          <Card className="bg-slate-900/40 border-amber-600/20">
+          <Card className="bg-background/40 border-amber-600/20">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-amber-200 flex items-center gap-2">
+              <CardTitle className="text-sm text-warning flex items-center gap-2">
                 <ClipboardList className="w-4 h-4" />
                 Cutting Instructions
-                <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px]">
+                <Badge className="bg-amber-500/20 text-warning border-amber-500/40 text-[10px]">
                   {cutSheets.length} cuts
                 </Badge>
               </CardTitle>
@@ -102,7 +102,7 @@ export const ProductionDocumentsPanel: React.FC = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-amber-600/20 text-xs text-slate-500 uppercase">
+                    <tr className="border-b border-amber-600/20 text-xs text-muted-foreground uppercase">
                       <th className="text-left py-2 px-3">#</th>
                       <th className="text-left py-2 px-3">Profile</th>
                       <th className="text-right py-2 px-3">Length (mm)</th>
@@ -113,13 +113,13 @@ export const ProductionDocumentsPanel: React.FC = () => {
                   </thead>
                   <tbody>
                     {cutSheets.map((cs) => (
-                      <tr key={cs.id} className="border-b border-slate-800/50 hover:bg-amber-500/5">
-                        <td className="py-2 px-3 text-slate-500 font-mono text-xs">{cs.id}</td>
-                        <td className="py-2 px-3 text-amber-300">{cs.profileRole}</td>
-                        <td className="py-2 px-3 text-right text-slate-300 font-mono">{cs.length}</td>
-                        <td className="py-2 px-3 text-right text-slate-400">{cs.angle}°</td>
-                        <td className="py-2 px-3 text-slate-400 font-mono text-xs">{cs.stockBarId}</td>
-                        <td className="py-2 px-3 text-right text-slate-500 font-mono text-xs">{cs.positionOnBar}mm</td>
+                      <tr key={cs.id} className="border-b border-border/50 hover:bg-amber-500/5">
+                        <td className="py-2 px-3 text-muted-foreground font-mono text-xs">{cs.id}</td>
+                        <td className="py-2 px-3 text-warning">{cs.profileRole}</td>
+                        <td className="py-2 px-3 text-right text-foreground font-mono">{cs.length}</td>
+                        <td className="py-2 px-3 text-right text-muted-foreground">{cs.angle}°</td>
+                        <td className="py-2 px-3 text-muted-foreground font-mono text-xs">{cs.stockBarId}</td>
+                        <td className="py-2 px-3 text-right text-muted-foreground font-mono text-xs">{cs.positionOnBar}mm</td>
                       </tr>
                     ))}
                   </tbody>
@@ -138,15 +138,15 @@ export const ProductionDocumentsPanel: React.FC = () => {
             const util = ((totalUsed / stockLen) * 100).toFixed(1);
 
             return (
-              <Card key={barId} className="bg-slate-900/40 border-amber-600/20">
+              <Card key={barId} className="bg-background/40 border-amber-600/20">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs text-amber-200 font-mono">{barId}</CardTitle>
+                    <CardTitle className="text-xs text-warning font-mono">{barId}</CardTitle>
                     <div className="flex gap-2">
-                      <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/40 text-[10px]">
+                      <Badge className="bg-blue-500/20 text-info border-blue-500/40 text-[10px]">
                         {stockLen}mm stock
                       </Badge>
-                      <Badge className={`text-[10px] ${Number(util) > 85 ? 'bg-green-500/20 text-green-300 border-green-500/40' : 'bg-amber-500/20 text-amber-300 border-amber-500/40'}`}>
+                      <Badge className={`text-[10px] ${Number(util) > 85 ? 'bg-green-500/20 text-success border-green-500/40' : 'bg-amber-500/20 text-warning border-amber-500/40'}`}>
                         {util}% utilization
                       </Badge>
                     </div>
@@ -154,7 +154,7 @@ export const ProductionDocumentsPanel: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   {/* Visual bar drawing */}
-                  <div className="relative h-10 bg-slate-800 rounded border border-slate-700 overflow-hidden">
+                  <div className="relative h-10 bg-card rounded border border-border overflow-hidden">
                     {cuts.map((cut) => {
                       const widthPct = (cut.length / stockLen) * 100;
                       const leftPct = (cut.positionOnBar / stockLen) * 100;
@@ -165,7 +165,7 @@ export const ProductionDocumentsPanel: React.FC = () => {
                           style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
                           title={`${cut.profileRole}: ${cut.length}mm`}
                         >
-                          <span className="text-[8px] text-amber-100 truncate px-0.5 font-mono">
+                          <span className="text-[8px] text-warning truncate px-0.5 font-mono">
                             {cut.length}
                           </span>
                         </div>
@@ -180,14 +180,14 @@ export const ProductionDocumentsPanel: React.FC = () => {
                           width: `${(waste / stockLen) * 100}%`,
                         }}
                       >
-                        <span className="text-[8px] text-red-300 font-mono">{waste}mm waste</span>
+                        <span className="text-[8px] text-destructive font-mono">{waste}mm waste</span>
                       </div>
                     )}
                   </div>
                   {/* Cut list for this bar */}
                   <div className="mt-2 flex flex-wrap gap-1">
                     {cuts.map((cut) => (
-                      <span key={cut.id} className="text-[10px] bg-slate-800/60 text-slate-400 px-2 py-0.5 rounded border border-slate-700/50">
+                      <span key={cut.id} className="text-[10px] bg-card/60 text-muted-foreground px-2 py-0.5 rounded border border-border/50">
                         {cut.profileRole}: {cut.length}mm @ {cut.angle}°
                       </span>
                     ))}
@@ -200,12 +200,12 @@ export const ProductionDocumentsPanel: React.FC = () => {
 
         {/* Labels Tab */}
         <TabsContent value="labels" className="mt-4">
-          <Card className="bg-slate-900/40 border-amber-600/20">
+          <Card className="bg-background/40 border-amber-600/20">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-amber-200 flex items-center gap-2">
+              <CardTitle className="text-sm text-warning flex items-center gap-2">
                 <QrCode className="w-4 h-4" />
                 Production Labels
-                <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px]">
+                <Badge className="bg-amber-500/20 text-warning border-amber-500/40 text-[10px]">
                   {labels.length} labels
                 </Badge>
               </CardTitle>
@@ -215,21 +215,21 @@ export const ProductionDocumentsPanel: React.FC = () => {
                 {labels.map((label) => (
                   <div
                     key={label.id}
-                    className="bg-white rounded-lg p-3 border-2 border-dashed border-slate-300 text-black"
+                    className="bg-card rounded-lg p-3 border-2 border-dashed border-border text-foreground"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{label.projectCode}</p>
+                        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{label.projectCode}</p>
                         <p className="text-sm font-mono font-bold mt-1">{label.positionCode}</p>
                         <div className="mt-2 space-y-0.5">
-                          <p className="text-xs"><span className="text-slate-500">Role:</span> {label.profileRole}</p>
-                          <p className="text-xs"><span className="text-slate-500">Length:</span> {label.length}mm</p>
-                          <p className="text-xs"><span className="text-slate-500">Angle:</span> {label.angle}°</p>
-                          <p className="text-xs"><span className="text-slate-500">Bar:</span> {label.stockBarId}</p>
+                          <p className="text-xs"><span className="text-muted-foreground">Role:</span> {label.profileRole}</p>
+                          <p className="text-xs"><span className="text-muted-foreground">Length:</span> {label.length}mm</p>
+                          <p className="text-xs"><span className="text-muted-foreground">Angle:</span> {label.angle}°</p>
+                          <p className="text-xs"><span className="text-muted-foreground">Bar:</span> {label.stockBarId}</p>
                         </div>
                       </div>
-                      <div className="w-16 h-16 bg-slate-100 border border-slate-200 rounded flex items-center justify-center">
-                        <QrCode className="w-12 h-12 text-slate-400" />
+                      <div className="w-16 h-16 bg-muted border border-border rounded flex items-center justify-center">
+                        <QrCode className="w-12 h-12 text-muted-foreground" />
                       </div>
                     </div>
                   </div>

@@ -23,11 +23,11 @@ export const CutPatternViewer: React.FC<CutPatternViewerProps> = ({ plans }) => 
       data-testid="cut-pattern-viewer"
       aria-label={t('industrial.opt.visualizer', 'Cut pattern')}
     >
-      <header className="px-3 py-2 border-b border-amber-600/20 text-[10px] uppercase tracking-widest text-amber-500">
+      <header className="px-3 py-2 border-b border-amber-600/20 text-[10px] uppercase tracking-widest text-warning">
         {t('industrial.opt.visualizer', 'Cut pattern')}
       </header>
       {bars.length === 0 ? (
-        <p className="p-3 text-xs text-slate-500">{NOT_RECORDED}</p>
+        <p className="p-3 text-xs text-muted-foreground">{NOT_RECORDED}</p>
       ) : (
         <div className="p-3 space-y-3">
           {bars.map((bar, i) => {
@@ -39,7 +39,7 @@ export const CutPatternViewer: React.FC<CutPatternViewerProps> = ({ plans }) => 
                   <span>{stock ? `${stock} mm` : NOT_RECORDED}</span>
                 </div>
                 <div
-                  className="h-7 w-full bg-slate-900 border border-slate-800 flex overflow-hidden"
+                  className="h-7 w-full bg-background border border-border flex overflow-hidden"
                   role="img"
                   aria-label={`Bar ${i + 1}`}
                 >
@@ -56,7 +56,7 @@ export const CutPatternViewer: React.FC<CutPatternViewerProps> = ({ plans }) => 
                       );
                     })}
                 </div>
-                <div className="text-[10px] text-slate-500 mt-0.5 font-mono" dir="ltr">
+                <div className="text-[10px] text-muted-foreground mt-0.5 font-mono" dir="ltr">
                   waste={bar.totalWaste ?? NOT_RECORDED} · util=
                   {bar.utilization != null ? `${bar.utilization}` : NOT_RECORDED}
                 </div>

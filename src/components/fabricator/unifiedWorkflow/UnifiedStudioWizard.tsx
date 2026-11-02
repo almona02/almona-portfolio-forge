@@ -207,15 +207,15 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto p-0 flex flex-col">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b border-amber-600/30 sticky top-0 bg-slate-950/95 backdrop-blur z-10">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b border-amber-600/30 sticky top-0 bg-background/95 backdrop-blur z-10">
           <div className="flex items-center justify-between">
             <div>
-              <DialogTitle className="text-2xl font-semibold text-amber-200">
+              <DialogTitle className="text-2xl font-semibold text-warning">
                 {studioType === 'profile' ? 'Profile Studio' : 
                  studioType === 'system-pack' ? 'System Pack Studio' : 
                  'Tuning Studio'}
               </DialogTitle>
-              <DialogDescription className="text-sm text-amber-600/70 mt-1">
+              <DialogDescription className="text-sm text-warning/70 mt-1">
                 {currentStepData.description}
               </DialogDescription>
             </div>
@@ -224,7 +224,7 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
               size="icon"
               onClick={handleClose}
               disabled={isSubmitting}
-              className="text-amber-600/70 hover:text-amber-400"
+              className="text-warning/70 hover:text-warning"
             >
               <X className="h-5 w-5" />
             </Button>
@@ -245,13 +245,13 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
                     aria-current={active ? 'step' : undefined}
                     aria-disabled={isSubmitting}
                     className={`group flex items-center flex-shrink-0 rounded-full border transition px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70
-                      ${active ? 'bg-amber-600/20 border-amber-500 text-amber-300 shadow-inner' : complete ? 'bg-slate-800/70 border-amber-800 text-amber-500' : 'bg-slate-900/40 border-amber-600/10 text-slate-400'}
-                      ${isSubmitting ? 'opacity-60 cursor-not-allowed' : 'hover:border-amber-500/70 hover:text-amber-300'}
+                      ${active ? 'bg-amber-600/20 border-amber-500 text-warning shadow-inner' : complete ? 'bg-card/70 border-amber-800 text-warning' : 'bg-background/40 border-amber-600/10 text-muted-foreground'}
+                      ${isSubmitting ? 'opacity-60 cursor-not-allowed' : 'hover:border-amber-500/70 hover:text-warning'}
                     `}
                   >
                     <span
                       className={`mr-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition
-                        ${active ? 'bg-amber-600 text-white' : complete ? 'bg-amber-700/70 text-white' : 'bg-slate-800 text-slate-400'}
+                        ${active ? 'bg-amber-600 text-white' : complete ? 'bg-amber-700/70 text-white' : 'bg-card text-muted-foreground'}
                       `}
                     >
                       {complete ? '✓' : <Icon className="h-3 w-3" />}
@@ -264,7 +264,7 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
               })}
             </div>
             <div className="mt-2 h-1 hidden md:flex w-full bg-gradient-to-r from-amber-700/40 via-amber-500/40 to-transparent rounded" />
-            <Progress value={progressPercent} className="mt-2 h-2 bg-slate-800" />
+            <Progress value={progressPercent} className="mt-2 h-2 bg-card" />
           </div>
         </DialogHeader>
 
@@ -274,19 +274,19 @@ export const UnifiedStudioWizard: React.FC<UnifiedStudioWizardProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 border-t border-amber-600/30 flex items-center justify-between bg-slate-950/95 backdrop-blur">
+        <div className="px-6 py-4 border-t border-amber-600/30 flex items-center justify-between bg-background/95 backdrop-blur">
           <Button
             variant="ghost"
             onClick={handlePrevious}
             disabled={currentStep === 0 || isSubmitting}
-            className="text-amber-600/70 hover:text-amber-400"
+            className="text-warning/70 hover:text-warning"
           >
             <ChevronLeft className="h-4 w-4 mr-2" />
             Previous
           </Button>
 
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="border-amber-600/30 text-amber-500">
+            <Badge variant="outline" className="border-amber-600/30 text-warning">
               Step {currentStep + 1} of {STUDIO_STEPS.length}
             </Badge>
           </div>
@@ -350,13 +350,13 @@ const ImportStep: React.FC<StepProps> = ({ data, onUpdate, studioType, userId })
   };
 
   return (
-    <Card className="bg-slate-900/90 border-amber-600/30">
+    <Card className="bg-background/90 border-amber-600/30">
       <CardHeader>
-        <CardTitle className="text-amber-200">Import {studioType === 'profile' ? 'Profile' : 'System Pack'}</CardTitle>
+        <CardTitle className="text-warning">Import {studioType === 'profile' ? 'Profile' : 'System Pack'}</CardTitle>
         <CardDescription>Upload a DXF file or use SmartScan to import</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Suspense fallback={<div className="text-slate-400">Loading DXF importer...</div>}>
+        <Suspense fallback={<div className="text-muted-foreground">Loading DXF importer...</div>}>
           <DXFProfileImporter
             onImported={handleImported}
             selectedProfileId={selectedProfileId}
@@ -369,7 +369,7 @@ const ImportStep: React.FC<StepProps> = ({ data, onUpdate, studioType, userId })
           />
         </Suspense>
         {data.dxfFile && (
-          <p className="mt-4 text-sm text-amber-500">
+          <p className="mt-4 text-sm text-warning">
             Selected: {data.dxfFile.name}
           </p>
         )}
@@ -418,29 +418,29 @@ const TuneStep: React.FC<StepProps> = ({ data, onUpdate, studioType, userId: _us
 
   if (profiles.length === 0) {
     return (
-      <Card className="bg-slate-900/90 border-amber-600/30">
+      <Card className="bg-background/90 border-amber-600/30">
         <CardHeader>
-          <CardTitle className="text-amber-200">Tune Configuration</CardTitle>
+          <CardTitle className="text-warning">Tune Configuration</CardTitle>
           <CardDescription>Import profiles first to configure them</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-slate-400">Please complete the Import step first.</p>
+          <p className="text-muted-foreground">Please complete the Import step first.</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="bg-slate-900/90 border-amber-600/30">
+    <Card className="bg-background/90 border-amber-600/30">
       <CardHeader>
-        <CardTitle className="text-amber-200">Tune Configuration</CardTitle>
+        <CardTitle className="text-warning">Tune Configuration</CardTitle>
         <CardDescription>Configure {studioType === 'profile' ? 'profile' : 'system pack'} parameters</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Role Tagging */}
         <div>
-          <h4 className="text-amber-300 mb-3">Tag Profile Roles</h4>
-          <Suspense fallback={<div className="text-slate-400">Loading role tagger...</div>}>
+          <h4 className="text-warning mb-3">Tag Profile Roles</h4>
+          <Suspense fallback={<div className="text-muted-foreground">Loading role tagger...</div>}>
             <RoleTagger
               profiles={profiles}
               roles={roles}
@@ -452,8 +452,8 @@ const TuneStep: React.FC<StepProps> = ({ data, onUpdate, studioType, userId: _us
         {/* Hardware Linking */}
         {studioType === 'system-pack' && (
           <div>
-            <h4 className="text-amber-300 mb-3">Link Hardware</h4>
-            <Suspense fallback={<div className="text-slate-400">Loading hardware linker...</div>}>
+            <h4 className="text-warning mb-3">Link Hardware</h4>
+            <Suspense fallback={<div className="text-muted-foreground">Loading hardware linker...</div>}>
               <HardwareLinker
                 profiles={profiles}
                 selectedProfileId={selectedProfileId}
@@ -482,13 +482,13 @@ const CalibrateStep: React.FC<StepProps> = ({ data, onUpdate, studioType, userId
 
   if (!selectedProfile) {
     return (
-      <Card className="bg-slate-900/90 border-amber-600/30">
+      <Card className="bg-background/90 border-amber-600/30">
         <CardHeader>
-          <CardTitle className="text-amber-200">Calibrate</CardTitle>
+          <CardTitle className="text-warning">Calibrate</CardTitle>
           <CardDescription>Import and configure profiles first</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-slate-400">Please complete the Import and Tune steps first.</p>
+          <p className="text-muted-foreground">Please complete the Import and Tune steps first.</p>
         </CardContent>
       </Card>
     );
@@ -531,16 +531,16 @@ const CalibrateStep: React.FC<StepProps> = ({ data, onUpdate, studioType, userId
   };
 
   return (
-    <Card className="bg-slate-900/90 border-amber-600/30">
+    <Card className="bg-background/90 border-amber-600/30">
       <CardHeader>
-        <CardTitle className="text-amber-200">Calibrate</CardTitle>
+        <CardTitle className="text-warning">Calibrate</CardTitle>
         <CardDescription>Calibrate machining zones and micron settings</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Calibration Wizard */}
         <div>
-          <h4 className="text-amber-300 mb-3">K-Factor & Cutting Calibration</h4>
-          <Suspense fallback={<div className="text-slate-400">Loading calibration wizard...</div>}>
+          <h4 className="text-warning mb-3">K-Factor & Cutting Calibration</h4>
+          <Suspense fallback={<div className="text-muted-foreground">Loading calibration wizard...</div>}>
             <CalibrationWizard
               profile={profileForCalibration}
               systemPackId={data.systemPackData?.systemPackId || 'custom'}
@@ -553,8 +553,8 @@ const CalibrateStep: React.FC<StepProps> = ({ data, onUpdate, studioType, userId
         {/* Machining Zones */}
         {studioType === 'system-pack' && (
           <div>
-            <h4 className="text-amber-300 mb-3">Machining Zones</h4>
-            <Suspense fallback={<div className="text-slate-400">Loading machining zone editor...</div>}>
+            <h4 className="text-warning mb-3">Machining Zones</h4>
+            <Suspense fallback={<div className="text-muted-foreground">Loading machining zone editor...</div>}>
               <MachiningZoneEditor
                 profiles={profiles}
                 selectedProfileId={selectedProfile.id}
@@ -598,25 +598,25 @@ const VerifyStep: React.FC<StepProps> = ({ data, onUpdate, studioType }) => {
   const allValid = validationItems.every(item => item.status === 'valid');
 
   return (
-    <Card className="bg-slate-900/90 border-amber-600/30">
+    <Card className="bg-background/90 border-amber-600/30">
       <CardHeader>
-        <CardTitle className="text-amber-200">Verify & Save</CardTitle>
+        <CardTitle className="text-warning">Verify & Save</CardTitle>
         <CardDescription>Review and save to library</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="p-4 bg-slate-800/50 rounded-lg border border-amber-600/20">
-          <h4 className="text-amber-300 mb-2">Validation Summary</h4>
+        <div className="p-4 bg-card/50 rounded-lg border border-amber-600/20">
+          <h4 className="text-warning mb-2">Validation Summary</h4>
           <ul className="space-y-2 text-sm">
             {validationItems.map((item, index) => (
               <li key={index} className="flex items-center gap-2">
                 {item.status === 'valid' ? (
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                  <CheckCircle2 className="h-4 w-4 text-success" />
                 ) : item.status === 'warning' ? (
-                  <CheckCircle2 className="h-4 w-4 text-amber-400" />
+                  <CheckCircle2 className="h-4 w-4 text-warning" />
                 ) : (
-                  <X className="h-4 w-4 text-red-400" />
+                  <X className="h-4 w-4 text-destructive" />
                 )}
-                <span className={item.status === 'valid' ? 'text-emerald-400' : item.status === 'warning' ? 'text-amber-400' : 'text-red-400'}>
+                <span className={item.status === 'valid' ? 'text-success' : item.status === 'warning' ? 'text-warning' : 'text-destructive'}>
                   {item.label}
                 </span>
               </li>
@@ -625,9 +625,9 @@ const VerifyStep: React.FC<StepProps> = ({ data, onUpdate, studioType }) => {
         </div>
 
         {studioType === 'system-pack' && data.systemPackData && (
-          <div className="p-4 bg-slate-800/50 rounded-lg border border-amber-600/20">
-            <h4 className="text-amber-300 mb-2">System Pack Summary</h4>
-            <ul className="space-y-1 text-sm text-slate-400">
+          <div className="p-4 bg-card/50 rounded-lg border border-amber-600/20">
+            <h4 className="text-warning mb-2">System Pack Summary</h4>
+            <ul className="space-y-1 text-sm text-muted-foreground">
               <li>Profiles: {data.dxfData?.profiles?.length || 0}</li>
               <li>Hardware items: {data.systemPackData.hardware?.length || 0}</li>
               <li>Machining zones: {data.micronConfig?.machiningZones?.length || 0}</li>

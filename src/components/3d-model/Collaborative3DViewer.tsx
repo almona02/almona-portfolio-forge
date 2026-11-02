@@ -42,8 +42,8 @@ const Cursor3D: React.FC<Cursor3DProps> = ({ participant, isLocal }) => {
       </mesh>
       {!isLocal && (
         <Html distanceFactor={10}>
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 text-xs shadow-lg">
-            <div className="font-medium text-gray-900">{participant.name}</div>
+          <div className="bg-foreground/90 backdrop-blur-sm rounded-lg px-2 py-1 text-xs shadow-lg">
+            <div className="font-medium text-foreground">{participant.name}</div>
           </div>
         </Html>
       )}
@@ -93,7 +93,7 @@ const Annotation3D: React.FC<Annotation3DProps> = ({
         <meshBasicMaterial color={annotation.color} />
       </mesh>
       <Html distanceFactor={8}>
-        <div className="bg-white/95 backdrop-blur-sm rounded-lg p-3 shadow-lg max-w-xs">
+        <div className="bg-foreground/95 backdrop-blur-sm rounded-lg p-3 shadow-lg max-w-xs">
           {isEditing ? (
             <div className="space-y-2">
               <Input
@@ -111,7 +111,7 @@ const Annotation3D: React.FC<Annotation3DProps> = ({
             </div>
           ) : (
             <div className="space-y-2">
-              <p className="text-sm text-gray-900">{annotation.text}</p>
+              <p className="text-sm text-foreground">{annotation.text}</p>
               {canEdit && (
                 <div className="flex gap-1">
                   <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
@@ -292,7 +292,7 @@ export const Collaborative3DViewer: React.FC<Collaborative3DViewerProps> = ({
   }, [])
 
   return (
-    <div className="relative w-full h-full bg-gray-900">
+    <div className="relative w-full h-full bg-background">
       {/* Collaboration Controls */}
       <div className="absolute top-4 left-4 z-10 space-y-2">
         <Card className="w-80">
@@ -369,7 +369,7 @@ export const Collaborative3DViewer: React.FC<Collaborative3DViewerProps> = ({
                     onChange={(e) => setNewAnnotationText(e.target.value)}
                     className="text-sm"
                   />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     Click on the 3D model to place annotation
                   </p>
                   {clickPosition && (

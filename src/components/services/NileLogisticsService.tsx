@@ -13,7 +13,7 @@ const NileLogisticsService = () => {
   ];
   
   return (
-    <div className="bg-almona-darker/50 p-6 rounded-lg">
+    <div className="bg-card/50 p-6 rounded-lg">
       <h2 className="typography-h2 mb-6">نقل معدات صناعية عبر نهر النيل</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -48,7 +48,7 @@ const NileLogisticsService = () => {
           </div>
         </div>
         
-        <div className="bg-almona-dark p-4 rounded-lg">
+        <div className="bg-background p-4 rounded-lg">
           <h3 className="typography-h3 text-lg mb-3">مميزات الخدمة</h3>
           <ul className="space-y-2">
             <li className="flex items-start">
@@ -71,7 +71,7 @@ const NileLogisticsService = () => {
         </div>
       </div>
       
-      <div className="border-t border-almona-light/20 pt-6">
+      <div className="border-t border-border/20 pt-6">
         <h3 className="typography-h3 text-lg mb-3">الموانئ المتاحة</h3>
         <div className="flex flex-wrap gap-2">
           {ports.map(port => (

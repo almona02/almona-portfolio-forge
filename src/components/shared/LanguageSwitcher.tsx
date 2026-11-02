@@ -67,7 +67,7 @@ export const LanguageSwitcher: React.FC<{
   const renderMenu = (showFlag: boolean, textVariant: 'native' | 'name' | 'both') => {
     const solid = variant === 'solid';
     const baseButtonClasses = solid
-      ? 'bg-[#0f0f0f] text-amber-200 border-amber-600/30 hover:border-amber-500/60 hover:bg-[#1a1a1a] shadow-sm'
+      ? 'bg-background text-amber-200 border-amber-600/30 hover:border-amber-500/60 hover:bg-background shadow-sm'
       : 'border-amber-600/30 hover:border-amber-500/50 text-amber-300 hover:text-amber-200 bg-transparent hover:bg-amber-500/5 backdrop-blur-sm';
 
     return (
@@ -170,7 +170,7 @@ export const LanguageSwitcher: React.FC<{
               title={lang.name}
               className={`
                 h-9 w-9 rounded-full flex items-center justify-center text-base
-                ${isActive ? 'bg-amber-500 text-[#0a0a0a] shadow-lg shadow-amber-500/30 border border-amber-500/60' : 'bg-[#0f0f0f] text-amber-300 border border-amber-600/30 hover:border-amber-400 hover:text-amber-200'}
+                ${isActive ? 'bg-amber-500 text-[#0a0a0a] shadow-lg shadow-amber-500/30 border border-amber-500/60' : 'bg-background text-amber-300 border border-amber-600/30 hover:border-amber-400 hover:text-amber-200'}
                 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400/70
               `}
             >

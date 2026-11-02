@@ -384,7 +384,7 @@ export function UnifiedARManager({
         <CardContent className="p-6">
           <div className="flex items-center justify-center space-x-3">
             <Loader2 className="h-5 w-5 animate-spin text-swiftxr-primary" />
-            <span className="text-sm text-gray-600">SwiftXR: Detecting AR capabilities...</span>
+            <span className="text-sm text-muted-foreground">SwiftXR: Detecting AR capabilities...</span>
           </div>
           <Progress value={undefined} className="mt-3" />
         </CardContent>
@@ -413,7 +413,7 @@ export function UnifiedARManager({
           {/* Device Info */}
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-gray-500">Platform:</span>
+              <span className="text-muted-foreground">Platform:</span>
               <div className="flex items-center gap-2 mt-1">
                 {deviceInfo?.platform === 'ios' && <Smartphone className="h-4 w-4" />}
                 {deviceInfo?.platform === 'android' && <Smartphone className="h-4 w-4" />}
@@ -422,14 +422,14 @@ export function UnifiedARManager({
               </div>
             </div>
             <div>
-              <span className="text-gray-500">Browser:</span>
+              <span className="text-muted-foreground">Browser:</span>
               <div className="mt-1">{deviceInfo?.browser}</div>
             </div>
           </div>
 
           {/* AR Method */}
           <div>
-            <span className="text-gray-500 text-sm">Preferred AR Method:</span>
+            <span className="text-muted-foreground text-sm">Preferred AR Method:</span>
             <div className="mt-1">
               <Badge variant={deviceInfo?.supportsAR ? "default" : "secondary"}>
                 {deviceInfo?.preferredARMethod || 'None available'}
@@ -453,7 +453,7 @@ export function UnifiedARManager({
             variant="ghost"
             size="sm"
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="w-full text-gray-500 hover:text-gray-700"
+            className="w-full text-muted-foreground hover:text-foreground"
           >
             <Settings className="h-4 w-4 mr-2" />
             {showAdvanced ? 'Hide' : 'Show'} Advanced Options
@@ -473,7 +473,7 @@ export function UnifiedARManager({
                 {capabilities.webXR ? (
                   <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-500" />
+                  <XCircle className="h-4 w-4 text-destructive" />
                 )}
                 <span>WebXR</span>
               </div>
@@ -482,7 +482,7 @@ export function UnifiedARManager({
                 {capabilities.sceneViewer ? (
                   <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-500" />
+                  <XCircle className="h-4 w-4 text-destructive" />
                 )}
                 <span>Scene Viewer</span>
               </div>
@@ -491,7 +491,7 @@ export function UnifiedARManager({
                 {capabilities.quickLook ? (
                   <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-500" />
+                  <XCircle className="h-4 w-4 text-destructive" />
                 )}
                 <span>Quick Look</span>
               </div>
@@ -500,7 +500,7 @@ export function UnifiedARManager({
                 {capabilities.hitTest ? (
                   <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-500" />
+                  <XCircle className="h-4 w-4 text-destructive" />
                 )}
                 <span>Hit Testing</span>
               </div>
@@ -509,7 +509,7 @@ export function UnifiedARManager({
                 {capabilities.lightingEstimation ? (
                   <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-500" />
+                  <XCircle className="h-4 w-4 text-destructive" />
                 )}
                 <span>Lighting</span>
               </div>
@@ -518,7 +518,7 @@ export function UnifiedARManager({
                 {capabilities.depthSensing ? (
                   <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
-                  <XCircle className="h-4 w-4 text-red-500" />
+                  <XCircle className="h-4 w-4 text-destructive" />
                 )}
                 <span>Depth</span>
               </div>
@@ -548,15 +548,15 @@ export function UnifiedARManager({
 
             <div className="mt-3 grid grid-cols-3 gap-4 text-xs">
               <div>
-                <span className="text-gray-500">FPS:</span>
+                <span className="text-muted-foreground">FPS:</span>
                 <div className="font-mono">{arSession.performance.fps}</div>
               </div>
               <div>
-                <span className="text-gray-500">Memory:</span>
+                <span className="text-muted-foreground">Memory:</span>
                 <div className="font-mono">{arSession.performance.memoryUsage}%</div>
               </div>
               <div>
-                <span className="text-gray-500">Battery:</span>
+                <span className="text-muted-foreground">Battery:</span>
                 <div className="font-mono">
                   {arSession.performance.batteryLevel ? `${arSession.performance.batteryLevel}%` : 'N/A'}
                 </div>

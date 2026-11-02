@@ -308,7 +308,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
     <>
       <div
         className={cn(
-          'fixed bottom-0 left-0 right-0 z-50 border-t border-amber-400/30 bg-slate-900/95 backdrop-blur-sm',
+          'fixed bottom-0 left-0 right-0 z-50 border-t border-amber-400/30 bg-background/95 backdrop-blur-sm',
           'transition-all duration-200',
           className
         )}
@@ -321,7 +321,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
           {operationState === 'idle' && (
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <span className="text-sm font-medium text-slate-300">
+                <span className="text-sm font-medium text-foreground">
                   {selectedCount} {selectedCount === 1 ? 'item' : 'items'} selected
                 </span>
                 <div className="flex items-center gap-2">
@@ -329,7 +329,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={() => setShowEditDialog(true)}
-                    className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+                    className="bg-card border-border text-foreground hover:bg-muted"
                   >
                     <Edit className="h-4 w-4 mr-2" />
                     Edit
@@ -338,7 +338,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={() => setShowExportDialog(true)}
-                    className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+                    className="bg-card border-border text-foreground hover:bg-muted"
                   >
                     <FileDown className="h-4 w-4 mr-2" />
                     Export
@@ -347,7 +347,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={() => setShowStatusDialog(true)}
-                    className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+                    className="bg-card border-border text-foreground hover:bg-muted"
                   >
                     <MoreHorizontal className="h-4 w-4 mr-2" />
                     Status
@@ -356,7 +356,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={() => setShowDeleteConfirm(true)}
-                    className="bg-red-900/20 border-red-700/50 text-red-400 hover:bg-red-900/30"
+                    className="bg-red-900/20 border-red-700/50 text-destructive hover:bg-red-900/30"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete
@@ -367,7 +367,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={handleClearSelection}
-                className="text-slate-400 hover:text-slate-200"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="h-4 w-4 mr-2" />
                 Clear
@@ -379,14 +379,14 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
           {operationState === 'running' && activeJob && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-300" aria-live="polite">
+                <span className="text-sm text-foreground" aria-live="polite">
                   Processing... {activeJob.processedItems} of {activeJob.totalItems} ({Math.round(activeJob.progress)}%)
                 </span>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => void handleCancel()}
-                  className="text-slate-400 hover:text-slate-200"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   Cancel
                 </Button>
@@ -399,7 +399,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
           {operationState === 'completed' && activeJob && (
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <span className="text-sm text-green-400" aria-live="polite">
+                <span className="text-sm text-success" aria-live="polite">
                   Operation completed successfully
                 </span>
                 {activeJob.result?.downloadUrl && (
@@ -407,7 +407,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
                     variant="outline"
                     size="sm"
                     onClick={handleDownload}
-                    className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+                    className="bg-card border-border text-foreground hover:bg-muted"
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Download
@@ -418,7 +418,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={handleClearSelection}
-                className="text-slate-400 hover:text-slate-200"
+                className="text-muted-foreground hover:text-foreground"
               >
                 Close
               </Button>
@@ -429,7 +429,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
           {operationState === 'error' && activeJob && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-red-400" aria-live="assertive">
+                <span className="text-sm text-destructive" aria-live="assertive">
                   Operation failed: {activeJob.failedItems} items failed
                 </span>
                 <div className="flex items-center gap-2">
@@ -438,7 +438,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowErrors(!showErrors)}
-                      className="text-slate-400 hover:text-slate-200"
+                      className="text-muted-foreground hover:text-foreground"
                     >
                       {showErrors ? 'Hide' : 'Show'} Errors
                     </Button>
@@ -447,7 +447,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
                     variant="ghost"
                     size="sm"
                     onClick={handleClearSelection}
-                    className="text-slate-400 hover:text-slate-200"
+                    className="text-muted-foreground hover:text-foreground"
                   >
                     Close
                   </Button>
@@ -457,7 +457,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
                 <ScrollArea className="max-h-32 rounded border border-red-700/30 bg-red-900/10 p-2">
                   <div className="space-y-1">
                     {activeJob.errors.map((error, index) => (
-                      <div key={index} className="text-xs text-red-300">
+                      <div key={index} className="text-xs text-destructive">
                         {error.itemId}: {error.message}
                       </div>
                     ))}
@@ -471,10 +471,10 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
 
       {/* Delete confirmation dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent className="bg-slate-900 border-slate-700">
+        <AlertDialogContent className="bg-background border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-red-400">Delete {selectedCount} items?</AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-300">
+            <AlertDialogTitle className="text-destructive">Delete {selectedCount} items?</AlertDialogTitle>
+            <AlertDialogDescription className="text-foreground">
               This action cannot be undone. The following items will be deleted:
               <ul className="mt-2 list-disc list-inside space-y-1">
                 {displayItemNames.map((name, index) => (
@@ -485,7 +485,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700">
+            <AlertDialogCancel className="bg-card border-border text-foreground hover:bg-muted">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -500,22 +500,22 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
 
       {/* Edit dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="bg-slate-900 border-slate-700 max-w-md">
+        <DialogContent className="bg-background border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-slate-200">Edit {selectedCount} items</DialogTitle>
-            <DialogDescription className="text-slate-400">
+            <DialogTitle className="text-foreground">Edit {selectedCount} items</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               Specify fields to update for all selected items
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="edit-field" className="text-slate-300">
+              <Label htmlFor="edit-field" className="text-foreground">
                 Field Name
               </Label>
               <Input
                 id="edit-field"
                 placeholder="e.g., status, tags, notes"
-                className="bg-slate-800 border-slate-700 text-slate-200"
+                className="bg-card border-border text-foreground"
                 value={Object.keys(editFields)[0] || ''}
                 onChange={(e) => {
                   const fieldName = e.target.value;
@@ -529,13 +529,13 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
             </div>
             {Object.keys(editFields).length > 0 && (
               <div className="space-y-2">
-                <Label htmlFor="edit-value" className="text-slate-300">
+                <Label htmlFor="edit-value" className="text-foreground">
                   Value
                 </Label>
                 <Input
                   id="edit-value"
                   placeholder="Enter value"
-                  className="bg-slate-800 border-slate-700 text-slate-200"
+                  className="bg-card border-border text-foreground"
                   value={(Object.values(editFields)[0] as string | number) || ''}
                   onChange={(e) => {
                     const fieldName = Object.keys(editFields)[0];
@@ -549,7 +549,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
             <Button
               variant="outline"
               onClick={() => setShowEditDialog(false)}
-              className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+              className="bg-card border-border text-foreground hover:bg-muted"
             >
               Cancel
             </Button>
@@ -565,23 +565,23 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
 
       {/* Export dialog */}
       <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
-        <DialogContent className="bg-slate-900 border-slate-700 max-w-md">
+        <DialogContent className="bg-background border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-slate-200">Export {selectedCount} items</DialogTitle>
-            <DialogDescription className="text-slate-400">
+            <DialogTitle className="text-foreground">Export {selectedCount} items</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               Choose export format
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="export-format" className="text-slate-300">
+              <Label htmlFor="export-format" className="text-foreground">
                 Format
               </Label>
               <Select value={exportFormat} onValueChange={(value: 'pdf' | 'csv' | 'dxf') => setExportFormat(value)}>
-                <SelectTrigger id="export-format" className="bg-slate-800 border-slate-700 text-slate-200">
+                <SelectTrigger id="export-format" className="bg-card border-border text-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-slate-700">
+                <SelectContent className="bg-card border-border">
                   <SelectItem value="pdf">PDF</SelectItem>
                   <SelectItem value="csv">CSV</SelectItem>
                   <SelectItem value="dxf">DXF</SelectItem>
@@ -593,7 +593,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
             <Button
               variant="outline"
               onClick={() => setShowExportDialog(false)}
-              className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+              className="bg-card border-border text-foreground hover:bg-muted"
             >
               Cancel
             </Button>
@@ -609,22 +609,22 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
 
       {/* Status change dialog */}
       <Dialog open={showStatusDialog} onOpenChange={setShowStatusDialog}>
-        <DialogContent className="bg-slate-900 border-slate-700 max-w-md">
+        <DialogContent className="bg-background border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-slate-200">Change Status</DialogTitle>
-            <DialogDescription className="text-slate-400">
+            <DialogTitle className="text-foreground">Change Status</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               Set status for {selectedCount} items
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="status-value" className="text-slate-300">
+              <Label htmlFor="status-value" className="text-foreground">
                 New Status
               </Label>
               <Input
                 id="status-value"
                 placeholder="e.g., active, archived, draft"
-                className="bg-slate-800 border-slate-700 text-slate-200"
+                className="bg-card border-border text-foreground"
                 value={statusValue}
                 onChange={(e) => setStatusValue(e.target.value)}
               />
@@ -634,7 +634,7 @@ export const BulkOperationToolbar: React.FC<BulkOperationToolbarProps> = ({
             <Button
               variant="outline"
               onClick={() => setShowStatusDialog(false)}
-              className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700"
+              className="bg-card border-border text-foreground hover:bg-muted"
             >
               Cancel
             </Button>

@@ -87,7 +87,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.6), 0 0 60px rgba(249, 115, 22, 0.4); }
           }
         `}</style>
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-[#0a0a0a] via-[#050505] to-[#0a0a0a] overflow-hidden" style={{ minHeight: '-webkit-fill-available' }}>
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-background via-[#050505] to-background overflow-hidden" style={{ minHeight: '-webkit-fill-available' }}>
           {/* Ancient Pattern Background - Hieroglyphic-inspired grid */}
           <div className="absolute inset-0 opacity-[0.03] sm:opacity-[0.05]">
             <div className="absolute inset-0" style={{
@@ -270,7 +270,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
                         "w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500",
                         active 
                           ? "bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0a0a] shadow-lg shadow-amber-500/50" 
-                          : "bg-[#0f0f0f] border border-amber-600/20 text-amber-600/50"
+                          : "bg-background border border-amber-600/20 text-amber-600/50"
                       )}>
                         <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                       </div>
@@ -302,7 +302,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
           >
             <div className="relative">
               {/* Progress bar container with Ancient styling - Smaller on mobile */}
-              <div className="w-full h-4 sm:h-5 md:h-6 bg-[#0f0f0f]/80 rounded-full overflow-hidden shadow-2xl border border-amber-600/30 relative card-dark">
+              <div className="w-full h-4 sm:h-5 md:h-6 bg-background/80 rounded-full overflow-hidden shadow-2xl border border-amber-600/30 relative card-dark">
                 {/* Background gradient */}
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-600/10 to-amber-500/10 rounded-full"></div>
 
@@ -330,7 +330,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
                   {[...Array(3)].map((_, i) => (
                     <motion.div
                       key={i}
-                      className="absolute top-1/2 w-1 h-1 bg-white rounded-full"
+                      className="absolute top-1/2 w-1 h-1 bg-card rounded-full"
                       animate={{ x: [0, 100, 0] }}
                       transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
                       style={{ top: '50%', transform: 'translateY(-50%)' }}
@@ -400,7 +400,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             animate={{ rotate: 360 }}
             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
           >
-            <div className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-amber-600/20 sm:border-amber-600/30 rounded-full flex items-center justify-center bg-[#0f0f0f]/30">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-amber-600/20 sm:border-amber-600/30 rounded-full flex items-center justify-center bg-background/30">
               <Factory className="w-6 h-6 sm:w-8 sm:h-8 text-amber-500/40 sm:text-amber-500/50" />
             </div>
           </motion.div>
@@ -410,7 +410,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            <div className="w-12 h-12 sm:w-16 sm:h-16 border border-amber-600/20 rounded-full flex items-center justify-center bg-[#0f0f0f]/30">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 border border-amber-600/20 rounded-full flex items-center justify-center bg-background/30">
               <Network className="w-4 h-4 sm:w-6 sm:h-6 text-amber-500/40 sm:text-amber-500/50" />
             </div>
           </motion.div>
@@ -431,7 +431,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             animate={{ rotate: [0, 180, 360] }}
             transition={{ duration: 4, repeat: Infinity }}
           >
-            <div className="w-6 h-6 border border-amber-600/20 rounded-full flex items-center justify-center bg-[#0f0f0f]/30">
+            <div className="w-6 h-6 border border-amber-600/20 rounded-full flex items-center justify-center bg-background/30">
               <Database className="w-3 h-3 text-amber-500/50" />
             </div>
           </motion.div>

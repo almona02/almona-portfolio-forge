@@ -62,7 +62,7 @@ export const AdminDashboard: React.FC = () => {
     icon: React.ReactNode;
     trend?: string;
     color?: string;
-  }> = ({ title, value, icon, trend, color = 'text-blue-600' }) => (
+  }> = ({ title, value, icon, trend, color = 'text-info' }) => (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
@@ -72,7 +72,7 @@ export const AdminDashboard: React.FC = () => {
         <div className="text-2xl font-bold">{value}</div>
         {trend && (
           <p className="text-xs text-muted-foreground">
-            <span className="text-green-600">{trend}</span> from last month
+            <span className="text-success">{trend}</span> from last month
           </p>
         )}
       </CardContent>
@@ -147,10 +147,10 @@ export const AdminDashboard: React.FC = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Low Stock Items</CardTitle>
-                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <AlertTriangle className="h-4 w-4 text-warning" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-amber-600">
+                <div className="text-2xl font-bold text-warning">
                   {dashboardMetrics.lowStockItems}
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -162,10 +162,10 @@ export const AdminDashboard: React.FC = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Pending Orders</CardTitle>
-                <ShoppingCart className="h-4 w-4 text-blue-600" />
+                <ShoppingCart className="h-4 w-4 text-info" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-info">
                   {dashboardMetrics.pendingOrders}
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -177,10 +177,10 @@ export const AdminDashboard: React.FC = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
-                <Activity className="h-4 w-4 text-green-600" />
+                <Activity className="h-4 w-4 text-success" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-success">
                   {dashboardMetrics.recentActivity}
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -192,10 +192,10 @@ export const AdminDashboard: React.FC = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">System Alerts</CardTitle>
-                <AlertTriangle className="h-4 w-4 text-red-600" />
+                <AlertTriangle className="h-4 w-4 text-destructive" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-red-600">
+                <div className="text-2xl font-bold text-destructive">
                   {dashboardMetrics.systemAlerts}
                 </div>
                 <p className="text-xs text-muted-foreground">

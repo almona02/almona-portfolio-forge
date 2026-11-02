@@ -437,7 +437,7 @@ ${data.notes}
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-almona-dark border-almona-light/20 text-white">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-background border-border/20 text-foreground">
         <LazyAnimatePresence mode="wait">
           {step === "select" && (
             <LazyMotionDiv
@@ -450,9 +450,9 @@ ${data.notes}
                 <DialogTitle className="text-2xl font-bold flex items-center gap-2">
                   <Settings className="h-6 w-6 text-amber-500" />
                   <span>جدولة صيانة ماكينات الألومنيوم</span>
-                  <span className="text-gray-400">| Aluminum Machinery Maintenance Scheduling</span>
+                  <span className="text-muted-foreground">| Aluminum Machinery Maintenance Scheduling</span>
                 </DialogTitle>
-                <DialogDescription className="text-gray-400">
+                <DialogDescription className="text-muted-foreground">
                   خدمة متخصصة لصيانة ماكينات الألومنيوم التركية والمحلية - Specialized service for Turkish and local aluminum machinery
                 </DialogDescription>
               </DialogHeader>
@@ -470,7 +470,7 @@ ${data.notes}
                         key={pkg.id}
                         className={`relative p-6 rounded-lg border-2 transition-all duration-300 ${selectedPackage?.id === pkg.id
                           ? "border-amber-500 bg-amber-500/10"
-                          : "border-almona-light/20 hover:border-almona-light/40"
+                          : "border-border/20 hover:border-border/40"
                           }`}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -478,21 +478,21 @@ ${data.notes}
                       >
                         <div className="text-center">
                           <h3 className="typography-h3 text-lg mb-1">{pkg.nameAr}</h3>
-                          <h4 className="typography-h4 text-gray-400 mb-2">{pkg.name}</h4>
+                          <h4 className="typography-h4 text-muted-foreground mb-2">{pkg.name}</h4>
 
-                          <p className="text-sm text-gray-400 mb-1">{pkg.descriptionAr}</p>
-                          <p className="text-xs text-gray-500 mb-3">{pkg.description}</p>
+                          <p className="text-sm text-muted-foreground mb-1">{pkg.descriptionAr}</p>
+                          <p className="text-xs text-muted-foreground mb-3">{pkg.description}</p>
 
                           <p className="text-2xl font-bold text-amber-500 mb-2">
                             {pkg.price.toLocaleString()} ج.م
                           </p>
-                          <p className="text-sm text-gray-400 mb-4">{pkg.duration}</p>
+                          <p className="text-sm text-muted-foreground mb-4">{pkg.duration}</p>
 
                           <div className="space-y-2 text-left">
                             {pkg.featuresAr.map((feature, index) => (
                               <div key={index} className="flex items-start">
                                 <CheckCircle2 className="h-3 w-3  mr-1 mt-0.5 flex-shrink-0 status-valid" />
-                                <span className="text-xs text-gray-400">
+                                <span className="text-xs text-muted-foreground">
                                   {feature} {pkg.features[index] && `| ${pkg.features[index]}`}
                                 </span>
                               </div>
@@ -500,14 +500,14 @@ ${data.notes}
                           </div>
 
                           {pkg.turkishExpert && (
-                            <Badge className="mt-3 bg-blue-500/20 text-blue-300">
+                            <Badge className="mt-3 bg-blue-500/20 text-info">
                               <Shield className="h-3 w-3 mr-1" />
                               خبير تركي | Turkish Expert
                             </Badge>
                           )}
 
                           {pkg.seasonalDiscount && (
-                            <Badge className="mt-2 bg-green-500/20 text-green-300">
+                            <Badge className="mt-2 bg-green-500/20 text-success">
                               <Zap className="h-3 w-3 mr-1" />
                               خصم موسمي 10% | 10% Seasonal Discount
                             </Badge>
@@ -527,7 +527,7 @@ ${data.notes}
                 </TabsContent>
 
                 <TabsContent value="custom" className="mt-6">
-                  <Card className="bg-almona-darker/50 border-almona-light/20">
+                  <Card className="bg-card/50 border-border/20">
                     <CardHeader>
                       <CardTitle>تخصيص الخدمة | Custom Service Configuration</CardTitle>
                     </CardHeader>
@@ -582,7 +582,7 @@ ${data.notes}
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <Label htmlFor="turkishTechnician" className="typography-label flex items-center">
-                            <Shield className="h-4 w-4 mr-2 text-blue-400" />
+                            <Shield className="h-4 w-4 mr-2 text-info" />
                             خبير تركي | Turkish Expert
                           </Label>
                           <Switch
@@ -594,7 +594,7 @@ ${data.notes}
 
                         <div className="flex items-center justify-between">
                           <Label htmlFor="includeOperatorTraining" className="typography-label flex items-center">
-                            <Users className="h-4 w-4 mr-2 text-green-400" />
+                            <Users className="h-4 w-4 mr-2 text-success" />
                             تدريب مشغل | Operator Training
                           </Label>
                           <Switch
@@ -671,11 +671,11 @@ ${data.notes}
                     <Input
                       id="companyName"
                       {...register("companyName", { required: "Company name is required" })}
-                      className="bg-almona-darker/50 border-almona-light/20"
+                      className="bg-card/50 border-border/20"
                       placeholder="اسم الشركة"
                     />
                     {errors.companyName && (
-                      <p className="text-red-500 text-sm">{errors.companyName.message}</p>
+                      <p className="text-destructive text-sm">{errors.companyName.message}</p>
                     )}
                   </div>
 
@@ -684,11 +684,11 @@ ${data.notes}
                     <Input
                       id="contactName"
                       {...register("contactName", { required: "Contact name is required" })}
-                      className="bg-almona-darker/50 border-almona-light/20"
+                      className="bg-card/50 border-border/20"
                       placeholder="اسم المسؤول"
                     />
                     {errors.contactName && (
-                      <p className="text-red-500 text-sm">{errors.contactName.message}</p>
+                      <p className="text-destructive text-sm">{errors.contactName.message}</p>
                     )}
                   </div>
 
@@ -698,11 +698,11 @@ ${data.notes}
                       id="email"
                       type="email"
                       {...register("email", { required: "Email is required" })}
-                      className="bg-almona-darker/50 border-almona-light/20"
+                      className="bg-card/50 border-border/20"
                       placeholder="example@company.com"
                     />
                     {errors.email && (
-                      <p className="text-red-500 text-sm">{errors.email.message}</p>
+                      <p className="text-destructive text-sm">{errors.email.message}</p>
                     )}
                   </div>
 
@@ -718,11 +718,11 @@ ${data.notes}
                           message: "Please enter a valid Egyptian phone number"
                         }
                       })}
-                      className="bg-almona-darker/50 border-almona-light/20"
+                      className="bg-card/50 border-border/20"
                       placeholder="01XXXXXXXXX"
                     />
                     {errors.phone && (
-                      <p className="text-red-500 text-sm">{errors.phone.message}</p>
+                      <p className="text-destructive text-sm">{errors.phone.message}</p>
                     )}
                   </div>
                 </div>
@@ -734,7 +734,7 @@ ${data.notes}
                       id="machineId"
                       {...register("machineId")}
                       readOnly={!!machineId}
-                      className="bg-almona-darker/30 border-almona-light/20"
+                      className="bg-card/30 border-border/20"
                     />
                   </div>
 
@@ -744,7 +744,7 @@ ${data.notes}
                       id="machineModel"
                       {...register("machineModel")}
                       readOnly={!!machineModel}
-                      className="bg-almona-darker/30 border-almona-light/20"
+                      className="bg-card/30 border-border/20"
                     />
                   </div>
 
@@ -824,7 +824,7 @@ ${data.notes}
                     rows={3}
                     placeholder="أي متطلبات خاصة، مشاكل، أو ملاحظات..."
                     {...register("notes")}
-                    className="bg-almona-darker/50 border-almona-light/20"
+                    className="bg-card/50 border-border/20"
                   />
                 </div>
 
@@ -870,7 +870,7 @@ ${data.notes}
                           key={index}
                           className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${selectedSlot === slot
                             ? "border-amber-500 bg-amber-500/10"
-                            : "border-almona-light/20 hover:border-almona-light/40"
+                            : "border-border/20 hover:border-border/40"
                             }`}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
@@ -879,12 +879,12 @@ ${data.notes}
                           <div className="flex justify-between items-start">
                             <div>
                               <p className="font-medium">{slot.date}</p>
-                              <p className="text-sm text-gray-400">{slot.time}</p>
+                              <p className="text-sm text-muted-foreground">{slot.time}</p>
                               <p className="text-xs text-amber-400 mt-1">{slot.technician}</p>
                             </div>
                             <div className="text-right">
                               <p className="text-sm">{slot.specialty}</p>
-                              <p className="text-xs text-gray-400">{slot.duration}h</p>
+                              <p className="text-xs text-muted-foreground">{slot.duration}h</p>
                               <div className="flex items-center justify-end mt-1">
                                 <span className="text-xs text-yellow-400 mr-1">★</span>
                                 <span className="text-xs">{slot.rating}</span>
@@ -905,7 +905,7 @@ ${data.notes}
 
                   <div>
                     <h3 className="typography-h3 mb-4">ملخص الخدمة | Service Summary</h3>
-                    <Card className="bg-almona-darker/50 border-almona-light/20">
+                    <Card className="bg-card/50 border-border/20">
                       <CardContent className="pt-6">
                         <div className="space-y-3">
                           <div className="flex justify-between">
@@ -913,7 +913,7 @@ ${data.notes}
                             <span className="font-bold text-right">
                               {selectedPackage?.nameAr || "خدمة مخصصة"}
                               <br />
-                              <span className="text-sm text-gray-400">{selectedPackage?.name || "Custom Service"}</span>
+                              <span className="text-sm text-muted-foreground">{selectedPackage?.name || "Custom Service"}</span>
                             </span>
                           </div>
 
@@ -937,7 +937,7 @@ ${data.notes}
                                 <span className="font-bold text-right">
                                   {selectedSlot.technician}
                                   <br />
-                                  <span className="text-sm text-gray-400">{selectedSlot.specialty}</span>
+                                  <span className="text-sm text-muted-foreground">{selectedSlot.specialty}</span>
                                 </span>
                               </div>
                             </>
@@ -949,26 +949,26 @@ ${data.notes}
                           {includeOperatorTraining && (
                             <div className="flex justify-between text-sm">
                               <span>تدريب مشغل | Operator Training:</span>
-                              <span className="text-green-400">+1,000 ج.م</span>
+                              <span className="text-success">+1,000 ج.م</span>
                             </div>
                           )}
 
                           {watch("includeSafetyInspection") && (
                             <div className="flex justify-between text-sm">
                               <span>فحص سلامة | Safety Inspection:</span>
-                              <span className="text-green-400">+500 ج.م</span>
+                              <span className="text-success">+500 ج.م</span>
                             </div>
                           )}
 
                           {watch("includeSoftwareUpdate") && (
                             <div className="flex justify-between text-sm">
                               <span>تحديث برمجي | Software Update:</span>
-                              <span className="text-green-400">+1,500 ج.م</span>
+                              <span className="text-success">+1,500 ج.م</span>
                             </div>
                           )}
 
                           {selectedPackage?.seasonalDiscount && (
-                            <div className="flex justify-between text-sm text-green-400">
+                            <div className="flex justify-between text-sm text-success">
                               <span>خصم موسمي | Seasonal Discount:</span>
                               <span>-10%</span>
                             </div>
@@ -988,10 +988,10 @@ ${data.notes}
 
                     <div className="mt-4 p-4 bg-blue-500/10 rounded-lg">
                       <div className="flex items-start gap-2">
-                        <AlertCircle className="h-4 w-4 text-blue-500 mt-0.5" />
+                        <AlertCircle className="h-4 w-4 text-info mt-0.5" />
                         <div>
                           <p className="text-sm font-medium">نظام الجدولة الذكي | automation Scheduling Active</p>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-xs text-muted-foreground">
                             سيقوم نظامنا بتحسين الجدول بناءً على توفر الفنيين وتفضيلاتك
                             <br />
                             Our system will optimize the schedule based on technician availability and your preferences
@@ -1035,19 +1035,19 @@ ${data.notes}
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
               >
                 <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle2 className="h-10 w-10 text-white" />
+                  <CheckCircle2 className="h-10 w-10 text-foreground" />
                 </div>
               </LazyMotionDiv>
               <h3 className="typography-h3 mb-2">تم جدولة الخدمة! | Service Scheduled!</h3>
-              <p className="text-gray-400 mb-4">
+              <p className="text-muted-foreground mb-4">
                 تم جدولة خدمة الصيانة بنجاح. ستتلقى تأكيدًا عبر البريد الإلكتروني والرسائل القصيرة.
                 <br />
                 Your maintenance service has been successfully scheduled. You will receive confirmation via email and SMS.
               </p>
-              <Badge className="bg-green-500/20 text-green-300">
+              <Badge className="bg-green-500/20 text-success">
                 رقم الخدمة: ALM-{Date.now().toString().slice(-8)}
               </Badge>
-              <div className="mt-6 space-y-2 text-sm text-gray-400">
+              <div className="mt-6 space-y-2 text-sm text-muted-foreground">
                 <p>✓ تم الجدولة | Service scheduled</p>
                 <p>✓ تم تعيين الفني | Technician assigned</p>
                 <p>✓ تم تحديث البوابة | Customer portal updated</p>

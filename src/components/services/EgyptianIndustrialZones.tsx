@@ -24,8 +24,8 @@ const EgyptianIndustrialZones = ({ interactive = false }: EgyptianIndustrialZone
               key={zone.id}
               className={`p-4 rounded-lg cursor-pointer transition-all ${
                 selectedZone === zone.id 
-                  ? "bg-egyptian-blue text-white" 
-                  : "bg-almona-dark/70 hover:bg-almona-dark"
+                  ? "bg-egyptian-blue text-primary-foreground"
+                  : "bg-background/70 hover:bg-background"
               }`}
               onClick={() => interactive && setSelectedZone(zone.id)}
             >
@@ -37,8 +37,8 @@ const EgyptianIndustrialZones = ({ interactive = false }: EgyptianIndustrialZone
       </div>
       
       {interactive && selectedZone && (
-        <div className="absolute inset-0 bg-almona-dark/90 flex items-center justify-center p-6">
-          <div className="bg-almona-darker p-6 rounded-lg max-w-md">
+        <div className="absolute inset-0 bg-background/90 flex items-center justify-center p-6">
+          <div className="bg-card p-6 rounded-lg max-w-md">
             <h3 className="typography-h3 mb-4">
               {industrialZones.find(z => z.id === selectedZone)?.name}
             </h3>

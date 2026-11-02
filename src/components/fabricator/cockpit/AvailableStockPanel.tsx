@@ -20,12 +20,12 @@ export const AvailableStockPanel: React.FC<AvailableStockPanelProps> = ({ plans,
       className="h-full min-h-0 flex flex-col border border-amber-600/20 bg-[#0d0d0d]"
       data-testid="available-stock-panel"
     >
-      <header className="px-3 py-2 border-b border-amber-600/20 text-[10px] uppercase tracking-widest text-amber-500">
+      <header className="px-3 py-2 border-b border-amber-600/20 text-[10px] uppercase tracking-widest text-warning">
         {t('industrial.opt.stock', 'Available stock / remnants')}
       </header>
       <div className="flex-1 overflow-auto">
         {bars.length === 0 ? (
-          <div><p className="p-3 text-xs text-slate-500">{profiles?.length ? 'Catalogue stock lengths — confirm owned availability in Stock.' : NOT_RECORDED}</p>
+          <div><p className="p-3 text-xs text-muted-foreground">{profiles?.length ? 'Catalogue stock lengths — confirm owned availability in Stock.' : NOT_RECORDED}</p>
           {profiles?.map(profile => <p key={profile.id} className="px-3 py-1 text-xs">{profile.name || profile.id}: {profile.barLength ?? NOT_RECORDED} mm · <a className="underline" href="/fabricator/studio/data/stock">Check inventory</a></p>)}</div>
         ) : (
           <table className="w-full text-xs">

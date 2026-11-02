@@ -210,23 +210,23 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       <LazyAnimatePresence mode="wait">
         {step === "scan" && (
           <LazyMotionDiv key="scan" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="space-y-6">
-            <Card className="bg-almona-darker/50 border-almona-light/20">
+            <Card className="bg-card/50 border-border/20">
               <CardHeader>
                 <CardTitle className="text-2xl font-bold">Register New Machine</CardTitle>
-                <p className="text-gray-400">Scan the QR code or enter details manually</p>
+                <p className="text-muted-foreground">Scan the QR code or enter details manually</p>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <LazyMotionDiv className="space-y-4" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
-                    <div className="h-64 bg-gradient-to-br from-almona-dark to-almona-darker rounded-lg flex flex-col items-center justify-center border border-almona-light/20">
+                    <div className="h-64 bg-gradient-to-br from-background to-almona-darker rounded-lg flex flex-col items-center justify-center border border-border/20">
                       {qrScanning ? (
                         <LazyMotionDiv animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
                           <QrCodeIcon className="w-16 h-16 text-amber-500" />
                         </LazyMotionDiv>
                       ) : (
-                        <Camera className="w-16 h-16 text-gray-400 mb-2" />
+                        <Camera className="w-16 h-16 text-muted-foreground mb-2" />
                       )}
-                      <p className="text-gray-400 text-center">{qrScanning ? "Scanning QR code..." : "Point camera at machine QR code"}</p>
+                      <p className="text-muted-foreground text-center">{qrScanning ? "Scanning QR code..." : "Point camera at machine QR code"}</p>
                     </div>
                     <Button className="w-full bg-gradient-to-r from-amber-500 to-red-500" onClick={handleScanQR} disabled={qrScanning}>
                       {qrScanning ? "Scanning..." : "Scan QR Code"}
@@ -236,7 +236,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="serialNumber" className="typography-label">Serial Number</Label>
-                      <Input id="serialNumber" placeholder="Enter machine serial number" value={machine.serialNumber} onChange={(e) => setMachine({ ...machine, serialNumber: e.target.value })} className="bg-almona-darker/50 border-almona-light/20" />
+                      <Input id="serialNumber" placeholder="Enter machine serial number" value={machine.serialNumber} onChange={(e) => setMachine({ ...machine, serialNumber: e.target.value })} className="bg-card/50 border-border/20" />
                     </div>
                     <div className="relative">
                       <Label htmlFor="model" className="typography-label">Model</Label>
@@ -250,12 +250,12 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                           setSelectedCatalogId(null);
                           setMachine((current) => ({ ...current, model: '' }));
                         }}
-                        className="bg-almona-darker/50 border-almona-light/20"
+                        className="bg-card/50 border-border/20"
                       />
                       {modelQuery.trim() && !selectedCatalogId && (
-                        <ul className="absolute z-20 mt-1 max-h-48 w-full overflow-auto rounded-md border border-almona-light/20 bg-almona-darker shadow-lg">
+                        <ul className="absolute z-20 mt-1 max-h-48 w-full overflow-auto rounded-md border border-border/20 bg-card shadow-lg">
                           {catalogMatches.length === 0 ? (
-                            <li className="px-3 py-2 text-sm text-gray-400">No catalog model matches.</li>
+                            <li className="px-3 py-2 text-sm text-muted-foreground">No catalog model matches.</li>
                           ) : catalogMatches.map((item) => (
                             <li key={item.id}>
                               <button
@@ -273,19 +273,19 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                           ))}
                         </ul>
                       )}
-                      <p className="mt-1 text-xs text-gray-400">Choose a model from the products catalog. Free text is not accepted.</p>
+                      <p className="mt-1 text-xs text-muted-foreground">Choose a model from the products catalog. Free text is not accepted.</p>
                     </div>
                     <div>
                       <Label htmlFor="photos" className="typography-label">Upload Photos</Label>
                       <div className="flex items-center gap-2">
                         <Input id="photos" type="file" multiple accept="image/*" onChange={handleFileUpload} className="hidden" />
-                        <Button onClick={() => document.getElementById('photos')?.click()} className="w-full border border-gray-300">
+                        <Button onClick={() => document.getElementById('photos')?.click()} className="w-full border border-border">
                           <Upload className="mr-2 h-4 w-4" />
                           Upload Photos
                         </Button>
                       </div>
                       {machine.photos && machine.photos.length > 0 && (
-                        <div className="mt-2 text-sm text-gray-400">{machine.photos.length} photo(s) uploaded</div>
+                        <div className="mt-2 text-sm text-muted-foreground">{machine.photos.length} photo(s) uploaded</div>
                       )}
                     </div>
                     <Button className="w-full" onClick={() => setStep("details")} disabled={!machine.serialNumber || !selectedCatalogId || machine.model !== modelQuery}>
@@ -300,20 +300,20 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
 
         {step === "details" && (
           <LazyMotionDiv key="details" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
-            <Card className="bg-almona-darker/50 border-almona-light/20">
+            <Card className="bg-card/50 border-border/20">
               <CardHeader>
                 <CardTitle className="text-2xl font-bold">Machine Details</CardTitle>
-                <p className="text-gray-400">Complete your machine registration</p>
+                <p className="text-muted-foreground">Complete your machine registration</p>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="serialNumber" className="typography-label">Serial Number</Label>
-                    <Input id="serialNumber" value={machine.serialNumber} readOnly className="bg-almona-darker/30 border-almona-light/20" />
+                    <Input id="serialNumber" value={machine.serialNumber} readOnly className="bg-card/30 border-border/20" />
                   </div>
                   <div>
                     <Label htmlFor="model" className="typography-label">Model</Label>
-                    <Input id="model" value={machine.model} readOnly className="bg-almona-darker/30 border-almona-light/20" />
+                    <Input id="model" value={machine.model} readOnly className="bg-card/30 border-border/20" />
                   </div>
                   <div>
                     <Label htmlFor="installationDate" className="typography-label">Installation Date</Label>
@@ -324,18 +324,18 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                         installationDate,
                         warrantyValid: isWithinStandardWarranty(installationDate),
                       }));
-                    }} className="bg-almona-darker/50 border-almona-light/20" />
+                    }} className="bg-card/50 border-border/20" />
                   </div>
                   <div>
                     <Label>Warranty Status</Label>
                     <div className="flex items-center gap-2">
-                      <Button onClick={checkWarranty} disabled={!machine.installationDate} className="flex-1 border border-gray-300">
+                      <Button onClick={checkWarranty} disabled={!machine.installationDate} className="flex-1 border border-border">
                         Check Warranty
                       </Button>
                       {warrantyActive ? (
-                        <Badge className="flex items-center gap-1 bg-green-500/20 text-green-300"><CheckCircle2 className="h-4 w-4" /> Active</Badge>
+                        <Badge className="flex items-center gap-1 bg-green-500/20 text-success"><CheckCircle2 className="h-4 w-4" /> Active</Badge>
                       ) : (
-                        <Badge className="flex items-center gap-1 bg-red-500/20 text-red-300">{machine.installationDate ? 'Expired' : 'Not Verified'}</Badge>
+                        <Badge className="flex items-center gap-1 bg-red-500/20 text-destructive">{machine.installationDate ? 'Expired' : 'Not Verified'}</Badge>
                       )}
                     </div>
                   </div>
@@ -345,11 +345,11 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                   <h3 className="typography-h3 mb-4">Warranty Extension Options</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {warrantyExtensions.map((option, index) => (
-                      <LazyMotionDiv key={option.months} className="border border-almona-light/20 rounded-lg p-4 hover:border-amber-500/50 transition-colors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} whileHover={{ scale: 1.02 }}>
+                      <LazyMotionDiv key={option.months} className="border border-border/20 rounded-lg p-4 hover:border-amber-500/50 transition-colors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} whileHover={{ scale: 1.02 }}>
                         <h4 className="typography-h4">{option.months} Months</h4>
                         <p className="text-2xl font-bold text-amber-500">{option.price} EGP</p>
-                        {option.egyptOnly && <Badge className="mb-2 bg-blue-500/20 text-blue-300">Egypt Only</Badge>}
-                        <ul className="text-sm text-gray-400 space-y-1 mt-2">
+                        {option.egyptOnly && <Badge className="mb-2 bg-blue-500/20 text-info">Egypt Only</Badge>}
+                        <ul className="text-sm text-muted-foreground space-y-1 mt-2">
                           {option.features.map((feature, i) => (
                             <li key={i} className="flex items-start">
                               <CheckCircle2 className="h-3 w-3  mr-1 mt-0.5 status-valid" />
@@ -357,14 +357,14 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                             </li>
                           ))}
                         </ul>
-                        <Button className="w-full mt-3 border border-gray-300" size="sm">Add to Contract</Button>
+                        <Button className="w-full mt-3 border border-border" size="sm">Add to Contract</Button>
                       </LazyMotionDiv>
                     ))}
                   </div>
                 </LazyMotionDiv>
 
                 <div className="flex justify-between mt-6">
-                  <Button onClick={() => setStep("scan")} className="border border-gray-300">Back</Button>
+                  <Button onClick={() => setStep("scan")} className="border border-border">Back</Button>
                   <Button onClick={generateDigitalTwin} disabled={!machine.installationDate || isProcessing} className="bg-gradient-to-r from-amber-500 to-red-500">
                     {isProcessing ? "Processing..." : "Generate Digital Twin"}
                     <ChevronRight className="ml-2 h-4 w-4" />
@@ -377,24 +377,24 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
 
         {step === "confirm" && (
           <LazyMotionDiv key="confirm" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="space-y-6">
-            <Card className="bg-almona-darker/50 border-almona-light/20">
+            <Card className="bg-card/50 border-border/20">
               <CardHeader>
                 <CardTitle className="text-2xl font-bold">Registration Complete</CardTitle>
-                <p className="text-gray-400">Your machine is now registered in our system</p>
+                <p className="text-muted-foreground">Your machine is now registered in our system</p>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card className="bg-almona-dark/50 border-almona-light/20">
+                  <Card className="bg-background/50 border-border/20">
                     <CardHeader><CardTitle className="text-lg">Machine Information</CardTitle></CardHeader>
                     <CardContent>
                       <div className="space-y-3">
-                        <div><p className="text-sm text-gray-400">Serial Number</p><p className="font-mono text-amber-500">{machine.serialNumber}</p></div>
-                        <div><p className="text-sm text-gray-400">Model</p><p className="font-bold">{machine.model}</p></div>
-                        <div><p className="text-sm text-gray-400">Installation Date</p><p>{machine.installationDate ? new Date(machine.installationDate).toLocaleDateString() : 'N/A'}</p></div>
+                        <div><p className="text-sm text-muted-foreground">Serial Number</p><p className="font-mono text-amber-500">{machine.serialNumber}</p></div>
+                        <div><p className="text-sm text-muted-foreground">Model</p><p className="font-bold">{machine.model}</p></div>
+                        <div><p className="text-sm text-muted-foreground">Installation Date</p><p>{machine.installationDate ? new Date(machine.installationDate).toLocaleDateString() : 'N/A'}</p></div>
                         {machine.digitalTwinId && (
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-sm text-gray-400">Digital Twin ID</p>
+                              <p className="text-sm text-muted-foreground">Digital Twin ID</p>
                               <p className="font-mono  status-valid">{machine.digitalTwinId}</p>
                             </div>
                             <Button
@@ -415,23 +415,23 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-almona-dark/50 border-almona-light/20">
+                  <Card className="bg-background/50 border-border/20">
                     <CardHeader><CardTitle className="text-lg">Next Steps</CardTitle></CardHeader>
                     <CardContent>
                       <ul className="space-y-3">
                         <LazyMotion component="li" className="flex items-start" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
                           <CheckCircle2 className="h-5 w-5  mr-2 mt-0.5 status-valid" />
-                          <div><p className="font-medium">Machine Registered</p><p className="text-sm text-gray-400">Added to your fleet</p></div>
+                          <div><p className="font-medium">Machine Registered</p><p className="text-sm text-muted-foreground">Added to your fleet</p></div>
                         </LazyMotion>
                         <LazyMotion component="li" className="flex items-start" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
                           <CheckCircle2 className="h-5 w-5  mr-2 mt-0.5 status-valid" />
-                          <div><p className="font-medium">Digital Twin Created</p><p className="text-sm text-gray-400">Virtual representation ready</p></div>
+                          <div><p className="font-medium">Digital Twin Created</p><p className="text-sm text-muted-foreground">Virtual representation ready</p></div>
                         </LazyMotion>
                         <LazyMotion component="li" className="flex items-start" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
                           <CheckCircle2 className="h-5 w-5  mr-2 mt-0.5 status-valid" />
                           <div>
                             <p className="font-medium">{warrantyActive ? 'Warranty Active' : 'Warranty Not Active'}</p>
-                            <p className="text-sm text-gray-400">{warrantyActive ? 'Installation is within the past year' : 'Installation is outside the one-year warranty window'}</p>
+                            <p className="text-sm text-muted-foreground">{warrantyActive ? 'Installation is within the past year' : 'Installation is outside the one-year warranty window'}</p>
                           </div>
                         </LazyMotion>
                       </ul>
@@ -440,13 +440,13 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                 </div>
 
                 <div className="flex gap-4 mt-6">
-                  <Button className="flex-1 border border-gray-300" onClick={() => window.open('/shop?tab=reports', '_blank')}>
+                  <Button className="flex-1 border border-border" onClick={() => window.open('/shop?tab=reports', '_blank')}>
                     Generate Report
                   </Button>
                   <Button className="flex-1 bg-gradient-to-r from-green-500 to-blue-500" onClick={() => void completeRegistration()} disabled={isSaving}>
                     {isSaving ? 'Saving...' : 'Complete Registration'}
                   </Button>
-                  <Button className="flex-1 border border-gray-300" onClick={() => setShowTrainingDialog(true)}>
+                  <Button className="flex-1 border border-border" onClick={() => setShowTrainingDialog(true)}>
                     Operator Training
                   </Button>
                 </div>

@@ -220,7 +220,7 @@ const SpareParts = () => {
       message="يجب تسجيل الدخول للوصول إلى قطع الغيار"
       fallback={<main className="container mx-auto px-4 pt-28 pb-20 max-w-3xl space-y-6" dir={ar ? 'rtl' : 'ltr'}>
         <h1 className="typography-h1">{ar ? 'استفسارات قطع الغيار' : 'Spare-part enquiries'}</h1>
-        <p className="text-gray-300">{ar ? 'أرسل طراز الماكينة ورقمها التسلسلي ورقم القطعة إن وجد. سيؤكد الفريق التوافق والتوافر والسعر قبل الطلب.' : 'Send the machine model, serial number and part number if available. Our team will confirm compatibility, availability and price before an order.'}</p>
+        <p className="text-foreground">{ar ? 'أرسل طراز الماكينة ورقمها التسلسلي ورقم القطعة إن وجد. سيؤكد الفريق التوافق والتوافر والسعر قبل الطلب.' : 'Send the machine model, serial number and part number if available. Our team will confirm compatibility, availability and price before an order.'}</p>
         <Button asChild><Link to="/contact?subject=Spare-part%20enquiry">{ar ? 'تواصل مع فريق قطع الغيار' : 'Contact the parts team'}</Link></Button>
         <p><Link to="/login" className="text-amber-400 underline">{ar ? 'تسجيل الدخول إلى حساب العميل' : 'Sign in to your customer account'}</Link></p>
       </main>}
@@ -238,7 +238,7 @@ const SpareParts = () => {
             <h1 className="typography-h1 md:text-5xl mb-6">
               <span className="text-gradient-orange">Genuine Spare Parts</span>
             </h1>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
               Original manufacturer parts with warranty for optimal machine performance and longevity
             </p>
           </LazyMotionDiv>
@@ -248,22 +248,22 @@ const SpareParts = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-almona-darker p-6 rounded-lg mb-8 border border-almona-light/20"
+            className="bg-card p-6 rounded-lg mb-8 border border-border/20"
           >
             <div className="flex flex-col md:flex-row gap-4 items-center">
               <div className="relative flex-grow">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search by part name, number, or description..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-almona-dark border-almona-light/30"
+                  className="pl-10 bg-background border-border/30"
                 />
               </div>
               
               <Button 
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 border-almona-light/30 text-white bg-almona-dark-lighter hover:bg-almona-dark/70 border"
+                className="flex items-center gap-2 border-border/30 text-foreground bg-background hover:bg-background/70 border"
               >
                 <Filter className="h-4 w-4" />
                 Filters
@@ -285,7 +285,7 @@ const SpareParts = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="lg:col-span-1"
             >
-              <div className="bg-almona-darker p-6 rounded-lg sticky top-24 border border-almona-light/20">
+              <div className="bg-card p-6 rounded-lg sticky top-24 border border-border/20">
                 <h3 className="typography-h3 text-lg mb-4">Part Categories</h3>
                 <div className="space-y-2">
                   {partCategories.map(category => (
@@ -294,8 +294,8 @@ const SpareParts = () => {
                       onClick={() => setSelectedCategory(category.id)}
                       className={`w-full text-left p-3 rounded-lg transition-all duration-300 flex items-center gap-3 ${
                         selectedCategory === category.id
-                          ? "bg-almona-orange/20 text-white border border-almona-orange/50"
-                          : "text-gray-400 hover:text-white hover:bg-almona-light/10"
+                          ? "bg-almona-orange/20 text-foreground border border-almona-orange/50"
+                          : "text-muted-foreground hover:text-foreground hover:bg-almona-light/10"
                       }`}
                     >
                       <span className="text-almona-orange">{category.icon}</span>
@@ -317,7 +317,7 @@ const SpareParts = () => {
                 </h2>
                 
                 <Select defaultValue="popular">
-                  <SelectTrigger className="w-[180px] bg-almona-darker border-almona-light/30">
+                  <SelectTrigger className="w-[180px] bg-card border-border/30">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
@@ -332,7 +332,7 @@ const SpareParts = () => {
               {filteredParts.length === 0 ? (
                 <div className="text-center py-12">
                   <h3 className="typography-h3 font-medium mb-2">No parts found</h3>
-                  <p className="text-gray-400 mb-4">
+                  <p className="text-muted-foreground mb-4">
                     Try adjusting your search criteria
                   </p>
                 </div>
@@ -345,7 +345,7 @@ const SpareParts = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4, delay: index * 0.05 }}
                     >
-                      <Card className="bg-almona-darker/50 border-almona-light/20 hover:border-almona-orange/30 transition-all duration-300 overflow-hidden group">
+                      <Card className="bg-card/50 border-border/20 hover:border-almona-orange/30 transition-all duration-300 overflow-hidden group">
                         <CardContent className="p-0">
                           <div className="relative">
                             <EnhancedImage
@@ -370,23 +370,23 @@ const SpareParts = () => {
                             <h3 className="typography-h3 text-lg mb-2 group-hover:text-almona-orange transition-colors">
                               {part.name}
                             </h3>
-                            <p className="text-gray-400 text-sm mb-4">{part.description}</p>
+                            <p className="text-muted-foreground text-sm mb-4">{part.description}</p>
                             
                             <div className="flex items-center justify-between mb-4">
                               <div>
                                 <p className="text-2xl font-bold text-almona-orange">
                                   ${part.price}
                                 </p>
-                                <p className="text-xs text-gray-500">Part #: {part.partNumber}</p>
+                                <p className="text-xs text-muted-foreground">Part #: {part.partNumber}</p>
                               </div>
                               
-                              <Badge variant="outline" className="bg-almona-dark/50">
+                              <Badge variant="outline" className="bg-background/50">
                                 {partCategories.find(c => c.id === part.category)?.name}
                               </Badge>
                             </div>
                             
                             <div className="mb-4">
-                              <p className="text-sm text-gray-400 mb-2">Compatible with:</p>
+                              <p className="text-sm text-muted-foreground mb-2">Compatible with:</p>
                               <div className="flex flex-wrap gap-1">
                                 {part.compatibleMachines.slice(0, 3).map(machineId => {
                                   const machine = yilmazMachines.find(m => m.id === machineId);

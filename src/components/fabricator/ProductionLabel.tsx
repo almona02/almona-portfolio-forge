@@ -21,14 +21,14 @@ export const ProductionLabel: React.FC<ProductionLabelProps> = ({ windowUnit, on
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <Card className="w-full max-w-md bg-white text-black shadow-2xl border-none overflow-hidden print:shadow-none print:w-full print:max-w-none print:absolute print:inset-0">
-        <div className="print:hidden bg-gray-100 p-3 flex justify-between items-center border-b">
-          <h3 className="typography-h3 text-gray-700 flex items-center gap-2">
+      <Card className="w-full max-w-md bg-card text-foreground shadow-2xl border-none overflow-hidden print:shadow-none print:w-full print:max-w-none print:absolute print:inset-0">
+        <div className="print:hidden bg-muted p-3 flex justify-between items-center border-b">
+          <h3 className="typography-h3 text-foreground flex items-center gap-2">
             <QrCode className="h-4 w-4" /> Production Label Preview
           </h3>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
-            <Button size="sm" onClick={handlePrint} className="bg-black hover:bg-gray-800 text-white gap-2">
+            <Button size="sm" onClick={handlePrint} className="bg-black hover:bg-card text-white gap-2">
               <Printer className="h-4 w-4" /> Print Label
             </Button>
           </div>
@@ -39,7 +39,7 @@ export const ProductionLabel: React.FC<ProductionLabelProps> = ({ windowUnit, on
           <div className="flex justify-between items-start border-b-2 border-black pb-4">
             <div>
               <h1 className="typography-h1 font-black tracking-tighter">ALMONA</h1>
-              <p className="text-sm font-medium text-gray-600">FABRICATOR PRO</p>
+              <p className="text-sm font-medium text-muted-foreground">FABRICATOR PRO</p>
             </div>
             <div className="text-right">
               <h2 className="typography-h2 text-xl">{windowUnit.orderNumber}</h2>
@@ -50,26 +50,26 @@ export const ProductionLabel: React.FC<ProductionLabelProps> = ({ windowUnit, on
           {/* Main Info Grid */}
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="block text-xs font-bold text-gray-500 uppercase">Type</span>
+              <span className="block text-xs font-bold text-muted-foreground uppercase">Type</span>
               <span className="font-semibold capitalize">{windowUnit.type?.replace(/_/g, ' ')}</span>
             </div>
             <div>
-              <span className="block text-xs font-bold text-gray-500 uppercase">System</span>
+              <span className="block text-xs font-bold text-muted-foreground uppercase">System</span>
               <span className="font-semibold">{windowUnit.systemPackId?.toUpperCase() || 'STANDARD'}</span>
             </div>
             <div>
-              <span className="block text-xs font-bold text-gray-500 uppercase">Dimensions</span>
+              <span className="block text-xs font-bold text-muted-foreground uppercase">Dimensions</span>
               <span className="font-mono font-bold text-lg">{windowUnit.overallWidth} x {windowUnit.overallHeight} mm</span>
             </div>
             <div>
-              <span className="block text-xs font-bold text-gray-500 uppercase">Color</span>
+              <span className="block text-xs font-bold text-muted-foreground uppercase">Color</span>
               <span className="font-semibold">{windowUnit.color}</span>
             </div>
           </div>
 
           {/* Cut List Summary (Simplified) */}
-          <div className="bg-gray-50 p-3 rounded border border-gray-200">
-             <h4 className="typography-h4 text-xs text-gray-500 mb-2">Critical Cuts (Verify)</h4>
+          <div className="bg-background p-3 rounded border border-border">
+             <h4 className="typography-h4 text-xs text-muted-foreground mb-2">Critical Cuts (Verify)</h4>
              <div className="space-y-1 text-xs font-mono">
                 <div className="flex justify-between">
                    <span>Frame Width:</span>
@@ -85,17 +85,17 @@ export const ProductionLabel: React.FC<ProductionLabelProps> = ({ windowUnit, on
 
           {/* Feedback Loop Section */}
           <div className="flex gap-4 items-center border-t-2 border-black pt-4">
-            <div className="bg-white p-1 border border-gray-300 rounded">
+            <div className="bg-card p-1 border border-border rounded">
                <QRCodeCanvas value={feedbackUrl} size={80} />
             </div>
             <div className="flex-1">
                <h4 className="typography-h4 text-sm flex items-center gap-1">
-                 <CheckCircle2 className="h-4 w-4 text-green-600" /> Quality Check
+                 <CheckCircle2 className="h-4 w-4 text-success" /> Quality Check
                </h4>
-               <p className="text-xs text-gray-600 leading-tight mt-1">
+               <p className="text-xs text-muted-foreground leading-tight mt-1">
                  Scan to report fit issues. Your feedback auto-tunes our cutting machines.
                </p>
-               <div className="mt-2 text-[10px] font-mono text-gray-400 break-all">
+               <div className="mt-2 text-[10px] font-mono text-muted-foreground break-all">
                  ID: {windowUnit.id.substring(0, 8)}...
                </div>
             </div>

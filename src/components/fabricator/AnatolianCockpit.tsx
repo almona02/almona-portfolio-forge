@@ -146,21 +146,21 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mb-8">
       <CollapsibleTrigger asChild>
-        <div className="cursor-pointer hover:bg-slate-900/50 transition-colors rounded-lg p-3 border border-slate-700/50 mb-4">
+        <div className="cursor-pointer hover:bg-background/50 transition-colors rounded-lg p-3 border border-border/50 mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Factory className="h-4 w-4 text-amber-400" />
-              <span className="text-sm font-semibold text-amber-100">
+              <Factory className="h-4 w-4 text-warning" />
+              <span className="text-sm font-semibold text-warning">
                 {t('fabricator:navbar.local_system_intelligence', 'Local System Intelligence')}
               </span>
             </div>
             <ChevronDown 
-              className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
+              className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
                 isOpen ? 'rotate-180' : ''
               }`} 
             />
           </div>
-          <p className="text-xs text-slate-300/80 mt-1">
+          <p className="text-xs text-foreground/80 mt-1">
             {t(
               'fabricator:navbar.local_system_intelligence_desc',
               'Dynamic preference suggestions for Turkish & Egyptian system houses – tuned to your active region.',
@@ -171,13 +171,13 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
       <CollapsibleContent>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
       {/* Market intelligence & system preference */}
-      <Card className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border-slate-700/80 shadow-lg shadow-amber-900/30">
+      <Card className="bg-gradient-to-br from-background via-background to-background border-border/80 shadow-lg shadow-amber-900/30">
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-amber-100">
-            <Factory className="h-4 w-4 text-amber-400" />
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-warning">
+            <Factory className="h-4 w-4 text-warning" />
             {t('fabricator:navbar.local_system_intelligence', 'Local System Intelligence')}
           </CardTitle>
-          <CardDescription className="text-xs text-slate-300/80">
+          <CardDescription className="text-xs text-foreground/80">
             {t(
               'fabricator:navbar.local_system_intelligence_desc',
               'Dynamic preference suggestions for Turkish & Egyptian system houses – tuned to your active region.',
@@ -195,13 +195,13 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
                   onClick={() => setActiveBrand(brand)}
                   className={`px-3 py-1.5 rounded-full border text-[11px] transition-all ${
                     isActive
-                      ? 'border-amber-400 bg-amber-500/15 text-amber-100 shadow-sm shadow-amber-500/40'
-                      : 'border-slate-700 bg-slate-900/60 text-slate-300 hover:border-amber-400/60 hover:text-amber-100'
+                      ? 'border-amber-400 bg-amber-500/15 text-warning shadow-sm shadow-amber-500/40'
+                      : 'border-border bg-background/60 text-foreground hover:border-amber-400/60 hover:text-warning'
                   }`}
                 >
                   {brand}
                   {projectMeta && BRANDS_BY_REGION[projectMeta.region] === brand && (
-                    <span className="ml-1 text-[9px] uppercase tracking-wide text-amber-300">
+                    <span className="ml-1 text-[9px] uppercase tracking-wide text-warning">
                       · suggested
                     </span>
                   )}
@@ -211,11 +211,11 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
           </div>
 
           <div className="mt-3 space-y-1">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               Most Fabricated in Istanbul (sample from current inventory)
             </p>
             {!topProfilesForBrand.length ? (
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-muted-foreground">
                 Add profiles in the Inventory tab to unlock live market-style suggestions.
               </p>
             ) : (
@@ -223,7 +223,7 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
                 {topProfilesForBrand.map((p, index) => (
                   <li
                     key={p.id}
-                    className="flex items-center justify-between rounded-md bg-slate-900/70 border border-slate-800 px-2.5 py-1.5"
+                    className="flex items-center justify-between rounded-md bg-background/70 border border-border px-2.5 py-1.5"
                   >
                     <div className="flex items-center gap-2">
                       <Badge
@@ -233,13 +233,13 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
                         {index + 1}
                       </Badge>
                       <div>
-                        <p className="text-xs font-medium text-slate-100 truncate max-w-[12rem]">
+                        <p className="text-xs font-medium text-foreground truncate max-w-[12rem]">
                           {p.name}
                         </p>
-                        <p className="text-[10px] text-slate-400">{p.systemBrand}</p>
+                        <p className="text-[10px] text-muted-foreground">{p.systemBrand}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 text-[10px] text-emerald-300">
+                    <div className="flex items-center gap-1 text-[10px] text-success">
                       <TrendingUp className="h-3 w-3" />
                       <span>{Math.round(p.utilizationHint * 100)}% demand signal</span>
                     </div>
@@ -252,11 +252,11 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
       </Card>
 
       {/* KPI Badges – Forged in Quality */}
-      <Card className="bg-slate-950/95 border-slate-700/80 shadow-inner shadow-black/60">
+      <Card className="bg-background/95 border-border/80 shadow-inner shadow-black/60">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between gap-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-100">
-              <Award className="h-4 w-4 text-amber-400" />
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <Award className="h-4 w-4 text-warning" />
               Forged in Quality
             </CardTitle>
             {currentProject && (
@@ -270,10 +270,10 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
           </div>
         </CardHeader>
         <CardContent className="space-y-3 text-xs">
-          <div className="space-y-1.5 rounded-lg border border-slate-700/80 bg-gradient-to-r from-emerald-900/40 to-slate-900/60 p-2.5">
+          <div className="space-y-1.5 rounded-lg border border-border/80 bg-gradient-to-r from-emerald-900/40 to-background/60 p-2.5">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Flame className="h-4 w-4 text-emerald-300" />
+                <Flame className="h-4 w-4 text-success" />
                 <div>
                   <p className="text-xs font-semibold text-emerald-100">Anatolian Efficiency</p>
                   <p className="text-[10px] text-emerald-200/80">
@@ -286,7 +286,7 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
                 className={`text-[10px] ${
                   anatolianEfficiencyUnlocked
                     ? 'border-emerald-400/70 bg-emerald-500/15 text-emerald-100'
-                    : 'border-slate-600 bg-slate-900 text-slate-300'
+                    : 'border-border bg-background text-foreground'
                 }`}
               >
                 {anatolianEfficiencyUnlocked ? 'Unlocked' : 'In Progress'}
@@ -294,9 +294,9 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
             </div>
             <Progress
               value={anatolianEfficiencyProgress}
-              className="h-1.5 bg-slate-800"
+              className="h-1.5 bg-card"
             />
-            <p className="text-[10px] text-slate-400">
+            <p className="text-[10px] text-muted-foreground">
               {optimization
                 ? `Current: ${optimization.nestingEfficiency.toFixed(
                     1,
@@ -305,10 +305,10 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
             </p>
           </div>
 
-          <div className="space-y-1.5 rounded-lg border border-slate-700/80 bg-gradient-to-r from-sky-900/40 to-slate-900/60 p-2.5">
+          <div className="space-y-1.5 rounded-lg border border-border/80 bg-gradient-to-r from-sky-900/40 to-background/60 p-2.5">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Award className="h-4 w-4 text-sky-300" />
+                <Award className="h-4 w-4 text-info" />
                 <div>
                   <p className="text-xs font-semibold text-sky-100">Bursa Precision</p>
                   <p className="text-[10px] text-sky-200/80">
@@ -321,7 +321,7 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
                 className={`text-[10px] ${
                   bursaPrecisionUnlocked
                     ? 'border-sky-400/70 bg-sky-500/15 text-sky-100'
-                    : 'border-slate-600 bg-slate-900 text-slate-300'
+                    : 'border-border bg-background text-foreground'
                 }`}
               >
                 {bursaPrecisionUnlocked ? 'Unlocked' : 'Locked'}
@@ -329,9 +329,9 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
             </div>
             <Progress
               value={Math.max(0, Math.min(100, bursaPrecisionProgress))}
-              className="h-1.5 bg-slate-800"
+              className="h-1.5 bg-card"
             />
-            <p className="text-[10px] text-slate-400">
+            <p className="text-[10px] text-muted-foreground">
               {optimization
                 ? `Closer as waste drops towards 0% and job moves into production.`
                 : 'Finish design & optimization, then start production to qualify.'}
@@ -341,13 +341,13 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
       </Card>
 
       {/* Regional supplier network */}
-      <Card className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border-slate-700/80 shadow-lg shadow-sky-900/30">
+      <Card className="bg-gradient-to-br from-background via-background to-background border-border/80 shadow-lg shadow-sky-900/30">
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-100">
-            <MapPin className="h-4 w-4 text-sky-400" />
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <MapPin className="h-4 w-4 text-info" />
             Regional Supplier Network
           </CardTitle>
-          <CardDescription className="text-[11px] text-slate-300/80">
+          <CardDescription className="text-[11px] text-foreground/80">
             A clickable mini-map of key Turkish fabrication hubs – tuned for sliding, casement and
             industrial work.
           </CardDescription>
@@ -365,7 +365,7 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
                   className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-[11px] border transition-all ${
                     isActive
                       ? 'border-sky-400 bg-sky-500/10 text-sky-100 shadow-sm shadow-sky-500/40'
-                      : 'border-slate-700 bg-slate-900/70 text-slate-300 hover:border-sky-400/60 hover:text-sky-100'
+                      : 'border-border bg-background/70 text-foreground hover:border-sky-400/60 hover:text-sky-100'
                   }`}
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
@@ -375,17 +375,17 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
             })}
           </div>
 
-          <div className="rounded-lg border border-slate-700/80 bg-slate-950/80 p-3">
-            <p className="text-[11px] text-slate-400 uppercase tracking-[0.18em] mb-1">
+          <div className="rounded-lg border border-border/80 bg-background/80 p-3">
+            <p className="text-[11px] text-muted-foreground uppercase tracking-[0.18em] mb-1">
               {activeRegionMeta.name} · {activeRegionMeta.role}
             </p>
-            <p className="text-xs text-slate-200 mb-2">{activeRegionMeta.description}</p>
-            <p className="text-[11px] text-slate-400 mb-1">Typical systems & suppliers:</p>
+            <p className="text-xs text-foreground mb-2">{activeRegionMeta.description}</p>
+            <p className="text-[11px] text-muted-foreground mb-1">Typical systems & suppliers:</p>
             <div className="flex flex-wrap gap-1.5">
               {activeRegionMeta.highlightBrands.map((b) => (
                 <span
                   key={b}
-                  className="rounded-full bg-slate-900/80 px-2 py-1 text-[10px] text-slate-200 border border-slate-700/70"
+                  className="rounded-full bg-background/80 px-2 py-1 text-[10px] text-foreground border border-border/70"
                 >
                   {b}
                 </span>

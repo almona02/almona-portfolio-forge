@@ -32,7 +32,7 @@ export const TurkishLayout: React.FC<TurkishLayoutProps> = ({
   const isMarketplaceRoute = location.pathname.startsWith('/used-machines') || location.pathname.startsWith('/usedmachines');
   
   return (
-    <div className="min-h-screen bg-almona-dark text-white">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Main Navigation */}
       <ConditionalNavbar />
       

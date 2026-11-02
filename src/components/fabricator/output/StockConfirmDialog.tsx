@@ -44,14 +44,14 @@ export const StockConfirmDialog: React.FC<StockConfirmDialogProps> = ({
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent
-        className="bg-[#111] border-amber-600/30 text-amber-100"
+        className="bg-[#111] border-amber-600/30 text-warning"
         data-testid="stock-confirm-dialog"
       >
         <AlertDialogHeader>
           <AlertDialogTitle>
             {t('industrial.stock.confirm_title', 'Confirm stock consumption')}
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-slate-400">
+          <AlertDialogDescription className="text-muted-foreground">
             {t(
               'industrial.stock.confirm_body',
               'This action affects warehouse records. Review the values below. Nothing is written until you confirm, and this dialog does not change stock semantics by itself.',

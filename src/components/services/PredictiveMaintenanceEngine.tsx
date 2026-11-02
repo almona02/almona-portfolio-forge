@@ -72,7 +72,7 @@ export const PredictiveMaintenanceEngine = () => {
       </Card>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-4 bg-gray-800">
+        <TabsList className="grid grid-cols-4 bg-card">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Gauge className="h-4 w-4" />
             Overview
@@ -115,7 +115,7 @@ export const PredictiveMaintenanceEngine = () => {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="font-semibold text-white">{alert.machineName}</span>
+                          <span className="font-semibold text-foreground">{alert.machineName}</span>
                           <Badge
                             variant={
                               alert.severity === "critical"
@@ -134,7 +134,7 @@ export const PredictiveMaintenanceEngine = () => {
                         <p className="text-sm mb-2">
                           <strong>{alert.component}:</strong> {alert.issue}
                         </p>
-                        <div className="flex items-center gap-4 text-xs text-gray-400">
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
                           <span>Predicted: {alert.predictedFailureDate}</span>
                           <div className="flex items-center gap-1">
                             Sensors: {alert.sensorsInvolved.map((sensor) => (
@@ -150,7 +150,7 @@ export const PredictiveMaintenanceEngine = () => {
                             <strong>Recommended Actions:</strong>
                             <ul className="list-disc list-inside mt-1 space-y-1">
                               {alert.recommendedActions.map((action, index) => (
-                                <li key={index} className="text-gray-300">
+                                <li key={index} className="text-foreground">
                                   {action}
                                 </li>
                               ))}
@@ -333,11 +333,11 @@ export const PredictiveMaintenanceEngine = () => {
                     { name: "Acoustic", rate: "20 kHz", status: "Active" },
                     { name: "Current", rate: "50 Hz", status: "Active" },
                   ].map((sensor, index) => (
-                    <Card key={index} className="bg-gray-800/50">
+                    <Card key={index} className="bg-card/50">
                       <CardContent className="p-4 text-center">
                         <div className="text-sm font-medium">{sensor.name}</div>
-                        <div className="text-xs text-gray-400">{sensor.rate}</div>
-                        <Badge variant="default" className="mt-2 bg-green-500/20 text-green-400">
+                        <div className="text-xs text-muted-foreground">{sensor.rate}</div>
+                        <Badge variant="default" className="mt-2 bg-green-500/20 text-success">
                           {sensor.status}
                         </Badge>
                       </CardContent>
@@ -376,17 +376,17 @@ export const PredictiveMaintenanceEngine = () => {
                       <span>Hydraulic system pressure drops</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <AlertTriangle className="h-3 w-3 text-red-500" />
+                      <AlertTriangle className="h-3 w-3 text-destructive" />
                       <span>Alignment drift affecting cut quality</span>
                     </li>
                   </ul>
                 </div>
 
                 <div className="space-y-3">
-                  <h4 className="typography-h4 text-green-400">Maintenance Rules</h4>
+                  <h4 className="typography-h4 text-success">Maintenance Rules</h4>
                   <div className="space-y-2 text-sm">
                     {maintenanceRules.slice(0, 2).map((rule, index) => (
-                      <div key={index} className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                      <div key={index} className="flex justify-between items-center p-2 bg-card/50 rounded">
                         <span>{rule.parameter}</span>
                         <Badge variant="outline">{rule.warning}</Badge>
                       </div>
@@ -421,17 +421,17 @@ export const PredictiveMaintenanceEngine = () => {
                       <span>Ball screw backlash in positioning</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <AlertTriangle className="h-3 w-3 text-red-500" />
+                      <AlertTriangle className="h-3 w-3 text-destructive" />
                       <span>Coolant system contamination</span>
                     </li>
                   </ul>
                 </div>
 
                 <div className="space-y-3">
-                  <h4 className="typography-h4 text-green-400">Maintenance Rules</h4>
+                  <h4 className="typography-h4 text-success">Maintenance Rules</h4>
                   <div className="space-y-2 text-sm">
                     {maintenanceRules.slice(2, 4).map((rule, index) => (
-                      <div key={index} className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                      <div key={index} className="flex justify-between items-center p-2 bg-card/50 rounded">
                         <span>{rule.parameter}</span>
                         <Badge variant="outline">{rule.warning}</Badge>
                       </div>
@@ -454,24 +454,24 @@ export const PredictiveMaintenanceEngine = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center">
                   <div className="p-3 bg-blue-500/20 rounded-lg inline-block mb-2">
-                    <Brain className="h-6 w-6 text-blue-400" />
+                    <Brain className="h-6 w-6 text-info" />
                   </div>
                   <h4 className="typography-h4 mb-2">LSTM Neural Networks</h4>
-                  <p className="text-sm text-gray-400">Time-series prediction of degradation patterns</p>
+                  <p className="text-sm text-muted-foreground">Time-series prediction of degradation patterns</p>
                 </div>
                 <div className="text-center">
                   <div className="p-3 bg-green-500/20 rounded-lg inline-block mb-2">
-                    <CheckCircle2 className="h-6 w-6 text-green-400" />
+                    <CheckCircle2 className="h-6 w-6 text-success" />
                   </div>
                   <h4 className="typography-h4 mb-2">Confidence Scoring</h4>
-                  <p className="text-sm text-gray-400">{alerts[0]?.confidence || 87}% prediction accuracy</p>
+                  <p className="text-sm text-muted-foreground">{alerts[0]?.confidence || 87}% prediction accuracy</p>
                 </div>
                 <div className="text-center">
                   <div className="p-3 bg-amber-500/20 rounded-lg inline-block mb-2">
                     <AlertTriangle className="h-6 w-6 text-amber-400" />
                   </div>
                   <h4 className="typography-h4 mb-2">Failure Mode Detection</h4>
-                  <p className="text-sm text-gray-400">Early identification of specific component failures</p>
+                  <p className="text-sm text-muted-foreground">Early identification of specific component failures</p>
                 </div>
               </div>
             </CardContent>
@@ -498,8 +498,8 @@ export const PredictiveMaintenanceEngine = () => {
                       { label: "ROI Percentage", value: `${roiData.roiPercentage.toFixed(1)}%` },
                       { label: "Payback Period", value: `${roiData.paybackPeriod.toFixed(1)} years` },
                     ].map((metric, index) => (
-                      <div key={index} className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg">
-                        <span className="text-gray-300">{metric.label}</span>
+                      <div key={index} className="flex justify-between items-center p-3 bg-card/50 rounded-lg">
+                        <span className="text-foreground">{metric.label}</span>
                         <Badge variant="default" className="btn-primary">
                           {metric.value}
                         </Badge>
@@ -519,8 +519,8 @@ export const PredictiveMaintenanceEngine = () => {
                       "52% faster maintenance response times",
                     ].map((benefit, index) => (
                       <div key={index} className="flex items-center gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-green-400 flex-shrink-0" />
-                        <span className="text-sm text-gray-300">{benefit}</span>
+                        <CheckCircle2 className="h-4 w-4 text-success flex-shrink-0" />
+                        <span className="text-sm text-foreground">{benefit}</span>
                       </div>
                     ))}
                   </div>
@@ -537,8 +537,8 @@ export const PredictiveMaintenanceEngine = () => {
                     { item: "Training", cost: "$5,000" },
                   ].map((cost, index) => (
                     <div key={index} className="text-center">
-                      <div className="text-gray-400">{cost.item}</div>
-                      <div className="font-semibold text-white">{cost.cost}</div>
+                      <div className="text-muted-foreground">{cost.item}</div>
+                      <div className="font-semibold text-foreground">{cost.cost}</div>
                     </div>
                   ))}
                 </div>

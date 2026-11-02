@@ -65,22 +65,22 @@ export const DesignInterface: React.FC<DesignInterfaceProps> = ({
   return (
     <div className="space-y-4">
       {/* Compact banner explaining the dual‑path design flow */}
-      <Card className="bg-gray-900/60 border-gray-800 card-dark">
+      <Card className="bg-background/60 border-border card-dark">
         <CardHeader className="py-3">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-              <Sparkles className="h-4 w-4 text-amber-400" />
+              <Sparkles className="h-4 w-4 text-warning" />
               {t('design_interface.title', 'Design Workspace – Engineering Bay')}
             </CardTitle>
             <div className="flex flex-col md:items-end gap-1">
-              <p className="text-[11px] text-gray-400 truncate max-w-xs">
+              <p className="text-[11px] text-muted-foreground truncate max-w-xs">
                 {defaultProjectLabel}
               </p>
               {project && relatedPositions && relatedPositions.length > 1 && onSelectPosition && (
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-gray-400">{t('design_interface.pose_in_order', 'Pose in order')}</span>
+                  <span className="text-[11px] text-muted-foreground">{t('design_interface.pose_in_order', 'Pose in order')}</span>
                   <select
-                    className="h-7 rounded-md bg-gray-900 border border-gray-700 text-[11px] px-2 text-gray-100"
+                    className="h-7 rounded-md bg-background border border-border text-[11px] px-2 text-foreground"
                     value={project.id}
                     onChange={(e) => onSelectPosition(e.target.value)}
                   >

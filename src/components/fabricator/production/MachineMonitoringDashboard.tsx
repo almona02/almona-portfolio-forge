@@ -143,17 +143,17 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'running':
-        return 'text-green-400 bg-green-500/20 border-green-500';
+        return 'text-success bg-green-500/20 border-green-500';
       case 'idle':
-        return 'text-blue-400 bg-blue-500/20 border-blue-500';
+        return 'text-info bg-blue-500/20 border-blue-500';
       case 'paused':
-        return 'text-yellow-400 bg-yellow-500/20 border-yellow-500';
+        return 'text-warning bg-yellow-500/20 border-yellow-500';
       case 'error':
-        return 'text-red-400 bg-red-500/20 border-red-500';
+        return 'text-destructive bg-red-500/20 border-red-500';
       case 'maintenance':
-        return 'text-amber-400 bg-amber-500/20 border-amber-500';
+        return 'text-warning bg-amber-500/20 border-amber-500';
       default:
-        return 'text-gray-400 bg-gray-500/20 border-gray-500';
+        return 'text-muted-foreground bg-muted/20 border-border';
     }
   };
 
@@ -180,7 +180,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
       <div className="flex items-center justify-between">
         <div>
           <h2 className="typography-h2">Machine Monitoring Dashboard</h2>
-          <p className="text-gray-400">Real-time status of all Yilmaz CNC machines</p>
+          <p className="text-muted-foreground">Real-time status of all Yilmaz CNC machines</p>
         </div>
         <Button
           onClick={() => void handleRefresh()}
@@ -205,11 +205,11 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
           const connected = cnc?.isConnected() || false;
 
           return (
-            <Card key={machine.id} className="bg-gray-700/50 border-gray-600">
+            <Card key={machine.id} className="bg-muted/50 border-border">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
-                    <Factory className="h-5 w-5 text-amber-400" />
+                    <Factory className="h-5 w-5 text-warning" />
                     {machine.name}
                   </CardTitle>
                   <Badge className={getStatusColor(status.status)}>
@@ -217,7 +217,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
                     <span className="ml-1 capitalize">{status.status}</span>
                   </Badge>
                 </div>
-                <div className="text-sm text-gray-400 mt-1">
+                <div className="text-sm text-muted-foreground mt-1">
                   {machine.model} • {connected ? 'Connected' : 'Disconnected'}
                 </div>
               </CardHeader>
@@ -225,7 +225,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
                 {/* Status Info */}
                 {status.currentOperation && (
                   <div>
-                    <div className="text-sm text-gray-400 mb-1">Current Operation</div>
+                    <div className="text-sm text-muted-foreground mb-1">Current Operation</div>
                     <div className="text-sm font-medium">{status.currentOperation}</div>
                   </div>
                 )}
@@ -245,29 +245,29 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   {status.spindleSpeed !== undefined && (
                     <div className="flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-yellow-400" />
-                      <span className="text-gray-400">Spindle:</span>
+                      <Zap className="h-4 w-4 text-warning" />
+                      <span className="text-muted-foreground">Spindle:</span>
                       <span className="font-medium">{status.spindleSpeed} rpm</span>
                     </div>
                   )}
                   {status.feedRate !== undefined && (
                     <div className="flex items-center gap-2">
-                      <Gauge className="h-4 w-4 text-blue-400" />
-                      <span className="text-gray-400">Feed:</span>
+                      <Gauge className="h-4 w-4 text-info" />
+                      <span className="text-muted-foreground">Feed:</span>
                       <span className="font-medium">{status.feedRate} mm/min</span>
                     </div>
                   )}
                   {status.temperature !== undefined && (
                     <div className="flex items-center gap-2">
-                      <Thermometer className="h-4 w-4 text-red-400" />
-                      <span className="text-gray-400">Temp:</span>
+                      <Thermometer className="h-4 w-4 text-destructive" />
+                      <span className="text-muted-foreground">Temp:</span>
                       <span className="font-medium">{status.temperature}°C</span>
                     </div>
                   )}
                   {status.toolNumber !== undefined && (
                     <div className="flex items-center gap-2">
-                      <Factory className="h-4 w-4 text-green-400" />
-                      <span className="text-gray-400">Tool:</span>
+                      <Factory className="h-4 w-4 text-success" />
+                      <span className="text-muted-foreground">Tool:</span>
                       <span className="font-medium">T{status.toolNumber}</span>
                     </div>
                   )}
@@ -311,7 +311,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
                         onClick={() => void handleMachineAction(machine.id, 'stop')}
                         size="sm"
                         variant="outline"
-                        className="flex-1 border-red-500 text-red-400 hover:bg-red-500/10"
+                        className="flex-1 border-red-500 text-destructive hover:bg-red-500/10"
                       >
                         <Square className="h-4 w-4 mr-1" />
                         Stop
@@ -332,7 +332,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
                         onClick={() => void handleMachineAction(machine.id, 'stop')}
                         size="sm"
                         variant="outline"
-                        className="flex-1 border-red-500 text-red-400 hover:bg-red-500/10"
+                        className="flex-1 border-red-500 text-destructive hover:bg-red-500/10"
                       >
                         <Square className="h-4 w-4 mr-1" />
                         Stop
@@ -342,7 +342,7 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
                 </div>
 
                 {/* Last Update */}
-                <div className="text-xs text-gray-500 text-center">
+                <div className="text-xs text-muted-foreground text-center">
                   Last update: {status.lastUpdate.toLocaleTimeString()}
                 </div>
               </CardContent>
@@ -353,43 +353,43 @@ export const MachineMonitoringDashboard: React.FC<MachineMonitoringDashboardProp
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gray-700/50 border-gray-600">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-4 text-center">
-            <Activity className="h-8 w-8 text-green-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-green-400">
+            <Activity className="h-8 w-8 text-success mx-auto mb-2" />
+            <div className="text-2xl font-bold text-success">
               {Array.from(machineStatuses.values()).filter(s => s.status === 'running').length}
             </div>
-            <div className="text-sm text-gray-400">Running</div>
+            <div className="text-sm text-muted-foreground">Running</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-700/50 border-gray-600">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-4 text-center">
-            <Clock className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-blue-400">
+            <Clock className="h-8 w-8 text-info mx-auto mb-2" />
+            <div className="text-2xl font-bold text-info">
               {Array.from(machineStatuses.values()).filter(s => s.status === 'idle').length}
             </div>
-            <div className="text-sm text-gray-400">Idle</div>
+            <div className="text-sm text-muted-foreground">Idle</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-700/50 border-gray-600">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-4 text-center">
-            <AlertCircle className="h-8 w-8 text-red-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-red-400">
+            <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-2" />
+            <div className="text-2xl font-bold text-destructive">
               {Array.from(machineStatuses.values()).filter(s => s.status === 'error').length}
             </div>
-            <div className="text-sm text-gray-400">Errors</div>
+            <div className="text-sm text-muted-foreground">Errors</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-700/50 border-gray-600">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-4 text-center">
-            <CheckCircle className="h-8 w-8 text-green-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-green-400">
+            <CheckCircle className="h-8 w-8 text-success mx-auto mb-2" />
+            <div className="text-2xl font-bold text-success">
               {machines.filter(m => machineControllers.get(m.id)?.isConnected()).length}
             </div>
-            <div className="text-sm text-gray-400">Connected</div>
+            <div className="text-sm text-muted-foreground">Connected</div>
           </CardContent>
         </Card>
       </div>

@@ -439,11 +439,11 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     if (!project) {
         return (
             <div className="space-y-6">
-                <Card className="bg-gray-700/50 border-gray-600">
+                <Card className="bg-muted/50 border-border">
                     <CardContent className="p-8 text-center">
-                        <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <Settings className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                         <h3 className="text-lg font-semibold mb-2">{t('engineering_bay.no_project_data', 'No Project Data')}</h3>
-                        <p className="text-gray-400">
+                        <p className="text-muted-foreground">
                             {t('engineering_bay.complete_measurement', 'Please complete the measurement phase first to create a project.')}
                         </p>
                     </CardContent>
@@ -458,7 +458,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             <div className="h-full">
                 <React.Suspense
                   fallback={
-                    <div className="flex h-full items-center justify-center bg-[#0a0a0a] text-amber-500 font-mono text-sm">
+                    <div className="flex h-full items-center justify-center bg-background text-warning font-mono text-sm">
                       Loading drafting workbench…
                     </div>
                   }
@@ -488,7 +488,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     return (
         <div className="h-full w-full overflow-y-auto p-6 space-y-6">
             {/* --- MASTER CONTROL CARD --- */}
-            <Card className="bg-gray-800/30 border-gray-700 shadow-2xl">
+            <Card className="bg-card/30 border-border shadow-2xl">
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <CardTitle className="flex items-center gap-3">
@@ -501,13 +501,13 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="h-7 px-2 text-xs border-gray-700 text-gray-300 hover:border-orange-500 hover:text-orange-300"
+                                            className="h-7 px-2 text-xs border-border text-foreground hover:border-orange-500 hover:text-orange-300"
                                         >
                                             {project?.posNumber || 'Pose'}
                                             {activeSystemPackId && (() => {
                                                 const pack = systemPacks.find((p) => p.meta?.id === activeSystemPackId);
                                                 return pack?.meta?.name ? (
-                                                    <span className="ml-2 text-amber-400 font-medium" title={pack.meta.name}>
+                                                    <span className="ml-2 text-warning font-medium" title={pack.meta.name}>
                                                         — {pack.meta.name}
                                                     </span>
                                                 ) : null;
@@ -515,16 +515,16 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             <ChevronDown className="h-3 w-3 ml-1" />
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="start" className="w-56 bg-gray-900 border-gray-700 text-gray-200">
+                                    <DropdownMenuContent align="start" className="w-56 bg-background border-border text-foreground">
                                         {relatedPositions.map((pos) => (
                                             <DropdownMenuItem
                                                 key={pos.id}
                                                 onClick={() => onSelectPosition?.(pos.id)}
-                                                className="focus:bg-gray-800 cursor-pointer"
+                                                className="focus:bg-card cursor-pointer"
                                             >
                                                 <div className="flex justify-between w-full">
                                                     <span className="font-mono text-xs">{pos.posNumber}</span>
-                                                    <span className="text-[10px] text-gray-500">{pos.overallWidth}x{pos.overallHeight}</span>
+                                                    <span className="text-[10px] text-muted-foreground">{pos.overallWidth}x{pos.overallHeight}</span>
                                                 </div>
                                             </DropdownMenuItem>
                                         ))}
@@ -534,7 +534,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-6 px-2 text-gray-500 hover:text-orange-400"
+                                className="h-6 px-2 text-muted-foreground hover:text-orange-400"
                                 onClick={() => setShowShortcuts(true)}
                                 title="Keyboard Shortcuts (Shift + ?)"
                             >
@@ -583,7 +583,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                     <Button
                                         variant="secondary"
                                         onClick={handleSaveAndNext}
-                                        className="bg-cyan-500 text-slate-900 hover:bg-cyan-400 shadow-lg font-semibold"
+                                        className="bg-cyan-500 text-foreground hover:bg-cyan-400 shadow-lg font-semibold"
                                     >
                                         {t('engineering_bay.save_and_next', 'Save & Next Pose')}
                                     </Button>
@@ -591,28 +591,28 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                 <div className="lg:hidden">
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" size="icon" className="border-gray-600 bg-gray-800/50">
-                                                <Menu className="h-5 w-5 text-gray-300" />
+                                            <Button variant="outline" size="icon" className="border-border bg-card/50">
+                                                <Menu className="h-5 w-5 text-foreground" />
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="w-56 bg-gray-900 border-gray-700 text-gray-200">
-                                            <DropdownMenuItem onClick={handleSaveAndNext} className="text-cyan-400 focus:text-cyan-300 focus:bg-gray-800 cursor-pointer">
+                                        <DropdownMenuContent align="end" className="w-56 bg-background border-border text-foreground">
+                                            <DropdownMenuItem onClick={handleSaveAndNext} className="text-info focus:text-info focus:bg-card cursor-pointer">
                                                 <CheckCircle2 className="h-4 w-4 mr-2" />
                                                 {t('engineering_bay.save_and_next', 'Save & Next')}
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={actions.validate} className="text-green-400 focus:text-green-300 focus:bg-gray-800 cursor-pointer">
+                                            <DropdownMenuItem onClick={actions.validate} className="text-success focus:text-success focus:bg-card cursor-pointer">
                                                 <Box className="h-4 w-4 mr-2" />
                                                 Confirm Design
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setEngineeringMode('wizard')} className="focus:bg-gray-800 cursor-pointer">
+                                            <DropdownMenuItem onClick={() => setEngineeringMode('wizard')} className="focus:bg-card cursor-pointer">
                                                 <Wand2 className="h-4 w-4 mr-2" />
                                                 Wizard Mode
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setDesignMode('drafting')} className="focus:bg-gray-800 cursor-pointer">
+                                            <DropdownMenuItem onClick={() => setDesignMode('drafting')} className="focus:bg-card cursor-pointer">
                                                 <Ruler className="h-4 w-4 mr-2" />
                                                 Drafting Mode
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => onBackToMeasuring && onBackToMeasuring()} className="focus:bg-gray-800 cursor-pointer">
+                                            <DropdownMenuItem onClick={() => onBackToMeasuring && onBackToMeasuring()} className="focus:bg-card cursor-pointer">
                                                 <ChevronDown className="h-4 w-4 mr-2 rotate-90" />
                                                 Back to Measuring
                                             </DropdownMenuItem>
@@ -626,17 +626,17 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                 <CardContent>
                     {/* 3D Mode Toggle */}
                     <div className="flex items-center justify-between mb-4 gap-2">
-                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <Cpu className="h-4 w-4 text-orange-400" />
                             <span>{t('engineering_bay.3d_engine_mode', '3D Engine Mode')}</span>
                         </div>
-                        <div className="inline-flex rounded-md border border-gray-700 bg-gray-900/60 p-1 text-xs">
+                        <div className="inline-flex rounded-md border border-border bg-background/60 p-1 text-xs">
                             <button
                                 type="button"
                                 onClick={() => setIsPro3D(false)}
                                 className={`px-2 py-1 rounded-sm transition-colors ${!isPro3D
-                                    ? 'bg-gray-100 text-gray-900'
-                                    : 'text-gray-400 hover:text-gray-200'
+                                    ? 'bg-muted text-foreground'
+                                    : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
                                 {t('engineering_bay.standard_3d', 'Standard 3D')}
@@ -646,7 +646,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                 onClick={() => setIsPro3D(true)}
                                 className={`px-2 py-1 rounded-sm transition-colors ${isPro3D
                                     ? 'bg-orange-500 text-white'
-                                    : 'text-gray-400 hover:text-gray-200'
+                                    : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
                                 {t('engineering_bay.pro_3d', 'Pro 3D')}
@@ -670,11 +670,11 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
                     <div className="lg:hidden mb-6">
                         <Tabs value={mobileTab} onValueChange={(v) => setMobileTab(v as any)} className="w-full">
-                            <TabsList className="grid w-full grid-cols-2 bg-gray-900 border border-gray-700">
-                                <TabsTrigger value="design" className="data-[state=active]:bg-gray-800 data-[state=active]:text-orange-400">
+                            <TabsList className="grid w-full grid-cols-2 bg-background border border-border">
+                                <TabsTrigger value="design" className="data-[state=active]:bg-card data-[state=active]:text-orange-400">
                                     <Layers className="h-4 w-4 mr-2" /> Design
                                 </TabsTrigger>
-                                <TabsTrigger value="3d" className="data-[state=active]:bg-gray-800 data-[state=active]:text-orange-400">
+                                <TabsTrigger value="3d" className="data-[state=active]:bg-card data-[state=active]:text-orange-400">
                                     <Box className="h-4 w-4 mr-2" /> 3D Preview
                                 </TabsTrigger>
                             </TabsList>
@@ -685,24 +685,24 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                         mobileTab={mobileTab}
                         controls={
                             <>
-                            <Card className="bg-gray-900/50">
+                            <Card className="bg-background/50">
                                 <CardHeader>
                                     <CardTitle className="text-base flex items-center gap-2">
-                                        <Settings className="h-4 w-4 text-gray-400" />
+                                        <Settings className="h-4 w-4 text-muted-foreground" />
                                         {t('engineering_bay.system_configuration', 'System Configuration')}
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     {/* Pattern Selection - Modal Dialog */}
                                     <div className="space-y-3">
-                                        <Label className="text-sm text-gray-300 font-semibold">Window Pattern</Label>
+                                        <Label className="text-sm text-foreground font-semibold">Window Pattern</Label>
 
                                         {/* Selected Pattern Display */}
                                         {selectedPreset && (
-                                            <div className="p-3 bg-gray-950/50 border border-gray-700 rounded-lg">
+                                            <div className="p-3 bg-background/50 border border-border rounded-lg">
                                                 <div className="flex items-center gap-2">
-                                                    <Grid3x3 className="w-4 h-4 text-amber-400" />
-                                                    <span className="text-sm text-gray-200 font-medium">
+                                                    <Grid3x3 className="w-4 h-4 text-warning" />
+                                                    <span className="text-sm text-foreground font-medium">
                                                         {getPresetById(selectedPreset, SIMPLE_PRESETS)?.title || selectedPreset}
                                                     </span>
                                                 </div>
@@ -722,13 +722,13 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                 <ChevronRight className="w-4 h-4 ml-auto" />
                                             </Button>
 
-                                            <DialogContent className="max-w-7xl h-[85vh] overflow-hidden flex flex-col bg-slate-950 border-slate-700 text-slate-100">
+                                            <DialogContent className="max-w-7xl h-[85vh] overflow-hidden flex flex-col bg-background border-border text-foreground">
                                                 <DialogHeader>
                                                     <DialogTitle className="text-2xl font-bold flex items-center gap-2">
-                                                        <ShieldCheck className="w-6 h-6 text-amber-400" />
+                                                        <ShieldCheck className="w-6 h-6 text-warning" />
                                                         Pattern reliability toolkit
                                                     </DialogTitle>
-                                                    <DialogDescription className="text-slate-400">
+                                                    <DialogDescription className="text-muted-foreground">
                                                         Confirm grid size, system pack fit, and complexity before applying
                                                     </DialogDescription>
                                                 </DialogHeader>
@@ -752,30 +752,30 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                     </div>
 
                                     <div className="space-y-3">
-                                        <Label className="text-sm text-gray-300 font-semibold">{t('engineering_bay.active_system', 'Active System')}</Label>
+                                        <Label className="text-sm text-foreground font-semibold">{t('engineering_bay.active_system', 'Active System')}</Label>
                                         <Select
                                             value={activeSystemPackId || ""}
                                             onValueChange={handleSystemPackSelect}
                                         >
-                                            <SelectTrigger className="h-14 bg-gray-950 border-2 border-gray-600 hover:border-orange-500 text-base transition-colors">
+                                            <SelectTrigger className="h-14 bg-background border-2 border-border hover:border-orange-500 text-base transition-colors">
                                                 <div className="flex items-center gap-3 w-full">
                                                     <Box className="w-5 h-5 text-orange-400 flex-shrink-0" />
                                                     <div className="flex flex-col items-start flex-1 min-w-0">
-                                                        <span className="text-xs text-gray-300 font-medium tracking-wide">System Pack</span>
+                                                        <span className="text-xs text-foreground font-medium tracking-wide">System Pack</span>
                                                         {activeSystemPackId ? (
-                                                            <span className="text-sm text-gray-100 font-semibold truncate w-full text-left">
+                                                            <span className="text-sm text-foreground font-semibold truncate w-full text-left">
                                                                 {(() => {
                                                                     const pack = systemPacks.find(p => p.meta.id === activeSystemPackId);
                                                                     return pack?.meta.name || activeSystemPackId;
                                                                 })()}
                                                             </span>
                                                         ) : (
-                                                            <span className="text-sm text-gray-400">{t('engineering_bay.select_system', 'Select System')}</span>
+                                                            <span className="text-sm text-muted-foreground">{t('engineering_bay.select_system', 'Select System')}</span>
                                                         )}
                                                     </div>
                                                 </div>
                                             </SelectTrigger>
-                                            <SelectContent className="bg-gray-900 border-gray-700 text-gray-200">
+                                            <SelectContent className="bg-background border-border text-foreground">
                                                 {(
                                                     (project as any)?.allowedSystemPackIds?.length
                                                         ? systemPacks.filter((p) =>
@@ -786,12 +786,12 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                     <SelectItem
                                                         key={pack.meta.id}
                                                         value={pack.meta.id}
-                                                        className="text-xs focus:bg-gray-800"
+                                                        className="text-xs focus:bg-card"
                                                         title={pack.meta.name}
                                                     >
                                                         <div className="flex items-center gap-2" title={pack.meta.name}>
                                                             <span className="font-medium">{pack.meta.name}</span>
-                                                            <Badge variant="outline" className="text-[9px] h-4 px-1 border-gray-600 text-gray-400">
+                                                            <Badge variant="outline" className="text-[9px] h-4 px-1 border-border text-muted-foreground">
                                                                 {(pack as any).meta?.type || 'system'}
                                                             </Badge>
                                                         </div>
@@ -802,12 +802,12 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                     </div>
 
                                     {activeSystemPackId && (
-                                        <div className="grid grid-cols-2 gap-2 bg-gray-950/50 rounded p-2 border border-gray-800/50">
+                                        <div className="grid grid-cols-2 gap-2 bg-background/50 rounded p-2 border border-border/50">
                                             <div className="flex items-center gap-2">
-                                                <Layers className="h-3 w-3 text-blue-400" />
+                                                <Layers className="h-3 w-3 text-info" />
                                                 <div className="flex flex-col">
-                                                    <span className="text-[10px] text-gray-500">{t('engineering_bay.profiles', 'Profiles')}</span>
-                                                    <span className="text-xs font-mono text-gray-300">
+                                                    <span className="text-[10px] text-muted-foreground">{t('engineering_bay.profiles', 'Profiles')}</span>
+                                                    <span className="text-xs font-mono text-foreground">
                                                         {(systemPacks.find(p => p.meta.id === activeSystemPackId) as any)?.profiles?.length || (systemPacks.find(p => p.meta.id === activeSystemPackId) as any)?.windowSystemSpec?.profiles_cutting_list?.length || 0}
                                                     </span>
                                                 </div>
@@ -815,8 +815,8 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             <div className="flex items-center gap-2">
                                                 <Box className="h-3 w-3 text-orange-400" />
                                                 <div className="flex flex-col">
-                                                    <span className="text-[10px] text-gray-500">{t('engineering_bay.parts', 'Parts')}</span>
-                                                    <span className="text-xs font-mono text-gray-300">
+                                                    <span className="text-[10px] text-muted-foreground">{t('engineering_bay.parts', 'Parts')}</span>
+                                                    <span className="text-xs font-mono text-foreground">
                                                         {(systemPacks.find(p => p.meta.id === activeSystemPackId) as any)?.windowSystemSpec?.accessories_list?.length || 0}
                                                     </span>
                                                 </div>
@@ -842,7 +842,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             <AlertDescription className="space-y-3 text-xs">
                                                 <p>{pendingGeometryAction.message}</p>
                                                 {pendingGeometryAction.reasons.length > 0 && (
-                                                    <ul className="list-disc pl-4 text-amber-100/90">
+                                                    <ul className="list-disc pl-4 text-warning/90">
                                                         {pendingGeometryAction.reasons.map((reason) => (
                                                             <li key={reason}>{reason}</li>
                                                         ))}
@@ -864,7 +864,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                     <Button
                                                         size="sm"
                                                         variant="outline"
-                                                        className="border-amber-500/50 text-amber-100"
+                                                        className="border-amber-500/50 text-warning"
                                                         onClick={actions.dismissPendingGeometryAction}
                                                         data-testid="dismiss-pending-geometry"
                                                     >
@@ -888,7 +888,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                         }
                         canvas={
                             <>
-                            <Card className="bg-gray-900/50 border-orange-500/30">
+                            <Card className="bg-background/50 border-orange-500/30">
                                 <CardHeader>
                                     <CardTitle className="text-base flex items-center gap-2">
                                         <Layers className="h-4 w-4 text-orange-400" />
@@ -897,7 +897,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             {t('engineering_bay.primary_canvas', 'PRIMARY')}
                                         </Badge>
                                     </CardTitle>
-                                    <CardDescription className="text-xs text-gray-400">
+                                    <CardDescription className="text-xs text-muted-foreground">
                                         {bayLayout.canvasLandmarkLabel}
                                     </CardDescription>
                                 </CardHeader>
@@ -941,7 +941,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                             {/* --- MACRO RECORDER (Gold Tier) --- */}
                             <MacroRecorderPanel
                                 recorder={macroRecorder}
-                                className="bg-gray-900/50 mt-4"
+                                className="bg-background/50 mt-4"
                                 onActionExecute={async (type: string, data?: Record<string, any>) => {
                                     if (type === 'custom' && data?.shortcutAction) {
                                         await import('@/lib/keyboard/shortcuts').then(({ shortcutManager }) => {
@@ -954,27 +954,27 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                         }
                         preview={
                             <>
-                            <Card className="bg-gray-900/50 sticky top-4">
+                            <Card className="bg-background/50 sticky top-4">
                                 <CardHeader>
                                     <CardTitle className="text-base flex items-center gap-2 flex-wrap">
-                                        <Box className="h-4 w-4 text-gray-400" />
+                                        <Box className="h-4 w-4 text-muted-foreground" />
                                         {t('engineering_bay.live_digital_twin', 'Live Digital Twin (Apex Engine v6.0)')}
                                         <Badge
                                             data-testid="preview-estimate-badge"
-                                            className="bg-amber-500/15 border border-amber-500/40 text-amber-200 text-[10px]"
+                                            className="bg-amber-500/15 border border-amber-500/40 text-warning text-[10px]"
                                         >
                                             {previewSurface.badgeLabel}
                                         </Badge>
                                     </CardTitle>
                                     <CardDescription
-                                        className="text-xs text-amber-200/80"
+                                        className="text-xs text-warning/80"
                                         data-testid="preview-estimate-description"
                                     >
                                         {previewSurface.description}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="w-full h-[350px] lg:h-[600px] rounded-lg overflow-hidden border border-gray-800">
+                                    <div className="w-full h-[350px] lg:h-[600px] rounded-lg overflow-hidden border border-border">
                                         {liveProject && (
                                             PreviewComponent ? (
                                                 <PreviewComponent
@@ -983,9 +983,9 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                 />
                                             ) : (
                                                 <React.Suspense fallback={
-                                                    <div className="flex items-center justify-center h-96 bg-gray-900 rounded-lg">
+                                                    <div className="flex items-center justify-center h-96 bg-background rounded-lg">
                                                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-                                                        <span className="ml-3 text-white">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</span>
+                                                        <span className="ml-3 text-foreground">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</span>
                                                     </div>
                                                 }>
                                                     <Window3DGenerator
@@ -1004,14 +1004,14 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                             </Card>
 
                             {/* --- ENGINEERING PHYSICS PANEL --- */}
-                            <Card className="bg-gray-900/50 mt-6 border-l-4 border-l-amber-500">
+                            <Card className="bg-background/50 mt-6 border-l-4 border-l-amber-500">
                                 <CardHeader>
                                     <CardTitle className="text-base flex items-center gap-2">
-                                        <Cpu className="h-4 w-4 text-amber-400" />
+                                        <Cpu className="h-4 w-4 text-warning" />
                                         {t('engineering_bay.physics_engine', 'Engineering Physics')}
                                     </CardTitle>
                                     <CardDescription
-                                        className="text-xs text-amber-200/90"
+                                        className="text-xs text-warning/90"
                                         data-testid="physics-authority-description"
                                     >
                                         {physicsResults?.authority.description ??
@@ -1021,11 +1021,11 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                 <CardContent>
                                     <div className="space-y-6">
                                         {/* 1. Structural Statics */}
-                                        <div className="space-y-3 bg-gray-950/40 p-3 rounded-lg border border-gray-800">
+                                        <div className="space-y-3 bg-background/40 p-3 rounded-lg border border-border">
                                             <div className="flex justify-between items-center text-sm">
                                                 <div className="flex items-center gap-2">
                                                     <Ruler className="h-4 w-4 text-orange-400" />
-                                                    <span className="text-gray-300 font-medium tracking-tight">Wind Load Performance (Ix)</span>
+                                                    <span className="text-foreground font-medium tracking-tight">Wind Load Performance (Ix)</span>
                                                 </div>
                                                 {physicsResults?.structResult ? (
                                                     <Badge
@@ -1033,9 +1033,9 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                         className={`${
                                                             physicsResults.authority.canClaimStandardsVerification
                                                                 ? physicsResults.structResult.isSafe
-                                                                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                                                    : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
-                                                                : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                                                                    ? 'bg-emerald-500/10 text-success border-emerald-500/20'
+                                                                    : 'bg-rose-500/10 text-destructive border-rose-500/20'
+                                                                : 'bg-amber-500/10 text-warning border-amber-500/30'
                                                         } border`}
                                                     >
                                                         {physicsResults.authority.structuralBadgeLabel}
@@ -1046,7 +1046,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                 ) : (
                                                     <Badge
                                                         variant="outline"
-                                                        className="text-gray-500 border-gray-800"
+                                                        className="text-muted-foreground border-border"
                                                         data-testid="physics-structural-badge"
                                                     >
                                                         {physicsResults?.authority.structuralBadgeLabel ?? 'INPUTS INCOMPLETE'}
@@ -1054,11 +1054,11 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                 )}
                                             </div>
                                             <div className="space-y-1.5">
-                                                <div className="flex justify-between text-[10px] text-gray-500 mb-1">
+                                                <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
                                                     <span>Utilization (estimate)</span>
                                                     <span>{Math.min((physicsResults?.structResult?.utilization || 0), 100).toFixed(1)}%</span>
                                                 </div>
-                                                <div className="h-1.5 bg-gray-900 rounded-full overflow-hidden border border-gray-800">
+                                                <div className="h-1.5 bg-background rounded-full overflow-hidden border border-border">
                                                     <div
                                                         className={`h-full transition-all duration-1000 ${
                                                             physicsResults?.authority.canClaimStandardsVerification &&
@@ -1072,54 +1072,54 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             </div>
                                             <div className="grid grid-cols-2 gap-4 text-[10px]">
                                                 <div className="flex flex-col">
-                                                    <span className="text-gray-500">Required Inertia (estimate)</span>
-                                                    <span className="text-gray-200 font-mono">{physicsResults?.structResult?.requiredIx?.toFixed(2) || '---'} cm⁴</span>
+                                                    <span className="text-muted-foreground">Required Inertia (estimate)</span>
+                                                    <span className="text-foreground font-mono">{physicsResults?.structResult?.requiredIx?.toFixed(2) || '---'} cm⁴</span>
                                                 </div>
                                                 <div className="flex flex-col text-right">
-                                                    <span className="text-gray-500">System Inertia</span>
-                                                    <span className="text-sky-300 font-mono">{physicsResults?.structResult?.actualIx?.toFixed(2) || '---'} cm⁴</span>
+                                                    <span className="text-muted-foreground">System Inertia</span>
+                                                    <span className="text-info font-mono">{physicsResults?.structResult?.actualIx?.toFixed(2) || '---'} cm⁴</span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* 2. Thermal Physics */}
-                                        <div className="space-y-3 bg-gray-950/40 p-3 rounded-lg border border-gray-800">
+                                        <div className="space-y-3 bg-background/40 p-3 rounded-lg border border-border">
                                             <div className="flex justify-between items-center text-sm">
                                                 <div className="flex items-center gap-2">
-                                                    <Box className="h-4 w-4 text-blue-400" />
-                                                    <span className="text-gray-300 font-medium tracking-tight">
+                                                    <Box className="h-4 w-4 text-info" />
+                                                    <span className="text-foreground font-medium tracking-tight">
                                                         Thermal Performance (Uw)
                                                         {physicsResults?.authority.thermalLabelSuffix === 'estimate' ? ' — estimate' : ''}
                                                     </span>
                                                 </div>
                                                 <span
-                                                    className="font-mono text-blue-300 font-bold bg-blue-900/20 px-2 py-0.5 rounded border border-blue-800/30"
+                                                    className="font-mono text-info font-bold bg-blue-900/20 px-2 py-0.5 rounded border border-blue-800/30"
                                                     data-testid="physics-uw-value"
                                                 >
                                                     {physicsResults?.uw != null ? physicsResults.uw.toFixed(2) : '---'} W/m²K
                                                 </span>
                                             </div>
                                             <div className="grid grid-cols-3 gap-2">
-                                                <div className="bg-gray-900/80 p-1.5 rounded border border-gray-800 text-center">
-                                                    <span className="text-[9px] text-gray-500 block">Uf (Frame)</span>
-                                                    <span className="text-[11px] text-gray-300 font-mono">{physicsResults?.physics?.uf || '---'}</span>
+                                                <div className="bg-background/80 p-1.5 rounded border border-border text-center">
+                                                    <span className="text-[9px] text-muted-foreground block">Uf (Frame)</span>
+                                                    <span className="text-[11px] text-foreground font-mono">{physicsResults?.physics?.uf || '---'}</span>
                                                 </div>
-                                                <div className="bg-gray-900/80 p-1.5 rounded border border-gray-800 text-center">
-                                                    <span className="text-[9px] text-gray-500 block">Ug (Glass, assumed)</span>
-                                                    <span className="text-[11px] text-gray-300 font-mono">1.10</span>
+                                                <div className="bg-background/80 p-1.5 rounded border border-border text-center">
+                                                    <span className="text-[9px] text-muted-foreground block">Ug (Glass, assumed)</span>
+                                                    <span className="text-[11px] text-foreground font-mono">1.10</span>
                                                 </div>
-                                                <div className="bg-gray-900/80 p-1.5 rounded border border-gray-800 text-center">
-                                                    <span className="text-[9px] text-gray-500 block">Ψ (Edge, assumed)</span>
-                                                    <span className="text-[11px] text-gray-300 font-mono">0.04</span>
+                                                <div className="bg-background/80 p-1.5 rounded border border-border text-center">
+                                                    <span className="text-[9px] text-muted-foreground block">Ψ (Edge, assumed)</span>
+                                                    <span className="text-[11px] text-foreground font-mono">0.04</span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* 3. Cross Sections */}
-                                        <div className="pt-4 border-t border-gray-800">
+                                        <div className="pt-4 border-t border-border">
                                             <div className="flex items-center justify-between mb-3 text-xs">
-                                                <span className="text-gray-400 font-medium">Auto-Generated Cross Sections</span>
-                                                <span className="text-[10px] bg-sky-900/30 text-sky-400 px-1.5 py-0.5 rounded border border-sky-800/30">SVG-Precision: 0.1mm</span>
+                                                <span className="text-muted-foreground font-medium">Auto-Generated Cross Sections</span>
+                                                <span className="text-[10px] bg-sky-900/30 text-info px-1.5 py-0.5 rounded border border-sky-800/30">SVG-Precision: 0.1mm</span>
                                             </div>
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div className="space-y-1.5">
@@ -1128,9 +1128,9 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                         width={physicsResults?.physics?.faceWidth || 60}
                                                         depth={physicsResults?.physics?.depth || 60}
                                                         glassThickness={24}
-                                                        className="w-full bg-gray-950/20 rounded border border-gray-800/50"
+                                                        className="w-full bg-background/20 rounded border border-border/50"
                                                     />
-                                                    <div className="text-[9px] text-gray-500 text-center font-mono">Frame: {physicsResults?.physics?.faceWidth || 60}x{physicsResults?.physics?.depth || 60}mm</div>
+                                                    <div className="text-[9px] text-muted-foreground text-center font-mono">Frame: {physicsResults?.physics?.faceWidth || 60}x{physicsResults?.physics?.depth || 60}mm</div>
                                                 </div>
                                                 <div className="space-y-1.5">
                                                     <CrossSectionGenerator
@@ -1138,9 +1138,9 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                         width={physicsResults?.physics?.mullionWidth || 80}
                                                         depth={physicsResults?.physics?.depth || 120}
                                                         glassThickness={24}
-                                                        className="w-full bg-gray-950/20 rounded border border-gray-800/50"
+                                                        className="w-full bg-background/20 rounded border border-border/50"
                                                     />
-                                                    <div className="text-[9px] text-gray-500 text-center font-mono">Mullion: {physicsResults?.physics?.mullionWidth || 80}x{physicsResults?.physics?.depth || 120}mm</div>
+                                                    <div className="text-[9px] text-muted-foreground text-center font-mono">Mullion: {physicsResults?.physics?.mullionWidth || 80}x{physicsResults?.physics?.depth || 120}mm</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1154,7 +1154,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             </Card>
 
             <Dialog open={showShortcuts} onOpenChange={setShowShortcuts}>
-                <DialogContent className="bg-gray-900 border-gray-700 max-w-md">
+                <DialogContent className="bg-background border-border max-w-md">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-orange-400">
                             <Command className="h-5 w-5" />
@@ -1167,42 +1167,42 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                     <div className="py-2">
                         <Table>
                             <TableHeader>
-                                <TableRow className="border-gray-700 hover:bg-transparent">
-                                    <TableHead className="text-gray-400 h-8">Action</TableHead>
-                                    <TableHead className="text-right text-gray-400 h-8">Shortcut</TableHead>
+                                <TableRow className="border-border hover:bg-transparent">
+                                    <TableHead className="text-muted-foreground h-8">Action</TableHead>
+                                    <TableHead className="text-right text-muted-foreground h-8">Shortcut</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <TableRow className="border-gray-800 hover:bg-transparent">
-                                    <TableCell className="py-2 font-medium text-gray-200">Save & Next Pose</TableCell>
+                                <TableRow className="border-border hover:bg-transparent">
+                                    <TableCell className="py-2 font-medium text-foreground">Save & Next Pose</TableCell>
                                     <TableCell className="py-2 text-right font-mono text-orange-300">Ctrl + S</TableCell>
                                 </TableRow>
-                                <TableRow className="border-gray-800 hover:bg-transparent">
-                                    <TableCell className="py-2 font-medium text-gray-200">Confirm & Validate</TableCell>
+                                <TableRow className="border-border hover:bg-transparent">
+                                    <TableCell className="py-2 font-medium text-foreground">Confirm & Validate</TableCell>
                                     <TableCell className="py-2 text-right font-mono text-orange-300">Ctrl + Enter</TableCell>
                                 </TableRow>
-                                <TableRow className="border-gray-800 hover:bg-transparent">
-                                    <TableCell className="py-2 font-medium text-gray-200">Collapse left rail</TableCell>
+                                <TableRow className="border-border hover:bg-transparent">
+                                    <TableCell className="py-2 font-medium text-foreground">Collapse left rail</TableCell>
                                     <TableCell className="py-2 text-right font-mono text-orange-300">{bayLayout.collapseLeftShortcut}</TableCell>
                                 </TableRow>
-                                <TableRow className="border-gray-800 hover:bg-transparent">
-                                    <TableCell className="py-2 font-medium text-gray-200">Collapse right rail</TableCell>
+                                <TableRow className="border-border hover:bg-transparent">
+                                    <TableCell className="py-2 font-medium text-foreground">Collapse right rail</TableCell>
                                     <TableCell className="py-2 text-right font-mono text-orange-300">{bayLayout.collapseRightShortcut}</TableCell>
                                 </TableRow>
-                                <TableRow className="border-gray-800 hover:bg-transparent">
-                                    <TableCell className="py-2 font-medium text-gray-200">Toggle Wizard Mode</TableCell>
+                                <TableRow className="border-border hover:bg-transparent">
+                                    <TableCell className="py-2 font-medium text-foreground">Toggle Wizard Mode</TableCell>
                                     <TableCell className="py-2 text-right font-mono text-orange-300">Alt + W</TableCell>
                                 </TableRow>
-                                <TableRow className="border-gray-800 hover:bg-transparent">
-                                    <TableCell className="py-2 font-medium text-gray-200">Toggle Drafting Mode</TableCell>
+                                <TableRow className="border-border hover:bg-transparent">
+                                    <TableCell className="py-2 font-medium text-foreground">Toggle Drafting Mode</TableCell>
                                     <TableCell className="py-2 text-right font-mono text-orange-300">Alt + D</TableCell>
                                 </TableRow>
-                                <TableRow className="border-gray-800 hover:bg-transparent">
-                                    <TableCell className="py-2 font-medium text-gray-200">Suggest catalog layout</TableCell>
+                                <TableRow className="border-border hover:bg-transparent">
+                                    <TableCell className="py-2 font-medium text-foreground">Suggest catalog layout</TableCell>
                                     <TableCell className="py-2 text-right font-mono text-orange-300">Alt + A</TableCell>
                                 </TableRow>
-                                <TableRow className="border-gray-800 hover:bg-transparent">
-                                    <TableCell className="py-2 font-medium text-gray-200">Show Shortcuts</TableCell>
+                                <TableRow className="border-border hover:bg-transparent">
+                                    <TableCell className="py-2 font-medium text-foreground">Show Shortcuts</TableCell>
                                     <TableCell className="py-2 text-right font-mono text-orange-300">Shift + ?</TableCell>
                                 </TableRow>
                             </TableBody>

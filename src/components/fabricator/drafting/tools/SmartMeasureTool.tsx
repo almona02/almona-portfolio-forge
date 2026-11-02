@@ -16,7 +16,7 @@ export const SmartMeasureTool: React.FC<SmartMeasureToolProps> = ({
     return (
         <div className="space-y-3 p-3 bg-blue-50 rounded border border-blue-200">
             <div className="flex items-center gap-2">
-                <Ruler size={16} className="text-blue-600" />
+                <Ruler size={16} className="text-info" />
                 <span className="text-sm font-medium text-blue-800">
                     Smart Measure
                 </span>
@@ -27,7 +27,7 @@ export const SmartMeasureTool: React.FC<SmartMeasureToolProps> = ({
                     onClick={() => onModeChange('outer')}
                     className={`flex flex-col items-center justify-center p-2 rounded text-xs border ${activeMode === 'outer'
                             ? 'bg-blue-100 border-blue-400 text-blue-800 font-medium'
-                            : 'bg-white border-blue-200 text-slate-600 hover:bg-blue-50'
+                            : 'bg-card border-blue-200 text-muted-foreground hover:bg-blue-50'
                         }`}
                 >
                     <Maximize size={16} className="mb-1" />
@@ -38,7 +38,7 @@ export const SmartMeasureTool: React.FC<SmartMeasureToolProps> = ({
                     onClick={() => onModeChange('inner')}
                     className={`flex flex-col items-center justify-center p-2 rounded text-xs border ${activeMode === 'inner'
                             ? 'bg-blue-100 border-blue-400 text-blue-800 font-medium'
-                            : 'bg-white border-blue-200 text-slate-600 hover:bg-blue-50'
+                            : 'bg-card border-blue-200 text-muted-foreground hover:bg-blue-50'
                         }`}
                 >
                     <Minimize size={16} className="mb-1" />
@@ -49,7 +49,7 @@ export const SmartMeasureTool: React.FC<SmartMeasureToolProps> = ({
                     onClick={() => onModeChange('glass')}
                     className={`flex flex-col items-center justify-center p-2 rounded text-xs border ${activeMode === 'glass'
                             ? 'bg-blue-100 border-blue-400 text-blue-800 font-medium'
-                            : 'bg-white border-blue-200 text-slate-600 hover:bg-blue-50'
+                            : 'bg-card border-blue-200 text-muted-foreground hover:bg-blue-50'
                         }`}
                 >
                     <ScanLine size={16} className="mb-1" />

@@ -194,10 +194,10 @@ const ProductGrid = ({
   if (filteredProducts.length === 0) {
     return (
       <div className="text-center py-16">
-  <div className="bg-almona-darker p-8 rounded-lg border border-almona-light/20">
-          <Search className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+  <div className="bg-card p-8 rounded-lg border border-border/20">
+          <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="typography-h3 mb-2">{copy("No products found")}</h3>
-          <p className="text-gray-400 mb-6">{copy("Try adjusting your filters or search terms")}</p>
+          <p className="text-muted-foreground mb-6">{copy("Try adjusting your filters or search terms")}</p>
           <Button onClick={() => setFilters({
             searchTerm: "",
             category: "all",
@@ -397,10 +397,10 @@ const Shop = () => {
   //       {[...Array(5)].map((_, i) => (
   //         <Star 
   //           key={i} 
-  //           className={`h-3 w-3 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-500'}`} 
+  //           className={`h-3 w-3 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`}
   //         />
   //       ))}
-  //       <span className="text-xs text-gray-400 ml-1">({rating.toFixed(1)})</span>
+  //       <span className="text-xs text-muted-foreground ml-1">({rating.toFixed(1)})</span>
   //     </div>
   //   );
   // };
@@ -518,7 +518,7 @@ const Shop = () => {
         <div id="top" className="sr-only" aria-hidden="true" />
         {/* Hero Section */}
         <section 
-          className="relative bg-gradient-to-br from-almona-dark to-almona-darker py-16 overflow-hidden fade-in-up"
+          className="relative bg-gradient-to-br from-background to-almona-darker py-16 overflow-hidden fade-in-up"
         >
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=2000')] opacity-10 mix-blend-overlay"></div>
 
@@ -527,7 +527,7 @@ const Shop = () => {
               <h1 className="typography-h1 md:text-5xl lg:text-6xl mb-6">
                 <span className="text-gradient-orange">{copy("Industrial Equipment Hub")}</span>
               </h1>
-              <p className="text-xl text-gray-300 mb-8">{copy("Premium machinery, genuine parts, and expert support for Egypt's manufacturing industry")}</p>
+              <p className="text-xl text-foreground mb-8">{copy("Premium machinery, genuine parts, and expert support for Egypt's manufacturing industry")}</p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <NeonButton 
@@ -539,7 +539,7 @@ const Shop = () => {
                   <Sparkles className="mr-2 h-5 w-5" />{copy("Equipment Advisor")}</NeonButton>
 
                 <Button 
-                  onClick={() => document.getElementById("catalogue")?.scrollIntoView({ behavior: "smooth" })} className="border-almona-light text-white hover:bg-almona-light/10 px-8 py-4"
+                  onClick={() => document.getElementById("catalogue")?.scrollIntoView({ behavior: "smooth" })} className="border-border text-foreground hover:bg-almona-light/10 px-8 py-4"
                 >{copy("Explore Catalog")}</Button>
                 <Button asChild variant="outline"><Link to="/quote">{copy("View enquiry basket (")}{quoteItems.length})</Link></Button>
               </div>
@@ -572,32 +572,32 @@ const Shop = () => {
 
               {/* Value Propositions */}
               <div className="mt-6 space-y-4">
-                <Card className="bg-slate-800 border-slate-600 shadow-lg card-dark">
+                <Card className="bg-card border-border shadow-lg card-dark">
                   <CardContent className="p-4 flex items-center gap-3">
                     <Truck className="h-6 w-6 text-almona-orange" />
                     <div>
-                      <h4 className="typography-h4 font-medium text-white">{copy("Delivery Planning")}</h4>
-                      <p className="text-sm text-gray-300">{copy("Delivery costs and timing confirmed in your quote")}</p>
+                      <h4 className="typography-h4 font-medium text-foreground">{copy("Delivery Planning")}</h4>
+                      <p className="text-sm text-foreground">{copy("Delivery costs and timing confirmed in your quote")}</p>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-slate-800 border-slate-600 shadow-lg card-dark">
+                <Card className="bg-card border-border shadow-lg card-dark">
                   <CardContent className="p-4 flex items-center gap-3">
                     <Shield className="h-6 w-6 text-almona-orange" />
                     <div>
-                      <h4 className="typography-h4 font-medium text-white">{copy("Warranty Details")}</h4>
-                      <p className="text-sm text-gray-300">{copy("Request model-specific written warranty terms")}</p>
+                      <h4 className="typography-h4 font-medium text-foreground">{copy("Warranty Details")}</h4>
+                      <p className="text-sm text-foreground">{copy("Request model-specific written warranty terms")}</p>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-slate-800 border-slate-600 shadow-lg card-dark">
+                <Card className="bg-card border-border shadow-lg card-dark">
                   <CardContent className="p-4 flex items-center gap-3">
                     <RotateCcw className="h-6 w-6 text-almona-orange" />
                     <div>
-                      <h4 className="typography-h4 font-medium text-white">{copy("Technical Support")}</h4>
-                      <p className="text-sm text-gray-300">{copy("Contact us to confirm service availability")}</p>
+                      <h4 className="typography-h4 font-medium text-foreground">{copy("Technical Support")}</h4>
+                      <p className="text-sm text-foreground">{copy("Contact us to confirm service availability")}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -619,7 +619,7 @@ const Shop = () => {
             <Tabs value={activeTab} onValueChange={useCallback((value: string) => setActiveTab(value as ProductTab), [])}>
               {/* Header with tabs and controls */}
               <div 
-                className="bg-almona-darker p-4 lg:p-6 rounded-lg border border-almona-light/20 mb-8 fade-in-up"
+                className="bg-card p-4 lg:p-6 rounded-lg border border-border/20 mb-8 fade-in-up"
                 style={{ animationDelay: '0.3s' }}
               >
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
@@ -632,7 +632,7 @@ const Shop = () => {
                   </h2>
 
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-                    <div className="flex bg-almona-dark rounded-lg p-1">
+                    <div className="flex bg-background rounded-lg p-1">
                       <Button
                         onClick={() => setViewMode('grid')}
                         className={`h-8 w-8 p-0 ${viewMode === 'grid' ? 'bg-almona-light/20' : ''}`}
@@ -651,10 +651,10 @@ const Shop = () => {
                       value={filters.sortBy} 
                       onValueChange={(value) => handleFilterChange('sortBy', value as ShopFilters['sortBy'])}
                     >
-                      <SelectTrigger className="w-full sm:w-[180px] bg-almona-dark border-almona-light/30">
+                      <SelectTrigger className="w-full sm:w-[180px] bg-background border-border/30">
                         <SelectValue placeholder="Sort by" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-800 border-slate-600">
+                      <SelectContent className="bg-card border-border">
                         <SelectItem value="featured" className="btn-secondary">{copy("Featured")}</SelectItem>
                         <SelectItem value="newest" className="btn-secondary">{copy("Newest")}</SelectItem>
                         <SelectItem value="price-low" className="btn-secondary">{copy("Price: Low to High")}</SelectItem>
@@ -668,16 +668,16 @@ const Shop = () => {
 
                 <div className="flex flex-col lg:flex-row gap-4">
                   <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
                       placeholder="Search machinery, parts, accessories..."
                       value={filters.searchTerm}
                       onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-                      className="pl-10 bg-almona-dark border-almona-light/30"
+                      className="pl-10 bg-background border-border/30"
                     />
                   </div>
 
-                  <TabsList className="bg-almona-dark border border-almona-light/20 w-full lg:w-auto">
+                  <TabsList className="bg-background border border-border/20 w-full lg:w-auto">
                     {menuData.map((menu) => (
                       <TabsTrigger key={menu.key} value={menu.key} className="flex items-center gap-2 flex-1 lg:flex-none">
                         {menu.icon}

@@ -35,7 +35,7 @@ export const Step3Size: React.FC<Step3SizeProps> = ({
             type="number"
             value={width}
             onChange={(e) => onWidthChange(Number(e.target.value))}
-            className="bg-gray-800 border-gray-700"
+            className="bg-card border-border"
             min={500}
             max={5000}
           />
@@ -47,15 +47,15 @@ export const Step3Size: React.FC<Step3SizeProps> = ({
             type="number"
             value={height}
             onChange={(e) => onHeightChange(Number(e.target.value))}
-            className="bg-gray-800 border-gray-700"
+            className="bg-card border-border"
             min={500}
             max={5000}
           />
         </div>
       </div>
-      <Card className="bg-gray-800 border-gray-700">
+      <Card className="bg-card border-border">
         <CardContent className="p-4">
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-muted-foreground">
             Area: {((width * height) / 1_000_000).toFixed(2)} m²
           </div>
         </CardContent>

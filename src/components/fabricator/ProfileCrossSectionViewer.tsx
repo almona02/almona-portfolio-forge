@@ -96,8 +96,8 @@ export const ProfileCrossSectionViewer: React.FC<ProfileCrossSectionViewerProps>
 
   if (!imageUrl) {
     return (
-      <Card className="bg-gray-800/50 border-gray-700">
-        <CardContent className="p-8 text-center text-gray-400">
+      <Card className="bg-card/50 border-border">
+        <CardContent className="p-8 text-center text-muted-foreground">
           <p>No image uploaded</p>
           <p className="text-sm mt-2">Upload a cross-section image to begin</p>
         </CardContent>
@@ -106,7 +106,7 @@ export const ProfileCrossSectionViewer: React.FC<ProfileCrossSectionViewerProps>
   }
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700">
+    <Card className="bg-card/50 border-border">
       <CardContent className="p-4">
         {/* Controls */}
         {!readonly && (
@@ -115,7 +115,7 @@ export const ProfileCrossSectionViewer: React.FC<ProfileCrossSectionViewerProps>
               variant="outline"
               size="sm"
               onClick={() => setAnnotationMode('point')}
-              className={`text-gray-300 border-gray-600 hover:bg-gray-700 ${annotationMode === 'point' ? 'bg-blue-500/20 border-blue-500' : ''}`}
+              className={`text-foreground border-border hover:bg-muted ${annotationMode === 'point' ? 'bg-blue-500/20 border-blue-500' : ''}`}
             >
               Add Point
             </Button>
@@ -123,7 +123,7 @@ export const ProfileCrossSectionViewer: React.FC<ProfileCrossSectionViewerProps>
               variant="outline"
               size="sm"
               onClick={() => setAnnotationMode('box')}
-              className={`text-gray-300 border-gray-600 hover:bg-gray-700 ${annotationMode === 'box' ? 'bg-blue-500/20 border-blue-500' : ''}`}
+              className={`text-foreground border-border hover:bg-muted ${annotationMode === 'box' ? 'bg-blue-500/20 border-blue-500' : ''}`}
             >
               Add Box
             </Button>
@@ -132,7 +132,7 @@ export const ProfileCrossSectionViewer: React.FC<ProfileCrossSectionViewerProps>
                 variant="ghost"
                 size="sm"
                 onClick={() => setAnnotationMode(null)}
-                className="text-gray-400"
+                className="text-muted-foreground"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -146,7 +146,7 @@ export const ProfileCrossSectionViewer: React.FC<ProfileCrossSectionViewerProps>
               variant="outline"
               size="sm"
               onClick={handleZoomIn}
-              className="text-gray-300 border-gray-600 hover:bg-gray-700"
+              className="text-foreground border-border hover:bg-muted"
             >
               <ZoomIn className="h-4 w-4" />
             </Button>
@@ -154,7 +154,7 @@ export const ProfileCrossSectionViewer: React.FC<ProfileCrossSectionViewerProps>
               variant="outline"
               size="sm"
               onClick={handleZoomOut}
-              className="text-gray-300 border-gray-600 hover:bg-gray-700"
+              className="text-foreground border-border hover:bg-muted"
             >
               <ZoomOut className="h-4 w-4" />
             </Button>
@@ -162,12 +162,12 @@ export const ProfileCrossSectionViewer: React.FC<ProfileCrossSectionViewerProps>
               variant="outline"
               size="sm"
               onClick={handleReset}
-              className="text-gray-300 border-gray-600 hover:bg-gray-700"
+              className="text-foreground border-border hover:bg-muted"
             >
               <RotateCw className="h-4 w-4 mr-1" />
               Reset
             </Button>
-            <span className="text-xs text-gray-400 ml-2">
+            <span className="text-xs text-muted-foreground ml-2">
               Zoom: {(zoom * 100).toFixed(0)}%
             </span>
           </div>
@@ -176,7 +176,7 @@ export const ProfileCrossSectionViewer: React.FC<ProfileCrossSectionViewerProps>
         {/* Image Viewer */}
         <div
           ref={canvasRef}
-          className="relative bg-gray-900 border border-gray-700 rounded overflow-hidden"
+          className="relative bg-background border border-border rounded overflow-hidden"
           style={{ width: '100%', height: '500px', cursor: annotationMode ? 'crosshair' : 'move' }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -250,15 +250,15 @@ export const ProfileCrossSectionViewer: React.FC<ProfileCrossSectionViewerProps>
 
         {/* Annotation List */}
         {annotations.length > 0 && (
-          <div className="mt-4 p-3 bg-gray-900 rounded border border-gray-700">
-            <p className="text-xs text-gray-400 mb-2">Annotations ({annotations.length})</p>
+          <div className="mt-4 p-3 bg-background rounded border border-border">
+            <p className="text-xs text-muted-foreground mb-2">Annotations ({annotations.length})</p>
             <div className="space-y-1">
               {annotations.map((annotation) => (
                 <div
                   key={annotation.id}
-                  className="flex items-center justify-between p-2 bg-gray-800 rounded text-xs"
+                  className="flex items-center justify-between p-2 bg-card rounded text-xs"
                 >
-                  <span className="text-gray-300">
+                  <span className="text-foreground">
                     {annotation.type} at ({annotation.x.toFixed(0)}, {annotation.y.toFixed(0)})
                   </span>
                   {!readonly && onAnnotationRemove && (
@@ -266,7 +266,7 @@ export const ProfileCrossSectionViewer: React.FC<ProfileCrossSectionViewerProps>
                       variant="ghost"
                       size="sm"
                       onClick={() => onAnnotationRemove(annotation.id)}
-                      className="h-6 w-6 p-0 text-red-400 hover:text-red-300"
+                      className="h-6 w-6 p-0 text-destructive hover:text-destructive"
                     >
                       <X className="h-3 w-3" />
                     </Button>

@@ -257,19 +257,19 @@ export const HardwarePalette: React.FC<HardwarePaletteProps> = ({
   const getCategoryColor = (category: HardwareItem['category']) => {
     switch (category) {
       case 'handle':
-        return 'bg-green-900/20 border-green-500/30 text-green-400';
+        return 'bg-green-900/20 border-green-500/30 text-success';
       case 'lock':
-        return 'bg-red-900/20 border-red-500/30 text-red-400';
+        return 'bg-red-900/20 border-red-500/30 text-destructive';
       case 'hinge':
-        return 'bg-blue-900/20 border-blue-500/30 text-blue-400';
+        return 'bg-blue-900/20 border-blue-500/30 text-info';
       case 'roller':
-        return 'bg-amber-900/20 border-amber-500/30 text-amber-400';
+        return 'bg-amber-900/20 border-amber-500/30 text-warning';
       case 'gasket':
-        return 'bg-amber-900/20 border-amber-500/30 text-amber-400';
+        return 'bg-amber-900/20 border-amber-500/30 text-warning';
       case 'reinforcement':
-        return 'bg-gray-900/20 border-gray-500/30 text-gray-400';
+        return 'bg-background/20 border-border/30 text-muted-foreground';
       default:
-        return 'bg-gray-900/20 border-gray-500/30 text-gray-400';
+        return 'bg-background/20 border-border/30 text-muted-foreground';
     }
   };
 
@@ -283,8 +283,8 @@ export const HardwarePalette: React.FC<HardwarePaletteProps> = ({
     <div className={cn('flex flex-col h-full', className)}>
       <Card className="card-glass-dark flex-1 flex flex-col">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-amber-200">
-            <Package className="h-4 w-4 text-amber-500" />
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-warning">
+            <Package className="h-4 w-4 text-warning" />
             {t('hardware_palette.title', 'Hardware Palette')}
           </CardTitle>
         </CardHeader>
@@ -293,13 +293,13 @@ export const HardwarePalette: React.FC<HardwarePaletteProps> = ({
           {/* Search */}
           {showSearch && (
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-600/70" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-warning/70" />
               <Input
                 type="text"
                 placeholder={t('hardware_palette.search', 'Search hardware...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 border-amber-600/30 bg-gray-900/50 text-amber-200 placeholder:text-amber-600/50 text-sm"
+                className="pl-9 border-amber-600/30 bg-background/50 text-warning placeholder:text-warning/50 text-sm"
               />
             </div>
           )}
@@ -316,7 +316,7 @@ export const HardwarePalette: React.FC<HardwarePaletteProps> = ({
                     <div className={cn('p-1 rounded', getCategoryColor(category as HardwareItem['category']))}>
                       {config.icon}
                     </div>
-                    <h4 className="text-xs font-semibold text-amber-500/80 uppercase tracking-wide">
+                    <h4 className="text-xs font-semibold text-warning/80 uppercase tracking-wide">
                       {config.label}
                     </h4>
                   </div>
@@ -329,25 +329,25 @@ export const HardwarePalette: React.FC<HardwarePaletteProps> = ({
                         onClick={() => handleAddHardware(item)}
                         className={cn(
                           'w-full justify-start text-left h-auto py-2 px-3',
-                          'border border-amber-600/20 bg-gray-900/30',
+                          'border border-amber-600/20 bg-background/30',
                           'hover:bg-amber-900/20 hover:border-amber-500/40',
-                          'text-xs text-amber-200'
+                          'text-xs text-warning'
                         )}
                       >
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                           {item.icon && (
-                            <div className="flex-shrink-0 text-amber-500">{item.icon}</div>
+                            <div className="flex-shrink-0 text-warning">{item.icon}</div>
                           )}
                           <div className="flex-1 min-w-0">
                             <div className="font-medium truncate">{item.name}</div>
                             {item.position && (
-                              <div className="text-[10px] text-amber-600/70 truncate">
+                              <div className="text-[10px] text-warning/70 truncate">
                                 {item.position}
                               </div>
                             )}
                           </div>
                           {item.quantity > 1 && (
-                            <Badge variant="outline" className="text-[10px] border-amber-600/30 text-amber-400">
+                            <Badge variant="outline" className="text-[10px] border-amber-600/30 text-warning">
                               {item.quantity}x
                             </Badge>
                           )}
@@ -361,8 +361,8 @@ export const HardwarePalette: React.FC<HardwarePaletteProps> = ({
 
             {filteredHardware.length === 0 && (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <Package className="h-8 w-8 text-amber-600/50 mb-2" />
-                <p className="text-xs text-amber-600/70">
+                <Package className="h-8 w-8 text-warning/50 mb-2" />
+                <p className="text-xs text-warning/70">
                   {t('hardware_palette.no_hardware', 'No hardware found')}
                 </p>
               </div>

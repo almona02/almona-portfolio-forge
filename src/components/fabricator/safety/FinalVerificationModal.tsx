@@ -184,13 +184,13 @@ export const FinalVerificationModal: React.FC<FinalVerificationModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-2xl bg-gray-900 text-white border-gray-700 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl bg-background text-foreground border-border max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-2xl">
-            <FileSignature className="h-7 w-7 text-green-400" />
+            <FileSignature className="h-7 w-7 text-success" />
             Final Verification - Step 3 of 3
           </DialogTitle>
-          <DialogDescription className="text-gray-400 text-base">
+          <DialogDescription className="text-muted-foreground text-base">
             Provide your digital signature to confirm you have reviewed and approved this G-code for production. This
             action is logged and cannot be undone.
           </DialogDescription>
@@ -198,29 +198,29 @@ export const FinalVerificationModal: React.FC<FinalVerificationModalProps> = ({
 
         <div className="space-y-6 py-4">
           {/* Job Information */}
-          <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+          <div className="p-4 bg-card/50 rounded-lg border border-border/50">
             <div className="grid grid-cols-2 gap-4 text-sm mb-4">
               <div>
-                <span className="text-gray-400">Job ID:</span>
-                <span className="ml-2 font-mono text-gray-300">{jobId}</span>
+                <span className="text-muted-foreground">Job ID:</span>
+                <span className="ml-2 font-mono text-foreground">{jobId}</span>
               </div>
               <div>
-                <span className="text-gray-400">Machine:</span>
-                <span className="ml-2 font-semibold text-gray-300">{machineType}</span>
+                <span className="text-muted-foreground">Machine:</span>
+                <span className="ml-2 font-semibold text-foreground">{machineType}</span>
               </div>
             </div>
-            <div className="pt-4 border-t border-gray-700/50">
-              <span className="text-gray-400 text-xs">G-code Hash (SHA-256):</span>
-              <p className="font-mono text-xs text-gray-300 break-all mt-1">{gcodeHashBefore}</p>
+            <div className="pt-4 border-t border-border/50">
+              <span className="text-muted-foreground text-xs">G-code Hash (SHA-256):</span>
+              <p className="font-mono text-xs text-foreground break-all mt-1">{gcodeHashBefore}</p>
             </div>
           </div>
 
           {/* Collision Check Status */}
           {!collisionCheckPassed && (
             <Alert className="bg-red-500/10 border-red-500/30">
-              <AlertTriangle className="h-5 w-5 text-red-400" />
+              <AlertTriangle className="h-5 w-5 text-destructive" />
               <AlertDescription>
-                <p className="font-semibold text-red-400">
+                <p className="font-semibold text-destructive">
                   Collision check failed. Cannot proceed to final verification.
                 </p>
               </AlertDescription>
@@ -229,20 +229,20 @@ export const FinalVerificationModal: React.FC<FinalVerificationModalProps> = ({
 
           {collisionCheckPassed && (
             <Alert className="bg-green-500/10 border-green-500/30">
-              <CheckCircle2 className="h-5 w-5 text-green-400" />
+              <CheckCircle2 className="h-5 w-5 text-success" />
               <AlertDescription>
-                <p className="font-semibold text-green-400">All safety checks passed. Ready for final verification.</p>
+                <p className="font-semibold text-success">All safety checks passed. Ready for final verification.</p>
               </AlertDescription>
             </Alert>
           )}
 
           {/* Terms and Conditions */}
-          <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
-            <h3 className="font-semibold text-gray-300 mb-3 flex items-center gap-2">
-              <Shield className="h-5 w-5 text-amber-400" />
+          <div className="p-4 bg-card/50 rounded-lg border border-border/50">
+            <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+              <Shield className="h-5 w-5 text-warning" />
               Terms and Conditions
             </h3>
-            <div className="space-y-2 text-sm text-gray-400">
+            <div className="space-y-2 text-sm text-muted-foreground">
               <p>
                 By signing below, I confirm that I have:
               </p>
@@ -253,7 +253,7 @@ export const FinalVerificationModal: React.FC<FinalVerificationModalProps> = ({
                 <li>Verified the G-code is correct for the selected machine</li>
                 <li>Understood that this action will generate production G-code</li>
               </ul>
-              <p className="pt-2 text-amber-400 font-medium">
+              <p className="pt-2 text-warning font-medium">
                 I accept full responsibility for the safety and accuracy of this G-code.
               </p>
             </div>
@@ -261,8 +261,8 @@ export const FinalVerificationModal: React.FC<FinalVerificationModalProps> = ({
 
           {/* Digital Signature Input */}
           <div className="space-y-3">
-            <Label htmlFor="signature-name" className="text-gray-300 font-semibold">
-              Digital Signature <span className="text-red-400">*</span>
+            <Label htmlFor="signature-name" className="text-foreground font-semibold">
+              Digital Signature <span className="text-destructive">*</span>
             </Label>
             <Input
               id="signature-name"
@@ -270,45 +270,45 @@ export const FinalVerificationModal: React.FC<FinalVerificationModalProps> = ({
               placeholder="Enter your full name to sign"
               value={signatureName}
               onChange={(e) => setSignatureName(e.target.value)}
-              className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-500 focus:border-amber-400"
+              className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-amber-400"
               disabled={isProcessing}
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Your signature will be cryptographically hashed and logged with this G-code export.
             </p>
           </div>
 
           {/* Acceptance Checkbox */}
-          <div className="flex items-start space-x-3 p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+          <div className="flex items-start space-x-3 p-4 bg-card/50 rounded-lg border border-border/50">
             <input
               type="checkbox"
               id="accept-terms"
               checked={hasAcceptedTerms}
               onChange={(e) => setHasAcceptedTerms(e.target.checked)}
-              className="mt-1 w-4 h-4 rounded border-gray-600 bg-gray-700 text-amber-500 focus:ring-amber-500 focus:ring-offset-gray-800"
+              className="mt-1 w-4 h-4 rounded border-border bg-muted text-warning focus:ring-amber-500 focus:ring-offset-gray-800"
               disabled={isProcessing}
             />
-            <label htmlFor="accept-terms" className="text-sm text-gray-300 cursor-pointer select-none">
+            <label htmlFor="accept-terms" className="text-sm text-foreground cursor-pointer select-none">
               I have read and accept the terms and conditions above. I understand that this action is final and will
               generate production G-code.
             </label>
           </div>
 
           {/* Progress Indicator */}
-          <div className="flex items-center justify-center gap-2 pt-4 border-t border-gray-700/50">
+          <div className="flex items-center justify-center gap-2 pt-4 border-t border-border/50">
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-full bg-green-400"></div>
-              <span className="text-sm font-medium text-gray-400">Step 1 Complete</span>
+              <span className="text-sm font-medium text-muted-foreground">Step 1 Complete</span>
             </div>
-            <div className="w-12 h-0.5 bg-gray-700"></div>
+            <div className="w-12 h-0.5 bg-muted"></div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-full bg-green-400"></div>
-              <span className="text-sm font-medium text-gray-400">Step 2 Complete</span>
+              <span className="text-sm font-medium text-muted-foreground">Step 2 Complete</span>
             </div>
-            <div className="w-12 h-0.5 bg-gray-700"></div>
+            <div className="w-12 h-0.5 bg-muted"></div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-full bg-green-400"></div>
-              <span className="text-sm font-medium text-green-400">Step 3 of 3</span>
+              <span className="text-sm font-medium text-success">Step 3 of 3</span>
             </div>
           </div>
         </div>
@@ -318,7 +318,7 @@ export const FinalVerificationModal: React.FC<FinalVerificationModalProps> = ({
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isProcessing}
-            className="text-gray-300 border-gray-600 hover:bg-gray-800"
+            className="text-foreground border-border hover:bg-card"
           >
             <X className="h-4 w-4 mr-2" />
             Cancel

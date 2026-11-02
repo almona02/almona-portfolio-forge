@@ -59,7 +59,7 @@ export const OptimizedProductCard = memo<OptimizedProductCardProps>(({
 
   return (
     <Card className={`group relative transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/20 ${
-      isSelected ? 'ring-2 ring-amber-500 bg-amber-500/5' : 'hover:bg-gray-800/50'
+      isSelected ? 'ring-2 ring-amber-500 bg-amber-500/5' : 'hover:bg-card/50'
     }`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
@@ -99,7 +99,7 @@ export const OptimizedProductCard = memo<OptimizedProductCardProps>(({
         />
         
         <div className="space-y-2">
-          <p className="text-sm text-gray-300 leading-relaxed">
+          <p className="text-sm text-foreground leading-relaxed">
             {showFullDescription ? machine.description : truncatedDescription}
             {machine.description.length > 120 && (
               <button
@@ -113,20 +113,20 @@ export const OptimizedProductCard = memo<OptimizedProductCardProps>(({
           
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div>
-              <span className="text-gray-400">Power:</span>
-              <span className="ml-1 text-white">{machine.powerSpec.consumption}</span>
+              <span className="text-muted-foreground">Power:</span>
+              <span className="ml-1 text-foreground">{machine.powerSpec.consumption}</span>
             </div>
             <div>
-              <span className="text-gray-400">Type:</span>
-              <span className="ml-1 text-white">{machine.type}</span>
+              <span className="text-muted-foreground">Type:</span>
+              <span className="ml-1 text-foreground">{machine.type}</span>
             </div>
             <div>
-              <span className="text-gray-400">Category:</span>
-              <span className="ml-1 text-white">{machine.category}</span>
+              <span className="text-muted-foreground">Category:</span>
+              <span className="ml-1 text-foreground">{machine.category}</span>
             </div>
             <div>
-              <span className="text-gray-400">Air:</span>
-              <span className="ml-1 text-white">{machine.airSpec?.consumption || 'N/A'}</span>
+              <span className="text-muted-foreground">Air:</span>
+              <span className="ml-1 text-foreground">{machine.airSpec?.consumption || 'N/A'}</span>
             </div>
           </div>
         </div>

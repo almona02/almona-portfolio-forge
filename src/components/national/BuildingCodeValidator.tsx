@@ -20,18 +20,18 @@ export const BuildingCodeValidator = () => {
   };
 
   return (
-    <Card className="bg-slate-800/50 border-slate-700 /50 overflow-hidden card-dark">
+    <Card className="bg-card/50 border-border /50 overflow-hidden card-dark">
       {/* Top accent bar */}
       <div className="h-1 bg-gradient-to-r from-amber-500 via-amber-500 to-amber-500" />
       
       <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-3 text-white">
+        <CardTitle className="flex items-center gap-3 text-foreground">
           <div className="btn-primary">
             <Shield className="w-5 h-5 text-amber-400" />
           </div>
           <div>
             <span className="block">HBRC Building Code Validator</span>
-            <span className="text-xs text-slate-500 font-normal">EN 12210 Wind Load Compliance</span>
+            <span className="text-xs text-muted-foreground font-normal">EN 12210 Wind Load Compliance</span>
           </div>
         </CardTitle>
       </CardHeader>
@@ -39,7 +39,7 @@ export const BuildingCodeValidator = () => {
       <CardContent className="space-y-5">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="typography-label text-slate-400 text-xs uppercase tracking-wide">Region (Wind Load Zone)</Label>
+            <Label className="typography-label text-muted-foreground text-xs uppercase tracking-wide">Region (Wind Load Zone)</Label>
             <Select value={region} onValueChange={setRegion}>
               <SelectTrigger>
                 <SelectValue placeholder="Select Region" />
@@ -54,30 +54,30 @@ export const BuildingCodeValidator = () => {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label className="typography-label text-slate-400 text-xs uppercase tracking-wide">Profile Height (m)</Label>
+            <Label className="typography-label text-muted-foreground text-xs uppercase tracking-wide">Profile Height (m)</Label>
             <Input 
               type="number" 
               placeholder="2.1" 
               defaultValue="2.1"
-              className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-600"
+              className="bg-background/50 border-border text-foreground placeholder:text-muted-foreground"
             />
           </div>
           <div className="space-y-2">
-            <Label className="typography-label text-slate-400 text-xs uppercase tracking-wide">Moment of Inertia (Ix cm⁴)</Label>
+            <Label className="typography-label text-muted-foreground text-xs uppercase tracking-wide">Moment of Inertia (Ix cm⁴)</Label>
             <Input 
               type="number" 
               placeholder="12.5" 
               defaultValue="12.5"
-              className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-600"
+              className="bg-background/50 border-border text-foreground placeholder:text-muted-foreground"
             />
           </div>
           <div className="space-y-2">
-            <Label className="typography-label text-slate-400 text-xs uppercase tracking-wide">Wind Load (Pa)</Label>
+            <Label className="typography-label text-muted-foreground text-xs uppercase tracking-wide">Wind Load (Pa)</Label>
             <Input 
               type="number" 
               disabled 
               value={region === 'alexandria' ? '1200' : region === 'sinai' ? '1500' : '800'} 
-              className="bg-slate-950/50 border-slate-700 text-slate-400"
+              className="bg-background/50 border-border text-muted-foreground"
             />
           </div>
         </div>
@@ -104,7 +104,7 @@ export const BuildingCodeValidator = () => {
           <Alert className="bg-emerald-500/10 border-emerald-500/30">
             <CheckCircle2 className="h-4 w-4 status-valid" />
             <AlertTitle className="font-semibold status-valid">Compliant Design ✓</AlertTitle>
-            <AlertDescription className="text-emerald-300/80 text-sm">
+            <AlertDescription className="text-success/80 text-sm">
               This configuration meets <span className="font-semibold">HBRC</span> and <span className="font-semibold">EN 12210</span> standards for wind load resistance in {region === 'cairo' ? 'Cairo' : region === 'alexandria' ? 'Alexandria' : region === 'aswan' ? 'Aswan' : region === 'delta' ? 'Delta Region' : 'Sinai'}.
             </AlertDescription>
           </Alert>
@@ -112,17 +112,17 @@ export const BuildingCodeValidator = () => {
         
         {status === 'unsafe' && (
           <Alert className="bg-red-500/10 border-red-500/30">
-            <AlertTriangle className="h-4 w-4 text-red-400" />
-            <AlertTitle className="text-red-400 font-semibold">Non-Compliant Design</AlertTitle>
-            <AlertDescription className="text-red-300/80 text-sm">
+            <AlertTriangle className="h-4 w-4 text-destructive" />
+            <AlertTitle className="text-destructive font-semibold">Non-Compliant Design</AlertTitle>
+            <AlertDescription className="text-destructive/80 text-sm">
               Structural integrity insufficient for the selected wind zone. Increase profile Ix value.
             </AlertDescription>
           </Alert>
         )}
 
         {/* Compliance Info */}
-        <div className="pt-4 border-t border-slate-700/50">
-          <div className="flex items-center justify-between text-xs text-slate-500">
+        <div className="pt-4 border-t border-border/50">
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Egyptian Building Code (HBRC 2018)</span>
             <span className="text-amber-400">EN 12210 Class C3</span>
           </div>

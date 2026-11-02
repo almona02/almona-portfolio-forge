@@ -134,12 +134,12 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
     const colors: Record<ExportTemplate['type'], string> = {
       basic: 'bg-blue-100 text-blue-800',
       premium: 'bg-amber-100 text-amber-800',
-      minimal: 'bg-gray-100 text-gray-800',
+      minimal: 'bg-muted text-foreground',
       'client-facing': 'bg-green-100 text-green-800',
       workshop: 'bg-amber-100 text-amber-800',
       'multi-language': 'bg-cyan-100 text-cyan-800'
     };
-    return colors[type] || 'bg-gray-100 text-gray-800';
+    return colors[type] || 'bg-muted text-foreground';
   };
 
   const getFormatIcon = (_format: ExportFormat) => {

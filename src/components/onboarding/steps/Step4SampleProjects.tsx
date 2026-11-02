@@ -37,14 +37,14 @@ export const Step4SampleProjects: React.FC<Step4SampleProjectsProps> = ({
     <div className="space-y-6">
       <div>
         <h3 className="typography-h3 text-lg mb-4">Sample Projects</h3>
-        <p className="text-gray-400 mb-6">Import a sample project to explore the system (optional)</p>
+        <p className="text-muted-foreground mb-6">Import a sample project to explore the system (optional)</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {SAMPLE_PROJECTS.map((project) => (
           <Card
             key={project.id}
-            className={`bg-gray-800 border-gray-700 cursor-pointer transition-colors ${
+            className={`bg-card border-border cursor-pointer transition-colors ${
               data.sampleProject === project.id ? 'border-blue-600' : ''
             }`}
             onClick={() => importProject(project.id)}
@@ -53,9 +53,9 @@ export const Step4SampleProjects: React.FC<Step4SampleProjectsProps> = ({
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <div className="font-semibold">{project.name}</div>
-                  <div className="text-sm text-gray-400 mt-1">{project.description}</div>
+                  <div className="text-sm text-muted-foreground mt-1">{project.description}</div>
                 </div>
-                <Download className="h-5 w-5 text-gray-400" />
+                <Download className="h-5 w-5 text-muted-foreground" />
               </div>
             </CardContent>
           </Card>
@@ -66,7 +66,7 @@ export const Step4SampleProjects: React.FC<Step4SampleProjectsProps> = ({
         <Button
           variant="outline"
           onClick={() => onUpdate({ sampleProject: null })}
-          className="bg-gray-800 border-gray-700"
+          className="bg-card border-border"
         >
           Skip - I'll create my own project
         </Button>

@@ -19,7 +19,7 @@ export const FabricationStageCard = ({
 }: FabricationStageCardProps) => (
   <LazyMotionDiv 
     whileHover={{ y: -5 }}
-    className="bg-almona-darker/70 border border-almona-light/20 rounded-lg overflow-hidden"
+    className="bg-card/70 border border-border/20 rounded-lg overflow-hidden"
   >
     <CardHeader className="pb-2">
       <div className="flex items-center gap-3">
@@ -33,7 +33,7 @@ export const FabricationStageCard = ({
       </Badge>
     </CardHeader>
     <CardContent>
-      <p className="text-gray-400 text-sm mb-3">{description}</p>
+      <p className="text-muted-foreground text-sm mb-3">{description}</p>
       <ul className="space-y-2">
         {keyPoints.map((point, i) => (
           <li key={i} className="flex items-start gap-2 text-sm">

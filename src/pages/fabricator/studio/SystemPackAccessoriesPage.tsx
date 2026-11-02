@@ -123,7 +123,7 @@ export default function SystemPackAccessoriesPage() {
           <Wrench className="w-6 h-6" />
           System pack accessories
         </h1>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-muted-foreground">
           Configure hardware / accessories kits per profile system pack (rollers, handles, locks,
           corner keys). Positive unit prices become workshop admin overrides in manufacturing BOM.
         </p>
@@ -134,7 +134,7 @@ export default function SystemPackAccessoriesPage() {
           >
             ← Profiles library
           </Link>
-          <span className="text-slate-600">·</span>
+          <span className="text-muted-foreground">·</span>
           <Link
             to="/settings?tab=manufacturing"
             className="text-amber-400/90 hover:text-amber-300 underline-offset-2 hover:underline"
@@ -144,10 +144,10 @@ export default function SystemPackAccessoriesPage() {
         </div>
       </header>
 
-      <div className="rounded-lg border border-slate-700/60 bg-slate-900/40 p-4 space-y-3">
+      <div className="rounded-lg border border-border/60 bg-background/40 p-4 space-y-3">
         <Label className="text-amber-100/90">System pack</Label>
         <Select value={packId} onValueChange={setPackId}>
-          <SelectTrigger className="bg-slate-950/60 border-slate-700" data-testid="accessories-pack-select">
+          <SelectTrigger className="bg-background/60 border-border" data-testid="accessories-pack-select">
             <SelectValue placeholder="Select a system pack" />
           </SelectTrigger>
           <SelectContent>
@@ -160,12 +160,12 @@ export default function SystemPackAccessoriesPage() {
           </SelectContent>
         </Select>
         {selected && (
-          <p className="text-xs text-slate-500 font-mono">{selected.id}</p>
+          <p className="text-xs text-muted-foreground font-mono">{selected.id}</p>
         )}
       </div>
 
       {!selected || mergedKits.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-700 p-10 text-center text-slate-500">
+        <div className="rounded-lg border border-dashed border-border p-10 text-center text-muted-foreground">
           <Package className="h-10 w-10 mx-auto mb-3 opacity-50" />
           <p>No hardware_kits defined on this pack.</p>
           <p className="text-xs mt-2">Catalogue packs like CALUMINIUM PS include rollers, locks, and corner keys.</p>
@@ -181,17 +181,17 @@ export default function SystemPackAccessoriesPage() {
             return (
               <li
                 key={id}
-                className="rounded-lg border border-slate-700/50 bg-slate-950/40 p-4 space-y-3"
+                className="rounded-lg border border-border/50 bg-background/40 p-4 space-y-3"
                 data-testid={`accessories-kit-${id}`}
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
                     <div className="font-medium text-amber-100">{kit.name || id}</div>
-                    <div className="text-xs font-mono text-slate-500 mt-0.5">{id}</div>
+                    <div className="text-xs font-mono text-muted-foreground mt-0.5">{id}</div>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {kit.type && (
-                      <Badge variant="outline" className="border-slate-600 text-slate-300">
+                      <Badge variant="outline" className="border-border text-foreground">
                         {String(kit.type)}
                       </Badge>
                     )}
@@ -201,7 +201,7 @@ export default function SystemPackAccessoriesPage() {
                       </Badge>
                     )}
                     {leg != null && (
-                      <Badge variant="outline" className="border-slate-600 text-slate-300">
+                      <Badge variant="outline" className="border-border text-foreground">
                         {leg} mm leg
                       </Badge>
                     )}
@@ -220,7 +220,7 @@ export default function SystemPackAccessoriesPage() {
 
                 <div className="flex flex-wrap items-end gap-3">
                   <div className="space-y-1.5 min-w-[140px]">
-                    <Label htmlFor={`price-${id}`} className="text-xs text-slate-400">
+                    <Label htmlFor={`price-${id}`} className="text-xs text-muted-foreground">
                       Unit price (EGP)
                     </Label>
                     <Input
@@ -232,7 +232,7 @@ export default function SystemPackAccessoriesPage() {
                       onChange={(e) =>
                         setDraftPrices((prev) => ({ ...prev, [id]: e.target.value }))
                       }
-                      className="bg-slate-900 border-slate-700"
+                      className="bg-background border-border"
                     />
                   </div>
                   <Button
@@ -246,7 +246,7 @@ export default function SystemPackAccessoriesPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-slate-600"
+                    className="border-border"
                     disabled={!hasOverride}
                     onClick={() => resetKit(id)}
                   >

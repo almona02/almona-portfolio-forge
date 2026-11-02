@@ -241,7 +241,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-almona-dark border-almona-light/20 text-white">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-background border-border/20 text-foreground">
             <LazyAnimatePresence mode="wait">
           {step === "market" && (
             <LazyMotionDiv
@@ -256,7 +256,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   <MapPin className="h-6 w-6 text-amber-500" />
                   Select Your Market
                 </DialogTitle>
-                <DialogDescription className="text-gray-400">
+                <DialogDescription className="text-muted-foreground">
                   Choose your region for customized aluminum machinery maintenance services
                 </DialogDescription>
               </DialogHeader>
@@ -268,22 +268,22 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${
                     selectedMarket === "egypt" 
                       ? "border-amber-500 bg-amber-500/10" 
-                      : "border-almona-light/20 hover:border-almona-light/40"
+                      : "border-border/20 hover:border-border/40"
                   }`}
                   onClick={() => handleMarketSelect("egypt")}
                 >
                   <div className="text-4xl mb-4">🇪🇬</div>
                   <h3 className="typography-h3 mb-2">Egypt Market</h3>
-                  <p className="text-gray-400 text-sm mb-4">
+                  <p className="text-muted-foreground text-sm mb-4">
                     Specialized maintenance for aluminum machinery in Egyptian industrial zones
                   </p>
-                  <div className="space-y-1 text-xs text-gray-400">
+                  <div className="space-y-1 text-xs text-muted-foreground">
                     <div className="flex items-center">
                       <Shield className="h-3 w-3 mr-1  status-valid" />
                       Local Egyptian technicians
                     </div>
                     <div className="flex items-center">
-                      <Wrench className="h-3 w-3 mr-1 text-blue-500" />
+                      <Wrench className="h-3 w-3 mr-1 text-info" />
                       Arabic technical support
                     </div>
                     <div className="flex items-center">
@@ -299,22 +299,22 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${
                     selectedMarket === "turkey" 
                       ? "border-amber-500 bg-amber-500/10" 
-                      : "border-almona-light/20 hover:border-almona-light/40"
+                      : "border-border/20 hover:border-border/40"
                   }`}
                   onClick={() => handleMarketSelect("turkey")}
                 >
                   <div className="text-4xl mb-4">🇹🇷</div>
                   <h3 className="typography-h3 mb-2">Turkey Market</h3>
-                  <p className="text-gray-400 text-sm mb-4">
+                  <p className="text-muted-foreground text-sm mb-4">
                     Premium maintenance services for Turkish aluminum machinery industry
                   </p>
-                  <div className="space-y-1 text-xs text-gray-400">
+                  <div className="space-y-1 text-xs text-muted-foreground">
                     <div className="flex items-center">
                       <Shield className="h-3 w-3 mr-1  status-valid" />
                       Turkish-speaking engineers
                     </div>
                     <div className="flex items-center">
-                      <Wrench className="h-3 w-3 mr-1 text-blue-500" />
+                      <Wrench className="h-3 w-3 mr-1 text-info" />
                       TRY pricing & local support
                     </div>
                     <div className="flex items-center">
@@ -339,7 +339,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   <Calendar className="h-6 w-6 text-amber-500" />
                   {selectedMarket === "egypt" ? "Egypt" : "Turkey"} Maintenance Plans
                 </DialogTitle>
-                <DialogDescription className="text-gray-400">
+                <DialogDescription className="text-muted-foreground">
                   Specialized aluminum machinery maintenance for {selectedMarket === "egypt" ? "Egyptian" : "Turkish"} market
                 </DialogDescription>
               </DialogHeader>
@@ -357,7 +357,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                         className={`relative p-4 rounded-lg border-2 transition-all duration-300 ${
                           selectedContract?.id === contract.id
                             ? "border-amber-500 bg-amber-500/10"
-                            : "border-almona-light/20 hover:border-almona-light/40"
+                            : "border-border/20 hover:border-border/40"
                         }`}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -368,11 +368,11 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                           <p className="text-2xl font-bold text-amber-500 mt-2">
                             {formatPrice(selectedMarket === "egypt" ? contract.priceEGP : contract.priceTRY)} {getCurrencySymbol()}
                           </p>
-                          <p className="text-sm text-gray-400">{contract.frequency}</p>
-                          <p className="text-xs text-blue-400 mt-1">
+                          <p className="text-sm text-muted-foreground">{contract.frequency}</p>
+                          <p className="text-xs text-info mt-1">
                             Response: {contract.responseTime}
                           </p>
-                          <ul className="text-xs text-gray-400 mt-3 space-y-1 text-left">
+                          <ul className="text-xs text-muted-foreground mt-3 space-y-1 text-left">
                             {contract.features.map((feature, index) => (
                               <li key={index} className="flex items-start">
                                 <CheckCircle2 className="h-3 w-3  mr-1 mt-0.5 flex-shrink-0 status-valid" />
@@ -381,7 +381,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                             ))}
                           </ul>
                           {contract.warrantyExtension && (
-                            <Badge className="mt-2 bg-green-500/20 text-green-300">
+                            <Badge className="mt-2 bg-green-500/20 text-success">
                               ✓ Warranty Extension
                             </Badge>
                           )}
@@ -408,15 +408,15 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                     max="50"
                     value={machineCount}
                     onChange={(e) => setMachineCount(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="bg-almona-darker/50 border-almona-light/20"
+                    className="bg-card/50 border-border/20"
                   />
-                  <p className="text-sm text-gray-400 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Total: {formatPrice(totalPrice)} {getCurrencySymbol()} for {machineCount} machine{machineCount > 1 ? 's' : ''}
                   </p>
                 </div>
 
                 <div className="flex justify-between">
-                  <Button className="bg-transparent border hover:bg-slate-800" onClick={() => setStep("market")}>
+                  <Button className="bg-transparent border hover:bg-card" onClick={() => setStep("market")}>
                     Back
                   </Button>
                   <Button
@@ -456,11 +456,11 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                     <Input
                       id="companyName"
                       {...register("companyName", { required: "Company name is required" })}
-                      className="bg-almona-darker/50 border-almona-light/20"
+                      className="bg-card/50 border-border/20"
                       placeholder={selectedMarket === "egypt" ? "اسم الشركة" : "Şirket Adı"}
                     />
                     {errors.companyName && (
-                      <p className="text-red-500 text-sm">{errors.companyName.message}</p>
+                      <p className="text-destructive text-sm">{errors.companyName.message}</p>
                     )}
                   </div>
 
@@ -471,11 +471,11 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                     <Input
                       id="contactName"
                       {...register("contactName", { required: "Contact name is required" })}
-                      className="bg-almona-darker/50 border-almona-light/20"
+                      className="bg-card/50 border-border/20"
                       placeholder={selectedMarket === "egypt" ? "اسم المسؤول" : "Yetkili Adı"}
                     />
                     {errors.contactName && (
-                      <p className="text-red-500 text-sm">{errors.contactName.message}</p>
+                      <p className="text-destructive text-sm">{errors.contactName.message}</p>
                     )}
                   </div>
 
@@ -485,10 +485,10 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       id="email"
                       type="email"
                       {...register("email", { required: "Email is required" })}
-                      className="bg-almona-darker/50 border-almona-light/20"
+                      className="bg-card/50 border-border/20"
                     />
                     {errors.email && (
-                      <p className="text-red-500 text-sm">{errors.email.message}</p>
+                      <p className="text-destructive text-sm">{errors.email.message}</p>
                     )}
                   </div>
 
@@ -500,11 +500,11 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       id="phone"
                       type="tel"
                       {...register("phone", { required: "Phone is required" })}
-                      className="bg-almona-darker/50 border-almona-light/20"
+                      className="bg-card/50 border-border/20"
                       placeholder={selectedMarket === "egypt" ? "+20 XXX XXX XXXX" : "+90 XXX XXX XXXX"}
                     />
                     {errors.phone && (
-                      <p className="text-red-500 text-sm">{errors.phone.message}</p>
+                      <p className="text-destructive text-sm">{errors.phone.message}</p>
                     )}
                   </div>
 
@@ -517,7 +517,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       onValueChange={(value) => setValue("governorate", value)}
                       {...register("governorate", { required: "Location is required" })}
                     >
-                      <SelectTrigger className="bg-almona-darker/50 border-almona-light/20">
+                      <SelectTrigger className="bg-card/50 border-border/20">
                         <SelectValue placeholder={selectedMarket === "egypt" ? "Select Governorate" : "Select City"} />
                       </SelectTrigger>
                       <SelectContent>
@@ -529,7 +529,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       </SelectContent>
                     </Select>
                     {errors.governorate && (
-                      <p className="text-red-500 text-sm">{errors.governorate.message}</p>
+                      <p className="text-destructive text-sm">{errors.governorate.message}</p>
                     )}
                   </div>
 
@@ -540,11 +540,11 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                     <Input
                       id="city"
                       {...register("city", { required: "City/District is required" })}
-                      className="bg-almona-darker/50 border-almona-light/20"
+                      className="bg-card/50 border-border/20"
                       placeholder={selectedMarket === "egypt" ? "المدينة أو المنطقة" : "İlçe"}
                     />
                     {errors.city && (
-                      <p className="text-red-500 text-sm">{errors.city.message}</p>
+                      <p className="text-destructive text-sm">{errors.city.message}</p>
                     )}
                   </div>
 
@@ -555,7 +555,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       onValueChange={(value) => setValue("machineType", value as MaintenanceFormData["machineType"])}
                       {...register("machineType", { required: "Machine type is required" })}
                     >
-                      <SelectTrigger className="bg-almona-darker/50 border-almona-light/20">
+                      <SelectTrigger className="bg-card/50 border-border/20">
                         <SelectValue placeholder="Select machine type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -567,7 +567,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       </SelectContent>
                     </Select>
                     {errors.machineType && (
-                      <p className="text-red-500 text-sm">{errors.machineType.message}</p>
+                      <p className="text-destructive text-sm">{errors.machineType.message}</p>
                     )}
                   </div>
 
@@ -577,7 +577,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       onValueChange={(value) => setValue("machineBrand", value)}
                       {...register("machineBrand", { required: "Machine brand is required" })}
                     >
-                      <SelectTrigger className="bg-almona-darker/50 border-almona-light/20">
+                      <SelectTrigger className="bg-card/50 border-border/20">
                         <SelectValue placeholder="Select brand" />
                       </SelectTrigger>
                       <SelectContent>
@@ -589,7 +589,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       </SelectContent>
                     </Select>
                     {errors.machineBrand && (
-                      <p className="text-red-500 text-sm">{errors.machineBrand.message}</p>
+                      <p className="text-destructive text-sm">{errors.machineBrand.message}</p>
                     )}
                   </div>
 
@@ -598,11 +598,11 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                     <Input
                       id="machineModel"
                       {...register("machineModel", { required: "Machine model is required" })}
-                      className="bg-almona-darker/50 border-almona-light/20"
+                      className="bg-card/50 border-border/20"
                       placeholder="e.g., Yilmaz Pro-5000, BMS MasterCut"
                     />
                     {errors.machineModel && (
-                      <p className="text-red-500 text-sm">{errors.machineModel.message}</p>
+                      <p className="text-destructive text-sm">{errors.machineModel.message}</p>
                     )}
                   </div>
 
@@ -612,7 +612,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       onValueChange={(value: "ar" | "tr" | "en") => setValue("preferredLanguage", value)}
                       defaultValue={selectedMarket === "egypt" ? "ar" : "tr"}
                     >
-                      <SelectTrigger className="bg-almona-darker/50 border-almona-light/20">
+                      <SelectTrigger className="bg-card/50 border-border/20">
                         <SelectValue placeholder="Select language" />
                       </SelectTrigger>
                       <SelectContent>
@@ -629,10 +629,10 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       id="startDate"
                       type="date"
                       {...register("startDate", { required: "Start date is required" })}
-                      className="bg-almona-darker/50 border-almona-light/20"
+                      className="bg-card/50 border-border/20"
                     />
                     {errors.startDate && (
-                      <p className="text-red-500 text-sm">{errors.startDate.message}</p>
+                      <p className="text-destructive text-sm">{errors.startDate.message}</p>
                     )}
                   </div>
 
@@ -643,7 +643,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       type="number"
                       value={machineCount}
                       readOnly
-                      className="bg-almona-darker/30 border-almona-light/20"
+                      className="bg-card/30 border-border/20"
                     />
                   </div>
                 </div>
@@ -661,12 +661,12 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                         : "Özel bakım istekleri veya notlar..."
                     }
                     {...register("notes")}
-                    className="bg-almona-darker/50 border-almona-light/20"
+                    className="bg-card/50 border-border/20"
                   />
                 </div>
 
                 {/* Service Summary */}
-                <Card className="bg-almona-dark/50 border-almona-light/20">
+                <Card className="bg-background/50 border-border/20">
                   <CardHeader>
                     <CardTitle className="text-lg">Service Summary</CardTitle>
                   </CardHeader>
@@ -690,7 +690,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       </div>
                       <div className="flex justify-between">
                         <span>Response Time:</span>
-                        <span className="font-bold text-green-400">{selectedContract.responseTime}</span>
+                        <span className="font-bold text-success">{selectedContract.responseTime}</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between text-lg">
@@ -705,7 +705,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
 
                 <div className="flex justify-between">
                   <Button
-                    className="bg-transparent border hover:bg-slate-800"
+                    className="bg-transparent border hover:bg-card"
                     onClick={() => setStep("select")}
                   >
                     Back
@@ -736,22 +736,22 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
               >
                 <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle2 className="h-10 w-10 text-white" />
+                  <CheckCircle2 className="h-10 w-10 text-foreground" />
                 </div>
               </LazyMotionDiv>
               <h3 className="typography-h3 mb-2">
                 {selectedMarket === "egypt" ? "الصيانة المجدولة! (Maintenance Scheduled!)" : "Bakım Planlandı! (Maintenance Scheduled!)"}
               </h3>
-              <p className="text-gray-400 mb-4">
+              <p className="text-muted-foreground mb-4">
                 {selectedMarket === "egypt" 
                   ? "تم جدولة خدمة الصيانة الوقائية الخاصة بك بنجاح لآلات الألومنيوم."
                   : "Alüminyum makineleriniz için önleyici bakım hizmeti başarıyla planlandı."
                 }
               </p>
-              <Badge className="bg-green-500/20 text-green-300">
+              <Badge className="bg-green-500/20 text-success">
                 Contract ID: {selectedMarket === "egypt" ? "EG" : "TR"}-PM-{Date.now().toString().slice(-8)}
               </Badge>
-              <div className="mt-6 space-y-2 text-sm text-gray-400">
+              <div className="mt-6 space-y-2 text-sm text-muted-foreground">
                 <p>✓ {selectedMarket === "egypt" ? "عقد الخدمة تم إنشاؤه" : "Servis sözleşmesi oluşturuldu"}</p>
                 <p>✓ {selectedMarket === "egypt" ? "الجداول الزمنية automation مفعلة" : "automation zamanlamaları etkinleştirildi"}</p>
                 <p>✓ {selectedMarket === "egypt" ? "وصول إلى البوابة الإلكترونية" : "Müşteri portalı erişimi verildi"}</p>

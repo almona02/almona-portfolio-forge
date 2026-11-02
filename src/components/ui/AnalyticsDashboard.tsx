@@ -201,15 +201,15 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                                 </div>
                                 <div className="flex items-center gap-1 text-xs">
                                     {metrics.project_volume.growth_rate >= 0 ? (
-                                        <TrendingUp className="h-3 w-3 text-green-500" />
+                                        <TrendingUp className="h-3 w-3 text-success" />
                                     ) : (
-                                        <TrendingDown className="h-3 w-3 text-red-500" />
+                                        <TrendingDown className="h-3 w-3 text-destructive" />
                                     )}
                                     <span
                                         className={
                                             metrics.project_volume.growth_rate >= 0
-                                                ? 'text-green-500'
-                                                : 'text-red-500'
+                                                ? 'text-success'
+                                                : 'text-destructive'
                                         }
                                     >
                                         {formatPercentage(
@@ -243,15 +243,15 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                                 </div>
                                 <div className="flex items-center gap-1 text-xs">
                                     {metrics.revenue.growth_rate >= 0 ? (
-                                        <TrendingUp className="h-3 w-3 text-green-500" />
+                                        <TrendingUp className="h-3 w-3 text-success" />
                                     ) : (
-                                        <TrendingDown className="h-3 w-3 text-red-500" />
+                                        <TrendingDown className="h-3 w-3 text-destructive" />
                                     )}
                                     <span
                                         className={
                                             metrics.revenue.growth_rate >= 0
-                                                ? 'text-green-500'
-                                                : 'text-red-500'
+                                                ? 'text-success'
+                                                : 'text-destructive'
                                         }
                                     >
                                         {formatPercentage(metrics.revenue.growth_rate)}

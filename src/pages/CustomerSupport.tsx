@@ -88,7 +88,7 @@ const CustomerSupport: React.FC = () => {
       <button
         type="button"
         onClick={onClick}
-        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-almona-orange/60 focus:ring-offset-almona-dark capitalize ${active ? 'bg-almona-orange text-white border-almona-orange shadow-md' : 'bg-almona-dark/40 border-almona-light/20 text-gray-300 hover:border-almona-light/40'} ${tone || ''}`}
+        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-almona-orange/60 focus:ring-offset-almona-dark capitalize ${active ? 'bg-almona-orange text-primary-foreground border-almona-orange shadow-md' : 'bg-background/40 border-border/20 text-foreground hover:border-border/40'} ${tone || ''}`}
       >
         {children}
       </button>
@@ -162,7 +162,7 @@ const CustomerSupport: React.FC = () => {
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.resolved}</div>
+              <div className="text-2xl font-bold text-success">{stats.resolved}</div>
             </CardContent>
           </Card>
           

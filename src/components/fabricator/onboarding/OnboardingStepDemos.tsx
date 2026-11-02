@@ -38,7 +38,7 @@ export const SmartMeasuringDemo: React.FC = () => {
     <Card className="bg-gradient-to-br from-blue-900/20 to-blue-800/20 border-blue-500/30">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Ruler className="h-5 w-5 text-blue-400" />
+          <Ruler className="h-5 w-5 text-info" />
           Interactive Measuring Demo
         </CardTitle>
       </CardHeader>
@@ -55,7 +55,7 @@ export const SmartMeasuringDemo: React.FC = () => {
                     ? 'bg-blue-500/20 border border-blue-500/50'
                     : i < step
                     ? 'bg-green-500/10 border border-green-500/30'
-                    : 'bg-gray-800/50 border border-gray-700'
+                    : 'bg-card/50 border border-border'
                 )}
               >
                 <div
@@ -65,7 +65,7 @@ export const SmartMeasuringDemo: React.FC = () => {
                       ? 'bg-blue-500 text-white'
                       : i < step
                       ? 'bg-green-500 text-white'
-                      : 'bg-gray-700 text-gray-400'
+                      : 'bg-muted text-muted-foreground'
                   )}
                 >
                   {i < step ? (
@@ -77,7 +77,7 @@ export const SmartMeasuringDemo: React.FC = () => {
                 <span
                   className={cn(
                     'text-sm',
-                    i === step ? 'font-semibold text-blue-300' : i < step ? 'text-green-300' : 'text-gray-400'
+                    i === step ? 'font-semibold text-info' : i < step ? 'text-success' : 'text-muted-foreground'
                   )}
                 >
                   {s.label}
@@ -93,11 +93,11 @@ export const SmartMeasuringDemo: React.FC = () => {
           </Button>
         ) : (
           <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-            <div className="flex items-center gap-2 text-green-300 mb-2">
+            <div className="flex items-center gap-2 text-success mb-2">
               <CheckCircle2 className="h-5 w-5" />
               <span className="font-semibold">Measurement Complete!</span>
             </div>
-            <div className="text-sm text-gray-300 space-y-1">
+            <div className="text-sm text-foreground space-y-1">
               <p>Width: {measurements.width}mm</p>
               <p>Height: {measurements.height}mm</p>
             </div>
@@ -133,12 +133,12 @@ export const AIDesignDemo: React.FC = () => {
     <Card className="bg-gradient-to-br from-amber-900/20 to-amber-800/20 border-amber-500/30">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Sparkles className="h-5 w-5 text-amber-400" />
+          <Sparkles className="h-5 w-5 text-warning" />
           automation Design Assistant Demo
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm text-gray-300">
+        <p className="text-sm text-foreground">
           Click the button below to see how automation suggests optimal window configurations based on your measurements.
         </p>
 
@@ -152,7 +152,7 @@ export const AIDesignDemo: React.FC = () => {
 
         {suggestions.length > 0 && (
           <div className="space-y-2">
-            <h4 className="typography-h4 text-sm text-amber-300">automation Suggestions:</h4>
+            <h4 className="typography-h4 text-sm text-warning">automation Suggestions:</h4>
             {suggestions.map((suggestion, i) => (
               <div
                 key={i}
@@ -160,8 +160,8 @@ export const AIDesignDemo: React.FC = () => {
                 style={{ animationDelay: `${i * 200}ms` }}
               >
                 <div className="flex items-start gap-2">
-                  <Sparkles className="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-gray-200">{suggestion}</span>
+                  <Sparkles className="h-4 w-4 text-warning mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-foreground">{suggestion}</span>
                 </div>
               </div>
             ))}
@@ -170,7 +170,7 @@ export const AIDesignDemo: React.FC = () => {
 
         {suggestions.length > 0 && (
           <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-            <p className="text-sm text-green-300">
+            <p className="text-sm text-success">
               ✓ automation has analyzed your measurements and provided optimal recommendations
             </p>
           </div>
@@ -207,12 +207,12 @@ export const OptimizationDemo: React.FC = () => {
     <Card className="bg-gradient-to-br from-amber-900/20 to-amber-800/20 border-amber-500/30">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Scissors className="h-5 w-5 text-amber-400" />
+          <Scissors className="h-5 w-5 text-warning" />
           Cutting Optimization Demo
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm text-gray-300">
+        <p className="text-sm text-foreground">
           The optimization engine calculates the most efficient cutting plan to minimize waste and maximize material usage.
         </p>
 
@@ -227,29 +227,29 @@ export const OptimizationDemo: React.FC = () => {
         {optimizing && (
           <div className="space-y-2">
             <Progress value={75} className="h-2" />
-            <p className="text-xs text-center text-gray-400">Calculating optimal cutting plan...</p>
+            <p className="text-xs text-center text-muted-foreground">Calculating optimal cutting plan...</p>
           </div>
         )}
 
         {results && (
           <div className="space-y-3">
-            <h4 className="typography-h4 text-sm text-amber-300">Optimization Results:</h4>
+            <h4 className="typography-h4 text-sm text-warning">Optimization Results:</h4>
             <div className="grid grid-cols-3 gap-2">
               <div className="btn-primary">
-                <div className="text-2xl font-bold text-amber-400">{results.wasteReduction}%</div>
-                <div className="text-xs text-gray-400 mt-1">Waste Reduction</div>
+                <div className="text-2xl font-bold text-warning">{results.wasteReduction}%</div>
+                <div className="text-xs text-muted-foreground mt-1">Waste Reduction</div>
               </div>
               <div className="btn-primary">
-                <div className="text-2xl font-bold text-amber-400">{results.efficiency}%</div>
-                <div className="text-xs text-gray-400 mt-1">Efficiency</div>
+                <div className="text-2xl font-bold text-warning">{results.efficiency}%</div>
+                <div className="text-xs text-muted-foreground mt-1">Efficiency</div>
               </div>
               <div className="btn-primary">
-                <div className="text-2xl font-bold text-amber-400">{results.cuts}</div>
-                <div className="text-xs text-gray-400 mt-1">Total Cuts</div>
+                <div className="text-2xl font-bold text-warning">{results.cuts}</div>
+                <div className="text-xs text-muted-foreground mt-1">Total Cuts</div>
               </div>
             </div>
             <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-              <p className="text-sm text-green-300">
+              <p className="text-sm text-success">
                 ✓ Optimization complete! Ready to export cutting plan.
               </p>
             </div>
@@ -290,12 +290,12 @@ export const CNCExportDemo: React.FC = () => {
     <Card className="bg-gradient-to-br from-green-900/20 to-green-800/20 border-green-500/30">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Download className="h-5 w-5 text-green-400" />
+          <Download className="h-5 w-5 text-success" />
           CNC Export Demo
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm text-gray-300">
+        <p className="text-sm text-foreground">
           Export your optimized cutting plan in various formats for production.
         </p>
 
@@ -313,7 +313,7 @@ export const CNCExportDemo: React.FC = () => {
             >
               <Download className="h-5 w-5" />
               <span className="text-xs font-semibold">{f.label}</span>
-              <span className="text-[10px] text-gray-400">{f.description}</span>
+              <span className="text-[10px] text-muted-foreground">{f.description}</span>
             </Button>
           ))}
         </div>
@@ -321,7 +321,7 @@ export const CNCExportDemo: React.FC = () => {
         {exporting && (
           <div className="space-y-2">
             <Progress value={100} className="h-2" />
-            <p className="text-xs text-center text-gray-400">
+            <p className="text-xs text-center text-muted-foreground">
               Exporting {format?.toUpperCase()} file...
             </p>
           </div>
@@ -329,18 +329,18 @@ export const CNCExportDemo: React.FC = () => {
 
         {exported && format && (
           <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-            <div className="flex items-center gap-2 text-green-300 mb-2">
+            <div className="flex items-center gap-2 text-success mb-2">
               <CheckCircle2 className="h-5 w-5" />
               <span className="font-semibold">Export Complete!</span>
             </div>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-foreground">
               Your {format.toUpperCase()} file has been generated and is ready for download.
             </p>
             <div className="mt-3 flex gap-2">
-              <Badge variant="outline" className="border-green-500/50 text-green-300">
+              <Badge variant="outline" className="border-green-500/50 text-success">
                 {format.toUpperCase()}
               </Badge>
-              <Badge variant="outline" className="border-green-500/50 text-green-300">
+              <Badge variant="outline" className="border-green-500/50 text-success">
                 Ready
               </Badge>
             </div>

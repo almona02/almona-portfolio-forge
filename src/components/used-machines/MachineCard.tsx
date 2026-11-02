@@ -38,13 +38,13 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine, isCompact = false, o
             : new Date(machine.createdAt).toLocaleDateString();
 
   return (
-    <Card className={`bg-almona-darker border-almona-light overflow-hidden hover:border-amber-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/20 group flex flex-col ${cardHeight}`}>
+    <Card className={`bg-card border-border overflow-hidden hover:border-amber-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/20 group flex flex-col ${cardHeight}`}>
       <div className="relative">
-        <div className={`${imageHeight} overflow-hidden bg-almona-dark`}>
+        <div className={`${imageHeight} overflow-hidden bg-background`}>
           {machine.images[0] ? (
             <img src={machine.images[0]} alt={machine.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-600">{copy('No photo')}</div>
+            <div className="w-full h-full flex items-center justify-center text-muted-foreground">{copy('No photo')}</div>
           )}
         </div>
         <div className="absolute top-2 left-2">
@@ -60,11 +60,11 @@ const MachineCard: React.FC<MachineCardProps> = ({ machine, isCompact = false, o
           {machine.title}
         </CardTitle>
         <div className="text-amber-400 font-bold text-xl">{machine.price}</div>
-        <div className="text-xs text-gray-500">{copy('Posted')} {relativeDate}</div>
+        <div className="text-xs text-muted-foreground">{copy('Posted')} {relativeDate}</div>
       </CardHeader>
 
       <CardContent className={isCompact ? 'py-2' : 'py-4'}>
-        <p className="text-gray-400 mb-4 line-clamp-2">{machine.description}</p>
+        <p className="text-muted-foreground mb-4 line-clamp-2">{machine.description}</p>
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-center">
             <MapPin className="w-4 h-4 mr-2 text-amber-500 flex-shrink-0" />

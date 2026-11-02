@@ -71,13 +71,13 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
   const getStatusIcon = (status: MetricStatus) => {
     switch (status) {
       case 'healthy':
-        return <CheckCircle2 className="h-5 w-5 text-green-400" />;
+        return <CheckCircle2 className="h-5 w-5 text-success" />;
       case 'warning':
         return <AlertTriangle className="h-5 w-5 text-amber-400" />;
       case 'critical':
-        return <AlertTriangle className="h-5 w-5 text-red-400" />;
+        return <AlertTriangle className="h-5 w-5 text-destructive" />;
       case 'info':
-        return <ShieldCheck className="h-5 w-5 text-blue-400" />;
+        return <ShieldCheck className="h-5 w-5 text-info" />;
       default:
         return <Activity className="h-5 w-5 text-amber-400" />;
     }
@@ -87,7 +87,7 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
     switch (status) {
       case 'healthy':
         return (
-          <Badge variant="default" className="bg-green-600/20 text-green-400 border-green-600/50">
+          <Badge variant="default" className="bg-green-600/20 text-success border-green-600/50">
             HEALTHY
           </Badge>
         );
@@ -99,13 +99,13 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
         );
       case 'critical':
         return (
-          <Badge variant="outline" className="border-red-600/50 text-red-400">
+          <Badge variant="outline" className="border-red-600/50 text-destructive">
             CRITICAL
           </Badge>
         );
       case 'info':
         return (
-          <Badge variant="outline" className="border-blue-600/50 text-blue-400">
+          <Badge variant="outline" className="border-blue-600/50 text-info">
             INFO
           </Badge>
         );
@@ -169,16 +169,16 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
             {data.trend && (
               <div className="flex items-center gap-1 text-xs">
                 {data.trend.direction === 'up' ? (
-                  <TrendingUp className="h-3 w-3 text-green-400" />
+                  <TrendingUp className="h-3 w-3 text-success" />
                 ) : data.trend.direction === 'down' ? (
-                  <TrendingDown className="h-3 w-3 text-red-400" />
+                  <TrendingDown className="h-3 w-3 text-destructive" />
                 ) : null}
                 <span
                   className={
                     data.trend.direction === 'up'
-                      ? 'text-green-400'
+                      ? 'text-success'
                       : data.trend.direction === 'down'
-                      ? 'text-red-400'
+                      ? 'text-destructive'
                       : 'text-amber-400'
                   }
                 >
@@ -209,11 +209,11 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
     return (
       <Card className={`card-glass-dark shadow-glow-strong ${className}`}>
         <CardContent className="p-12">
-          <div className="flex items-center gap-3 text-red-400">
+          <div className="flex items-center gap-3 text-destructive">
             <AlertTriangle className="h-6 w-6" />
             <div>
               <div className="font-semibold">Failed to load trust metrics</div>
-              <div className="text-sm text-red-400/70 mt-1">{error}</div>
+              <div className="text-sm text-destructive/70 mt-1">{error}</div>
             </div>
           </div>
           <Button onClick={() => void loadMetrics()} className="mt-4" variant="outline">
@@ -348,7 +348,7 @@ export const ExecutiveTrustDashboard: React.FC<ExecutiveTrustDashboardProps> = (
                 <select
                   value={timePeriod}
                   onChange={(e) => setTimePeriod(e.target.value)}
-                  className="bg-[#0a0a0a] border border-amber-600/30 text-amber-200 rounded px-3 py-1 text-sm"
+                  className="bg-background border border-amber-600/30 text-amber-200 rounded px-3 py-1 text-sm"
                 >
                   <option value="7d">Last 7 days</option>
                   <option value="30d">Last 30 days</option>

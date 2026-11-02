@@ -97,11 +97,11 @@ const ProfilesPage: React.FC = () => {
       // Show error and let user know they need to log in again
       return (
         <div className="space-y-6">
-          <Card className="bg-slate-800/50 border-slate-700 /50 card-dark">
+          <Card className="bg-card/50 border-border /50 card-dark">
             <CardContent className="p-6">
               <div className="text-center py-12">
-                <p className="text-red-400 mb-4">{errorMessage}</p>
-                <p className="text-gray-400 text-sm">Please refresh the page or log in again.</p>
+                <p className="text-destructive mb-4">{errorMessage}</p>
+                <p className="text-muted-foreground text-sm">Please refresh the page or log in again.</p>
               </div>
             </CardContent>
           </Card>
@@ -114,8 +114,8 @@ const ProfilesPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="typography-h1 text-2xl text-white">Profiles</h1>
-          <p className="text-sm text-gray-400">
+          <h1 className="typography-h1 text-2xl text-foreground">Profiles</h1>
+          <p className="text-sm text-muted-foreground">
             {t('profiles.register_description', 'Register new profiles directly from Smart Scan or Assembly, then manage them here.')}
           </p>
         </div>
@@ -137,7 +137,7 @@ const ProfilesPage: React.FC = () => {
         </div>
       </div>
 
-      <Card className="bg-slate-800/50 border-slate-700 /50 card-dark">
+      <Card className="bg-card/50 border-border /50 card-dark">
         <CardContent className="p-6">
           <Suspense fallback={<FabricatorProjectSkeleton />}>
             <ProfileManagement

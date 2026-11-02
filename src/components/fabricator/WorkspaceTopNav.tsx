@@ -57,7 +57,7 @@ export const WorkspaceTopNav: React.FC = () => {
 
   return (
     <div
-      className="fixed top-0 right-0 z-[150] bg-slate-900/95 backdrop-blur-sm border-b border-slate-800/80"
+      className="fixed top-0 right-0 z-[150] bg-background/95 backdrop-blur-sm border-b border-border/80"
       style={
         isRTLMode
           ? { right: 'var(--sidebar-width, 320px)', left: 0 }
@@ -67,7 +67,7 @@ export const WorkspaceTopNav: React.FC = () => {
       <div className="mx-auto w-full px-4 md:px-6">
         <div className="flex items-center py-3">
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="bg-slate-800/70 border border-slate-700 /70 p-1 rounded-xl card-dark">
+            <TabsList className="bg-card/70 border border-border /70 p-1 rounded-xl card-dark">
               {workspaceTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -91,7 +91,7 @@ export const WorkspaceTopNav: React.FC = () => {
                     {tab.id === 'commercial' && state.draftQuotes.length > 0 && (
                       <Badge
                         variant="outline"
-                        className={`${isRTLMode ? 'ml-1 md:ml-2' : 'ml-1 md:ml-2'} bg-amber-500/20 text-amber-200 border-amber-500/40 text-[10px] md:text-xs ${isActive ? 'border-white/40' : ''
+                        className={`${isRTLMode ? 'ml-1 md:ml-2' : 'ml-1 md:ml-2'} bg-amber-500/20 text-warning border-amber-500/40 text-[10px] md:text-xs ${isActive ? 'border-white/40' : ''
                           }`}
                       >
                         {state.draftQuotes.length}
@@ -105,19 +105,19 @@ export const WorkspaceTopNav: React.FC = () => {
         </div>
         {/* ─── Breadcrumbs ─────────────────────────────────────── */}
         {breadcrumbs.length > 0 && (
-          <div className="flex items-center gap-1 px-1 pb-2 text-[11px] text-slate-400">
+          <div className="flex items-center gap-1 px-1 pb-2 text-[11px] text-muted-foreground">
             {breadcrumbs.map((crumb, idx) => (
               <React.Fragment key={idx}>
-                {idx > 0 && <ChevronRight className="h-3 w-3 text-slate-600" />}
+                {idx > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
                 {crumb.path ? (
                   <button
                     onClick={() => void navigate(crumb.path!)}
-                    className="hover:text-amber-400 transition-colors"
+                    className="hover:text-warning transition-colors"
                   >
                     {crumb.label}
                   </button>
                 ) : (
-                  <span className="text-amber-300 font-medium">{crumb.label}</span>
+                  <span className="text-warning font-medium">{crumb.label}</span>
                 )}
               </React.Fragment>
             ))}

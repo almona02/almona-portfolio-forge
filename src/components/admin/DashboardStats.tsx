@@ -71,7 +71,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ stats }) => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
-              <p className={`text-xs ${stat.trendPositive ? 'text-green-600' : 'text-red-600'}`}>{stat.trend || 'Current database total'}</p>
+              <p className={`text-xs ${stat.trendPositive ? 'text-success' : 'text-destructive'}`}>{stat.trend || 'Current database total'}</p>
             </CardContent>
           </Card>
         )

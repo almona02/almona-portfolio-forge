@@ -91,7 +91,7 @@ export const HardwareLinker: React.FC<HardwareLinkerProps> = ({
 
   if (!selectedProfile) {
     return (
-      <Alert className="bg-gray-900/60 border-gray-800 text-sm text-gray-200 card-dark">
+      <Alert className="bg-background/60 border-border text-sm text-foreground card-dark">
         <AlertDescription>No profile selected. Import a DXF first.</AlertDescription>
       </Alert>
     );
@@ -123,11 +123,11 @@ export const HardwareLinker: React.FC<HardwareLinkerProps> = ({
                   return (
                     <div
                       key={hw.id}
-                      className="flex items-center justify-between p-3 border rounded bg-gray-900/40 border-gray-800 card-dark"
+                      className="flex items-center justify-between p-3 border rounded bg-background/40 border-border card-dark"
                     >
                       <div>
-                        <div className="font-medium text-white">{hw.name}</div>
-                        <div className="text-xs text-gray-400">
+                        <div className="font-medium text-foreground">{hw.name}</div>
+                        <div className="text-xs text-muted-foreground">
                           {hw.supplier} • Lead: {hw.leadTimeDays}d {hw.costEGP ? `• ${hw.costEGP} EGP` : ''}
                         </div>
                       </div>
@@ -135,7 +135,7 @@ export const HardwareLinker: React.FC<HardwareLinkerProps> = ({
                         {vr?.isValid ? (
                           <CheckCircle className="h-5 w-5  status-valid" />
                         ) : (
-                          <AlertCircle className="h-5 w-5 text-red-500" />
+                          <AlertCircle className="h-5 w-5 text-destructive" />
                         )}
                         <Button variant="ghost" size="sm" onClick={() => handleSelectHardware(hw)}>
                           Remove
@@ -178,13 +178,13 @@ export const HardwareLinker: React.FC<HardwareLinkerProps> = ({
                         key={hw.id}
                         onClick={() => handleSelectHardware(hw)}
                         className={`p-3 border rounded cursor-pointer transition-colors ${
-                          isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'
+                          isSelected ? 'border-blue-500 bg-blue-50' : 'border-border hover:bg-background'
                         } ${vr && !vr.isValid ? 'border-red-300 bg-red-50' : ''}`}
                       >
                         <div className="flex justify-between items-start">
                           <div>
                             <div className="font-medium">{hw.name}</div>
-                            <div className="text-xs text-gray-600">
+                            <div className="text-xs text-muted-foreground">
                               {hw.dimensions.width}×{hw.dimensions.height}mm
                               {hw.maxLoadKg ? ` • ${hw.maxLoadKg}kg` : ''}
                             </div>
@@ -199,7 +199,7 @@ export const HardwareLinker: React.FC<HardwareLinkerProps> = ({
                               )}
                             </div>
                           </div>
-                          {isSelected && <CheckCircle className="h-4 w-4 text-blue-500 flex-shrink-0" />}
+                          {isSelected && <CheckCircle className="h-4 w-4 text-info flex-shrink-0" />}
                         </div>
                         {vr && vr.warnings.length > 0 && (
                           <div className="mt-2 text-xs text-amber-700 flex items-center gap-1">
@@ -240,10 +240,10 @@ export const HardwareLinker: React.FC<HardwareLinkerProps> = ({
               {selectedHardware.map((hw) => {
                 const vr = validationResults[hw.id];
                 return (
-                  <div key={hw.id} className="p-3 border rounded bg-gray-900/30 border-gray-800 card-dark">
-                    <div className="font-medium text-white">{hw.name}</div>
+                  <div key={hw.id} className="p-3 border rounded bg-background/30 border-border card-dark">
+                    <div className="font-medium text-foreground">{hw.name}</div>
                     {vr?.errors.length ? (
-                      <div className="mt-1 text-sm text-red-400">
+                      <div className="mt-1 text-sm text-destructive">
                         {vr.errors.map((e, i) => (
                           <div key={i} className="flex items-start gap-1">
                             <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
@@ -252,10 +252,10 @@ export const HardwareLinker: React.FC<HardwareLinkerProps> = ({
                         ))}
                       </div>
                     ) : (
-                      <div className="text-xs text-green-400 mt-1">No blocking errors.</div>
+                      <div className="text-xs text-success mt-1">No blocking errors.</div>
                     )}
                     {vr?.warnings.length > 0 && (
-                      <div className="mt-1 text-sm text-amber-300">
+                      <div className="mt-1 text-sm text-warning">
                         {vr.warnings.map((w, i) => (
                           <div key={i} className="flex items-start gap-1">
                             <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
@@ -265,7 +265,7 @@ export const HardwareLinker: React.FC<HardwareLinkerProps> = ({
                       </div>
                     )}
                     {vr?.suggestions.length > 0 && (
-                      <div className="mt-1 text-sm text-blue-300">
+                      <div className="mt-1 text-sm text-info">
                         {vr.suggestions.map((s, i) => (
                           <div key={i}>💡 {s}</div>
                         ))}

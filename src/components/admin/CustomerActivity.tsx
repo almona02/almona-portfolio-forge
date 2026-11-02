@@ -63,7 +63,7 @@ export const CustomerActivity: React.FC = () => {
   }, [])
 
   return (
-    <Card className="bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-white/20 shadow-lg transition-shadow hover:shadow-xl">
+    <Card className="bg-foreground/70 backdrop-blur supports-[backdrop-filter]:bg-foreground/60 border-white/20 shadow-lg transition-shadow hover:shadow-xl">
       <CardHeader>
         <CardTitle>Customer Activity</CardTitle>
       </CardHeader>
@@ -71,7 +71,7 @@ export const CustomerActivity: React.FC = () => {
         {loading ? (
           <div className="h-32 flex items-center justify-center text-sm text-muted-foreground">Loading...</div>
         ) : error ? (
-          <div className="h-32 flex items-center justify-center text-sm text-red-600">{error}</div>
+          <div className="h-32 flex items-center justify-center text-sm text-destructive">{error}</div>
         ) : items.length === 0 ? (
           <div className="h-32 flex items-center justify-center text-sm text-muted-foreground">No recent activity</div>
         ) : (

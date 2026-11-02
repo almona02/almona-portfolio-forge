@@ -59,7 +59,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg bg-almona-darker border-almona-light">
+    <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg bg-card border-border">
       <h3 className="typography-h3 text-gradient-orange">{t('reviews.write_review')}</h3>
       <div>
         <Label htmlFor="reviewerName" className="typography-label">{t('reviews.your_name')}</Label>
@@ -67,7 +67,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
           id="reviewerName"
           value={reviewerName}
           onChange={(e) => setReviewerName(e.target.value)}
-          className="bg-almona-dark border-almona-light"
+          className="bg-background border-border"
           required
         />
       </div>
@@ -77,7 +77,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
           {[1, 2, 3, 4, 5].map((star) => (
             <Star
               key={star}
-              className={`cursor-pointer ${star <= (hoverRating || rating) ? 'text-yellow-400' : 'text-gray-500'}`}
+              className={`cursor-pointer ${star <= (hoverRating || rating) ? 'text-yellow-400' : 'text-muted-foreground'}`}
               onClick={() => setRating(star)}
               onMouseEnter={() => setHoverRating(star)}
               onMouseLeave={() => setHoverRating(0)}
@@ -92,7 +92,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
           id="comment"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          className="bg-almona-dark border-almona-light"
+          className="bg-background border-border"
           rows={4}
           placeholder={t('reviews.comment_placeholder')}
         />

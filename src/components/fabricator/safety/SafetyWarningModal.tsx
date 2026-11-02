@@ -135,38 +135,38 @@ export const SafetyWarningModal: React.FC<SafetyWarningModalProps> = ({
         return {
           bg: 'bg-red-500/10',
           border: 'border-red-500/30',
-          icon: 'text-red-400',
-          title: 'text-red-400',
-          text: 'text-red-300',
+          icon: 'text-destructive',
+          title: 'text-destructive',
+          text: 'text-destructive',
         };
       case 'warning':
         return {
           bg: 'bg-yellow-500/10',
           border: 'border-yellow-500/30',
-          icon: 'text-yellow-400',
-          title: 'text-yellow-400',
-          text: 'text-yellow-300',
+          icon: 'text-warning',
+          title: 'text-warning',
+          text: 'text-warning',
         };
       default:
         return {
           bg: 'bg-blue-500/10',
           border: 'border-blue-500/30',
-          icon: 'text-blue-400',
-          title: 'text-blue-400',
-          text: 'text-blue-300',
+          icon: 'text-info',
+          title: 'text-info',
+          text: 'text-info',
         };
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-2xl bg-gray-900 text-white border-gray-700 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl bg-background text-foreground border-border max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-2xl">
-            <Shield className="h-7 w-7 text-amber-400" />
+            <Shield className="h-7 w-7 text-warning" />
             Safety Verification - Step 1 of 3
           </DialogTitle>
-          <DialogDescription className="text-gray-400 text-base">
+          <DialogDescription className="text-muted-foreground text-base">
             Review all safety warnings before proceeding. This is a mandatory safety check to protect your materials,
             equipment, and personnel.
           </DialogDescription>
@@ -175,18 +175,18 @@ export const SafetyWarningModal: React.FC<SafetyWarningModalProps> = ({
         <div className="space-y-6 py-4">
           {/* Job Information */}
           {(jobId || machineType) && (
-            <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+            <div className="p-4 bg-card/50 rounded-lg border border-border/50">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 {jobId && (
                   <div>
-                    <span className="text-gray-400">Job ID:</span>
-                    <span className="ml-2 font-mono text-gray-300">{jobId}</span>
+                    <span className="text-muted-foreground">Job ID:</span>
+                    <span className="ml-2 font-mono text-foreground">{jobId}</span>
                   </div>
                 )}
                 {machineType && (
                   <div>
-                    <span className="text-gray-400">Machine:</span>
-                    <span className="ml-2 font-semibold text-gray-300">{machineType}</span>
+                    <span className="text-muted-foreground">Machine:</span>
+                    <span className="ml-2 font-semibold text-foreground">{machineType}</span>
                   </div>
                 )}
               </div>
@@ -196,7 +196,7 @@ export const SafetyWarningModal: React.FC<SafetyWarningModalProps> = ({
           {/* Critical Warnings */}
           {criticalWarnings.length > 0 && (
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-red-400 flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-destructive flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5" />
                 Critical Safety Warnings
               </h3>
@@ -212,12 +212,12 @@ export const SafetyWarningModal: React.FC<SafetyWarningModalProps> = ({
                           <p className={`text-sm ${styles.text}`}>{warning.message}</p>
                         </div>
                         {warning.requiresAcknowledgment && (
-                          <div className="flex items-center space-x-2 pt-2 border-t border-gray-700/50">
+                          <div className="flex items-center space-x-2 pt-2 border-t border-border/50">
                             <Checkbox
                               id={`ack-${warning.id}`}
                               checked={acknowledgedWarnings.has(warning.id)}
                               onCheckedChange={(checked) => handleAcknowledge(warning.id, checked === true)}
-                              className="border-gray-600 data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500"
+                              className="border-border data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500"
                             />
                             <label
                               htmlFor={`ack-${warning.id}`}
@@ -238,7 +238,7 @@ export const SafetyWarningModal: React.FC<SafetyWarningModalProps> = ({
           {/* Warning Level Warnings */}
           {warningWarnings.length > 0 && (
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-yellow-400 flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-warning flex items-center gap-2">
                 <FileWarning className="h-5 w-5" />
                 Important Warnings
               </h3>
@@ -254,12 +254,12 @@ export const SafetyWarningModal: React.FC<SafetyWarningModalProps> = ({
                           <p className={`text-sm ${styles.text}`}>{warning.message}</p>
                         </div>
                         {warning.requiresAcknowledgment && (
-                          <div className="flex items-center space-x-2 pt-2 border-t border-gray-700/50">
+                          <div className="flex items-center space-x-2 pt-2 border-t border-border/50">
                             <Checkbox
                               id={`ack-${warning.id}`}
                               checked={acknowledgedWarnings.has(warning.id)}
                               onCheckedChange={(checked) => handleAcknowledge(warning.id, checked === true)}
-                              className="border-gray-600 data-[state=checked]:bg-yellow-500 data-[state=checked]:border-yellow-500"
+                              className="border-border data-[state=checked]:bg-yellow-500 data-[state=checked]:border-yellow-500"
                             />
                             <label
                               htmlFor={`ack-${warning.id}`}
@@ -295,15 +295,15 @@ export const SafetyWarningModal: React.FC<SafetyWarningModalProps> = ({
           )}
 
           {/* Progress Indicator */}
-          <div className="flex items-center justify-center gap-2 pt-4 border-t border-gray-700/50">
+          <div className="flex items-center justify-center gap-2 pt-4 border-t border-border/50">
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-full bg-amber-400"></div>
-              <span className="text-sm font-medium text-amber-400">Step 1 of 3</span>
+              <span className="text-sm font-medium text-warning">Step 1 of 3</span>
             </div>
-            <div className="w-12 h-0.5 bg-gray-700"></div>
-            <div className="w-3 h-3 rounded-full bg-gray-700"></div>
-            <div className="w-12 h-0.5 bg-gray-700"></div>
-            <div className="w-3 h-3 rounded-full bg-gray-700"></div>
+            <div className="w-12 h-0.5 bg-muted"></div>
+            <div className="w-3 h-3 rounded-full bg-muted"></div>
+            <div className="w-12 h-0.5 bg-muted"></div>
+            <div className="w-3 h-3 rounded-full bg-muted"></div>
           </div>
         </div>
 
@@ -311,7 +311,7 @@ export const SafetyWarningModal: React.FC<SafetyWarningModalProps> = ({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="text-gray-300 border-gray-600 hover:bg-gray-800"
+            className="text-foreground border-border hover:bg-card"
           >
             <X className="h-4 w-4 mr-2" />
             Cancel

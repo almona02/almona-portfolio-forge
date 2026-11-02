@@ -205,7 +205,7 @@ export const DimensionsDialog: React.FC<DimensionsDialogProps> = ({
       <DialogContent className={cn('max-w-md', className)}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Ruler className="h-5 w-5 text-amber-500" />
+            <Ruler className="h-5 w-5 text-warning" />
             {t('dimensions_dialog.title', 'Enter Window Dimensions')}
           </DialogTitle>
           <DialogDescription>
@@ -217,8 +217,8 @@ export const DimensionsDialog: React.FC<DimensionsDialogProps> = ({
           {/* Constraint Info */}
           {constraintInfo && (
             <Alert className="bg-amber-900/20 border-amber-600/30">
-              <AlertCircle className="h-4 w-4 text-amber-500" />
-              <AlertDescription className="text-xs text-amber-300">
+              <AlertCircle className="h-4 w-4 text-warning" />
+              <AlertDescription className="text-xs text-warning">
                 {t('dimensions_dialog.constraints', 'System constraints')}: {constraintInfo}
               </AlertDescription>
             </Alert>
@@ -226,7 +226,7 @@ export const DimensionsDialog: React.FC<DimensionsDialogProps> = ({
 
           {/* Quick Size Templates */}
           <div className="space-y-2">
-            <Label className="text-sm text-amber-200">
+            <Label className="text-sm text-warning">
               {t('dimensions_dialog.quick_sizes', 'Quick Sizes (mm)')}
             </Label>
             <div className="grid grid-cols-3 gap-2">
@@ -239,8 +239,8 @@ export const DimensionsDialog: React.FC<DimensionsDialogProps> = ({
                   className={cn(
                     'h-9 text-xs',
                     dimensions.width === size.width && dimensions.height === size.height
-                      ? 'bg-amber-900/30 border-amber-500 text-amber-200'
-                      : 'border-amber-600/30 text-amber-300 hover:bg-amber-900/20'
+                      ? 'bg-amber-900/30 border-amber-500 text-warning'
+                      : 'border-amber-600/30 text-warning hover:bg-amber-900/20'
                   )}
                 >
                   {size.label}
@@ -297,9 +297,9 @@ export const DimensionsDialog: React.FC<DimensionsDialogProps> = ({
           {/* Validation Errors */}
           {validationErrors.length > 0 && (
             <Alert variant="destructive" className="bg-red-900/20 border-red-500/30">
-              <AlertCircle className="h-4 w-4 text-red-400" />
+              <AlertCircle className="h-4 w-4 text-destructive" />
               <AlertDescription>
-                <ul className="list-disc list-inside space-y-1 text-xs text-red-300">
+                <ul className="list-disc list-inside space-y-1 text-xs text-destructive">
                   {validationErrors.map((error, idx) => (
                     <li key={idx}>{error.message}</li>
                   ))}
@@ -313,7 +313,7 @@ export const DimensionsDialog: React.FC<DimensionsDialogProps> = ({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="border-amber-600/30 text-amber-300 hover:bg-amber-900/20"
+            className="border-amber-600/30 text-warning hover:bg-amber-900/20"
           >
             {t('dimensions_dialog.cancel', 'Cancel')}
           </Button>

@@ -116,8 +116,8 @@ const onSubmit = async (data: FormData) => {
     <form onSubmit={(e) => { void handleSubmit(onSubmit)(e); }} className="space-y-6">
       {emergencyMode && (
         <div className="bg-red-900/20 p-4 rounded-lg border border-red-900/50 flex items-center">
-          <AlertTriangle className="text-red-500 mr-3" />
-          <span className="text-red-300">Emergency mode activated - Your request will be prioritized</span>
+          <AlertTriangle className="text-destructive mr-3" />
+          <span className="text-destructive">Emergency mode activated - Your request will be prioritized</span>
         </div>
       )}
 
@@ -157,11 +157,11 @@ const onSubmit = async (data: FormData) => {
               <Check className="absolute right-3 top-3 h-4 w-4  status-valid" />
             )}
             {serialValid === false && (
-              <AlertTriangle className="absolute right-3 top-3 h-4 w-4 text-red-500" />
+              <AlertTriangle className="absolute right-3 top-3 h-4 w-4 text-destructive" />
             )}
           </div>
           {machineInfo && (
-            <div className="mt-2 p-3 bg-almona-darker/50 rounded-lg border border-almona-light/10 text-sm">
+            <div className="mt-2 p-3 bg-card/50 rounded-lg border border-border/10 text-sm">
               <div className="font-medium">Machine: {machineInfo.model}</div>
               <div>Warranty until: {machineInfo.warranty}</div>
               <div>Last service: {machineInfo.lastService}</div>
@@ -178,7 +178,7 @@ const onSubmit = async (data: FormData) => {
             placeholder="Your name"
             {...register('name', { required: 'Name is required' })}
           />
-          {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+          {errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
         </div>
 
         <div className="space-y-2">
@@ -195,7 +195,7 @@ const onSubmit = async (data: FormData) => {
               }
             })}
           />
-          {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+          {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
         </div>
       </div>
 
@@ -208,7 +208,7 @@ const onSubmit = async (data: FormData) => {
             placeholder="+20 123 456 7890"
             {...register('phone', { required: 'Phone is required' })}
           />
-          {errors.phone && <p className="text-red-500 text-sm">{errors.phone.message}</p>}
+          {errors.phone && <p className="text-destructive text-sm">{errors.phone.message}</p>}
         </div>
 
         <div className="space-y-2">
@@ -230,7 +230,7 @@ const onSubmit = async (data: FormData) => {
           placeholder="Describe your inquiry in detail..."
           {...register('message', { required: 'Message is required' })}
         />
-        {errors.message && <p className="text-red-500 text-sm">{errors.message.message}</p>}
+        {errors.message && <p className="text-destructive text-sm">{errors.message.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -271,7 +271,7 @@ const onSubmit = async (data: FormData) => {
       </div>
 
       {emergencyMode && (
-        <div className="mt-4 flex items-center gap-2 text-sm text-red-500">
+        <div className="mt-4 flex items-center gap-2 text-sm text-destructive">
           <AlertTriangle className="h-4 w-4" />
           <span>Emergency requests will trigger immediate technician dispatch</span>
         </div>

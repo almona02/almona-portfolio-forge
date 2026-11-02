@@ -36,9 +36,9 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
   };
 
   return (
-    <Card className="bg-almona-darker border-almona-light/20">
+    <Card className="bg-card border-border/20">
       <CardContent className="p-4">
-        <Label className="typography-label text-sm font-medium text-almona-light mb-3 block">
+        <Label className="typography-label text-sm font-medium text-foreground mb-3 block">
           Price Range
         </Label>
         
@@ -48,7 +48,7 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
             <span className="text-amber-400 font-semibold">
               {formatCompactPrice(currentRange[0])}
             </span>
-            <span className="text-almona-light/60">to</span>
+            <span className="text-foreground/60">to</span>
             <span className="text-amber-400 font-semibold">
               {formatCompactPrice(currentRange[1])}
             </span>
@@ -73,7 +73,7 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
           </div>
 
           {/* Min/Max labels */}
-          <div className="flex justify-between text-xs text-almona-light/50">
+          <div className="flex justify-between text-xs text-foreground/50">
             <span>{formatCompactPrice(minPrice)}</span>
             <span>{formatCompactPrice(maxPrice)}</span>
           </div>
@@ -92,7 +92,7 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
                 className={`px-2 py-1 rounded text-xs transition-colors ${
                   currentRange[0] === preset.range[0] && currentRange[1] === preset.range[1]
                     ? 'bg-amber-600 text-white'
-                    : 'bg-almona-dark text-almona-light/70 hover:bg-almona-light/10'
+                    : 'bg-background text-foreground/70 hover:bg-almona-light/10'
                 }`}
               >
                 {preset.label}

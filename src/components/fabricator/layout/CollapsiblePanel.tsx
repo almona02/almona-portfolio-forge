@@ -130,7 +130,7 @@ export const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
         ref={panelRef}
         className={cn(
           'relative flex flex-col h-full transition-all duration-300 ease-in-out',
-          'bg-gray-900/95 border-amber-600/30 backdrop-blur-sm',
+          'bg-background/95 border-amber-600/30 backdrop-blur-sm',
           position === 'left' ? 'border-r' : 'border-l',
           isCollapsed && 'shadow-lg',
           isOverlay && !overlayCollapsed && 'fixed inset-y-0 z-50 shadow-2xl',
@@ -157,7 +157,7 @@ export const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
         <div
           className={cn(
             'flex items-center justify-between border-b border-amber-600/30',
-            'hover:bg-gray-800/50 transition-colors cursor-pointer',
+            'hover:bg-card/50 transition-colors cursor-pointer',
             isCollapsed ? 'justify-center p-2' : 'p-2 px-3',
           )}
           onClick={handleToggle}
@@ -176,11 +176,11 @@ export const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
           {isCollapsed ? (
             <div className="flex items-center justify-center w-full h-8">
               {icon ? (
-                <div className="text-amber-400 opacity-80 hover:opacity-100 transition-opacity">
+                <div className="text-warning opacity-80 hover:opacity-100 transition-opacity">
                   {icon}
                 </div>
               ) : (
-                <div className="text-amber-400 opacity-80 hover:opacity-100 transition-opacity">
+                <div className="text-warning opacity-80 hover:opacity-100 transition-opacity">
                   {position === 'left' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
                 </div>
               )}
@@ -188,12 +188,12 @@ export const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
           ) : (
             <>
               <div className="flex items-center space-x-2 min-w-0">
-                {icon && <span className="text-amber-400 shrink-0">{icon}</span>}
-                <h3 className="text-sm font-semibold text-gray-200 truncate">{title}</h3>
+                {icon && <span className="text-warning shrink-0">{icon}</span>}
+                <h3 className="text-sm font-semibold text-foreground truncate">{title}</h3>
               </div>
               <button
                 type="button"
-                className="p-1 rounded hover:bg-gray-700/50 shrink-0"
+                className="p-1 rounded hover:bg-muted/50 shrink-0"
                 aria-label={
                   isOverlay
                     ? `Close ${title} panel`
@@ -240,7 +240,7 @@ export const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
             onMouseDown={handleResizeStart}
           >
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <GripVertical size={12} className="text-gray-500" />
+              <GripVertical size={12} className="text-muted-foreground" />
             </div>
           </div>
         )}

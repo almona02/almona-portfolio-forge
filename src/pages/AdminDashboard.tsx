@@ -199,7 +199,7 @@ const AdminDashboard: React.FC = () => {
             <Card data-testid="admin-fabricator-hub">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
-                  <Factory className="h-5 w-5 text-amber-500" aria-hidden />
+                  <Factory className="h-5 w-5 text-warning" aria-hidden />
                   <CardTitle className="text-lg">Fabricator Pro · manufacturing</CardTitle>
                 </div>
                 <CardDescription>
@@ -293,7 +293,7 @@ const AdminDashboard: React.FC = () => {
         return (
           <div className="space-y-6">
             <div className="flex items-center gap-2 mb-4">
-              <Zap className="h-5 w-5 text-amber-400" />
+              <Zap className="h-5 w-5 text-warning" />
               <h2 className="typography-h2 text-lg">YDT Performance Monitoring</h2>
             </div>
             <YDTPerformanceDashboard refreshInterval={5000} />
@@ -441,7 +441,7 @@ const AdminDashboard: React.FC = () => {
           variant="ghost"
           aria-current={activeTab === id ? 'page' : undefined}
           onClick={() => selectTab(id)}
-          className={cn('min-h-11 w-full justify-start gap-3', activeTab === id && 'border border-amber-500/30 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25')}
+          className={cn('min-h-11 w-full justify-start gap-3', activeTab === id && 'border border-amber-500/30 bg-amber-500/15 text-warning hover:bg-amber-500/25')}
         >
           <Icon aria-hidden="true" className="h-5 w-5 shrink-0" />
           {label}
@@ -455,9 +455,9 @@ const AdminDashboard: React.FC = () => {
       <a href="#admin-main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-background focus:p-3 focus:text-foreground focus:ring-2 focus:ring-ring">
         Skip to admin content
       </a>
-      <aside aria-label="Administration" className="admin-desktop-sidebar fixed bottom-0 left-0 z-40 hidden w-64 flex-col border-r border-amber-500/15 bg-slate-950 lg:flex">
+      <aside aria-label="Administration" className="admin-desktop-sidebar fixed bottom-0 left-0 z-40 hidden w-64 flex-col border-r border-amber-500/15 bg-background lg:flex">
         <div className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <Shield aria-hidden="true" className="h-6 w-6 text-amber-400" />
+          <Shield aria-hidden="true" className="h-6 w-6 text-warning" />
           <span className="text-xl font-semibold">Almona Admin</span>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto">{navigation}</div>
@@ -479,7 +479,7 @@ const AdminDashboard: React.FC = () => {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Header */}
-        <header className="sticky z-30 border-b border-amber-500/15 bg-slate-950/95 backdrop-blur">
+        <header className="sticky z-30 border-b border-amber-500/15 bg-background/95 backdrop-blur">
           <div className="flex min-h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-2">
               <Dialog.Root open={sidebarOpen} onOpenChange={setSidebarOpen}>
@@ -536,7 +536,7 @@ const AdminDashboard: React.FC = () => {
                       <DropdownMenuItem key={n.id} className="p-3">
                         <div className="flex items-start space-x-3">
                           <div className="flex-shrink-0">
-                            <AlertCircle className="h-5 w-5 text-blue-500" />
+                            <AlertCircle className="h-5 w-5 text-info" />
                           </div>
                           <div className="flex-1 space-y-1">
                             <p className="text-sm font-medium">{n.title}</p>

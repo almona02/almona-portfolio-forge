@@ -119,15 +119,15 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
 
   if (showBanner) {
     return (
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-6 shadow-lg z-50">
+      <div className="fixed bottom-0 left-0 right-0 bg-background text-foreground p-6 shadow-lg z-50">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-start gap-4">
-            <Cookie className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+            <Cookie className="w-6 h-6 text-info flex-shrink-0 mt-1" />
             <div className="flex-1">
               <h3 className="typography-h3 text-lg mb-2">
                 {t('gdpr.cookieTitle', 'We respect your privacy')}
               </h3>
-              <p className="text-gray-300 mb-4">
+              <p className="text-foreground mb-4">
                 {t('gdpr.cookieDescription', 'We use cookies to enhance your experience and analyze our traffic. You can choose which cookies to accept.')}
               </p>
               <div className="flex flex-wrap gap-3">
@@ -139,13 +139,13 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
                 </button>
                 <button
                   onClick={handleRejectAll}
-                  className="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg font-medium transition-colors"
+                  className="bg-muted hover:bg-muted px-6 py-2 rounded-lg font-medium transition-colors"
                 >
                   {t('gdpr.rejectAll', 'Reject All')}
                 </button>
                 <button
                   onClick={() => setShowPreferences(true)}
-                  className="bg-transparent border border-gray-500 hover:border-gray-400 px-6 py-2 rounded-lg font-medium transition-colors"
+                  className="bg-transparent border border-border hover:border-border px-6 py-2 rounded-lg font-medium transition-colors"
                 >
                   {t('gdpr.customize', 'Customize')}
                 </button>
@@ -153,7 +153,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
             </div>
             <button
               onClick={() => setShowBanner(false)}
-              className="text-gray-400 hover:text-white"
+              className="text-muted-foreground hover:text-foreground"
             >
               <X className="w-6 h-6" />
             </button>
@@ -166,10 +166,10 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
   if (showPreferences) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div className="p-6">
             <div className="flex items-center gap-3 mb-6">
-              <Settings className="w-6 h-6 text-blue-600" />
+              <Settings className="w-6 h-6 text-info" />
               <h2 className="typography-h2 text-xl font-semibold">
                 {t('gdpr.cookiePreferences', 'Cookie Preferences')}
               </h2>
@@ -180,13 +180,13 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="typography-h3 font-medium">{t('gdpr.necessary', 'Necessary Cookies')}</h3>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-muted-foreground text-sm">
                       {t('gdpr.necessaryDesc', 'Required for the website to function properly.')}
                     </p>
                   </div>
                   <div className="flex items-center">
-                    <Check className="w-5 h-5 text-green-600" />
-                    <span className="ml-2 text-sm text-gray-500">
+                    <Check className="w-5 h-5 text-success" />
+                    <span className="ml-2 text-sm text-muted-foreground">
                       {t('gdpr.required', 'Required')}
                     </span>
                   </div>
@@ -197,7 +197,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="typography-h3 font-medium">{t('gdpr.analytics', 'Analytics Cookies')}</h3>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-muted-foreground text-sm">
                       {t('gdpr.analyticsDesc', 'Help us understand how visitors interact with our website.')}
                     </p>
                   </div>
@@ -208,7 +208,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
                       checked={preferences.analytics}
                       onChange={(e) => setPreferences(prev => ({ ...prev, analytics: e.target.checked }))}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-card after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
               </div>
@@ -217,7 +217,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="typography-h3 font-medium">{t('gdpr.marketing', 'Marketing Cookies')}</h3>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-muted-foreground text-sm">
                       {t('gdpr.marketingDesc', 'Used to deliver personalized advertisements.')}
                     </p>
                   </div>
@@ -228,7 +228,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
                       checked={preferences.marketing}
                       onChange={(e) => setPreferences(prev => ({ ...prev, marketing: e.target.checked }))}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-card after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
               </div>
@@ -243,7 +243,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
               </button>
               <button
                 onClick={() => setShowPreferences(false)}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg font-medium transition-colors"
+                className="bg-muted hover:bg-muted text-foreground px-6 py-2 rounded-lg font-medium transition-colors"
               >
                 {t('gdpr.cancel', 'Cancel')}
               </button>
@@ -255,38 +255,38 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
   }
 
   return (
-    <div className="bg-gray-50 border rounded-lg p-6">
+    <div className="bg-background border rounded-lg p-6">
       <div className="flex items-center gap-3 mb-4">
-        <Shield className="w-6 h-6 text-green-600" />
+        <Shield className="w-6 h-6 text-success" />
         <h2 className="typography-h2 text-lg font-semibold">{t('gdpr.dataRights', 'Your Data Rights')}</h2>
       </div>
 
-      <p className="text-gray-600 mb-6">
+      <p className="text-muted-foreground mb-6">
         {t('gdpr.dataRightsDesc', 'Under GDPR, you have the right to access, correct, or delete your personal data.')}
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <button
           onClick={() => setShowPreferences(true)}
-          className="flex items-center gap-2 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-2 p-4 border border-border rounded-lg hover:bg-background transition-colors"
         >
-          <Eye className="w-5 h-5 text-blue-600" />
+          <Eye className="w-5 h-5 text-info" />
           <span>{t('gdpr.viewPreferences', 'View Preferences')}</span>
         </button>
 
         <button
           onClick={() => void handleDataExport()}
-          className="flex items-center gap-2 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-2 p-4 border border-border rounded-lg hover:bg-background transition-colors"
         >
-          <Download className="w-5 h-5 text-green-600" />
+          <Download className="w-5 h-5 text-success" />
           <span>{t('gdpr.exportData', 'Export Data')}</span>
         </button>
 
         <button
           onClick={() => void handleDataDeletion()}
-          className="flex items-center gap-2 p-4 border border-gray-200 rounded-lg hover:bg-red-50 transition-colors"
+          className="flex items-center gap-2 p-4 border border-border rounded-lg hover:bg-red-50 transition-colors"
         >
-          <Trash2 className="w-5 h-5 text-red-600" />
+          <Trash2 className="w-5 h-5 text-destructive" />
           <span>{t('gdpr.deleteData', 'Delete Data')}</span>
         </button>
       </div>
