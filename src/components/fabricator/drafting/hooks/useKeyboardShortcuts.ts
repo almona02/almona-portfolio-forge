@@ -22,7 +22,6 @@ interface UseKeyboardShortcutsOptions {
  */
 export const useKeyboardShortcuts = ({
   draftingEngine,
-  _selectedTool,
   onToolSelect,
   onUndo,
   onRedo,

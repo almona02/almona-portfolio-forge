@@ -79,7 +79,7 @@ export class BendRadiusValidator {
     radius: number,
     material: 'aluminum' | 'upvc',
     profileWidth: number,
-    profileDepth: number,
+    _profileDepth: number,
     workshopId?: string
   ): BendValidation {
     const materialLimits = this.MATERIAL_LIMITS[material];

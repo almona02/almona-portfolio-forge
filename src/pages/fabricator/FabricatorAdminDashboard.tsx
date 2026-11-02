@@ -40,7 +40,7 @@ const FabricatorAdminDashboard: React.FC = () => {
           .select('id,user_id,factory_role,profiles(full_name,username)')
           .eq('workshop_id', (ws as Workshop).id)
           .order('created_at', { ascending: true })
-        setMembers(((rows ?? []) as Array<{ id: string; user_id: string; factory_role: string; profiles: { full_name: string | null; username: string | null } | null }>).map((r) => ({
+        setMembers(((rows ?? []) as unknown as Array<{ id: string; user_id: string; factory_role: string; profiles: { full_name: string | null; username: string | null } | null }>).map((r) => ({
           id: r.id, user_id: r.user_id, factory_role: r.factory_role,
           full_name: r.profiles?.full_name ?? null, username: r.profiles?.username ?? null,
         })))

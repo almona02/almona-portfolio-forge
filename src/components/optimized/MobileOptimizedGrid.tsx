@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import EnhancedProductCard from '@/shared/ui/ui/EnhancedProductCard';
 import type { Machine } from '@/constants/yilmazMachines';
 

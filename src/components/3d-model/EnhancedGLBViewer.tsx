@@ -350,7 +350,7 @@ export const EnhancedGLBViewer = forwardRef<{ resetCamera: () => void }, Enhance
           </Suspense>
           {!isXRSession && (
             <OrbitControls 
-              ref={controlsRef} 
+              ref={controlsRef as any} 
               makeDefault 
               enableDamping 
               dampingFactor={0.08} 

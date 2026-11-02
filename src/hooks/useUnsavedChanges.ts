@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useBlocker, useNavigate } from 'react-router-dom';
+import { useBlocker } from 'react-router-dom';
 
 export interface UseUnsavedChangesOptions {
   isDirty: boolean;
@@ -25,7 +25,6 @@ export const useUnsavedChanges = ({
   onSave,
   message: _message = 'You have unsaved changes. Are you sure you want to leave?',
 }: UseUnsavedChangesOptions): UseUnsavedChangesReturn => {
-  const _navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const pendingNavigationRef = useRef<(() => void) | null>(null);
   

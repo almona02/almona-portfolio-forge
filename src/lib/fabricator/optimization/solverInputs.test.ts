@@ -36,7 +36,11 @@ const identity: WorkflowIdentity = { ownerUserId: 'owner', projectId: 'project',
 const bom = { profiles: [{ id: 'PS-6601-FRAME:frame', profileCode: 'PS-6601-FRAME', cuttingLengths: [1503, 1803], cutIds: ['a:0', 'b:0'], angles: [45, 45], length: 3306, quantity: 1 }] } as unknown as CompleteBOM;
 const ack = (overrides: Partial<StockReservationEvidence> = {}): StockReservationEvidence => ({
   identity, profileIds: ['owned-1'], metersByProfile: { 'owned-1': 3.306 }, reservedAt: new Date().toISOString(),
-  availabilityOk: true, bomFingerprint: fingerprintBom(bom), stockVersionByProfile: { 'owned-1': 1 }, ...overrides,
+  availabilityOk: true, bomFingerprint: fingerprintBom(bom), stockVersionByProfile: { 'owned-1': 1 },
+  physicalBarBinding: 'physical',
+  barsByCatalogueLength: { 'PS-6601-FRAME|6500': 4, 'owned-1|6500': 4 },
+  physicalStockVersionFingerprint: 'owned-1:1',
+  ...overrides,
 });
 
 describe('resolveApprovedSolverInputs', () => {
@@ -77,9 +81,30 @@ describe('resolveApprovedSolverInputs', () => {
     expect(resolved.issues[1].profileId).toBe('PS-6601-BEAD');
   });
 
-  it('carries finite available bar counts into the binding', () => {
+  it('carries finite available bar counts into the binding (legacy profile-only when not required)', () => {
     const resolved = resolveApprovedSolverInputs([frame], authority, {}, { 'PS-6601-FRAME': 2 });
     expect(resolved.ok && resolved.stockByProfile['PS-6601-FRAME']).toEqual({ stockLengthMm: 6500, availableBars: 2 });
+  });
+
+  it('binds bars to the selected length and fails closed when that length is unbound', () => {
+    const bars = { 'PS-6601-FRAME|6500': 2, 'PS-6601-SASH|6000': 3 };
+    const ok = resolveApprovedSolverInputs([frame], authority, {}, bars, { requirePhysicalBars: true });
+    expect(ok.ok && ok.stockByProfile['PS-6601-FRAME']).toEqual({ stockLengthMm: 6500, availableBars: 2 });
+
+    // 12 m of 3 m bars must not authorize a 6 m selection.
+    const wrongLength = resolveApprovedSolverInputs(
+      [sash],
+      authority,
+      { 'PS-6601-SASH': 6500 },
+      { 'PS-6601-SASH|6000': 4 },
+      { requirePhysicalBars: true },
+    );
+    expect(wrongLength.ok).toBe(false);
+    if (!wrongLength.ok) expect(wrongLength.issues[0].code).toBe('STOCK_BARS_UNBOUND');
+
+    const missing = resolveApprovedSolverInputs([frame], authority, {}, {}, { requirePhysicalBars: true });
+    expect(missing.ok).toBe(false);
+    if (!missing.ok) expect(missing.issues[0].code).toBe('STOCK_BARS_UNBOUND');
   });
 });
 
@@ -136,11 +161,11 @@ describe('AdaptiveSolver with approved stock binding', () => {
 });
 
 describe('assessStockReadiness', () => {
-  it('is ready only for a current, BOM-bound, mapped acknowledgement without shortage', () => {
+  it('is ready only for a current, BOM-bound, mapped acknowledgement with physical bars', () => {
     expect(assessStockReadiness({ stockReservation: ack(), workflowIdentity: identity, bom })).toEqual({ ready: true, issues: [] });
   });
 
-  it('separates missing ack, stale revision, stale BOM, missing mapping and shortage', () => {
+  it('separates missing ack, stale revision, stale BOM, missing mapping, shortage and unbound bars', () => {
     const codes = (r: ReturnType<typeof assessStockReadiness>) => r.issues.map((issue) => issue.code);
     expect(codes(assessStockReadiness({ stockReservation: null, workflowIdentity: identity, bom }))).toEqual(['STOCK_NOT_ACKNOWLEDGED']);
     expect(codes(assessStockReadiness({ stockReservation: ack(), workflowIdentity: { ...identity, revision: 10 }, bom }))).toEqual(['STOCK_ACK_STALE_REVISION']);
@@ -148,8 +173,39 @@ describe('assessStockReadiness', () => {
     expect(codes(assessStockReadiness({ stockReservation: ack(), workflowIdentity: identity, bom: changedBom }))).toEqual(['STOCK_ACK_STALE_BOM']);
     expect(codes(assessStockReadiness({ stockReservation: ack({ profileIds: [], metersByProfile: {} }), workflowIdentity: identity, bom }))).toEqual(['STOCK_MAPPING_MISSING']);
     expect(codes(assessStockReadiness({ stockReservation: ack({ availabilityOk: false }), workflowIdentity: identity, bom }))).toEqual(['STOCK_SHORTAGE']);
+    expect(codes(assessStockReadiness({
+      stockReservation: ack({ physicalBarBinding: 'metres_only', barsByCatalogueLength: {} }),
+      workflowIdentity: identity,
+      bom,
+    }))).toEqual(['STOCK_BARS_UNBOUND']);
     // Multiple failures are all reported, not collapsed into one.
     expect(codes(assessStockReadiness({ stockReservation: ack({ availabilityOk: false }), workflowIdentity: { ...identity, revision: 10 }, bom }))).toEqual(['STOCK_ACK_STALE_REVISION', 'STOCK_SHORTAGE']);
+  });
+
+  it('requires live stock versions for production when requireCurrentStockVersions is set', () => {
+    const codes = (r: ReturnType<typeof assessStockReadiness>) => r.issues.map((issue) => issue.code);
+    expect(codes(assessStockReadiness({
+      stockReservation: ack(),
+      workflowIdentity: identity,
+      bom,
+      currentStockVersions: { 'owned-1': 1 },
+      requireCurrentStockVersions: true,
+    }))).toEqual([]);
+    expect(codes(assessStockReadiness({
+      stockReservation: ack(),
+      workflowIdentity: identity,
+      bom,
+      currentStockVersions: { 'owned-1': 2 },
+      requireCurrentStockVersions: true,
+    }))).toEqual(['STOCK_ACK_STALE_STOCK']);
+    expect(codes(assessStockReadiness({
+      stockReservation: ack(),
+      workflowIdentity: identity,
+      bom,
+      currentStockVersions: null,
+      currentStockVersionsError: 'unavailable',
+      requireCurrentStockVersions: true,
+    }))).toEqual(['STOCK_BARS_UNBOUND']);
   });
 });
 

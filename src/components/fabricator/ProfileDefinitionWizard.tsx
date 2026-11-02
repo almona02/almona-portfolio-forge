@@ -361,7 +361,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                 <ProfileCrossSectionViewer
                   imageUrl={uploadedImage}
                   annotations={annotations}
-                  onAnnotationAdd={handleAnnotationAdd}
+                  onAnnotationAdd={handleAnnotationAdd as any}
                   onAnnotationRemove={handleAnnotationRemove}
                 />
               </div>

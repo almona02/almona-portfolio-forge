@@ -387,7 +387,7 @@ export function mergeAutoConfigIntoProfile(
         ...autoConfig.structuralConfig,
         ...(existingSpecs.structuralConfig || {}),
       },
-      machiningZones: existingSpecs.machiningZones?.length
+      machiningZones: (existingSpecs as any).machiningZones?.length
         ? existingSpecs.machiningZones
         : autoConfig.machiningZones,
       hardwareConfig: {

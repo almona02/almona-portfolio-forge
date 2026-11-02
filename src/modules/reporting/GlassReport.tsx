@@ -128,7 +128,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
 
     // Resolve system pack glass allowances (if available)
     const systemPack =
-      project.systemPackId && SYSTEM_PACKS.find((p) => p.meta.id === project.systemPackId);
+      project.systemPackId ? SYSTEM_PACKS.find((p) => p.meta.id === project.systemPackId) : undefined;
     const glassAllowances = systemPack?.glassAllowances;
 
     // Process each component
@@ -141,7 +141,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
       let glassHeight = component.height;
 
       if (glassAllowances) {
-        const derived = deriveGlassSize(component.width, component.height, glassAllowances);
+        const derived = deriveGlassSize(component.width, component.height, glassAllowances as any);
         glassWidth = derived.size.widthMm;
         glassHeight = derived.size.heightMm;
         // If invalid, we still proceed but this could be surfaced in UI later via derived.errors
@@ -156,15 +156,15 @@ export const GlassReport: React.FC<GlassReportProps> = ({
       
       // Glass thickness: 5mm for single glazing, 4mm per pane for double/triple
       const defaultThickness = glazingType === 'single' ? 5 : 4; // 5mm for single glazing bead system
-      const glassThickness = project.glazing?.thickness || defaultThickness;
+      const glassThickness = (project.glazing as any)?.thickness || defaultThickness;
       
       // Spacer information
-      const spacerThickness = project.glazing?.spacer || 12;
-      const spacerMaterial = project.glazing?.spacerMaterial || 'warm_edge';
-      const gasFill = project.glazing?.gasFill || 'argon';
+      const spacerThickness = (project.glazing as any)?.spacer || 12;
+      const spacerMaterial = (project.glazing as any)?.spacerMaterial || 'warm_edge';
+      const gasFill = (project.glazing as any)?.gasFill || 'argon';
       
       // Calculate weight (glass density ~2.5 kg/m² per mm thickness)
-      const weight = totalComponentArea * glassThickness * 2.5;
+      const weight = totalComponentArea * Number(glassThickness) * 2.5;
       
       // Special requirements
       const specialReqs: string[] = [];
@@ -184,7 +184,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
         componentType: component.type,
         width: glassWidth,
         height: glassHeight,
-        allowRotation90: glassAllowances?.allowRotation90 ?? true,
+        allowRotation90: (glassAllowances as any)?.allowRotation90 ?? true,
         glazingType,
         paneCount,
         totalArea: totalComponentArea,
@@ -634,7 +634,7 @@ function optimizeGlassCutting(specifications: GlassSpecification[]): {
     const areaB = b.width * b.height * b.paneCount;
     return areaB - areaA;
   });
-  let currentSheet: CuttingSheet | null = null;
+  let currentSheet: CuttingSheet | null = null as CuttingSheet | null;
 
   remainingPanes.forEach((spec) => {
     for (let pane = 0; pane < spec.paneCount; pane++) {
@@ -721,7 +721,7 @@ function optimizeGlassCutting(specifications: GlassSpecification[]): {
   });
 
   const totalWaste = sheets.reduce((sum, s) => sum + s.waste, 0);
-  const totalArea = sheets.reduce((sum, s) => (s.width * s.height) / 1_000_000, 0);
+  const totalArea = sheets.reduce((_sum, s) => (s.width * s.height) / 1_000_000, 0);
   const wastePercentage = totalArea > 0 ? (totalWaste / totalArea) * 100 : 0;
   const utilization = totalSheetArea > 0 ? (totalUsedArea / totalSheetArea) * 100 : 0;
 

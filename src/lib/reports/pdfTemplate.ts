@@ -8,7 +8,7 @@ import { MACHINE_SPECS } from './pricing';
 export async function generatePDFReport(
   costs: FabricationCosts,
   machineModel: string,
-  material: 'aluminum' | 'upvc',
+  _material: 'aluminum' | 'upvc',
   isArabic: boolean = false
 ): Promise<Uint8Array> {
   if (!PDFDocument) {
@@ -36,7 +36,7 @@ export async function generatePDFReport(
   });
   
   // Draw machine specs
-  const machine = MACHINE_SPECS[machineModel];
+  const machine = MACHINE_SPECS[machineModel as keyof typeof MACHINE_SPECS];
   page.drawText(`${machineTitle}: ${machineModel}`, {
     x: 50,
     y: height - 100,

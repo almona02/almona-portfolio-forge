@@ -137,7 +137,9 @@ export class FenestrationSystemValidator {
     if (this.VALIDATION_CACHE.size >= this.MAX_CACHE_SIZE) {
       // Remove oldest entry (FIFO)
       const firstKey = this.VALIDATION_CACHE.keys().next().value;
-      this.VALIDATION_CACHE.delete(firstKey);
+      if (firstKey !== undefined) {
+        this.VALIDATION_CACHE.delete(firstKey);
+      }
     }
     this.VALIDATION_CACHE.set(cacheKey, {
       result,
@@ -466,7 +468,7 @@ export class FenestrationSystemValidator {
       });
     }
     
-    if (profile.standardStockLength <= 0) {
+    if ((profile.standardStockLength ?? 0) <= 0) {
       errors.push({
         code: 'VAL-304',
         field: `${fieldPath}.standardStockLength`,

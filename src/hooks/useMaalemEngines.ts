@@ -183,8 +183,6 @@ export const useMaalemEngines = (inputs: MaalemDashboardState) => {
           color: inputs.color || 'Silver',
           glazing: {
             type: inputs.glazing || 'double',
-            totalThickness: 24,
-            weightPerSqm: 20
           },
           hardware: [],
           status: 'design',

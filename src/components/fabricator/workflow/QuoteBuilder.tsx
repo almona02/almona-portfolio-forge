@@ -352,11 +352,11 @@ export const QuoteBuilder: React.FC = () => {
             <div className="flex flex-col items-end gap-1 text-right">
               <div className="flex justify-between w-48">
                 <span className="text-slate-400">Subtotal</span>
-                <span>{formatCurrency(quote.subtotal, quote.currency)}</span>
+                <span>{formatCurrency(quote.subtotal ?? 0, quote.currency)}</span>
               </div>
               <div className="flex justify-between w-48">
                 <span className="text-slate-400">VAT</span>
-                <span>{formatCurrency(quote.tax, quote.currency)}</span>
+                <span>{formatCurrency(quote.tax ?? 0, quote.currency)}</span>
               </div>
               <div className="flex justify-between w-48 font-bold text-amber-200 text-lg pt-2 border-t border-amber-600/30">
                 <span>Total</span>

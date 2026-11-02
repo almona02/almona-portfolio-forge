@@ -436,7 +436,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
         }
       };
 
-      drafting.addHardware(hardware);
+      drafting.addHardware(hardware as any);
       logToolOperation(tool, 'place_hardware', { point, rectIndex, hardwareType: tool }, { hardware });
     }
   };
@@ -492,7 +492,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
       reinforcement: needsReinforcement ? { type: (material === 'aluminum' ? 'aluminum' : 'steel'), dimensions: { width: 20, height: 20 } } : undefined
     };
 
-    drafting.addStructuralElement(element);
+    drafting.addStructuralElement(element as any);
     logToolOperation(tool, 'place_structural_element', { point, material, tool }, { element });
   };
 
@@ -553,7 +553,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
     getSVGPoint,
     handleHardwarePlacement,
     handleStructuralPlacement,
-    logToolOperation,
+    logToolOperation: logToolOperation as any,
     svgRef: containerRef,
     onMousePositionChange: _onMousePositionChange
   });
@@ -859,7 +859,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
   }, [handleMouseMoveEvent]);
 
   const mouseBatcher = useMemo(() => new EventBatcher((e) => {
-    mouseMoveHandlerRef.current(e);
+    mouseMoveHandlerRef.current(e as any);
   }), []);
 
   useEffect(() => {
@@ -938,7 +938,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
           onAddSash={drafting.addSashToFrame ? (t) => { if (t?.id) drafting.addSashToFrame?.(t.id); } : undefined}
           onQuickAddTwoSashes={drafting.quickAddTwoSashes ? (t) => { if (t?.id) drafting.quickAddTwoSashes?.(t.id); } : undefined}
           getAddSashWarning={getAddSashWarning}
-          onAddMullion={drafting.addMullionToFrame ? handleAddMullionClick : undefined}
+          onAddMullion={handleAddMullionClick}
           onAssignGlazing={handleAssignGlazingClick}
           onGlassColor={handleAssignGlazingClick}
           onGlassType={handleAssignGlazingClick}

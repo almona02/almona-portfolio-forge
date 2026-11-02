@@ -570,7 +570,7 @@ export function generateProfileCrossSection(profile: Profile): ProfileCrossSecti
     const profileRole = (profile.profileRole ?? 'frame') as 'frame' | 'sash' | 'mullion' | 'transom';
     const profileMaterial = (profile.material === 'upvc' || profile.material === 'aluminum' || profile.material === 'wood') ? profile.material : 'aluminum';
     
-    const goldTierResult = createGoldTierProfileShape(width, depth, thickness, profileRole, profileMaterial, true);
+    const goldTierResult = createGoldTierProfileShape(width, depth, thickness, profileRole, profileMaterial as "aluminum" | "upvc" | "steel", true);
     
     return {
         shape: goldTierResult.shape,
@@ -1015,7 +1015,7 @@ export function calculateGlassBounds(
   
   // Check for transoms and adjust glass bounds
   if (windowUnit.presetData?.transoms && Array.isArray(windowUnit.presetData.transoms)) {
-    const transoms = windowUnit.presetData.transoms;
+    const transoms = windowUnit.presetData.transoms as Array<{ position?: number; height?: number }>;
     
     // Transom ABOVE (at position row - 1)
     const transomAbove = transoms.find((t: { position?: number; height?: number }) => t.position === cell.row - 1);

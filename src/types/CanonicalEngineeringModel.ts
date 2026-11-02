@@ -11,7 +11,7 @@
  * - Optimization consumes this exclusively
  */
 
-import type { WindowUnit } from './fabricator';
+import type { WindowComponent, WindowGrid, WindowUnit } from './fabricator';
 
 export interface CanonicalEngineeringModel {
   // Unique identifier
@@ -157,7 +157,7 @@ export interface CanonicalEngineeringModel {
 export function isCanonicalEngineeringModel(obj: unknown): obj is CanonicalEngineeringModel {
   if (!obj || typeof obj !== 'object') return false;
   const o = obj as Record<string, unknown>;
-  return (
+  return Boolean(
     typeof o.id === 'string' &&
     o.geometry &&
     typeof (o.geometry as Record<string, unknown>).overallWidth === 'number' &&

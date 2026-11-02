@@ -15,7 +15,7 @@ import type { HardenerSelectionContext, HardenerSelectionResult } from '@/lib/fa
 import { HardenerRuleEngine, hardenerSelector } from '@/lib/fabricator/hardener';
 import { describe, expect, it } from 'vitest';
 
-import type { SystemPack, WindowUnit } from '@/types/fabricator';
+import type { SystemPack } from '@/types/fabricator';
 
 describe('Hardener Integration Tests', () => {
   describe('Real Egyptian Standards Validation', () => {
@@ -391,7 +391,7 @@ describe('Hardener Integration Tests', () => {
 
   describe('Window Unit Integration', () => {
     it('should select hardener from WindowUnit and SystemPack', () => {
-      const windowUnit: WindowUnit = {
+      const windowUnit: any = {
         id: 'test-window-1',
         type: 'casement',
         overallWidth: 1200,
@@ -406,10 +406,9 @@ describe('Hardener Integration Tests', () => {
       const systemPack: SystemPack = {
         id: 'caluminium_ps_v3',
         name: 'Caluminium PS v3',
-        category: 'aluminum',
+        category: 'aluminum' as any,
         profiles: [],
-        hardware: [],
-      };
+      } as any;
 
       const result = hardenerSelector.selectHardenerForWindowUnit(windowUnit, systemPack);
 
@@ -419,7 +418,7 @@ describe('Hardener Integration Tests', () => {
     });
 
     it('should handle missing system pack gracefully', () => {
-      const windowUnit: WindowUnit = {
+      const windowUnit: any = {
         id: 'test-window-2',
         type: 'tilt-turn',
         overallWidth: 1000,

@@ -83,7 +83,7 @@ export class UnifiedCognitionEngine {
       ...fabricatorRecs.warnings,
       ...engineeringRecs.warnings,
       ...platformRecs.warnings
-    ];
+    ] as any;
 
     // Calculate overall confidence
     const confidence = this.calculateOverallConfidence(recommendations);

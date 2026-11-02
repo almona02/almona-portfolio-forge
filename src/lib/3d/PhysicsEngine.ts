@@ -53,7 +53,7 @@ export type ConstraintType = 'hinge' | 'slider' | 'tilt_turn' | 'fixed';
 export interface PhysicsBody {
   id: string;
   mesh: THREE.Object3D;
-  rigidBody: unknown; // Ammo.btRigidBody
+  rigidBody: any; // Ammo.btRigidBody
   mass: number;
   type: 'static' | 'dynamic' | 'kinematic';
 }
@@ -63,10 +63,10 @@ export interface PhysicsConstraint {
   type: ConstraintType;
   bodyA: string;
   bodyB: string;
-  constraint: unknown; // Ammo.btTypedConstraint
+  constraint: any; // Ammo.btTypedConstraint
 }
 
-let ammoInstance: unknown = null;
+let ammoInstance: any = null;
 let isAmmoInitialized = false;
 let initPromise: Promise<boolean> | null = null;
 
@@ -142,10 +142,10 @@ export async function initPhysics(): Promise<boolean> {
  * Handles the simulation loop and body management
  */
 export class PhysicsWorld {
-  private world: unknown; // Ammo.btDiscreteDynamicsWorld
+  private world: any; // Ammo.btDiscreteDynamicsWorld
   private bodies: Map<string, PhysicsBody> = new Map();
   private constraints: Map<string, PhysicsConstraint> = new Map();
-  private tempTransform: unknown;
+  private tempTransform: any;
   private config: PhysicsConfig;
   private isRunning: boolean = false;
   private lastTime: number = 0;
@@ -209,7 +209,7 @@ export class PhysicsWorld {
     bbox.getSize(size);
     
     // Create collision shape
-    let collisionShape: unknown;
+    let collisionShape: any;
     switch (shape) {
       case 'sphere':
         collisionShape = new Ammo.btSphereShape(Math.max(size.x, size.y, size.z) / 2);

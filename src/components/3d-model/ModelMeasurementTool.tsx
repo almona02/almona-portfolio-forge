@@ -16,7 +16,7 @@ import {
   X,
   Zap
 } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 interface MeasurementPoint {
   id: string;
@@ -51,7 +51,6 @@ interface ModelMeasurementToolProps {
 export function ModelMeasurementTool({
   isVisible,
   onToggle,
-  onMeasurementAdd,
   onMeasurementRemove,
   onMeasurementExport,
   modelDimensions,
@@ -72,7 +71,6 @@ export function ModelMeasurementTool({
   const [autoRotateSpeed, setAutoRotateSpeed] = useState(1);
   const [showGrid, setShowGrid] = useState(false);
 
-  const _canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
 
   const convertUnit = useCallback((value: number, fromUnit: string, toUnit: string) => {
@@ -88,34 +86,6 @@ export function ModelMeasurementTool({
     const toFactor = unitFactors[toUnit as keyof typeof unitFactors];
     return (value * fromFactor) / toFactor;
   }, []);
-
-  const _addMeasurement = useCallback((startPoint: MeasurementPoint, endPoint: MeasurementPoint) => {
-    const distance = Math.sqrt(
-      Math.pow(endPoint.position.x - startPoint.position.x, 2) +
-      Math.pow(endPoint.position.y - startPoint.position.y, 2) +
-      Math.pow(endPoint.position.z - startPoint.position.z, 2)
-    );
-
-    const convertedDistance = convertUnit(distance, 'mm', unit);
-
-    const newMeasurement: MeasurementLine = {
-      id: `measurement_${Date.now()}`,
-      startPoint,
-      endPoint,
-      distance: convertedDistance,
-      unit,
-      color: measurementColor,
-      label: `${convertedDistance.toFixed(2)} ${unit}`
-    };
-
-    setMeasurements(prev => [...prev, newMeasurement]);
-    onMeasurementAdd?.(newMeasurement);
-
-    toast({
-      title: "Measurement Added",
-      description: `Distance: ${convertedDistance.toFixed(2)} ${unit}`,
-    });
-  }, [unit, measurementColor, convertUnit, onMeasurementAdd, toast]);
 
   const removeMeasurement = useCallback((measurementId: string) => {
     setMeasurements(prev => prev.filter(m => m.id !== measurementId));

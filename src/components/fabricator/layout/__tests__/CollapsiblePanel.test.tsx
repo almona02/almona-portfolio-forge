@@ -43,6 +43,7 @@ describe('CollapsiblePanel', () => {
       },
     },
     togglePanel: vi.fn(),
+    setPanelWidthExpanded: vi.fn(),
   };
 
   it('should render component with content', () => {
@@ -87,7 +88,7 @@ describe('CollapsiblePanel', () => {
       return collapsedState;
     });
 
-    render(
+    const { container } = render(
       <CollapsiblePanel
         position="left"
         sectionId="fabrication"
@@ -97,9 +98,16 @@ describe('CollapsiblePanel', () => {
       </CollapsiblePanel>
     );
 
-    // Content should not be visible when collapsed
-    expect(screen.queryByText('Panel Content')).not.toBeInTheDocument();
+    // Children stay mounted (preview state survives) but are marked hidden/inaccessible.
+    const contentHost = container.querySelector('[aria-hidden="true"][hidden]');
+    expect(contentHost).not.toBeNull();
+    expect(contentHost).toHaveTextContent('Panel Content');
+    // Title is only shown when expanded; collapsed shows the chevron/icon control.
     expect(screen.queryByText('Test Panel')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /expand test panel panel/i })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
   });
 
   it('should toggle panel on header click', async () => {

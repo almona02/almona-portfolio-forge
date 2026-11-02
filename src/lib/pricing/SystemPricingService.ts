@@ -247,7 +247,7 @@ export class SystemPricingService {
    */
   async calculateGlazingPrice(
     glazingTypeId: string,
-    area: number, // in square meters
+    _area: number, // in square meters
     systemName: string,
     profileId: string,
     targetCurrency?: Currency

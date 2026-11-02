@@ -88,11 +88,6 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
     return () => video.removeEventListener('ended', handleEnded);
   }, [onVideoEnd]);
 
-  // Expose video duration for analytics
-  const _getVideoDuration = (): number => {
-    return videoRef.current?.duration || 0;
-  };
-
   // Handle video loaded
   useEffect(() => {
     const video = videoRef.current;

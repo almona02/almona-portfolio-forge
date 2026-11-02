@@ -196,7 +196,7 @@ export class EgyptianVerificationDialog {
    */
   async processResponse(
     response: string,
-    factId: string,
+    _factId: string,
     expectedResponses: VerificationQuestion['expectedResponses']
   ): Promise<'confirmation' | 'denial' | 'unsure'> {
     const lowerResponse = response.toLowerCase();

@@ -124,7 +124,6 @@ export function applyFillet(
   
   // Calculate fillet center (perpendicular to both lines at fillet points)
   const perp1 = { x: -dir1.y, y: dir1.x };
-  const _perp2 = { x: -dir2.y, y: dir2.x };
   
   // Center is at radius distance along perpendicular
   const center: Point = {

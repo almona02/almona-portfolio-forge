@@ -260,7 +260,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
 
             <QuoteCalculator 
               products={selectedProducts as unknown as Machine[]}
-              services={selectedServices.map(s => ({ id: s.id || s.name, name: s.name, price: s.price }))}
+              services={selectedServices.map(s => ({ id: s.id || s.name, name: s.name, price: s.price ?? 0 }))}
               urgency={form.watch("urgency")}
               onCalculate={calculateEstimate}
             />

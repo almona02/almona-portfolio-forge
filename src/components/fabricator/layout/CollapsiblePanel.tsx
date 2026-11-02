@@ -34,9 +34,12 @@ export const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
 }) => {
   const panelState = useFabricatorUIStore((state) => state.panelStates[sectionId]);
   const togglePanel = useFabricatorUIStore((state) => state.togglePanel);
+  const setPanelWidthExpanded = useFabricatorUIStore((state) => state.setPanelWidthExpanded);
   const isCollapsed = position === 'left' ? panelState.leftCollapsed : panelState.rightCollapsed;
   const isOverlay = variant === 'overlay';
-  const panelWidth = isCollapsed ? widthCollapsed : widthExpanded;
+  const storedExpanded = position === 'left' ? panelState.leftWidthExpanded : panelState.rightWidthExpanded;
+  const expandedWidth = resizable ? (storedExpanded || widthExpanded) : widthExpanded;
+  const panelWidth = isCollapsed ? widthCollapsed : expandedWidth;
 
   const [isResizing, setIsResizing] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -83,7 +86,7 @@ export const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
         : rect.right - e.clientX;
 
       if (newWidth >= 200 && newWidth <= 600) {
-        console.log('New width:', newWidth);
+        setPanelWidthExpanded(sectionId, position, newWidth);
       }
     };
 
@@ -98,7 +101,7 @@ export const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [resizable, isResizing, position, isOverlay]);
+  }, [resizable, isResizing, position, isOverlay, sectionId, setPanelWidthExpanded]);
 
   const handleToggle = () => {
     togglePanel(sectionId, position);
@@ -109,10 +112,8 @@ export const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
     setIsResizing(true);
   };
 
-  // Narrow overlay: hide completely when collapsed (header owns the open control)
-  if (isOverlay && isCollapsed) {
-    return null;
-  }
+  // Overlay collapsed: keep a zero-size mounted host so nested preview state survives.
+  const overlayCollapsed = isOverlay && isCollapsed;
 
   return (
     <>
@@ -132,20 +133,26 @@ export const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
           'bg-gray-900/95 border-amber-600/30 backdrop-blur-sm',
           position === 'left' ? 'border-r' : 'border-l',
           isCollapsed && 'shadow-lg',
-          isOverlay && 'fixed inset-y-0 z-50 shadow-2xl',
-          isOverlay && position === 'left' && 'left-0',
-          isOverlay && position === 'right' && 'right-0',
+          isOverlay && !overlayCollapsed && 'fixed inset-y-0 z-50 shadow-2xl',
+          isOverlay && !overlayCollapsed && position === 'left' && 'left-0',
+          isOverlay && !overlayCollapsed && position === 'right' && 'right-0',
+          overlayCollapsed && 'pointer-events-none fixed h-0 w-0 overflow-hidden opacity-0',
           className,
         )}
         style={{
-          width: `${isOverlay ? widthExpanded : panelWidth}px`,
-          minWidth: isOverlay
-            ? `${widthExpanded}px`
-            : `${isCollapsed ? widthCollapsed : widthExpanded}px`,
-          maxWidth: isOverlay ? 'min(280px, 85vw)' : undefined,
+          width: overlayCollapsed ? 0 : `${isOverlay ? expandedWidth : panelWidth}px`,
+          minWidth: overlayCollapsed
+            ? 0
+            : isOverlay
+              ? `${expandedWidth}px`
+              : `${isCollapsed ? widthCollapsed : expandedWidth}px`,
+          maxWidth: isOverlay && !overlayCollapsed ? 'min(280px, 85vw)' : undefined,
           flexShrink: 0,
         }}
         data-variant={variant}
+        data-collapsed={isCollapsed ? 'true' : 'false'}
+        hidden={overlayCollapsed}
+        aria-hidden={overlayCollapsed}
       >
         <div
           className={cn(
@@ -211,13 +218,16 @@ export const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
           )}
         </div>
 
+        {/* Keep children mounted while collapsed so nested 3D preview state survives. */}
         <div
           className={cn(
             'flex-1 overflow-y-auto transition-opacity duration-200',
-            isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100',
+            isCollapsed ? 'pointer-events-none opacity-0' : 'opacity-100',
           )}
+          hidden={isCollapsed}
+          aria-hidden={isCollapsed}
         >
-          {!isCollapsed && children}
+          {children}
         </div>
 
         {resizable && !isCollapsed && !isOverlay && (

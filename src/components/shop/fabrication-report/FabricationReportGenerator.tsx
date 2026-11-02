@@ -53,15 +53,15 @@ export default function FabricationReportGenerator() {
     });
 
     // Save PDF
-    const blob = new Blob([report.pdfBytes], { type: 'application/pdf' });
+    const blob = new Blob([report.pdfBytes as BlobPart], { type: 'application/pdf' });
     if (!saveAsFn) {
       const mod = await import('file-saver');
-      saveAsFn = mod.saveAs;
+      saveAsFn = mod.saveAs as any;
     }
     saveAsFn!(blob, `fabrication-report-${new Date().toISOString().slice(0,10)}.pdf`);
 
     // Set comparison data
-    setComparisonData(compareMachines(report.comparisons));
+    setComparisonData(compareMachines(report.comparisons) as any);
   }, [materialType, machineModel, profileLength, customPrices, isArabic]);
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,7 +101,7 @@ export default function FabricationReportGenerator() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div>
           <Label htmlFor="material-type" className="typography-label">Material Type</Label>
-          <Select value={materialType} onValueChange={(val: 'aluminum' | 'upvc') => setMaterialType(val)}>
+          <Select value={materialType} onValueChange={(val) => setMaterialType(val as 'aluminum' | 'upvc')}>
             <SelectTrigger>
               <SelectValue placeholder="Select material" />
             </SelectTrigger>

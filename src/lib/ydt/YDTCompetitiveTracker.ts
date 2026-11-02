@@ -5,7 +5,6 @@
  * detects new entrants, and feeds data back to YDT.
  */
 
-import { YDTCoreService } from './YDTCoreService';
 import type { Project } from './types';
 
 export interface CompetitorData {
@@ -36,7 +35,6 @@ export interface CompetitiveLandscape {
  * YDT Competitive Tracker
  */
 export class YDTCompetitiveTracker {
-  private ydt = YDTCoreService.getInstance();
   private competitorData: Map<string, CompetitorData[]> = new Map();
 
   /**

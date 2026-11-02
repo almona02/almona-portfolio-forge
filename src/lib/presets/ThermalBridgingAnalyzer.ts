@@ -23,21 +23,12 @@ export interface ThermalAnalysis {
  * ThermalBridgingAnalyzer - Thermal analysis engine
  */
 export class ThermalBridgingAnalyzer {
-  // Thermal conductivity values (W/m·K)
-  private readonly ALUMINUM_CONDUCTIVITY = 160; // W/m·K
-  private readonly UPVC_CONDUCTIVITY = 0.2; // W/m·K
-  private readonly THERMAL_BREAK_CONDUCTIVITY = 0.25; // W/m·K (polyamide)
-
-  // Base U-values (W/m²K)
-  private readonly BASE_U_VALUE_ALUMINUM = 5.5; // W/m²K (single glazing, no thermal break)
-  private readonly BASE_U_VALUE_UPVC = 2.8; // W/m²K (double glazing)
-
   /**
    * Calculate thermal break effect
    */
   calculateThermalBreakEffect(
     windowUnit: WindowUnit,
-    mullionPosition: number,
+    _mullionPosition: number,
     mullionType: MullionType
   ): ThermalAnalysis {
     const height = windowUnit.overallHeight;
@@ -53,7 +44,7 @@ export class ThermalBridgingAnalyzer {
     if (mullionType === 'thermal_break') {
       // Thermal break mullion has minimal impact
       uValueImpact = 0.1; // W/m²K
-    } else if (material === 'aluminum' && mullionType !== 'thermal_break') {
+    } else if (material === 'aluminum') {
       // Aluminum mullion without thermal break creates significant thermal bridge
       const thermalBridgeArea = mullionWidth * height; // m²
       const windowArea = windowUnit.overallWidth * height / 1_000_000; // m²

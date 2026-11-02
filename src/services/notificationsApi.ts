@@ -74,6 +74,7 @@ export interface NotificationCreateRequest {
   type: string;
   title: string;
   message: string;
+  user_id?: string;
   metadata?: Record<string, any>;
 }
 

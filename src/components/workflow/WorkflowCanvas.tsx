@@ -59,7 +59,6 @@ function convertToReactFlowNode(node: WorkflowNode): any {
         type: node.type,
         position: node.position,
         data: {
-            label: node.data.label,
             ...node.data,
         },
     };

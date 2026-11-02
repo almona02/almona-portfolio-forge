@@ -25,7 +25,7 @@ const migrate = (systems: unknown[]): StoredSystemPack[] => {
     version: sys.version || 2,
     createdAt: sys.createdAt || new Date().toISOString(),
     updatedAt: sys.updatedAt || new Date().toISOString(),
-  };
+  } as StoredSystemPack;
   });
 };
 

@@ -18,7 +18,7 @@ try {
     const namespace = file.replace(/\.json$/, '');
     discoveredResources[lang] = discoveredResources[lang] || {};
     // merge namespace JSON under its own key (namespaced usage: t('services:title'))
-    discoveredResources[lang][namespace] = modules[path].default;
+    discoveredResources[lang][namespace] = (modules[path] as any).default;
   }
 } catch (e) {
   // Non-fatal; build still succeeds

@@ -9,8 +9,7 @@
 
 import { ComplexShapeGenerator, type ComplexShapeDesign } from './ComplexShapeGenerator';
 import type { InferredShape } from './ShapeInferenceEngine';
-import { MaterialStrategyCalculator } from './MaterialStrategyCalculator';
-import { HardwareSpecifier } from './HardwareSpecifier';
+import { MaterialStrategyCalculator, type MachineCapabilities } from './MaterialStrategyCalculator';
 
 export interface WorkshopContext {
   workshopId?: string;
@@ -71,12 +70,10 @@ export interface MagicModeResult {
 export class ZeroDecisionGenerator {
   private complexShapeGenerator: ComplexShapeGenerator;
   private materialStrategyCalculator: MaterialStrategyCalculator;
-  private hardwareSpecifier: HardwareSpecifier;
   
   constructor() {
     this.complexShapeGenerator = new ComplexShapeGenerator();
     this.materialStrategyCalculator = new MaterialStrategyCalculator();
-    this.hardwareSpecifier = new HardwareSpecifier();
   }
   
   /**
@@ -168,7 +165,7 @@ export class ZeroDecisionGenerator {
         reinforcement: []
       },
       materialStrategy: {
-        recommendedMaterial: workshopContext.preferredMaterials?.[0] || 'aluminum',
+        recommendedMaterial: (workshopContext.preferredMaterials?.[0] || 'aluminum') as "both" | "aluminum" | "upvc",
         profileSystem: 'panda-50',
         complexityLevel: 'simple',
         requiresSpecialTools: false,
@@ -185,7 +182,7 @@ export class ZeroDecisionGenerator {
    */
   private mapMachineCapabilities(
     capabilities?: string[]
-  ): MaterialStrategyCalculator['MachineCapabilities'] {
+  ): MachineCapabilities | undefined {
     if (!capabilities) return undefined;
     
     return {
@@ -196,28 +193,5 @@ export class ZeroDecisionGenerator {
     };
   }
   
-  /**
-   * Generate irregular cutting pattern for complex shape
-   * Note: This is handled by ComplexShapeGenerator.generateOptimalDesign()
-   * This method is kept for potential future custom logic
-   */
-  private generateIrregularCuttingPattern(_shape: InferredShape): ComplexShapeDesign['production']['cuttingPattern'] {
-    // This is handled by ComplexShapeGenerator, but we can add custom logic here if needed
-    // For now, delegate to the generator
-    return {
-      stockLengths: [],
-      totalWaste: 0,
-      wastePercentage: 0
-    };
-  }
-  
-  /**
-   * Calculate complex shape assembly time
-   * Note: This is handled by ComplexShapeGenerator.generateOptimalDesign()
-   * This method is kept for potential future custom logic
-   */
-  private calculateComplexShapeTime(shape: InferredShape): number {
-    return shape.materialStrategy.estimatedAssemblyTime;
-  }
 }
 

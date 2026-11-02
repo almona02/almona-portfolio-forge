@@ -38,7 +38,7 @@ class WorkerWrapper {
     }
     this.busy = true;
     return new Promise((resolve, reject) => {
-      this.activeRequest = { resolve, reject };
+      this.activeRequest = { resolve: resolve as (val: unknown) => void, reject: reject as (err: unknown) => void };
       this.worker.postMessage(request);
     });
   }
@@ -84,8 +84,8 @@ export class PathWorkerPool {
     return new Promise((resolve, reject) => {
       this.queue.push({
         request: { templateId, width, height, params, quality },
-        resolve,
-        reject
+        resolve: resolve as (val: unknown) => void,
+        reject: reject as (err: unknown) => void
       });
       this.processQueue();
     });

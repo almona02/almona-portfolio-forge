@@ -12,7 +12,7 @@
 
 import { trackAccuracyCheckpoint } from '@/lib/fabricator/AccuracyTracker';
 import { getBaselineTracker } from '@/lib/performance/BaselineTracker';
-import { endTiming, getWorkflowProfiler, startTiming } from '@/lib/performance/WorkflowProfiler';
+import { endTiming, startTiming } from '@/lib/performance/WorkflowProfiler';
 import type { Cut, CuttingPlan, OptimizationResult, Profile } from '@/types/fabricator';
 import {
   ACCURACY_DECIMAL_PLACES,
@@ -86,7 +86,6 @@ export class ProductionOptimizer {
       onProgress,
     } = options;
 
-    const _profiler = getWorkflowProfiler();
     startTiming('optimization', 'Cutting Optimization');
 
     const progress: OptimizationProgress[] = [];

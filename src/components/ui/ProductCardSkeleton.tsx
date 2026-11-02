@@ -1,4 +1,3 @@
-import React from 'react';
 
 export const ProductCardSkeleton = () => (
   <div className="animate-pulse bg-card rounded-lg p-4 border border-border">

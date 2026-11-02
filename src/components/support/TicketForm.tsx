@@ -200,7 +200,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
               <div className="space-y-2">
                 <Label>Maintenance Type</Label>
                 <Controller name="maintenance_type" control={control} render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select value={field.value ?? ''} onValueChange={field.onChange}>
                     <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="preventive">Preventive</SelectItem>
@@ -245,7 +245,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
                 <div className="space-y-2">
                   <Label>Preferred Contact</Label>
                   <Controller name="preferred_contact_method" control={control} render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
+                    <Select value={field.value ?? ''} onValueChange={field.onChange}>
                       <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="email">Email</SelectItem>

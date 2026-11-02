@@ -1,4 +1,3 @@
-import React from 'react';
 
 export const FormSkeleton = () => (
   <div className="animate-pulse space-y-4">

@@ -314,13 +314,12 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
     setQuantityBreaks(updated);
     localStorage.setItem('engineeringBay_quantityBreaks', JSON.stringify(updated));
     if (userId) {
-      supabase
-        .from('pricing_configurations')
+      (supabase.from('pricing_configurations') as any)
         .update({
           settings: { quantityBreaks: updated }
-        } as any)
+        })
         .eq('user_id', userId)
-        .catch((error) => console.error('Failed to save quantity breaks:', error));
+        .catch((error: unknown) => console.error('Failed to save quantity breaks:', error));
     }
   };
 
@@ -332,13 +331,12 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
     setQuantityBreaks(updated);
     localStorage.setItem('engineeringBay_quantityBreaks', JSON.stringify(updated));
     if (userId) {
-      supabase
-        .from('pricing_configurations')
+      (supabase.from('pricing_configurations') as any)
         .update({
           settings: { quantityBreaks: updated }
-        } as any)
+        })
         .eq('user_id', userId)
-        .catch((error) => console.error('Failed to save quantity breaks:', error));
+        .catch((error: unknown) => console.error('Failed to save quantity breaks:', error));
     }
   };
 

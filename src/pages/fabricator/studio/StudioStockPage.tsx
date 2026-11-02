@@ -7,6 +7,11 @@ import {
   buildBomDemandReport,
   isStockAcknowledgementStale,
 } from '@/lib/fabricator/inventory/bomStockAvailability';
+import { loadOwnedPhysicalBarLots } from '@/lib/fabricator/inventory/loadOwnedPhysicalBarLots';
+import {
+  buildFreshStockAcknowledgement,
+  decideStockAcknowledgementFreshness,
+} from '@/lib/fabricator/inventory/stockAcknowledgementFreshness';
 import { loadOwnedWorkshopInventory } from '@/lib/fabricator/inventory/ProfileInventoryAdapter';
 import { fingerprintBom } from '@/lib/fabricator/positionRelease';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
@@ -14,7 +19,7 @@ import { Button } from '@/shared/ui/ui/button';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -30,6 +35,7 @@ export const StudioStockPage: React.FC = () => {
   const stockReservation = useWorkflowStore((s) => s.stockReservation);
   const setStockReservation = useWorkflowStore((s) => s.setStockReservation);
   const currentProject = useWorkflowStore((s) => s.currentProject) ?? state.currentProject;
+  const [acknowledging, setAcknowledging] = useState(false);
 
   const {
     data,
@@ -44,16 +50,43 @@ export const StudioStockPage: React.FC = () => {
     refetchOnWindowFocus: false,
     queryFn: async () => {
       if (!user?.id) {
-        return { profiles: [], totalValue: 0, error: null as string | null };
+        return {
+          profiles: [],
+          totalValue: 0,
+          physicalLots: [],
+          physicalInvalidated: [] as string[],
+          physicalComplete: false,
+          physicalError: null as string | null,
+          physicalStockVersionFingerprint: '',
+          physicalStockVersionByProfile: {} as Record<string, number>,
+          error: null as string | null,
+        };
       }
       const result = await loadOwnedWorkshopInventory({
         userId: user.id,
         syncFromMovements: false,
       });
+      const lotsResult = await loadOwnedPhysicalBarLots({
+        userId: user.id,
+        ownedProfiles: result.profiles,
+      });
+      const verifiedVersions = lotsResult.stockVersionByProfile;
+      const profiles = result.profiles.map((p) => ({
+        ...p,
+        stockVersion: verifiedVersions[p.id] ?? p.stockVersion,
+      }));
       return {
-        profiles: result.profiles,
+        profiles,
         totalValue: result.totalValue,
-        error: result.ok ? null : result.error,
+        physicalLots: lotsResult.lots,
+        physicalInvalidated: lotsResult.invalidatedProfileIds,
+        physicalComplete: lotsResult.ok && lotsResult.complete,
+        physicalError: lotsResult.ok ? null : lotsResult.error,
+        physicalStockVersionFingerprint: lotsResult.stockVersionFingerprint,
+        physicalStockVersionByProfile: verifiedVersions,
+        error: result.ok
+          ? (lotsResult.ok ? null : lotsResult.error)
+          : result.error,
       };
     },
   });
@@ -95,7 +128,7 @@ export const StudioStockPage: React.FC = () => {
     });
   }, [reservationCurrent, stockReservation, report, bomFingerprint]);
 
-  const handleAcknowledgeStock = () => {
+  const handleAcknowledgeStock = async () => {
     if (!workflowIdentity || workflowIdentity.ownerUserId !== user?.id) {
       toast.error('Open a saved position revision before acknowledging stock.');
       return;
@@ -104,7 +137,7 @@ export const StudioStockPage: React.FC = () => {
       toast.error('Qualify the bill of materials for this revision before acknowledging stock.');
       return;
     }
-    if (isLoading || error || data?.error || !data) {
+    if (isLoading || error || data?.error || !data || !user?.id) {
       toast.error('Owned inventory must load successfully before acknowledging stock.');
       return;
     }
@@ -116,31 +149,99 @@ export const StudioStockPage: React.FC = () => {
       toast.error('Map missing catalogue profiles to owned stock before acknowledging.');
       return;
     }
-
-    const metersByProfile: Record<string, number> = {};
-    for (const row of report.rows) {
-      if (row.ownedProfileId) {
-        metersByProfile[row.ownedProfileId] =
-          (metersByProfile[row.ownedProfileId] ?? 0) + row.requiredMetres;
-      }
+    if (!data.physicalComplete) {
+      toast.error(
+        data.physicalError
+          || 'Physical bar movement history is incomplete — cannot acknowledge production stock.',
+      );
+      return;
     }
 
-    setStockReservation({
-      identity: workflowIdentity,
-      profileIds: Array.from(new Set(Object.keys(metersByProfile))),
-      metersByProfile,
-      reservedAt: new Date().toISOString(),
-      availabilityOk: report.availabilityOk,
-      bomFingerprint,
-      stockVersionByProfile: { ...report.stockVersionByProfile },
-    });
+    setAcknowledging(true);
+    try {
+      // Fresh authoritative load — do not trust React cache alone for acceptance.
+      const freshInventory = await loadOwnedWorkshopInventory({
+        userId: user.id,
+        syncFromMovements: false,
+      });
+      if (!freshInventory.ok) {
+        toast.error(freshInventory.error || 'Failed to refresh owned inventory for acknowledgement.');
+        return;
+      }
+      const freshLots = await loadOwnedPhysicalBarLots({
+        userId: user.id,
+        ownedProfiles: freshInventory.profiles,
+      });
+      const freshness = decideStockAcknowledgementFreshness({
+        displayedFingerprint: data.physicalStockVersionFingerprint,
+        freshOk: freshLots.ok,
+        freshComplete: freshLots.ok && freshLots.complete,
+        freshFingerprint: freshLots.stockVersionFingerprint,
+        freshError: freshLots.ok ? null : freshLots.error,
+      });
+      if (!freshness.ok) {
+        await queryClient.invalidateQueries({ queryKey: ['studio-owned-inventory', user.id] });
+        if (freshness.action === 'block_refresh') {
+          toast.warning(freshness.reason);
+        } else {
+          toast.error(freshness.reason);
+        }
+        return;
+      }
 
-    if (report.availabilityOk) {
-      toast.success(`Stock availability acknowledged for R${workflowIdentity.revision} (soft check only).`);
-    } else {
-      toast.warning(
-        `Stock acknowledgement recorded for R${workflowIdentity.revision}, but metres are short — resolve intake before optimize.`,
-      );
+      // Rebuild demand against fresh profiles (same BOM, live stock versions).
+      let freshReport;
+      try {
+        freshReport = buildBomDemandReport(
+          bom!.profiles,
+          freshInventory.profiles.map((p) => ({
+            ...p,
+            stockVersion: freshLots.stockVersionByProfile[p.id] ?? p.stockVersion,
+          })),
+          currentProject?.quantity ?? 1,
+        );
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Unable to recompute demand on fresh stock.');
+        return;
+      }
+      if (!freshReport.allMapped) {
+        toast.error('Fresh inventory lost catalogue mappings — review stock before acknowledging.');
+        await queryClient.invalidateQueries({ queryKey: ['studio-owned-inventory', user.id] });
+        return;
+      }
+
+      const built = buildFreshStockAcknowledgement({
+        identity: workflowIdentity,
+        bomFingerprint,
+        report: freshReport,
+        freshLots: freshLots.lots,
+        freshInvalidatedProfileIds: freshLots.invalidatedProfileIds,
+        freshStockVersionByProfile: freshLots.stockVersionByProfile,
+        freshFingerprint: freshLots.stockVersionFingerprint,
+        ownedProfiles: freshInventory.profiles,
+      });
+      if (!built.ok) {
+        toast.error(built.reason);
+        return;
+      }
+
+      setStockReservation(built.reservation);
+      // Keep UI cache aligned with the accepted fresh snapshot.
+      await queryClient.invalidateQueries({ queryKey: ['studio-owned-inventory', user.id] });
+
+      if (built.binding.binding !== 'physical') {
+        toast.warning(
+          `Stock acknowledgement for R${workflowIdentity.revision} is metres-only / unbound — production packing stays blocked until piece/bar intake establishes profile×length counts.`,
+        );
+      } else if (freshReport.availabilityOk) {
+        toast.success(`Stock availability acknowledged for R${workflowIdentity.revision} with physical bar lots.`);
+      } else {
+        toast.warning(
+          `Stock acknowledgement recorded for R${workflowIdentity.revision}, but metres are short — resolve intake before optimize.`,
+        );
+      }
+    } finally {
+      setAcknowledging(false);
     }
   };
 
@@ -181,7 +282,8 @@ export const StudioStockPage: React.FC = () => {
     && !loadError
     && Boolean(report)
     && !demandError
-    && !isFetching;
+    && !isFetching
+    && !acknowledging;
 
   return (
     <div className="h-full overflow-auto" data-testid="studio-stock-page">
@@ -243,10 +345,10 @@ export const StudioStockPage: React.FC = () => {
               <Button
                 size="sm"
                 className="bg-amber-500 hover:bg-amber-600 text-black"
-                onClick={handleAcknowledgeStock}
+                onClick={() => void handleAcknowledgeStock()}
                 disabled={!canAcknowledge}
               >
-                Acknowledge stock for this revision
+                {acknowledging ? 'Verifying fresh stock…' : 'Acknowledge stock for this revision'}
               </Button>
               {reservationCurrent && stockReservation && !acknowledgementStale ? (
                 <span

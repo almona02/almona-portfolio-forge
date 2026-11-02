@@ -134,7 +134,7 @@ export const QuoteTemplateEditor: React.FC<QuoteTemplateEditorProps> = ({
                 setIsDefault(template.is_default);
                 
                 if (template.template_config && typeof template.template_config === 'object') {
-                    setConfig(template.template_config as QuoteTemplateConfig);
+                    setConfig(template.template_config as unknown as QuoteTemplateConfig);
                 }
             } catch (error) {
                 toast.error(
@@ -165,7 +165,7 @@ export const QuoteTemplateEditor: React.FC<QuoteTemplateEditorProps> = ({
                 name: name.trim(),
                 description: description.trim() || undefined,
                 category,
-                template_config: config,
+                template_config: config as unknown as Record<string, unknown>,
                 is_public: isPublic,
                 is_default: isDefault,
             };
@@ -175,7 +175,7 @@ export const QuoteTemplateEditor: React.FC<QuoteTemplateEditorProps> = ({
                 result = await updateQuoteTemplate(templateId, request);
                 toast.success('Template updated successfully');
             } else {
-                result = await createQuoteTemplate(request);
+                result = await createQuoteTemplate(request as QuoteTemplateCreateRequest);
                 toast.success('Template created successfully');
             }
 

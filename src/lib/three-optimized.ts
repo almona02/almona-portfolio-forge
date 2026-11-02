@@ -42,13 +42,8 @@ export {
 } from '@react-three/fiber';
 
 // React Three Drei - essential components only (remove heavy post-processing)
-export { 
-  OrbitControls,
-  useGLTF,
-  useAnimations,
-  Environment,
-  Bounds
-} from '@react-three/drei';
+import { OrbitControls, useGLTF, useAnimations, Environment, Bounds } from '@react-three/drei';
+export { OrbitControls, useGLTF, useAnimations, Environment, Bounds };
 
 // Dynamic import post-processing only when needed
 export const lazyPostProcessing = () => import('@react-three/postprocessing');

@@ -161,20 +161,13 @@ export class YDTBusinessLayer {
    * Get optimization WITH YDT intelligence
    */
   async optimizeWithYDT(
-    cuts: any[],
+    _cuts: any[],
     context: OptimizationContext
   ): Promise<YDTOptimizationResult> {
     // Get YDT strategy FIRST
     const ydtStrategy = await this.ydt.getOptimizationStrategy(context);
 
     // Execute optimization with YDT guidance
-    // (Would call actual ProductionOptimizer with YDT strategy)
-    const _result = await this.executeOptimization(cuts, {
-      strategy: ydtStrategy.data.strategy,
-      constraints: ydtStrategy.data.constraints,
-      priorities: ydtStrategy.data.priorities,
-    });
-
     return {
       strategy: ydtStrategy.data.strategy,
       constraints: ydtStrategy.data.constraints,
@@ -245,37 +238,5 @@ export class YDTBusinessLayer {
     };
   }
 
-  private async validateMarketPosition(project: Project): Promise<{
-    feasible: boolean;
-    challenges: string[];
-    recommendations: string[];
-    confidence: number;
-  }> {
-    // Get competitive analysis
-    const competition = await this.ydt.analyzeCompetition(project.location, project.type);
-
-    return {
-      feasible: true,
-      challenges: [],
-      recommendations: competition.recommendations,
-      confidence: 0.88,
-    };
-  }
-
-  private async executeOptimization(
-    cuts: any[],
-    options: {
-      strategy: string;
-      constraints: Record<string, any>;
-      priorities: string[];
-    }
-  ): Promise<any> {
-    // Would call ProductionOptimizer with YDT strategy
-    // For now, return placeholder
-    return {
-      optimized: true,
-      strategy: options.strategy,
-    };
-  }
 }
 

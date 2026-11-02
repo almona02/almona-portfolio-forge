@@ -1,10 +1,8 @@
 import * as React from "react"
 import * as MenubarPrimitive from "@radix-ui/react-menubar"
 import { Check, ChevronRight, Circle } from "lucide-react"
-import { Route } from "react-router-dom"
 
 import { cn } from "@/lib/utils"
-import TrainingServicesPage from "@/app/(site)/services/training/page"
 
 const MenubarMenu = MenubarPrimitive.Menu
 
@@ -234,5 +232,3 @@ export {
   MenubarSub,
   MenubarShortcut,
 }
-
-<Route path="/services/training" element={<TrainingServicesPage />} />

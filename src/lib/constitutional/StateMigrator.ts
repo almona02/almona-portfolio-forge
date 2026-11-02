@@ -8,7 +8,6 @@ import { PersistedState } from './PositionStateSyncService';
  * @constitutional_compliance AICS-001 §9.3.I (Data Integrity)
  */
 export class StateMigrator {
-  private readonly CURRENT_VERSION = 1;
 
   /**
    * Migrate state to current version

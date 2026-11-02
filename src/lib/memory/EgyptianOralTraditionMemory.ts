@@ -70,7 +70,6 @@ export class EgyptianOralTraditionMemory {
   private stories: Map<string, WorkshopStory> = new Map();
   private tricks: Map<string, WorkshopTrick> = new Map();
   private warnings: Map<string, WorkshopWarning> = new Map();
-  private names: Map<string, PersonRecord> = new Map();
 
   /**
    * Encode fact as Egyptian memory
@@ -123,11 +122,6 @@ export class EgyptianOralTraditionMemory {
    * Create proverb from fact
    */
   private async createProverb(fact: ValidatedFact): Promise<string> {
-    const _proverbTemplates: Record<string, string> = {
-      material_trick: '${action} على ${tool}، و${result}',
-      supplier_advice: 'خذ من ${supplier} ${material}، ومتاخدش ${warning}',
-      timing_advice: '${action} في ${time}، ${result}',
-    };
 
     // Extract key words from claim
     const lowerClaim = fact.claim.toLowerCase();
@@ -226,12 +220,6 @@ export class EgyptianOralTraditionMemory {
   }
 }
 
-interface PersonRecord {
-  name: string;
-  type: 'supplier' | 'maalem' | 'workshop';
-  reputation: 'high' | 'medium' | 'low';
-  location: string;
-}
 
 
 

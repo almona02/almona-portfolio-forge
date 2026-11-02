@@ -162,7 +162,7 @@ describe('FP-028 / P5.3 — save persists grid/system/template identity', () => 
           height: 1550,
           length: 1210,
           quantity: 1,
-        } as WindowUnit['components'][number],
+        } as unknown as WindowUnit['components'][number],
       ],
       grid: F1_GRID,
       systemPackId: 'rock60',

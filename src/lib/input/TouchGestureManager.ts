@@ -115,7 +115,7 @@ export class TouchGestureManager {
 
   // --- Event Handlers ---
 
-  private handlePointerDown = (e: PointerEvent) => {
+  public handlePointerDown = (e: PointerEvent) => {
     // Only capture primary buttons or touch
     if (e.button !== 0 && e.pointerType === 'mouse') return;
 
@@ -140,7 +140,7 @@ export class TouchGestureManager {
     }
   };
 
-  private handlePointerMove = (e: PointerEvent) => {
+  public handlePointerMove = (e: PointerEvent) => {
     if (!this.activePointers.has(e.pointerId)) return;
     
     this.activePointers.set(e.pointerId, e);

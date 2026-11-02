@@ -333,7 +333,7 @@ export class FlyScreenPresetEngine {
    * Determine mesh type based on screen type and location
    */
   private determineMeshType(
-    screenType: FlyScreenType,
+    _screenType: FlyScreenType,
     location?: string
   ): string {
     // Coastal areas (Alexandria) may need finer mesh for sand

@@ -214,7 +214,7 @@ export class CompatibilityMatrix {
    */
   checkScreenSashCompatibility(
     screenSashProfile: Profile,
-    glassSashProfile: Profile,
+    _glassSashProfile: Profile,
     glassSashDimensions: { width: number; height: number }
   ): CompatibilityResult {
     // Screen sash must be smaller than glass sash by at least 10mm

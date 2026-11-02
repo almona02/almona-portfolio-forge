@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const geminiKey = import.meta.env.VITE_GEMINI_KEY;
-const genAI = geminiKey ? new GoogleGenerativeAI(geminiKey) : null;
+const genAI = geminiKey ? new GoogleGenerativeAI(geminiKey as string) : null;
 
 export const EGYPTIAN_MARKET_CONTEXT = `
 

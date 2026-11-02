@@ -85,7 +85,7 @@ export class Phase1MetricsTracker {
     actualValue: number | null,
     confidence: number,
     modelVersion: string,
-    fallbackUsed: boolean,
+    _fallbackUsed: boolean,
     features: Record<string, any>,
     userId?: string
   ): Promise<void> {

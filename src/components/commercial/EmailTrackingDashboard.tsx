@@ -163,9 +163,9 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
 
       // Calculate stats
       const totalSent = combined.length;
-      const totalDelivered = combined.filter(e => e.status === 'delivered' || e.status === 'sent').length;
-      const totalOpened = combined.filter(e => e.openCount > 0).length;
-      const totalClicked = combined.filter(e => e.clickCount > 0).length;
+      const totalDelivered = combined.filter((e: any) => e.status === 'delivered' || e.status === 'sent').length;
+      const totalOpened = combined.filter((e: any) => e.openCount > 0).length;
+      const totalClicked = combined.filter((e: any) => e.clickCount > 0).length;
 
       setStats({
         totalSent,

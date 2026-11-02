@@ -396,7 +396,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       systemPackId: selectedSystemPackId,
       // Persist multi-cell predicted grids even when Multi-pane UI toggle is off
       grid: shouldPersistMeasuringGrid(grid, isGridMode) ? grid : undefined,
-    };
+    } as unknown as WindowUnit;
   }, [measurements, grid, isGridMode, selectedSystemPackId]);
 
   // Force blueprint to update when grid changes - include ALL grid properties for reactivity

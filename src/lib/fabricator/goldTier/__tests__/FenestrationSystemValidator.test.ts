@@ -14,7 +14,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { FenestrationSystemValidator } from '../FenestrationSystemValidator';
 import type { FenestrationSystem } from '@/types/fenestration';
-import { createValidSystem, createInvalidSystem } from './testFixtures';
 
 // Mock audit logging
 vi.mock('@/lib/audit/fabricatorAudit', () => ({
@@ -362,7 +361,7 @@ function createInvalidSystem(type: string): FenestrationSystem {
   
   switch (type) {
     case 'missingId':
-      return { ...valid, id: undefined } as FenestrationSystem;
+      return { ...valid, id: undefined } as unknown as FenestrationSystem;
     case 'invalidRegion':
       return { ...valid, region: 'INVALID' as FenestrationSystem['region'] };
     case 'upvcNoWelding':
@@ -405,14 +404,14 @@ function createInvalidSystem(type: string): FenestrationSystem {
     case 'multipleErrors':
       return {
         ...valid,
-        id: undefined,
-        region: 'INVALID',
+        id: undefined as any,
+        region: 'INVALID' as any,
       };
     case 'typeErrors':
       return {
         ...valid,
-        id: 123, // Invalid type
-        name: 456, // Invalid type
+        id: 123 as any, // Invalid type
+        name: 456 as any, // Invalid type
       };
     default:
       return valid;

@@ -296,7 +296,6 @@ export class StatePersistenceManager {
       const index = this.versions.findIndex(v => v.id === versionId);
       if (index === -1) return false;
 
-      const _version = this.versions[index];
       this.versions.splice(index, 1);
 
       // Remove from storage

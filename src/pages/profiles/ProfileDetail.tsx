@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Profile } from "../../constants/productsData";
 import { ReviewForm } from "@/components/shop/ReviewForm";
 import { ReviewList } from "@/components/shop/ReviewList";
 import { getReviewsByProductId, addReview, Review } from "@/lib/reviewsApi";
@@ -38,7 +37,7 @@ const ProfileDetail: React.FC = () => {
     toast.success(t("reviews.review_submitted_success"));
   };
 
-  const profile: Profile | undefined = undefined; // alfapenProfiles removed
+  const profile: any = undefined; // alfapenProfiles removed
 
   if (!profile) {
     return (
@@ -71,7 +70,7 @@ const ProfileDetail: React.FC = () => {
       <div className="mb-4">
         <strong>Applications:</strong>
         <ul className="list-disc list-inside">
-          {profile.applications.map((app, index) => (
+          {profile.applications.map((app: any, index: number) => (
             <li key={index}>{app}</li>
           ))}
         </ul>

@@ -81,7 +81,6 @@ export interface MaterialOrderRecommendation {
 export class SupplyChainIntelligence {
   private suppliers: Map<string, Supplier> = new Map();
   private priceHistory: Map<string, PriceTrend[]> = new Map();
-  private orderHistory: Map<string, any[]> = new Map();
 
   /**
    * Predict optimal order timing for materials

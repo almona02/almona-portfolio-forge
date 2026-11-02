@@ -58,7 +58,7 @@ export class RealityOSEventEmitter {
             originalEventType: eventType,
             entityId: ((entity.id as string) ?? entity.unitId ?? 'unknown'),
             detectedAt: new Date(),
-            reason: retroactiveCheck.reason,
+            reason: retroactiveCheck.reason ?? '',
             requiresHumanInvestigation: true,
           };
           const faultResult = await this.emitFaultEvent(faultEvent);
@@ -255,7 +255,7 @@ export class RealityOSEventEmitter {
     const faultProof: RealityProof = {
       verifiedBy: 'system',
       timestamp: fault.detectedAt.toISOString(),
-      location: null,
+      location: undefined,
       photoHashes: [],
     };
 
@@ -295,7 +295,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: 'system',
       timestamp: new Date().toISOString(),
-      location: null,
+      location: undefined,
       photoHashes: [],
       metadata: { constitutional_role: 'cutover_anchor' },
     };
@@ -313,7 +313,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: null,
+      location: undefined,
       photoHashes: [],
       metadata: { constitutional_role: 'rollback_executed' },
     };
@@ -334,7 +334,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: null,
+      location: undefined,
       photoHashes: [],
       metadata: {
         constitutional_role: 'migration_initiation',
@@ -358,7 +358,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: null,
+      location: undefined,
       photoHashes: [completionProofPhotoHash],
       metadata: {
         migrationId: payload.migrationId,
@@ -381,7 +381,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: null,
+      location: undefined,
       photoHashes: [],
       metadata: {
         constitutional_role: 'rollback_initiation',
@@ -402,7 +402,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: null,
+      location: undefined,
       photoHashes: [completionProofPhotoHash],
       metadata: {
         migrationId: payload.migrationId,
@@ -425,11 +425,11 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: null, // Design intent, no location
+      location: undefined, // Design intent, no location
       photoHashes: [],
     };
 
-    return this.emitEvent('FabricationIntentCreated', windowUnit, proof);
+    return this.emitEvent('FabricationIntentCreated', windowUnit as unknown as Record<string, unknown>, proof);
   }
 
   /**
@@ -443,7 +443,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: null,
+      location: undefined,
       photoHashes: screenshotHash ? [screenshotHash] : [],
     };
 
@@ -462,7 +462,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: null,
+      location: undefined,
       photoHashes: [fileHash],
       qrData: qrCode,
     };
@@ -482,7 +482,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: workshopGPS || null,
+      location: workshopGPS || undefined,
       photoHashes: [],
       qrData: machineQR,
     };
@@ -503,7 +503,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: workshopGPS || null,
+      location: workshopGPS || undefined,
       photoHashes: [productPhotoHash],
       qrData: productQR,
     };
@@ -523,7 +523,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: null,
+      location: undefined,
       photoHashes: [productPhotoHash],
       qrData: productQR,
     };
@@ -543,7 +543,7 @@ export class RealityOSEventEmitter {
     const proof: RealityProof = {
       verifiedBy: operatorId,
       timestamp: new Date().toISOString(),
-      location: null,
+      location: undefined,
       photoHashes: defectPhotoHashes.slice(0, 2), // Max 2 photos
       qrData: productQR,
     };

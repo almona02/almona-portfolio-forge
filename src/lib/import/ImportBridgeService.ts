@@ -339,7 +339,7 @@ export class ImportBridgeService {
       grid: { rows: 1, cols: 1, cells: [] },
       createdAt: new Date(),
       updatedAt: new Date(),
-    } as WindowUnit;
+    } as unknown as WindowUnit;
   }
 
   private async parseCSV(file: File, options: CSVImportOptions): Promise<any[]> {
@@ -384,7 +384,7 @@ export class ImportBridgeService {
       grid: { rows: 1, cols: 1, cells: [] },
       createdAt: new Date(),
       updatedAt: new Date(),
-    } as WindowUnit;
+    } as unknown as WindowUnit;
   }
 
   private async parseLogiKalExport(file: File): Promise<any> {
@@ -413,7 +413,7 @@ export class ImportBridgeService {
       grid: { rows: 1, cols: 1, cells: [] },
       createdAt: new Date(),
       updatedAt: new Date(),
-    } as WindowUnit;
+    } as unknown as WindowUnit;
   }
 
   private async parseKLAESExport(file: File): Promise<any> {
@@ -442,7 +442,7 @@ export class ImportBridgeService {
       grid: { rows: 1, cols: 1, cells: [] },
       createdAt: new Date(),
       updatedAt: new Date(),
-    } as WindowUnit;
+    } as unknown as WindowUnit;
   }
 
   private async hashFile(file: File): Promise<string> {

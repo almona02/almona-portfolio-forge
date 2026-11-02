@@ -195,7 +195,6 @@ export class TurkishProfileOptimizer {
     // Get all cut lengths
     const allCutLengths = plans.flatMap(plan => plan.cuts.map(cut => cut.length));
     const maxCut = Math.max(...allCutLengths);
-    const _totalLength = allCutLengths.reduce((sum, len) => sum + len, 0);
 
     // Find best standard length
     let bestLength = this.standardLengths[0];

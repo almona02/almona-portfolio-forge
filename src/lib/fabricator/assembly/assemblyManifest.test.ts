@@ -233,3 +233,104 @@ describe('assembly manifest — binding to the generated 3D model', () => {
     expect(searchManifest(manifest, '')).toHaveLength(manifest.entries.length);
   });
 });
+
+describe('assembly manifest — fixed / single-sash / mixed honesty (Batch E)', () => {
+  function fixedSingleSashUnit(): WindowUnit {
+    const stamp = 'fixed1s';
+    const components = [
+      component(`frame_top_${stamp}`, 'frame', 'PS-6601-FRAME', [900], [45, 45]),
+      component(`frame_bottom_${stamp}`, 'frame', 'PS-6601-FRAME', [900], [45, 45]),
+      component(`frame_left_${stamp}`, 'frame', 'PS-6601-FRAME', [1200], [45, 45]),
+      component(`frame_right_${stamp}`, 'frame', 'PS-6601-FRAME', [1200], [45, 45]),
+    ];
+    const fixedGrid: WindowGrid = {
+      rows: 1, cols: 1, colWidths: [1], rowHeights: [1],
+      cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }],
+    };
+    return {
+      id: 'fixed-1s-unit', orderNumber: 'FP-FIXED', posNumber: '1', type: 'fixed_window',
+      overallWidth: 900, overallHeight: 1200, systemPackId: 'caluminium-ps', quantity: 1, revision: 1,
+      grid: fixedGrid, components, color: 'white', glazing: {}, hardware: [],
+    } as unknown as WindowUnit;
+  }
+
+  function mixedFixedSlidingUnit(): WindowUnit {
+    const stamp = 'mixed1';
+    const components = [
+      component(`frame_top_${stamp}`, 'frame', 'PS-6601-FRAME', [1500], [45, 45]),
+      component(`frame_bottom_${stamp}`, 'frame', 'PS-6601-FRAME', [1500], [45, 45]),
+      component(`frame_left_${stamp}`, 'frame', 'PS-6601-FRAME', [1400], [45, 45]),
+      component(`frame_right_${stamp}`, 'frame', 'PS-6601-FRAME', [1400], [45, 45]),
+      component(`sash_0-1_top`, 'sash', 'PS-6601-SASH', [700], [45, 45]),
+      component(`sash_0-1_bottom`, 'sash', 'PS-6601-SASH', [700], [45, 45]),
+      component(`sash_0-1_left`, 'sash', 'PS-6601-SASH', [1200], [45, 45]),
+      component(`sash_0-1_right`, 'sash', 'PS-6601-SASH', [1200], [45, 45]),
+    ];
+    const mixedGrid: WindowGrid = {
+      rows: 1, cols: 2, colWidths: [1, 1], rowHeights: [1],
+      cells: [
+        { id: '0-0', row: 0, col: 0, type: 'fixed' },
+        { id: '0-1', row: 0, col: 1, type: 'sash' },
+      ],
+    };
+    return {
+      id: 'mixed-unit', orderNumber: 'FP-MIXED', posNumber: '2', type: 'mixed_window',
+      overallWidth: 1500, overallHeight: 1400, systemPackId: 'caluminium-ps', quantity: 1, revision: 2,
+      grid: mixedGrid, components, color: 'bronze', glazing: {}, hardware: [],
+    } as unknown as WindowUnit;
+  }
+
+  it('fixed single-sash: listed profiles map or are explicitly unmodelled; no invented codes', () => {
+    const unit = fixedSingleSashUnit();
+    const geometry = generateModelGeometries(unit, null, { forceRegenerate: true });
+    const visual = collectVisualPartKeys(geometry, generateHardwarePlaceholders(unit));
+    const manifest = buildAssemblyManifest(unit, { visualPartKeys: visual, systemPack: PACK });
+    expect(manifest.openingType).toMatch(/fixed/i);
+    const profiles = manifest.entries.filter((e) => e.category === 'profile');
+    expect(profiles.length).toBeGreaterThan(0);
+    expect(profiles.every((e) => e.modelling === 'mapped' || e.modelling === 'unmodelled')).toBe(true);
+    expect(manifest.entries.every((e) => e.catalogueCode !== '' && e.catalogueCode != null)).toBe(true);
+    // System-pack hardware for fixed stays unmodelled / unquantified until assigned — never invented as placed.
+    const system = manifest.entries.filter((e) => e.source === 'system_pack');
+    expect(system.every((e) => e.modelling === 'unmodelled')).toBe(true);
+    expect(manifest.entries.filter((e) => e.modelling === 'pending')).toHaveLength(0);
+  });
+
+  it('mixed fixed+sash: every listed part is drawn or explicitly unmodelled', () => {
+    const unit = mixedFixedSlidingUnit();
+    const geometry = generateModelGeometries(unit, null, { forceRegenerate: true });
+    const visual = collectVisualPartKeys(geometry, generateHardwarePlaceholders(unit));
+    const manifest = buildAssemblyManifest(unit, { visualPartKeys: visual, systemPack: PACK });
+    expect(manifest.entries.every((e) => e.modelling === 'mapped' || e.modelling === 'unmodelled')).toBe(true);
+    expect(manifest.entries.filter((e) => e.modelling === 'pending')).toHaveLength(0);
+    const frames = manifest.entries.filter((e) => e.role === 'frame');
+    const sashes = manifest.entries.filter((e) => e.role === 'sash');
+    expect(frames.length).toBeGreaterThan(0);
+    expect(sashes.length).toBeGreaterThan(0);
+  });
+
+  it('legacy frame-only component id stays unmodelled without inventing PS codes', () => {
+    const unit = fixedSingleSashUnit();
+    unit.components = [
+      {
+        id: 'frame-caluminium-ps',
+        type: 'frame',
+        profile: { ...packProfile('PS-6601-FRAME'), id: '' } as Profile,
+        quantity: 1,
+        cuttingLengths: [900, 900, 1200, 1200],
+        angles: [45, 45],
+        machiningOperations: [],
+        glazingType: 'none',
+        hardware: [],
+      } as unknown as WindowComponent,
+    ];
+    const manifest = buildAssemblyManifest(unit, {
+      visualPartKeys: [partRefKey({ kind: 'frame', cellId: null, placement: 'top', index: null })],
+      systemPack: PACK,
+    });
+    const frame = manifest.entries.filter((e) => e.role === 'frame');
+    expect(frame).toHaveLength(4);
+    expect(frame.every((e) => e.catalogueCode === UNKNOWN_CODE)).toBe(true);
+    expect(frame.every((e) => e.partRef === null && e.modelling === 'unmodelled')).toBe(true);
+  });
+});

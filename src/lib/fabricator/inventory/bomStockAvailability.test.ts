@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { FabricationData, Profile } from '@/types/fabricator';
 import {
+  barsByCatalogueProfileFromDemand,
   buildBomDemandReport,
   isStockAcknowledgementStale,
   resolveOwnedProfileForBomLine,
@@ -106,4 +107,15 @@ it('fails closed on ambiguous same-code catalogue mappings',()=>{
 it('includes every repeated window in active revision demand',()=>{
  const bom=[{id:'line',profileCode:'CAT-FRAME',systemPack:'pack',cuttingLengths:[1000,1000]}] as never;
  expect(buildBomDemandReport(bom,[],5).totalRequiredMetres).toBe(10);
+});
+
+it('derives finite bar counts from available metres and stock length', () => {
+  const report = buildBomDemandReport(
+    [ledger([1200, 1200], { profileCode: 'F60', id: 'bom-row-1' })],
+    [owned],
+  );
+  const bars = barsByCatalogueProfileFromDemand(report, { F60: 6000 });
+  // 40 m available / 6 m bar = 6 bars
+  expect(bars.F60).toBe(6);
+  expect(bars['bom-row-1']).toBe(6);
 });

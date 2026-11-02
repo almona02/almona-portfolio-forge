@@ -197,7 +197,7 @@ export class CuttingListGenerator {
    * Generate cutting list summary
    */
   private generateSummary(
-    project: WindowUnit,
+    _project: WindowUnit,
     optimization: OptimizationResult,
     processedPlans: ProcessedCuttingPlan[]
   ): CuttingListSummary {

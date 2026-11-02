@@ -171,11 +171,6 @@ describe('FabricatorTemplates', () => {
 
   describe('getMostUsedTemplates', () => {
     it('should return templates sorted by usage', async () => {
-      const _t1 = await templateManager.saveTemplate({
-        name: 'Template 1',
-        category: 'custom',
-        windowUnit: {}
-      });
       const t2 = await templateManager.saveTemplate({
         name: 'Template 2',
         category: 'custom',

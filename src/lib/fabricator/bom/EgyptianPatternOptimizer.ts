@@ -75,7 +75,7 @@ export class EgyptianPatternOptimizer {
     const topIsFixed = row0Cells.every(c => c.type === 'fixed' || c.type === 'empty');
     
     // Row 1 should have at least one sash
-    const bottomHasSash = row1Cells.some(c => c.type === 'sash' || c.type === 'casement');
+    const bottomHasSash = row1Cells.some(c => c.type === 'sash' || (c.type as string) === 'casement');
 
     return topIsFixed && bottomHasSash;
   }
@@ -93,7 +93,7 @@ export class EgyptianPatternOptimizer {
     // Usually 1 row, multiple cols
     if (grid.rows !== 1) return false;
     // Cells are sliding sashes
-    return grid.cells.every(c => c.type === 'sliding' || c.type === 'sash_sliding');
+    return grid.cells.every(c => c.type === 'sliding' || (c.type as string) === 'sash_sliding');
   }
 
   private static isFixedMullionGrid(grid: WindowGrid): boolean {

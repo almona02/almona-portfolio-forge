@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
   solverConfig: vi.fn(),
   recordEvidence: vi.fn(),
   resolveAuthority: vi.fn(),
+  fetchVersions: vi.fn(),
   onComplete: undefined as undefined | (() => Promise<void>),
 }));
 vi.mock('@/context/AuthContext', () => ({ useAuth: () => ({ user: { id: 'user-1' } }) }));
@@ -25,6 +26,15 @@ vi.mock('@/lib/fabricator/commercial/recordOptimizationEvidence', () => ({
 vi.mock('@/lib/fabricator/manufacturing/ManufacturingAuthorityResolver', () => ({
   resolveManufacturingAuthority: (...args: unknown[]) => mocks.resolveAuthority(...args),
 }));
+vi.mock('@/lib/fabricator/inventory/loadOwnedPhysicalBarLots', async () => {
+  const actual = await vi.importActual<typeof import('@/lib/fabricator/inventory/loadOwnedPhysicalBarLots')>(
+    '@/lib/fabricator/inventory/loadOwnedPhysicalBarLots',
+  );
+  return {
+    ...actual,
+    fetchOwnedStockVersions: (...args: unknown[]) => mocks.fetchVersions(...args),
+  };
+});
 vi.mock('@/components/fabricator/cockpit/OptimizationCockpit', () => ({ OptimizationCockpit: ({ children, result }: { children: React.ReactNode; result: unknown }) => <><div data-testid="cockpit-result">{result ? 'result' : 'none'}</div>{children}</> }));
 vi.mock('@/components/fabricator/OptimizationEqualizer', () => ({ OptimizationEqualizer: ({ onComplete, runLabel, runDisabled }: { onComplete: () => Promise<void>; runLabel?: string; runDisabled?: boolean }) => { mocks.onComplete = onComplete; return <button disabled={runDisabled} onClick={() => void onComplete()}>{runLabel ?? 'Optimize'}</button>; } }));
 import { fingerprintBom } from '@/lib/fabricator/positionRelease';
@@ -34,7 +44,7 @@ import { OptimizationPage } from './OptimizationPage';
 
 const pack = SYSTEM_PACKS.find(candidate => candidate.profiles?.length);
 if (!pack) throw new Error('Test requires a system pack with profiles.');
-const profile = pack.profiles[0];
+const profile = pack.profiles![0];
 const project = { id: 'position-1', updatedAt: new Date('2026-09-26'), systemPackId: pack.meta.id, components: [{ id: 'component-1', profile, quantity: 1, cuttingLengths: [1000] }] } as WindowUnit;
 const result: OptimizationResult = { materialUsage: 1, wastePercentage: 0, estimatedProductionTime: 1, nestingEfficiency: 100, cuttingPlan: [{ profile, stockLength: 6000, totalWaste: 0, utilization: 100, cuts: [{ length: 1000, angle: 90, componentId: 'component-1', waste: 0 }] }], costBreakdown: { materialCost: 1, laborCost: 0, hardwareCost: 0, glazingCost: 0, totalCost: 1 } };
 const qualifiedBom = {
@@ -42,7 +52,7 @@ const qualifiedBom = {
     cutIds: [physicalCutForOccurrence(project.components[0], 0, profile, project.systemPackId).cutId ?? 'component-1:0'],
     angles: [physicalCutForOccurrence(project.components[0], 0, profile, project.systemPackId).angle] }],
   qualification: { status: 'qualified', identity: { ownerUserId: 'user-1' }, catalogueVersion: 'fixture-catalogue', ruleVersion: 'fixture-rules', requiredPieceCount: 1, generatedPieceCount: 1, unplacedPieceCount: 0, reasons: [] },
-} as CompleteBOM;
+} as unknown as CompleteBOM;
 
 const identity = { ownerUserId: 'user-1', projectId: 'project-a', positionId: 'position-1', source: 'v2' as const, revision: 1 };
 const APPROVED_STOCK_MM = 6500;
@@ -55,6 +65,14 @@ const authority = {
 const currentAck = () => ({
   identity, profileIds: ['owned-1'], metersByProfile: { 'owned-1': 1 }, reservedAt: new Date().toISOString(),
   availabilityOk: true, bomFingerprint: fingerprintBom(qualifiedBom), stockVersionByProfile: { 'owned-1': 1 },
+  physicalBarBinding: 'physical' as const,
+  barsByCatalogueLength: {
+    [`${profile.id}|${APPROVED_STOCK_MM}`]: 2,
+    [`${profile.id}|6000`]: 2,
+    'owned-1|6500': 2,
+    'owned-1|6000': 2,
+  },
+  physicalStockVersionFingerprint: 'owned-1:1',
 });
 const renderPage = () => render(<MemoryRouter initialEntries={['/project/project-a/position/position-1']}><Routes>
   <Route path="/project/:projectId/position/:poseId" element={<OptimizationPage />} />
@@ -72,8 +90,10 @@ describe('OptimizationPage fail-closed execution', () => {
     mocks.solverConfig.mockReset();
     mocks.recordEvidence.mockReset();
     mocks.resolveAuthority.mockReset();
+    mocks.fetchVersions.mockReset();
     mocks.resolveAuthority.mockResolvedValue(authority);
     mocks.recordEvidence.mockResolvedValue({ ok: true, positionId: 'position-1' });
+    mocks.fetchVersions.mockResolvedValue({ versions: { 'owned-1': 1 }, error: null });
     mocks.onComplete = undefined;
     useWorkflowStore.getState().clearWorkflow();
     useWorkflowStore.setState({
@@ -102,14 +122,48 @@ describe('OptimizationPage fail-closed execution', () => {
     expect(screen.getByTestId('approved-machining')).toHaveTextContent('Saw kerf: 4 mm');
     expect(screen.getByTestId('approved-stock-table')).toHaveTextContent(`${APPROVED_STOCK_MM} mm`);
     await act(async () => { await mocks.onComplete!(); });
+    expect(mocks.fetchVersions).toHaveBeenCalledWith('user-1');
     expect(mocks.solve).toHaveBeenCalledTimes(1);
     const [job, solverProfiles] = mocks.solve.mock.calls[0] as [import('@/algorithms/adaptiveSolver').CuttingJob, import('@/types/fabricator').Profile[]];
     expect(job.defaultStockLength).toBeUndefined();
-    expect(job.stockByProfile).toEqual({ [profile.id]: { stockLengthMm: APPROVED_STOCK_MM } });
+    expect(job.stockByProfile).toEqual({
+      [profile.id]: { stockLengthMm: APPROVED_STOCK_MM, availableBars: 2 },
+    });
     expect(solverProfiles[0].specifications).toMatchObject({ stockLengthMm: APPROVED_STOCK_MM, sawKerf: 4, barEndTrim: 10 });
     expect(mocks.recordEvidence).toHaveBeenCalledTimes(1);
     expect(useWorkflowStore.getState().completedSteps.has('optimization')).toBe(true);
     expect(screen.getByTestId('approved-stock-table')).toHaveTextContent(`1 × ${APPROVED_STOCK_MM} mm`);
+  });
+
+  it('accepts production when live stock versions match the acknowledgement fingerprint', async () => {
+    mocks.solve.mockResolvedValue(solvedResult());
+    renderPage();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Run production optimization' })).toBeEnabled());
+    await act(async () => { await mocks.onComplete!(); });
+    expect(mocks.fetchVersions).toHaveBeenCalledTimes(1);
+    expect(mocks.solve).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  it('blocks production when stock versions advance after acknowledgement', async () => {
+    mocks.fetchVersions.mockResolvedValue({ versions: { 'owned-1': 2 }, error: null });
+    renderPage();
+    await waitFor(() => expect(mocks.onComplete).toBeDefined());
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Run production optimization' })).toBeEnabled());
+    await act(async () => { await mocks.onComplete!(); });
+    expect(mocks.solve).not.toHaveBeenCalled();
+    expect(mocks.recordEvidence).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toHaveTextContent(/versions advanced after acknowledgement/i);
+  });
+
+  it('blocks production when the freshness version query fails', async () => {
+    mocks.fetchVersions.mockResolvedValue({ versions: {}, error: 'stock versions unavailable' });
+    renderPage();
+    await waitFor(() => expect(mocks.onComplete).toBeDefined());
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Run production optimization' })).toBeEnabled());
+    await act(async () => { await mocks.onComplete!(); });
+    expect(mocks.solve).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toHaveTextContent(/stock versions unavailable/i);
   });
 
   it('exposes no operator algorithm choice: selection stays rule-based inside the solver (FP-025A)', async () => {
@@ -132,7 +186,9 @@ describe('OptimizationPage fail-closed execution', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Run production optimization' })).toBeEnabled());
     await act(async () => { await mocks.onComplete!(); });
     const [job] = mocks.solve.mock.calls[0] as [import('@/algorithms/adaptiveSolver').CuttingJob];
-    expect(job.stockByProfile).toEqual({ [profile.id]: { stockLengthMm: 6000 } });
+    expect(job.stockByProfile).toEqual({
+      [profile.id]: { stockLengthMm: 6000, availableBars: 2 },
+    });
   });
 
   it.each([

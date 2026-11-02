@@ -11,10 +11,10 @@ import type { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
 import { CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
 import { LiveCostConsole } from './LiveCostConsole';
-import { NewProjectWizard, type ProjectHeaderMeta } from './NewProjectWizard';
-import { ProjectCockpit, getProjectTypeConfig, type ProjectType } from './ProjectCockpit';
-import { SmartDrawTool } from './SmartDrawTool';
-import { SystemDrivenDesign } from './SystemDrivenDesign';
+import { NewProjectWizard, type ProjectHeaderMeta } from '../NewProjectWizard';
+import { ProjectCockpit, getProjectTypeConfig, type ProjectType } from '../ProjectCockpit';
+import { SmartDrawTool } from '../SmartDrawTool';
+import { SystemDrivenDesign } from '../SystemDrivenDesign';
 
 type WorkflowStep = 1 | 2 | 3 | 4;
 
@@ -31,7 +31,7 @@ export const QuoteToCutWorkflow: React.FC<QuoteToCutWorkflowProps> = ({
 }) => {
   const [currentStep, setCurrentStep] = useState<WorkflowStep>(1);
   const [projectType, setProjectType] = useState<ProjectType>();
-  const [projectMeta, setProjectMeta] = useState<ProjectHeaderMeta>(null);
+  const [projectMeta, setProjectMeta] = useState<ProjectHeaderMeta | null>(null);
   const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>('');
   const [designMode, setDesignMode] = useState<'system' | 'freeform'>('system');
   const [components, setComponents] = useState<WindowComponent[]>([]);
@@ -204,7 +204,7 @@ export const QuoteToCutWorkflow: React.FC<QuoteToCutWorkflowProps> = ({
               <SmartDrawTool
                 project={null}
                 profiles={profiles}
-                onApplyLayout={(payload) => {
+                onApplyLayout={(payload: any) => {
                   if (payload.components && payload.components.length > 0) {
                     handleSmartDrawApply({ components: payload.components });
                   }

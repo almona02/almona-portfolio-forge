@@ -206,7 +206,7 @@ describe('FP-024 DoWin external golden', () => {
     const cut: Cut = { length: 1003, angle: 45, componentId: 'c', waste: 0 };
     expect(physicalSawCutLengthMm(cut)).toBe(1003);
     expect(
-      physicalSawCutLengthMm({ ...cut, sawCutLengthMm: 1003, reportedWeldedLengthMm: 1000 })
+      physicalSawCutLengthMm({ ...cut, sawCutLengthMm: 1003, reportedWeldedLengthMm: 1000 } as any)
     ).toBe(1003);
   });
 

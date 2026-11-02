@@ -234,6 +234,7 @@ export type DraftingTool =
 // Context Type
 export interface DraftingContextType {
   state: DraftingState;
+  replaceState: (nextState: DraftingState) => void;
   addRectangle: (rect: Rectangle) => void;
   addLine: (line: Line) => void;
   addCircle: (circle: Circle) => void;

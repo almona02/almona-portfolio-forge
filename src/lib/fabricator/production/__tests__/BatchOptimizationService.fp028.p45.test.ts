@@ -69,7 +69,7 @@ const system: FenestrationSystem = {
     windLoadClass: 'C3',
     requiresReinforcement: () => false,
   },
-  regionalPhysics: {},
+  regionalPhysics: { thermalExpansionCoefficient: 0 },
   metadata: { createdAt: '', updatedAt: '', validationStatus: 'validated' },
 };
 

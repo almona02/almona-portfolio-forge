@@ -140,17 +140,23 @@ export class KanbanSystem {
    */
   createCardFromProject(project: WindowUnit): KanbanCard {
     const priorityMap: Record<WindowUnit['status'], KanbanCard['priority']> = {
+      measuring: 'medium',
       design: 'medium',
       optimized: 'high',
       production: 'high',
+      quality: 'medium',
       completed: 'low',
+      delivered: 'low',
     };
 
     const statusMap: Record<WindowUnit['status'], KanbanColumn['id']> = {
+      measuring: 'design',
       design: 'design',
       optimized: 'production',
       production: 'production',
+      quality: 'quality',
       completed: 'completed',
+      delivered: 'completed',
     };
 
     return {

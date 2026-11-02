@@ -57,7 +57,7 @@ vi.mock('three', async () => {
 });
 
 describe('Apex Engine V6: Grid Integration', () => {
-    const baseWindow: WindowUnit = {
+    const baseWindow: any = {
         id: 'test-window',
         overallWidth: 1000,
         overallHeight: 1000,

@@ -151,9 +151,9 @@ export class ASTME1300Compliance {
    * Calculate load resistance
    */
   private calculateLoadResistance(window: WindowUnit): number {
-    const _area = (window.overallWidth * window.overallHeight) / 1000000; // m²
     const baseResistance = 800; // Pa
-    const thicknessFactor = window.glazing.thickness >= 24 ? 1.3 : 1.0;
+    const glazing = window.glazing as unknown as { thickness?: number };
+    const thicknessFactor = (glazing.thickness ?? 0) >= 24 ? 1.3 : 1.0;
     return baseResistance * thicknessFactor;
   }
 

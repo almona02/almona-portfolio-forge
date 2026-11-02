@@ -39,6 +39,7 @@ export interface Machine {
   subcategory?: string; // e.g., "copy-routers", "end-milling", "cnc-routers"
   featured?: boolean;
   releaseDate: string;
+  pricing?: { basePrice?: number };
   type: string;
   powerSpec: PowerSpecification;
   airSpec?: {

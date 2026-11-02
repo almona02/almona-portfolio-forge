@@ -56,7 +56,7 @@ const system: FenestrationSystem = {
     minSashWidth: 200, aspectRatio: { min: 0.1, max: 10 }, windLoadClass: 'C3',
     requiresReinforcement: () => false,
   },
-  regionalPhysics: {},
+  regionalPhysics: { thermalExpansionCoefficient: 0 },
   metadata: { createdAt: '', updatedAt: '', validationStatus: 'validated' },
 };
 

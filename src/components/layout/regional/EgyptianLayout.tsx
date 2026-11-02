@@ -4,7 +4,6 @@
  */
 
 import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
-import { isRTL } from '@/lib/i18n';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
@@ -25,13 +24,12 @@ export const EgyptianLayout: React.FC<EgyptianLayoutProps> = ({
   onRegionChange: _onRegionChange,
   enableRegionSwitching: _enableRegionSwitching
 }) => {
-  const { i18n } = useTranslation();
+  useTranslation();
   const location = useLocation();
   const isFabricatorRoute = location.pathname.startsWith('/fabricator') || location.pathname.startsWith('/fabricator-workflow');
   const isBatchCutListDemo = location.pathname === '/demo/batch-cut-list' || location.pathname === '/batch-cut-list-demo';
   const isAdminRoute = location.pathname === '/admin';
   const isMarketplaceRoute = location.pathname.startsWith('/used-machines') || location.pathname.startsWith('/usedmachines');
-  const _rtl = isRTL(i18n.language);
   
   return (
     <div className="min-h-screen bg-almona-dark text-white" dir="rtl">

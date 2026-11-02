@@ -4,7 +4,7 @@ import { usePublicCopy } from '@/hooks/usePublicCopy';
  * Simple grid layout for machine cards with proper spacing and alignment
  */
 
-import React, { memo, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import EnhancedProductCard from '@/shared/ui/ui/EnhancedProductCard';
 import { Button } from '@/shared/ui/ui/button';
 import { Loader2 } from 'lucide-react';

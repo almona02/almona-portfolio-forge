@@ -34,11 +34,13 @@ export interface SteelReinforcementSpec {
   momentOfInertia: number;
   /** Steel grade (typically S235 or S275 for Egyptian market) */
   grade?: 'S235' | 'S275' | 'S355';
+  formula?: string;
 }
 
 export interface UPVCSystemSettings {
   /** Material type flag */
   isUPVC: boolean;
+  material?: string;
   /** Welding parameters */
   welding: UPVCWeldingParams;
   /** Steel reinforcement specification */

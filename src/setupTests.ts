@@ -7,9 +7,9 @@ if (typeof window === 'undefined') {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { JSDOM } = require('jsdom');
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
-  (global as typeof globalThis & { window: typeof window; document: typeof document; navigator: typeof navigator }).window = dom.window;
-  (global as typeof globalThis & { window: typeof window; document: typeof document; navigator: typeof navigator }).document = dom.window.document;
-  (global as typeof globalThis & { window: typeof window; document: typeof document; navigator: typeof navigator }).navigator = dom.window.navigator;
+  (global as any).window = dom.window;
+  (global as any).document = dom.window.document;
+  (global as any).navigator = dom.window.navigator;
 }
 
 try {

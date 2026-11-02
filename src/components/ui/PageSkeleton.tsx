@@ -1,4 +1,3 @@
-import React from 'react';
 
 export const PageHeaderSkeleton = () => (
   <div className="animate-pulse space-y-4 mb-8">

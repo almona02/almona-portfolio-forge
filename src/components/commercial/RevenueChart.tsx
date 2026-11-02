@@ -210,7 +210,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => ReportingService.exportToCSV(data, `revenue-${period}`)}
+                onClick={() => ReportingService.exportToCSV(data as any, `revenue-${period}`)}
                 className="border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
               >
                 <Download className="w-4 h-4" />

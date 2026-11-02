@@ -5,7 +5,7 @@
 
 import type { CuttingPlan } from '@/types/fabricator';
 import { supabase } from '../supabase';
-import { RemnantManager, type Remnant } from './RemnantManager';
+import type { Remnant } from './RemnantManager';
 
 export interface RemnantGenerationResult {
   remnantsCreated: number;
@@ -14,11 +14,9 @@ export interface RemnantGenerationResult {
 }
 
 export class AutoRemnantGenerator {
-  private remnantManager: RemnantManager;
   private minRemnantLength: number = 200; // Minimum usable remnant length in mm
 
   constructor() {
-    this.remnantManager = new RemnantManager();
   }
 
   /**

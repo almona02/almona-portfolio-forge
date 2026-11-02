@@ -72,7 +72,7 @@ export class GlassBOMCalculator {
         const glassHeight = Math.max(0, rowHeight - edgeClearance * 2);
 
         // Get glass thickness from user selection or default (per-cell or flat)
-        const glazingType = getCellGlazingType(cell);
+        const glazingType = getCellGlazingType(cell as { id?: string });
         const glazingSpec = rawGlazing as GlazingSpecFlat;
         const defaultThickness = glazingType === 'single'
           ? GLASS_THICKNESS.SINGLE_GLAZING_MM

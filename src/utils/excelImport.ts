@@ -224,8 +224,8 @@ export const importSpareParts = async (file: File, options: ImportOptions = {}) 
         // Map: part_number -> sku, name -> name_en (keep name_ar same for now), category forced to 'spare_part'
         const product: ProductsTable['Insert'] = {
           sku: payload.part_number,
-          name_ar: payload.name,
-          name_en: payload.name,
+          name_ar: payload.name ?? '',
+          name_en: payload.name ?? '',
           description_ar: payload.description,
           description_en: payload.description,
           category: 'spare_part' as const,
@@ -258,7 +258,7 @@ export const importSpareParts = async (file: File, options: ImportOptions = {}) 
         if (error) throw error;
       } else {
         type DynamicFrom = { from: (t: string) => { upsert: (d: unknown, o?: { onConflict?: string }) => Promise<{ error: Error | null }> } };
-        const { error } = await (supabase as DynamicFrom)
+        const { error } = await (supabase as unknown as DynamicFrom)
           .from('spare_parts')
           .upsert({
             part_number: payload.part_number,

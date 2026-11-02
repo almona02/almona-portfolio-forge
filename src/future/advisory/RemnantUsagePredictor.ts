@@ -17,17 +17,9 @@ const loadTensorFlow = async () => {
 
 import type { Remnant } from '@/lib/inventory/RemnantManager';
 import { remnantPredictor } from '@/lib/inventory/RemnantPredictor';
+import type { RemnantFeatures } from '@/lib/ml/remnantFeatures';
 
-export interface RemnantFeatures {
-  remnantLength: number;
-  ageDays: number;
-  profileTypeFrequency: number;
-  seasonalDemand: number;
-  locationPriority: number;
-  qualityScore: number;
-  usageCount: number;
-  estimatedValue: number;
-}
+export type { RemnantFeatures };
 
 export interface PredictionResult {
   reuseLikelihood: number; // 0-100 score

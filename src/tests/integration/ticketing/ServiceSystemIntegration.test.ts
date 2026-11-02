@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AssignmentExecutor } from '../../../services/ticketing/AssignmentExecutor';
-import { TicketLifecycleEngine } from '../../../services/ticketing/TicketLifecycleEngine';
 import { RoutingAdvisor } from '../../../services/ticketing/advisory/RoutingAdvisor';
 
 // Mock data
@@ -8,12 +7,10 @@ const mockTechnicians = [{ id: 'TECH-1', name: 'John Doe', skills: ['repair'] }]
 const mockTicket = { id: 'T-101', description: 'Test ticket', type: 'technical', priority: 'high' };
 
 describe('Service System Integration', () => {
-  let _lifecycleEngine: TicketLifecycleEngine;
   let assignmentExecutor: AssignmentExecutor;
   let routingAdvisor: RoutingAdvisor;
   
   beforeEach(() => {
-    _lifecycleEngine = new TicketLifecycleEngine();
     // Initialize with rules including default
     assignmentExecutor = new AssignmentExecutor([
         {

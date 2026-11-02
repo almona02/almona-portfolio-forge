@@ -111,7 +111,7 @@ export class CNCIntegration {
     const monitoringData: CNCMonitoringData = {
       machineId,
       timestamp: new Date(),
-      status: machine.status,
+      status: machine.status as any,
       metrics: {
         vibration: 0.2, // mm/s
         temperature: 45, // °C
@@ -254,7 +254,7 @@ export class CNCIntegration {
    * Based on material properties, profile dimensions, and cut requirements
    */
   private calculateDeterministicParameters(
-    cut: Cut,
+    _cut: Cut,
     profile: Profile
   ): OptimalCuttingParameters {
     const baseSpeed = profile.material === 'aluminum' ? 3000 : 2500; // RPM
@@ -278,8 +278,8 @@ export class CNCIntegration {
    */
   async sendCuttingPlanToMachine(
     machineId: string,
-    cuttingPlan: CuttingPlan,
-    projectId: string
+    _cuttingPlan: CuttingPlan,
+    _projectId: string
   ): Promise<{
     success: boolean;
     jobId?: string;
@@ -292,9 +292,6 @@ export class CNCIntegration {
         error: 'Machine not found',
       };
     }
-
-    // Generate QR code cut list
-    const _qrCutList = await this.generateQRCodeCutList(cuttingPlan, projectId, machineId);
 
     // TODO: Implement actual CNC controller communication
     // This would send the cutting plan via the machine's API/protocol

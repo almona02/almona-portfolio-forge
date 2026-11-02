@@ -113,7 +113,7 @@ export const useJobsStore = create<JobsState>((set, get) => ({
         }
 
         if (projError || !upsertedProjects || upsertedProjects.length === 0) {
-          const status = (projError)?.status || (projError)?.code;
+          const status = (projError as any)?.status || (projError)?.code;
           const isExpectedError = status === 403 || status === 404 || 
                                   (projError)?.code === 'PGRST116' ||
                                   (projError)?.message?.includes('permission') ||
@@ -191,7 +191,7 @@ export const useJobsStore = create<JobsState>((set, get) => ({
         }
 
         if (posError) {
-          const status = (posError)?.status || (posError)?.code;
+          const status = (posError as any)?.status || (posError)?.code;
           const isExpectedError = status === 403 || status === 404 || 
                                   (posError)?.code === 'PGRST116' ||
                                   (posError)?.message?.includes('permission') ||
@@ -262,7 +262,7 @@ export const useJobsStore = create<JobsState>((set, get) => ({
       if (updates.status) dbUpdates.status = updates.status;
       if (updates.color) dbUpdates.color = updates.color;
       if (updates.systemPackId) dbUpdates.system_pack_id = updates.systemPackId;
-      if (updates.glazing) dbUpdates.glazing = updates.glazing;
+      if (updates.glazing) dbUpdates.glazing = updates.glazing as any;
 
       if (Object.keys(dbUpdates).length === 0) return;
 

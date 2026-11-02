@@ -47,7 +47,6 @@ export interface CollaborationState {
 
 class Collaboration3DService {
   private channel: RealtimeChannel | null = null
-  private sessionId: string | null = null
   private userId: string | null = null
 
   async createSession(modelPath: string, userId: string): Promise<CollaborationSession> {
@@ -70,7 +69,7 @@ class Collaboration3DService {
     const { data, error } = await supabase
       .from('collaboration_sessions')
       .update({
-        participants: supabase.sql`array_append(participants, ${userId})`,
+        participants: (supabase as any).sql`array_append(participants, ${userId})`,
         updated_at: new Date().toISOString()
       })
       .eq('id', sessionId)
@@ -85,7 +84,7 @@ class Collaboration3DService {
     const { error } = await supabase
       .from('collaboration_sessions')
       .update({
-        participants: supabase.sql`array_remove(participants, ${userId})`,
+        participants: (supabase as any).sql`array_remove(participants, ${userId})`,
         updated_at: new Date().toISOString()
       })
       .eq('id', sessionId)
@@ -106,7 +105,6 @@ class Collaboration3DService {
       onAnnotationRemove?: (annotationId: string) => void
     }
   ): RealtimeChannel {
-    this.sessionId = sessionId
     this.userId = userId
 
     this.channel = supabase.channel(`collaboration-${sessionId}`)
@@ -244,7 +242,6 @@ class Collaboration3DService {
       void this.channel.unsubscribe()
       this.channel = null
     }
-    this.sessionId = null
     this.userId = null
   }
 }

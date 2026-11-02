@@ -2,7 +2,6 @@ import { generateComponentsFromGrid } from '@/algorithms/smartDraw';
 import { EGYPTIAN_PATTERNS, getPatternsForSystem } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { SimplifiedOptimizationEngine } from '@/lib/fabricator/OptimizationEngine';
-import { PricingEngine } from '@/lib/pricing/PricingEngine';
 import { cn } from '@/lib/utils';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
@@ -103,7 +102,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     const handleLoadTurkishProfile = (e: any) => {
       // Load specific profile into project
       const profile = e.detail;
-      if (project && onGridChange) {
+      if (project) {
         // Update project with Turkish profile
         // This would need to be handled by parent component
         console.log('Load Turkish profile:', profile);
@@ -197,12 +196,8 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
       }
     }
 
-    // Update project dimensions to pattern's typical dimensions if needed
-    if (project && pattern.typicalWidthMm && pattern.typicalHeightMm) {
-      const _midWidth = Math.round((pattern.typicalWidthMm[0] + pattern.typicalWidthMm[1]) / 2);
-      const _midHeight = Math.round((pattern.typicalHeightMm[0] + pattern.typicalHeightMm[1]) / 2);
-      // Note: We can't directly update project here, but the grid change will trigger re-render
-    }
+    // (dead mid-width/height block removed)
+
 
     onGridChange(newGrid);
   }, [onGridChange, project]);
@@ -277,7 +272,6 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
         totalMaterial += totalBarLength;
 
         // Calculate price
-        const _pricingEngine = new PricingEngine({ region: 'egypt', currency: 'EGP' });
         const lengthM = totalBarLength / CALCULATION_MULTIPLIERS.MM_TO_M;
         const price = profile.costPerMeter ? lengthM * profile.costPerMeter : 0;
         totalPrice += price;
@@ -346,7 +340,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
   // Get system max width constraint
   const maxSashWidth = useMemo(() => {
     if (!systemPack?.smartDrawPreset) return CELL_CONSTRAINTS.DEFAULT_MAX_SASH_WIDTH_MM; // Default
-    return systemPack.smartDrawPreset.maxPanelWidthMm || CELL_CONSTRAINTS.DEFAULT_MAX_SASH_WIDTH_MM;
+    return (systemPack.smartDrawPreset as { maxPanelWidthMm?: number }).maxPanelWidthMm || CELL_CONSTRAINTS.DEFAULT_MAX_SASH_WIDTH_MM;
   }, [systemPack]);
 
   // Check constraints for each cell
@@ -529,7 +523,6 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     if (!svgRef.current || dragState.type === null) return;
     const rect = svgRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const _y = e.clientY - rect.top;
 
     if (dragState.type === 'mullion-vertical' && dragState.startX !== undefined) {
       const deltaX = x - dragState.startX;

@@ -35,6 +35,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import { findInspectablePart, WindowPartDetails, WindowPartOutline, type PartViewMode } from './WindowPartInspector';
 import { AssemblyPartList } from './AssemblyPartList';
 import { Window3DChromeShell } from './Window3DChromeShell';
+import { useContainerSize } from '@/hooks/useContainerSize';
 import { buildAssemblyManifest, type AssemblyManifestOptions } from '@/lib/fabricator/assembly/assemblyManifest';
 import { collectVisualPartKeys, selectionKeyOf } from '@/lib/3d/visualPartRefs';
 import { useWindowPhysics } from '@/lib/3d/hooks';
@@ -59,7 +60,8 @@ import React, {
     useImperativeHandle,
     useMemo,
     useRef,
-    useState
+    useState,
+    type ReactNode,
 } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { easeInOutCubic } from './utils/animationUtils';
@@ -1578,6 +1580,11 @@ interface Window3DGeneratorProps {
     bom?: AssemblyManifestOptions['bom'];
     /** Part list panel is available (defaults to showControls). */
     showPartList?: boolean;
+    /**
+     * Extra content for the chrome status slot (e.g. DraftingPreview3D preview source).
+     * Owned by Window3DChromeShell — callers must not absolute-position overlays on the canvas.
+     */
+    chromeStatus?: ReactNode;
 }
 
 
@@ -1996,12 +2003,14 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     viewMode: initialViewMode = 'manufacturing',
     bom = null,
     showPartList,
+    chromeStatus,
 }, ref) => {
     // Customer view: assemble/explode, parts, highlight and plain-language cards only —
     // cut/machine data, gates and advanced render controls stay in the workshop view.
     const [viewMode, setViewMode] = useState<PartViewMode>(initialViewMode);
     useEffect(() => setViewMode(initialViewMode), [initialViewMode]);
     const { t } = useTranslation('fabricator');
+    const { ref: hostRef, size: hostSize } = useContainerSize<HTMLDivElement>();
     // --- State Management ---
     const [isAnimating, setIsAnimating] = useState(false);
     const [animationProgress, setAnimationProgress] = useState(0);
@@ -2244,7 +2253,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     const height = windowUnit.overallHeight / 1000;
 
     return (
-        <div className={`relative w-full h-full ${className}`}>
+        <div ref={hostRef} className={`relative w-full h-full ${className}`}>
             {/* Accessibility Summary - Live Region for Screen Readers */}
             <div className="sr-only" role="status" aria-live="polite">
                 {`3D Window Visualization: ${(width * 1000).toFixed(0)}mm wide by ${(height * 1000).toFixed(0)}mm high.`}
@@ -2352,8 +2361,10 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                 </Canvas>
             </div>
 
-            {/* Chrome: one toolbar strip, disclaimer pinned below it, Parts docked in remaining left band */}
+            {/* Chrome: one owner for toolbar / Parts / details / status — container-measured layout */}
             <Window3DChromeShell
+                containerWidthPx={hostSize.width}
+                containerHeightPx={hostSize.height}
                 toolbar={showControls && !controlsVisible ? (
                     <div
                         role="toolbar"
@@ -2459,33 +2470,48 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                         <AssemblyPartList manifest={manifest} selectedKey={selectedKey} onSelect={setSelectedKey} mode={viewMode} />
                     </div>
                 ) : undefined}
-                status={showControls && viewMode === 'manufacturing' && !partListOpen ? (
-                    <Card className="border-gray-600 bg-gray-900/90 card-dark">
-                        <CardContent className="p-3">
-                            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
-                                <div className="flex items-center gap-1">
-                                    <Layers className="h-3 w-3" />
-                                    <span>{t('window_3d_generator.quality_label', '{quality} Quality', { quality: quality.charAt(0).toUpperCase() + quality.slice(1) })}</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    {enableShadows ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
-                                    <span>{enableShadows ? t('window_3d_generator.shadows_on', 'Shadows On') : t('window_3d_generator.shadows_off', 'Shadows Off')}</span>
-                                </div>
-                                {sectionViewEnabled && (
-                                    <div className="flex items-center gap-1 text-amber-400">
-                                        <Scissors className="h-3 w-3" />
-                                        <span>{t('window_3d_generator.section_view', 'Section View')}</span>
+                details={showControls && selectedKey ? (
+                    <WindowPartDetails
+                        selectionKey={selectedKey}
+                        manifest={manifest}
+                        unit={windowUnit}
+                        mode={viewMode}
+                        onClose={() => setSelectedKey(null)}
+                        variant="embedded"
+                    />
+                ) : undefined}
+                status={(chromeStatus || (showControls && viewMode === 'manufacturing' && !partListOpen)) ? (
+                    <div className="space-y-2">
+                        {chromeStatus}
+                        {showControls && viewMode === 'manufacturing' && !partListOpen ? (
+                            <Card className="border-gray-600 bg-gray-900/90 card-dark">
+                                <CardContent className="p-3">
+                                    <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
+                                        <div className="flex items-center gap-1">
+                                            <Layers className="h-3 w-3" />
+                                            <span>{t('window_3d_generator.quality_label', '{quality} Quality', { quality: quality.charAt(0).toUpperCase() + quality.slice(1) })}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            {enableShadows ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
+                                            <span>{enableShadows ? t('window_3d_generator.shadows_on', 'Shadows On') : t('window_3d_generator.shadows_off', 'Shadows Off')}</span>
+                                        </div>
+                                        {sectionViewEnabled && (
+                                            <div className="flex items-center gap-1 text-amber-400">
+                                                <Scissors className="h-3 w-3" />
+                                                <span>{t('window_3d_generator.section_view', 'Section View')}</span>
+                                            </div>
+                                        )}
+                                        {validation.errors.length > 0 && (
+                                            <div className="flex items-center gap-1 text-red-400">
+                                                <AlertTriangle className="h-3 w-3" />
+                                                <span>{t('window_3d_generator.issues', '{count} Issues', { count: validation.errors.length })}</span>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                                {validation.errors.length > 0 && (
-                                    <div className="flex items-center gap-1 text-red-400">
-                                        <AlertTriangle className="h-3 w-3" />
-                                        <span>{t('window_3d_generator.issues', '{count} Issues', { count: validation.errors.length })}</span>
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
+                                </CardContent>
+                            </Card>
+                        ) : null}
+                    </div>
                 ) : undefined}
             />
 
@@ -2519,10 +2545,6 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                         setDetailConfig={setDetailConfig}
                     />
                 </div>
-            )}
-
-            {showControls && selectedKey && (
-                <WindowPartDetails selectionKey={selectedKey} manifest={manifest} unit={windowUnit} mode={viewMode} onClose={() => setSelectedKey(null)} />
             )}
         </div>
     );

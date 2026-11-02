@@ -17,7 +17,6 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import type { WindowComponent, Profile } from '@/types/fabricator';
-import { PricingEngine } from '@/lib/pricing/PricingEngine';
 import { RemnantManager } from '@/lib/inventory/RemnantManager';
 
 interface LiveCostConsoleProps {
@@ -67,21 +66,16 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
 
       setLoading(true);
       try {
-        const _pricingEngine = new PricingEngine({
-          region: 'egypt',
-          currency: currency as any,
-        });
-
         // Calculate material costs
         let totalAluminum = 0;
         let totalGlass = 0;
         let totalAccessories = 0;
 
         for (const component of components) {
-          const profile = profiles.find((p) => p.id === component.profileId);
+          const profile = profiles.find((p) => p.id === component.profile.id);
           if (profile) {
-            const lengthM = (component.cuttingLength || component.length) / 1000;
-            const cost = (profile.cost_per_meter || 0) * lengthM * (component.quantity || 1);
+            const lengthM = component.cuttingLengths.reduce((a, b) => a + b, 0) / 1000;
+            const cost = (profile.costPerMeter || 0) * lengthM * (component.quantity || 1);
             totalAluminum += cost;
           }
         }
@@ -98,7 +92,7 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
 
         // Calculate waste estimate (simplified - would use ML predictor)
         const totalLength = components.reduce(
-          (sum, c) => sum + (c.cuttingLength || c.length) * (c.quantity || 1),
+          (sum, c) => sum + c.cuttingLengths.reduce((a, b) => a + b, 0) * (c.quantity || 1),
           0
         );
         const estimatedWaste = totalLength * 0.12; // 12% waste estimate
@@ -125,14 +119,15 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
           try {
             const remnantManager = new RemnantManager();
             for (const component of components) {
-              const profile = profiles.find((p) => p.id === component.profileId);
+              const profile = profiles.find((p) => p.id === component.profile.id);
               if (profile) {
                 const matches = await remnantManager.findRemnantMatches(
                   [
                     {
-                      id: component.id,
-                      length: component.cuttingLength || component.length,
-                      quantity: component.quantity || 1,
+                      length: component.cuttingLengths.reduce((a, b) => a + b, 0),
+                      angle: 0,
+                      componentId: component.id,
+                      waste: 0,
                     },
                   ],
                   profile,
@@ -143,7 +138,7 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
                 for (const match of matches.slice(0, 1)) {
                   // Calculate savings
                   const remnantLength = match.remnant.length;
-                  const costPerMeter = profile.cost_per_meter || 0;
+                  const costPerMeter = profile.costPerMeter || 0;
                   const savings = (remnantLength / 1000) * costPerMeter * 0.8; // 80% of cost saved
 
                   remnantSuggestions.push({

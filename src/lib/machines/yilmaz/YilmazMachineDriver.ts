@@ -173,7 +173,7 @@ export class YilmazMachineDriver implements MachineInterface {
       return new Blob([result], { type: 'text/csv;charset=utf-8' });
     } else {
       // MDB Buffer
-      return new Blob([result], { type: 'application/x-msaccess' });
+      return new Blob([result as BlobPart], { type: 'application/x-msaccess' });
     }
   }
 

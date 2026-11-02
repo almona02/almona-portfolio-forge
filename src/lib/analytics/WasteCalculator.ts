@@ -18,7 +18,7 @@ export interface ManualCuttingPlan {
  */
 export function calculateManualCuttingPlan(
   requiredCuts: Cut[],
-  profiles: Profile[],
+  _profiles: Profile[],
   defaultStockLength: number = 6000
 ): ManualCuttingPlan {
   // Group cuts by profile (using componentId as proxy since Cut doesn't have profileId)

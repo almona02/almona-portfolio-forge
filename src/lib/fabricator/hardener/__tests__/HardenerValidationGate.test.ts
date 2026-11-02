@@ -110,7 +110,7 @@ describe('HardenerValidationGate', () => {
         constitutionalDisclaimer: 'Test',
         systemStopRequired: false,
         requiresHumanIntervention: false,
-      } as HardenerSelectionResult;
+      } as unknown as HardenerSelectionResult;
 
       const validation = gate.validateHardenerSelection(selection, minimalWindowUnit);
 
@@ -138,7 +138,7 @@ describe('HardenerValidationGate', () => {
         constitutionalDisclaimer: 'Test',
         systemStopRequired: false,
         requiresHumanIntervention: false,
-      } as HardenerSelectionResult;
+      } as unknown as HardenerSelectionResult;
 
       const validation = gate.validateHardenerSelection(selection, minimalWindowUnit);
 

@@ -51,7 +51,7 @@ export async function initSentry() {
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
     // Filter out common non-critical errors
-    beforeSend(event, hint) {
+    beforeSend(event: any, hint: any) {
       // Filter out network errors that are expected
       if (event.exception) {
         const error = hint.originalException;

@@ -16,7 +16,7 @@ class MockWorker {
        setTimeout(() => {
            if (this.onmessage) {
                // Echo back success with dummy result
-               this.onmessage({
+               (this.onmessage as any)({
                    data: {
                        jobId: message.jobId,
                        status: 'success',

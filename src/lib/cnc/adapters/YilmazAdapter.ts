@@ -6,7 +6,6 @@
  * Week 5 Task 5.1: Production CNC Exporter
  */
 
-import { SecurityGateway } from '@/lib/security/SecurityGateway';
 import type { Cut, OptimizationResult } from '@/types/fabricator';
 import { BaseCNCAdapter, CNCAdapterConfig, GCodeSimulationResult, GCodeValidationResult } from './BaseCNCAdapter';
 
@@ -14,7 +13,6 @@ import { BaseCNCAdapter, CNCAdapterConfig, GCodeSimulationResult, GCodeValidatio
  * YilmazAdapter - Yilmaz CNC machine adapter
  */
 export class YilmazAdapter extends BaseCNCAdapter {
-  private securityGateway: SecurityGateway;
 
   constructor(config: Partial<CNCAdapterConfig> = {}) {
     const defaultConfig: CNCAdapterConfig = {
@@ -31,7 +29,6 @@ export class YilmazAdapter extends BaseCNCAdapter {
     };
 
     super(defaultConfig);
-    this.securityGateway = SecurityGateway.getInstance();
   }
 
   /**
@@ -39,7 +36,7 @@ export class YilmazAdapter extends BaseCNCAdapter {
    */
   async generateGCode(
     cuts: Cut[],
-    optimization: OptimizationResult,
+    _optimization: OptimizationResult,
     options?: Record<string, any>
   ): Promise<string> {
     const lines: string[] = [];

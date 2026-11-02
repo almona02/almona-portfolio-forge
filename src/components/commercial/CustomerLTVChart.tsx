@@ -202,7 +202,7 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
                 borderRadius: '8px',
                 color: '#e2e8f0',
               }}
-              formatter={(value: unknown, name: string, props: { payload?: { currency?: string } }) => {
+              formatter={((value: unknown, name: string, props: { payload?: { currency?: string } }) => {
                 const currency = props.payload?.currency ?? 'EGP';
                 if (name === 'revenue') {
                   return [formatCurrency(Number(value ?? 0), currency), 'Revenue'];
@@ -211,7 +211,7 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
                   return [formatCurrency(Number(value ?? 0), currency), 'Avg Order'];
                 }
                 return [value, name];
-              }}
+              }) as any}
               labelFormatter={(label) => `Customer: ${label}`}
             />
             <Legend
@@ -224,7 +224,7 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
               fill="url(#revenueGradient)"
               radius={[8, 8, 0, 0]}
             >
-              {chartData.map((entry, index) => (
+              {chartData.map((_entry, index) => (
                 <Cell key={`cell-${index}`} fill={`rgba(245, 158, 11, ${0.7 + (index % 3) * 0.1})`} />
               ))}
             </Bar>

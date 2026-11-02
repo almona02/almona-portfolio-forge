@@ -95,7 +95,7 @@ export class BentProfileEngine {
     const validation = this.bendValidator.validateBend(radius, material, profileWidth, profileDepth);
     
     // Determine bending method
-    const bendingMethod = validation.isBendable ? 'continuous' : 'segmented';
+    const bendingMethod: 'continuous' | 'segmented' = validation.isBendable ? 'continuous' : 'segmented';
     const segments = bendingMethod === 'segmented' ? this.calculateSegments(radius, angle) : undefined;
 
     // Calculate springback compensation
@@ -186,7 +186,7 @@ export class BentProfileEngine {
   /**
    * Calculate number of segments for segmented bend
    */
-  private calculateSegments(radius: number, angle: number): number {
+  private calculateSegments(_radius: number, angle: number): number {
     // One segment per 15 degrees (typical for segmented bends)
     return Math.ceil(angle / 15);
   }
@@ -197,8 +197,8 @@ export class BentProfileEngine {
   private generateProfilePreparation(
     radius: number,
     angle: number,
-    profileWidth: number,
-    profileDepth: number,
+    _profileWidth: number,
+    _profileDepth: number,
     method: 'continuous' | 'segmented'
   ): BentProfileDesign['profilePreparation'] {
     if (method === 'segmented') {
@@ -235,7 +235,7 @@ export class BentProfileEngine {
    */
   private generateGlassIntegration(
     radius: number,
-    angle: number,
+    _angle: number,
     chordLength: number
   ): BentProfileDesign['glassIntegration'] {
     // Segment glass for curves (one panel per 600mm)

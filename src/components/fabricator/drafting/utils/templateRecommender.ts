@@ -1,5 +1,5 @@
 // src/components/fabricator/drafting/utils/templateRecommender.ts
-import type { DesignConstraints, EgyptianTemplate, Geometry2D } from '../types/drafting';
+import type { EgyptianTemplate, Geometry2D } from '../types/drafting';
 
 export interface TemplateRecommendation {
   templateId: string;
@@ -49,9 +49,6 @@ export function recommendTemplate(
 
   // Analyze cell structure
   const cellCount = geometry.rectangles.length;
-  const _cellTypes = geometry.rectangles
-    .map((r) => r.type || 'fixed')
-    .filter((t) => t);
 
   // Calculate grid structure (approximate)
   const cols = Math.round(Math.sqrt(cellCount));
@@ -126,7 +123,7 @@ export function recommendTemplate(
     // 5. Cell type compatibility (10 points)
     if (constraints.preferredCellTypes && constraints.preferredCellTypes.length > 0) {
       const templateCellTypes = template.cellTypes.flat();
-      const hasMatchingTypes = constraints.preferredCellTypes.some((type) =>
+      const hasMatchingTypes = constraints.preferredCellTypes.some((type: string) =>
         templateCellTypes.includes(type)
       );
 

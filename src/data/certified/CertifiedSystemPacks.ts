@@ -10,6 +10,13 @@ export const CERTIFIED_SYSTEM_PACKS: SystemPack[] = [
     {
         id: 'reynaers-cp155',
         name: 'Reynaers CP 155-LS',
+        meta: {
+            id: 'reynaers-cp155',
+            name: 'Reynaers CP 155-LS',
+            brands: ['Reynaers Aluminium'],
+            regions: ['global']
+        },
+        windowSystemSpec: {},
         category: 'aluminum_doors',
         brand: 'Reynaers Aluminium',
         description: 'Premium lift-slide system for large glass expanses. U-value down to 1.07 W/m²K.',
@@ -27,6 +34,13 @@ export const CERTIFIED_SYSTEM_PACKS: SystemPack[] = [
     {
         id: 'katra-k60',
         name: 'Katra K60 Thermal',
+        meta: {
+            id: 'katra-k60',
+            name: 'Katra K60 Thermal',
+            brands: ['Katra Aluminium'],
+            regions: ['egypt', 'mena']
+        },
+        windowSystemSpec: {},
         category: 'aluminum_windows',
         brand: 'Katra Aluminium',
         description: 'Standard 60mm thermal break system optimized for Egyptian market.',

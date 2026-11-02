@@ -248,7 +248,7 @@ export class CustomMullionValidator {
    */
   private calculateAddedCost(
     mullionType: MullionType,
-    width: number,
+    _width: number,
     height: number
   ): MullionValidation['cost'] {
     // Base material cost per meter
@@ -318,7 +318,7 @@ export class CustomMullionValidator {
    */
   private getConnectorType(
     mullionType: MullionType,
-    systemPackId: string,
+    _systemPackId: string,
     profile: MullionValidation['requiredProfile']
   ): MullionValidation['connectorSpec'] {
     if (mullionType === 'thermal_break') {

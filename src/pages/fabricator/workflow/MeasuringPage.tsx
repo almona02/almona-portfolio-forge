@@ -68,7 +68,7 @@ export function unitFromMeasurement(
         measurementMode: data.measurementMode,
         grid: data.grid ?? base?.grid,
         presetId: data.presetId ?? base?.presetId,
-    } as WindowUnit;
+    } as unknown as WindowUnit;
 }
 
 export function nextPoseNumber(poses: WindowUnit[]): string {

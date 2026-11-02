@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import { globalPerformanceMonitor as performanceMonitor } from './PerformanceMonitor';
 
 export type ConstitutionalTier = 'Tier 0' | 'Tier 3' | 'Mixed';
 
@@ -57,10 +56,6 @@ export const ConstitutionalProfiler: React.FC<ConstitutionalProfilerProps> = ({
         startTime: number,
         commitTime: number
     ) => {
-        // Record in global performance monitor
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const metrics = performanceMonitor.getMetrics();
-
         // Log constitutional context
         const perfData: ConstitutionalPerformanceData = {
             component: id,

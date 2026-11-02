@@ -125,8 +125,8 @@ export const ProjectCreationManager: React.FC = () => {
             if (user?.id) {
                 try {
                     const saved = await fabricatorClientV2.savePose(newProject, user.id);
-                    persistedProjectId = saved.projectId;
-                    persistedPoseId = saved.poseId;
+                    persistedProjectId = saved.projectId as any;
+                    persistedPoseId = saved.poseId as any;
                     newProject.id = persistedPoseId;
                     newProject.projectId = persistedProjectId;
                 } catch (persistErr) {

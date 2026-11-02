@@ -109,7 +109,7 @@ export class GuildSystem {
    */
   static async canUserOverrideFirman(
     userId: string,
-    firmanCode: string,
+    _firmanCode: string,
     firmanSeverity: string
   ): Promise<boolean> {
     const profile = await this.getUserGuildProfile(userId);

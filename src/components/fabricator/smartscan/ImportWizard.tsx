@@ -215,11 +215,11 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
                   </div>
                 )}
 
-                {scanData.technical_data.material_hints?.length > 0 && (
+                {(scanData.technical_data.material_hints ?? []).length > 0 && (
                   <div>
                     <span className="text-xs text-zinc-500">Material hints:</span>
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {scanData.technical_data.material_hints.map((mat, idx) => (
+                      {(scanData.technical_data.material_hints ?? []).map((mat, idx) => (
                         <Badge key={idx} variant="outline" className="text-xs">
                           {mat}
                         </Badge>

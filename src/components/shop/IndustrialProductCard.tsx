@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { usePublicCopy } from '@/hooks/usePublicCopy';
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";

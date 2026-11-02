@@ -23,7 +23,7 @@ export class FutureKnowledgeGraph {
   async getLatestTrends(query: TrendQuery = {}): Promise<TrendData[]> {
     try {
       const cacheKey = `trends_${JSON.stringify(query)}`;
-      const cached = this.getCached(cacheKey);
+      const cached = this.getCached<TrendData[]>(cacheKey);
       if (cached) return cached;
 
       const params = new URLSearchParams();
@@ -53,7 +53,7 @@ export class FutureKnowledgeGraph {
   async getActiveAlerts(severity?: string): Promise<MarketAlert[]> {
     try {
       const cacheKey = `alerts_${severity || 'all'}`;
-      const cached = this.getCached(cacheKey);
+      const cached = this.getCached<MarketAlert[]>(cacheKey);
       if (cached) return cached;
 
       const params = severity ? `?severity=${severity}` : '';
@@ -78,7 +78,7 @@ export class FutureKnowledgeGraph {
   async getMorningBrief(): Promise<FutureIntelligence> {
     try {
       const cacheKey = 'morning_brief';
-      const cached = this.getCached(cacheKey);
+      const cached = this.getCached<FutureIntelligence>(cacheKey);
       if (cached) return cached;
 
       const response = await fetch(`${this.apiBaseUrl}/ydt/future-intelligence/morning-brief`);

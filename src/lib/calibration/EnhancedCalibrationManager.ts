@@ -152,12 +152,6 @@ export class EnhancedCalibrationManager {
       machineTolerance?: number;
     }
   ): Promise<Partial<CuttingCalibration>> {
-    // Get historical calibrations for this profile type and system
-    const _historicalCalibrations = await this.getHistoricalCalibrations(
-      profile.id,
-      systemPackId
-    );
-
     // Get test results
     const testResults = await this.getTestResults(profile.id, systemPackId);
 
@@ -314,7 +308,7 @@ export class EnhancedCalibrationManager {
         (cal) => cal.profileId === profileId && cal.systemPackId === systemPackId
       );
 
-      return calibration?.testResults || [];
+      return (calibration?.testResults as CalibrationTestResult[]) || [];
     } catch (error) {
       console.error('Error getting test results:', error);
       return [];

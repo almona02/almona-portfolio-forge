@@ -174,13 +174,14 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
     const isCasement = isOperable && !isSliding;
     
     // Calculate cell dimensions using proportional grid (colWidths/rowHeights)
-    const cols = windowUnit.grid.cols || 1;
-    const rows = windowUnit.grid.rows || 1;
-    const colWidths = windowUnit.grid.colWidths && windowUnit.grid.colWidths.length === cols
-      ? windowUnit.grid.colWidths
+    const grid = windowUnit.grid;
+    const cols = grid?.cols || 1;
+    const rows = grid?.rows || 1;
+    const colWidths = grid?.colWidths && grid.colWidths.length === cols
+      ? grid.colWidths
       : Array(cols).fill(1);
-    const rowHeights = windowUnit.grid.rowHeights && windowUnit.grid.rowHeights.length === rows
-      ? windowUnit.grid.rowHeights
+    const rowHeights = grid?.rowHeights && grid.rowHeights.length === rows
+      ? grid.rowHeights
       : Array(rows).fill(1);
     
     // Calculate proportional sizes

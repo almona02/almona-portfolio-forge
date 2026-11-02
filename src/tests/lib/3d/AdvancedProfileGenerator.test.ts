@@ -21,7 +21,14 @@ describe('AdvancedProfileGenerator', () => {
       height: 50,
       thickness: 1.5,
       material: 'aluminum',
-      color: 'Silver'
+      color: 'Silver',
+      id: 'test-profile-1',
+      name: 'Test Profile',
+      costPerMeter: 10,
+      cuttingAllowance: 0,
+      stockQuantity: 100,
+      minStockLevel: 10,
+      supplier: 'Test Supplier'
     };
 
     const config = {
@@ -47,7 +54,14 @@ describe('AdvancedProfileGenerator', () => {
       height: 60,
       thickness: 2.0,
       material: 'aluminum',
-      color: 'Bronze'
+      color: 'Bronze',
+      id: 'test-profile-2',
+      name: 'Test Profile',
+      costPerMeter: 10,
+      cuttingAllowance: 0,
+      stockQuantity: 100,
+      minStockLevel: 10,
+      supplier: 'Test Supplier'
     };
 
     const config = {
@@ -71,7 +85,14 @@ describe('AdvancedProfileGenerator', () => {
       height: 70,
       thickness: 2.5,
       material: 'aluminum',
-      color: 'White'
+      color: 'White',
+      id: 'test-profile-3',
+      name: 'Test Profile',
+      costPerMeter: 10,
+      cuttingAllowance: 0,
+      stockQuantity: 100,
+      minStockLevel: 10,
+      supplier: 'Test Supplier'
     };
 
     const config = {

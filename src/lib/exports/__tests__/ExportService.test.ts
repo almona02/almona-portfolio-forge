@@ -36,7 +36,7 @@ describe('ExportService', () => {
       overallWidth: 1000,
       overallHeight: 1500,
       status: 'active',
-    } as WindowUnit;
+    } as unknown as WindowUnit;
 
     mockOptimization = {
       materialUsage: 5000,
@@ -86,7 +86,7 @@ describe('ExportService', () => {
         mockProject,
         mockOptimization,
         'csv',
-        options
+        options as any
       );
 
       expect(result.success).toBe(true);
@@ -105,7 +105,7 @@ describe('ExportService', () => {
         mockProject,
         mockOptimization,
         'dxf',
-        options
+        options as any
       );
 
       expect(result.success).toBe(true);

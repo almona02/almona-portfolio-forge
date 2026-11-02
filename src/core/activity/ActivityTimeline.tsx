@@ -26,7 +26,7 @@ import { Badge } from '@/shared/ui/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { formatDistanceToNow } from 'date-fns';
 import * as Icons from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityLogEntry, ActivityLogger } from './ActivityLogger';
 import { getActivityColor, getActivityIcon, getActivityLabel } from './activityTypes';
 
@@ -63,10 +63,6 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadActivities();
-  }, [entityType, entityId, limit, loadActivities]);
-
   const loadActivities = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -81,6 +77,10 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
       setLoading(false);
     }
   }, [entityType, entityId, limit, setLoading, setError, setActivities]);
+
+  useEffect(() => {
+    loadActivities();
+  }, [entityType, entityId, limit, loadActivities]);
 
   const renderIcon = (eventType: string) => {
     const iconName = getActivityIcon(eventType);
@@ -188,7 +188,6 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
           <div className={cn('space-y-6', compact && 'space-y-4')}>
             {activities.map((activity, index) => {
               const label = getActivityLabel(activity.eventType);
-              const _colorClass = getActivityColor(activity.eventType);
               const timeAgo = formatDistanceToNow(activity.timestamp, { addSuffix: true });
               
               return (

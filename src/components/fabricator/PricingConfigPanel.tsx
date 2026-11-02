@@ -35,6 +35,7 @@ export interface EnhancedPricingConfig extends Partial<PricingConfig> {
   maxDiscount?: number;
   roundingMethod?: 'standard' | 'up' | 'down' | 'nearest';
   roundingPrecision?: number;
+  laborHourlyRate?: number;
   
   // Regional settings
   region?: 'turkey' | 'egypt' | 'global';

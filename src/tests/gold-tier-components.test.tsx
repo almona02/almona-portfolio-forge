@@ -363,20 +363,10 @@ describe('harden.executeAsync', () => {
 describe('Touch Gestures Hook', () => {
   it('should provide touch gesture handlers', () => {
     const TestComponent = () => {
-      useTouchGestures(
-        {
-          pinchZoom: false,
-          twoFingerPan: false,
-          rotate: false,
-          tapSelect: false,
-          longPress: false,
-          swipe: true,
-          momentum: false,
-        },
-        {
-          onSwipe: vi.fn(),
-        }
-      );
+      useTouchGestures({
+        onTap: vi.fn(),
+        onPan: vi.fn(),
+      });
 
       return <div data-touch-enabled="true">Touch Area</div>;
     };
@@ -407,7 +397,7 @@ describe('withTouchGestures HOC', () => {
       },
       {
         onSwipe: vi.fn(),
-      }
+      } as any
     );
 
     render(

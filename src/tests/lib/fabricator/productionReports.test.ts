@@ -4,7 +4,7 @@
  * Tests for the ProductionReportsGenerator utility
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { ProductionReportsGenerator } from '@/components/fabricator/drafting/utils/productionReports';
 import type { WindowUnit } from '@/types/fabricator';
 
@@ -28,8 +28,8 @@ describe('ProductionReportsGenerator', () => {
           rows: 2,
           cols: 1,
           cells: [
-            { id: 'cell-0', row: 0, col: 0, type: 'casement' },
-            { id: 'cell-1', row: 1, col: 0, type: 'casement' }
+            { id: 'cell-0', row: 0, col: 0, type: 'casement' as any },
+            { id: 'cell-1', row: 1, col: 0, type: 'casement' as any }
           ]
         },
         systemPackId: 'test-pack',
@@ -38,6 +38,7 @@ describe('ProductionReportsGenerator', () => {
         glazing: {},
         hardware: [],
         status: 'design',
+        optimization: null,
         createdAt: new Date(),
         updatedAt: new Date()
       }

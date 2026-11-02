@@ -12,7 +12,7 @@ const trainingModules = [
   { id: 'calibration', title: 'Precision Calibration', duration: '4 hours', level: 'Advanced' },
 ];
 
-export const EnhancedOperatorTrainingDialog = ({ open, onOpenChange }) => {
+export const EnhancedOperatorTrainingDialog = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) => {
   const [selectedModules, setSelectedModules] = useState<string[]>([]);
 
   const toggleModule = (id: string) => {

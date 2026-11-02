@@ -239,7 +239,7 @@ export class PerformanceMetricsAggregator {
     // Keep only last 100 audits
     if (this.workflowAudits.size > 100) {
       const firstKey = this.workflowAudits.keys().next().value;
-      this.workflowAudits.delete(firstKey);
+      this.workflowAudits.delete(firstKey as string);
     }
   }
 

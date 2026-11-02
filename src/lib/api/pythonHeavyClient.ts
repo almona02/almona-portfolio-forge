@@ -1,5 +1,5 @@
-﻿import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
 import { PLATFORM_MANUFACTURING_DEFAULTS } from '@/lib/fabricator/ManufacturingSettings';
 
 /**
@@ -181,7 +181,7 @@ export async function waitForOptimizationJobRealtime(
           table: 'jobs',
           filter: `job_id=eq.${jobId}`,
         },
-        (payload) => {
+        (payload: any) => {
           const job = payload.new;
 
           if (job.status === 'completed' && job.result_data) {

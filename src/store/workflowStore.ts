@@ -107,6 +107,24 @@ export interface StockReservationEvidence {
   bomFingerprint: string;
   /** Owned profile stock_version snapshot (stale after intake/consumption). */
   stockVersionByProfile: Record<string, number>;
+  /**
+   * @deprecated Metres quotient — never treat as production inventory.
+   * Retained only for reading legacy acknowledgements; production must use
+   * barsByCatalogueLength + physicalBarBinding === 'physical'.
+   */
+  barsByCatalogueProfile?: Record<string, number>;
+  /**
+   * Physical owned bars keyed by `${catalogueOrProfileId}|${stockLengthMm}`.
+   * Established only from piece/bar intake lots — never floor(metres/length).
+   */
+  barsByCatalogueLength?: Record<string, number>;
+  /** How bar counts were established at acknowledgement. */
+  physicalBarBinding?: 'physical' | 'unbound' | 'metres_only';
+  /**
+   * Verified stock_version fingerprint from the physical-bar snapshot used at ack.
+   * Production readiness revalidates against current owned versions.
+   */
+  physicalStockVersionFingerprint?: string;
 }
 
 /** UP-18: frozen release fingerprint acknowledgement. */

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 // PHASE 4: Use LazyModelWrapper for interaction-first loading
 import { LazyModelWrapper } from '../components/3d-model/LazyModelWrapper';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

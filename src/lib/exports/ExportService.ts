@@ -192,9 +192,6 @@ export class ExportService {
       }
     }
 
-    // Group projects if needed
-    const _groupedProjects = this.groupProjects(projects, groupBy);
-
     // Apply template if provided
     const finalOptions = templateId 
       ? await this.applyTemplate(templateId, options)
@@ -649,41 +646,6 @@ export class ExportService {
   }
 
   /**
-   * Group projects by criteria
-   */
-  private groupProjects(projects: WindowUnit[], groupBy: 'client' | 'jobSite' | 'type' | 'none'): WindowUnit[][] {
-    if (groupBy === 'none') {
-      return [projects];
-    }
-
-    const groups = new Map<string, WindowUnit[]>();
-    
-    projects.forEach(project => {
-      let key: string;
-      switch (groupBy) {
-        case 'client':
-          key = project.customer || project.customerCode || 'unknown';
-          break;
-        case 'jobSite':
-          key = project.projectCode || project.positionCode || 'unknown';
-          break;
-        case 'type':
-          key = project.type || 'unknown';
-          break;
-        default:
-          key = 'default';
-      }
-      
-      if (!groups.has(key)) {
-        groups.set(key, []);
-      }
-      groups.get(key)!.push(project);
-    });
-
-    return Array.from(groups.values());
-  }
-
-  /**
    * Process export with memory management
    */
   private async processExportWithMemoryManagement(
@@ -692,7 +654,7 @@ export class ExportService {
     format: ExportFormat,
     options: ExportOptions,
     index: number,
-    total: number,
+    _total: number,
     batchId: string,
     memoryLimit: number,
     qualityCheck: boolean,
@@ -856,7 +818,7 @@ export class ExportService {
   private async applyTemplate(templateId: string, baseOptions: ExportOptions): Promise<ExportOptions> {
     const result = templateManager.applyTemplate(templateId, baseOptions);
     if (result.success) {
-      return result.appliedOptions;
+      return result.appliedOptions as ExportOptions;
     }
     // Fallback to base options if template application fails
     return baseOptions;

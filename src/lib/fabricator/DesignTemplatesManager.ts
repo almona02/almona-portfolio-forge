@@ -483,6 +483,7 @@ export const generateTemplateThumbnail = (windowUnit: WindowUnit): string => {
   svg += `<rect width="${svgWidth}" height="${svgHeight}" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>`;
 
   // Draw grid cells
+  if (!grid) return svg;
   const cellWidth = svgWidth / grid.cols;
   const cellHeight = svgHeight / grid.rows;
 

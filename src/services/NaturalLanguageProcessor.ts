@@ -15,7 +15,7 @@ export interface ParsedQuery {
   condition?: string;
   brand?: string;
   year?: {min?: number, max?: number};
-  intent: 'buy' | 'sell' | 'research' | 'compare';
+  intent: 'buy' | 'sell' | 'research' | 'compare' | 'commercial';
   urgency: 'low' | 'medium' | 'high';
   expandedTerms: string[];
 }
@@ -29,13 +29,6 @@ export class NaturalLanguageProcessor {
     'qena', 'faiyum', 'kafr el sheikh', 'beni suef', 'port said',
     'القاهرة', 'الجيزة', 'الإسكندرية', 'الدقهلية', 'الشرقية'
   ];
-
-  // Price indicators in Arabic and English
-  private static priceIndicators = {
-    under: ['under', 'below', 'less than', 'maximum', 'max', 'اقل من', 'تحت', 'اكتر من'],
-    over: ['over', 'above', 'more than', 'minimum', 'min', 'اكتر من', 'فوق', 'اعلى من'],
-    around: ['around', 'approximately', 'about', 'near', 'حوالي', 'تقريبا']
-  };
 
   // Urgency indicators
   private static urgencyIndicators = {

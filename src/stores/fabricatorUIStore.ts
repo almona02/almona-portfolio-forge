@@ -47,6 +47,7 @@ interface FabricatorUIState {
   // Actions
   togglePanel: (sectionId: SectionId, panel: 'left' | 'right') => void;
   setPanelState: (sectionId: SectionId, leftCollapsed: boolean, rightCollapsed: boolean) => void;
+  setPanelWidthExpanded: (sectionId: SectionId, panel: 'left' | 'right', widthPx: number) => void;
   setTheme: (theme: Theme) => void;
   setQuickAccessToolbarVisible: (visible: boolean) => void;
   setQuickAccessToolbarPinned: (pinned: boolean) => void;
@@ -113,6 +114,20 @@ export const useFabricatorUIStore = create<FabricatorUIState>()(
           },
         },
       })),
+
+      setPanelWidthExpanded: (sectionId, panel, widthPx) => set((state) => {
+        const clamped = Math.min(600, Math.max(200, Math.round(widthPx)));
+        const key = panel === 'left' ? 'leftWidthExpanded' : 'rightWidthExpanded';
+        return {
+          panelStates: {
+            ...state.panelStates,
+            [sectionId]: {
+              ...state.panelStates[sectionId],
+              [key]: clamped,
+            },
+          },
+        };
+      }),
       
       setTheme: (theme) => set({ theme }),
       

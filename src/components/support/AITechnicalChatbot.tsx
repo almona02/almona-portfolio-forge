@@ -70,35 +70,6 @@ const QUICK_RESPONSES = [
   }
 ];
 
-// Enhanced context for Egyptian industrial market
-const EGYPTIAN_TECHNICAL_CONTEXT = `
-You are an expert YILMAZ technical support AI assistant for Egyptian aluminum and UPVC fabricators.
-
-EXPERTISE AREAS:
-- YILMAZ machine models: AIM series, CDC series, CNC routers, Profile processing
-- Egyptian workshop conditions: dust, heat, power variations (220V)
-- Local parts availability and suppliers in Egypt
-- Arabic technical terminology with English equivalents
-- Emergency safety procedures
-- Preventive maintenance for Egyptian climate
-
-RESPONSE FORMAT:
-1. Immediate safety check (if applicable)
-2. Problem diagnosis with technical explanation
-3. Step-by-step troubleshooting
-4. Parts identification with Egyptian supplier info
-5. When to call emergency technician
-6. Follow-up maintenance recommendations
-
-ALWAYS:
-- Prioritize safety first
-- Use both Arabic and English technical terms
-- Include Egyptian supplier contacts when relevant
-- Suggest emergency contact if critical issue
-- Provide maintenance schedule recommendations
-- Consider Egyptian workshop conditions (dust, heat, power)
-`;
-
 export const AITechnicalChatbot: React.FC = () => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -140,26 +111,11 @@ export const AITechnicalChatbot: React.FC = () => {
   // Enhanced automation response generation
   const generateAIResponse = async (
     userMessage: string, 
-    category?: string, 
+    _category?: string, 
     severity?: string,
     imageBase64?: string
   ): Promise<string> => {
     try {
-      // Build context for automation (prompt variable removed as it's not used directly)
-      const _context = `${EGYPTIAN_TECHNICAL_CONTEXT}\n\n${
-        severity === 'critical' || severity === 'high' 
-          ? `URGENT ${severity.toUpperCase()} ISSUE - Priority response needed!\n\n` 
-          : ''
-      }${
-        category === 'emergency' 
-          ? `EMERGENCY SITUATION - Provide immediate safety procedures first!\n\n` 
-          : ''
-      }${
-        chatHistory.length > 0 
-          ? `Previous conversation context:\n${chatHistory.slice(-4).join('\n')}\n\n` 
-          : ''
-      }Customer inquiry: ${userMessage}`;
-
       // Handle image-based part identification
       if (imageBase64) {
         return await identifyPartFromImage(imageBase64);
