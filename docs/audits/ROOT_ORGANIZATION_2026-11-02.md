@@ -119,3 +119,11 @@ See [Project layout](../PROJECT_LAYOUT.md) for the intended folder structure. Th
 ### Validation runtime note
 
 The host default Node 22.17 is below package.json's `>=22.19 <23` engine range. Its first build compiled Vite successfully but failed at the existing catalogue script's native TypeScript import. The final build and tests used the README-recommended Node 22.22.2 from a portable runtime verified against the official SHA256 list, stored only in ignored `.artifacts/root-organization/runtime/`. No source workaround, global Node install or dependency update was introduced. Both the supported-runtime and original-host type checks reported the same seven existing application errors.
+
+### Supabase Preview replay repair
+
+The normalized `20261006000000_manufacturing_approval_requests.sql` version can be replayed over objects created through historical/manual provisioning. Read-only catalog checks confirmed the approval table, owner/admin policies and RPC signatures already exist; the normalized approval-request version was absent from the inspected migration history. The failure is unrelated to deleting root reports.
+
+The historical migration now creates its table, owner policy and exact RPC signatures only when missing, retaining data and later policy/RPC definitions and RPC grants. Original cold-install authorization remains intact; table RLS/read-only client grants continue to be enforced. No remote schema, production data or migration ledger was modified.
+
+An isolated PostgreSQL 17.6 fixture reproduced SQLSTATE 42P07 with the unchanged migration and passed with the patch: cold install, authenticated owner isolation, repeated replay, preservation of stricter later policy/function/ACL definitions, and missing-RPC initialization. The local test instance was stopped afterward. `tests/sql/manufacturing_approval_migration_replay.sql` refuses databases without the disposable fixture prefix. The Supabase Migrations workflow now runs this fixture against a disposable PostgreSQL 17 service. Migration-version guard (76 canonical versions), workflow YAML parsing, secret scan and diff checks passed. Hosted Supabase Preview status must be checked after the push; local replay success alone is not a hosted-check result.

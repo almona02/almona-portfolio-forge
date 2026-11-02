@@ -5,12 +5,14 @@ on:
     paths:
       - 'supabase/migrations/**'
       - 'scripts/check-migration-version-format.mjs'
+      - 'tests/sql/manufacturing_approval_migration_replay.sql'
       - '.github/workflows/supabase-migrations.yml'
   push:
     branches: [main]
     paths:
       - 'supabase/migrations/**'
       - 'scripts/check-migration-version-format.mjs'
+      - 'tests/sql/manufacturing_approval_migration_replay.sql'
       - '.github/workflows/supabase-migrations.yml'
   workflow_dispatch:
 
@@ -28,3 +30,27 @@ jobs:
           node-version: '22.22.2'
       - name: Reject short / colliding migration versions
         run: node scripts/check-migration-version-format.mjs
+
+  approval-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: approval_replay_test_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d approval_replay_test_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify fresh install and non-destructive migration replay
+        env:
+          PGPASSWORD: postgres
+        run: psql -X -h 127.0.0.1 -U postgres -d approval_replay_test_ci -v ON_ERROR_STOP=1 -f tests/sql/manufacturing_approval_migration_replay.sql

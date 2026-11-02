@@ -1,5 +1,8 @@
 BEGIN;
-CREATE TABLE public.fabricator_manufacturing_approval_requests (
+-- The historical 20261006 migration was normalized to a 14-digit version.
+-- Preview can replay it over objects provisioned under the old/manual history.
+-- Keep existing data and later policy/RPC definitions; initialize missing objects only.
+CREATE TABLE IF NOT EXISTS public.fabricator_manufacturing_approval_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   owner_user_id UUID NOT NULL REFERENCES auth.users(id),
   position_id UUID NOT NULL,
@@ -15,9 +18,22 @@ CREATE TABLE public.fabricator_manufacturing_approval_requests (
 ALTER TABLE public.fabricator_manufacturing_approval_requests ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.fabricator_manufacturing_approval_requests FROM anon, authenticated;
 GRANT SELECT ON public.fabricator_manufacturing_approval_requests TO authenticated;
+DO $approval_policy$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_policy
+    WHERE polrelid = 'public.fabricator_manufacturing_approval_requests'::regclass
+      AND polname = 'owner_read_approval_requests'
+  ) THEN
 CREATE POLICY owner_read_approval_requests ON public.fabricator_manufacturing_approval_requests
   FOR SELECT TO authenticated USING (owner_user_id = auth.uid());
+  END IF;
+END;
+$approval_policy$;
 
+DO $approval_request_rpc$
+BEGIN
+  IF to_regprocedure('public.request_fabricator_manufacturing_approval(uuid,bigint,text,text,text)') IS NULL THEN
 CREATE FUNCTION public.request_fabricator_manufacturing_approval(
   p_position_id UUID, p_expected_revision BIGINT,
   p_catalogue_reference TEXT, p_rule_reference TEXT, p_notes TEXT DEFAULT ''
@@ -43,8 +59,14 @@ BEGIN
 END; $$;
 REVOKE ALL ON FUNCTION public.request_fabricator_manufacturing_approval(UUID,BIGINT,TEXT,TEXT,TEXT) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.request_fabricator_manufacturing_approval(UUID,BIGINT,TEXT,TEXT,TEXT) TO authenticated;
+  END IF;
+END;
+$approval_request_rpc$;
 
 -- Reviewer writes use the trusted service role; browser users cannot self-approve.
+DO $approval_review_rpc$
+BEGIN
+  IF to_regprocedure('public.review_fabricator_manufacturing_approval(uuid,uuid,jsonb)') IS NULL THEN
 CREATE FUNCTION public.review_fabricator_manufacturing_approval(
   p_request_id UUID, p_approved_by UUID, p_authority_payload JSONB
 ) RETURNS UUID LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$
@@ -91,4 +113,7 @@ BEGIN
 END; $$;
 REVOKE ALL ON FUNCTION public.review_fabricator_manufacturing_approval(UUID,UUID,JSONB) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.review_fabricator_manufacturing_approval(UUID,UUID,JSONB) TO service_role;
+  END IF;
+END;
+$approval_review_rpc$;
 COMMIT;
