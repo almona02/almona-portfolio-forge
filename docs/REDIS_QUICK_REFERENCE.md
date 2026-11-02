@@ -66,7 +66,7 @@ shared:search:{query}:{category}             // TTL: 10 min
 
 ### Test Redis Connection
 ```bash
-npx tsx env-check.ts
+npx tsx scripts/diagnostics/redis/env-check.ts
 npx tsx src/lib/redis/simpleTest.ts
 ```
 
@@ -90,7 +90,7 @@ redis-cli -h caboose.proxy.rlwy.net -p 26145 -a $REDIS_PASSWORD FLUSHDB
 
 ### Performance Testing
 ```bash
-npx tsx test-cache-performance.ts
+npx tsx scripts/diagnostics/redis/test-cache-performance.ts
 ```
 
 ---

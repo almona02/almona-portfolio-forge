@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-import os
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+OUTPUT_DIR = REPO_ROOT / "docs" / "architecture" / "diagrams"
 
 def create_svg(filename, content, width=800, height=500):
     svg_template = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}">
@@ -14,7 +17,8 @@ def create_svg(filename, content, width=800, height=500):
     {content}
     </svg>'''
     
-    with open(filename, 'w', encoding='utf-8') as f:
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    with (OUTPUT_DIR / filename).open('w', encoding='utf-8') as f:
         f.write(svg_template)
     print(f"Generated {filename}")
 
@@ -59,7 +63,7 @@ arch_content = '''
         </g>
         <g transform="translate(370, 50)">
             <rect width="280" height="40" fill="white" stroke="#86efac" rx="4" />
-            <text x="140" y="25" class="box-text">Calibration Learner (AI)</text>
+            <text x="140" y="25" class="box-text">Calibration Learner (automation)</text>
         </g>
     </g>
 
@@ -81,7 +85,7 @@ arch_content = '''
         <g transform="translate(500, 0)">
             <rect width="200" height="80" fill="#fef2f2" stroke="#ef4444" stroke-width="2" rx="8" />
             <text x="100" y="35" class="box-text" fill="#b91c1c">External Services</text>
-            <text x="100" y="55" class="box-sub">OpenAI / SendGrid</text>
+            <text x="100" y="55" class="box-sub">support service / SendGrid</text>
         </g>
     </g>
 
@@ -190,7 +194,7 @@ ydt_content = '''
     <g transform="translate(280, 80)">
         <circle cx="120" cy="140" r="110" fill="#fffbeb" stroke="#d97706" stroke-width="2" />
         <text x="120" y="70" class="box-text" fill="#b45309" font-size="16px">MAALEM ANALYST</text>
-        <text x="120" y="90" class="subtitle" text-anchor="middle">(AI Agent)</text>
+        <text x="120" y="90" class="subtitle" text-anchor="middle">(automation Agent)</text>
 
         <g transform="translate(40, 110)">
             <rect width="160" height="25" fill="white" stroke="#fcd34d" rx="4" />
