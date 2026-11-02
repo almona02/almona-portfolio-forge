@@ -176,12 +176,12 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-amber-400 shrink-0" />
-            <h2 className="typography-h2 text-slate-100 text-lg sm:text-xl">
+            <ShieldCheck className="w-5 h-5 text-warning shrink-0" />
+            <h2 className="typography-h2 text-foreground text-lg sm:text-xl">
               Pattern reliability toolkit
             </h2>
           </div>
-          <p className="mt-1 text-xs sm:text-sm text-slate-400">
+          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
             Verify grid, pack fit, and complexity before applying. No auto-invented layouts.
           </p>
         </div>
@@ -190,7 +190,7 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
           variant="outline"
           size="sm"
           onClick={() => handleToggleDetails(!showDetails)}
-          className="shrink-0 border-slate-600 text-slate-200"
+          className="shrink-0 border-border text-foreground"
           title={showDetails ? 'Simple view (Ctrl+D)' : 'Workshop notes (Ctrl+D)'}
         >
           <Info className="w-4 h-4" />
@@ -207,7 +207,7 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
         value={activeCategory}
         onValueChange={(v) => setActiveCategory(v as typeof activeCategory)}
       >
-        <TabsList className="bg-slate-900/80 border border-slate-700">
+        <TabsList className="bg-background/80 border border-border">
           <TabsTrigger value="residential" className="flex items-center gap-2">
             <Home className="w-4 h-4" />
             Residential
@@ -224,7 +224,7 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
 
         <TabsContent value={activeCategory} className="mt-4 sm:mt-6">
           {filteredPresets.length === 0 ? (
-            <div className="rounded-lg border border-slate-700 bg-slate-950/60 p-6 text-center text-sm text-slate-400">
+            <div className="rounded-lg border border-border bg-background/60 p-6 text-center text-sm text-muted-foreground">
               No selectable patterns in this category for the current catalog.
             </div>
           ) : (
@@ -242,49 +242,49 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
                   <Card
                     key={preset.id}
                     className={cn(
-                      'relative overflow-hidden border bg-slate-950/70 text-slate-100',
+                      'relative overflow-hidden border bg-background/70 text-foreground',
                       isSelected
                         ? 'border-amber-500 ring-1 ring-amber-500/40'
-                        : 'border-slate-700 hover:border-amber-600/50',
+                        : 'border-border hover:border-amber-600/50',
                     )}
                   >
                     {isSelected && (
                       <div className="absolute top-3 right-3 z-10">
-                        <CheckCircle2 className="w-5 h-5 text-amber-400" />
+                        <CheckCircle2 className="w-5 h-5 text-warning" />
                       </div>
                     )}
 
                     <CardContent className="p-4 sm:p-5 space-y-3">
                       <div className="flex items-start gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-md border border-amber-600/40 bg-amber-500/10">
-                          <Grid3x3 className="h-5 w-5 text-amber-400" />
+                          <Grid3x3 className="h-5 w-5 text-warning" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h3 className="typography-h3 text-base text-slate-100 leading-snug">
+                          <h3 className="typography-h3 text-base text-foreground leading-snug">
                             {preset.title}
                           </h3>
-                          <p className="mt-1 text-xs text-slate-400 line-clamp-2">
+                          <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
                             {preset.description}
                           </p>
                         </div>
                       </div>
 
                       {/* Human verification checklist */}
-                      <div className="rounded-md border border-slate-700/80 bg-slate-900/70 p-3 space-y-1.5 text-xs">
+                      <div className="rounded-md border border-border/80 bg-background/70 p-3 space-y-1.5 text-xs">
                         <div className="flex justify-between gap-2">
-                          <span className="text-slate-400">Grid</span>
-                          <span className="font-mono text-amber-200">
+                          <span className="text-muted-foreground">Grid</span>
+                          <span className="font-mono text-warning">
                             {grid
                               ? `${grid.rows}×${grid.cols}`
                               : preset.intelligence.gridPattern}
                           </span>
                         </div>
                         <div className="flex justify-between gap-2">
-                          <span className="text-slate-400">Pack fit</span>
+                          <span className="text-muted-foreground">Pack fit</span>
                           <span
                             className={cn(
                               'font-medium',
-                              packMatch ? 'text-emerald-300' : 'text-red-300',
+                              packMatch ? 'text-success' : 'text-destructive',
                             )}
                           >
                             {packIds[0] || preset.intelligence.systemRecommendation}
@@ -296,18 +296,18 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
                           </span>
                         </div>
                         <div className="flex justify-between gap-2">
-                          <span className="text-slate-400">Complexity</span>
-                          <span className="text-slate-200">{preset.complexity}</span>
+                          <span className="text-muted-foreground">Complexity</span>
+                          <span className="text-foreground">{preset.complexity}</span>
                         </div>
                         <div className="flex justify-between gap-2">
-                          <span className="text-slate-400">Evidence</span>
+                          <span className="text-muted-foreground">Evidence</span>
                           <Badge
                             variant="outline"
                             className={cn(
                               'text-[10px]',
                               evidence === 'approved'
-                                ? 'border-emerald-500/50 text-emerald-300'
-                                : 'border-amber-500/40 text-amber-200',
+                                ? 'border-emerald-500/50 text-success'
+                                : 'border-amber-500/40 text-warning',
                             )}
                           >
                             {evidence}
@@ -316,22 +316,22 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
                       </div>
 
                       {showDetails && details && (
-                        <div className="rounded-md border border-slate-700 bg-slate-900/50 p-3 space-y-2 text-xs text-slate-300">
+                        <div className="rounded-md border border-border bg-background/50 p-3 space-y-2 text-xs text-foreground">
                           {details.bestFor && (
                             <p>
-                              <span className="text-amber-300 font-medium">Best for: </span>
+                              <span className="text-warning font-medium">Best for: </span>
                               {details.bestFor}
                             </p>
                           )}
                           {details.architecturalStyle && (
                             <p>
-                              <span className="text-amber-300 font-medium">Style: </span>
+                              <span className="text-warning font-medium">Style: </span>
                               {details.architecturalStyle}
                             </p>
                           )}
                           {preset.intelligence.optimization && (
                             <p>
-                              <span className="text-amber-300 font-medium">Workshop note: </span>
+                              <span className="text-warning font-medium">Workshop note: </span>
                               {preset.intelligence.optimization}
                             </p>
                           )}
@@ -344,8 +344,8 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
                         className={cn(
                           'w-full',
                           isSelected
-                            ? 'bg-amber-500 hover:bg-amber-600 text-slate-900'
-                            : 'bg-slate-100 hover:bg-white text-slate-900',
+                            ? 'bg-amber-500 hover:bg-amber-600 text-foreground'
+                            : 'bg-muted hover:bg-card text-foreground',
                         )}
                       >
                         {isSelected ? (

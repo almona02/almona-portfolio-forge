@@ -45,10 +45,10 @@ const palette = {
     border: 'border-red-300 dark:border-red-700'
   },
   gray: {
-    soft: 'bg-gray-100 dark:bg-gray-800',
-    solid: 'bg-gray-500',
-    text: 'text-gray-700 dark:text-gray-300',
-    border: 'border-gray-300 dark:border-gray-700'
+    soft: 'bg-muted dark:bg-card',
+    solid: 'bg-muted',
+    text: 'text-foreground dark:text-foreground',
+    border: 'border-border dark:border-border'
   }
 }
 

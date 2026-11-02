@@ -62,70 +62,70 @@ export const ProjectBOMAggregate: React.FC<ProjectBOMAggregateProps> = ({ projec
 
   if (!results?.unitResults?.size) {
     return (
-      <Card className="bg-gray-800/50 border-gray-700">
-        <CardContent className="p-8 text-center text-gray-500">
+      <Card className="bg-card/50 border-border">
+        <CardContent className="p-8 text-center text-muted-foreground">
           <Layers className="h-12 w-12 mx-auto mb-4 opacity-30" aria-hidden />
           <p className="text-sm">Run optimization to see aggregate BOM.</p>
-          <p className="text-xs text-gray-500 mt-2">Click &quot;Optimize All&quot; in the sidebar.</p>
+          <p className="text-xs text-muted-foreground mt-2">Click &quot;Optimize All&quot; in the sidebar.</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700">
+    <Card className="bg-card/50 border-border">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Layers className="h-5 w-5 text-amber-400" />
+          <Layers className="h-5 w-5 text-warning" />
           Aggregate BOM
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
-            <Package className="h-5 w-5 text-blue-400 mb-2" />
-            <div className="text-2xl font-bold text-white">{totalBars}</div>
-            <div className="text-xs text-gray-400">Total Bars</div>
+          <div className="bg-background/50 rounded-lg p-4 border border-border">
+            <Package className="h-5 w-5 text-info mb-2" />
+            <div className="text-2xl font-bold text-foreground">{totalBars}</div>
+            <div className="text-xs text-muted-foreground">Total Bars</div>
           </div>
-          <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
-            <Scissors className="h-5 w-5 text-amber-400 mb-2" />
-            <div className="text-2xl font-bold text-white">{(totalWaste / 1000).toFixed(2)} m</div>
-            <div className="text-xs text-gray-400">Total Waste</div>
+          <div className="bg-background/50 rounded-lg p-4 border border-border">
+            <Scissors className="h-5 w-5 text-warning mb-2" />
+            <div className="text-2xl font-bold text-foreground">{(totalWaste / 1000).toFixed(2)} m</div>
+            <div className="text-xs text-muted-foreground">Total Waste</div>
           </div>
-          <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
-            <div className="text-2xl font-bold text-green-400">{formatEGP(totalCost)}</div>
-            <div className="text-xs text-gray-400">Material Cost</div>
+          <div className="bg-background/50 rounded-lg p-4 border border-border">
+            <div className="text-2xl font-bold text-success">{formatEGP(totalCost)}</div>
+            <div className="text-xs text-muted-foreground">Material Cost</div>
           </div>
-          <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
-            <div className="text-2xl font-bold text-white">{units.length}</div>
-            <div className="text-xs text-gray-400">Positions</div>
+          <div className="bg-background/50 rounded-lg p-4 border border-border">
+            <div className="text-2xl font-bold text-foreground">{units.length}</div>
+            <div className="text-xs text-muted-foreground">Positions</div>
           </div>
         </div>
 
         <div>
-          <h4 className="text-sm font-medium text-gray-400 mb-2">Cost Breakdown</h4>
+          <h4 className="text-sm font-medium text-muted-foreground mb-2">Cost Breakdown</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-            <div className="bg-gray-900/30 rounded p-2">
-              <span className="text-gray-500">Profiles</span>
-              <div className="font-mono text-amber-300">{formatEGP(costBreakdown.profiles)}</div>
+            <div className="bg-background/30 rounded p-2">
+              <span className="text-muted-foreground">Profiles</span>
+              <div className="font-mono text-warning">{formatEGP(costBreakdown.profiles)}</div>
             </div>
-            <div className="bg-gray-900/30 rounded p-2">
-              <span className="text-gray-500">Hardware</span>
-              <div className="font-mono text-amber-300">{formatEGP(costBreakdown.hardware)}</div>
+            <div className="bg-background/30 rounded p-2">
+              <span className="text-muted-foreground">Hardware</span>
+              <div className="font-mono text-warning">{formatEGP(costBreakdown.hardware)}</div>
             </div>
-            <div className="bg-gray-900/30 rounded p-2">
-              <span className="text-gray-500">Glass</span>
-              <div className="font-mono text-amber-300">{formatEGP(costBreakdown.glass)}</div>
+            <div className="bg-background/30 rounded p-2">
+              <span className="text-muted-foreground">Glass</span>
+              <div className="font-mono text-warning">{formatEGP(costBreakdown.glass)}</div>
             </div>
-            <div className="bg-gray-900/30 rounded p-2">
-              <span className="text-gray-500">Waste</span>
-              <div className="font-mono text-red-400">{formatEGP(costBreakdown.waste)}</div>
+            <div className="bg-background/30 rounded p-2">
+              <span className="text-muted-foreground">Waste</span>
+              <div className="font-mono text-destructive">{formatEGP(costBreakdown.waste)}</div>
             </div>
           </div>
         </div>
 
         <div>
-          <h4 className="text-sm font-medium text-gray-400 mb-2">Per Position</h4>
+          <h4 className="text-sm font-medium text-muted-foreground mb-2">Per Position</h4>
           <div className="space-y-2 max-h-48 overflow-y-auto" role="list">
             {units.map((unit) => {
               const res = unitResults.get(unit.id);
@@ -136,11 +136,11 @@ export const ProjectBOMAggregate: React.FC<ProjectBOMAggregateProps> = ({ projec
               return (
                 <div
                   key={unit.id}
-                  className="flex justify-between items-center py-2 px-3 bg-gray-900/30 rounded border border-gray-700/50"
+                  className="flex justify-between items-center py-2 px-3 bg-background/30 rounded border border-border/50"
                 >
-                  <span className="font-medium text-gray-200">{unit.posNumber}</span>
-                  <span className="text-xs text-gray-400">{bars} bars</span>
-                  <span className="font-mono text-sm text-amber-300">{formatEGP(cost)}</span>
+                  <span className="font-medium text-foreground">{unit.posNumber}</span>
+                  <span className="text-xs text-muted-foreground">{bars} bars</span>
+                  <span className="font-mono text-sm text-warning">{formatEGP(cost)}</span>
                 </div>
               );
             })}

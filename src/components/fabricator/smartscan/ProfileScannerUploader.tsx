@@ -128,7 +128,7 @@ const ScaleSuggestionModal: React.FC<ScaleSuggestionModalProps> = ({
                   {
                     label: t('profile_scanner_uploader.scale_modal.suggestion', 'Suggestion'),
                     value: (
-                      <span className={isHighConfidence ? "text-green-600" : isMediumConfidence ? "text-amber-600" : "text-destructive"}>
+                      <span className={isHighConfidence ? "text-success" : isMediumConfidence ? "text-warning" : "text-destructive"}>
                         {suggestion_text || t('profile_scanner_uploader.scale_modal.no_suggestion', 'No suggestion available')}
                       </span>
                     ),

@@ -135,7 +135,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
           'border-amber-600/30',
           invoice.status === 'paid' ? 'bg-green-500/20 text-green-200' :
           invoice.status === 'pending' || invoice.status === 'sent' ? 'bg-amber-500/20 text-amber-200' :
-          'bg-gray-500/20 text-gray-200'
+          'bg-muted/20 text-foreground'
         )}
       >
         {invoice.status || 'pending'}
@@ -152,7 +152,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
 
   if (loading || loadedFor !== customerId) {
     return (
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-8">
           <div className="text-center text-amber-600/70">Loading invoices...</div>
         </CardContent>
@@ -163,7 +163,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
   return (
     <div className="space-y-6">
       {/* Search Bar */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-4">
           <div className="flex gap-2">
             <div className="relative flex-1">
@@ -173,7 +173,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
                 placeholder="Search invoices..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                className="pl-10 bg-background/60 border-amber-600/30 text-amber-200"
               />
             </div>
             <Button
@@ -188,7 +188,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
       </Card>
 
       {/* Invoices Table */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Your Invoices</CardTitle>
           <CardDescription className="text-sm text-amber-600/70">
@@ -201,7 +201,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#0f0f0f]/60 border-amber-600/20">
+                <TableRow className="bg-background/60 border-amber-600/20">
                   <TableHead className="text-amber-300/70">Invoice Number</TableHead>
                   <TableHead className="text-amber-300/70">Date</TableHead>
                   <TableHead className="text-amber-300/70">Due Date</TableHead>
@@ -225,7 +225,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
                     <TableCell className="text-amber-200">
                       {invoice.due_date ? (
                         <span className={cn(
-                          new Date(invoice.due_date) < new Date() && invoice.status !== 'paid' ? 'text-red-400' : ''
+                          new Date(invoice.due_date) < new Date() && invoice.status !== 'paid' ? 'text-destructive' : ''
                         )}>
                           {format(new Date(invoice.due_date), 'MMM d, yyyy')}
                         </span>
@@ -279,7 +279,7 @@ export const ClientInvoiceViewer: React.FC<ClientInvoiceViewerProps> = ({ custom
       {/* Invoice Detail Modal */}
       {selectedInvoice && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <Card className="bg-[#0f0f0f]/95 border-amber-600/30 card-glass-dark max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <Card className="bg-background/95 border-amber-600/30 card-glass-dark max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>

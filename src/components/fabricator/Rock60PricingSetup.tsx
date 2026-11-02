@@ -583,7 +583,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   };
 
   return (
-    <Card className="bg-gray-900/70 border-gray-700 card-dark">
+    <Card className="bg-background/70 border-border card-dark">
       <CardHeader className="pb-3 flex flex-row items-center justify-between">
         <div className="flex-1">
           <div className="flex items-center justify-between gap-2">
@@ -601,7 +601,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => onOpenStudio(systemName || undefined, selectedProfile?.id)}
-                className="h-7 text-xs bg-amber-600/20 hover:bg-amber-600/30 border-amber-600/40 text-amber-300"
+                className="h-7 text-xs bg-amber-600/20 hover:bg-amber-600/30 border-amber-600/40 text-warning"
                 title="Open in Pricing Tuning Studio"
               >
                 <Maximize2 className="h-3 w-3 mr-1.5" />
@@ -612,20 +612,20 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
           <CardDescription className="text-[11px] mt-1">
             Set base prices for {systemName} elements: profiles, glass, hardware, and gaskets.
             {onOpenStudio && (
-              <span className="text-amber-400/70 ml-1">Click "Open Studio" for advanced pricing management.</span>
+              <span className="text-warning/70 ml-1">Click "Open Studio" for advanced pricing management.</span>
             )}
           </CardDescription>
-          <p className="text-[11px] text-slate-400 mt-2">
-            Currency: <span className="font-semibold text-slate-200">{currency}</span>. {inventoryCurrencyNote}
+          <p className="text-[11px] text-muted-foreground mt-2">
+            Currency: <span className="font-semibold text-foreground">{currency}</span>. {inventoryCurrencyNote}
           </p>
         </div>
-        <DollarSign className="h-4 w-4 text-green-400 ml-2 flex-shrink-0" />
+        <DollarSign className="h-4 w-4 text-success ml-2 flex-shrink-0" />
       </CardHeader>
       <CardContent className="space-y-4 text-[11px]">
         {/* System Pack Selector */}
         {Object.keys(profilesBySystem).length > 1 && (
           <div className="space-y-2">
-            <Label className="typography-label text-xs text-gray-400">Select System Pack</Label>
+            <Label className="typography-label text-xs text-muted-foreground">Select System Pack</Label>
             <Select 
               value={systemName || ''} 
               onValueChange={(system) => {
@@ -652,8 +652,8 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
         {/* Profile Selector - Show all profiles with code and role */}
         {profilesBySystem[systemName || ''] && profilesBySystem[systemName || ''].length > 0 && (
           <div className="space-y-2">
-            <Label className="typography-label text-xs text-gray-400">
-              Select Profile • <span className="font-semibold text-gray-300">{systemName}</span> ({profilesBySystem[systemName || '']?.length} available)
+            <Label className="typography-label text-xs text-muted-foreground">
+              Select Profile • <span className="font-semibold text-foreground">{systemName}</span> ({profilesBySystem[systemName || '']?.length} available)
             </Label>
             <Select value={currentProfileId} onValueChange={handleProfileChange}>
               <SelectTrigger className="h-8 text-xs">
@@ -672,7 +672,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                       {/* Profile name as first text node for SelectValue */}
                       {displayName}
                       <div className="flex flex-col gap-0.5 w-full mt-0.5">
-                        <span className="text-[10px] text-gray-400">
+                        <span className="text-[10px] text-muted-foreground">
                           Profile: {code} • Role: {role}
                         </span>
                       </div>
@@ -694,11 +694,11 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
         )}
 
         {/* Aluminum Price Per Kg - Main Input */}
-        <div className="space-y-2 border-b border-gray-700 pb-4">
-          <div className="font-semibold text-gray-200">Daily Aluminum Price</div>
+        <div className="space-y-2 border-b border-border pb-4">
+          <div className="font-semibold text-foreground">Daily Aluminum Price</div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="typography-label text-xs text-gray-400 mb-1 block">Price per kg ({currency})</Label>
+              <Label className="typography-label text-xs text-muted-foreground mb-1 block">Price per kg ({currency})</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -726,7 +726,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                 placeholder={`Enter daily aluminum price per kg (${currency})`}
                 className="font-semibold"
               />
-              <p className="text-[10px] text-gray-500 mt-1">
+              <p className="text-[10px] text-muted-foreground mt-1">
                 Auto-calculates prices for <strong>frame, sash, and other</strong> profiles only. Accessories need separate pricing.
               </p>
             </div>
@@ -736,21 +736,21 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
         {/* Profiles - Read-only table showing auto-calculated prices */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <div className="font-semibold text-gray-200">Profiles (per meter)</div>
-            <span className="text-[10px] text-gray-400">
+            <div className="font-semibold text-foreground">Profiles (per meter)</div>
+            <span className="text-[10px] text-muted-foreground">
               {systemPackProfiles.length} profiles • Frame/Sash auto-calc • Accessories manual
             </span>
           </div>
-          <div className="border border-gray-700 rounded-md overflow-hidden">
+          <div className="border border-border rounded-md overflow-hidden">
             <div className="max-h-[500px] overflow-y-auto">
               <table className="w-full text-xs">
-                <thead className="bg-gray-800/50 sticky top-0">
-                  <tr className="border-b border-gray-700">
-                    <th className="text-left p-2 font-semibold text-gray-300">Profile</th>
-                    <th className="text-left p-2 font-semibold text-gray-300">Code</th>
-                    <th className="text-center p-2 font-semibold text-gray-300">Role</th>
-                    <th className="text-right p-2 font-semibold text-gray-300">Weight (kg/m)</th>
-                    <th className="text-right p-2 font-semibold text-gray-300">Price ({currency}/m)</th>
+                <thead className="bg-card/50 sticky top-0">
+                  <tr className="border-b border-border">
+                    <th className="text-left p-2 font-semibold text-foreground">Profile</th>
+                    <th className="text-left p-2 font-semibold text-foreground">Code</th>
+                    <th className="text-center p-2 font-semibold text-foreground">Role</th>
+                    <th className="text-right p-2 font-semibold text-foreground">Weight (kg/m)</th>
+                    <th className="text-right p-2 font-semibold text-foreground">Price ({currency}/m)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -769,15 +769,15 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                     return (
                       <tr 
                         key={profile.code} 
-                        className={`border-b border-gray-800/50 hover:bg-gray-800/30 ${
-                          idx % 2 === 0 ? 'bg-gray-900/30' : ''
+                        className={`border-b border-border/50 hover:bg-card/30 ${
+                          idx % 2 === 0 ? 'bg-background/30' : ''
                         } ${isAccessory ? 'opacity-75' : ''}`}
                       >
-                        <td className="p-2 text-gray-200 font-medium">
+                        <td className="p-2 text-foreground font-medium">
                           {profile.name}
-                          {isAccessory && <span className="text-[9px] text-yellow-400 ml-1">(manual)</span>}
+                          {isAccessory && <span className="text-[9px] text-warning ml-1">(manual)</span>}
                         </td>
-                        <td className="p-2 text-gray-400 font-mono text-[10px]">{profile.code}</td>
+                        <td className="p-2 text-muted-foreground font-mono text-[10px]">{profile.code}</td>
                         <td className="p-2 text-center">
                           <Badge 
                             variant={isAccessory ? "secondary" : "outline"} 
@@ -786,7 +786,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                             {role}
                           </Badge>
                         </td>
-                        <td className="p-2 text-right text-gray-300 font-mono">
+                        <td className="p-2 text-right text-foreground font-mono">
                           {profile.weight.toFixed(3)}
                         </td>
                         <td className="p-2 text-right">
@@ -806,14 +806,14 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                                 }));
                               }}
                               placeholder="Manual"
-                              className="h-7 w-20 text-xs text-right font-mono bg-gray-800 border-gray-600 text-yellow-400"
+                              className="h-7 w-20 text-xs text-right font-mono bg-card border-border text-warning"
                             />
                           ) : state.aluminumPricePerKg > 0 ? (
-                            <span className="text-green-400 font-semibold font-mono">
+                            <span className="text-success font-semibold font-mono">
                               {calculatedPrice.toFixed(2)}
                             </span>
                           ) : (
-                            <span className="text-gray-500">—</span>
+                            <span className="text-muted-foreground">—</span>
                           )}
                         </td>
                       </tr>
@@ -822,17 +822,17 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                 </tbody>
               </table>
               {systemPackProfiles.length === 0 && (
-                <div className="text-center py-8 text-gray-400 text-xs">
+                <div className="text-center py-8 text-muted-foreground text-xs">
                   No profiles found in system pack data. Please check system pack configuration.
                 </div>
               )}
             </div>
           </div>
           {state.aluminumPricePerKg > 0 && (
-            <p className="text-[10px] text-gray-500 mt-1">
+            <p className="text-[10px] text-muted-foreground mt-1">
               💡 Frame/Sash/Other prices: <span className="font-mono">{state.aluminumPricePerKg.toFixed(2)} {currency}/kg</span> × weight
               {' • '}
-              <span className="text-yellow-400">Accessories require manual pricing</span>
+              <span className="text-warning">Accessories require manual pricing</span>
             </p>
           )}
         </div>
@@ -840,7 +840,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
         {/* Glass - Multiple Glazing Types (Dropdown Interface) */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <div className="font-semibold text-gray-200 text-xs">Glazing Types & Prices</div>
+            <div className="font-semibold text-foreground text-xs">Glazing Types & Prices</div>
             <Button
               size="sm"
               variant="outline"
@@ -853,14 +853,14 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
           </div>
           
           {state.glazingTypes.length === 0 ? (
-            <div className="text-xs text-gray-500 text-center py-3 border border-gray-700 rounded bg-gray-800/30">
+            <div className="text-xs text-muted-foreground text-center py-3 border border-border rounded bg-card/30">
               No glazing types configured. Click "Add" to add one.
             </div>
           ) : (
             <div className="space-y-2">
               {/* Dropdown Selector */}
               <Select value={selectedGlazingTypeId} onValueChange={setSelectedGlazingTypeId}>
-                <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
+                <SelectTrigger className="h-8 text-xs bg-card border-border">
                   <SelectValue placeholder="Select glazing type">
                     {selectedGlazingType ? (
                       <span className="font-medium">{selectedGlazingType.name}</span>
@@ -874,7 +874,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                     <SelectItem key={type.id} value={type.id} className="text-xs">
                       <div className="flex items-center justify-between w-full pr-2">
                         <span className="font-medium">{type.name}</span>
-                        <span className="text-gray-400 ml-2 font-mono text-[10px]">
+                        <span className="text-muted-foreground ml-2 font-mono text-[10px]">
                           {type.pricePerSquareMeter > 0 
                             ? `${type.pricePerSquareMeter.toFixed(2)} ${currency}/m²`
                             : '—'}
@@ -887,26 +887,26 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
 
               {/* Edit Form for Selected Type */}
               {selectedGlazingType && (
-                <div className="grid grid-cols-12 gap-2 p-2 rounded-lg border border-gray-700 bg-gray-800/50">
+                <div className="grid grid-cols-12 gap-2 p-2 rounded-lg border border-border bg-card/50">
                   <div className="col-span-5">
-                    <Label className="typography-label text-[10px] text-gray-400 mb-1 block">Name</Label>
+                    <Label className="typography-label text-[10px] text-muted-foreground mb-1 block">Name</Label>
                     <Input
                       type="text"
                       value={selectedGlazingType.name}
                       onChange={(e) => handleGlazingTypeChange(selectedGlazingType.id, 'name', e.target.value)}
                       placeholder="Glazing type name"
-                      className="h-7 text-xs bg-gray-700 border-gray-600"
+                      className="h-7 text-xs bg-muted border-border"
                     />
                   </div>
                   <div className="col-span-4">
-                    <Label className="typography-label text-[10px] text-gray-400 mb-1 block">Price / m²</Label>
+                    <Label className="typography-label text-[10px] text-muted-foreground mb-1 block">Price / m²</Label>
                     <Input
                       type="number"
                       step="0.01"
                       value={selectedGlazingType.pricePerSquareMeter || ''}
                       onChange={(e) => handleGlazingTypeChange(selectedGlazingType.id, 'pricePerSquareMeter', parseFloat(e.target.value) || 0)}
                       placeholder={`0.00 ${currency}`}
-                      className="h-7 text-xs bg-gray-700 border-gray-600 font-mono"
+                      className="h-7 text-xs bg-muted border-border font-mono"
                     />
                   </div>
                   <div className="col-span-3 flex items-end gap-1">
@@ -914,7 +914,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                       size="sm"
                       variant="ghost"
                       onClick={() => handleDeleteGlazingType(selectedGlazingType.id)}
-                      className="h-7 px-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs"
+                      className="h-7 px-2 text-destructive hover:text-destructive hover:bg-red-500/10 text-xs"
                       disabled={state.glazingTypes.length <= 1}
                       title="Delete this glazing type"
                     >
@@ -923,13 +923,13 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                   </div>
                   {selectedGlazingType.description && (
                     <div className="col-span-12">
-                      <Label className="typography-label text-[10px] text-gray-400 mb-1 block">Description</Label>
+                      <Label className="typography-label text-[10px] text-muted-foreground mb-1 block">Description</Label>
                       <Input
                         type="text"
                         value={selectedGlazingType.description}
                         onChange={(e) => handleGlazingTypeChange(selectedGlazingType.id, 'description', e.target.value)}
                         placeholder="Optional description"
-                        className="h-7 text-xs bg-gray-700 border-gray-600"
+                        className="h-7 text-xs bg-muted border-border"
                       />
                     </div>
                   )}
@@ -941,10 +941,10 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
 
         {/* Hardware (Dropdown Interface) */}
         <div className="space-y-2">
-          <div className="font-semibold text-gray-200 text-xs">Hardware (per piece / set)</div>
+          <div className="font-semibold text-foreground text-xs">Hardware (per piece / set)</div>
           <div className="space-y-2">
             <Select value={selectedHardwareCode} onValueChange={setSelectedHardwareCode}>
-              <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
+              <SelectTrigger className="h-8 text-xs bg-card border-border">
                 <SelectValue placeholder="Select hardware">
                   {selectedHardware ? (
                     <span className="font-medium">{selectedHardware.code} - {selectedHardware.label}</span>
@@ -958,7 +958,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                   <SelectItem key={hw.code} value={hw.code} className="text-xs">
                     <div className="flex items-center justify-between w-full pr-2">
                       <span className="font-medium">{hw.code}</span>
-                      <span className="text-gray-400 ml-2 text-[10px]">
+                      <span className="text-muted-foreground ml-2 text-[10px]">
                         {state.hardware[hw.code] > 0 
                           ? `${state.hardware[hw.code].toFixed(2)} ${currency}`
                           : '—'}
@@ -970,9 +970,9 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
             </Select>
 
             {selectedHardware && (
-              <div className="grid grid-cols-12 gap-2 p-2 rounded-lg border border-gray-700 bg-gray-800/50">
+              <div className="grid grid-cols-12 gap-2 p-2 rounded-lg border border-border bg-card/50">
                 <div className="col-span-9">
-                  <Label className="typography-label text-[10px] text-gray-400 mb-1 block">
+                  <Label className="typography-label text-[10px] text-muted-foreground mb-1 block">
                     {selectedHardware.code} - {selectedHardware.label}
                   </Label>
                   <Input
@@ -981,7 +981,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                     value={state.hardware[selectedHardwareCode] || ''}
                     onChange={(e) => handleHardwareChange(selectedHardwareCode, parseFloat(e.target.value) || 0)}
                     placeholder={`Price (${currency})`}
-                    className="h-7 text-xs bg-gray-700 border-gray-600 font-mono"
+                    className="h-7 text-xs bg-muted border-border font-mono"
                   />
                 </div>
               </div>
@@ -991,10 +991,10 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
 
         {/* Gaskets (Dropdown Interface) */}
         <div className="space-y-2">
-          <div className="font-semibold text-gray-200 text-xs">Gaskets (per meter)</div>
+          <div className="font-semibold text-foreground text-xs">Gaskets (per meter)</div>
           <div className="space-y-2">
             <Select value={selectedGasketCode} onValueChange={setSelectedGasketCode}>
-              <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
+              <SelectTrigger className="h-8 text-xs bg-card border-border">
                 <SelectValue placeholder="Select gasket">
                   {selectedGasket ? (
                     <span className="font-medium">{selectedGasket.code} - {selectedGasket.label}</span>
@@ -1008,7 +1008,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                   <SelectItem key={g.code} value={g.code} className="text-xs">
                     <div className="flex items-center justify-between w-full pr-2">
                       <span className="font-medium">{g.code}</span>
-                      <span className="text-gray-400 ml-2 text-[10px]">
+                      <span className="text-muted-foreground ml-2 text-[10px]">
                         {state.gaskets[g.code] > 0 
                           ? `${state.gaskets[g.code].toFixed(2)} ${currency}/m`
                           : '—'}
@@ -1020,9 +1020,9 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
             </Select>
 
             {selectedGasket && (
-              <div className="grid grid-cols-12 gap-2 p-2 rounded-lg border border-gray-700 bg-gray-800/50">
+              <div className="grid grid-cols-12 gap-2 p-2 rounded-lg border border-border bg-card/50">
                 <div className="col-span-9">
-                  <Label className="typography-label text-[10px] text-gray-400 mb-1 block">
+                  <Label className="typography-label text-[10px] text-muted-foreground mb-1 block">
                     {selectedGasket.code} - {selectedGasket.label}
                   </Label>
                   <Input
@@ -1031,7 +1031,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                     value={state.gaskets[selectedGasketCode] || ''}
                     onChange={(e) => handleGasketChange(selectedGasketCode, parseFloat(e.target.value) || 0)}
                     placeholder={`Price / m (${currency})`}
-                    className="h-7 text-xs bg-gray-700 border-gray-600 font-mono"
+                    className="h-7 text-xs bg-muted border-border font-mono"
                   />
                 </div>
               </div>

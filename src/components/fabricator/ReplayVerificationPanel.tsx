@@ -45,16 +45,16 @@ const HashDisplay: React.FC<{
 
   return (
     <div className="space-y-1">
-      <Label className="text-xs text-slate-400 uppercase tracking-wider">{label}</Label>
+      <Label className="text-xs text-muted-foreground uppercase tracking-wider">{label}</Label>
       <div className="flex items-center gap-2">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex-1 font-mono text-xs text-amber-400 bg-amber-950/20 border border-amber-500/30 rounded px-3 py-2 cursor-help break-all">
+              <div className="flex-1 font-mono text-xs text-warning bg-amber-950/20 border border-amber-500/30 rounded px-3 py-2 cursor-help break-all">
                 {displayValue}
               </div>
             </TooltipTrigger>
-            <TooltipContent className="bg-slate-900 border-amber-500/30 text-xs font-mono max-w-md">
+            <TooltipContent className="bg-background border-amber-500/30 text-xs font-mono max-w-md">
               <p>{value}</p>
             </TooltipContent>
           </Tooltip>
@@ -63,9 +63,9 @@ const HashDisplay: React.FC<{
           variant="ghost"
           size="sm"
           onClick={copyToClipboard}
-          className="h-8 w-8 p-0 text-amber-400 hover:text-amber-300 hover:bg-amber-950/30"
+          className="h-8 w-8 p-0 text-warning hover:text-warning hover:bg-amber-950/30"
         >
-          <Copy className={`h-3 w-3 ${copied ? 'text-emerald-400' : ''}`} />
+          <Copy className={`h-3 w-3 ${copied ? 'text-success' : ''}`} />
         </Button>
       </div>
     </div>
@@ -138,13 +138,13 @@ export const ReplayVerificationPanel: React.FC<ReplayVerificationPanelProps> = (
 
   return (
     <div className={className}>
-      <Card className="bg-slate-900/50 border-slate-700/50">
+      <Card className="bg-background/50 border-border/50">
         <CardHeader>
-          <CardTitle className="text-xl font-bold text-amber-200 flex items-center gap-2">
-            <Hash className="h-5 w-5 text-amber-500" />
+          <CardTitle className="text-xl font-bold text-warning flex items-center gap-2">
+            <Hash className="h-5 w-5 text-warning" />
             Replay Verification
           </CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardDescription className="text-muted-foreground">
             Verify deterministic replay guarantee (AICS-001 Section 7.5)
           </CardDescription>
         </CardHeader>
@@ -152,7 +152,7 @@ export const ReplayVerificationPanel: React.FC<ReplayVerificationPanelProps> = (
           {/* Input Form */}
           <div className="space-y-4">
             <div>
-              <Label htmlFor="inputHash" className="text-slate-300">
+              <Label htmlFor="inputHash" className="text-foreground">
                 Input Hash
               </Label>
               <Input
@@ -160,51 +160,51 @@ export const ReplayVerificationPanel: React.FC<ReplayVerificationPanelProps> = (
                 value={inputHash}
                 onChange={(e) => setInputHash(e.target.value)}
                 placeholder="Enter input hash..."
-                className="bg-slate-800/50 border-amber-500/30 text-amber-400 font-mono text-sm mt-1"
+                className="bg-card/50 border-amber-500/30 text-warning font-mono text-sm mt-1"
               />
             </div>
 
             <div>
-              <Label className="text-slate-300 mb-2 block">Truth Versions</Label>
+              <Label className="text-foreground mb-2 block">Truth Versions</Label>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-xs text-slate-400">Geometry</Label>
+                  <Label className="text-xs text-muted-foreground">Geometry</Label>
                   <Input
                     value={truthVersions.geometry}
                     onChange={(e) => setTruthVersions({ ...truthVersions, geometry: e.target.value })}
-                    className="bg-slate-800/50 border-cyan-500/30 text-cyan-400 font-mono text-xs mt-1"
+                    className="bg-card/50 border-cyan-500/30 text-info font-mono text-xs mt-1"
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-400">Material</Label>
+                  <Label className="text-xs text-muted-foreground">Material</Label>
                   <Input
                     value={truthVersions.material}
                     onChange={(e) => setTruthVersions({ ...truthVersions, material: e.target.value })}
-                    className="bg-slate-800/50 border-cyan-500/30 text-cyan-400 font-mono text-xs mt-1"
+                    className="bg-card/50 border-cyan-500/30 text-info font-mono text-xs mt-1"
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-400">Machine</Label>
+                  <Label className="text-xs text-muted-foreground">Machine</Label>
                   <Input
                     value={truthVersions.machine}
                     onChange={(e) => setTruthVersions({ ...truthVersions, machine: e.target.value })}
-                    className="bg-slate-800/50 border-cyan-500/30 text-cyan-400 font-mono text-xs mt-1"
+                    className="bg-card/50 border-cyan-500/30 text-info font-mono text-xs mt-1"
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-400">Process</Label>
+                  <Label className="text-xs text-muted-foreground">Process</Label>
                   <Input
                     value={truthVersions.process}
                     onChange={(e) => setTruthVersions({ ...truthVersions, process: e.target.value })}
-                    className="bg-slate-800/50 border-cyan-500/30 text-cyan-400 font-mono text-xs mt-1"
+                    className="bg-card/50 border-cyan-500/30 text-info font-mono text-xs mt-1"
                   />
                 </div>
                 <div className="col-span-2">
-                  <Label className="text-xs text-slate-400">Certification</Label>
+                  <Label className="text-xs text-muted-foreground">Certification</Label>
                   <Input
                     value={truthVersions.certification}
                     onChange={(e) => setTruthVersions({ ...truthVersions, certification: e.target.value })}
-                    className="bg-slate-800/50 border-cyan-500/30 text-cyan-400 font-mono text-xs mt-1"
+                    className="bg-card/50 border-cyan-500/30 text-info font-mono text-xs mt-1"
                   />
                 </div>
               </div>
@@ -238,7 +238,7 @@ export const ReplayVerificationPanel: React.FC<ReplayVerificationPanelProps> = (
             }`}>
               <CardHeader>
                 <CardTitle className={`text-lg flex items-center gap-2 ${
-                  replayResult.matches ? 'text-emerald-400' : 'text-red-400'
+                  replayResult.matches ? 'text-success' : 'text-destructive'
                 }`}>
                   {replayResult.matches ? (
                     <>
@@ -261,7 +261,7 @@ export const ReplayVerificationPanel: React.FC<ReplayVerificationPanelProps> = (
                   <HashDisplay label="Replayed Result Signature" value={replayResult.replayedSignature} />
                 )}
                 {performanceMetrics.verificationTime && (
-                  <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Zap className="h-3 w-3" />
                     Verification time: {performanceMetrics.verificationTime.toFixed(2)}ms
                   </div>
@@ -272,9 +272,9 @@ export const ReplayVerificationPanel: React.FC<ReplayVerificationPanelProps> = (
 
           {/* Performance Metrics */}
           {Object.keys(performanceMetrics).length > 0 && (
-            <Card className="bg-slate-800/30 border-amber-500/20">
+            <Card className="bg-card/30 border-amber-500/20">
               <CardHeader>
-                <CardTitle className="text-sm text-amber-300 flex items-center gap-2">
+                <CardTitle className="text-sm text-warning flex items-center gap-2">
                   <Zap className="h-4 w-4" />
                   Performance Metrics
                 </CardTitle>
@@ -283,8 +283,8 @@ export const ReplayVerificationPanel: React.FC<ReplayVerificationPanelProps> = (
                 <div className="space-y-2 text-xs">
                   {performanceMetrics.verificationTime && (
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Verification Time:</span>
-                      <span className="text-amber-400 font-mono">{performanceMetrics.verificationTime.toFixed(2)}ms</span>
+                      <span className="text-muted-foreground">Verification Time:</span>
+                      <span className="text-warning font-mono">{performanceMetrics.verificationTime.toFixed(2)}ms</span>
                     </div>
                   )}
                 </div>

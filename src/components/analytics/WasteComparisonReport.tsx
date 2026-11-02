@@ -47,7 +47,7 @@ export const WasteComparisonReport: React.FC<WasteComparisonReportProps> = ({
   ];
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700">
+    <Card className="bg-card/50 border-border">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
@@ -67,60 +67,60 @@ export const WasteComparisonReport: React.FC<WasteComparisonReportProps> = ({
       <CardContent className="space-y-6">
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gray-900/50 border-gray-700 card-dark">
+          <Card className="bg-background/50 border-border card-dark">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Package className="h-4 w-4 text-blue-400" />
-                <span className="text-xs text-gray-400">Bars Used</span>
+                <Package className="h-4 w-4 text-info" />
+                <span className="text-xs text-muted-foreground">Bars Used</span>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-white">
+                <span className="text-2xl font-bold text-foreground">
                   {comparison.optimized.barsUsed}
                 </span>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-muted-foreground">
                   vs {comparison.manual.barsUsed} (manual)
                 </span>
               </div>
               {comparison.savings.barsSaved > 0 && (
-                <div className="mt-2 text-xs text-green-400">
+                <div className="mt-2 text-xs text-success">
                   Saved {comparison.savings.barsSaved} bar{comparison.savings.barsSaved !== 1 ? 's' : ''}
                 </div>
               )}
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900/50 border-gray-700 card-dark">
+          <Card className="bg-background/50 border-border card-dark">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingDown className="h-4 w-4 text-yellow-400" />
-                <span className="text-xs text-gray-400">Waste %</span>
+                <span className="text-xs text-muted-foreground">Waste %</span>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-white">
+                <span className="text-2xl font-bold text-foreground">
                   {comparison.optimized.wastePercentage.toFixed(1)}%
                 </span>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-muted-foreground">
                   vs {comparison.manual.wastePercentage.toFixed(1)}% (manual)
                 </span>
               </div>
               {comparison.savings.wasteReduction > 0 && (
-                <div className="mt-2 text-xs text-green-400">
+                <div className="mt-2 text-xs text-success">
                   Reduced by {comparison.savings.wasteReduction.toFixed(1)}%
                 </div>
               )}
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900/50 border-gray-700 card-dark">
+          <Card className="bg-background/50 border-border card-dark">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
-                <DollarSign className="h-4 w-4 text-green-400" />
-                <span className="text-xs text-gray-400">Savings</span>
+                <DollarSign className="h-4 w-4 text-success" />
+                <span className="text-xs text-muted-foreground">Savings</span>
               </div>
-              <div className="text-2xl font-bold text-green-400">
+              <div className="text-2xl font-bold text-success">
                 {comparison.savings.costSavings.toFixed(0)} {currency}
               </div>
-              <div className="mt-2 text-xs text-gray-400">
+              <div className="mt-2 text-xs text-muted-foreground">
                 On this job
               </div>
             </CardContent>
@@ -129,7 +129,7 @@ export const WasteComparisonReport: React.FC<WasteComparisonReportProps> = ({
 
         {/* Comparison Chart */}
         <div>
-          <h4 className="typography-h4 text-sm text-gray-300 mb-4">Visual Comparison</h4>
+          <h4 className="typography-h4 text-sm text-foreground mb-4">Visual Comparison</h4>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -147,40 +147,40 @@ export const WasteComparisonReport: React.FC<WasteComparisonReportProps> = ({
 
         {/* Detailed Breakdown */}
         <div className="space-y-3">
-          <h4 className="typography-h4 text-sm text-gray-300">Detailed Breakdown</h4>
+          <h4 className="typography-h4 text-sm text-foreground">Detailed Breakdown</h4>
           
           <div className="space-y-2">
-            <div className="flex justify-between items-center p-2 bg-gray-900/50 rounded">
-              <span className="text-sm text-gray-400">Manual Plan</span>
+            <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+              <span className="text-sm text-muted-foreground">Manual Plan</span>
               <div className="flex items-center gap-4">
-                <Badge variant="outline" className="bg-red-500/10 border-red-500/30 text-red-400">
+                <Badge variant="outline" className="bg-red-500/10 border-red-500/30 text-destructive">
                   {comparison.manual.barsUsed} bars
                 </Badge>
-                <Badge variant="outline" className="bg-red-500/10 border-red-500/30 text-red-400">
+                <Badge variant="outline" className="bg-red-500/10 border-red-500/30 text-destructive">
                   {comparison.manual.wastePercentage.toFixed(1)}% waste
                 </Badge>
               </div>
             </div>
 
-            <div className="flex justify-between items-center p-2 bg-gray-900/50 rounded">
-              <span className="text-sm text-gray-400">Fabricator Pro Optimized</span>
+            <div className="flex justify-between items-center p-2 bg-background/50 rounded">
+              <span className="text-sm text-muted-foreground">Fabricator Pro Optimized</span>
               <div className="flex items-center gap-4">
-                <Badge variant="outline" className="bg-green-500/10 border-green-500/30 text-green-400">
+                <Badge variant="outline" className="bg-green-500/10 border-green-500/30 text-success">
                   {comparison.optimized.barsUsed} bars
                 </Badge>
-                <Badge variant="outline" className="bg-green-500/10 border-green-500/30 text-green-400">
+                <Badge variant="outline" className="bg-green-500/10 border-green-500/30 text-success">
                   {comparison.optimized.wastePercentage.toFixed(1)}% waste
                 </Badge>
               </div>
             </div>
 
             <div className="flex justify-between items-center p-3 bg-green-500/10 border border-green-500/30 rounded">
-              <span className="text-sm font-semibold text-green-400">Total Savings</span>
+              <span className="text-sm font-semibold text-success">Total Savings</span>
               <div className="text-right">
-                <div className="text-lg font-bold text-green-400">
+                <div className="text-lg font-bold text-success">
                   {comparison.savings.costSavings.toFixed(0)} {currency}
                 </div>
-                <div className="text-xs text-gray-400">
+                <div className="text-xs text-muted-foreground">
                   {comparison.savings.barsSaved} bars saved •{' '}
                   {comparison.savings.wasteReduction.toFixed(1)}% waste reduction
                 </div>
@@ -191,7 +191,7 @@ export const WasteComparisonReport: React.FC<WasteComparisonReportProps> = ({
 
         {/* Progress Indicator */}
         <div className="space-y-2">
-          <div className="flex justify-between text-xs text-gray-400">
+          <div className="flex justify-between text-xs text-muted-foreground">
             <span>Waste Reduction</span>
             <span>{comparison.savings.wasteReduction.toFixed(1)}% improvement</span>
           </div>

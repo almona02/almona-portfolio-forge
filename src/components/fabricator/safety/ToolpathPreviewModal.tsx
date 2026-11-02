@@ -223,13 +223,13 @@ export const ToolpathPreviewModal: React.FC<ToolpathPreviewModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-6xl bg-gray-900 text-white border-gray-700 max-h-[95vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-6xl bg-background text-foreground border-border max-h-[95vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-2xl">
-            <Eye className="h-7 w-7 text-blue-400" />
+            <Eye className="h-7 w-7 text-info" />
             Toolpath Preview - Step 2 of 3
           </DialogTitle>
-          <DialogDescription className="text-gray-400 text-base">
+          <DialogDescription className="text-muted-foreground text-base">
             Review the 3D toolpath visualization and collision detection results. Verify all cuts are within machine
             limits before proceeding.
           </DialogDescription>
@@ -238,18 +238,18 @@ export const ToolpathPreviewModal: React.FC<ToolpathPreviewModalProps> = ({
         <div className="space-y-6 py-4">
           {/* Job Information */}
           {(jobId || machineType) && (
-            <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+            <div className="p-4 bg-card/50 rounded-lg border border-border/50">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 {jobId && (
                   <div>
-                    <span className="text-gray-400">Job ID:</span>
-                    <span className="ml-2 font-mono text-gray-300">{jobId}</span>
+                    <span className="text-muted-foreground">Job ID:</span>
+                    <span className="ml-2 font-mono text-foreground">{jobId}</span>
                   </div>
                 )}
                 {machineType && (
                   <div>
-                    <span className="text-gray-400">Machine:</span>
-                    <span className="ml-2 font-semibold text-gray-300">{machineType}</span>
+                    <span className="text-muted-foreground">Machine:</span>
+                    <span className="ml-2 font-semibold text-foreground">{machineType}</span>
                   </div>
                 )}
               </div>
@@ -267,56 +267,56 @@ export const ToolpathPreviewModal: React.FC<ToolpathPreviewModalProps> = ({
             >
               <div className="flex items-center gap-2 mb-2">
                 {collisionCheck.passed ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-400" />
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                 ) : (
-                  <AlertTriangle className="h-5 w-5 text-red-400" />
+                  <AlertTriangle className="h-5 w-5 text-destructive" />
                 )}
                 <span className="font-semibold">
                   {collisionCheck.passed ? 'Collision Check Passed' : 'Collision Check Failed'}
                 </span>
               </div>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 {collisionCheck.passed
                   ? 'All cuts are within safe limits'
                   : `${collisionCheck.collisions.filter((c) => c.severity === 'critical').length} critical issues found`}
               </p>
             </div>
 
-            <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+            <div className="p-4 bg-card/50 rounded-lg border border-border/50">
               <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                <AlertTriangle className="h-5 w-5 text-warning" />
                 <span className="font-semibold">Collisions</span>
               </div>
-              <p className="text-2xl font-bold text-yellow-400">{collisionCheck.collisions.length}</p>
-              <p className="text-sm text-gray-400">
+              <p className="text-2xl font-bold text-warning">{collisionCheck.collisions.length}</p>
+              <p className="text-sm text-muted-foreground">
                 {collisionCheck.collisions.filter((c) => c.severity === 'critical').length} critical
               </p>
             </div>
 
-            <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+            <div className="p-4 bg-card/50 rounded-lg border border-border/50">
               <div className="flex items-center gap-2 mb-2">
                 <X className="h-5 w-5 text-orange-400" />
                 <span className="font-semibold">Out of Bounds</span>
               </div>
               <p className="text-2xl font-bold text-orange-400">{collisionCheck.outOfBounds.length}</p>
-              <p className="text-sm text-gray-400">Cuts exceeding limits</p>
+              <p className="text-sm text-muted-foreground">Cuts exceeding limits</p>
             </div>
           </div>
 
           {/* Critical Collisions */}
           {collisionCheck.collisions.filter((c) => c.severity === 'critical').length > 0 && (
             <Alert className="bg-red-500/10 border-red-500/30">
-              <AlertTriangle className="h-5 w-5 text-red-400" />
+              <AlertTriangle className="h-5 w-5 text-destructive" />
               <AlertDescription>
-                <p className="font-semibold text-red-400 mb-2">Critical Collisions Detected</p>
-                <ul className="text-sm text-red-300 space-y-1">
+                <p className="font-semibold text-destructive mb-2">Critical Collisions Detected</p>
+                <ul className="text-sm text-destructive space-y-1">
                   {collisionCheck.collisions
                     .filter((c) => c.severity === 'critical')
                     .map((collision) => (
                       <li key={collision.id}>• {collision.message}</li>
                     ))}
                 </ul>
-                <p className="text-sm text-red-300 mt-2">
+                <p className="text-sm text-destructive mt-2">
                   You must resolve these issues before proceeding to final verification.
                 </p>
               </AlertDescription>
@@ -339,7 +339,7 @@ export const ToolpathPreviewModal: React.FC<ToolpathPreviewModalProps> = ({
           )}
 
           {/* 3D Visualization */}
-          <div className="relative bg-gray-950 rounded-lg border border-gray-700/50 overflow-hidden" style={{ minHeight: '500px' }}>
+          <div className="relative bg-background rounded-lg border border-border/50 overflow-hidden" style={{ minHeight: '500px' }}>
             <div className="absolute top-4 right-4 z-10 flex gap-2">
               <Button
                 variant="outline"
@@ -386,24 +386,24 @@ export const ToolpathPreviewModal: React.FC<ToolpathPreviewModalProps> = ({
           </div>
 
           {/* Travel Limits Info */}
-          <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
-            <p className="text-sm font-semibold text-gray-300 mb-2">Machine Travel Limits</p>
+          <div className="p-4 bg-card/50 rounded-lg border border-border/50">
+            <p className="text-sm font-semibold text-foreground mb-2">Machine Travel Limits</p>
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
-                <span className="text-gray-400">X-axis:</span>
-                <span className="ml-2 font-mono text-gray-300">
+                <span className="text-muted-foreground">X-axis:</span>
+                <span className="ml-2 font-mono text-foreground">
                   {collisionCheck.travelLimits.x.min}mm to {collisionCheck.travelLimits.x.max}mm
                 </span>
               </div>
               <div>
-                <span className="text-gray-400">Y-axis:</span>
-                <span className="ml-2 font-mono text-gray-300">
+                <span className="text-muted-foreground">Y-axis:</span>
+                <span className="ml-2 font-mono text-foreground">
                   {collisionCheck.travelLimits.y.min}mm to {collisionCheck.travelLimits.y.max}mm
                 </span>
               </div>
               <div>
-                <span className="text-gray-400">Z-axis:</span>
-                <span className="ml-2 font-mono text-gray-300">
+                <span className="text-muted-foreground">Z-axis:</span>
+                <span className="ml-2 font-mono text-foreground">
                   {collisionCheck.travelLimits.z.min}mm to {collisionCheck.travelLimits.z.max}mm
                 </span>
               </div>
@@ -411,18 +411,18 @@ export const ToolpathPreviewModal: React.FC<ToolpathPreviewModalProps> = ({
           </div>
 
           {/* Progress Indicator */}
-          <div className="flex items-center justify-center gap-2 pt-4 border-t border-gray-700/50">
+          <div className="flex items-center justify-center gap-2 pt-4 border-t border-border/50">
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-full bg-green-400"></div>
-              <span className="text-sm font-medium text-gray-400">Step 1 Complete</span>
+              <span className="text-sm font-medium text-muted-foreground">Step 1 Complete</span>
             </div>
-            <div className="w-12 h-0.5 bg-gray-700"></div>
+            <div className="w-12 h-0.5 bg-muted"></div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-full bg-blue-400"></div>
-              <span className="text-sm font-medium text-blue-400">Step 2 of 3</span>
+              <span className="text-sm font-medium text-info">Step 2 of 3</span>
             </div>
-            <div className="w-12 h-0.5 bg-gray-700"></div>
-            <div className="w-3 h-3 rounded-full bg-gray-700"></div>
+            <div className="w-12 h-0.5 bg-muted"></div>
+            <div className="w-3 h-3 rounded-full bg-muted"></div>
           </div>
         </div>
 
@@ -430,7 +430,7 @@ export const ToolpathPreviewModal: React.FC<ToolpathPreviewModalProps> = ({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="text-gray-300 border-gray-600 hover:bg-gray-800"
+            className="text-foreground border-border hover:bg-card"
           >
             <X className="h-4 w-4 mr-2" />
             Cancel
@@ -439,7 +439,7 @@ export const ToolpathPreviewModal: React.FC<ToolpathPreviewModalProps> = ({
             <Button
               variant="outline"
               onClick={() => window.location.reload()}
-              className="text-gray-300 border-gray-600 hover:bg-gray-800"
+              className="text-foreground border-border hover:bg-card"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset View

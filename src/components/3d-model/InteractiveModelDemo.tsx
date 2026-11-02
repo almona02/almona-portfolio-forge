@@ -122,7 +122,7 @@ export const InteractiveModelDemo: React.FC<InteractiveModelDemoProps> = ({
     <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 ${className}`}>
       {/* 3D Model Viewer */}
       <div className="lg:col-span-2">
-        <Card className="bg-almona-dark border-almona-light/20 h-full">
+        <Card className="bg-background border-border/20 h-full">
           <CardHeader>
             <CardTitle className="text-white flex items-center justify-between">
               <span>{t('3d.interactive.title', 'Interactive 3D Model')}</span>
@@ -134,7 +134,7 @@ export const InteractiveModelDemo: React.FC<InteractiveModelDemoProps> = ({
                   variant="outline"
                   size="sm"
                   onClick={() => setShowPricing(!showPricing)}
-                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  className="border-border text-foreground hover:bg-muted"
                 >
                   {showPricing ? t('3d.hidePricing', 'Hide Pricing') : t('3d.showPricing', 'Show Pricing')}
                 </Button>
@@ -158,9 +158,9 @@ export const InteractiveModelDemo: React.FC<InteractiveModelDemoProps> = ({
             </div>
             
             {/* Selection Info */}
-            <div className="p-4 border-t border-gray-700">
+            <div className="p-4 border-t border-border">
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-300">
+                <div className="text-sm text-foreground">
                   {t('3d.selectedParts', 'Selected Parts')}: {selectedParts.length} / {SAMPLE_ANNOTATIONS.length}
                 </div>
                 {selectedParts.length > 0 && (
@@ -168,7 +168,7 @@ export const InteractiveModelDemo: React.FC<InteractiveModelDemoProps> = ({
                     variant="ghost"
                     size="sm"
                     onClick={clearSelection}
-                    className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                    className="text-destructive hover:text-destructive hover:bg-red-900/20"
                   >
                     {t('3d.clearSelection', 'Clear Selection')}
                   </Button>
@@ -212,9 +212,9 @@ export const InteractiveModelDemo: React.FC<InteractiveModelDemoProps> = ({
 
       {/* Instructions */}
       <div className="lg:col-span-3">
-        <Card className="bg-gray-800/50 border-gray-700">
+        <Card className="bg-card/50 border-border">
           <CardContent className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-300">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-foreground">
               <div className="flex items-center space-x-2">
                 <div className="btn-primary"></div>
                 <span>{t('3d.instructions.click', 'Click on parts to select/deselect')}</span>

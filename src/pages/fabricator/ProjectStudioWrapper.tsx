@@ -46,7 +46,7 @@ export const ProjectStudioWrapper: React.FC = () => {
     return (
         <div className="flex flex-col h-full overflow-hidden">
             {/* View toggle */}
-            <div className="flex items-center justify-between px-6 py-3 border-b border-amber-600/20 bg-[#0c0c0c]">
+            <div className="flex items-center justify-between px-6 py-3 border-b border-amber-600/20 bg-background">
                 <div>
                     <h2 className="text-lg font-bold text-amber-200">
                         {projectMeta?.project_name || projectMeta?.project_code || projectId || 'Project'}
@@ -56,7 +56,7 @@ export const ProjectStudioWrapper: React.FC = () => {
                     </p>
                 </div>
                 <Tabs value={view} onValueChange={(v) => setView(v as 'summary' | 'studio')}>
-                    <TabsList className="bg-slate-900/60 border-amber-600/20">
+                    <TabsList className="bg-background/60 border-amber-600/20">
                         <TabsTrigger value="summary" className="text-amber-300 data-[state=active]:text-amber-100 text-xs">
                             <BarChart3 size={14} className="mr-1" /> Summary
                         </TabsTrigger>

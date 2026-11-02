@@ -73,9 +73,9 @@ export function OptimizationJobMonitor({
   }
 
   const getStatusIcon = () => {
-    if (isCompleted) return <CheckCircle className="h-4 w-4 text-green-600" />;
+    if (isCompleted) return <CheckCircle className="h-4 w-4 text-success" />;
     if (isFailed) return <AlertCircle className="h-4 w-4 text-destructive" />;
-    if (isProcessing) return <Loader2 className="h-4 w-4 animate-spin text-blue-600" />;
+    if (isProcessing) return <Loader2 className="h-4 w-4 animate-spin text-info" />;
     return <Clock className="h-4 w-4 text-muted-foreground" />;
   };
 

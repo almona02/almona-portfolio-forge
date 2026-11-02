@@ -337,7 +337,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <RefreshCw className="h-8 w-8 animate-spin text-blue-500" />
+        <RefreshCw className="h-8 w-8 animate-spin text-info" />
       </div>
     );
   }
@@ -346,8 +346,8 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="typography-h2 text-white">Pricing Configuration</h2>
-          <p className="text-gray-400 mt-1">Manage pricing settings, markups, and regional variations</p>
+          <h2 className="typography-h2 text-foreground">Pricing Configuration</h2>
+          <p className="text-muted-foreground mt-1">Manage pricing settings, markups, and regional variations</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleExport}>
@@ -368,7 +368,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
       {/* Alerts Banner */}
       {unresolvedAlerts.length > 0 && (
         <Alert className="bg-yellow-900/20 border-yellow-700">
-          <AlertTriangle className="h-4 w-4 text-yellow-500" />
+          <AlertTriangle className="h-4 w-4 text-warning" />
           <AlertTitle>Price Validation Alerts</AlertTitle>
           <AlertDescription>
             You have {unresolvedAlerts.length} unresolved pricing alerts. 
@@ -395,7 +395,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
 
         {/* General Configuration */}
         <TabsContent value="general" className="space-y-4">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle>General Pricing Settings</CardTitle>
               <CardDescription>Configure base markups, tax rates, and currency settings</CardDescription>
@@ -439,13 +439,13 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
 
               {/* Exchange Rates Display */}
               {Object.keys(exchangeRates).length > 0 && (
-                <div className="p-4 bg-gray-900/50 rounded-lg">
+                <div className="p-4 bg-background/50 rounded-lg">
                   <Label className="typography-label mb-2 block">Current Exchange Rates</Label>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     {Object.entries(exchangeRates).map(([pair, rate]) => (
                       <div key={pair} className="flex justify-between">
-                        <span className="text-gray-400">{pair.replace('_', ' → ')}</span>
-                        <span className="text-white font-mono">{rate.toFixed(4)}</span>
+                        <span className="text-muted-foreground">{pair.replace('_', ' → ')}</span>
+                        <span className="text-foreground font-mono">{rate.toFixed(4)}</span>
                       </div>
                     ))}
                   </div>
@@ -509,7 +509,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
                 </div>
               </div>
 
-              <div className="border-t border-gray-700 pt-4">
+              <div className="border-t border-border pt-4">
                 <h3 className="typography-h3 text-lg mb-4">Tax & Discount Settings</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -550,7 +550,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
                 </div>
               </div>
 
-              <div className="border-t border-gray-700 pt-4">
+              <div className="border-t border-border pt-4">
                 <h3 className="typography-h3 text-lg mb-4">Material-Specific Markups</h3>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
@@ -583,7 +583,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
                 </div>
               </div>
 
-              <div className="border-t border-gray-700 pt-4">
+              <div className="border-t border-border pt-4">
                 <h3 className="typography-h3 text-lg mb-4">Rounding Settings</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -621,13 +621,13 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
 
         {/* Material Pricing Rules */}
         <TabsContent value="materials" className="space-y-4">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle>Material Pricing Rules</CardTitle>
               <CardDescription>Configure material-specific pricing with quantity breaks</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-gray-400 mb-4">
+              <div className="text-sm text-muted-foreground mb-4">
                 Material-specific pricing rules allow you to set different markups and discounts for specific profiles or material types.
               </div>
               {/* Material rules table/form would go here */}
@@ -641,13 +641,13 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
 
         {/* Labor Cost Configuration */}
         <TabsContent value="labor" className="space-y-4">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle>Labor Cost Configuration</CardTitle>
               <CardDescription>Configure labor rates by operation type</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-gray-400 mb-4">
+              <div className="text-sm text-muted-foreground mb-4">
                 Set different labor rates for cutting, machining, assembly, welding, finishing, and installation operations.
               </div>
               {/* Labor configs table/form would go here */}
@@ -661,7 +661,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
 
         {/* Price History */}
         <TabsContent value="history" className="space-y-4">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle>Price History</CardTitle>
               <CardDescription>View complete audit trail of all price changes</CardDescription>
@@ -704,13 +704,13 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
               </div>
               <div className="space-y-2">
                 {priceHistory.length === 0 ? (
-                  <div className="text-center py-8 text-gray-400">No price history found</div>
+                  <div className="text-center py-8 text-muted-foreground">No price history found</div>
                 ) : (
                   priceHistory.map((entry) => (
-                    <div key={entry.id} className="p-3 bg-gray-900/50 rounded-lg flex items-center justify-between">
+                    <div key={entry.id} className="p-3 bg-background/50 rounded-lg flex items-center justify-between">
                       <div>
                         <div className="font-medium">{entry.entityName || entry.entityType}</div>
-                        <div className="text-sm text-gray-400">
+                        <div className="text-sm text-muted-foreground">
                           {entry.oldPrice && `${formatCurrency(entry.oldPrice, entry.currency)} → `}
                           {formatCurrency(entry.newPrice, entry.currency)}
                           {entry.priceChangePercentage && (
@@ -721,7 +721,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
                           )}
                         </div>
                       </div>
-                      <div className="text-sm text-gray-400">
+                      <div className="text-sm text-muted-foreground">
                         {entry.createdAt && new Date(entry.createdAt).toLocaleDateString()}
                       </div>
                     </div>
@@ -734,14 +734,14 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
 
         {/* Bulk Import */}
         <TabsContent value="bulk" className="space-y-4">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle>Bulk Price Import</CardTitle>
               <CardDescription>Import price updates from CSV or Excel files</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="border-2 border-dashed border-gray-700 rounded-lg p-8 text-center">
-                <FileSpreadsheet className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                <FileSpreadsheet className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                 <Label htmlFor="bulk-import-file" className="typography-label cursor-pointer">
                   <Input
                     ref={fileInputRef}
@@ -757,7 +757,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
                 </Label>
                 {bulkImportFile && (
                   <div className="mt-4">
-                    <div className="text-sm text-gray-400">{bulkImportFile.name}</div>
+                    <div className="text-sm text-muted-foreground">{bulkImportFile.name}</div>
                     <Button onClick={() => void handleBulkImport()} className="mt-2">
                       <Upload className="h-4 w-4 mr-2" />
                       Import Prices
@@ -768,12 +768,12 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
               {bulkImportProgress > 0 && (
                 <div>
                   <Progress value={bulkImportProgress} className="mb-2" />
-                  <div className="text-sm text-gray-400 text-center">
+                  <div className="text-sm text-muted-foreground text-center">
                     Processing... {Math.round(bulkImportProgress)}%
                   </div>
                 </div>
               )}
-              <div className="text-sm text-gray-400 p-4 bg-gray-900/50 rounded-lg">
+              <div className="text-sm text-muted-foreground p-4 bg-background/50 rounded-lg">
                 <strong>CSV Format:</strong> profile_id,base_cost_per_meter,markup_percentage
                 <br />
                 <strong>Example:</strong> 123e4567-e89b-12d3-a456-426614174000,25.50,35
@@ -784,7 +784,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
 
         {/* Validation Alerts */}
         <TabsContent value="alerts" className="space-y-4">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle>Price Validation Alerts</CardTitle>
               <CardDescription>Review and resolve pricing validation issues</CardDescription>
@@ -792,7 +792,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
             <CardContent>
               <div className="space-y-2">
                 {alerts.length === 0 ? (
-                  <div className="text-center py-8 text-gray-400">
+                  <div className="text-center py-8 text-muted-foreground">
                     <CheckCircle className="h-12 w-12 mx-auto mb-4  status-valid" />
                     No alerts found
                   </div>

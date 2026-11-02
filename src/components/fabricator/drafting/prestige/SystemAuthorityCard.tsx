@@ -67,14 +67,14 @@ export const SystemAuthorityCard: React.FC<SystemAuthorityCardProps> = ({
         "hover:shadow-2xl hover:-translate-y-1",
         selected
           ? "border-2 border-amber-500 bg-gradient-to-br from-amber-50 via-white to-white shadow-xl"
-          : "border border-gray-200 hover:border-amber-300"
+          : "border border-border hover:border-amber-300"
       )}
     >
       {/* Selection Indicator */}
       {selected && (
         <div className="absolute top-4 right-4 z-10">
           <div className="btn-primary">
-            <CheckCircle2 className="w-5 h-5 text-white" />
+            <CheckCircle2 className="w-5 h-5 text-foreground" />
           </div>
         </div>
       )}
@@ -100,32 +100,32 @@ export const SystemAuthorityCard: React.FC<SystemAuthorityCardProps> = ({
       <CardContent className="p-6 pt-16">
         {/* Header */}
         <div className="mb-4">
-          <h3 className="typography-h3 text-gray-900 mb-2">
+          <h3 className="typography-h3 text-foreground mb-2">
             {system.title}
           </h3>
-          <p className="text-sm text-gray-600 leading-relaxed">
+          <p className="text-sm text-muted-foreground leading-relaxed">
             {system.description}
           </p>
         </div>
 
         {/* Visual Placeholder */}
         {system.visual && (
-          <div className="mb-6 h-40 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+          <div className="mb-6 h-40 bg-gradient-to-br from-muted to-muted rounded-lg flex items-center justify-center">
             {system.visual}
           </div>
         )}
 
         {/* Capabilities */}
         <div className="mb-6">
-          <h4 className="typography-h4 text-sm text-gray-700 mb-3 flex items-center gap-2">
-            <Shield className="w-4 h-4 text-amber-500" />
+          <h4 className="typography-h4 text-sm text-foreground mb-3 flex items-center gap-2">
+            <Shield className="w-4 h-4 text-warning" />
             System Capabilities
           </h4>
           <div className="grid grid-cols-2 gap-3">
             {system.capabilities.map((cap, i) => (
-              <div key={i} className="bg-gray-50 rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">{cap.label}</div>
-                <div className="text-sm font-semibold text-gray-900">{cap.value}</div>
+              <div key={i} className="bg-background rounded-lg p-3">
+                <div className="text-xs text-muted-foreground mb-1">{cap.label}</div>
+                <div className="text-sm font-semibold text-foreground">{cap.value}</div>
               </div>
             ))}
           </div>
@@ -133,7 +133,7 @@ export const SystemAuthorityCard: React.FC<SystemAuthorityCardProps> = ({
 
         {/* Recommended For */}
         <div className="mb-6">
-          <h4 className="typography-h4 text-sm text-gray-700 mb-2">Recommended For</h4>
+          <h4 className="typography-h4 text-sm text-foreground mb-2">Recommended For</h4>
           <div className="flex flex-wrap gap-2">
             {system.recommendedFor.map((app, i) => (
               <Badge 
@@ -150,10 +150,10 @@ export const SystemAuthorityCard: React.FC<SystemAuthorityCardProps> = ({
         {/* Testimonials */}
         {system.testimonials && system.testimonials.length > 0 && (
           <div className="mb-6">
-            <h4 className="typography-h4 text-sm text-gray-700 mb-2">Authority Proof</h4>
+            <h4 className="typography-h4 text-sm text-foreground mb-2">Authority Proof</h4>
             <ul className="space-y-2">
               {system.testimonials.map((testimonial, i) => (
-                <li key={i} className="text-xs text-gray-600 flex items-start gap-2">
+                <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
                   <div className="btn-primary" />
                   <span>{testimonial}</span>
                 </li>
@@ -165,7 +165,7 @@ export const SystemAuthorityCard: React.FC<SystemAuthorityCardProps> = ({
         {/* Certifications */}
         {system.certifications && system.certifications.length > 0 && (
           <div className="mb-6">
-            <h4 className="typography-h4 text-sm text-gray-700 mb-2">Certifications</h4>
+            <h4 className="typography-h4 text-sm text-foreground mb-2">Certifications</h4>
             <div className="flex flex-wrap gap-2">
               {system.certifications.map((cert, i) => (
                 <Badge 
@@ -187,7 +187,7 @@ export const SystemAuthorityCard: React.FC<SystemAuthorityCardProps> = ({
             "w-full transition-all duration-300",
             selected
               ? "bg-amber-500 hover:bg-amber-600 text-white"
-              : "bg-gray-900 hover:bg-gray-800 text-white"
+              : "bg-background hover:bg-card text-foreground"
           )}
         >
           {selected ? (

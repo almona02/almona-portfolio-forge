@@ -124,7 +124,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
       {specCategories.map((category) => (
         <div key={category.name} className="border rounded-lg overflow-hidden shadow-sm bg-background/50">
           <div className="bg-muted/60 backdrop-blur-sm px-4 py-2 flex items-center justify-between">
-            <h3 className="typography-h3 text-sm text-muted-foreground/90">{copy(category.name)}</h3>
+            <h3 className="typography-h3 text-sm text-foreground">{copy(category.name)}</h3>
           </div>
           <div className="overflow-x-auto supports-[backdrop-filter]:backdrop-blur-xs">
             <Table className="border-collapse w-full min-w-[640px]">
@@ -142,7 +142,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
                 {category.specs.map((spec, rowIdx) => {
                   const differs = rowDiffers(spec.key);
                   return (
-                    <TableRow key={spec.key} className={differs ? 'bg-amber-50/40 dark:bg-amber-950/10' : rowIdx % 2 === 0 ? 'bg-background/40' : 'bg-background/20'}>
+                    <TableRow key={spec.key} className={differs ? 'bg-accent/50' : rowIdx % 2 === 0 ? 'bg-background/40' : 'bg-background/20'}>
                       <TableCell className="font-medium sticky left-0 z-10 bg-background/80 backdrop-blur-sm border-r border-border/40">
                         <span className="inline-flex items-center gap-1">
                           {copy(spec.name)}

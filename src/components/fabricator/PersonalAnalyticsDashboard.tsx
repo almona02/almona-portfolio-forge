@@ -69,35 +69,35 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
   const getSeverityColor = (severity?: string) => {
     switch (severity) {
       case 'error':
-        return 'bg-red-500/10 border-red-500/30 text-red-400';
+        return 'bg-red-500/10 border-red-500/30 text-destructive';
       case 'warning':
-        return 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400';
+        return 'bg-yellow-500/10 border-yellow-500/30 text-warning';
       case 'success':
-        return 'bg-green-500/10 border-green-500/30 text-green-400';
+        return 'bg-green-500/10 border-green-500/30 text-success';
       default:
-        return 'bg-blue-500/10 border-blue-500/30 text-blue-400';
+        return 'bg-blue-500/10 border-blue-500/30 text-info';
     }
   };
 
   const getHealthStatusColor = (status: ProfileHealth['healthStatus']) => {
     switch (status) {
       case 'excellent':
-        return 'text-green-400';
+        return 'text-success';
       case 'good':
-        return 'text-blue-400';
+        return 'text-info';
       case 'needs_attention':
-        return 'text-yellow-400';
+        return 'text-warning';
       case 'critical':
-        return 'text-red-400';
+        return 'text-destructive';
     }
   };
 
   if (loading) {
     return (
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardContent className="p-8 text-center">
-          <RefreshCw className="h-8 w-8 animate-spin text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-400">{t('personal_analytics.loading', 'Loading analytics...')}</p>
+          <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground">{t('personal_analytics.loading', 'Loading analytics...')}</p>
         </CardContent>
       </Card>
     );
@@ -106,14 +106,14 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2 text-xl">
-                <BarChart3 className="h-6 w-6 text-amber-400" /> {t('personal_analytics.title', 'Personal Analytics Dashboard')}
+                <BarChart3 className="h-6 w-6 text-warning" /> {t('personal_analytics.title', 'Personal Analytics Dashboard')}
               </CardTitle>
-              <CardDescription className="text-gray-400 mt-1">
+              <CardDescription className="text-muted-foreground mt-1">
                 {t('personal_analytics.description', 'Insights from your calibration data to improve accuracy and efficiency')}
               </CardDescription>
             </div>
@@ -121,7 +121,7 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
               variant="outline"
               size="sm"
               onClick={() => void loadAnalytics()}
-              className="text-gray-300 border-gray-600 hover:bg-gray-700"
+              className="text-foreground border-border hover:bg-muted"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               {t('personal_analytics.refresh', 'Refresh')}
@@ -158,7 +158,7 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
       )}
 
       {/* Main Analytics Tabs */}
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardContent className="pt-4">
           <Tabs defaultValue="profiles" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
@@ -169,16 +169,16 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
 
             {/* Profile Health Tab */}
             <TabsContent value="profiles" className="space-y-4">
-              <Card className="bg-gray-800/50 border-gray-700">
+              <Card className="bg-card/50 border-border">
                 <CardHeader>
                   <CardTitle className="text-lg">Profile Calibration Health</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-muted-foreground">
                     Monitor calibration accuracy for each profile
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {profileHealth.length === 0 ? (
-                    <div className="text-center py-8 text-gray-400">
+                    <div className="text-center py-8 text-muted-foreground">
                       <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p>{t('personal_analytics.no_profiles', 'No profile health data available.')}</p>
                       <p className="text-sm mt-2">{t('personal_analytics.no_profiles_desc', 'Start calibrating profiles to see insights here.')}</p>
@@ -191,12 +191,12 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
                       renderItem={(profile) => (
                         <div
                           key={profile.profileId}
-                          className="p-4 bg-gray-900 rounded-lg border border-gray-700 mb-3"
+                          className="p-4 bg-background rounded-lg border border-border mb-3"
                         >
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex-1">
-                              <h4 className="typography-h4 text-gray-300">{profile.profileName}</h4>
-                              <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
+                              <h4 className="typography-h4 text-foreground">{profile.profileName}</h4>
+                              <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                                 <span>
                                   <Target className="h-4 w-4 inline mr-1" />
                                   {profile.totalTests} tests
@@ -224,7 +224,7 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
                                       String(profile.healthStatus).replace('_', ' ')}
                             </Badge>
                           </div>
-                          <p className="text-sm text-gray-400 mt-2">{profile.recommendation}</p>
+                          <p className="text-sm text-muted-foreground mt-2">{profile.recommendation}</p>
                         </div>
                       )}
                     />
@@ -235,16 +235,16 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
 
             {/* Strategy Performance Tab */}
             <TabsContent value="strategies" className="space-y-4">
-              <Card className="bg-gray-800/50 border-gray-700">
+              <Card className="bg-card/50 border-border">
                 <CardHeader>
                   <CardTitle className="text-lg">Optimization Strategy Performance</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardDescription className="text-muted-foreground">
                     Compare how different strategies perform in your workshop
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {strategyPerformance.length === 0 ? (
-                    <div className="text-center py-8 text-gray-400">
+                    <div className="text-center py-8 text-muted-foreground">
                       <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p>{t('personal_analytics.no_strategies', 'No strategy performance data available.')}</p>
                       <p className="text-sm mt-2">{t('personal_analytics.no_strategies_desc', 'Use different strategies to see comparisons.')}</p>
@@ -257,31 +257,31 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
                       renderItem={(strategy, idx) => (
                         <div
                           key={idx}
-                          className="p-4 bg-gray-900 rounded-lg border border-gray-700 mb-4"
+                          className="p-4 bg-background rounded-lg border border-border mb-4"
                         >
                           <div className="flex items-start justify-between mb-3">
                             <div>
-                              <h4 className="typography-h4 text-gray-300">{strategy.strategyName}</h4>
-                              <p className="text-xs text-gray-500 mt-1">
+                              <h4 className="typography-h4 text-foreground">{strategy.strategyName}</h4>
+                              <p className="text-xs text-muted-foreground mt-1">
                                 {strategy.jobCount} job{strategy.jobCount !== 1 ? 's' : ''}
                               </p>
                             </div>
                             <div className="text-right">
-                              <div className="text-2xl font-bold text-amber-400">
+                              <div className="text-2xl font-bold text-warning">
                                 {strategy.averageWastePercentage.toFixed(1)}%
                               </div>
-                              <div className="text-xs text-gray-400">avg waste</div>
+                              <div className="text-xs text-muted-foreground">avg waste</div>
                             </div>
                           </div>
                           <div className="grid grid-cols-2 gap-4 mt-3">
                             <div>
-                              <div className="text-sm text-gray-400">Accuracy</div>
-                              <div className="text-lg font-semibold text-green-400">
+                              <div className="text-sm text-muted-foreground">Accuracy</div>
+                              <div className="text-lg font-semibold text-success">
                                 {(strategy.averageAccuracy * 100).toFixed(1)}%
                               </div>
                             </div>
                           </div>
-                          <div className="mt-3 p-2 bg-blue-500/10 border border-blue-500/30 rounded text-sm text-blue-300">
+                          <div className="mt-3 p-2 bg-blue-500/10 border border-blue-500/30 rounded text-sm text-info">
                             {strategy.recommendation}
                           </div>
                         </div>
@@ -294,12 +294,12 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
 
             {/* Efficiency Trends Tab */}
             <TabsContent value="trends" className="space-y-4">
-              <Card className="bg-gray-800/50 border-gray-700">
+              <Card className="bg-card/50 border-border">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-lg">Efficiency Trends</CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardDescription className="text-muted-foreground">
                         Track calibration accuracy over time
                       </CardDescription>
                     </div>
@@ -323,7 +323,7 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
                 </CardHeader>
                 <CardContent>
                   {efficiencyTrends.length === 0 ? (
-                    <div className="text-center py-8 text-gray-400">
+                    <div className="text-center py-8 text-muted-foreground">
                       <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p>{t('personal_analytics.no_trends', 'No efficiency trend data available.')}</p>
                       <p className="text-sm mt-2">{t('personal_analytics.no_trends_desc', 'Complete more calibration tests to see trends.')}</p>
@@ -336,36 +336,36 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
                       renderItem={(trend, idx) => (
                         <div
                           key={idx}
-                          className="p-4 bg-gray-900 rounded-lg border border-gray-700 mb-3"
+                          className="p-4 bg-background rounded-lg border border-border mb-3"
                         >
                           <div className="flex items-center justify-between">
                             <div>
-                              <div className="font-semibold text-gray-300">
+                              <div className="font-semibold text-foreground">
                                 {trend.date.toLocaleDateString()}
                               </div>
-                              <div className="text-sm text-gray-400 mt-1">
+                              <div className="text-sm text-muted-foreground mt-1">
                                 {trend.testCount} test{trend.testCount !== 1 ? 's' : ''}
                               </div>
                             </div>
                             <div className="flex items-center gap-4">
                               <div className="text-right">
-                                <div className="text-sm text-gray-400">Avg Accuracy</div>
-                                <div className="text-lg font-bold text-green-400">
+                                <div className="text-sm text-muted-foreground">Avg Accuracy</div>
+                                <div className="text-lg font-bold text-success">
                                   {trend.averageAccuracy.toFixed(2)}mm
                                 </div>
                               </div>
                               {trend.improvement !== 0 && (
                                 <div className="flex items-center gap-1">
                                   {trend.improvement < 0 ? (
-                                    <TrendingDown className="h-5 w-5 text-red-400" />
+                                    <TrendingDown className="h-5 w-5 text-destructive" />
                                   ) : (
-                                    <TrendingUp className="h-5 w-5 text-green-400" />
+                                    <TrendingUp className="h-5 w-5 text-success" />
                                   )}
                                   <span
                                     className={
                                       trend.improvement < 0
-                                        ? 'text-green-400 font-semibold'
-                                        : 'text-red-400 font-semibold'
+                                        ? 'text-success font-semibold'
+                                        : 'text-destructive font-semibold'
                                     }
                                   >
                                     {Math.abs(trend.improvement).toFixed(1)}%

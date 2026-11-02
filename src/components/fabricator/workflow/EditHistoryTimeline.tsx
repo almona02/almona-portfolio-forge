@@ -52,18 +52,18 @@ export const EditHistoryTimeline: React.FC<EditHistoryTimelineProps> = ({
   const getOperationColor = (type: string): string => {
     switch (type) {
       case 'add':
-        return 'bg-green-900/20 border-green-700 text-green-400';
+        return 'bg-green-900/20 border-green-700 text-success';
       case 'update':
-        return 'bg-blue-900/20 border-blue-700 text-blue-400';
+        return 'bg-blue-900/20 border-blue-700 text-info';
       case 'delete':
-        return 'bg-red-900/20 border-red-700 text-red-400';
+        return 'bg-red-900/20 border-red-700 text-destructive';
       default:
-        return 'bg-gray-900/20 border-gray-700 text-gray-400';
+        return 'bg-background/20 border-border text-muted-foreground';
     }
   };
 
   return (
-    <Card className="bg-gray-900 border-gray-700 card-dark">
+    <Card className="bg-background border-border card-dark">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-sm">
           <History className="h-4 w-4" />
@@ -74,19 +74,19 @@ export const EditHistoryTimeline: React.FC<EditHistoryTimelineProps> = ({
         <ScrollArea className="h-[400px]">
           <div className="space-y-2">
             {displayHistory.length === 0 ? (
-              <div className="text-center text-gray-500 text-sm py-8">
+              <div className="text-center text-muted-foreground text-sm py-8">
                 No edit history available
               </div>
             ) : (
               displayHistory.map((entry, index) => (
                 <div
                   key={entry.id}
-                  className="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-800 transition-colors"
+                  className="flex items-start gap-3 p-2 rounded-lg hover:bg-card transition-colors"
                 >
                   <div className="flex-shrink-0 mt-1">
                     <div className="h-2 w-2 rounded-full bg-amber-400" />
                     {index < displayHistory.length - 1 && (
-                      <div className="h-8 w-px bg-gray-700 ml-[3px] mt-1" />
+                      <div className="h-8 w-px bg-muted ml-[3px] mt-1" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -97,18 +97,18 @@ export const EditHistoryTimeline: React.FC<EditHistoryTimelineProps> = ({
                       >
                         {entry.operation.type}
                       </Badge>
-                      <span className="text-xs text-gray-400 flex items-center gap-1">
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
                         <User className="h-3 w-3" />
                         {entry.userName}
                       </span>
-                      <span className="text-xs text-gray-500 flex items-center gap-1">
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         {formatTimestamp(entry.timestamp)}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-300">{entry.description}</p>
+                    <p className="text-sm text-foreground">{entry.description}</p>
                     {expandedEntry === entry.id && (
-                      <div className="mt-2 p-2 bg-gray-800 rounded text-xs font-mono text-gray-400">
+                      <div className="mt-2 p-2 bg-card rounded text-xs font-mono text-muted-foreground">
                         Path: {entry.operation.path}
                         <br />
                         Value: {JSON.stringify(entry.operation.value, null, 2)}

@@ -97,7 +97,7 @@ export const SchematicIconGenerator = forwardRef<SchematicIconHandle, SchematicP
         height={height}
         viewBox={`0 0 ${width} ${height}`}
         xmlns="http://www.w3.org/2000/svg"
-        className={`bg-white ${className || ''}`}
+        className={`bg-card ${className || ''}`}
       >
         {/* Outer frame */}
         <rect

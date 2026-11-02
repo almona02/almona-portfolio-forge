@@ -182,6 +182,7 @@
     "test:e2e": "playwright test",
     "test:ticketing-boundary": "cross-env SUPABASE_INTEGRATION_TESTS=true SUPABASE_INTEGRATION_REQUIRED=true vitest run src/tests/integration/ticketing/ServiceTicketingSupabaseBoundary.test.ts",
     "verify:ticketing-boundary": "node scripts/verify-ticketing-boundary.mjs",
+    "test:theme": "node --test scripts/theme-palettes.test.mjs && vitest run src/components/theme/AppThemeProvider.test.tsx",
     "test:marketplace": "vitest run src/lib/marketplace src/lib/usedMachines/UsedMachineService.reliability.test.ts src/lib/marketplaceRecovery.test.ts src/lib/serviceWorkerLifecycle.test.ts src/utils/lazyImport.test.ts src/pages/UsedMachines.loading.test.tsx src/lib/pwaUpdate.test.ts tests/marketplace-events.test.ts && node --test scripts/retain-release-assets.test.mjs && node scripts/verify-marketplace-submission-db.mjs && tsc --noEmit --skipLibCheck --module ESNext --moduleResolution Bundler --target ES2022 --types node api/marketplace-events.ts",
     "test:marketplace:browser": "playwright test --config playwright.marketplace.config.ts",
     "visibility:check": "tsx scripts/visibility/run.ts",

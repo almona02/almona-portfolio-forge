@@ -112,7 +112,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-almona-dark border-almona-light/20 text-white">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-background border-border/20 text-foreground">
         <LazyAnimatePresence mode="wait">
           {!submitted ? (
             <LazyMotionDiv
@@ -128,11 +128,11 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                     animate={{ rotate: [0, 10, -10, 0] }}
                     transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
                   >
-                    <AlertTriangle className="h-6 w-6 text-red-500" />
+                    <AlertTriangle className="h-6 w-6 text-destructive" />
                   </LazyMotionDiv>
                   Emergency Service Request
                 </DialogTitle>
-                <DialogDescription className="text-gray-400">
+                <DialogDescription className="text-muted-foreground">
                   24/7 critical response team - Average response time: 30-120 minutes
                 </DialogDescription>
               </DialogHeader>
@@ -152,7 +152,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                           className={`relative p-4 rounded-lg border-2 transition-all duration-300 ${
                             selectedEmergency === type.id
                               ? "border-amber-500 bg-amber-500/10"
-                              : "border-almona-light/20 hover:border-almona-light/40"
+                              : "border-border/20 hover:border-border/40"
                           }`}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
@@ -163,11 +163,11 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                               animate={selectedEmergency === type.id ? { scale: [1, 1.1, 1] } : {}}
                               transition={{ duration: 0.5, repeat: Infinity }}
                             >
-                              <Icon className="h-5 w-5 text-white" />
+                              <Icon className="h-5 w-5 text-foreground" />
                             </LazyMotionDiv>
                             <div className="text-left">
                               <h3 className="typography-h3">{type.title}</h3>
-                              <p className="text-sm text-gray-400">{type.description}</p>
+                              <p className="text-sm text-muted-foreground">{type.description}</p>
                               <Badge variant="secondary" className="mt-2">
                                 <Clock className="h-3 w-3 mr-1" />
                                 {type.responseTime}
@@ -204,10 +204,10 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                             id="machineModel"
                             placeholder="e.g., DK-502, KM-212"
                             {...register("machineModel", { required: "Machine model is required" })}
-                            className="bg-almona-darker/50 border-almona-light/20"
+                            className="bg-card/50 border-border/20"
                           />
                           {errors.machineModel && (
-                            <p className="text-red-500 text-sm">{errors.machineModel.message}</p>
+                            <p className="text-destructive text-sm">{errors.machineModel.message}</p>
                           )}
                         </div>
 
@@ -217,10 +217,10 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                             id="serialNumber"
                             placeholder="Enter machine serial number"
                             {...register("serialNumber", { required: "Serial number is required" })}
-                            className="bg-almona-darker/50 border-almona-light/20"
+                            className="bg-card/50 border-border/20"
                           />
                           {errors.serialNumber && (
-                            <p className="text-red-500 text-sm">{errors.serialNumber.message}</p>
+                            <p className="text-destructive text-sm">{errors.serialNumber.message}</p>
                           )}
                         </div>
                       </div>
@@ -232,10 +232,10 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                             id="contactName"
                             placeholder="Your full name"
                             {...register("contactName", { required: "Contact name is required" })}
-                            className="bg-almona-darker/50 border-almona-light/20"
+                            className="bg-card/50 border-border/20"
                           />
                           {errors.contactName && (
-                            <p className="text-red-500 text-sm">{errors.contactName.message}</p>
+                            <p className="text-destructive text-sm">{errors.contactName.message}</p>
                           )}
                         </div>
 
@@ -246,10 +246,10 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                             type="tel"
                             placeholder="+20 123 456 7890"
                             {...register("phone", { required: "Phone number is required" })}
-                            className="bg-almona-darker/50 border-almona-light/20"
+                            className="bg-card/50 border-border/20"
                           />
                           {errors.phone && (
-                            <p className="text-red-500 text-sm">{errors.phone.message}</p>
+                            <p className="text-destructive text-sm">{errors.phone.message}</p>
                           )}
                         </div>
                       </div>
@@ -260,10 +260,10 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                           id="location"
                           placeholder="Enter your facility address"
                           {...register("location", { required: "Location is required" })}
-                          className="bg-almona-darker/50 border-almona-light/20"
+                          className="bg-card/50 border-border/20"
                         />
                         {errors.location && (
-                          <p className="text-red-500 text-sm">{errors.location.message}</p>
+                          <p className="text-destructive text-sm">{errors.location.message}</p>
                         )}
                       </div>
 
@@ -274,10 +274,10 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                           rows={4}
                           placeholder="Describe the issue in detail..."
                           {...register("description", { required: "Description is required" })}
-                          className="bg-almona-darker/50 border-almona-light/20"
+                          className="bg-card/50 border-border/20"
                         />
                         {errors.description && (
-                          <p className="text-red-500 text-sm">{errors.description.message}</p>
+                          <p className="text-destructive text-sm">{errors.description.message}</p>
                         )}
                       </div>
 
@@ -287,12 +287,12 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                           onValueChange={(value) => void register("priority").onChange({ target: { value } })}
                           defaultValue="critical"
                         >
-                          <SelectTrigger className="bg-almona-darker/50 border-almona-light/20">
+                          <SelectTrigger className="bg-card/50 border-border/20">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="critical">
-                              <span className="text-red-500">🔴 Critical - Production Stopped</span>
+                              <span className="text-destructive">🔴 Critical - Production Stopped</span>
                             </SelectItem>
                             <SelectItem value="high">
                               <span className="text-amber-500">🟠 High - Major Impact</span>
@@ -312,7 +312,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                     type="button"
                     variant="outline"
                     onClick={handleClose}
-                    className="border-almona-light/20"
+                    className="border-border/20"
                   >
                     Cancel
                   </Button>
@@ -324,7 +324,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                     whileTap={{ scale: 0.95 }}
                   >
                     <LazyMotionDiv
-                      className="absolute inset-0 bg-white/20"
+                      className="absolute inset-0 bg-foreground/20"
                       initial={{ x: "-100%" }}
                       animate={{ x: isSubmitting ? "100%" : "-100%" }}
                       transition={{ duration: 1, repeat: isSubmitting ? Infinity : 0 }}
@@ -348,14 +348,14 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
               >
                 <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle2 className="h-10 w-10 text-white" />
+                  <CheckCircle2 className="h-10 w-10 text-foreground" />
                 </div>
               </LazyMotionDiv>
               <h3 className="typography-h3 mb-2">Emergency Request Submitted!</h3>
-              <p className="text-gray-400">
+              <p className="text-muted-foreground">
                 Our emergency response team has been notified and will contact you within 15 minutes.
               </p>
-              <Badge className="mt-4 bg-green-500/20 text-green-300">
+              <Badge className="mt-4 bg-green-500/20 text-success">
                 Reference: EMG-{Date.now().toString().slice(-6)}
               </Badge>
             </LazyMotionDiv>

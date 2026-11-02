@@ -70,17 +70,17 @@ const getStatusBadge = (status: Payment['status']) => {
     },
     processing: {
       variant: 'outline',
-      className: 'bg-blue-500/10 text-blue-300 border-blue-500/30',
+      className: 'bg-blue-500/10 text-info border-blue-500/30',
       icon: <RefreshCw className="w-3 h-3 animate-spin" />
     },
     completed: {
       variant: 'default',
-      className: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30',
+      className: 'bg-emerald-500/10 text-success border-emerald-500/30',
       icon: <CheckCircle2 className="w-3 h-3" />
     },
     failed: {
       variant: 'destructive',
-      className: 'bg-red-500/10 text-red-300 border-red-500/30',
+      className: 'bg-red-500/10 text-destructive border-red-500/30',
       icon: <XCircle className="w-3 h-3" />
     },
     refunded: {
@@ -90,7 +90,7 @@ const getStatusBadge = (status: Payment['status']) => {
     },
     cancelled: {
       variant: 'outline',
-      className: 'bg-gray-500/10 text-gray-300 border-gray-500/30',
+      className: 'bg-muted/10 text-foreground border-border/30',
       icon: <XCircle className="w-3 h-3" />
     }
   };
@@ -174,7 +174,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
   // Loading state
   if (loading) {
     return (
-      <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+      <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Payment History</CardTitle>
         </CardHeader>
@@ -190,14 +190,14 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
   // Error state
   if (error) {
     return (
-      <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+      <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Payment History</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <AlertCircle className="w-12 h-12 text-red-500/70 mb-4" />
-            <p className="text-sm text-red-400/70 mb-2">{error}</p>
+            <AlertCircle className="w-12 h-12 text-destructive/70 mb-4" />
+            <p className="text-sm text-destructive/70 mb-2">{error}</p>
             <Button
               onClick={() => void loadPayments()}
               variant="outline"
@@ -216,7 +216,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
   return (
     <div className={cn('space-y-6', className)}>
       {/* Payment History Card */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -265,15 +265,15 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
                 placeholder="Search payments..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
+                className="pl-10 bg-background/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
               />
             </div>
             <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as Payment['status'] | 'all')}>
-              <SelectTrigger className="w-full sm:w-[180px] bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200">
+              <SelectTrigger className="w-full sm:w-[180px] bg-background/60 border-amber-600/30 text-amber-200">
                 <Filter className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
-              <SelectContent className="bg-[#0f0f0f] border-amber-600/30">
+              <SelectContent className="bg-background border-amber-600/30">
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="processing">Processing</SelectItem>
@@ -284,10 +284,10 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
               </SelectContent>
             </Select>
             <Select value={methodFilter} onValueChange={(value) => setMethodFilter(value as Payment['method'] | 'all')}>
-              <SelectTrigger className="w-full sm:w-[180px] bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200">
+              <SelectTrigger className="w-full sm:w-[180px] bg-background/60 border-amber-600/30 text-amber-200">
                 <SelectValue placeholder="Method" />
               </SelectTrigger>
-              <SelectContent className="bg-[#0f0f0f] border-amber-600/30">
+              <SelectContent className="bg-background border-amber-600/30">
                 <SelectItem value="all">All Methods</SelectItem>
                 <SelectItem value="stripe">Stripe</SelectItem>
                 <SelectItem value="cash">Cash</SelectItem>
@@ -312,7 +312,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
             <div className="rounded-lg border border-amber-600/20 overflow-hidden">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-[#0f0f0f]/60 border-amber-600/20 hover:bg-[#0f0f0f]/80">
+                  <TableRow className="bg-background/60 border-amber-600/20 hover:bg-background/80">
                     <TableHead className="text-amber-300/70 text-xs font-medium">Date</TableHead>
                     <TableHead className="text-amber-300/70 text-xs font-medium">Amount</TableHead>
                     <TableHead className="text-amber-300/70 text-xs font-medium">Method</TableHead>
@@ -328,7 +328,7 @@ export const PaymentHistory: React.FC<PaymentHistoryProps> = ({
                     return (
                       <TableRow
                         key={payment.id}
-                        className="border-amber-600/10 hover:bg-[#0f0f0f]/40"
+                        className="border-amber-600/10 hover:bg-background/40"
                       >
                         <TableCell className="text-xs text-amber-200/80">
                           <div className="flex flex-col">

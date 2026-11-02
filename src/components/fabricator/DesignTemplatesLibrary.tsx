@@ -187,12 +187,12 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 -xl shadow-premium card-glass-dark">
+      <Card className="bg-gradient-to-br from-background/80 to-card/80 -xl shadow-premium card-glass-dark">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <Grid className="h-5 w-5 text-amber-400" />
+                <Grid className="h-5 w-5 text-warning" />
                 Design Templates Library
               </CardTitle>
               <CardDescription>
@@ -206,53 +206,53 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
                   Save Current Design
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-slate-900/95 backdrop-blur-xl border-slate-700/50 shadow-premium">
+              <DialogContent className="bg-background/95 backdrop-blur-xl border-border/50 shadow-premium">
                 <DialogHeader>
-                  <DialogTitle className="text-slate-100">Save Design as Template</DialogTitle>
-                  <DialogDescription className="text-slate-400">
+                  <DialogTitle className="text-foreground">Save Design as Template</DialogTitle>
+                  <DialogDescription className="text-muted-foreground">
                     Create a reusable template from your current design
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
-                    <Label className="typography-label text-sm text-slate-300">Template Name *</Label>
+                    <Label className="typography-label text-sm text-foreground">Template Name *</Label>
                     <Input
                       placeholder="e.g., Modern Living Room Window"
                       value={saveFormData.name}
                       onChange={(e) => setSaveFormData({ ...saveFormData, name: e.target.value })}
-                      className="border-slate-700/50 text-slate-100 mt-1 focus:border-amber- 500/30 card-premium"
+                      className="border-border/50 text-foreground mt-1 focus:border-amber- 500/30 card-premium"
                     />
                   </div>
                   <div>
-                    <Label className="typography-label text-sm text-slate-300">Description</Label>
+                    <Label className="typography-label text-sm text-foreground">Description</Label>
                     <Input
                       placeholder="Optional description"
                       value={saveFormData.description}
                       onChange={(e) => setSaveFormData({ ...saveFormData, description: e.target.value })}
-                      className="border-slate-700/50 text-slate-100 mt-1 focus:border-amber- 500/30 card-premium"
+                      className="border-border/50 text-foreground mt-1 focus:border-amber- 500/30 card-premium"
                     />
                   </div>
                   <div>
-                    <Label className="typography-label text-sm text-slate-300">Category</Label>
+                    <Label className="typography-label text-sm text-foreground">Category</Label>
                     <Select value={saveFormData.category} onValueChange={(value: any) => setSaveFormData({ ...saveFormData, category: value })}>
-                      <SelectTrigger className="border-slate-700/50 text-slate-100 mt-1 focus:border-amber- 500/30 card-premium">
+                      <SelectTrigger className="border-border/50 text-foreground mt-1 focus:border-amber- 500/30 card-premium">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-900/95 backdrop-blur-xl border-slate-700/50">
-                        <SelectItem value="residential" className="text-slate-200 focus:bg-slate-800/80 focus:text-amber-400">Residential</SelectItem>
-                        <SelectItem value="commercial" className="text-slate-200 focus:bg-slate-800/80 focus:text-amber-400">Commercial</SelectItem>
-                        <SelectItem value="industrial" className="text-slate-200 focus:bg-slate-800/80 focus:text-amber-400">Industrial</SelectItem>
-                        <SelectItem value="custom" className="text-slate-200 focus:bg-slate-800/80 focus:text-amber-400">Custom</SelectItem>
+                      <SelectContent className="bg-background/95 backdrop-blur-xl border-border/50">
+                        <SelectItem value="residential" className="text-foreground focus:bg-card/80 focus:text-warning">Residential</SelectItem>
+                        <SelectItem value="commercial" className="text-foreground focus:bg-card/80 focus:text-warning">Commercial</SelectItem>
+                        <SelectItem value="industrial" className="text-foreground focus:bg-card/80 focus:text-warning">Industrial</SelectItem>
+                        <SelectItem value="custom" className="text-foreground focus:bg-card/80 focus:text-warning">Custom</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label className="typography-label text-sm text-slate-300">Tags (comma-separated)</Label>
+                    <Label className="typography-label text-sm text-foreground">Tags (comma-separated)</Label>
                     <Input
                       placeholder="e.g., modern, large, double-casement"
                       value={saveFormData.tags}
                       onChange={(e) => setSaveFormData({ ...saveFormData, tags: e.target.value })}
-                      className="border-slate-700/50 text-slate-100 mt-1 focus:border-amber- 500/30 card-premium"
+                      className="border-border/50 text-foreground mt-1 focus:border-amber- 500/30 card-premium"
                     />
                   </div>
                   <div className="flex gap-2 pt-4">
@@ -280,30 +280,30 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
       {/* Statistics */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Card className="bg-slate-900/60 -xl border-slate-700/50 shadow-card card-glass-dark">
+          <Card className="bg-background/60 -xl border-border/50 shadow-card card-glass-dark">
             <CardContent className="p-4">
-              <div className="text-xs text-slate-400 mb-1">Total Templates</div>
-              <div className="text-2xl font-bold text-slate-100">{stats.totalTemplates}</div>
+              <div className="text-xs text-muted-foreground mb-1">Total Templates</div>
+              <div className="text-2xl font-bold text-foreground">{stats.totalTemplates}</div>
             </CardContent>
           </Card>
-          <Card className="bg-slate-900/60 -xl border-slate-700/50 shadow-card card-glass-dark">
+          <Card className="bg-background/60 -xl border-border/50 shadow-card card-glass-dark">
             <CardContent className="p-4">
-              <div className="text-xs text-slate-400 mb-1">Favorites</div>
-              <div className="text-2xl font-bold text-amber-400">{stats.favoriteCount}</div>
+              <div className="text-xs text-muted-foreground mb-1">Favorites</div>
+              <div className="text-2xl font-bold text-warning">{stats.favoriteCount}</div>
             </CardContent>
           </Card>
-          <Card className="bg-slate-900/60 -xl border-slate-700/50 shadow-card card-glass-dark">
+          <Card className="bg-background/60 -xl border-border/50 shadow-card card-glass-dark">
             <CardContent className="p-4">
-              <div className="text-xs text-slate-400 mb-1">Most Used</div>
-              <div className="text-sm font-bold text-slate-100 truncate">
+              <div className="text-xs text-muted-foreground mb-1">Most Used</div>
+              <div className="text-sm font-bold text-foreground truncate">
                 {stats.mostUsed?.name || 'N/A'}
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-slate-900/60 -xl border-slate-700/50 shadow-card card-glass-dark">
+          <Card className="bg-background/60 -xl border-border/50 shadow-card card-glass-dark">
             <CardContent className="p-4">
-              <div className="text-xs text-slate-400 mb-1">By Category</div>
-              <div className="text-sm font-bold text-slate-100">
+              <div className="text-xs text-muted-foreground mb-1">By Category</div>
+              <div className="text-sm font-bold text-foreground">
                 {Object.keys(stats.byCategory).length} categories
               </div>
             </CardContent>
@@ -312,31 +312,31 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
       )}
 
       {/* Search & Filter */}
-      <Card className="bg-slate-900/60 -xl border-slate-700/50 shadow-card card-glass-dark">
+      <Card className="bg-background/60 -xl border-border/50 shadow-card card-glass-dark">
         <CardContent className="p-4 space-y-4">
           <div className="flex gap-3">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search templates..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 border-slate-700/50 text-slate-100 focus:border-amber- 500/30 card-premium"
+                className="pl-10 border-border/50 text-foreground focus:border-amber- 500/30 card-premium"
               />
             </div>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-40 border-slate-700/50 text-slate-100 focus:border-amber- 500/30 card-premium">
+              <SelectTrigger className="w-40 border-border/50 text-foreground focus:border-amber- 500/30 card-premium">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-900/95 backdrop-blur-xl border-slate-700/50">
-                <SelectItem value="all" className="text-slate-200 focus:bg-slate-800/80 focus:text-amber-400">All Categories</SelectItem>
-                <SelectItem value="residential" className="text-slate-200 focus:bg-slate-800/80 focus:text-amber-400">Residential</SelectItem>
-                <SelectItem value="commercial" className="text-slate-200 focus:bg-slate-800/80 focus:text-amber-400">Commercial</SelectItem>
-                <SelectItem value="industrial" className="text-slate-200 focus:bg-slate-800/80 focus:text-amber-400">Industrial</SelectItem>
-                <SelectItem value="custom" className="text-slate-200 focus:bg-slate-800/80 focus:text-amber-400">Custom</SelectItem>
+              <SelectContent className="bg-background/95 backdrop-blur-xl border-border/50">
+                <SelectItem value="all" className="text-foreground focus:bg-card/80 focus:text-warning">All Categories</SelectItem>
+                <SelectItem value="residential" className="text-foreground focus:bg-card/80 focus:text-warning">Residential</SelectItem>
+                <SelectItem value="commercial" className="text-foreground focus:bg-card/80 focus:text-warning">Commercial</SelectItem>
+                <SelectItem value="industrial" className="text-foreground focus:bg-card/80 focus:text-warning">Industrial</SelectItem>
+                <SelectItem value="custom" className="text-foreground focus:bg-card/80 focus:text-warning">Custom</SelectItem>
               </SelectContent>
             </Select>
-            <div className="flex gap-1 bg-slate-800/50 rounded-lg p-1 border border-slate-700 /50 card-dark">
+            <div className="flex gap-1 bg-card/50 rounded-lg p-1 border border-border /50 card-dark">
               <Button
                 size="sm"
                 variant={viewMode === 'grid' ? 'default' : 'ghost'}
@@ -360,15 +360,15 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
 
       {/* Templates Grid/List */}
       {loading ? (
-        <Card className="bg-slate-900/60 -xl border-slate-700/50 shadow-card card-glass-dark">
-          <CardContent className="p-8 text-center text-slate-400">
+        <Card className="bg-background/60 -xl border-border/50 shadow-card card-glass-dark">
+          <CardContent className="p-8 text-center text-muted-foreground">
             Loading templates...
           </CardContent>
         </Card>
       ) : filteredTemplates.length === 0 ? (
         <Alert className="bg-cyan-500/10 border-cyan-500/30">
-          <AlertCircle className="h-4 w-4 text-cyan-400" />
-          <AlertDescription className="text-sm text-cyan-300">
+          <AlertCircle className="h-4 w-4 text-info" />
+          <AlertDescription className="text-sm text-info">
             No templates found. {templates.length === 0 ? 'Create your first template by saving a design.' : 'Try adjusting your search filters.'}
           </AlertDescription>
         </Alert>
@@ -377,12 +377,12 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
           {filteredTemplates.map((template) => (
             <Card
               key={template.id}
-              className="border-slate-700/50 hover:border-amber- 500/50 transition-all cursor-pointer group shadow-card hover:shadow-premium card-premium"
+              className="border-border/50 hover:border-amber- 500/50 transition-all cursor-pointer group shadow-card hover:shadow-premium card-premium"
             >
               <CardContent className="p-4 space-y-3">
                 {/* Thumbnail */}
                 {template.thumbnail && (
-                  <div className="w-full h-32 bg-slate-800/50 rounded-lg overflow-hidden border border-slate-700 /50 card-dark">
+                  <div className="w-full h-32 bg-card/50 rounded-lg overflow-hidden border border-border /50 card-dark">
                     <img
                       src={template.thumbnail}
                       alt={template.name}
@@ -394,7 +394,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
                 {/* Template Info */}
                 <div>
                   <div className="flex items-start justify-between mb-1">
-                    <h3 className="typography-h3 text-slate-100 text-sm group-hover:text-amber-400 transition-colors">
+                    <h3 className="typography-h3 text-foreground text-sm group-hover:text-warning transition-colors">
                       {template.name}
                     </h3>
                     <button
@@ -402,23 +402,23 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
                       className="transition-colors"
                     >
                       <Star
-                        className={`h-4 w-4 ${template.isFavorite ? 'fill-amber-400 text-amber-400' : 'text-slate-500 hover:text-amber-400'}`}
+                        className={`h-4 w-4 ${template.isFavorite ? 'fill-amber-400 text-warning' : 'text-muted-foreground hover:text-warning'}`}
                       />
                     </button>
                   </div>
-                  <p className="text-xs text-slate-400 line-clamp-2">{template.description}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{template.description}</p>
                 </div>
 
                 {/* Metadata */}
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className="text-xs border-slate-700/50 text-slate-300 bg-slate-800 /30 card-dark">
+                  <Badge variant="outline" className="text-xs border-border/50 text-foreground bg-card /30 card-dark">
                     {template.category}
                   </Badge>
-                  <Badge variant="outline" className="text-xs flex items-center gap-1 border-cyan-500/30 text-cyan-300 bg-cyan-500/10">
+                  <Badge variant="outline" className="text-xs flex items-center gap-1 border-cyan-500/30 text-info bg-cyan-500/10">
                     <TrendingUp className="h-3 w-3" />
                     {template.usageCount}
                   </Badge>
-                  <Badge variant="outline" className="text-xs flex items-center gap-1 border-slate-700/50 text-slate-400 bg-slate-800 /30 card-dark">
+                  <Badge variant="outline" className="text-xs flex items-center gap-1 border-border/50 text-muted-foreground bg-card /30 card-dark">
                     <Clock className="h-3 w-3" />
                     {template.createdAt.toLocaleDateString()}
                   </Badge>
@@ -428,12 +428,12 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
                 {template.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {template.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs bg-slate-800/50 text-slate-300 border-slate-700 /50 card-dark">
+                      <Badge key={tag} variant="secondary" className="text-xs bg-card/50 text-foreground border-border /50 card-dark">
                         {tag}
                       </Badge>
                     ))}
                     {template.tags.length > 3 && (
-                      <Badge variant="secondary" className="text-xs bg-slate-800/50 text-slate-400 border-slate-700 /50 card-dark">
+                      <Badge variant="secondary" className="text-xs bg-card/50 text-muted-foreground border-border /50 card-dark">
                         +{template.tags.length - 3}
                       </Badge>
                     )}
@@ -441,7 +441,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
                 )}
 
                 {/* Actions */}
-                <div className="flex gap-2 pt-2 border-t border-slate-700/50">
+                <div className="flex gap-2 pt-2 border-t border-border/50">
                   <Button
                     size="sm"
                     onClick={() => void handleLoadTemplate(template)}
@@ -453,7 +453,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
                     size="sm"
                     variant="outline"
                     onClick={() => void handleDuplicateTemplate(template)}
-                    className="h-8 w-8 p-0 border-slate-700/50 text-slate-300 hover:bg-slate-800 /50 hover:text-amber-400 card-dark"
+                    className="h-8 w-8 p-0 border-border/50 text-foreground hover:bg-card /50 hover:text-warning card-dark"
                     title="Duplicate"
                   >
                     <Copy className="h-3 w-3" />
@@ -462,7 +462,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
                     size="sm"
                     variant="outline"
                     onClick={() => void handleDeleteTemplate(template.id)}
-                    className="h-8 w-8 p-0 border-slate-700/50 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                    className="h-8 w-8 p-0 border-border/50 text-destructive hover:text-destructive hover:bg-red-500/10"
                     title="Delete"
                   >
                     <Trash2 className="h-3 w-3" />

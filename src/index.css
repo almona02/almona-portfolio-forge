@@ -2,6 +2,7 @@
 @import './styles/theme-gold.css';
 @import './styles/prestige-design-system.css';
 @import './styles/fabricator-themes.css';
+@import './styles/app-palettes.css';
 
 /* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind base;
@@ -11,22 +12,8 @@
 @tailwind utilities;
 
 :root {
-  --bg: #fff;
-  --fg: #0a0a0b;
-  --br: #e4e4e7;
-  --mf: #71717a;
-  --de: #ef4444;
-  --ad: #0f0f23;
+  --sidebar-width: 80px;
   --r: .5rem;
-  --sidebar-width: 80px; /* Collapsed: 80px, Expanded: 320px */
-}
-
-.dark {
-  --bg: #0a0a0b;
-  --fg: #fafafa;
-  --br: #27272a;
-  --mf: #a1a1aa;
-  --de: #dc2626;
 }
 
 * {

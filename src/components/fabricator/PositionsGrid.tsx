@@ -238,12 +238,12 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
   }
 
   return (
-    <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+    <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
       <CardHeader className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between pb-3 min-h-[60px]">
         {selectedJobIds.size > 0 ? (
            <div className="flex items-center justify-between w-full bg-amber-500/10 p-2 rounded border border-amber-500/30 animate-in fade-in duration-200">
              <div className="flex items-center gap-3">
-               <span className="text-sm font-semibold text-amber-200 flex items-center gap-2">
+               <span className="text-sm font-semibold text-warning flex items-center gap-2">
                  <CheckSquare className="h-4 w-4" />
                  {selectedJobIds.size} Selected
                </span>
@@ -271,7 +271,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
              <Button 
               size="icon" 
               variant="ghost" 
-              className="h-6 w-6 text-amber-400/70 hover:text-amber-200"
+              className="h-6 w-6 text-warning/70 hover:text-warning"
               onClick={() => setSelectedJobIds(new Set())}
              >
                <X className="h-4 w-4" />
@@ -280,7 +280,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
         ) : (
           <>
             <CardTitle className="flex items-center gap-2 text-sm md:text-base">
-              <Layers className="h-4 w-4 text-amber-400" />
+              <Layers className="h-4 w-4 text-warning" />
               Positions & Flats Overview
               <Badge variant="outline" className="ml-2 text-[10px]">
                 {totalPoses} poses · {totalRows} unit types
@@ -296,14 +296,14 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                     setLimitToCurrentProject(checked === true && !!currentProject)
                   }
                 />
-                <Label htmlFor="limit-current" className="typography-label text-xs text-amber-300">
+                <Label htmlFor="limit-current" className="typography-label text-xs text-warning">
                   Current order only
                 </Label>
               </div>
               <div className="relative">
-                <Search className="h-3 w-3 text-amber-600/70 absolute left-2 top-1.5" />
+                <Search className="h-3 w-3 text-warning/70 absolute left-2 top-1.5" />
                 <Input
-                  className="pl-6 h-7 text-xs bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                  className="pl-6 h-7 text-xs bg-background/60 border-amber-600/30 text-warning"
                   placeholder="Search order, flat, floor, remark…"
                   value={searchTerm}
                   onChange={(e) => {
@@ -316,7 +316,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
         )}
       </CardHeader>
       <CardContent className="space-y-3">
-        <div className="flex items-center justify-between text-[11px] text-amber-600/70">
+        <div className="flex items-center justify-between text-[11px] text-warning/70">
           <span>{totalRows} positions</span>
         </div>
 
@@ -325,12 +325,12 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
           {/* Sticky Header */}
           <Table className="min-w-[950px] text-[10px]">
             <TableHeader>
-              <TableRow className="bg-[#0f0f0f]/80 h-8">
+              <TableRow className="bg-background/80 h-8">
                 <TableHead className="w-8 px-2 py-1.5">
                   <Checkbox 
                     checked={filteredJobs.length > 0 && filteredJobs.every(j => selectedJobIds.has(j.id))}
                     onCheckedChange={(checked) => handleSelectAll(checked === true)}
-                    className="border-amber-600/50 data-[state=checked]:bg-amber-500 data-[state=checked]:text-black"
+                    className="border-amber-600/50 data-[state=checked]:bg-amber-500 data-[state=checked]:text-foreground"
                   />
                 </TableHead>
                 <TableHead className="w-20 px-2 py-1.5">Order/POS</TableHead>
@@ -342,7 +342,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                 <TableHead className="w-12 px-2 py-1.5 text-right">Qty</TableHead>
                 <TableHead className="w-40 px-2 py-1.5">
                   <div className="flex items-center gap-1">
-                    <MapPin className="h-3 w-3 text-amber-400" />
+                    <MapPin className="h-3 w-3 text-warning" />
                     Location
                   </div>
                 </TableHead>
@@ -388,42 +388,42 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                           <Checkbox 
                             checked={isSelected}
                             onCheckedChange={(checked) => handleSelectRow(job.id, checked === true)}
-                            className="border-amber-600/50 data-[state=checked]:bg-amber-500 data-[state=checked]:text-black"
+                            className="border-amber-600/50 data-[state=checked]:bg-amber-500 data-[state=checked]:text-foreground"
                           />
                         </TableCell>
                         <TableCell className="w-20 px-2 py-1">
                           <div className="flex flex-col gap-0">
-                            <span className="font-mono text-[9px] text-amber-200 leading-tight">
+                            <span className="font-mono text-[9px] text-warning leading-tight">
                               {job.orderNumber}
                             </span>
-                            <span className="text-[9px] text-amber-600/70 leading-tight">{job.posNumber}</span>
+                            <span className="text-[9px] text-warning/70 leading-tight">{job.posNumber}</span>
                           </div>
                         </TableCell>
                         <TableCell className="w-20 px-2 py-1">
                           <div className="flex flex-col gap-0">
                             {job.projectCode && (
-                              <span className="text-[9px] text-amber-300 truncate leading-tight">
+                              <span className="text-[9px] text-warning truncate leading-tight">
                                 {job.projectCode}
                               </span>
                             )}
                             {job.positionCode && (
-                              <span className="text-[9px] text-amber-600/70 truncate leading-tight">
+                              <span className="text-[9px] text-warning/70 truncate leading-tight">
                                 {job.positionCode}
                               </span>
                             )}
                             {!job.projectCode && !job.positionCode && (
-                              <span className="text-[9px] text-amber-600/70 italic">--</span>
+                              <span className="text-[9px] text-warning/70 italic">--</span>
                             )}
                           </div>
                         </TableCell>
                         <TableCell className="w-24 px-2 py-1">
                           {packLabel ? (
-                            <span className="text-[9px] text-amber-200 truncate leading-tight">{packLabel}</span>
+                            <span className="text-[9px] text-warning truncate leading-tight">{packLabel}</span>
                           ) : (
-                            <span className="text-[9px] text-amber-600/70 italic">--</span>
+                            <span className="text-[9px] text-warning/70 italic">--</span>
                           )}
                         </TableCell>
-                        <TableCell className="w-20 px-2 py-1 text-amber-200 truncate text-[9px] leading-tight">
+                        <TableCell className="w-20 px-2 py-1 text-warning truncate text-[9px] leading-tight">
                           {job.type.replace('_', ' ').substring(0, 12)}
                         </TableCell>
                         <TableCell className="w-20 px-2 py-1 text-[9px] leading-tight">
@@ -431,10 +431,10 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                         </TableCell>
                         <TableCell className="w-24 px-2 py-1">
                           <div className="flex flex-col gap-0">
-                            <span className="text-[9px] text-amber-200 leading-tight truncate">
+                            <span className="text-[9px] text-warning leading-tight truncate">
                               {((job.glazing?.type as string) || '--')}
                             </span>
-                            <span className="text-[8px] text-amber-600/70 leading-tight truncate">
+                            <span className="text-[8px] text-warning/70 leading-tight truncate">
                               {job.flyScreenType || 'none'}
                             </span>
                           </div>
@@ -467,14 +467,14 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                               )}
                             </div>
                             {meta.remarks && (
-                              <div className="text-[8px] text-amber-600/70 truncate mt-0.5 max-w-[120px]">
+                              <div className="text-[8px] text-warning/70 truncate mt-0.5 max-w-[120px]">
                                 {meta.remarks}
                               </div>
                             )}
                           </div>
                         </TableCell>
                         <TableCell className="w-16 px-2 py-1">
-                          <Badge className="text-[8px] capitalize bg-[#0f0f0f]/60 text-amber-200 border border-amber-600/30 px-1.5 py-0 h-4 leading-tight">
+                          <Badge className="text-[8px] capitalize bg-background/60 text-warning border border-amber-600/30 px-1.5 py-0 h-4 leading-tight">
                             {job.status.substring(0, 6)}
                           </Badge>
                         </TableCell>
@@ -483,7 +483,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-6 w-6 p-0 text-amber-600/70 hover:text-amber-400 hover:bg-amber-500/10"
+                              className="h-6 w-6 p-0 text-warning/70 hover:text-warning hover:bg-amber-500/10"
                               onClick={() => { setEditingPose(job); setEditModalOpen(true); }}
                               title="Quick edit metadata"
                             >
@@ -492,7 +492,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-6 w-6 p-0 text-amber-600/70 hover:text-amber-400 hover:bg-amber-500/10"
+                              className="h-6 w-6 p-0 text-warning/70 hover:text-warning hover:bg-amber-500/10"
                               onClick={() => handleViewJob(job)}
                               title="Focus on this position"
                             >
@@ -501,7 +501,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-6 w-6 p-0 text-red-400 hover:text-red-300 hover:bg-red-900/40"
+                              className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-red-900/40"
                               onClick={() => handleDeleteClick(job)}
                               title="Delete position"
                             >
@@ -514,7 +514,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                   })}
                   {filteredJobs.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={11} className="text-center text-[10px] text-amber-600/70 py-4">
+                      <TableCell colSpan={11} className="text-center text-[10px] text-warning/70 py-4">
                         No positions found for the current filters.
                       </TableCell>
                     </TableRow>
@@ -527,17 +527,17 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
 
         {/* Bulk Edit Dialog */}
         <Dialog open={bulkEditOpen} onOpenChange={setBulkEditOpen}>
-          <DialogContent className="bg-[#0f0f0f] border-amber-600/30 card-glass-dark">
+          <DialogContent className="bg-background border-amber-600/30 card-glass-dark">
             <DialogHeader>
-              <DialogTitle className="text-amber-200">Bulk Edit {selectedJobIds.size} Positions</DialogTitle>
-              <DialogDescription className="text-amber-600/70">
+              <DialogTitle className="text-warning">Bulk Edit {selectedJobIds.size} Positions</DialogTitle>
+              <DialogDescription className="text-warning/70">
                 Update properties for all selected positions. This will override existing values.
               </DialogDescription>
             </DialogHeader>
             
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="field" className="text-right text-amber-200">
+                <Label htmlFor="field" className="text-right text-warning">
                   Field
                 </Label>
                 <div className="col-span-3">
@@ -545,10 +545,10 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                     value={bulkEditField}
                     onValueChange={setBulkEditField}
                   >
-                    <SelectTrigger className="bg-[#0f0f0f] border-amber-600/30 text-amber-200">
+                    <SelectTrigger className="bg-background border-amber-600/30 text-warning">
                       <SelectValue placeholder="Select field to update" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#0f0f0f] border-amber-600/30 text-amber-200">
+                    <SelectContent className="bg-background border-amber-600/30 text-warning">
                       <SelectItem value="status">Status</SelectItem>
                       <SelectItem value="systemPack">System Pack</SelectItem>
                       <SelectItem value="color">Color Material</SelectItem>
@@ -558,7 +558,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
               </div>
               
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="value" className="text-right text-amber-200">
+                <Label htmlFor="value" className="text-right text-warning">
                   Value
                 </Label>
                 <div className="col-span-3">
@@ -567,10 +567,10 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                       value={bulkEditValue}
                       onValueChange={setBulkEditValue}
                     >
-                      <SelectTrigger className="bg-[#0f0f0f] border-amber-600/30 text-amber-200">
+                      <SelectTrigger className="bg-background border-amber-600/30 text-warning">
                         <SelectValue placeholder="Select new status" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#0f0f0f] border-amber-600/30 text-amber-200">
+                      <SelectContent className="bg-background border-amber-600/30 text-warning">
                         <SelectItem value="pending">Pending</SelectItem>
                         <SelectItem value="design">Design</SelectItem>
                         <SelectItem value="production">Production</SelectItem>
@@ -584,10 +584,10 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                       value={bulkEditValue}
                       onValueChange={setBulkEditValue}
                     >
-                      <SelectTrigger className="bg-[#0f0f0f] border-amber-600/30 text-amber-200">
+                      <SelectTrigger className="bg-background border-amber-600/30 text-warning">
                         <SelectValue placeholder="Select system pack" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 h-64">
+                      <SelectContent className="bg-background border-amber-600/30 text-warning h-64">
                          {SYSTEM_PACKS.map(pack => (
                            <SelectItem key={pack.meta.id} value={pack.meta.id}>
                              {pack.meta.name}
@@ -599,7 +599,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
                   
                   {bulkEditField === 'color' && (
                     <Input 
-                      className="bg-[#0f0f0f] border-amber-600/30 text-amber-200" 
+                      className="bg-background border-amber-600/30 text-warning"
                       placeholder="e.g. RAL 9016 (White)"
                       value={bulkEditValue}
                       onChange={(e) => setBulkEditValue(e.target.value)}
@@ -610,7 +610,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
             </div>
 
             <DialogFooter>
-               <Button variant="outline" onClick={() => setBulkEditOpen(false)} className="border-amber-600/30 text-amber-200 hover:bg-amber-900/20">
+               <Button variant="outline" onClick={() => setBulkEditOpen(false)} className="border-amber-600/30 text-warning hover:bg-amber-900/20">
                  Cancel
                </Button>
                <Button onClick={() => void handleBulkUpdate()} className="bg-amber-500 hover:bg-amber-600 text-black">
@@ -629,19 +629,19 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-          <AlertDialogContent className="bg-[#0f0f0f] border-amber-600/30 card-glass-dark">
+          <AlertDialogContent className="bg-background border-amber-600/30 card-glass-dark">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-amber-200">Delete Position?</AlertDialogTitle>
-              <AlertDialogDescription className="text-amber-600/70">
+              <AlertDialogTitle className="text-warning">Delete Position?</AlertDialogTitle>
+              <AlertDialogDescription className="text-warning/70">
                 Are you sure you want to delete position{' '}
-                <span className="font-mono text-amber-400">
+                <span className="font-mono text-warning">
                   {jobToDelete?.orderNumber} / {jobToDelete?.posNumber}
                 </span>
                 ? This action cannot be undone for this workspace session.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-[#0f0f0f] border-amber-600/30 text-amber-300 hover:bg-[#1a1a1a]">
+              <AlertDialogCancel className="bg-background border-amber-600/30 text-warning hover:bg-background">
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction

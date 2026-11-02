@@ -331,7 +331,7 @@ export const BarDrawing: React.FC<BarDrawingProps> = ({
   if (cuttingPlans.length === 0) {
     return (
       <Card className={className}>
-        <CardContent className="p-8 text-center text-slate-400">
+        <CardContent className="p-8 text-center text-muted-foreground">
           <p>{t('bar_drawing.no_cutting_plans', 'No cutting plans available for bar drawing.')}</p>
         </CardContent>
       </Card>
@@ -343,23 +343,23 @@ export const BarDrawing: React.FC<BarDrawingProps> = ({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-amber-200 flex items-center gap-2">
+            <CardTitle className="text-warning flex items-center gap-2">
               <FileText className="h-5 w-5" />
               {t('bar_drawing.title', 'Bar Drawings')}
             </CardTitle>
-            <CardDescription className="text-amber-600/70 mt-1">
+            <CardDescription className="text-warning/70 mt-1">
               {t('bar_drawing.description', 'Auto-generated cutting plan visualization')}
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="border-amber-600/30 text-amber-500">
+            <Badge variant="outline" className="border-amber-600/30 text-warning">
               {totalBars} {t('bar_drawing.bars', 'bars')}
             </Badge>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="text-amber-600/70 hover:text-amber-400"
+              className="text-warning/70 hover:text-warning"
             >
               {isExpanded ? (
                 <Minimize2 className="h-4 w-4" />
@@ -372,25 +372,25 @@ export const BarDrawing: React.FC<BarDrawingProps> = ({
 
         {/* Summary Stats */}
         <div className="mt-4 grid grid-cols-3 gap-4">
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-amber-600/20">
-            <div className="text-xs text-slate-400 mb-1">
+          <div className="bg-card/50 rounded-lg p-3 border border-amber-600/20">
+            <div className="text-xs text-muted-foreground mb-1">
               {t('bar_drawing.total_bars', 'Total Bars')}
             </div>
-            <div className="text-lg font-semibold text-amber-300">{totalBars}</div>
+            <div className="text-lg font-semibold text-warning">{totalBars}</div>
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-amber-600/20">
-            <div className="text-xs text-slate-400 mb-1">
+          <div className="bg-card/50 rounded-lg p-3 border border-amber-600/20">
+            <div className="text-xs text-muted-foreground mb-1">
               {t('bar_drawing.utilization', 'Utilization')}
             </div>
-            <div className="text-lg font-semibold text-amber-300">
+            <div className="text-lg font-semibold text-warning">
               {averageUtilization.toFixed(1)}%
             </div>
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-amber-600/20">
-            <div className="text-xs text-slate-400 mb-1">
+          <div className="bg-card/50 rounded-lg p-3 border border-amber-600/20">
+            <div className="text-xs text-muted-foreground mb-1">
               {t('bar_drawing.total_waste', 'Total Waste')}
             </div>
-            <div className="text-lg font-semibold text-red-400">
+            <div className="text-lg font-semibold text-destructive">
               {totalWaste.toFixed(0)}mm
             </div>
           </div>
@@ -402,7 +402,7 @@ export const BarDrawing: React.FC<BarDrawingProps> = ({
             variant="outline"
             size="sm"
             onClick={handleExportPDF}
-            className="border-amber-600/30 text-amber-400 hover:bg-amber-600/20"
+            className="border-amber-600/30 text-warning hover:bg-amber-600/20"
           >
             <Download className="h-4 w-4 mr-2" />
             {t('bar_drawing.export_pdf', 'Export PDF')}
@@ -411,7 +411,7 @@ export const BarDrawing: React.FC<BarDrawingProps> = ({
             variant="outline"
             size="sm"
             onClick={handleExportDXF}
-            className="border-amber-600/30 text-amber-400 hover:bg-amber-600/20"
+            className="border-amber-600/30 text-warning hover:bg-amber-600/20"
           >
             <Download className="h-4 w-4 mr-2" />
             {t('bar_drawing.export_dxf', 'Export DXF')}
@@ -420,7 +420,7 @@ export const BarDrawing: React.FC<BarDrawingProps> = ({
             variant="outline"
             size="sm"
             onClick={handlePrint}
-            className="border-amber-600/30 text-amber-400 hover:bg-amber-600/20"
+            className="border-amber-600/30 text-warning hover:bg-amber-600/20"
           >
             <Printer className="h-4 w-4 mr-2" />
             {t('bar_drawing.print', 'Print')}
@@ -433,22 +433,22 @@ export const BarDrawing: React.FC<BarDrawingProps> = ({
           {barDrawingData.map((data, planIndex) => (
             <div key={planIndex} className="space-y-4">
               {/* Profile Header */}
-              <div className="bg-slate-800/50 rounded-lg p-4 border border-amber-600/20">
+              <div className="bg-card/50 rounded-lg p-4 border border-amber-600/20">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-amber-200">
+                    <h3 className="text-lg font-semibold text-warning">
                       {data.profile.name || data.profile.code || `Profile ${planIndex + 1}`}
                     </h3>
-                    <p className="text-sm text-slate-400 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       {data.profile.code && `Code: ${data.profile.code}`}
                       {data.profile.material && ` • Material: ${data.profile.material}`}
                     </p>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm text-slate-400">
+                    <div className="text-sm text-muted-foreground">
                       {t('bar_drawing.bars_count', '{count} bars', { count: data.bars.length })}
                     </div>
-                    <div className="text-sm text-amber-400 font-semibold">
+                    <div className="text-sm text-warning font-semibold">
                       {data.totalUtilization.toFixed(1)}% {t('bar_drawing.utilization', 'utilization')}
                     </div>
                   </div>
@@ -464,7 +464,7 @@ export const BarDrawing: React.FC<BarDrawingProps> = ({
                   return (
                     <div
                       key={barIndex}
-                      className={`bg-slate-900/90 rounded-lg p-4 border transition ${
+                      className={`bg-background/90 rounded-lg p-4 border transition ${
                         isSelected
                           ? 'border-amber-500 shadow-lg shadow-amber-500/20'
                           : 'border-amber-600/20 hover:border-amber-600/40'
@@ -474,28 +474,28 @@ export const BarDrawing: React.FC<BarDrawingProps> = ({
                       {/* Bar Header */}
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="border-amber-600/30 text-amber-500">
+                          <Badge variant="outline" className="border-amber-600/30 text-warning">
                             {t('bar_drawing.bar', 'Bar')} {barIndex + 1}
                           </Badge>
-                          <span className="text-sm text-slate-400">
+                          <span className="text-sm text-muted-foreground">
                             {bar.stockLength.toFixed(0)}mm {t('bar_drawing.stock', 'stock')}
                           </span>
                         </div>
                         <div className="flex items-center gap-4 text-sm">
-                          <span className="text-slate-400">
+                          <span className="text-muted-foreground">
                             {t('bar_drawing.cuts', 'Cuts')}: {bar.cuts.length}
                           </span>
-                          <span className="text-amber-400">
+                          <span className="text-warning">
                             {bar.utilization.toFixed(1)}% {t('bar_drawing.utilized', 'utilized')}
                           </span>
-                          <span className="text-red-400">
+                          <span className="text-destructive">
                             {bar.waste.toFixed(0)}mm {t('bar_drawing.waste', 'waste')}
                           </span>
                         </div>
                       </div>
 
                       {/* Bar Visualization */}
-                      <div className="relative bg-slate-950 rounded border border-amber-600/30 overflow-hidden">
+                      <div className="relative bg-background rounded border border-amber-600/30 overflow-hidden">
                         <svg
                           width={barWidth}
                           height={BAR_HEIGHT}
@@ -661,7 +661,7 @@ export const BarDrawing: React.FC<BarDrawingProps> = ({
                         <div className="mt-3 pt-3 border-t border-amber-600/20">
                           <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                              <div className="text-slate-400 mb-1">
+                              <div className="text-muted-foreground mb-1">
                                 {t('bar_drawing.cuts_list', 'Cuts')}:
                               </div>
                               <div className="space-y-1 max-h-32 overflow-y-auto">
@@ -670,10 +670,10 @@ export const BarDrawing: React.FC<BarDrawingProps> = ({
                                     key={cutIndex}
                                     className="flex items-center justify-between text-xs"
                                   >
-                                    <span className="text-slate-300">
+                                    <span className="text-foreground">
                                       {cutIndex + 1}. {cut.label}
                                     </span>
-                                    <span className="text-slate-500">
+                                    <span className="text-muted-foreground">
                                       @ {cut.position.toFixed(0)}mm
                                     </span>
                                   </div>
@@ -681,7 +681,7 @@ export const BarDrawing: React.FC<BarDrawingProps> = ({
                               </div>
                             </div>
                             <div>
-                              <div className="text-slate-400 mb-1">
+                              <div className="text-muted-foreground mb-1">
                                 {t('bar_drawing.waste_segments', 'Waste Segments')}:
                               </div>
                               <div className="space-y-1 max-h-32 overflow-y-auto">
@@ -690,10 +690,10 @@ export const BarDrawing: React.FC<BarDrawingProps> = ({
                                     key={wasteIndex}
                                     className="flex items-center justify-between text-xs"
                                   >
-                                    <span className="text-red-400">
+                                    <span className="text-destructive">
                                       {waste.length.toFixed(0)}mm
                                     </span>
-                                    <span className="text-slate-500">
+                                    <span className="text-muted-foreground">
                                       {waste.percentage.toFixed(1)}%
                                     </span>
                                   </div>

@@ -23,10 +23,10 @@ export class PrestigeMicroInteractions {
 
   showConfidenceToast(confidence: number) {
     const getColor = (conf: number) => {
-      if (conf >= 95) return 'text-green-600';
-      if (conf >= 85) return 'text-blue-600';
+      if (conf >= 95) return 'text-success';
+      if (conf >= 85) return 'text-info';
       if (conf >= 75) return 'text-amber-600';
-      return 'text-red-600';
+      return 'text-destructive';
     };
 
     const getIcon = (conf: number) => {
@@ -44,7 +44,7 @@ export class PrestigeMicroInteractions {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className="max-w-md w-full bg-white/95 backdrop-blur-md shadow-xl rounded-2xl pointer-events-auto flex ring-1 ring-black/10 border border-gray-200/50"
+        className="max-w-md w-full bg-foreground/95 backdrop-blur-md shadow-xl rounded-2xl pointer-events-auto flex ring-1 ring-black/10 border border-border/50"
         style={{ zIndex: 9999 }}
       >
         <div className="flex-1 w-0 p-4">
@@ -53,16 +53,16 @@ export class PrestigeMicroInteractions {
               <Icon className={`w-5 h-5 ${color}`} />
             </div>
             <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-sm font-medium text-foreground">
                 Response Ready
               </p>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Response received
               </p>
             </div>
           </div>
         </div>
-        <div className="flex border-l border-gray-200">
+        <div className="flex border-l border-border">
           <button
             onClick={() => toast.dismiss(t)}
             className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-amber-600 hover:text-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -88,15 +88,15 @@ export class PrestigeMicroInteractions {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="flex items-center space-x-3 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-gray-200/50"
+        className="flex items-center space-x-3 bg-foreground/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-border/50"
         style={{ zIndex: 9999 }}
       >
         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-          <BookOpen className="w-4 h-4 text-blue-600" />
+          <BookOpen className="w-4 h-4 text-info" />
         </div>
         <div>
           <p className="font-medium text-sm">{copy('Accessing Knowledge Base')}</p>
-          <p className="text-xs text-gray-500">{copy('Accessing knowledge base')}</p>
+          <p className="text-xs text-muted-foreground">{copy('Accessing knowledge base')}</p>
         </div>
       </motion.div>
     ), {
@@ -117,15 +117,15 @@ export class PrestigeMicroInteractions {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.8 }}
-        className="flex items-center space-x-3 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-gray-200/50"
+        className="flex items-center space-x-3 bg-foreground/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-border/50"
         style={{ zIndex: 9999 }}
       >
         <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-amber-500 flex items-center justify-center">
-          <PersonaIcon className="w-5 h-5 text-white" />
+          <PersonaIcon className="w-5 h-5 text-foreground" />
         </div>
         <div>
           <p className="font-bold text-sm">{copy('Switched to')} {copy(persona.title)}</p>
-          <p className="text-xs text-gray-500">{copy(persona.subtitle)}</p>
+          <p className="text-xs text-muted-foreground">{copy(persona.subtitle)}</p>
         </div>
       </motion.div>
     ), {
@@ -144,14 +144,14 @@ export class PrestigeMicroInteractions {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
-        className="bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-gray-200/50 w-64"
+        className="bg-foreground/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-border/50 w-64"
         style={{ zIndex: 9999 }}
       >
         <div className="flex items-center justify-between mb-2">
           <span className="font-bold text-sm">Learning Progress</span>
-          <span className="text-xs text-gray-500">{progress}%</span>
+          <span className="text-xs text-muted-foreground">{progress}%</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-muted rounded-full h-2">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
@@ -159,7 +159,7 @@ export class PrestigeMicroInteractions {
             className="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full"
           />
         </div>
-        <div className="mt-2 text-xs text-gray-600">
+        <div className="mt-2 text-xs text-muted-foreground">
           Module: <span className="font-medium">{module}</span>
         </div>
       </motion.div>

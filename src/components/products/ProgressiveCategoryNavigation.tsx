@@ -84,8 +84,8 @@ const ProgressiveCategoryNavigation: React.FC<ProgressiveCategoryNavigationProps
             ${selected 
               ? 'bg-amber-500/20 border border-amber-500/30 text-amber-400' 
               : hovered 
-                ? 'bg-gray-700/50 border border-gray-600/30 text-gray-200' 
-                : 'text-gray-300 hover:text-gray-100'
+                ? 'bg-muted/50 border border-border/30 text-foreground'
+                : 'text-foreground hover:text-foreground'
             }
             ${compact ? 'py-2 px-3' : 'py-3 px-4'}
           `}
@@ -105,14 +105,14 @@ const ProgressiveCategoryNavigation: React.FC<ProgressiveCategoryNavigationProps
                 {showMachineCounts && category.machineCount && (
                   <Badge 
                     variant="secondary" 
-                    className="text-xs bg-gray-600/50 text-gray-300"
+                    className="text-xs bg-muted/50 text-foreground"
                   >
                     {category.machineCount}
                   </Badge>
                 )}
               </div>
               {!compact && category.description && (
-                <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                   {category.description}
                 </p>
               )}
@@ -124,7 +124,7 @@ const ProgressiveCategoryNavigation: React.FC<ProgressiveCategoryNavigationProps
               animate={{ rotate: expanded ? 90 : 0 }}
               transition={{ duration: 0.2 }}
             >
-              <ChevronRight className="h-4 w-4 text-gray-400" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </LazyMotionDiv>
           )}
         </LazyMotionDiv>
@@ -157,10 +157,10 @@ const ProgressiveCategoryNavigation: React.FC<ProgressiveCategoryNavigationProps
   ]);
 
   return (
-    <div className={`bg-gray-800/50 rounded-lg border border-gray-700/50 ${className}`}>
-      <div className="p-4 border-b border-gray-700/50">
-        <h3 className="typography-h3 text-lg text-white">Product Categories</h3>
-        <p className="text-sm text-gray-400 mt-1">
+    <div className={`bg-card/50 rounded-lg border border-border/50 ${className}`}>
+      <div className="p-4 border-b border-border/50">
+        <h3 className="typography-h3 text-lg text-foreground">Product Categories</h3>
+        <p className="text-sm text-muted-foreground mt-1">
           Browse by category to find the right equipment
         </p>
       </div>

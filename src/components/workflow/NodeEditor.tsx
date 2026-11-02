@@ -316,7 +316,7 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({
                 </div>
             </CardContent>
             {(onSave || onCancel) && (
-                <div className="p-4 border-t border-slate-700 flex gap-2">
+                <div className="p-4 border-t border-border flex gap-2">
                     {onSave && (
                         <Button
                             onClick={handleSave}

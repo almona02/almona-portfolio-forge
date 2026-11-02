@@ -132,12 +132,12 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
       {/* Toolbar */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="typography-h3 text-gray-700 text-lg">Profile Roles</h3>
-          <p className="text-xs text-gray-500">Import DXF files and assign roles to profiles</p>
+          <h3 className="typography-h3 text-foreground text-lg">Profile Roles</h3>
+          <p className="text-xs text-muted-foreground">Import DXF files and assign roles to profiles</p>
         </div>
         <button 
           onClick={() => setView('import')}
-          className="px-4 py-2 bg-[#003366] text-white text-sm rounded-lg hover:bg-[#004488] transition-colors flex items-center gap-2"
+          className="px-4 py-2 bg-[#003366] text-primary-foreground text-sm rounded-lg hover:bg-[#004488] transition-colors flex items-center gap-2"
         >
           <span>📁</span>
           <span>Import DXF</span>
@@ -151,7 +151,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
         {view === 'list' && (
           <div className="space-y-3">
             {system.profiles.length === 0 && untaggedImported.length === 0 && (
-              <div className="text-center py-12 text-gray-400">
+              <div className="text-center py-12 text-muted-foreground">
                 <div className="text-4xl mb-3">📐</div>
                 <p className="text-sm font-medium mb-1">No profiles yet</p>
                 <p className="text-xs">Import a DXF file to begin building your system pack</p>
@@ -161,20 +161,20 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
             {/* System Profiles (Tagged) */}
             {system.profiles.length > 0 && (
               <div>
-                <h4 className="typography-h4 text-xs text-gray-500 mb-2">System Profiles ({system.profiles.length})</h4>
+                <h4 className="typography-h4 text-xs text-muted-foreground mb-2">System Profiles ({system.profiles.length})</h4>
                 <div className="space-y-2">
                   {system.profiles.map(profile => (
                     <div 
                       key={profile.id}
-                      className="p-3 border border-gray-200 rounded-lg hover:bg-blue-50 cursor-pointer transition-colors flex justify-between items-center"
+                      className="p-3 border border-border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors flex justify-between items-center"
                     >
                       <div className="flex-1">
-                        <div className="font-bold text-sm text-gray-800">{profile.name}</div>
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="font-bold text-sm text-foreground">{profile.name}</div>
+                        <div className="text-xs text-muted-foreground mt-1">
                           {profile.width} × {profile.height}mm • {profile.material}
                         </div>
                         {profile.code && (
-                          <div className="text-xs text-gray-400 mt-0.5 font-mono">{profile.code}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5 font-mono">{profile.code}</div>
                         )}
                       </div>
                       <div className="flex items-center gap-2">
@@ -183,7 +183,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
                             {profile.profileRole}
                           </span>
                         ) : (
-                          <span className="px-2 py-1 bg-gray-100 text-gray-500 text-[10px] rounded">
+                          <span className="px-2 py-1 bg-muted text-muted-foreground text-[10px] rounded">
                             Untagged
                           </span>
                         )}
@@ -193,7 +193,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
                             setSelectedProfileId(profile.id);
                             setView('tag');
                           }}
-                          className="px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded"
+                          className="px-2 py-1 text-xs text-info hover:bg-blue-50 rounded"
                         >
                           Edit
                         </button>
@@ -202,7 +202,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
                             e.stopPropagation();
                             handleRemoveProfile(profile.id);
                           }}
-                          className="px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded"
+                          className="px-2 py-1 text-xs text-destructive hover:bg-red-50 rounded"
                         >
                           ×
                         </button>
@@ -216,7 +216,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
             {/* Untagged Imported Profiles */}
             {untaggedImported.length > 0 && (
               <div>
-                <h4 className="typography-h4 text-xs text-gray-500 mb-2">Imported (Needs Tagging) ({untaggedImported.length})</h4>
+                <h4 className="typography-h4 text-xs text-muted-foreground mb-2">Imported (Needs Tagging) ({untaggedImported.length})</h4>
                 <div className="space-y-2">
                   {untaggedImported.map(imported => (
                     <div 
@@ -228,11 +228,11 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
                       className="p-3 border border-yellow-200 bg-yellow-50 rounded-lg hover:bg-yellow-100 cursor-pointer transition-colors flex justify-between items-center"
                     >
                       <div className="flex-1">
-                        <div className="font-bold text-sm text-gray-800">{imported.name || imported.fileName}</div>
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="font-bold text-sm text-foreground">{imported.name || imported.fileName}</div>
+                        <div className="text-xs text-muted-foreground mt-1">
                           {imported.widthMm} × {imported.heightMm}mm
                         </div>
-                        <div className="text-xs text-gray-400 mt-0.5 font-mono">{imported.fileName}</div>
+                        <div className="text-xs text-muted-foreground mt-0.5 font-mono">{imported.fileName}</div>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-[10px] rounded">
@@ -249,10 +249,10 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
 
         {/* VIEW: DXF Importer */}
         {view === 'import' && (
-          <div className="h-full flex flex-col bg-white rounded-lg border border-gray-200 p-4">
+          <div className="h-full flex flex-col bg-card rounded-lg border border-border p-4">
             <button 
               onClick={() => setView('list')} 
-              className="text-sm text-blue-600 mb-4 hover:underline flex items-center gap-1"
+              className="text-sm text-info mb-4 hover:underline flex items-center gap-1"
             >
               <span>←</span>
               <span>Back to List</span>
@@ -269,10 +269,10 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
 
         {/* VIEW: Role Tagger */}
         {view === 'tag' && (
-          <div className="h-full flex flex-col bg-white rounded-lg border border-gray-200 p-4">
+          <div className="h-full flex flex-col bg-card rounded-lg border border-border p-4">
             <button 
               onClick={() => setView('list')} 
-              className="text-sm text-blue-600 mb-4 hover:underline flex items-center gap-1"
+              className="text-sm text-info mb-4 hover:underline flex items-center gap-1"
             >
               <span>←</span>
               <span>Back to List</span>
@@ -298,11 +298,11 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
             )}
             
             {!selectedProfileId && view === 'tag' && (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8 text-muted-foreground">
                 <p className="text-sm">No profile selected</p>
                 <button 
                   onClick={() => setView('list')}
-                  className="text-xs text-blue-600 hover:underline mt-2"
+                  className="text-xs text-info hover:underline mt-2"
                 >
                   Go back to list
                 </button>
@@ -316,7 +316,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
       {/* Summary Footer */}
       {system.profiles.length > 0 && (
         <div className="border-t pt-3 mt-auto">
-          <div className="flex justify-between text-xs text-gray-500">
+          <div className="flex justify-between text-xs text-muted-foreground">
             <span>Total Profiles: {system.profiles.length}</span>
             <span>Tagged: {system.profiles.filter(p => p.profileRole).length}</span>
           </div>

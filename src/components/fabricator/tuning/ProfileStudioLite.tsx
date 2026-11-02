@@ -557,7 +557,7 @@ export const ProfileStudioLite: React.FC = () => {
   const isFormValid = profile.name.trim().length > 0 && profile.manufacturer.trim().length > 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Prestige Header */}
         <LazyMotionDiv
@@ -565,35 +565,35 @@ export const ProfileStudioLite: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Card className="bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-slate-700/50 shadow-2xl shadow-amber-500/5">
+          <Card className="bg-gradient-to-br from-background/95 via-card/90 to-background/95 border-border/50 shadow-2xl shadow-amber-500/5">
             <CardHeader className="pb-4">
               <div className="flex items-start justify-between">
                 <div className="space-y-3">
                   <div className="flex items-center gap-4">
                     <div className="btn-primary-gradient">
-                      <Factory className="h-6 w-6 text-white" />
+                      <Factory className="h-6 w-6 text-foreground" />
                     </div>
                     <div>
                       <div className="flex items-center gap-3 mb-1">
                         <CardTitle className="text-3xl font-bold bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 bg-clip-text text-transparent">
                           Profile Studio
                         </CardTitle>
-                        <Badge className="bg-gradient-to-r from-amber-500/20 to-amber-500/20 border-amber-500/40 text-amber-300 px-3 py-1">
+                        <Badge className="bg-gradient-to-r from-amber-500/20 to-amber-500/20 border-amber-500/40 text-warning px-3 py-1">
                           <Sparkles className="h-3 w-3 mr-1" />
                           PRO
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-slate-400">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span className="font-medium">Custom Profiles</span>
                         {libraryPacks.length > 0 ? (
-                          <Badge variant="outline" className="border-amber-600/40 text-amber-300 text-[10px]">
+                          <Badge variant="outline" className="border-amber-600/40 text-warning text-[10px]">
                             {libraryPacks.length} saved pack{libraryPacks.length === 1 ? '' : 's'}
                           </Badge>
                         ) : null}
                       </div>
                     </div>
                   </div>
-                  <CardDescription className="text-base text-slate-300 max-w-2xl leading-relaxed">
+                  <CardDescription className="text-base text-foreground max-w-2xl leading-relaxed">
                     Define workshop profiles with dimensions, roles and cutting settings. 
                     DXF import, verification, and milling slot configuration for immediate use in Precision Design Interface.
                   </CardDescription>
@@ -606,15 +606,15 @@ export const ProfileStudioLite: React.FC = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="border border-slate-700/50 rounded-xl p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm shadow-lg"
+            className="border border-border/50 rounded-xl p-6 bg-gradient-to-br from-card/50 to-background/50 backdrop-blur-sm shadow-lg"
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="btn-primary">
-                <FileCode className="h-5 w-5 text-amber-400" />
+                <FileCode className="h-5 w-5 text-warning" />
               </div>
               <div>
-                <Label className="typography-label text-lg font-semibold text-white">DXF Profile Import</Label>
-                <p className="text-xs text-slate-400 mt-0.5">Optional - Auto-extract dimensions from CAD files</p>
+                <Label className="typography-label text-lg font-semibold text-foreground">DXF Profile Import</Label>
+                <p className="text-xs text-muted-foreground mt-0.5">Optional - Auto-extract dimensions from CAD files</p>
               </div>
             </div>
             <div className="space-y-4">
@@ -659,12 +659,12 @@ export const ProfileStudioLite: React.FC = () => {
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                   >
-                    <Alert className="bg-green-500/10 border-green-500/30 text-green-300">
-                      <CheckCircle2 className="h-4 w-4 text-green-400" />
+                    <Alert className="bg-green-500/10 border-green-500/30 text-success">
+                      <CheckCircle2 className="h-4 w-4 text-success" />
                       <AlertDescription className="text-green-200">
-                        <strong className="text-green-300">{dxfFileName}</strong> loaded successfully
+                        <strong className="text-success">{dxfFileName}</strong> loaded successfully
                         {dxfPreview && (
-                          <div className="mt-3 text-xs font-mono bg-slate-900/50 p-3 rounded-lg border border-slate-700 max-h-32 overflow-auto text-slate-300">
+                          <div className="mt-3 text-xs font-mono bg-background/50 p-3 rounded-lg border border-border max-h-32 overflow-auto text-foreground">
                             {dxfPreview}
                           </div>
                         )}
@@ -675,11 +675,11 @@ export const ProfileStudioLite: React.FC = () => {
               </LazyAnimatePresence>
 
               {!dxfFileName && !isUploading && (
-                <div className="text-sm text-slate-400 p-6 border-2 border-dashed border-slate-700 rounded-lg text-center bg-slate-900/30">
-                  <Upload className="h-8 w-8 mx-auto mb-2 text-slate-500" />
-                  <p className="font-medium text-slate-300">Upload DXF/DWG file from your supplier</p>
-                  <p className="text-xs mt-2 text-slate-500">Supported: ASAŞ, Fırat, Kale, Yılmaz profiles</p>
-                  <p className="text-xs text-slate-600 mt-1">(Optional - you can enter values manually)</p>
+                <div className="text-sm text-muted-foreground p-6 border-2 border-dashed border-border rounded-lg text-center bg-background/30">
+                  <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="font-medium text-foreground">Upload DXF/DWG file from your supplier</p>
+                  <p className="text-xs mt-2 text-muted-foreground">Supported: ASAŞ, Fırat, Kale, Yılmaz profiles</p>
+                  <p className="text-xs text-muted-foreground mt-1">(Optional - you can enter values manually)</p>
                 </div>
               )}
             </div>
@@ -692,25 +692,25 @@ export const ProfileStudioLite: React.FC = () => {
                 className="mt-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <CheckCircle2 className="h-5 w-5 text-blue-400" />
-                  <h4 className="typography-h4 text-blue-300">Detected Profiles ({detectedProfiles.length})</h4>
+                  <CheckCircle2 className="h-5 w-5 text-info" />
+                  <h4 className="typography-h4 text-info">Detected Profiles ({detectedProfiles.length})</h4>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {detectedProfiles.map((detected, idx) => (
-                    <div key={idx} className="p-3 bg-slate-800/50 rounded border border-slate-700 card-dark">
+                    <div key={idx} className="p-3 bg-card/50 rounded border border-border card-dark">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-white capitalize">{detected.type}</span>
-                        <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/40">
+                        <span className="font-medium text-foreground capitalize">{detected.type}</span>
+                        <Badge className="bg-blue-500/20 text-info border-blue-500/40">
                           {detected.name}
                         </Badge>
                       </div>
                       {detected.width && detected.height && (
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-muted-foreground">
                           {detected.width.toFixed(1)} × {detected.height.toFixed(1)} mm
                         </p>
                       )}
                       {detected.unitWeight && (
-                        <p className="text-xs text-slate-400 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Weight: {detected.unitWeight.toFixed(3)} kg/m
                         </p>
                       )}
@@ -718,7 +718,7 @@ export const ProfileStudioLite: React.FC = () => {
                   ))}
                 </div>
                 {detectedProfiles.length >= 2 && (
-                  <p className="text-xs text-blue-300 mt-3">
+                  <p className="text-xs text-info mt-3">
                     ✓ Complete window system detected (Frame + Sash). Both profiles will be saved.
                   </p>
                 )}
@@ -735,49 +735,49 @@ export const ProfileStudioLite: React.FC = () => {
               transition={{ delay: 0.2 }}
               className="space-y-5"
             >
-              <div className="flex items-center gap-3 pb-2 border-b border-slate-700/50">
+              <div className="flex items-center gap-3 pb-2 border-b border-border/50">
                 <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                  <Settings className="h-5 w-5 text-blue-400" />
+                  <Settings className="h-5 w-5 text-info" />
                 </div>
-                <h3 className="typography-h3 text-white">Profile Information</h3>
+                <h3 className="typography-h3 text-foreground">Profile Information</h3>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="name" className="typography-label text-slate-300 font-medium">Profile Name *</Label>
+                <Label htmlFor="name" className="typography-label text-foreground font-medium">Profile Name *</Label>
                 <Input
                   id="name"
                   type="text"
                   value={profile.name}
                   onChange={(e) => setProfile({...profile, name: e.target.value})}
                   placeholder="e.g., ASAŞ Sliding Frame 60"
-                  className="h-11 text-base border-slate-600 text-white placeholder:text-slate-500 focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
+                  className="h-11 text-base border-border text-foreground placeholder:text-muted-foreground focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 {(['width', 'height', 'thickness'] as const).map(dimension => (
                   <div key={dimension} className="space-y-2">
-                    <Label htmlFor={`profile-${dimension}`} className="typography-label text-slate-300 capitalize">
+                    <Label htmlFor={`profile-${dimension}`} className="typography-label text-foreground capitalize">
                       {dimension} (mm) *
                     </Label>
                     <Input id={`profile-${dimension}`} type="number" min="0.01" step="0.01"
                       value={profile[dimension] ?? ''}
                       onChange={event => setProfile({ ...profile, [dimension]: event.target.value === '' ? undefined : Number(event.target.value) })}
-                      className="h-11 border-slate-600 text-white card-premium" />
+                      className="h-11 border-border text-foreground card-premium" />
                   </div>
                 ))}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="manufacturer" className="typography-label text-slate-300 font-medium">Manufacturer *</Label>
+                <Label htmlFor="manufacturer" className="typography-label text-foreground font-medium">Manufacturer *</Label>
                 <Select
                   value={profile.manufacturer}
                   onValueChange={(value) => setProfile({...profile, manufacturer: value})}
                 >
-                  <SelectTrigger id="manufacturer" className="h-11 text-base border-slate-600 text-white focus:border-amber- 500 focus:ring-amber-500/20 card-premium">
+                  <SelectTrigger id="manufacturer" className="h-11 text-base border-border text-foreground focus:border-amber- 500 focus:ring-amber-500/20 card-premium">
                     <SelectValue placeholder="Select Manufacturer" />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700 card-dark">
+                  <SelectContent className="bg-card border-border card-dark">
                     <SelectItem value="ASAŞ" className="btn-secondary">ASAŞ Alüminyum</SelectItem>
                     <SelectItem value="Fırat" className="btn-secondary">Fırat Alüminyum</SelectItem>
                     <SelectItem value="Kale" className="btn-secondary">Kale Alüminyum</SelectItem>
@@ -788,15 +788,15 @@ export const ProfileStudioLite: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="profileType" className="typography-label text-slate-300 font-medium">Profile Type *</Label>
+                <Label htmlFor="profileType" className="typography-label text-foreground font-medium">Profile Type *</Label>
                 <Select
                   value={profile.profileType}
                   onValueChange={(value) => setProfile({...profile, profileType: value as any})}
                 >
-                  <SelectTrigger id="profileType" className="h-11 text-base border-slate-600 text-white focus:border-amber- 500 focus:ring-amber-500/20 card-premium">
+                  <SelectTrigger id="profileType" className="h-11 text-base border-border text-foreground focus:border-amber- 500 focus:ring-amber-500/20 card-premium">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700 card-dark">
+                  <SelectContent className="bg-card border-border card-dark">
                     <SelectItem value="frame" className="btn-secondary">Frame</SelectItem>
                     <SelectItem value="sash" className="btn-secondary">Sash</SelectItem>
                     <SelectItem value="mullion" className="btn-secondary">Mullion</SelectItem>
@@ -807,7 +807,7 @@ export const ProfileStudioLite: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="material" className="typography-label text-slate-300 font-medium">Material *</Label>
+                <Label htmlFor="material" className="typography-label text-foreground font-medium">Material *</Label>
                 <Select
                   value={profile.material}
                   onValueChange={(value) => {
@@ -819,10 +819,10 @@ export const ProfileStudioLite: React.FC = () => {
                     });
                   }}
                 >
-                  <SelectTrigger id="material" className="h-11 text-base border-slate-600 text-white focus:border-amber- 500 focus:ring-amber-500/20 card-premium">
+                  <SelectTrigger id="material" className="h-11 text-base border-border text-foreground focus:border-amber- 500 focus:ring-amber-500/20 card-premium">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700 card-dark">
+                  <SelectContent className="bg-card border-border card-dark">
                     <SelectItem value="aluminum" className="btn-secondary">Aluminum</SelectItem>
                     <SelectItem value="upvc" className="btn-secondary">UPVC (Plastik)</SelectItem>
                     <SelectItem value="steel" className="btn-secondary">Steel (Çelik)</SelectItem>
@@ -838,29 +838,29 @@ export const ProfileStudioLite: React.FC = () => {
               transition={{ delay: 0.3 }}
               className="space-y-5"
             >
-              <div className="flex items-center gap-3 pb-2 border-b border-slate-700/50">
+              <div className="flex items-center gap-3 pb-2 border-b border-border/50">
                 <div className="btn-primary">
-                  <Gauge className="h-5 w-5 text-amber-400" />
+                  <Gauge className="h-5 w-5 text-warning" />
                 </div>
-                <h3 className="typography-h3 text-white">Workshop Production Settings</h3>
+                <h3 className="typography-h3 text-foreground">Workshop Production Settings</h3>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="barLength" className="typography-label text-slate-300 font-medium">Bar Length (mm) *</Label>
+                  <Label htmlFor="barLength" className="typography-label text-foreground font-medium">Bar Length (mm) *</Label>
                   <Input
                     id="barLength"
                     type="number"
                     value={profile.barLength}
                     onChange={(e) => setProfile({...profile, barLength: Number(e.target.value)})}
                     placeholder="6500"
-                    className="h-11 text-base border-slate-600 text-white placeholder:text-slate-500 focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
+                    className="h-11 text-base border-border text-foreground placeholder:text-muted-foreground focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
                   />
-                  <p className="text-xs text-slate-400">Set the stock length supplied to your workshop.</p>
+                  <p className="text-xs text-muted-foreground">Set the stock length supplied to your workshop.</p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="unitWeight" className="typography-label text-slate-300 font-medium">Unit Weight (kg/m) *</Label>
+                  <Label htmlFor="unitWeight" className="typography-label text-foreground font-medium">Unit Weight (kg/m) *</Label>
                   <Input
                     id="unitWeight"
                     type="number"
@@ -868,13 +868,13 @@ export const ProfileStudioLite: React.FC = () => {
                     value={profile.unitWeight}
                     onChange={(e) => setProfile({...profile, unitWeight: Number(e.target.value)})}
                     placeholder="1.2"
-                    className="h-11 text-base border-slate-600 text-white placeholder:text-slate-500 focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
+                    className="h-11 text-base border-border text-foreground placeholder:text-muted-foreground focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="weldingAllowance" className="typography-label text-slate-300 font-medium">Welding Allowance (mm)</Label>
+                <Label htmlFor="weldingAllowance" className="typography-label text-foreground font-medium">Welding Allowance (mm)</Label>
                 <Input
                   id="weldingAllowance"
                   type="number"
@@ -882,15 +882,15 @@ export const ProfileStudioLite: React.FC = () => {
                   value={profile.weldingAllowance}
                   onChange={(e) => setProfile({...profile, weldingAllowance: Number(e.target.value)})}
                   placeholder={profile.material === 'upvc' ? '3' : '0'}
-                  className="h-11 text-base border-slate-600 text-white placeholder:text-slate-500 focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
+                  className="h-11 text-base border-border text-foreground placeholder:text-muted-foreground focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
                 />
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-muted-foreground">
                   UPVC: 3mm, Aluminum: 0mm
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="sawKerf" className="typography-label text-slate-300 font-medium">Saw Kerf (mm) *</Label>
+                <Label htmlFor="sawKerf" className="typography-label text-foreground font-medium">Saw Kerf (mm) *</Label>
                 <Input
                   id="sawKerf"
                   type="number"
@@ -898,13 +898,13 @@ export const ProfileStudioLite: React.FC = () => {
                   value={profile.sawKerf}
                   onChange={(e) => setProfile({...profile, sawKerf: Number(e.target.value)})}
                   placeholder="4.5"
-                  className="h-11 text-base border-slate-600 text-white placeholder:text-slate-500 focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
+                  className="h-11 text-base border-border text-foreground placeholder:text-muted-foreground focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
                 />
-                <p className="text-xs text-slate-400">Set the measured saw kerf for your machine.</p>
+                <p className="text-xs text-muted-foreground">Set the measured saw kerf for your machine.</p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="millingDepth" className="typography-label text-slate-300 font-medium">Milling Depth (mm)</Label>
+                <Label htmlFor="millingDepth" className="typography-label text-foreground font-medium">Milling Depth (mm)</Label>
                 <Input
                   id="millingDepth"
                   type="number"
@@ -912,23 +912,23 @@ export const ProfileStudioLite: React.FC = () => {
                   value={profile.millingDepth}
                   onChange={(e) => setProfile({...profile, millingDepth: Number(e.target.value)})}
                   placeholder="2.5"
-                  className="h-11 text-base border-slate-600 text-white placeholder:text-slate-500 focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
+                  className="h-11 text-base border-border text-foreground placeholder:text-muted-foreground focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
                 />
-                <p className="text-xs text-slate-400">For transoms (ara dikme)</p>
+                <p className="text-xs text-muted-foreground">For transoms (ara dikme)</p>
               </div>
 
               {profile.profileType === 'frame' && (
                 <div className="space-y-2">
-                  <Label htmlFor="bendingRadius" className="typography-label text-slate-300 font-medium">Minimum Bending Radius (mm)</Label>
+                  <Label htmlFor="bendingRadius" className="typography-label text-foreground font-medium">Minimum Bending Radius (mm)</Label>
                   <Input
                     id="bendingRadius"
                     type="number"
                     value={profile.bendingRadius || ''}
                     onChange={(e) => setProfile({...profile, bendingRadius: Number(e.target.value) || undefined})}
                     placeholder="1000"
-                    className="h-11 text-base border-slate-600 text-white placeholder:text-slate-500 focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
+                    className="h-11 text-base border-border text-foreground placeholder:text-muted-foreground focus:border-amber- 500 focus:ring-amber-500/20 card-premium"
                   />
-                  <p className="text-xs text-slate-400">For arched windows (kemerli pencere)</p>
+                  <p className="text-xs text-muted-foreground">For arched windows (kemerli pencere)</p>
                 </div>
               )}
             </LazyMotionDiv>
@@ -939,11 +939,11 @@ export const ProfileStudioLite: React.FC = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="border border-slate-700/50 rounded-xl p-6 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-amber-500/10 backdrop-blur-sm"
+            className="border border-border/50 rounded-xl p-6 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-amber-500/10 backdrop-blur-sm"
           >
-            <h4 className="typography-h4 mb-4 flex items-center gap-2 text-white">
+            <h4 className="typography-h4 mb-4 flex items-center gap-2 text-foreground">
               <div className="btn-primary">
-                <Zap className="h-4 w-4 text-amber-400" />
+                <Zap className="h-4 w-4 text-warning" />
               </div>
               <span>🇹🇷 Turkish Industry Presets</span>
             </h4>
@@ -953,24 +953,24 @@ export const ProfileStudioLite: React.FC = () => {
                 onClick={() => applyPreset('asas_aluminum')}
                 className="btn-secondary"
               >
-                <span className="font-semibold text-white group-hover:text-amber-300">ASAŞ Aluminum</span>
-                <span className="text-xs text-slate-400 mt-1">6500mm bars, 4.5mm kerf</span>
+                <span className="font-semibold text-foreground group-hover:text-warning">ASAŞ Aluminum</span>
+                <span className="text-xs text-muted-foreground mt-1">6500mm bars, 4.5mm kerf</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => applyPreset('firat_upvc')}
                 className="btn-secondary"
               >
-                <span className="font-semibold text-white group-hover:text-amber-300">Fırat UPVC</span>
-                <span className="text-xs text-slate-400 mt-1">6000mm bars, 3mm welding</span>
+                <span className="font-semibold text-foreground group-hover:text-warning">Fırat UPVC</span>
+                <span className="text-xs text-muted-foreground mt-1">6000mm bars, 3mm welding</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => applyPreset('yilmaz_heavy')}
                 className="btn-secondary"
               >
-                <span className="font-semibold text-white group-hover:text-amber-300">Yılmaz Heavy Duty</span>
-                <span className="text-xs text-slate-400 mt-1">7000mm bars, 4.8mm kerf</span>
+                <span className="font-semibold text-foreground group-hover:text-warning">Yılmaz Heavy Duty</span>
+                <span className="text-xs text-muted-foreground mt-1">7000mm bars, 4.8mm kerf</span>
               </Button>
             </div>
           </LazyMotionDiv>
@@ -981,43 +981,43 @@ export const ProfileStudioLite: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="border border-slate-700/50 rounded-xl p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50"
+              className="border border-border/50 rounded-xl p-6 bg-gradient-to-br from-card/50 to-background/50"
             >
               <div className="flex items-center justify-between mb-4">
-                <h4 className="typography-h4 text-white flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-400" />
+                <h4 className="typography-h4 text-foreground flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                   Imported Profiles ({importedProfiles.length})
                 </h4>
                 {importedProfiles.some(p => p.type === 'frame') && importedProfiles.some(p => p.type === 'sash') && (
-                  <Badge className="bg-green-500/20 text-green-300 border-green-500/40">
+                  <Badge className="bg-green-500/20 text-success border-green-500/40">
                     Complete System Ready
                   </Badge>
                 )}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                 {importedProfiles.map((imported) => (
-                  <div key={imported.id} className="p-3 bg-slate-800/50 rounded border border-slate-700 card-dark">
+                  <div key={imported.id} className="p-3 bg-card/50 rounded border border-border card-dark">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-white capitalize">{imported.type}</span>
-                      <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/40">
+                      <span className="font-medium text-foreground capitalize">{imported.type}</span>
+                      <Badge className="bg-blue-500/20 text-info border-blue-500/40">
                         {imported.name}
                       </Badge>
                     </div>
-                    <p className="text-xs text-slate-400">From: {imported.dxfFileName}</p>
+                    <p className="text-xs text-muted-foreground">From: {imported.dxfFileName}</p>
                   </div>
                 ))}
               </div>
               {importedProfiles.some(p => p.type === 'frame') && importedProfiles.some(p => p.type === 'sash') ? (
                 <Alert className="bg-green-500/10 border-green-500/30">
-                  <CheckCircle2 className="h-4 w-4 text-green-400" />
-                  <AlertDescription className="text-green-300">
+                  <CheckCircle2 className="h-4 w-4 text-success" />
+                  <AlertDescription className="text-success">
                     ✓ Complete system ready! Click "Add Profile" to save, then you'll be redirected to Tuning Studio.
                   </AlertDescription>
                 </Alert>
               ) : (
                 <Alert className="btn-primary">
-                  <AlertTriangle className="h-4 w-4 text-amber-400" />
-                  <AlertDescription className="text-amber-300">
+                  <AlertTriangle className="h-4 w-4 text-warning" />
+                  <AlertDescription className="text-warning">
                     {importedProfiles.some(p => p.type === 'frame') 
                       ? 'Import a Sash profile to complete the system (Frame + Sash required).'
                       : 'Import a Frame profile first, then a Sash profile to create a complete window system.'}
@@ -1032,7 +1032,7 @@ export const ProfileStudioLite: React.FC = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="flex items-center justify-between pt-6 border-t border-slate-700/50"
+            className="flex items-center justify-between pt-6 border-t border-border/50"
           >
             <div className="flex-1">
               <LazyAnimatePresence>
@@ -1043,8 +1043,8 @@ export const ProfileStudioLite: React.FC = () => {
                     exit={{ opacity: 0, x: -10 }}
                   >
                     <Alert className="bg-green-500/10 border-green-500/30">
-                      <CheckCircle2 className="h-4 w-4 text-green-400" />
-                      <AlertDescription className="text-green-300">
+                      <CheckCircle2 className="h-4 w-4 text-success" />
+                      <AlertDescription className="text-success">
                         {saveFeedback
                           || (importedProfiles.some(p => p.type === 'frame') && importedProfiles.some(p => p.type === 'sash')
                           ? 'Complete system ready! Redirecting to Tuning Studio...'
@@ -1060,8 +1060,8 @@ export const ProfileStudioLite: React.FC = () => {
                     exit={{ opacity: 0, x: -10 }}
                   >
                     <Alert className="bg-amber-500/10 border-amber-500/30">
-                      <AlertTriangle className="h-4 w-4 text-amber-400" />
-                      <AlertDescription className="text-amber-300">
+                      <AlertTriangle className="h-4 w-4 text-warning" />
+                      <AlertDescription className="text-warning">
                         {saveFeedback || 'Saved to this browser only.'}
                       </AlertDescription>
                     </Alert>
@@ -1074,8 +1074,8 @@ export const ProfileStudioLite: React.FC = () => {
                     exit={{ opacity: 0, x: -10 }}
                   >
                     <Alert className="bg-red-500/10 border-red-500/30">
-                      <AlertTriangle className="h-4 w-4 text-red-400" />
-                      <AlertDescription className="text-red-300">
+                      <AlertTriangle className="h-4 w-4 text-destructive" />
+                      <AlertDescription className="text-destructive">
                         {saveFeedback || 'Please fill in all required fields (Name and Manufacturer).'}
                       </AlertDescription>
                     </Alert>
@@ -1115,30 +1115,30 @@ export const ProfileStudioLite: React.FC = () => {
             transition={{ delay: 0.6 }}
             className="border rounded-xl p-6 bg-gradient-to-br from-amber-500/10 via-yellow-500/5 to-amber-500/10 -sm card-glass-dark"
           >
-            <h4 className="typography-h4 mb-3 text-white flex items-center gap-2">
+            <h4 className="typography-h4 mb-3 text-foreground flex items-center gap-2">
               <span className="text-xl">🇹🇷</span>
               <span>Turkish Industry Tips</span>
             </h4>
-            <ul className="text-sm space-y-2 text-slate-300">
+            <ul className="text-sm space-y-2 text-foreground">
               <li className="flex items-start gap-2">
-                <span className="text-amber-400 mt-0.5">•</span>
-                <span>Turkish bars: <strong className="text-white">6500mm</strong> (not Egyptian 6000mm)</span>
+                <span className="text-warning mt-0.5">•</span>
+                <span>Turkish bars: <strong className="text-foreground">6500mm</strong> (not Egyptian 6000mm)</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-amber-400 mt-0.5">•</span>
-                <span>Turkish saws: Double-mitre with <strong className="text-white">4.5mm kerf</strong></span>
+                <span className="text-warning mt-0.5">•</span>
+                <span>Turkish saws: Double-mitre with <strong className="text-foreground">4.5mm kerf</strong></span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-amber-400 mt-0.5">•</span>
-                <span>UPVC welding: Use <strong className="text-white">3mm allowance</strong> per corner</span>
+                <span className="text-warning mt-0.5">•</span>
+                <span>UPVC welding: Use <strong className="text-foreground">3mm allowance</strong> per corner</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-amber-400 mt-0.5">•</span>
-                <span>Bending: ASAŞ profiles can bend to <strong className="text-white">1000mm radius</strong></span>
+                <span className="text-warning mt-0.5">•</span>
+                <span>Bending: ASAŞ profiles can bend to <strong className="text-foreground">1000mm radius</strong></span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-amber-400 mt-0.5">•</span>
-                <span>Hardware: Use <strong className="text-white">MACO (Austrian)</strong> or local Turkish brands</span>
+                <span className="text-warning mt-0.5">•</span>
+                <span>Hardware: Use <strong className="text-foreground">MACO (Austrian)</strong> or local Turkish brands</span>
               </li>
             </ul>
           </LazyMotionDiv>

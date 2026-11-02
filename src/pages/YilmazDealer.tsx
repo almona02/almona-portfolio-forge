@@ -13,7 +13,7 @@ const YilmazDealer = () => {
       description: "Official distributor in Egypt since 2000. Full warranty and manufacturer backing guaranteed."
     },
     {
-      icon: <Wrench className="w-8 h-8 text-blue-500" />,
+      icon: <Wrench className="w-8 h-8 text-info" />,
       title: "Certified Service",
       description: "Factory-trained technicians for installation, maintenance, and repair of all Yilmaz machinery."
     },
@@ -46,9 +46,9 @@ const YilmazDealer = () => {
 
       <main className="pt-24 pb-16">
         {/* Hero Section */}
-        <section className="relative bg-gray-900 text-white py-20 overflow-hidden">
+        <section className="relative bg-background text-foreground py-20 overflow-hidden">
           <div className="absolute inset-0 z-0 opacity-20">
-             <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-gray-900" />
+             <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-background" />
              {/* Placeholder for a background image of a machine or workshop */}
           </div>
           
@@ -65,7 +65,7 @@ const YilmazDealer = () => {
                 <h1 className="typography-h1 md:text-6xl mb-6">
                   YILMAZ Machines Authorized Dealer in Egypt
                 </h1>
-                <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+                <p className="text-xl text-foreground mb-8 leading-relaxed">
                   ALMONA Co. brings world-class Turkish engineering to Egyptian manufacturers. 
                   Get authentic machinery, expert local support, and comprehensive warranty services.
                 </p>
@@ -76,7 +76,7 @@ const YilmazDealer = () => {
                     </Button>
                   </Link>
                   <Link to="/contact">
-                    <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                    <Button size="lg" variant="outline" className="border-white text-foreground hover:bg-foreground/10">
                       Contact Sales
                     </Button>
                   </Link>
@@ -87,7 +87,7 @@ const YilmazDealer = () => {
         </section>
 
         {/* Trust Indicators */}
-        <section className="py-16 bg-gray-50 dark:bg-gray-900/50">
+        <section className="py-16 bg-background dark:bg-background/50">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {benefits.map((benefit, index) => (
@@ -98,13 +98,13 @@ const YilmazDealer = () => {
                   transition={{ delay: index * 0.1, duration: 0.5 }}
                   viewport={{ once: true }}
                 >
-                  <Card className="h-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+                  <Card className="h-full bg-card dark:bg-card border-border dark:border-border shadow-sm hover:shadow-md transition-shadow">
                     <CardHeader>
                       <div className="mb-4">{benefit.icon}</div>
                       <CardTitle className="text-xl">{benefit.title}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-gray-600 dark:text-gray-300">{benefit.description}</p>
+                      <p className="text-muted-foreground dark:text-foreground">{benefit.description}</p>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -118,7 +118,7 @@ const YilmazDealer = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="typography-h2 mb-4">Popular Yilmaz Machinery in Egypt</h2>
-              <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+              <p className="text-muted-foreground dark:text-muted-foreground max-w-2xl mx-auto">
                 From high-speed CNC processing centers to precise cutting saws, we supply the full range of Yilmaz equipment tailored for the Egyptian market.
               </p>
             </div>
@@ -131,10 +131,10 @@ const YilmazDealer = () => {
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  className="group relative overflow-hidden rounded-xl aspect-video bg-gray-200 dark:bg-gray-800"
+                  className="group relative overflow-hidden rounded-xl aspect-video bg-muted dark:bg-card"
                 >
                    {/* Fallback for missing images would go here, using simple divs for now */}
-                  <div className="absolute inset-0 flex items-center justify-center text-gray-400 bg-gray-800">
+                  <div className="absolute inset-0 flex items-center justify-center text-muted-foreground bg-card">
                     <img 
                       src={machine.image} 
                       alt={machine.name}
@@ -146,7 +146,7 @@ const YilmazDealer = () => {
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
                     <div>
-                      <h3 className="typography-h3 text-white mb-2">{machine.name}</h3>
+                      <h3 className="typography-h3 text-foreground mb-2">{machine.name}</h3>
                       <Link to={machine.link} className="text-amber-400 hover:text-amber-300 text-sm font-medium inline-flex items-center">
                         View Details <ArrowRight className="ml-1 w-3 h-3" />
                       </Link>
@@ -175,12 +175,12 @@ const YilmazDealer = () => {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
                <Link to="/contact">
-                <Button size="lg" variant="secondary" className="w-full sm:w-auto bg-white text-amber-600 hover:bg-gray-100">
+                <Button size="lg" variant="secondary" className="w-full sm:w-auto bg-card text-amber-600 hover:bg-muted">
                   Request a Quote
                 </Button>
               </Link>
               <Link to="/services/consulting">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white/10">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-foreground hover:bg-foreground/10">
                   Book a Consultation
                 </Button>
               </Link>

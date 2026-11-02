@@ -511,11 +511,11 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
     return (
       <div className={`p-4 ${className || ''}`}>
         <Card>
-          <CardHeader className="px-4 py-3 border-b border-slate-700/30">
-            <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-200">
-              <Square className="h-5 w-5 text-amber-400" />
+          <CardHeader className="px-4 py-3 border-b border-border/30">
+            <CardTitle className="flex items-center gap-2 text-lg font-semibold text-foreground">
+              <Square className="h-5 w-5 text-warning" />
               Batch Selection
-              <Badge variant="outline" className="ml-auto border-amber-600/30 text-amber-400 bg-amber-500/10 text-xs font-medium px-2 py-0.5">
+              <Badge variant="outline" className="ml-auto border-amber-600/30 text-warning bg-amber-500/10 text-xs font-medium px-2 py-0.5">
                 {batchInfo.count} items
               </Badge>
             </CardTitle>
@@ -532,7 +532,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
               <Label>Selection Summary</Label>
               <div className="flex flex-wrap gap-2">
                 {Object.entries(batchInfo.typeCounts).map(([type, count]) => (
-                  <Badge key={type} variant="outline" className="border-amber-600/30 text-amber-400">
+                  <Badge key={type} variant="outline" className="border-amber-600/30 text-warning">
                     {count} {type}{count > 1 ? 's' : ''}
                   </Badge>
                 ))}
@@ -549,7 +549,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                     // Clear selection
                     drafting.clearSelection();
                   }}
-                  className="w-full border-amber-600/30 text-amber-400 hover:bg-amber-500/10"
+                  className="w-full border-amber-600/30 text-warning hover:bg-amber-500/10"
                 >
                   Clear Selection
                 </Button>
@@ -565,14 +565,14 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
     return (
       <div className={`p-4 ${className || ''}`}>
         <Card>
-          <CardHeader className="px-4 py-3 border-b border-slate-700/30">
-            <CardTitle className="text-base font-semibold text-slate-200">Properties</CardTitle>
+          <CardHeader className="px-4 py-3 border-b border-border/30">
+            <CardTitle className="text-base font-semibold text-foreground">Properties</CardTitle>
           </CardHeader>
           <CardContent className="p-4">
-            <div className="text-sm text-slate-400 text-center py-8">
-              <Info className="w-8 h-8 mx-auto mb-2 text-slate-500" />
-              <p className="font-medium text-slate-300">No element selected</p>
-              <p className="text-xs mt-1 text-slate-500">Select an element to edit its properties</p>
+            <div className="text-sm text-muted-foreground text-center py-8">
+              <Info className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+              <p className="font-medium text-foreground">No element selected</p>
+              <p className="text-xs mt-1 text-muted-foreground">Select an element to edit its properties</p>
             </div>
           </CardContent>
         </Card>
@@ -606,17 +606,17 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
   
   return (
     <div className={`p-4 space-y-4 overflow-y-auto overflow-x-hidden ${className || ''}`} style={{ height: '100%', maxHeight: '100%' }}>
-      <Card className="border-amber-600/20 bg-slate-900/50">
-        <CardHeader className="border-b border-amber-600/20 bg-slate-800/30">
+      <Card className="border-amber-600/20 bg-background/50">
+        <CardHeader className="border-b border-amber-600/20 bg-card/30">
           <div className="flex items-center gap-2">
-            <div className="text-amber-400">
+            <div className="text-warning">
               {getElementIcon()}
             </div>
-            <CardTitle className="text-sm font-semibold capitalize text-slate-200">
+            <CardTitle className="text-sm font-semibold capitalize text-foreground">
               {selection.type === 'hardware' ? selection.element.type : selection.type} Properties
             </CardTitle>
             {selection.materialWindow && (
-              <Badge variant="outline" className="ml-auto border-amber-600/30 text-amber-400 bg-amber-500/10 text-xs font-medium px-2 py-0.5">
+              <Badge variant="outline" className="ml-auto border-amber-600/30 text-warning bg-amber-500/10 text-xs font-medium px-2 py-0.5">
                 {selection.materialWindow.material}
               </Badge>
             )}
@@ -635,10 +635,10 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
           
           {/* Properties by Type */}
           <Tabs defaultValue="geometry" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-slate-800/30 border border-amber-600/10">
-              <TabsTrigger value="geometry" className="text-xs data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 data-[state=active]:border-amber-600/30">Geometry</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 bg-card/30 border border-amber-600/10">
+              <TabsTrigger value="geometry" className="text-xs data-[state=active]:bg-amber-500/20 data-[state=active]:text-warning data-[state=active]:border-amber-600/30">Geometry</TabsTrigger>
               {(selection.type === 'rectangle' && selection.materialWindow) && (
-                <TabsTrigger value="material" className="text-xs data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 data-[state=active]:border-amber-600/30">Material</TabsTrigger>
+                <TabsTrigger value="material" className="text-xs data-[state=active]:bg-amber-500/20 data-[state=active]:text-warning data-[state=active]:border-amber-600/30">Material</TabsTrigger>
               )}
             </TabsList>
             
@@ -647,17 +647,17 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                 <>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label htmlFor="rect-x" className="text-xs text-slate-300">X Position (mm)</Label>
+                      <Label htmlFor="rect-x" className="text-xs text-foreground">X Position (mm)</Label>
                       <Input
                         id="rect-x"
                         type="number"
                         value={editValues.x ?? ''}
                         onChange={(e) => updateValue('x', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                       />
                       {validationErrors.x && (
-                        <p className="text-xs text-red-500">{validationErrors.x}</p>
+                        <p className="text-xs text-destructive">{validationErrors.x}</p>
                       )}
                     </div>
                     <div className="space-y-1">
@@ -667,68 +667,68 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                         type="number"
                         value={editValues.y ?? ''}
                         onChange={(e) => updateValue('y', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                       />
                       {validationErrors.y && (
-                        <p className="text-xs text-red-500">{validationErrors.y}</p>
+                        <p className="text-xs text-destructive">{validationErrors.y}</p>
                       )}
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label htmlFor="rect-width" className="text-xs text-slate-300">Width (mm)</Label>
+                      <Label htmlFor="rect-width" className="text-xs text-foreground">Width (mm)</Label>
                       <Input
                         id="rect-width"
                         type="number"
                         value={editValues.width ?? ''}
                         onChange={(e) => updateValue('width', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                         min="10"
                       />
                       {validationErrors.width && (
-                        <p className="text-xs text-red-500">{validationErrors.width}</p>
+                        <p className="text-xs text-destructive">{validationErrors.width}</p>
                       )}
                     </div>
                     <div className="space-y-1">
-                      <Label htmlFor="rect-height" className="text-xs text-slate-300">Height (mm)</Label>
+                      <Label htmlFor="rect-height" className="text-xs text-foreground">Height (mm)</Label>
                       <Input
                         id="rect-height"
                         type="number"
                         value={editValues.height ?? ''}
                         onChange={(e) => updateValue('height', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                         min="10"
                       />
                       {validationErrors.height && (
-                        <p className="text-xs text-red-500">{validationErrors.height}</p>
+                        <p className="text-xs text-destructive">{validationErrors.height}</p>
                       )}
                     </div>
                   </div>
                     <div className="space-y-1">
-                      <Label htmlFor="rect-rotation" className="text-xs text-slate-300">Rotation (°)</Label>
+                      <Label htmlFor="rect-rotation" className="text-xs text-foreground">Rotation (°)</Label>
                       <Input
                         id="rect-rotation"
                         type="number"
                         value={editValues.rotation ?? 0}
                         onChange={(e) => updateValue('rotation', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                         min="0"
                         max="360"
                       />
                     {validationErrors.rotation && (
-                      <p className="text-xs text-red-500">{validationErrors.rotation}</p>
+                      <p className="text-xs text-destructive">{validationErrors.rotation}</p>
                     )}
                   </div>
                   
                   {/* Transform Controls */}
-                  <Card className="bg-slate-800/50 border-amber-600/20">
+                  <Card className="bg-card/50 border-amber-600/20">
                     <CardHeader className="pb-2 border-b border-amber-600/10">
-                      <CardTitle className="text-xs font-semibold flex items-center gap-2 text-amber-300">
-                        <RotateCw className="h-3 w-3 text-amber-400" />
+                      <CardTitle className="text-xs font-semibold flex items-center gap-2 text-warning">
+                        <RotateCw className="h-3 w-3 text-warning" />
                         Transform
                       </CardTitle>
                     </CardHeader>
@@ -741,13 +741,13 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                             type="number"
                             value={editValues.scaleX ?? 1}
                             onChange={(e) => updateValue('scaleX', e.target.value)}
-                            className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                            className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                             step="0.01"
                             min="0.01"
                             max="100"
                           />
                           {validationErrors.scaleX && (
-                            <p className="text-xs text-red-500">{validationErrors.scaleX}</p>
+                            <p className="text-xs text-destructive">{validationErrors.scaleX}</p>
                           )}
                         </div>
                         <div className="space-y-1">
@@ -757,13 +757,13 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                             type="number"
                             value={editValues.scaleY ?? 1}
                             onChange={(e) => updateValue('scaleY', e.target.value)}
-                            className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                            className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                             step="0.01"
                             min="0.01"
                             max="100"
                           />
                           {validationErrors.scaleY && (
-                            <p className="text-xs text-red-500">{validationErrors.scaleY}</p>
+                            <p className="text-xs text-destructive">{validationErrors.scaleY}</p>
                           )}
                         </div>
                       </div>
@@ -773,7 +773,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                           value={editValues.mirror || 'none'}
                           onValueChange={(value) => updateValue('mirror', value)}
                         >
-                          <SelectTrigger className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors">
+                          <SelectTrigger className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors">
                             <SelectValue placeholder="None" />
                           </SelectTrigger>
                           <SelectContent>
@@ -787,12 +787,12 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                   </Card>
                   
                   <div className="space-y-1">
-                      <Label htmlFor="rect-type" className="text-xs text-slate-300">Window Type</Label>
+                      <Label htmlFor="rect-type" className="text-xs text-foreground">Window Type</Label>
                     <select
                       id="rect-type"
                       value={editValues.type || 'fixed'}
                       onChange={(e) => updateValue('type', e.target.value)}
-                      className="w-full h-8 text-xs border rounded px-2 bg-slate-800/50 border-slate-700/50 text-slate-200 focus:border-amber-600/50 focus:ring-amber-600/20"
+                      className="w-full h-8 text-xs border rounded px-2 bg-card/50 border-border/50 text-foreground focus:border-amber-600/50 focus:ring-amber-600/20"
                     >
                       <option value="fixed">Fixed</option>
                       <option value="casement">Casement</option>
@@ -814,7 +814,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                         type="number"
                         value={editValues.cx ?? ''}
                         onChange={(e) => updateValue('cx', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                       />
                     </div>
@@ -825,7 +825,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                         type="number"
                         value={editValues.cy ?? ''}
                         onChange={(e) => updateValue('cy', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                       />
                     </div>
@@ -837,7 +837,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                       type="number"
                       value={editValues.r ?? ''}
                       onChange={(e) => updateValue('r', e.target.value)}
-                      className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                      className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                       step="1"
                       min="5"
                     />
@@ -857,7 +857,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                           type="number"
                           value={editValues.startX ?? ''}
                           onChange={(e) => updateValue('startX', e.target.value)}
-                          className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                          className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                           step="1"
                         />
                       </div>
@@ -868,7 +868,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                           type="number"
                           value={editValues.startY ?? ''}
                           onChange={(e) => updateValue('startY', e.target.value)}
-                          className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                          className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                           step="1"
                         />
                       </div>
@@ -884,7 +884,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                           type="number"
                           value={editValues.endX ?? ''}
                           onChange={(e) => updateValue('endX', e.target.value)}
-                          className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                          className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                           step="1"
                         />
                       </div>
@@ -895,7 +895,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                           type="number"
                           value={editValues.endY ?? ''}
                           onChange={(e) => updateValue('endY', e.target.value)}
-                          className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                          className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                           step="1"
                         />
                       </div>
@@ -927,7 +927,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                         type="number"
                         value={editValues.cx ?? ''}
                         onChange={(e) => updateValue('cx', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                       />
                     </div>
@@ -938,7 +938,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                         type="number"
                         value={editValues.cy ?? ''}
                         onChange={(e) => updateValue('cy', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                       />
                     </div>
@@ -963,7 +963,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                         type="number"
                         value={editValues.startAngle ?? ''}
                         onChange={(e) => updateValue('startAngle', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                       />
                     </div>
@@ -974,7 +974,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                         type="number"
                         value={editValues.endAngle ?? ''}
                         onChange={(e) => updateValue('endAngle', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                       />
                     </div>
@@ -992,7 +992,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                         type="number"
                         value={editValues.x ?? ''}
                         onChange={(e) => updateValue('x', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                       />
                     </div>
@@ -1003,7 +1003,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                         type="number"
                         value={editValues.y ?? ''}
                         onChange={(e) => updateValue('y', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                       />
                     </div>
@@ -1044,7 +1044,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                         type="number"
                         value={editValues.width ?? ''}
                         onChange={(e) => updateValue('width', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                         min="10"
                       />
@@ -1056,7 +1056,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                         type="number"
                         value={editValues.depth ?? ''}
                         onChange={(e) => updateValue('depth', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                         min="10"
                       />
@@ -1068,7 +1068,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                         type="number"
                         value={editValues.height ?? ''}
                         onChange={(e) => updateValue('height', e.target.value)}
-                        className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
+                        className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors"
                         step="1"
                         min="10"
                       />
@@ -1115,17 +1115,17 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ className }) =
                     disabled
                   />
                 </div>
-                <div className="p-2 bg-gray-50 rounded text-xs space-y-1">
+                <div className="p-2 bg-background rounded text-xs space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Profile Depth:</span>
+                    <span className="text-muted-foreground">Profile Depth:</span>
                     <span className="font-medium">{selection.materialWindow.profileDepth}mm</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Glazing Pocket:</span>
+                    <span className="text-muted-foreground">Glazing Pocket:</span>
                     <span className="font-medium">{selection.materialWindow.glazingPocket.depth}mm</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Thermal Break:</span>
+                    <span className="text-muted-foreground">Thermal Break:</span>
                     <span className="font-medium">{selection.materialWindow.thermalBreak ? 'Yes' : 'No'}</span>
                   </div>
                 </div>
@@ -1177,12 +1177,12 @@ export const SnapSpacingSelector: React.FC<SnapSpacingSelectorProps> = ({
 }) => {
   return (
     <div className="space-y-2">
-      <Label htmlFor="snap-spacing" className="text-xs text-slate-300">Snap Spacing (mm)</Label>
+      <Label htmlFor="snap-spacing" className="text-xs text-foreground">Snap Spacing (mm)</Label>
       <Select
         value={snapSpacing.toString()}
         onValueChange={(value) => onSnapSpacingChange(parseFloat(value))}
       >
-        <SelectTrigger className="h-8 text-xs bg-slate-800/50 border-slate-700/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors">
+        <SelectTrigger className="h-8 text-xs bg-card/50 border-border/50 focus:border-amber-600/50 focus:ring-amber-600/20 transition-colors">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

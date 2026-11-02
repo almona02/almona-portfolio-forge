@@ -67,7 +67,7 @@ export function Production2DFallback({
               width={scaledWidth}
               height={scaledHeight}
               viewBox={`0 0 ${width} ${height}`}
-              className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900"
+              className="border border-border dark:border-border bg-card dark:bg-background"
             >
               {/* Frame outline */}
               <rect
@@ -105,21 +105,21 @@ export function Production2DFallback({
               </text>
             </svg>
             
-            <div className="text-sm text-gray-600 dark:text-gray-400 text-center">
+            <div className="text-sm text-muted-foreground dark:text-muted-foreground text-center">
               {currentLocale === 'ar' 
                 ? `العرض: ${width}mm × الارتفاع: ${height}mm`
                 : `Width: ${width}mm × Height: ${height}mm`}
             </div>
           </div>
         ) : (
-          <div className="text-center text-gray-500 dark:text-gray-400">
+          <div className="text-center text-muted-foreground dark:text-muted-foreground">
             {currentLocale === 'ar' 
               ? 'لا توجد بيانات للنافذة للعرض'
               : 'No window data available for display'}
           </div>
         )}
         
-        <div className="text-xs text-gray-500 dark:text-gray-400 text-center mt-4">
+        <div className="text-xs text-muted-foreground dark:text-muted-foreground text-center mt-4">
           {currentLocale === 'ar'
             ? 'تم تفعيل العرض ثنائي الأبعاد بسبب قيود الذاكرة'
             : '2D view enabled due to memory constraints'}

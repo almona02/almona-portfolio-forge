@@ -100,9 +100,9 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
 
   // Get performance status color
   const getPerformanceColor = (value: number, thresholds: { good: number; warning: number }) => {
-    if (value >= thresholds.good) return 'text-emerald-400';
-    if (value >= thresholds.warning) return 'text-amber-400';
-    return 'text-red-400';
+    if (value >= thresholds.good) return 'text-success';
+    if (value >= thresholds.warning) return 'text-warning';
+    return 'text-destructive';
   };
 
   const fpsColor = getPerformanceColor(fps, { good: 55, warning: 30 });
@@ -114,7 +114,7 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
         variant="ghost"
         size="sm"
         onClick={handleToggle}
-        className={`h-4 px-1.5 text-[10px] text-slate-400 hover:text-amber-400 ${className}`}
+        className={`h-4 px-1.5 text-[10px] text-muted-foreground hover:text-warning ${className}`}
         title="Show Performance Metrics"
       >
         <Monitor className="h-2.5 w-2.5" />
@@ -123,23 +123,23 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
   }
 
   return (
-    <div className={`flex items-center gap-1 px-1.5 py-0.5 bg-slate-900/80 border border-amber-600/20 rounded ${className}`}>
+    <div className={`flex items-center gap-1 px-1.5 py-0.5 bg-background/80 border border-amber-600/20 rounded ${className}`}>
       <div className="flex items-center gap-2 text-[10px]">
         <div className="flex items-center gap-0.5">
           <Activity className={`h-2.5 w-2.5 ${fpsColor}`} />
-          <span className="text-slate-400">FPS:</span>
+          <span className="text-muted-foreground">FPS:</span>
           <span className={`font-mono font-medium ${fpsColor}`}>{fps}</span>
         </div>
         
         <div className="flex items-center gap-0.5">
           <Zap className={`h-2.5 w-2.5 ${renderTimeColor}`} />
-          <span className="text-slate-400">Render:</span>
+          <span className="text-muted-foreground">Render:</span>
           <span className={`font-mono font-medium ${renderTimeColor}`}>{renderTime.toFixed(1)}ms</span>
         </div>
         
         <div className="flex items-center gap-0.5">
-          <span className="text-slate-400">Elements:</span>
-          <Badge variant="outline" className="text-[10px] border-amber-600/30 text-amber-400 bg-amber-500/10 px-1.5 py-0.5">
+          <span className="text-muted-foreground">Elements:</span>
+          <Badge variant="outline" className="text-[10px] border-amber-600/30 text-warning bg-amber-500/10 px-1.5 py-0.5">
             {elementCount}
           </Badge>
         </div>
@@ -150,7 +150,7 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
           variant="ghost"
           size="icon"
           onClick={onClose}
-          className="h-3 w-3 text-slate-400 hover:text-slate-200"
+          className="h-3 w-3 text-muted-foreground hover:text-foreground"
         >
           <X className="h-2 w-2" />
         </Button>

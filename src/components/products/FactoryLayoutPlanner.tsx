@@ -345,26 +345,26 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1100] p-2 sm:p-4" onClick={onClose}>
       <div
-        className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-[1400px] max-h-[94vh] overflow-hidden flex flex-col"
+        className="bg-background border border-border rounded-xl w-full max-w-[1400px] max-h-[94vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-3 sm:px-5 py-2 sm:py-3 border-b border-gray-700 flex-shrink-0 gap-2">
+        <div className="flex items-center justify-between px-3 sm:px-5 py-2 sm:py-3 border-b border-border flex-shrink-0 gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <button
               onClick={() => setShowPanel((v) => !v)}
-              className="lg:hidden text-gray-300 hover:text-white p-1.5 rounded border border-gray-700"
+              className="lg:hidden text-foreground hover:text-foreground p-1.5 rounded border border-border"
               aria-label="Toggle add panel"
             >
               <SlidersHorizontal className="h-4 w-4" />
             </button>
-            <h2 className="text-base sm:text-lg font-bold text-white truncate">{copy("Yilmaz Workshop Planner")}</h2>
+            <h2 className="text-base sm:text-lg font-bold text-foreground truncate">{copy("Yilmaz Workshop Planner")}</h2>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <Button size="sm" onClick={() => void exportPdf()} className="bg-amber-500 hover:bg-amber-600 text-white">
               <Download className="h-4 w-4 mr-1" /><span className="hidden sm:inline">{copy("Export PDF")}</span>
             </Button>
-            <button onClick={onClose} aria-label="Close" className="text-gray-400 hover:text-white p-1">
+            <button onClick={onClose} aria-label="Close" className="text-muted-foreground hover:text-foreground p-1">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -372,28 +372,28 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
 
         <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-[340px_1fr]">
           {/* Sidebar */}
-          <div className={`${showPanel ? 'flex' : 'hidden'} lg:flex border-b lg:border-b-0 lg:border-r border-gray-700 flex-col min-h-0 max-h-[45vh] lg:max-h-none`}>
-            <div className="p-3 border-b border-gray-700">
+          <div className={`${showPanel ? 'flex' : 'hidden'} lg:flex border-b lg:border-b-0 lg:border-r border-border flex-col min-h-0 max-h-[45vh] lg:max-h-none`}>
+            <div className="p-3 border-b border-border">
               <div className="text-[10px] font-semibold uppercase tracking-widest text-amber-400/80 mb-1.5">{copy("Factory Dimensions")}</div>
               <div className="flex gap-2 mb-3">
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 block mb-1">{copy("Width (m)")}</label>
-                  <Input type="number" min={1} value={factoryW} onChange={(e) => setFactoryW(Math.max(1, Number(e.target.value) || 1))} className="bg-gray-800 border-gray-600 h-8" />
+                  <label className="text-xs text-muted-foreground block mb-1">{copy("Width (m)")}</label>
+                  <Input type="number" min={1} value={factoryW} onChange={(e) => setFactoryW(Math.max(1, Number(e.target.value) || 1))} className="bg-card border-border h-8" />
                 </div>
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 block mb-1">{copy("Length (m)")}</label>
-                  <Input type="number" min={1} value={factoryL} onChange={(e) => setFactoryL(Math.max(1, Number(e.target.value) || 1))} className="bg-gray-800 border-gray-600 h-8" />
+                  <label className="text-xs text-muted-foreground block mb-1">{copy("Length (m)")}</label>
+                  <Input type="number" min={1} value={factoryL} onChange={(e) => setFactoryL(Math.max(1, Number(e.target.value) || 1))} className="bg-card border-border h-8" />
                 </div>
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 block mb-1">{copy("Height (m)")}</label>
-                  <Input type="number" min={1} value={factoryH} onChange={(e) => setFactoryH(Math.max(1, Number(e.target.value) || 1))} className="bg-gray-800 border-gray-600 h-8" />
+                  <label className="text-xs text-muted-foreground block mb-1">{copy("Height (m)")}</label>
+                  <Input type="number" min={1} value={factoryH} onChange={(e) => setFactoryH(Math.max(1, Number(e.target.value) || 1))} className="bg-card border-border h-8" />
                 </div>
               </div>
 
               <div className="text-[10px] font-semibold uppercase tracking-widest text-amber-400/80 mb-1.5">{copy("Zones")}</div>
               <div className="flex flex-wrap gap-1 mb-3">
                 {Object.entries(ZONES).map(([k, z]) => (
-                  <button key={k} onClick={() => addZone(k)} className="text-[11px] px-2 py-1 rounded border border-gray-600 hover:bg-gray-700 text-gray-200">
+                  <button key={k} onClick={() => addZone(k)} className="text-[11px] px-2 py-1 rounded border border-border hover:bg-muted text-foreground">
                     + {z.label}
                   </button>
                 ))}
@@ -401,17 +401,17 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
 
               <div className="text-[10px] font-semibold uppercase tracking-widest text-amber-400/80 mb-1.5">{copy("Equipment & Openings")}</div>
               <div className="flex flex-wrap gap-1">
-                <button onClick={addWorkbench} className="text-[11px] px-2 py-1 rounded border border-gray-600 hover:bg-gray-700 text-gray-200">+ Workbench</button>
-                <button onClick={() => addDoor(1)} className="text-[11px] px-2 py-1 rounded border border-gray-600 hover:bg-gray-700 text-gray-200">+ Door 1</button>
-                <button onClick={() => addDoor(2)} className="text-[11px] px-2 py-1 rounded border border-gray-600 hover:bg-gray-700 text-gray-200">+ Door 2</button>
-                <button onClick={clearAll} className="text-[11px] px-2 py-1 rounded border border-red-700 text-red-400 hover:bg-red-900/30">Clear</button>
+                <button onClick={addWorkbench} className="text-[11px] px-2 py-1 rounded border border-border hover:bg-muted text-foreground">+ Workbench</button>
+                <button onClick={() => addDoor(1)} className="text-[11px] px-2 py-1 rounded border border-border hover:bg-muted text-foreground">+ Door 1</button>
+                <button onClick={() => addDoor(2)} className="text-[11px] px-2 py-1 rounded border border-border hover:bg-muted text-foreground">+ Door 2</button>
+                <button onClick={clearAll} className="text-[11px] px-2 py-1 rounded border border-red-700 text-destructive hover:bg-red-900/30">Clear</button>
               </div>
             </div>
 
-            <div className="p-3 border-b border-gray-700">
+            <div className="p-3 border-b border-border">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={copy("Search machines...")} className="pl-9 bg-gray-800 border-gray-600 h-8" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={copy("Search machines...")} className="pl-9 bg-card border-border h-8" />
               </div>
             </div>
 
@@ -419,9 +419,9 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
               {filtered.slice(0, 150).map((m) => {
                 const q = qtyOf(m.id);
                 return (
-                  <div key={m.id} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-800">
+                  <div key={m.id} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-card">
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm text-gray-200 truncate">{m.name}</div>
+                      <div className="text-sm text-foreground truncate">{m.name}</div>
                     </div>
                     {q > 0 && <span className="text-xs text-amber-400 font-bold">{q}×</span>}
                     <button onClick={() => addMachine(m)} className="text-amber-400 hover:text-amber-300 p-1" aria-label={`Add ${m.name}`}>
@@ -435,15 +435,15 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
 
           {/* Canvas */}
           <div className="p-3 flex flex-col min-h-0">
-            <div className="flex items-center justify-end mb-2 text-xs text-gray-400 gap-3 flex-wrap">
+            <div className="flex items-center justify-end mb-2 text-xs text-muted-foreground gap-3 flex-wrap">
               <div className="flex items-center gap-3 font-mono text-[11px]">
-                <span className="text-gray-300">{items.length}</span>
+                <span className="text-foreground">{items.length}</span>
                 <span className="text-amber-400/90">{totals.powerKw} kW</span>
-                <span className="text-sky-400/90">{totals.airLmin} L/min</span>
-                <span className="text-gray-400">{factoryL}×{factoryW}×{factoryH} m</span>
+                <span className="text-info/90">{totals.airLmin} L/min</span>
+                <span className="text-muted-foreground">{factoryL}×{factoryW}×{factoryH} m</span>
               </div>
             </div>
-            <div className="flex-1 min-h-[380px] bg-gray-950 border border-gray-700 rounded-lg overflow-hidden">
+            <div className="flex-1 min-h-[380px] bg-background border border-border rounded-lg overflow-hidden">
               <svg
                 ref={svgRef}
                 viewBox={`0 0 ${svg.svgW} ${svg.svgH}`}
@@ -497,11 +497,11 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
             </div>
 
             {/* editing bar — fixed height so the canvas never rescales on select/deselect */}
-            <div className="mt-2 text-sm bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 h-[64px] overflow-y-auto">
+            <div className="mt-2 text-sm bg-card/60 border border-border rounded-lg px-3 py-2 h-[64px] overflow-y-auto">
               {selected ? (
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-gray-200 font-medium truncate max-w-[140px]">{selected.label}</span>
-                  <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                  <span className="text-foreground font-medium truncate max-w-[140px]">{selected.label}</span>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <span>W</span>
                     <Input
                       type="number"
@@ -509,7 +509,7 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
                       step={0.1}
                       value={selected.w}
                       onChange={(e) => updateSize(selected.id, 'w', Number(e.target.value))}
-                      className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
+                      className="w-16 h-7 bg-background border-border text-xs"
                     />
                     <span>×</span>
                     <span>L</span>
@@ -519,14 +519,14 @@ export function FactoryLayoutPlanner({ onClose }: { onClose: () => void }) {
                       step={0.1}
                       value={selected.h}
                       onChange={(e) => updateSize(selected.id, 'h', Number(e.target.value))}
-                      className="w-16 h-7 bg-gray-900 border-gray-600 text-xs"
+                      className="w-16 h-7 bg-background border-border text-xs"
                     />
                     <span>m</span>
                   </div>
                   <button onClick={() => rotateItem(selected.id)} className="text-amber-400 hover:text-amber-300 flex items-center gap-1">
                     <RotateCw className="h-4 w-4" /><span className="hidden sm:inline">{copy("Rotate")}</span>
                   </button>
-                  <button onClick={() => removeItem(selected.id)} className="ml-auto text-red-400 hover:text-red-300 flex items-center gap-1">
+                  <button onClick={() => removeItem(selected.id)} className="ml-auto text-destructive hover:text-destructive flex items-center gap-1">
                     <Trash2 className="h-4 w-4" /><span className="hidden sm:inline">{copy("Remove")}</span>
                   </button>
                 </div>

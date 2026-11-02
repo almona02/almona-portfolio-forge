@@ -15,9 +15,9 @@ const sizeClasses = {
 };
 
 const variantClasses = {
-  default: 'text-gray-600',
-  primary: 'text-blue-600',
-  secondary: 'text-gray-400',
+  default: 'text-muted-foreground',
+  primary: 'text-info',
+  secondary: 'text-muted-foreground',
   accent: 'text-amber-600'
 };
 

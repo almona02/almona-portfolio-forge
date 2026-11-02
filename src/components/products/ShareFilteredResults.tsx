@@ -143,10 +143,10 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
           <span className="sm:hidden">{copy("Share")}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 bg-gray-900 border-gray-700">
+      <DropdownMenuContent align="end" className="w-56 bg-background border-border">
         <DropdownMenuItem
           onClick={() => void handleCopyLink()}
-          className="cursor-pointer hover:bg-gray-800"
+          className="cursor-pointer hover:bg-card"
         >
           {copied ? (
             <>
@@ -162,7 +162,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={handleShareWhatsApp}
-          className="cursor-pointer hover:bg-gray-800"
+          className="cursor-pointer hover:bg-card"
         >
           <MessageCircle className="mr-2 h-4 w-4  status-valid" />
           <span>{copy("Share via WhatsApp")}</span>
@@ -170,7 +170,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
         {typeof navigator.share === 'function' && (
           <DropdownMenuItem
             onClick={() => void handleNativeShare()}
-            className="cursor-pointer hover:bg-gray-800"
+            className="cursor-pointer hover:bg-card"
           >
             <Share2 className="mr-2 h-4 w-4" />
             <span>{copy("Share via...")}</span>

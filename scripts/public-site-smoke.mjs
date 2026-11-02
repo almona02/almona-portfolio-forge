@@ -60,8 +60,9 @@ try {
   assert.equal(missingProduct.status(), 404);
   await recovery.close();
 
-  for (const [device, viewport] of [['mobile', { width: 412, height: 823 }], ['desktop', { width: 1350, height: 940 }]]) {
-    const context = await browser.newContext({ viewport, locale: 'en-EG', serviceWorkers: 'block' });
+  for (const mode of ['light', 'dark']) for (const [device, viewport] of [['mobile', { width: 412, height: 823 }], ['desktop', { width: 1350, height: 940 }]]) {
+    const context = await browser.newContext({ viewport, colorScheme: mode, locale: 'en-EG', serviceWorkers: 'block' });
+    await context.addInitScript(mode => localStorage.setItem('theme', mode), mode);
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -71,7 +72,7 @@ try {
     const firstHeading = await page.locator('main h1').innerText();
     await page.waitForTimeout(6500);
     assert.equal(await page.locator('main h1').innerText(), firstHeading, 'Carousel must start still');
-    await page.screenshot({ path: path.join(output, `${device}.png`) });
+    await page.screenshot({ path: path.join(output, `${device}-${mode}.png`) });
 
     await page.getByRole('tab', { name: 'Go to slide 2' }).click();
     await page.waitForFunction(() => document.querySelector('main h1')?.textContent?.toLowerCase().includes('yilmaz'));
@@ -105,9 +106,9 @@ try {
     assert.match(await specs.getAttribute('href'), /ALM-6510(?:-1)?\.pdf$/);
     await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
     const accessibility = await page.evaluate(async () => window.axe.run(document, { runOnly: { type: 'rule', values: ['button-name', 'aria-prohibited-attr', 'color-contrast'] } }));
-    assert.deepEqual(accessibility.violations.map(issue => ({ id: issue.id, nodes: issue.nodes.map(node => node.target) })), [], `${device} accessibility regressions`);
+    assert.deepEqual(accessibility.violations.map(issue => ({ id: issue.id, nodes: issue.nodes.map(node => node.target) })), [], `${device} ${mode} accessibility regressions`);
     assert.deepEqual(errors, [], `${device} runtime errors`);
-    report.pages.push({ device, firstHeading, accessibilityViolations: accessibility.violations.length, runtimeErrors: errors });
+    report.pages.push({ device, mode, firstHeading, accessibilityViolations: accessibility.violations.length, runtimeErrors: errors });
     await context.close();
   }
 

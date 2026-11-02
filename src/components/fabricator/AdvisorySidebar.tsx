@@ -81,16 +81,16 @@ export const AdvisorySidebar: React.FC<AdvisorySidebarProps> = ({
 
     return (
         <div
-            className={`advisory-sidebar border-l border-slate-700 bg-slate-900/95 transition-all duration-300 ${isExpanded ? 'w-[350px]' : 'w-12'
+            className={`advisory-sidebar border-l border-border bg-background/95 transition-all duration-300 ${isExpanded ? 'w-[350px]' : 'w-12'
                 } ${className}`}
         >
             {/* Header */}
-            <div className="flex items-center justify-between p-3 border-b border-slate-700">
+            <div className="flex items-center justify-between p-3 border-b border-border">
                 {isExpanded && (
                     <div className="flex items-center gap-2">
                         <Brain className="w-5 h-5 text-[var(--fabricator-text-accent)]" />
-                        <h3 className="text-sm font-semibold text-amber-200">Advisory Intelligence</h3>
-                        <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 text-xs rounded-full">
+                        <h3 className="text-sm font-semibold text-warning">Advisory Intelligence</h3>
+                        <span className="px-2 py-0.5 bg-amber-500/20 text-warning text-xs rounded-full">
                             Tier 2
                         </span>
                     </div>
@@ -99,7 +99,7 @@ export const AdvisorySidebar: React.FC<AdvisorySidebarProps> = ({
                     variant="ghost"
                     size="sm"
                     onClick={handleToggle}
-                    className="text-slate-400 hover:text-amber-400"
+                    className="text-muted-foreground hover:text-warning"
                 >
                     {isExpanded ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
                 </Button>
@@ -109,7 +109,7 @@ export const AdvisorySidebar: React.FC<AdvisorySidebarProps> = ({
                 <>
                     {/* Advisor Selection */}
                     <div className="p-3 space-y-2">
-                        <p className="text-xs text-slate-500 mb-2">Select an advisor:</p>
+                        <p className="text-xs text-muted-foreground mb-2">Select an advisor:</p>
                         <div className="grid grid-cols-2 gap-2">
                             {tier2Components.slice(0, 6).map((key) => (
                                 <Button
@@ -119,7 +119,7 @@ export const AdvisorySidebar: React.FC<AdvisorySidebarProps> = ({
                                     onClick={() => setActiveAdvisor(activeAdvisor === key ? null : key)}
                                     className={`text-xs justify-start gap-2 ${activeAdvisor === key
                                             ? 'bg-amber-500 text-white hover:bg-amber-600'
-                                            : 'border-slate-600 text-slate-300 hover:border-amber-500'
+                                            : 'border-border text-foreground hover:border-amber-500'
                                         }`}
                                 >
                                     {ADVISOR_ICONS[key] || <Brain className="w-4 h-4 text-[var(--fabricator-text-accent)]" />}
@@ -131,7 +131,7 @@ export const AdvisorySidebar: React.FC<AdvisorySidebarProps> = ({
 
                     {/* Active Advisor Panel */}
                     {activeAdvisor && (
-                        <div className="p-3 border-t border-slate-700 overflow-y-auto max-h-[calc(100vh-200px)]">
+                        <div className="p-3 border-t border-border overflow-y-auto max-h-[calc(100vh-200px)]">
                             <Suspense fallback={<AdvisoryLoading />}>
                                 {React.createElement(getAdvisoryComponent(activeAdvisor))}
                             </Suspense>
@@ -140,10 +140,10 @@ export const AdvisorySidebar: React.FC<AdvisorySidebarProps> = ({
 
                     {/* No Advisor Selected */}
                     {!activeAdvisor && (
-                        <div className="p-6 text-center text-slate-500">
+                        <div className="p-6 text-center text-muted-foreground">
                             <Brain className="w-12 h-12 mx-auto mb-3 opacity-30 text-[var(--fabricator-text-accent)]" />
                             <p className="text-sm">Select an advisor above to get software-assisted suggestions</p>
-                            <p className="text-xs mt-2 text-amber-500/70">
+                            <p className="text-xs mt-2 text-warning/70">
                                 All advisors are Tier 2 - suggestions only, no execution authority
                             </p>
                         </div>
@@ -163,7 +163,7 @@ export const AdvisorySidebar: React.FC<AdvisorySidebarProps> = ({
                                 handleToggle();
                                 setActiveAdvisor(key);
                             }}
-                            className="w-full p-2 text-slate-400 hover:text-amber-400"
+                            className="w-full p-2 text-muted-foreground hover:text-warning"
                             title={ADVISOR_LABELS[key]}
                         >
                             {ADVISOR_ICONS[key] || <Brain className="w-4 h-4 text-[var(--fabricator-text-accent)]" />}

@@ -265,18 +265,18 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
     }, [project.units, engineeringPacks, useV2, projectMeta, updateProject]);
 
     return (
-        <div className="flex h-full bg-gray-950 text-white overflow-hidden font-sans">
+        <div className="flex h-full bg-background text-foreground overflow-hidden font-sans">
 
             {/* --- SIDEBAR: Project Items --- */}
             <div className={`
         ${isSidebarOpen ? 'w-80' : 'w-16'} 
-        flex-shrink-0 bg-gray-900 border-r border-gray-800 transition-all duration-300 flex flex-col z-20
+        flex-shrink-0 bg-background border-r border-border transition-all duration-300 flex flex-col z-20
       `}>
-                <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+                <div className="p-4 border-b border-border flex items-center justify-between">
                     {isSidebarOpen ? (
                         <div>
                             <h2 className="font-bold text-lg text-orange-500">ALMONA</h2>
-                            <p className="text-xs text-gray-400">Fabricator Studio</p>
+                            <p className="text-xs text-muted-foreground">Fabricator Studio</p>
                         </div>
                     ) : (
                         <div className="mx-auto font-bold text-orange-500">A</div>
@@ -288,10 +288,10 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
 
                 {isSidebarOpen && (
                     <div className="p-4 space-y-4">
-                        <div className="bg-gray-800/50 p-3 rounded-lg border border-gray-700">
-                            <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">Project</div>
+                        <div className="bg-card/50 p-3 rounded-lg border border-border">
+                            <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Project</div>
                             <div className="font-medium truncate">{project.clientName}</div>
-                            <div className="text-sm text-gray-500">{project.reference}</div>
+                            <div className="text-sm text-muted-foreground">{project.reference}</div>
                         </div>
 
                         <Button onClick={handleAddUnit} className="w-full bg-orange-600 hover:bg-orange-700 text-white">
@@ -308,8 +308,8 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                                 className={`
                   group relative p-3 rounded-lg border transition-all cursor-pointer
                   ${activeUnitId === unit.id
-                                        ? 'bg-gray-800 border-orange-500/50 shadow-lg'
-                                        : 'bg-gray-900/30 border-gray-800 hover:bg-gray-800 hover:border-gray-700'}
+                                        ? 'bg-card border-orange-500/50 shadow-lg'
+                                        : 'bg-background/30 border-border hover:bg-card hover:border-border'}
                 `}
                                 onClick={() => {
                                     setActiveUnitId(unit.id);
@@ -318,15 +318,15 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                             >
                                 <div className="flex justify-between items-start mb-2">
                                     <div className="font-medium text-sm flex items-center gap-2">
-                                        <span className="bg-gray-700 text-gray-300 text-[10px] px-1.5 rounded">{idx + 1}</span>
+                                        <span className="bg-muted text-foreground text-[10px] px-1.5 rounded">{idx + 1}</span>
                                         {isSidebarOpen && <span className="truncate">{unit.posNumber}</span>}
                                     </div>
                                     {isSidebarOpen && (
                                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); handleDuplicateUnit(unit.id); }}>
-                                                <Copy className="h-3 w-3 text-gray-400" />
+                                                <Copy className="h-3 w-3 text-muted-foreground" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" className="h-6 w-6 hover:text-red-400" onClick={(e) => { e.stopPropagation(); handleDeleteUnit(unit.id); }}>
+                                            <Button variant="ghost" size="icon" className="h-6 w-6 hover:text-destructive" onClick={(e) => { e.stopPropagation(); handleDeleteUnit(unit.id); }}>
                                                 <Trash2 className="h-3 w-3" />
                                             </Button>
                                         </div>
@@ -343,9 +343,9 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                                                 }}
                                             />
                                         </div>
-                                        <div className="flex justify-between text-xs text-gray-500">
-                                            <span className="font-mono text-amber-200/80">{unit.overallWidth} × {unit.overallHeight} mm</span>
-                                            <Badge variant="outline" className="text-[9px] h-4 px-1 border-gray-700">
+                                        <div className="flex justify-between text-xs text-muted-foreground">
+                                            <span className="font-mono text-warning/80">{unit.overallWidth} × {unit.overallHeight} mm</span>
+                                            <Badge variant="outline" className="text-[9px] h-4 px-1 border-border">
                                                 {unit.systemPackId || 'Generic'}
                                             </Badge>
                                         </div>
@@ -363,11 +363,11 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
 
                 {/* Workflow Actions */}
                 {isSidebarOpen && (
-                    <div className="p-4 border-t border-gray-800 space-y-2">
+                    <div className="p-4 border-t border-border space-y-2">
                         <Button
                             onClick={runProjectOptimization}
                             variant="outline"
-                            className="w-full border-blue-500/30 text-blue-400 hover:bg-blue-900/20"
+                            className="w-full border-blue-500/30 text-info hover:bg-blue-900/20"
                         >
                             <MonitorPlay className="h-4 w-4 mr-2" /> Optimize All (Estimate)
                         </Button>
@@ -375,7 +375,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                             onClick={() => setWorkflowStage('quote')}
                             disabled={!optimizationResults}
                             variant="outline"
-                            className="w-full border-green-500/30 text-green-400 hover:bg-green-900/20 disabled:opacity-50"
+                            className="w-full border-green-500/30 text-success hover:bg-green-900/20 disabled:opacity-50"
                         >
                             <FileText className="h-4 w-4 mr-2" /> Generate Quote
                         </Button>
@@ -383,7 +383,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                             onClick={() => setWorkflowStage('summary')}
                             disabled={!optimizationResults}
                             variant="outline"
-                            className="w-full border-amber-500/30 text-amber-400 hover:bg-amber-900/20 disabled:opacity-50"
+                            className="w-full border-amber-500/30 text-warning hover:bg-amber-900/20 disabled:opacity-50"
                         >
                             <Layout className="h-4 w-4 mr-2" /> Summary
                         </Button>
@@ -392,12 +392,12 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
             </div>
 
             {/* --- MAIN STAGE --- */}
-            <div className="flex-1 flex flex-col min-w-0 bg-gray-950">
+            <div className="flex-1 flex flex-col min-w-0 bg-background">
 
                 {/* Top Navigation Bar */}
-                <div className="h-16 border-b border-gray-800 flex items-center justify-between px-6 bg-gray-900/50 backdrop-blur-xl">
+                <div className="h-16 border-b border-border flex items-center justify-between px-6 bg-background/50 backdrop-blur-xl">
                     <div className="flex items-center gap-4">
-                        <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                        <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-muted">
                             {workflowStage === 'design' && activeUnit ? `Designing: ${activeUnit.posNumber}` :
                                 workflowStage === 'optimize' ? 'Optimization & Cutting Lists' :
                                     workflowStage === 'quote' ? 'Commercial Quote' :
@@ -407,11 +407,11 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
 
                     <div className="flex items-center gap-2">
                         <Tabs value={workflowStage} onValueChange={(v) => setWorkflowStage(v as any)} className="w-[500px]">
-                            <TabsList className="grid w-full grid-cols-4 bg-gray-800 text-gray-400">
-                                <TabsTrigger value="design" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white">Design</TabsTrigger>
-                                <TabsTrigger value="optimize" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Optimize</TabsTrigger>
-                                <TabsTrigger value="quote" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">Quote</TabsTrigger>
-                                <TabsTrigger value="summary" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">Summary</TabsTrigger>
+                            <TabsList className="grid w-full grid-cols-4 bg-card text-muted-foreground">
+                                <TabsTrigger value="design" className="data-[state=active]:bg-orange-600 data-[state=active]:text-foreground">Design</TabsTrigger>
+                                <TabsTrigger value="optimize" className="data-[state=active]:bg-blue-600 data-[state=active]:text-foreground">Optimize</TabsTrigger>
+                                <TabsTrigger value="quote" className="data-[state=active]:bg-green-600 data-[state=active]:text-foreground">Quote</TabsTrigger>
+                                <TabsTrigger value="summary" className="data-[state=active]:bg-amber-600 data-[state=active]:text-foreground">Summary</TabsTrigger>
                             </TabsList>
                         </Tabs>
                     </div>
@@ -436,7 +436,7 @@ export const ProjectStudio: React.FC<ProjectStudioProps> = ({
                                 mode="expert"
                             />
                         ) : (
-                            <div className="h-full flex flex-col items-center justify-center text-gray-500 space-y-4">
+                            <div className="h-full flex flex-col items-center justify-center text-muted-foreground space-y-4">
                                 <Layout className="h-16 w-16 opacity-20" />
                                 <p>Select a unit from the sidebar or create a new one to start designing.</p>
                                 <Button onClick={handleAddUnit} variant="outline" className="mt-4 border-orange-500/50 text-orange-400">

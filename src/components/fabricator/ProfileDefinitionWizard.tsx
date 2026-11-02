@@ -316,14 +316,14 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
   if (!open) return null;
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700">
+    <Card className="bg-card/50 border-border">
       <CardHeader>
         <CardTitle className="text-xl">Define Profile from Data Sheet</CardTitle>
-        <CardDescription className="text-gray-400">
+        <CardDescription className="text-muted-foreground">
           Create a new profile from supplier technical data sheet
         </CardDescription>
         <Progress value={(step / totalSteps) * 100} className="mt-4" />
-        <p className="text-sm text-gray-500 mt-2">
+        <p className="text-sm text-muted-foreground mt-2">
           Step {step} of {totalSteps}
         </p>
       </CardHeader>
@@ -332,10 +332,10 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
         {step === 1 && (
           <div className="space-y-4">
             <div>
-              <Label htmlFor="file-upload" className="typography-label text-gray-300 mb-2 block">
+              <Label htmlFor="file-upload" className="typography-label text-foreground mb-2 block">
                 Upload Technical Data Sheet
               </Label>
-              <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center">
+              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
                 <input
                   id="file-upload"
                   type="file"
@@ -349,9 +349,9 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                 <Label htmlFor="file-upload"
                   className="typography-label cursor-pointer flex flex-col items-center gap-2"
                 >
-                  <Upload className="h-12 w-12 text-gray-400" />
-                  <span className="text-gray-300">Click to upload or drag and drop</span>
-                  <span className="text-sm text-gray-500">PNG, JPG, or PDF (max 10MB)</span>
+                  <Upload className="h-12 w-12 text-muted-foreground" />
+                  <span className="text-foreground">Click to upload or drag and drop</span>
+                  <span className="text-sm text-muted-foreground">PNG, JPG, or PDF (max 10MB)</span>
                 </Label>
               </div>
             </div>
@@ -369,7 +369,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
 
             <Alert>
               <FileText className="h-4 w-4" />
-              <AlertDescription className="text-sm text-gray-400">
+              <AlertDescription className="text-sm text-muted-foreground">
                 Upload a cross-section image from the technical data sheet. You'll enter dimensions manually in the next step.
               </AlertDescription>
             </Alert>
@@ -380,9 +380,9 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
         {step === 2 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h3 className="typography-h3 text-lg text-gray-300">Profile Information</h3>
+              <h3 className="typography-h3 text-lg text-foreground">Profile Information</h3>
               <div>
-                <Label htmlFor="profile-code" className="typography-label text-gray-300">
+                <Label htmlFor="profile-code" className="typography-label text-foreground">
                   Profile Code *
                 </Label>
                 <Input
@@ -390,11 +390,11 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   value={formData.profileCode}
                   onChange={(e) => setFormData({ ...formData, profileCode: e.target.value })}
                   placeholder="e.g., PS-9601"
-                  className="mt-1 bg-gray-900 border-gray-600 text-white"
+                  className="mt-1 bg-background border-border text-foreground"
                 />
               </div>
               <div>
-                <Label htmlFor="system-name" className="typography-label text-gray-300">
+                <Label htmlFor="system-name" className="typography-label text-foreground">
                   System Name *
                 </Label>
                 <Input
@@ -402,12 +402,12 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   value={formData.systemName}
                   onChange={(e) => setFormData({ ...formData, systemName: e.target.value })}
                   placeholder="e.g., PS 9600 Sliding"
-                  className="mt-1 bg-gray-900 border-gray-600 text-white"
+                  className="mt-1 bg-background border-border text-foreground"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="width" className="typography-label text-gray-300">
+                  <Label htmlFor="width" className="typography-label text-foreground">
                     Width (mm) *
                   </Label>
                   <Input
@@ -416,11 +416,11 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                     step="0.1"
                     value={formData.width}
                     onChange={(e) => setFormData({ ...formData, width: parseFloat(e.target.value) || 0 })}
-                    className="mt-1 bg-gray-900 border-gray-600 text-white"
+                    className="mt-1 bg-background border-border text-foreground"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="height" className="typography-label text-gray-300">
+                  <Label htmlFor="height" className="typography-label text-foreground">
                     Height (mm) *
                   </Label>
                   <Input
@@ -429,12 +429,12 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                     step="0.1"
                     value={formData.height}
                     onChange={(e) => setFormData({ ...formData, height: parseFloat(e.target.value) || 0 })}
-                    className="mt-1 bg-gray-900 border-gray-600 text-white"
+                    className="mt-1 bg-background border-border text-foreground"
                   />
                 </div>
               </div>
               <div>
-                <Label htmlFor="material-thickness" className="typography-label text-gray-300">
+                <Label htmlFor="material-thickness" className="typography-label text-foreground">
                   Material Thickness (mm) *
                 </Label>
                 <Input
@@ -445,11 +445,11 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   onChange={(e) =>
                     setFormData({ ...formData, materialThickness: parseFloat(e.target.value) || 0 })
                   }
-                  className="mt-1 bg-gray-900 border-gray-600 text-white"
+                  className="mt-1 bg-background border-border text-foreground"
                 />
               </div>
               <div>
-                <Label htmlFor="weight" className="typography-label text-gray-300">
+                <Label htmlFor="weight" className="typography-label text-foreground">
                   Weight per Meter (kg/m)
                 </Label>
                 <Input
@@ -458,22 +458,22 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   step="0.1"
                   value={formData.weightPerMeter}
                   onChange={(e) => setFormData({ ...formData, weightPerMeter: parseFloat(e.target.value) || 0 })}
-                  className="mt-1 bg-gray-900 border-gray-600 text-white"
+                  className="mt-1 bg-background border-border text-foreground"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="role" className="typography-label text-gray-300">
+                  <Label htmlFor="role" className="typography-label text-foreground">
                     Role *
                   </Label>
                   <Select
                     value={formData.role}
                     onValueChange={(value) => setFormData({ ...formData, role: value as any })}
                   >
-                    <SelectTrigger id="role" className="mt-1 bg-gray-900 border-gray-600 text-white">
+                    <SelectTrigger id="role" className="mt-1 bg-background border-border text-foreground">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
+                    <SelectContent className="bg-card border-border">
                       <SelectItem value="frame">Frame</SelectItem>
                       <SelectItem value="sash">Sash</SelectItem>
                       <SelectItem value="mullion">Mullion</SelectItem>
@@ -486,17 +486,17 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="material" className="typography-label text-gray-300">
+                  <Label htmlFor="material" className="typography-label text-foreground">
                     Material *
                   </Label>
                   <Select
                     value={formData.material}
                     onValueChange={(value) => setFormData({ ...formData, material: value as any })}
                   >
-                    <SelectTrigger id="material" className="mt-1 bg-gray-900 border-gray-600 text-white">
+                    <SelectTrigger id="material" className="mt-1 bg-background border-border text-foreground">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
+                    <SelectContent className="bg-card border-border">
                       <SelectItem value="aluminum">Aluminum</SelectItem>
                       <SelectItem value="upvc">UPVC</SelectItem>
                       <SelectItem value="wood">Wood</SelectItem>
@@ -507,7 +507,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
             </div>
 
             <div>
-              <h3 className="typography-h3 text-lg text-gray-300 mb-4">Visual Reference</h3>
+              <h3 className="typography-h3 text-lg text-foreground mb-4">Visual Reference</h3>
               {uploadedImage ? (
                 <ProfileCrossSectionViewer
                   imageUrl={uploadedImage}
@@ -515,15 +515,15 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   readonly
                 />
               ) : (
-                <div className="p-8 bg-gray-900 rounded border border-gray-700 text-center text-gray-400">
+                <div className="p-8 bg-background rounded border border-border text-center text-muted-foreground">
                   No image uploaded. Go back to step 1 to upload.
                 </div>
               )}
             </div>
 
             <div className="lg:col-span-2">
-              <h4 className="typography-h4 text-sm text-gray-200 mb-2">Thumbnail Preview</h4>
-              <div className="border border-gray-700 rounded-lg p-3 bg-gray-900 flex flex-col items-center">
+              <h4 className="typography-h4 text-sm text-foreground mb-2">Thumbnail Preview</h4>
+              <div className="border border-border rounded-lg p-3 bg-background flex flex-col items-center">
                 <ProfileIconGenerator
                   ref={profileIconRef}
                   widthMm={formData.width || 60}
@@ -533,7 +533,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   glazingPocketWidthMm={0}
                   className="w-24 h-24"
                 />
-                <p className="text-xs text-gray-500 mt-2 text-center">
+                <p className="text-xs text-muted-foreground mt-2 text-center">
                   This preview is auto-captured and uploaded as the profile thumbnail.
                 </p>
               </div>
@@ -545,8 +545,8 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
         {step === 3 && (
           <div className="space-y-6">
             <div>
-              <h3 className="typography-h3 text-lg text-gray-300 mb-4">Initial Calibration Setup</h3>
-              <p className="text-sm text-gray-400 mb-4">
+              <h3 className="typography-h3 text-lg text-foreground mb-4">Initial Calibration Setup</h3>
+              <p className="text-sm text-muted-foreground mb-4">
                 Set up basic cutting parameters. You can fine-tune these later in the Calibration Wizard.
               </p>
             </div>
@@ -578,22 +578,22 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
               initialJointType="miter_45"
             />
 
-            <div className="p-4 bg-gray-900 rounded border border-gray-700">
-              <h4 className="typography-h4 text-sm text-gray-300 mb-2">Summary</h4>
-              <div className="space-y-1 text-sm text-gray-400">
+            <div className="p-4 bg-background rounded border border-border">
+              <h4 className="typography-h4 text-sm text-foreground mb-2">Summary</h4>
+              <div className="space-y-1 text-sm text-muted-foreground">
                 <p>
-                  <span className="text-gray-500">Profile:</span> {formData.profileCode}
+                  <span className="text-muted-foreground">Profile:</span> {formData.profileCode}
                 </p>
                 <p>
-                  <span className="text-gray-500">System:</span> {formData.systemName}
+                  <span className="text-muted-foreground">System:</span> {formData.systemName}
                 </p>
                 <p>
-                  <span className="text-gray-500">Dimensions:</span> {formData.width}mm × {formData.height}mm
+                  <span className="text-muted-foreground">Dimensions:</span> {formData.width}mm × {formData.height}mm
                 </p>
                 {formData.defaultKFactor45 !== undefined && (
                   <p>
-                    <span className="text-gray-500">K-Factor (45°):</span>{' '}
-                    <span className="text-green-400 font-semibold">{formData.defaultKFactor45.toFixed(2)}mm</span>
+                    <span className="text-muted-foreground">K-Factor (45°):</span>{' '}
+                    <span className="text-success font-semibold">{formData.defaultKFactor45.toFixed(2)}mm</span>
                   </p>
                 )}
               </div>
@@ -602,11 +602,11 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
         )}
 
         {/* Navigation Buttons */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+        <div className="flex items-center justify-between pt-4 border-t border-border">
           <Button
             variant="outline"
             onClick={step === 1 ? () => onOpenChange(false) : handleBack}
-            className="text-gray-300 border-gray-600 hover:bg-gray-700"
+            className="text-foreground border-border hover:bg-muted"
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
             {step === 1 ? 'Cancel' : 'Back'}

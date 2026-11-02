@@ -157,7 +157,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
 
   if (loading || loadedFor !== customerId) {
     return (
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-8">
           <div className="text-center text-amber-600/70">Loading payment data...</div>
         </CardContent>
@@ -168,7 +168,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
   return (
     <div className="space-y-6">
       {/* Pending Invoices */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Pending Payments</CardTitle>
           <CardDescription className="text-sm text-amber-600/70">
@@ -181,7 +181,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#0f0f0f]/60 border-amber-600/20">
+                <TableRow className="bg-background/60 border-amber-600/20">
                   <TableHead className="text-amber-300/70">Invoice</TableHead>
                   <TableHead className="text-amber-300/70">Due Date</TableHead>
                   <TableHead className="text-amber-300/70">Amount</TableHead>
@@ -197,7 +197,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
                     <TableCell className="text-amber-200">
                       {invoice.due_date ? (
                         <span className={cn(
-                          new Date(invoice.due_date) < new Date() ? 'text-red-400' : ''
+                          new Date(invoice.due_date) < new Date() ? 'text-destructive' : ''
                         )}>
                           {format(new Date(invoice.due_date), 'MMM d, yyyy')}
                         </span>
@@ -227,7 +227,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
       </Card>
 
       {/* Payment History */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Payment History</CardTitle>
           <CardDescription className="text-sm text-amber-600/70">
@@ -240,7 +240,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#0f0f0f]/60 border-amber-600/20">
+                <TableRow className="bg-background/60 border-amber-600/20">
                   <TableHead className="text-amber-300/70">Date</TableHead>
                   <TableHead className="text-amber-300/70">Invoice</TableHead>
                   <TableHead className="text-amber-300/70">Amount</TableHead>
@@ -277,7 +277,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
       {/* Payment Link Modal */}
       {selectedInvoice && paymentLink && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <Card className="bg-[#0f0f0f]/95 border-amber-600/30 card-glass-dark max-w-md w-full">
+          <Card className="bg-background/95 border-amber-600/30 card-glass-dark max-w-md w-full">
             <CardHeader>
               <CardTitle className="text-lg text-amber-200">Payment Link</CardTitle>
               <CardDescription className="text-sm text-amber-600/70">
@@ -303,7 +303,7 @@ export const ClientPaymentProcessor: React.FC<ClientPaymentProcessorProps> = ({ 
                   <Input
                     value={paymentLink}
                     readOnly
-                    className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 font-mono text-sm"
+                    className="bg-background/60 border-amber-600/30 text-amber-200 font-mono text-sm"
                   />
                   <Button
                     onClick={handleCopyLink}

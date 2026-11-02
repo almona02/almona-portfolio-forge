@@ -219,16 +219,16 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
   }, [activeTab, historyTemplates, recommendations, extractedTemplate, debouncedSearchQuery, filterMaterial, minConfidence]);
 
   return (
-    <div className="h-full w-full flex flex-col bg-slate-900 min-h-0">
+    <div className="h-full w-full flex flex-col bg-background min-h-0">
       {/* Header */}
-      <div className="border-b border-amber-600/20 bg-slate-800/50 p-4">
+      <div className="border-b border-amber-600/20 bg-card/50 p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2 text-slate-100">
-              <Sparkles className="w-6 h-6 text-amber-400" />
+            <h2 className="text-2xl font-bold flex items-center gap-2 text-foreground">
+              <Sparkles className="w-6 h-6 text-warning" />
               Template Editor
             </h2>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Reverse engineer ALMONA designs to extract reusable templates
             </p>
           </div>
@@ -238,7 +238,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
               size="sm"
               onClick={() => void handleExtractFromHistory()}
               disabled={isLoading || jobs.length === 0}
-              className="border-amber-600/30 text-slate-300 hover:bg-amber-500/10 hover:text-amber-400 hover:border-amber-600/50"
+              className="border-amber-600/30 text-foreground hover:bg-amber-500/10 hover:text-warning hover:border-amber-600/50"
             >
               <History className="w-4 h-4 mr-2" />
               Extract from History
@@ -248,7 +248,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
               size="sm"
               onClick={() => void handleExtractKnowledge()}
               disabled={isLoading || jobs.length === 0}
-              className="border-amber-600/30 text-slate-300 hover:bg-amber-500/10 hover:text-amber-400 hover:border-amber-600/50"
+              className="border-amber-600/30 text-foreground hover:bg-amber-500/10 hover:text-warning hover:border-amber-600/50"
             >
               <Lightbulb className="w-4 h-4 mr-2" />
               Extract Knowledge
@@ -259,7 +259,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
                 size="sm"
                 onClick={() => void handleGetRecommendations()}
                 disabled={isLoading}
-                className="border-amber-600/30 text-slate-300 hover:bg-amber-500/10 hover:text-amber-400 hover:border-amber-600/50"
+                className="border-amber-600/30 text-foreground hover:bg-amber-500/10 hover:text-warning hover:border-amber-600/50"
               >
                 <Zap className="w-4 h-4 mr-2" />
                 Get Recommendations
@@ -270,49 +270,49 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
         {/* Error Display */}
         {error && (
           <div className="mt-3 p-3 bg-red-900/20 border border-red-600/30 rounded-md flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
-            <p className="text-sm text-red-300">{error}</p>
+            <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
+            <p className="text-sm text-destructive">{error}</p>
           </div>
         )}
       </div>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="flex-1 flex flex-col min-h-0">
-        <TabsList className="mx-4 mt-4 bg-slate-800/50 border border-amber-600/20">
+        <TabsList className="mx-4 mt-4 bg-card/50 border border-amber-600/20">
           <TabsTrigger 
             value="extract"
-            className="text-slate-400 data-[state=active]:text-amber-400 data-[state=active]:bg-amber-500/20"
+            className="text-muted-foreground data-[state=active]:text-warning data-[state=active]:bg-amber-500/20"
           >
             <Grid3x3 className="w-4 h-4 mr-2" />
             Extract from Design
           </TabsTrigger>
           <TabsTrigger 
             value="history"
-            className="text-slate-400 data-[state=active]:text-amber-400 data-[state=active]:bg-amber-500/20"
+            className="text-muted-foreground data-[state=active]:text-warning data-[state=active]:bg-amber-500/20"
           >
             <History className="w-4 h-4 mr-2" />
             Workshop History
             {historyTemplates.length > 0 && (
-              <Badge variant="secondary" className="ml-2 bg-amber-500/20 text-amber-300 border-amber-600/30">
+              <Badge variant="secondary" className="ml-2 bg-amber-500/20 text-warning border-amber-600/30">
                 {historyTemplates.length}
               </Badge>
             )}
           </TabsTrigger>
           <TabsTrigger 
             value="recommendations"
-            className="text-slate-400 data-[state=active]:text-amber-400 data-[state=active]:bg-amber-500/20"
+            className="text-muted-foreground data-[state=active]:text-warning data-[state=active]:bg-amber-500/20"
           >
             <Lightbulb className="w-4 h-4 mr-2" />
             Recommendations
             {recommendations.length > 0 && (
-              <Badge variant="secondary" className="ml-2 bg-amber-500/20 text-amber-300 border-amber-600/30">
+              <Badge variant="secondary" className="ml-2 bg-amber-500/20 text-warning border-amber-600/30">
                 {recommendations.length}
               </Badge>
             )}
           </TabsTrigger>
           <TabsTrigger 
             value="knowledge"
-            className="text-slate-400 data-[state=active]:text-amber-400 data-[state=active]:bg-amber-500/20"
+            className="text-muted-foreground data-[state=active]:text-warning data-[state=active]:bg-amber-500/20"
           >
             <BarChart3 className="w-4 h-4 mr-2" />
             Knowledge Base
@@ -322,36 +322,36 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
         {/* Filters */}
         <div className="mx-4 mt-4 flex gap-4 items-center">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Search templates..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="pl-10 bg-slate-800/50 border-slate-700/50 text-slate-200 placeholder:text-slate-500 focus:border-amber-600/50 focus:ring-amber-600/20"
+              className="pl-10 bg-card/50 border-border/50 text-foreground placeholder:text-muted-foreground focus:border-amber-600/50 focus:ring-amber-600/20"
             />
           </div>
           <Select value={filterMaterial} onValueChange={(v) => setFilterMaterial(v as typeof filterMaterial)}>
-            <SelectTrigger className="w-40 bg-slate-800/50 border-slate-700/50 text-slate-200 focus:border-amber-600/50">
+            <SelectTrigger className="w-40 bg-card/50 border-border/50 text-foreground focus:border-amber-600/50">
               <Filter className="w-4 h-4 mr-2" />
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-amber-600/30">
-              <SelectItem value="all" className="text-slate-200 focus:bg-amber-500/20">All Materials</SelectItem>
-              <SelectItem value="aluminum" className="text-slate-200 focus:bg-amber-500/20">Aluminum</SelectItem>
-              <SelectItem value="upvc" className="text-slate-200 focus:bg-amber-500/20">UPVC</SelectItem>
+            <SelectContent className="bg-card border-amber-600/30">
+              <SelectItem value="all" className="text-foreground focus:bg-amber-500/20">All Materials</SelectItem>
+              <SelectItem value="aluminum" className="text-foreground focus:bg-amber-500/20">Aluminum</SelectItem>
+              <SelectItem value="upvc" className="text-foreground focus:bg-amber-500/20">UPVC</SelectItem>
             </SelectContent>
           </Select>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-400">Min Confidence:</span>
+            <span className="text-sm text-muted-foreground">Min Confidence:</span>
             <Input
               type="number"
               min="0"
               max="100"
               value={minConfidence}
               onChange={(e) => setMinConfidence(Number(e.target.value))}
-              className="w-20 bg-slate-800/50 border-slate-700/50 text-slate-200 focus:border-amber-600/50"
+              className="w-20 bg-card/50 border-border/50 text-foreground focus:border-amber-600/50"
             />
-            <span className="text-sm text-slate-500">%</span>
+            <span className="text-sm text-muted-foreground">%</span>
           </div>
         </div>
 
@@ -365,10 +365,10 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
                 onSave={() => onTemplateCreated?.(extractedTemplate)}
               />
             ) : (
-              <Card className="bg-slate-800/50 border-amber-600/20">
+              <Card className="bg-card/50 border-amber-600/20">
                 <CardContent className="p-8 text-center">
-                  <AlertCircle className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                  <p className="text-slate-400">
+                  <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
                     {currentDesign
                       ? 'No template could be extracted from this design. Ensure it has a grid layout.'
                       : 'No design selected. Open a design to extract a template.'}
@@ -382,7 +382,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
             {isLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto"></div>
-                <p className="mt-4 text-slate-400">Analyzing workshop history...</p>
+                <p className="mt-4 text-muted-foreground">Analyzing workshop history...</p>
               </div>
             ) : filteredTemplates.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -396,10 +396,10 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
                 ))}
               </div>
             ) : (
-              <Card className="bg-slate-800/50 border-amber-600/20">
+              <Card className="bg-card/50 border-amber-600/20">
                 <CardContent className="p-8 text-center">
-                  <History className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                  <p className="text-slate-400">
+                  <History className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
                     {jobs.length === 0
                       ? 'No workshop history available. Create some projects first.'
                       : 'No templates found matching your filters.'}
@@ -413,19 +413,19 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
             {isLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto"></div>
-                <p className="mt-4 text-slate-400">Analyzing recommendations...</p>
+                <p className="mt-4 text-muted-foreground">Analyzing recommendations...</p>
               </div>
             ) : recommendations.length > 0 ? (
               <div className="space-y-4">
                 {recommendations
                   .filter(r => filteredTemplates.includes(r.template))
                   .map((rec) => (
-                    <Card key={rec.template.id} className="bg-slate-800/50 border-amber-600/20">
+                    <Card key={rec.template.id} className="bg-card/50 border-amber-600/20">
                       <CardHeader>
                         <div className="flex items-center justify-between">
-                          <CardTitle className="flex items-center gap-2 text-slate-200">
+                          <CardTitle className="flex items-center gap-2 text-foreground">
                             {rec.template.name}
-                            <Badge variant={rec.confidence >= 80 ? 'default' : 'secondary'} className={rec.confidence >= 80 ? 'bg-amber-500/20 text-amber-300 border-amber-600/30' : 'bg-slate-700/50 text-slate-400 border-slate-600/30'}>
+                            <Badge variant={rec.confidence >= 80 ? 'default' : 'secondary'} className={rec.confidence >= 80 ? 'bg-amber-500/20 text-warning border-amber-600/30' : 'bg-muted/50 text-muted-foreground border-border/30'}>
                               {rec.confidence}% match
                             </Badge>
                           </CardTitle>
@@ -434,7 +434,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
                               size="sm"
                               variant="outline"
                               onClick={() => onTemplateSelected?.(rec.template)}
-                              className="border-amber-600/30 text-slate-300 hover:bg-amber-500/10 hover:text-amber-400"
+                              className="border-amber-600/30 text-foreground hover:bg-amber-500/10 hover:text-warning"
                             >
                               Use
                             </Button>
@@ -442,13 +442,13 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
                               size="sm"
                               variant="outline"
                               onClick={() => onTemplateCreated?.(rec.template)}
-                              className="border-amber-600/30 text-slate-300 hover:bg-amber-500/10 hover:text-amber-400"
+                              className="border-amber-600/30 text-foreground hover:bg-amber-500/10 hover:text-warning"
                             >
                               Save
                             </Button>
                           </div>
                         </div>
-                        <CardDescription className="text-slate-400">{rec.reason}</CardDescription>
+                        <CardDescription className="text-muted-foreground">{rec.reason}</CardDescription>
                       </CardHeader>
                       <CardContent>
                         <TemplateDetails template={rec.template} />
@@ -457,10 +457,10 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
                   ))}
               </div>
             ) : (
-              <Card className="bg-slate-800/50 border-amber-600/20">
+              <Card className="bg-card/50 border-amber-600/20">
                 <CardContent className="p-8 text-center">
-                  <Lightbulb className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                  <p className="text-slate-400">
+                  <Lightbulb className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
                     {currentDesign
                       ? 'No recommendations available. Try extracting from history first.'
                       : 'Select a design to get recommendations.'}
@@ -474,10 +474,10 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
             {knowledge ? (
               <KnowledgeView knowledge={knowledge} />
             ) : (
-              <Card className="bg-slate-800/50 border-amber-600/20">
+              <Card className="bg-card/50 border-amber-600/20">
                 <CardContent className="p-8 text-center">
-                  <BarChart3 className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                  <p className="text-slate-400">
+                  <BarChart3 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
                     Click "Extract Knowledge" to analyze workshop patterns.
                   </p>
                 </CardContent>
@@ -499,15 +499,15 @@ interface TemplateCardProps {
 
 const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect, onSave }) => {
   return (
-    <Card className="hover:shadow-lg hover:shadow-amber-500/10 transition-shadow bg-slate-800/50 border-amber-600/20">
+    <Card className="hover:shadow-lg hover:shadow-amber-500/10 transition-shadow bg-card/50 border-amber-600/20">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg text-slate-200">{template.name}</CardTitle>
-          <Badge variant={template.confidence >= 80 ? 'default' : 'secondary'} className={template.confidence >= 80 ? 'bg-amber-500/20 text-amber-300 border-amber-600/30' : 'bg-slate-700/50 text-slate-400 border-slate-600/30'}>
+          <CardTitle className="text-lg text-foreground">{template.name}</CardTitle>
+          <Badge variant={template.confidence >= 80 ? 'default' : 'secondary'} className={template.confidence >= 80 ? 'bg-amber-500/20 text-warning border-amber-600/30' : 'bg-muted/50 text-muted-foreground border-border/30'}>
             {template.confidence}%
           </Badge>
         </div>
-        <CardDescription className="text-slate-400">
+        <CardDescription className="text-muted-foreground">
           {template.rows}x{template.cols} Grid • {template.frequency} occurrence{template.frequency !== 1 ? 's' : ''}
         </CardDescription>
       </CardHeader>
@@ -517,7 +517,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onSelect, onSave 
           <Button size="sm" className="flex-1 bg-amber-600 hover:bg-amber-500 text-white" onClick={onSelect}>
             Use Template
           </Button>
-          <Button size="sm" variant="outline" className="flex-1 border-amber-600/30 text-slate-300 hover:bg-amber-500/10 hover:text-amber-400" onClick={onSave}>
+          <Button size="sm" variant="outline" className="flex-1 border-amber-600/30 text-foreground hover:bg-amber-500/10 hover:text-warning" onClick={onSave}>
             <Download className="w-4 h-4 mr-2" />
             Save
           </Button>
@@ -536,7 +536,7 @@ const TemplateDetails: React.FC<TemplateDetailsProps> = ({ template }) => {
   return (
     <div className="space-y-3">
       {/* Grid Preview */}
-      <div className="bg-slate-900/50 p-3 rounded border border-amber-600/10">
+      <div className="bg-background/50 p-3 rounded border border-amber-600/10">
         <div className="grid gap-1" style={{
           gridTemplateColumns: `repeat(${template.cols}, 1fr)`,
           gridTemplateRows: `repeat(${template.rows}, 1fr)`
@@ -549,11 +549,11 @@ const TemplateDetails: React.FC<TemplateDetailsProps> = ({ template }) => {
               <div
                 key={i}
                 className={`aspect-square rounded text-xs flex items-center justify-center font-medium ${
-                  cellType === 'empty' ? 'bg-slate-700/50 text-slate-500' :
-                  cellType === 'fixed' ? 'bg-blue-600/30 text-blue-300 border border-blue-600/30' :
-                  cellType === 'casement' ? 'bg-green-600/30 text-green-300 border border-green-600/30' :
-                  cellType === 'sliding' ? 'bg-amber-600/30 text-amber-300 border border-amber-600/30' :
-                  'bg-slate-600/50 text-slate-400'
+                  cellType === 'empty' ? 'bg-muted/50 text-muted-foreground' :
+                  cellType === 'fixed' ? 'bg-blue-600/30 text-info border border-blue-600/30' :
+                  cellType === 'casement' ? 'bg-green-600/30 text-success border border-green-600/30' :
+                  cellType === 'sliding' ? 'bg-amber-600/30 text-warning border border-amber-600/30' :
+                  'bg-muted/50 text-muted-foreground'
                 }`}
                 title={cellType}
               >
@@ -567,14 +567,14 @@ const TemplateDetails: React.FC<TemplateDetailsProps> = ({ template }) => {
       {/* Dimensions */}
       <div className="text-sm">
         <div className="flex justify-between">
-          <span className="text-slate-400">Width Range:</span>
-          <span className="font-medium text-amber-300">
+          <span className="text-muted-foreground">Width Range:</span>
+          <span className="font-medium text-warning">
             {template.typicalDimensions.widthRange[0]} - {template.typicalDimensions.widthRange[1]} mm
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-slate-400">Height Range:</span>
-          <span className="font-medium text-amber-300">
+          <span className="text-muted-foreground">Height Range:</span>
+          <span className="font-medium text-warning">
             {template.typicalDimensions.heightRange[0]} - {template.typicalDimensions.heightRange[1]} mm
           </span>
         </div>
@@ -582,11 +582,11 @@ const TemplateDetails: React.FC<TemplateDetailsProps> = ({ template }) => {
 
       {/* Material Preference */}
       <div className="flex items-center gap-2">
-        <span className="text-sm text-slate-400">Material:</span>
-        <Badge variant="outline" className="border-amber-600/30 text-amber-300 bg-amber-500/10">
+        <span className="text-sm text-muted-foreground">Material:</span>
+        <Badge variant="outline" className="border-amber-600/30 text-warning bg-amber-500/10">
           {template.materialPreferences.preferred === 'aluminum' ? 'Aluminum' : 'UPVC'}
         </Badge>
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-muted-foreground">
           ({template.materialPreferences.aluminum} Al, {template.materialPreferences.upvc} UPVC)
         </span>
       </div>
@@ -595,21 +595,21 @@ const TemplateDetails: React.FC<TemplateDetailsProps> = ({ template }) => {
       {template.successMetrics && (
         <div className="pt-2 border-t border-amber-600/20">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-4 h-4 text-green-400" />
-            <span className="text-sm font-medium text-slate-300">Success Metrics</span>
+            <TrendingUp className="w-4 h-4 text-success" />
+            <span className="text-sm font-medium text-foreground">Success Metrics</span>
           </div>
-          <div className="text-xs space-y-1 text-slate-400">
+          <div className="text-xs space-y-1 text-muted-foreground">
             <div className="flex justify-between">
               <span>Success Rate:</span>
-              <span className="font-medium text-amber-300">{(template.successMetrics.successRate * 100).toFixed(1)}%</span>
+              <span className="font-medium text-warning">{(template.successMetrics.successRate * 100).toFixed(1)}%</span>
             </div>
             <div className="flex justify-between">
               <span>Avg Accuracy:</span>
-              <span className="font-medium text-amber-300">{(template.successMetrics.averageAccuracy * 100).toFixed(1)}%</span>
+              <span className="font-medium text-warning">{(template.successMetrics.averageAccuracy * 100).toFixed(1)}%</span>
             </div>
             <div className="flex justify-between">
               <span>Issues:</span>
-              <span className="font-medium text-amber-300">{template.successMetrics.issueCount}</span>
+              <span className="font-medium text-warning">{template.successMetrics.issueCount}</span>
             </div>
           </div>
         </div>
@@ -618,15 +618,15 @@ const TemplateDetails: React.FC<TemplateDetailsProps> = ({ template }) => {
       {/* System Packs */}
       {template.compatibleSystemPacks.length > 0 && (
         <div className="pt-2 border-t border-amber-600/20">
-          <div className="text-xs text-slate-400 mb-1">Compatible Systems:</div>
+          <div className="text-xs text-muted-foreground mb-1">Compatible Systems:</div>
           <div className="flex flex-wrap gap-1">
             {template.compatibleSystemPacks.slice(0, 3).map(pack => (
-              <Badge key={pack} variant="outline" className="text-xs border-amber-600/30 text-amber-300 bg-amber-500/10">
+              <Badge key={pack} variant="outline" className="text-xs border-amber-600/30 text-warning bg-amber-500/10">
                 {pack}
               </Badge>
             ))}
             {template.compatibleSystemPacks.length > 3 && (
-              <Badge variant="outline" className="text-xs border-amber-600/30 text-amber-300 bg-amber-500/10">
+              <Badge variant="outline" className="text-xs border-amber-600/30 text-warning bg-amber-500/10">
                 +{template.compatibleSystemPacks.length - 3}
               </Badge>
             )}
@@ -646,31 +646,31 @@ const KnowledgeView: React.FC<KnowledgeViewProps> = ({ knowledge }) => {
   return (
     <div className="space-y-6">
       {/* Workshop Insights */}
-      <Card className="bg-slate-800/50 border-amber-600/20">
+      <Card className="bg-card/50 border-amber-600/20">
         <CardHeader>
-          <CardTitle className="text-slate-200">Workshop Insights</CardTitle>
+          <CardTitle className="text-foreground">Workshop Insights</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <div className="text-2xl font-bold text-amber-300">{knowledge.workshopInsights.totalProjects}</div>
-              <div className="text-sm text-slate-400">Total Projects</div>
+              <div className="text-2xl font-bold text-warning">{knowledge.workshopInsights.totalProjects}</div>
+              <div className="text-sm text-muted-foreground">Total Projects</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-amber-300">{knowledge.commonPatterns.length}</div>
-              <div className="text-sm text-slate-400">Common Patterns</div>
+              <div className="text-2xl font-bold text-warning">{knowledge.commonPatterns.length}</div>
+              <div className="text-sm text-muted-foreground">Common Patterns</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-amber-300">
+              <div className="text-2xl font-bold text-warning">
                 {Math.round(knowledge.workshopInsights.averageProjectSize.width)}mm
               </div>
-              <div className="text-sm text-slate-400">Avg Width</div>
+              <div className="text-sm text-muted-foreground">Avg Width</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-amber-300">
+              <div className="text-2xl font-bold text-warning">
                 {Math.round(knowledge.workshopInsights.averageProjectSize.height)}mm
               </div>
-              <div className="text-sm text-slate-400">Avg Height</div>
+              <div className="text-sm text-muted-foreground">Avg Height</div>
             </div>
           </div>
         </CardContent>
@@ -678,9 +678,9 @@ const KnowledgeView: React.FC<KnowledgeViewProps> = ({ knowledge }) => {
 
       {/* Most Common Pattern */}
       {knowledge.workshopInsights.mostCommonPattern && (
-        <Card className="bg-slate-800/50 border-amber-600/20">
+        <Card className="bg-card/50 border-amber-600/20">
           <CardHeader>
-            <CardTitle className="text-slate-200">Most Common Pattern</CardTitle>
+            <CardTitle className="text-foreground">Most Common Pattern</CardTitle>
           </CardHeader>
           <CardContent>
             <TemplateCard
@@ -694,23 +694,23 @@ const KnowledgeView: React.FC<KnowledgeViewProps> = ({ knowledge }) => {
 
       {/* Success Patterns */}
       {knowledge.successPatterns.length > 0 && (
-        <Card className="bg-slate-800/50 border-amber-600/20">
+        <Card className="bg-card/50 border-amber-600/20">
           <CardHeader>
-            <CardTitle className="text-slate-200">High Success Patterns</CardTitle>
+            <CardTitle className="text-foreground">High Success Patterns</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               {knowledge.successPatterns.slice(0, 5).map((pattern, i) => (
-                <div key={i} className="flex items-center justify-between p-2 bg-slate-900/50 rounded border border-amber-600/10">
+                <div key={i} className="flex items-center justify-between p-2 bg-background/50 rounded border border-amber-600/10">
                   <div>
-                    <div className="font-medium text-slate-200">{pattern.templateId}</div>
-                    <div className="text-sm text-slate-400">{pattern.systemPackId}</div>
+                    <div className="font-medium text-foreground">{pattern.templateId}</div>
+                    <div className="text-sm text-muted-foreground">{pattern.systemPackId}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-medium text-green-400">
+                    <div className="font-medium text-success">
                       {(pattern.successRate * 100).toFixed(1)}% success
                     </div>
-                    <div className="text-xs text-slate-400">
+                    <div className="text-xs text-muted-foreground">
                       {pattern.issueCount} issues
                     </div>
                   </div>

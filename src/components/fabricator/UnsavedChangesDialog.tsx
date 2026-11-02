@@ -60,18 +60,18 @@ export const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
       {/* Dialog content */}
-      <div className="relative bg-gray-900 border border-gray-700 rounded-lg shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-background border border-border rounded-lg shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="p-6 pb-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="btn-primary">
-              <AlertTriangle className="h-6 w-6 text-amber-400" />
+              <AlertTriangle className="h-6 w-6 text-warning" />
             </div>
             <div className="flex-1">
-              <h2 className="typography-h2 text-lg font-semibold text-gray-100">
+              <h2 className="typography-h2 text-lg font-semibold text-foreground">
                 {title || t('unsavedChanges.title', 'Unsaved Changes')}
               </h2>
-              <p className="text-sm text-gray-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {description || t('unsavedChanges.description', 'You have unsaved changes that will be lost if you leave this page.')}
               </p>
             </div>
@@ -79,11 +79,11 @@ export const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
 
           {/* Context */}
           {context && (
-            <div className="py-3 px-4 bg-gray-800/50 rounded-lg border border-gray-700 mb-4">
-              <div className="flex items-center gap-2 text-xs text-gray-400">
+            <div className="py-3 px-4 bg-card/50 rounded-lg border border-border mb-4">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <RefreshCw className="h-3 w-3" />
                 <span>
-                  {t('unsavedChanges.context', 'Context')}: <span className="text-gray-300 font-medium">{context}</span>
+                  {t('unsavedChanges.context', 'Context')}: <span className="text-foreground font-medium">{context}</span>
                 </span>
               </div>
             </div>
@@ -92,12 +92,12 @@ export const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
           {/* Warning */}
           <div className="btn-primary">
             <div className="flex items-start gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" />
-              <div className="flex-1 text-xs text-amber-200">
+              <AlertTriangle className="h-4 w-4 text-warning mt-0.5 flex-shrink-0" />
+              <div className="flex-1 text-xs text-warning">
                 <p className="font-semibold mb-1">
                   {t('unsavedChanges.warning', 'What will happen:')}
                 </p>
-                <ul className="space-y-1 text-amber-300/80">
+                <ul className="space-y-1 text-warning/80">
                   <li>• {t('unsavedChanges.warningLost', 'All unsaved changes will be permanently lost')}</li>
                   <li>• {t('unsavedChanges.warningNoRecovery', 'Changes cannot be recovered after leaving')}</li>
                   {showSaveOption && (
@@ -116,7 +116,7 @@ export const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
               variant="outline"
               onClick={handleCancel}
               disabled={isSaving}
-              className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-gray-100"
+              className="bg-card border-border text-foreground hover:bg-muted hover:text-foreground"
             >
               <X className="h-4 w-4 mr-2" />
               {t('unsavedChanges.cancel', 'Cancel')}

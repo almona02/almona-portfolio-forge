@@ -146,15 +146,15 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
 
   if (selectedParts.length === 0) {
     return (
-      <Card className={`bg-almona-dark border-almona-light/20 ${className}`}>
+      <Card className={`bg-background border-border/20 ${className}`}>
         <CardHeader>
           <CardTitle className="text-white">
             {t('pricing.calculator.title', 'Pricing Calculator')}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center text-gray-400 py-8">
-            <svg className="w-12 h-12 mx-auto mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="text-center text-muted-foreground py-8">
+            <svg className="w-12 h-12 mx-auto mb-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
             </svg>
             <p>{t('pricing.calculator.noParts', 'Select parts from the 3D model to see pricing')}</p>
@@ -165,7 +165,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
   }
 
   return (
-    <Card className={`bg-almona-dark border-almona-light/20 ${className}`}>
+    <Card className={`bg-background border-border/20 ${className}`}>
       <CardHeader>
         <CardTitle className="text-white flex items-center justify-between">
           <span>{t('pricing.calculator.title', 'Pricing Calculator')}</span>
@@ -184,13 +184,13 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
           </h4>
           
           {totalPricing?.parts.map((item) => (
-            <div key={item.part.id} className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
+            <div key={item.part.id} className="bg-card/50 rounded-lg p-3 border border-border">
               <div className="flex justify-between items-start mb-2">
                 <div className="flex-1">
                   <h5 className="text-white font-medium text-sm">
                     {getLocalizedPartName(item.part)}
                   </h5>
-                  <p className="text-gray-400 text-xs">
+                  <p className="text-muted-foreground text-xs">
                     {getLocalizedPartDescription(item.part)}
                   </p>
                   {item.part.material && (
@@ -203,7 +203,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
                   variant="ghost"
                   size="sm"
                   onClick={() => removePart(item.part.id)}
-                  className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                  className="text-destructive hover:text-destructive hover:bg-red-900/20"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -215,7 +215,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
                 <div className="flex items-center space-x-2">
                   {enableQuantityAdjustment && (
                     <>
-                      <Label htmlFor={`qty-${item.part.id}`} className="typography-label text-gray-300 text-xs">
+                      <Label htmlFor={`qty-${item.part.id}`} className="typography-label text-foreground text-xs">
                         {t('pricing.calculator.quantity', 'Qty')}:
                       </Label>
                       <Input
@@ -224,7 +224,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
                         min="1"
                         value={item.quantity}
                         onChange={(e) => updateQuantity(item.part.id, parseInt(e.target.value) || 1)}
-                        className="w-16 h-8 text-xs bg-gray-700 border-gray-600 text-white"
+                        className="w-16 h-8 text-xs bg-muted border-border text-white"
                       />
                     </>
                   )}
@@ -235,7 +235,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
                     {utils.formatCurrency(item.total, { showSymbol: true })}
                   </div>
                   {showTaxBreakdown && (
-                    <div className="text-gray-400 text-xs">
+                    <div className="text-muted-foreground text-xs">
                       {utils.formatCurrency(item.subtotal, { showSymbol: true })} + {utils.formatCurrency(item.taxAmount, { showSymbol: true })} {getRegionalConfig(regionState.region).tax.vatName}
                     </div>
                   )}
@@ -245,18 +245,18 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
           ))}
         </div>
 
-        <Separator className="bg-gray-700" />
+        <Separator className="bg-muted" />
 
         {/* Total Calculation */}
         {totalPricing && (
           <div className="space-y-2">
-            <div className="flex justify-between text-gray-300">
+            <div className="flex justify-between text-foreground">
               <span>{t('pricing.calculator.subtotal', 'Subtotal')}:</span>
               <span>{utils.formatCurrency(totalPricing.subtotal, { showSymbol: true })}</span>
             </div>
             
             {showTaxBreakdown && (
-              <div className="flex justify-between text-gray-300">
+              <div className="flex justify-between text-foreground">
                 <span>
                   {t('pricing.calculator.tax', 'Tax')} ({getRegionalConfig(regionState.region).tax.vatName} {getRegionalConfig(regionState.region).tax.vatRate * 100}%):
                 </span>
@@ -264,7 +264,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
               </div>
             )}
             
-            <Separator className="bg-gray-600" />
+            <Separator className="bg-muted" />
             
             <div className="flex justify-between text-white font-bold text-lg">
               <span>{t('pricing.calculator.total', 'Total')}:</span>
@@ -275,14 +275,14 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
 
             {/* Turkish-specific KDV information */}
             {turkishTaxUtils.isTurkish && (
-              <div className="mt-3 p-2 bg-blue-900/20 border border-blue-700/30 rounded text-xs text-blue-300">
+              <div className="mt-3 p-2 bg-blue-900/20 border border-blue-700/30 rounded text-xs text-info">
                 <p>🇹🇷 {t('pricing.calculator.kdvInfo', 'KDV %20 dahil fiyatlar. Tüm fiyatlar Türk Lirası cinsindendir.')}</p>
               </div>
             )}
 
             {/* Egyptian-specific VAT information */}
             {regionState.region === 'EG' && (
-              <div className="mt-3 p-2 bg-green-900/20 border border-green-700/30 rounded text-xs text-green-300">
+              <div className="mt-3 p-2 bg-green-900/20 border border-green-700/30 rounded text-xs text-success">
                 <p>🇪🇬 {t('pricing.calculator.vatInfo', 'VAT 14% included in prices. All prices are in Egyptian Pounds.')}</p>
               </div>
             )}
@@ -299,7 +299,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
           </Button>
           <Button 
             variant="outline" 
-            className="border-gray-600 text-gray-300 hover:bg-gray-700"
+            className="border-border text-foreground hover:bg-muted"
             disabled={!totalPricing || totalPricing.parts.length === 0}
           >
             {t('pricing.calculator.addToCart', 'Add to Cart')}

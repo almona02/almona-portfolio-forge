@@ -122,14 +122,14 @@ const ServicesSection = () => {
   ];
 
   return (
-    <section className="py-10 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">
+    <section className="py-10 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-b from-background via-background to-background relative overflow-hidden">
       <div className="container mx-auto px-3 sm:px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8 md:mb-12 lg:mb-16">
           <span className="text-amber-400 font-medium text-xs sm:text-sm md:text-base opacity-90 sm:opacity-100">{t('services.badge')}</span>
           <h2 className="typography-h2 text-xl sm:text-2xl md:text-3xl lg:text-4xl mt-2 mb-2 sm:mb-3 md:mb-4 leading-tight px-2">
             {t('services.title_prefix')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400">{t('services.title_highlight')}</span> {t('services.title_suffix')}
           </h2>
-          <p className="text-gray-400/90 sm:text-gray-400 text-xs sm:text-sm md:text-base px-3 sm:px-4">
+          <p className="text-muted-foreground/90 sm:text-muted-foreground text-xs sm:text-sm md:text-base px-3 sm:px-4">
             {t('services.subtitle')}
           </p>
         </div>
@@ -139,15 +139,15 @@ const ServicesSection = () => {
             <Link 
               to={service.path} 
               key={index} 
-              className="bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80 p-3 sm:p-4 md:p-6 rounded-lg border border-slate-700/50 hover:border-amber-500/40 transition-all hover:shadow-lg hover:shadow-amber-500/10 group opacity-95 sm:opacity-100 backdrop-blur-sm"
+              className="bg-gradient-to-br from-background/80 via-card/60 to-background/80 p-3 sm:p-4 md:p-6 rounded-lg border border-border/50 hover:border-amber-500/40 transition-all hover:shadow-lg hover:shadow-amber-500/10 group opacity-95 sm:opacity-100 backdrop-blur-sm"
             >
               <div className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gradient-to-br from-amber-500/25 to-amber-600/15 border border-amber-500/20 flex items-center justify-center rounded-lg mb-2 sm:mb-3 md:mb-4 group-hover:bg-amber-500/30 group-hover:border-amber-400/40 group-hover:shadow-lg group-hover:shadow-amber-500/20 transition-all duration-300">
                 {service.icon}
               </div>
-              <h3 className="typography-h3 text-base sm:text-lg md:text-xl text-white mb-1.5 sm:mb-2 group-hover:text-amber-400 transition-colors leading-tight">
+              <h3 className="typography-h3 text-base sm:text-lg md:text-xl text-foreground mb-1.5 sm:mb-2 group-hover:text-amber-400 transition-colors leading-tight">
                 {service.title}
               </h3>
-              <p className="text-gray-400/90 sm:text-gray-400 mb-2 sm:mb-3 md:mb-4 text-xs sm:text-sm md:text-base leading-relaxed">
+              <p className="text-muted-foreground/90 sm:text-muted-foreground mb-2 sm:mb-3 md:mb-4 text-xs sm:text-sm md:text-base leading-relaxed">
                 {service.description}
               </p>
               <div className="flex items-center text-amber-400 font-medium text-xs sm:text-sm group-hover:text-amber-300 transition-colors">

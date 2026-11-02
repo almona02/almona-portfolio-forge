@@ -96,7 +96,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
       maxWeight: 50000,
       estimatedDays: '3-7 days',
       features: ['Eco-friendly', 'Cost-effective', 'Heavy cargo support', 'Historical route'],
-      color: 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+      color: 'bg-blue-500/20 text-info border-blue-500/30'
     },
     {
       id: 'sea-freight',
@@ -109,7 +109,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
       maxWeight: 100000,
       estimatedDays: '7-21 days',
       features: ['International', 'Large capacity', 'Container options', 'Tracking available'],
-      color: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'
+      color: 'bg-cyan-500/20 text-info border-cyan-500/30'
     },
     {
       id: 'air-freight',
@@ -122,7 +122,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
       maxWeight: 10000,
       estimatedDays: '1-3 days',
       features: ['Fastest delivery', 'Global reach', 'Priority handling', 'Real-time tracking'],
-      color: 'bg-sky-500/20 text-sky-400 border-sky-500/30'
+      color: 'bg-sky-500/20 text-info border-sky-500/30'
     },
     {
       id: 'land-freight',
@@ -135,7 +135,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
       maxWeight: 30000,
       estimatedDays: '1-5 days',
       features: ['Door-to-door', 'Flexible routes', 'Real-time tracking', 'Local expertise'],
-      color: 'bg-green-500/20 text-green-400 border-green-500/30'
+      color: 'bg-green-500/20 text-success border-green-500/30'
     }
   ];
 
@@ -252,7 +252,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
 
   const getShippingMethodColor = (methodId: string) => {
     const method = shippingOptions.find(opt => opt.id === methodId);
-    return method?.color || 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+    return method?.color || 'bg-muted/20 text-muted-foreground border-border/30';
   };
 
   return (
@@ -269,34 +269,34 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
             <span className="text-gradient-orange">Nile Logistics Calculator</span>
           </h1>
         </div>
-        <p className="text-xl text-gray-400 max-w-4xl mx-auto mb-6">
+        <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-6">
           Comprehensive shipping cost calculator for machinery across Egypt and international destinations
         </p>
         
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-amber-400">4</div>
-              <div className="text-sm text-gray-400">Shipping Methods</div>
+              <div className="text-sm text-muted-foreground">Shipping Methods</div>
             </CardContent>
           </Card>
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-400">18+</div>
-              <div className="text-sm text-gray-400">Destinations</div>
+              <div className="text-2xl font-bold text-success">18+</div>
+              <div className="text-sm text-muted-foreground">Destinations</div>
             </CardContent>
           </Card>
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-400">24/7</div>
-              <div className="text-sm text-gray-400">Tracking</div>
+              <div className="text-2xl font-bold text-info">24/7</div>
+              <div className="text-sm text-muted-foreground">Tracking</div>
             </CardContent>
           </Card>
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-amber-400">99%</div>
-              <div className="text-sm text-gray-400">On-Time</div>
+              <div className="text-sm text-muted-foreground">On-Time</div>
             </CardContent>
           </Card>
         </div>
@@ -314,7 +314,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
         <TabsContent value="calculator" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Calculator Form */}
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calculator className="h-6 w-6 text-amber-400" />
@@ -352,7 +352,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                     <select
                       value={fromPort}
                       onChange={(e) => setFromPort(e.target.value)}
-                      className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                      className="w-full p-2 bg-muted border border-border rounded-md text-foreground"
                     >
                       {ports.map((port) => (
                         <option key={port.id} value={port.id}>
@@ -366,7 +366,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                     <select
                       value={toDestination}
                       onChange={(e) => setToDestination(e.target.value)}
-                      className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                      className="w-full p-2 bg-muted border border-border rounded-md text-foreground"
                     >
                       {destinations.map((dest) => (
                         <option key={dest.id} value={dest.id}>
@@ -392,7 +392,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                   <label className="typography-label block text-sm font-medium mb-3">Dimensions (cm)</label>
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="typography-label block text-xs text-gray-400 mb-1">Length</label>
+                      <label className="typography-label block text-xs text-muted-foreground mb-1">Length</label>
                       <Input
                         type="number"
                         value={dimensions.length}
@@ -401,7 +401,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                       />
                     </div>
                     <div>
-                      <label className="typography-label block text-xs text-gray-400 mb-1">Width</label>
+                      <label className="typography-label block text-xs text-muted-foreground mb-1">Width</label>
                       <Input
                         type="number"
                         value={dimensions.width}
@@ -410,7 +410,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                       />
                     </div>
                     <div>
-                      <label className="typography-label block text-xs text-gray-400 mb-1">Height</label>
+                      <label className="typography-label block text-xs text-muted-foreground mb-1">Height</label>
                       <Input
                         type="number"
                         value={dimensions.height}
@@ -429,7 +429,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                       id="insurance"
                       checked={insurance}
                       onChange={(e) => setInsurance(e.target.checked)}
-                      className="rounded border-gray-600 bg-gray-700 text-amber-500 focus:ring-amber-500"
+                      className="rounded border-border bg-muted text-amber-500 focus:ring-amber-500"
                     />
                     <label htmlFor="insurance" className="typography-label text-sm">Insurance Coverage (+20%)</label>
                   </div>
@@ -439,7 +439,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                       id="urgent"
                       checked={urgent}
                       onChange={(e) => setUrgent(e.target.checked)}
-                      className="rounded border-gray-600 bg-gray-700 text-amber-500 focus:ring-amber-500"
+                      className="rounded border-border bg-muted text-amber-500 focus:ring-amber-500"
                     />
                     <label htmlFor="urgent" className="typography-label text-sm">Urgent Delivery (+50%)</label>
                   </div>
@@ -456,7 +456,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
             </Card>
 
             {/* Results */}
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <DollarSign className="h-6 w-6 text-amber-400" />
@@ -470,10 +470,10 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                       <h3 className="typography-h3 text-3xl text-amber-400 mb-2">
                         {calculatedCost.toLocaleString('en-US')} EGP
                       </h3>
-                      <p className="text-gray-400">
+                      <p className="text-muted-foreground">
                         {shippingOptions.find(opt => opt.id === shippingMethod)?.name}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         From {fromPort} to {toDestination}
                       </p>
                     </div>
@@ -498,7 +498,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                               <span>+{costBreakdown.insuranceFee.toLocaleString('en-US')} EGP</span>
                             </div>
                           )}
-                          <div className="border-t border-gray-600 pt-2 flex justify-between font-semibold">
+                          <div className="border-t border-border pt-2 flex justify-between font-semibold">
                             <span>Total:</span>
                             <span>{costBreakdown.totalCost.toLocaleString('en-US')} EGP</span>
                           </div>
@@ -506,19 +506,19 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
 
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
-                            <span className="text-gray-400">Weight:</span>
+                            <span className="text-muted-foreground">Weight:</span>
                             <p className="font-medium">{costBreakdown.weight.toLocaleString('en-US')} kg</p>
                           </div>
                           <div>
-                            <span className="text-gray-400">Distance:</span>
+                            <span className="text-muted-foreground">Distance:</span>
                             <p className="font-medium">{costBreakdown.distance} km</p>
                           </div>
                           <div>
-                            <span className="text-gray-400">Volume:</span>
+                            <span className="text-muted-foreground">Volume:</span>
                             <p className="font-medium">{costBreakdown.volume.toFixed(2)} m³</p>
                           </div>
                           <div>
-                            <span className="text-gray-400">Est. Delivery:</span>
+                            <span className="text-muted-foreground">Est. Delivery:</span>
                             <p className="font-medium">{costBreakdown.estimatedDays}</p>
                           </div>
                         </div>
@@ -538,8 +538,8 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <Calculator className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-400">Enter your shipping details and click "Calculate" to get a quote</p>
+                    <Calculator className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">Enter your shipping details and click "Calculate" to get a quote</p>
                   </div>
                 )}
               </CardContent>
@@ -584,7 +584,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                         <ul className="space-y-1">
                           {option.features.map((feature, index) => (
                             <li key={index} className="flex items-center gap-2 text-sm">
-                              <CheckCircle className="h-4 w-4 text-green-400" />
+                              <CheckCircle className="h-4 w-4 text-success" />
                               {feature}
                             </li>
                           ))}
@@ -615,7 +615,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
         {/* Tracking & Support Tab */}
         <TabsContent value="tracking" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Route className="h-6 w-6 text-amber-400" />
@@ -635,21 +635,21 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                 <div className="space-y-3">
                   <h4 className="typography-h4">Recent Shipments:</h4>
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded">
                       <div>
                         <p className="text-sm font-medium">#NL2024001</p>
-                        <p className="text-xs text-gray-400">Cairo → Alexandria</p>
+                        <p className="text-xs text-muted-foreground">Cairo → Alexandria</p>
                       </div>
-                      <Badge variant="outline" className="text-green-400 border-green-400">
+                      <Badge variant="outline" className="text-success border-green-400">
                         Delivered
                       </Badge>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded">
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded">
                       <div>
                         <p className="text-sm font-medium">#NL2024002</p>
-                        <p className="text-xs text-gray-400">Port Said → Suez</p>
+                        <p className="text-xs text-muted-foreground">Port Said → Suez</p>
                       </div>
-                      <Badge variant="outline" className="text-blue-400 border-blue-400">
+                      <Badge variant="outline" className="text-info border-blue-400">
                         In Transit
                       </Badge>
                     </div>
@@ -658,7 +658,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-card/50 border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Phone className="h-6 w-6 text-amber-400" />
@@ -667,25 +667,25 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3 p-3 bg-gray-700/50 rounded">
+                  <div className="flex items-center gap-3 p-3 bg-muted/50 rounded">
                     <Phone className="h-5 w-5 text-amber-400" />
                     <div>
                       <p className="font-medium">Phone Support</p>
-                      <p className="text-sm text-gray-400">+20 2 2274 0000</p>
+                      <p className="text-sm text-muted-foreground">+20 2 2274 0000</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-gray-700/50 rounded">
+                  <div className="flex items-center gap-3 p-3 bg-muted/50 rounded">
                     <Mail className="h-5 w-5 text-amber-400" />
                     <div>
                       <p className="font-medium">Email Support</p>
-                      <p className="text-sm text-gray-400">logistics@almona.com</p>
+                      <p className="text-sm text-muted-foreground">logistics@almona.com</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-gray-700/50 rounded">
+                  <div className="flex items-center gap-3 p-3 bg-muted/50 rounded">
                     <Globe className="h-5 w-5 text-amber-400" />
                     <div>
                       <p className="font-medium">Live Chat</p>
-                      <p className="text-sm text-gray-400">Available 24/7</p>
+                      <p className="text-sm text-muted-foreground">Available 24/7</p>
                     </div>
                   </div>
                 </div>
@@ -708,7 +708,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
             </Card>
           </div>
 
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Info className="h-6 w-6 text-amber-400" />
@@ -717,20 +717,20 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center p-4 bg-gray-700/30 rounded">
-                  <CheckCircle className="h-8 w-8 text-green-400 mx-auto mb-2" />
+                <div className="text-center p-4 bg-muted/30 rounded">
+                  <CheckCircle className="h-8 w-8 text-success mx-auto mb-2" />
                   <h4 className="typography-h4 mb-1">Insurance Coverage</h4>
-                  <p className="text-sm text-gray-400">Full coverage up to 100,000 EGP</p>
+                  <p className="text-sm text-muted-foreground">Full coverage up to 100,000 EGP</p>
                 </div>
-                <div className="text-center p-4 bg-gray-700/30 rounded">
-                  <Route className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+                <div className="text-center p-4 bg-muted/30 rounded">
+                  <Route className="h-8 w-8 text-info mx-auto mb-2" />
                   <h4 className="typography-h4 mb-1">Real-time Tracking</h4>
-                  <p className="text-sm text-gray-400">GPS tracking and status updates</p>
+                  <p className="text-sm text-muted-foreground">GPS tracking and status updates</p>
                 </div>
-                <div className="text-center p-4 bg-gray-700/30 rounded">
+                <div className="text-center p-4 bg-muted/30 rounded">
                   <Shield className="h-8 w-8 text-amber-400 mx-auto mb-2" />
                   <h4 className="typography-h4 mb-1">Secure Handling</h4>
-                  <p className="text-sm text-gray-400">Professional packaging and handling</p>
+                  <p className="text-sm text-muted-foreground">Professional packaging and handling</p>
                 </div>
               </div>
             </CardContent>

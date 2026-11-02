@@ -133,7 +133,7 @@ export function AdvancedModelViewer() {
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
     >
-      <Card className="group cursor-pointer bg-gradient-to-br from-gray-900 to-black border-gray-700 hover:border-amber-400/50 transition-all duration-300 overflow-hidden">
+      <Card className="group cursor-pointer bg-gradient-to-br from-background to-black border-border hover:border-amber-400/50 transition-all duration-300 overflow-hidden">
         <CardHeader className="p-0">
           <div className="relative aspect-square overflow-hidden">
             <img
@@ -160,13 +160,13 @@ export function AdvancedModelViewer() {
           <CardTitle className="text-white text-lg mb-2 line-clamp-2">
             {model.name}
           </CardTitle>
-          <p className="text-gray-400 text-sm line-clamp-2 mb-3">
+          <p className="text-muted-foreground text-sm line-clamp-2 mb-3">
             {model.description}
           </p>
 
           <div className="flex flex-wrap gap-1 mb-3">
             {model.tags.slice(0, 3).map((tag: string, index: number) => (
-              <Badge key={index} variant="outline" className="text-xs text-gray-400 border-gray-600">
+              <Badge key={index} variant="outline" className="text-xs text-muted-foreground border-border">
                 {tag}
               </Badge>
             ))}
@@ -187,7 +187,7 @@ export function AdvancedModelViewer() {
                   size="sm"
                   variant="outline"
                   onClick={() => handleCompareSelect(model, 'left')}
-                  className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                  className="border-border text-foreground hover:bg-card"
                 >
                   <GitCompare className="w-4 h-4" />
                 </Button>
@@ -198,7 +198,7 @@ export function AdvancedModelViewer() {
                   size="sm"
                   variant="outline"
                   onClick={() => handleCompareSelect(model, 'left')}
-                  className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800"
+                  className="flex-1 border-border text-foreground hover:bg-card"
                 >
                   Left
                 </Button>
@@ -206,7 +206,7 @@ export function AdvancedModelViewer() {
                   size="sm"
                   variant="outline"
                   onClick={() => handleCompareSelect(model, 'right')}
-                  className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800"
+                  className="flex-1 border-border text-foreground hover:bg-card"
                 >
                   Right
                 </Button>
@@ -219,7 +219,7 @@ export function AdvancedModelViewer() {
   );
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 pt-24">
+    <main className="min-h-screen bg-gradient-to-br from-background via-black to-background pt-24">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <motion.div
@@ -233,7 +233,7 @@ export function AdvancedModelViewer() {
               Advanced 3D Model Viewer
             </span>
           </h1>
-          <p className="text-gray-400 text-lg max-w-3xl mx-auto">
+          <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
             Professional 3D model viewer with measurement tools, AR support, collaborative features,
             and advanced visualization capabilities.
           </p>
@@ -247,7 +247,7 @@ export function AdvancedModelViewer() {
           transition={{ delay: 0.2 }}
         >
           <Tabs value={viewerMode} onValueChange={(value: any) => setViewerMode(value)} className="w-full max-w-2xl">
-            <TabsList className="grid w-full grid-cols-4 bg-gray-800">
+            <TabsList className="grid w-full grid-cols-4 bg-card">
               <TabsTrigger value="single" className="btn-primary">
                 <Eye className="w-4 h-4 mr-2" />
                 Single View
@@ -273,7 +273,7 @@ export function AdvancedModelViewer() {
           {/* Sidebar Controls */}
           <div className="lg:col-span-1 space-y-6">
             {/* Viewer Settings */}
-            <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700">
+            <Card className="bg-gradient-to-br from-background to-black border-border">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <Settings className="w-5 h-5 text-amber-500" />
@@ -283,7 +283,7 @@ export function AdvancedModelViewer() {
               <CardContent className="space-y-4">
                 {/* Scale Control */}
                 <div>
-                  <Label htmlFor="scale" className="typography-label text-gray-300">
+                  <Label htmlFor="scale" className="typography-label text-foreground">
                     Scale: {viewerSettings.scale.toFixed(1)}x
                   </Label>
                   <Slider
@@ -299,7 +299,7 @@ export function AdvancedModelViewer() {
 
                 {/* Auto Rotate */}
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="autoRotate" className="typography-label text-gray-300">Auto Rotate</Label>
+                  <Label htmlFor="autoRotate" className="typography-label text-foreground">Auto Rotate</Label>
                   <Switch
                     id="autoRotate"
                     checked={viewerSettings.autoRotate}
@@ -310,7 +310,7 @@ export function AdvancedModelViewer() {
                 {/* Auto Rotate Speed */}
                 {viewerSettings.autoRotate && (
                   <div>
-                    <Label htmlFor="rotateSpeed" className="typography-label text-gray-300">
+                    <Label htmlFor="rotateSpeed" className="typography-label text-foreground">
                       Speed: {viewerSettings.autoRotateSpeed.toFixed(1)}x
                     </Label>
                     <Slider
@@ -327,15 +327,15 @@ export function AdvancedModelViewer() {
 
                 {/* Background Color */}
                 <div>
-                  <Label className="typography-label text-gray-300">Background</Label>
+                  <Label className="typography-label text-foreground">Background</Label>
                   <Select
                     value={viewerSettings.backgroundColor}
                     onValueChange={(value) => setViewerSettings(prev => ({ ...prev, backgroundColor: value }))}
                   >
-                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                    <SelectTrigger className="bg-card border-border text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-600">
+                    <SelectContent className="bg-card border-border">
                       <SelectItem value="#111">Dark</SelectItem>
                       <SelectItem value="#ffffff">Light</SelectItem>
                       <SelectItem value="#f3f4f6">Gray</SelectItem>
@@ -346,15 +346,15 @@ export function AdvancedModelViewer() {
 
                 {/* Lighting */}
                 <div>
-                  <Label className="typography-label text-gray-300">Lighting</Label>
+                  <Label className="typography-label text-foreground">Lighting</Label>
                   <Select
                     value={viewerSettings.lighting}
                     onValueChange={(value: any) => setViewerSettings(prev => ({ ...prev, lighting: value }))}
                   >
-                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                    <SelectTrigger className="bg-card border-border text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-600">
+                    <SelectContent className="bg-card border-border">
                       <SelectItem value="studio">Studio</SelectItem>
                       <SelectItem value="warehouse">Warehouse</SelectItem>
                       <SelectItem value="outdoor">Outdoor</SelectItem>
@@ -364,15 +364,15 @@ export function AdvancedModelViewer() {
 
                 {/* Quality */}
                 <div>
-                  <Label className="typography-label text-gray-300">Quality</Label>
+                  <Label className="typography-label text-foreground">Quality</Label>
                   <Select
                     value={viewerSettings.quality}
                     onValueChange={(value: any) => setViewerSettings(prev => ({ ...prev, quality: value }))}
                   >
-                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                    <SelectTrigger className="bg-card border-border text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-600">
+                    <SelectContent className="bg-card border-border">
                       <SelectItem value="low">Low</SelectItem>
                       <SelectItem value="medium">Medium</SelectItem>
                       <SelectItem value="high">High</SelectItem>
@@ -383,7 +383,7 @@ export function AdvancedModelViewer() {
                 <Button
                   onClick={resetViewer}
                   variant="outline"
-                  className="w-full border-gray-600 text-gray-300 hover:bg-gray-800"
+                  className="w-full border-border text-foreground hover:bg-card"
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
                   Reset Settings
@@ -392,7 +392,7 @@ export function AdvancedModelViewer() {
             </Card>
 
             {/* Tools */}
-            <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700">
+            <Card className="bg-gradient-to-br from-background to-black border-border">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <Zap className="w-5 h-5 text-amber-500" />
@@ -423,7 +423,7 @@ export function AdvancedModelViewer() {
                     <Button
                       onClick={() => handleModelDownload(selectedModel)}
                       variant="outline"
-                      className="w-full border-gray-600 text-gray-300 hover:bg-gray-800"
+                      className="w-full border-border text-foreground hover:bg-card"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Download Model
@@ -432,7 +432,7 @@ export function AdvancedModelViewer() {
                     <Button
                       onClick={() => handleModelShare(selectedModel)}
                       variant="outline"
-                      className="w-full border-gray-600 text-gray-300 hover:bg-gray-800"
+                      className="w-full border-border text-foreground hover:bg-card"
                     >
                       <Share2 className="w-4 h-4 mr-2" />
                       Share Model
@@ -444,7 +444,7 @@ export function AdvancedModelViewer() {
 
             {/* Model Info */}
             {selectedModel && (
-              <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700">
+              <Card className="bg-gradient-to-br from-background to-black border-border">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
                     <Info className="w-5 h-5 text-amber-500" />
@@ -454,12 +454,12 @@ export function AdvancedModelViewer() {
                 <CardContent className="space-y-3">
                   <div>
                     <h4 className="typography-h4 text-white">{selectedModel.name}</h4>
-                    <p className="text-gray-400 text-sm mt-1">{selectedModel.description}</p>
+                    <p className="text-muted-foreground text-sm mt-1">{selectedModel.description}</p>
                   </div>
 
                   {selectedModel.dimensions && (
-                    <div className="bg-gray-800 p-3 rounded-lg">
-                      <div className="text-sm text-gray-400 mb-1">Dimensions</div>
+                    <div className="bg-card p-3 rounded-lg">
+                      <div className="text-sm text-muted-foreground mb-1">Dimensions</div>
                       <div className="text-white text-sm">
                         {selectedModel.dimensions.length} × {selectedModel.dimensions.width} × {selectedModel.dimensions.height}
                       </div>
@@ -467,18 +467,18 @@ export function AdvancedModelViewer() {
                   )}
 
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">File Size:</span>
+                    <span className="text-muted-foreground">File Size:</span>
                     <span className="text-white">{selectedModel.fileSize}</span>
                   </div>
 
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Updated:</span>
+                    <span className="text-muted-foreground">Updated:</span>
                     <span className="text-white">{selectedModel.lastUpdated}</span>
                   </div>
 
                   <div className="flex flex-wrap gap-1 mt-3">
                     {selectedModel.tags.map((tag: string, index: number) => (
-                      <Badge key={index} variant="outline" className="text-xs text-gray-400 border-gray-600">
+                      <Badge key={index} variant="outline" className="text-xs text-muted-foreground border-border">
                         {tag}
                       </Badge>
                     ))}
@@ -496,7 +496,7 @@ export function AdvancedModelViewer() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700">
+                <Card className="bg-gradient-to-br from-background to-black border-border">
                   <CardHeader>
                     <CardTitle className="text-white flex items-center justify-between">
                       <span>3D Model Viewer</span>
@@ -591,7 +591,7 @@ export function AdvancedModelViewer() {
                 transition={{ duration: 0.5 }}
               >
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                  <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700">
+                  <Card className="bg-gradient-to-br from-background to-black border-border">
                     <CardHeader>
                       <CardTitle className="text-white">Left Model</CardTitle>
                     </CardHeader>
@@ -603,7 +603,7 @@ export function AdvancedModelViewer() {
                             backgroundColor={viewerSettings.backgroundColor}
                           />
                         ) : (
-                          <div className="flex items-center justify-center h-full text-gray-400">
+                          <div className="flex items-center justify-center h-full text-muted-foreground">
                             Select a model to compare
                           </div>
                         )}
@@ -611,7 +611,7 @@ export function AdvancedModelViewer() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700">
+                  <Card className="bg-gradient-to-br from-background to-black border-border">
                     <CardHeader>
                       <CardTitle className="text-white">Right Model</CardTitle>
                     </CardHeader>
@@ -623,7 +623,7 @@ export function AdvancedModelViewer() {
                             backgroundColor={viewerSettings.backgroundColor}
                           />
                         ) : (
-                          <div className="flex items-center justify-center h-full text-gray-400">
+                          <div className="flex items-center justify-center h-full text-muted-foreground">
                             Select a model to compare
                           </div>
                         )}
@@ -648,20 +648,20 @@ export function AdvancedModelViewer() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700">
+                <Card className="bg-gradient-to-br from-background to-black border-border">
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
                       <Users className="w-5 h-5 text-amber-500" />
                       Collaborative 3D Viewer
                     </CardTitle>
-                    <CardDescription className="text-gray-400">
+                    <CardDescription className="text-muted-foreground">
                       Work together on 3D models in real-time
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-0">
                     <div className="h-[70vh]">
                       <Suspense fallback={
-                        <div className="flex items-center justify-center h-96 bg-gray-900 rounded-lg">
+                        <div className="flex items-center justify-center h-96 bg-background rounded-lg">
                           <div className="text-center">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
                             <p className="text-white">Loading 3D Collaboration Engine...</p>

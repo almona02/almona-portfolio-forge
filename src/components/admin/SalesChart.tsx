@@ -94,7 +94,7 @@ export const SalesChart: React.FC = () => {
     new Intl.NumberFormat('en-EG', { style: 'currency', currency: 'EGP', maximumFractionDigits: 0 }).format(n)
 
   return (
-    <Card className="bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-white/20 shadow-lg transition-shadow hover:shadow-xl">
+    <Card className="bg-foreground/70 backdrop-blur supports-[backdrop-filter]:bg-foreground/60 border-white/20 shadow-lg transition-shadow hover:shadow-xl">
       <CardHeader>
         <CardTitle>Sales (Last 30 Days)</CardTitle>
       </CardHeader>
@@ -102,7 +102,7 @@ export const SalesChart: React.FC = () => {
         {loading ? (
           <div className="h-56 flex items-center justify-center text-sm text-muted-foreground">Loading...</div>
         ) : error ? (
-          <div className="h-56 flex items-center justify-center text-sm text-red-600">{error}</div>
+          <div className="h-56 flex items-center justify-center text-sm text-destructive">{error}</div>
         ) : (
           <div className="h-56">
             <Suspense fallback={<div className="h-56 flex items-center justify-center text-sm text-muted-foreground">Loading chart...</div>}>

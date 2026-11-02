@@ -53,17 +53,17 @@ export const LazyModelWrapper: React.FC<LazyModelWrapperProps> = ({
   if (!isLoaded) {
     return (
       <div 
-        className="w-full bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700"
+        className="w-full bg-gradient-to-br from-background to-muted dark:from-background dark:to-card flex items-center justify-center rounded-lg border border-border dark:border-border"
         style={{ height }}
       >
         <div className="text-center p-8 max-w-md">
           <div className="mb-4 flex justify-center">
-            <Box className="w-12 h-12 text-slate-400 dark:text-slate-500" />
+            <Box className="w-12 h-12 text-muted-foreground dark:text-muted-foreground" />
           </div>
-          <h3 className="typography-h3 mb-2 text-lg text-slate-900 dark:text-slate-100">
+          <h3 className="typography-h3 mb-2 text-lg text-foreground dark:text-foreground">
             3D Visualization
           </h3>
-          <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
+          <p className="mb-4 text-sm text-muted-foreground dark:text-muted-foreground">
             Click to load the 3D model viewer
           </p>
           <Button 
@@ -73,7 +73,7 @@ export const LazyModelWrapper: React.FC<LazyModelWrapperProps> = ({
           >
             Load 3D Model
           </Button>
-          <p className="text-xs text-slate-500 dark:text-slate-500 mt-2">
+          <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-2">
             ~1.5MB 3D engine will load on demand
           </p>
         </div>
@@ -91,10 +91,10 @@ export const LazyModelWrapper: React.FC<LazyModelWrapperProps> = ({
     <div style={{ height, width: '100%' }} className="relative">
       <Suspense 
         fallback={
-          <div className="h-full w-full flex items-center justify-center bg-slate-50 dark:bg-slate-900 rounded-lg">
+          <div className="h-full w-full flex items-center justify-center bg-background dark:bg-background rounded-lg">
             <div className="text-center">
-              <Loader2 className="w-8 h-8 animate-spin text-slate-400 mx-auto mb-2" />
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <Loader2 className="w-8 h-8 animate-spin text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                 Loading 3D engine...
               </p>
             </div>

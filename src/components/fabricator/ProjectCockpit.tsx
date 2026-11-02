@@ -85,8 +85,8 @@ export const ProjectCockpit: React.FC<ProjectCockpitProps> = ({
   return (
     <div className={cn('space-y-4', className)}>
       <div className="text-center space-y-2">
-        <h2 className="typography-h2 text-white">What Are We Building?</h2>
-        <p className="text-sm text-gray-400">
+        <h2 className="typography-h2 text-foreground">What Are We Building?</h2>
+        <p className="text-sm text-muted-foreground">
           Select your project type to pre-load relevant settings and system packs
         </p>
       </div>
@@ -103,7 +103,7 @@ export const ProjectCockpit: React.FC<ProjectCockpitProps> = ({
                 'cursor-pointer transition-all hover:border-amber-500/50',
                 isSelected
                   ? 'border-amber-500 bg-amber-500/10'
-                  : 'bg-gray-800/50 border-gray-700 hover:bg-gray-800'
+                  : 'bg-card/50 border-border hover:bg-card'
               )}
               onClick={() => onSelectType(type.id)}
             >
@@ -112,13 +112,13 @@ export const ProjectCockpit: React.FC<ProjectCockpitProps> = ({
                   <div
                     className={cn(
                       'p-2 rounded-lg',
-                      isSelected ? 'bg-amber-500/20' : 'bg-gray-700/50'
+                      isSelected ? 'bg-amber-500/20' : 'bg-muted/50'
                     )}
                   >
                     <Icon
                       className={cn(
                         'h-6 w-6',
-                        isSelected ? 'text-amber-400' : 'text-gray-400'
+                        isSelected ? 'text-warning' : 'text-muted-foreground'
                       )}
                     />
                   </div>
@@ -126,17 +126,17 @@ export const ProjectCockpit: React.FC<ProjectCockpitProps> = ({
                 </div>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-sm text-gray-300 mb-3">
+                <CardDescription className="text-sm text-foreground mb-3">
                   {type.description}
                 </CardDescription>
                 {type.suggestedSystems.length > 0 && (
                   <div className="space-y-1">
-                    <p className="text-xs text-gray-400 font-medium">Suggested Systems:</p>
+                    <p className="text-xs text-muted-foreground font-medium">Suggested Systems:</p>
                     <div className="flex flex-wrap gap-1">
                       {type.suggestedSystems.map((system) => (
                         <span
                           key={system}
-                          className="text-xs px-2 py-0.5 bg-gray-700/50 rounded text-gray-300"
+                          className="text-xs px-2 py-0.5 bg-muted/50 rounded text-foreground"
                         >
                           {system}
                         </span>

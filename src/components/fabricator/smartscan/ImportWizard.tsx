@@ -160,17 +160,17 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
   };
 
   return (
-    <div className="space-y-6 p-4 bg-slate-900/40 backdrop-blur-sm">
+    <div className="space-y-6 p-4 bg-background/40 backdrop-blur-sm">
       <div className="flex items-center justify-between pb-4 border-b border-amber-500/20">
-        <h3 className="typography-h3 text-lg text-white font-semibold tracking-wide uppercase">
+        <h3 className="typography-h3 text-lg text-foreground font-semibold tracking-wide uppercase">
           Import Profile from Scan
         </h3>
         <Badge 
           variant={scanData.quality.requires_verification ? "default" : "secondary"} 
           className={
             scanData.quality.requires_verification 
-              ? "bg-amber-500/20 text-amber-400 border-amber-500/50 shadow-md shadow-amber-500/10" 
-              : "bg-emerald-500/20 text-emerald-400 border-emerald-500/50 shadow-md shadow-emerald-500/10"
+              ? "bg-amber-500/20 text-warning border-amber-500/50 shadow-md shadow-amber-500/10"
+              : "bg-emerald-500/20 text-success border-emerald-500/50 shadow-md shadow-emerald-500/10"
           }
         >
           {(scanData.quality.confidence_score * 100).toFixed(0)}% Confidence
@@ -179,8 +179,8 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
 
       {scanData.quality.requires_verification && (
         <Alert className="bg-amber-900/20 border-amber-500/50 shadow-md shadow-amber-500/10">
-          <AlertTriangle className="w-4 h-4 text-amber-400" />
-          <AlertDescription className="text-sm text-amber-200">
+          <AlertTriangle className="w-4 h-4 text-warning" />
+          <AlertDescription className="text-sm text-warning">
             Manual verification recommended. Please confirm dimensions before importing.
           </AlertDescription>
         </Alert>
@@ -189,8 +189,8 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div>
-            <Label className="typography-label text-zinc-400 uppercase tracking-wide">Vector Preview</Label>
-            <div className="mt-2 bg-white rounded-lg p-3 border border-amber-500/20 shadow-md">
+            <Label className="typography-label text-muted-foreground uppercase tracking-wide">Vector Preview</Label>
+            <div className="mt-2 bg-card rounded-lg p-3 border border-amber-500/20 shadow-md">
               <svg viewBox={scanData.view_box} className="w-full h-40">
                 <path d={scanData.svg_path} fill="#333333" stroke="none" />
               </svg>
@@ -201,15 +201,15 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
             <div className="space-y-2 p-3 bg-amber-500/10 rounded-lg border border-amber-500/20 shadow-md shadow-amber-500/10">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-5 h-5 rounded-full bg-amber-500/20 flex items-center justify-center border border-amber-500/30">
-                  <span className="text-xs font-bold text-amber-400">automation</span>
+                  <span className="text-xs font-bold text-warning">automation</span>
                 </div>
-                <span className="text-sm font-medium text-amber-400 tracking-wide uppercase">OCR Suggestions</span>
+                <span className="text-sm font-medium text-warning tracking-wide uppercase">OCR Suggestions</span>
               </div>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 {scanData.technical_data.profile_name && (
                   <div>
-                    <span className="text-xs text-zinc-500">Detected name:</span>
-                    <p className="text-sm font-medium text-white truncate">
+                    <span className="text-xs text-muted-foreground">Detected name:</span>
+                    <p className="text-sm font-medium text-foreground truncate">
                       {scanData.technical_data.profile_name}
                     </p>
                   </div>
@@ -217,7 +217,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
 
                 {(scanData.technical_data.material_hints ?? []).length > 0 && (
                   <div>
-                    <span className="text-xs text-zinc-500">Material hints:</span>
+                    <span className="text-xs text-muted-foreground">Material hints:</span>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {(scanData.technical_data.material_hints ?? []).map((mat, idx) => (
                         <Badge key={idx} variant="outline" className="text-xs">
@@ -230,15 +230,15 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
 
                 {scanData.suggestions?.egyptian_standard_match && (
                   <div className="col-span-2">
-                    <span className="text-xs text-zinc-500">Egyptian standard:</span>
+                    <span className="text-xs text-muted-foreground">Egyptian standard:</span>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge
                         variant="outline"
-                        className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 shadow-md shadow-emerald-500/10"
+                        className="bg-emerald-500/10 text-success border-emerald-500/30 shadow-md shadow-emerald-500/10"
                       >
                         {standardMatch?.name || 'Egyptian Standard'}
                       </Badge>
-                      <span className="text-xs text-zinc-500">
+                      <span className="text-xs text-muted-foreground">
                         {((standardMatch?.match_score || 0) * 100).toFixed(0)}% match
                       </span>
                     </div>
@@ -250,35 +250,35 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
 
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-zinc-400">Width:</span>
-              <span className="font-mono text-white">
+              <span className="text-muted-foreground">Width:</span>
+              <span className="font-mono text-foreground">
                 {effectiveDimensions.width_mm.toFixed(1)} mm
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-zinc-400">Height:</span>
-              <span className="font-mono text-white">
+              <span className="text-muted-foreground">Height:</span>
+              <span className="font-mono text-foreground">
                 {effectiveDimensions.height_mm.toFixed(1)} mm
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-zinc-400">Scale Source:</span>
+              <span className="text-muted-foreground">Scale Source:</span>
               <Badge variant="secondary" className="text-xs capitalize">
                 {effectiveDimensions.scale_source.replace("_", " ")}
               </Badge>
             </div>
           </div>
 
-          <div className="space-y-3 p-3 rounded-lg border border-amber-500/20 bg-slate-800/50 backdrop-blur-sm shadow-md">
+          <div className="space-y-3 p-3 rounded-lg border border-amber-500/20 bg-card/50 backdrop-blur-sm shadow-md">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-medium text-white tracking-wide uppercase">Scale verification</p>
-                <p className="text-xs text-zinc-400 mt-1">
+                <p className="text-sm font-medium text-foreground tracking-wide uppercase">Scale verification</p>
+                <p className="text-xs text-muted-foreground mt-1">
                   Enter the true dimensions to override heuristic scale.
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <Label className="typography-label text-xs text-zinc-400">Override scale</Label>
+                <Label className="typography-label text-xs text-muted-foreground">Override scale</Label>
                 <Button
                   type="button"
                   variant={useManualScale ? "default" : "outline"}
@@ -293,7 +293,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <Label className="typography-label text-zinc-400 text-xs">True Width (mm)</Label>
+                <Label className="typography-label text-muted-foreground text-xs">True Width (mm)</Label>
                 <Input
                   value={manualWidth}
                   onChange={(e) => setManualWidth(e.target.value)}
@@ -301,12 +301,12 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
                   type="number"
                   min="0"
                   step="0.1"
-                  className="mt-1 bg-zinc-900 border-zinc-700"
+                  className="mt-1 bg-background border-border"
                   disabled={!useManualScale}
                 />
               </div>
               <div>
-                <Label className="typography-label text-zinc-400 text-xs">True Height (mm)</Label>
+                <Label className="typography-label text-muted-foreground text-xs">True Height (mm)</Label>
                 <Input
                   value={manualHeight}
                   onChange={(e) => setManualHeight(e.target.value)}
@@ -314,12 +314,12 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
                   type="number"
                   min="0"
                   step="0.1"
-                  className="mt-1 bg-zinc-900 border-zinc-700"
+                  className="mt-1 bg-background border-border"
                   disabled={!useManualScale}
                 />
               </div>
             </div>
-            <p className="text-[11px] text-amber-300/90 font-medium">
+            <p className="text-[11px] text-warning/90 font-medium">
               💡 Tip: Use the real measured width/height. Scale is recomputed from the SVG viewBox.
             </p>
           </div>
@@ -327,7 +327,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
 
         <div className="space-y-4">
           <div>
-            <Label htmlFor="profileName" className="typography-label text-zinc-400">
+            <Label htmlFor="profileName" className="typography-label text-muted-foreground">
               Profile Name *
             </Label>
             <Input
@@ -335,15 +335,15 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
               value={profileName}
               onChange={(e) => setProfileName(e.target.value)}
               placeholder="e.g., JUMBO 100 ALUMINUM FRAME"
-              className="mt-1 bg-zinc-900 border-zinc-700"
+              className="mt-1 bg-background border-border"
             />
-            <p className="text-xs text-zinc-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Auto-suggested: {defaultName}
             </p>
           </div>
 
           <div>
-            <Label className="typography-label text-zinc-400">Profile Role</Label>
+            <Label className="typography-label text-muted-foreground">Profile Role</Label>
             <div className="flex gap-2 mt-2 flex-wrap">
               {(["frame", "sash", "mullion", "transom"] as const).map((role) => (
                 <Button
@@ -361,7 +361,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
           </div>
 
           <div>
-            <Label className="typography-label text-zinc-400">Material</Label>
+            <Label className="typography-label text-muted-foreground">Material</Label>
             <div className="flex gap-2 mt-2 flex-wrap">
               {(["aluminum", "upvc", "wood"] as const).map((mat) => (
                 <Button
@@ -378,7 +378,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
             </div>
           </div>
 
-          <div className="pt-4 border-t border-zinc-800 space-y-3 text-sm text-zinc-400">
+          <div className="pt-4 border-t border-border space-y-3 text-sm text-muted-foreground">
             <p>This will:</p>
             <ul className="list-disc list-inside space-y-1">
               <li>Create a new profile in your library</li>
@@ -390,13 +390,13 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
         </div>
       </div>
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-zinc-800">
+      <div className="flex justify-end gap-3 pt-4 border-t border-border">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
           disabled={isSubmitting}
-          className="text-zinc-300 border-zinc-700 hover:bg-zinc-800/50"
+          className="text-foreground border-border hover:bg-card/50"
         >
           Cancel
         </Button>

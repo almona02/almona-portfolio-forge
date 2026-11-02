@@ -107,11 +107,11 @@ const features: Feature[] = [
 const getFeatureIcon = (status: 'yes' | 'partial' | 'no') => {
   switch (status) {
     case 'yes':
-      return <CheckCircle2 className="h-5 w-5 text-emerald-400" />;
+      return <CheckCircle2 className="h-5 w-5 text-success" />;
     case 'partial':
-      return <Minus className="h-5 w-5 text-amber-400" />;
+      return <Minus className="h-5 w-5 text-warning" />;
     case 'no':
-      return <XCircle className="h-5 w-5 text-slate-600" />;
+      return <XCircle className="h-5 w-5 text-muted-foreground" />;
   }
 };
 
@@ -120,44 +120,44 @@ export const DesignModeComparison: React.FC = () => {
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="border-amber-600/30 bg-slate-900/50">
+        <Card className="border-amber-600/30 bg-background/50">
           <CardHeader>
-            <CardTitle className="text-base font-semibold text-amber-200">SmartDraw</CardTitle>
+            <CardTitle className="text-base font-semibold text-warning">SmartDraw</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-400 mb-3">
+            <p className="text-sm text-muted-foreground mb-3">
               Perfect for quick designs using templates and grid-based layouts.
             </p>
             <div className="space-y-2">
-              <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 bg-emerald-500/10 text-xs">
+              <Badge variant="outline" className="border-emerald-500/30 text-success bg-emerald-500/10 text-xs">
                 ✅ Best for beginners
               </Badge>
-              <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 bg-emerald-500/10 text-xs">
+              <Badge variant="outline" className="border-emerald-500/30 text-success bg-emerald-500/10 text-xs">
                 ⚡ Fast workflow
               </Badge>
-              <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 bg-emerald-500/10 text-xs">
+              <Badge variant="outline" className="border-emerald-500/30 text-success bg-emerald-500/10 text-xs">
                 📐 Template-based
               </Badge>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-amber-600/30 bg-slate-900/50">
+        <Card className="border-amber-600/30 bg-background/50">
           <CardHeader>
-            <CardTitle className="text-base font-semibold text-amber-200">Professional Drafting</CardTitle>
+            <CardTitle className="text-base font-semibold text-warning">Professional Drafting</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-400 mb-3">
+            <p className="text-sm text-muted-foreground mb-3">
               Advanced CAD tools for custom designs with precision control.
             </p>
             <div className="space-y-2">
-              <Badge variant="outline" className="border-amber-500/30 text-amber-400 bg-amber-500/10 text-xs">
+              <Badge variant="outline" className="border-amber-500/30 text-warning bg-amber-500/10 text-xs">
                 🎯 CAD precision
               </Badge>
-              <Badge variant="outline" className="border-amber-500/30 text-amber-400 bg-amber-500/10 text-xs">
+              <Badge variant="outline" className="border-amber-500/30 text-warning bg-amber-500/10 text-xs">
                 ⌨️ Keyboard shortcuts
               </Badge>
-              <Badge variant="outline" className="border-amber-500/30 text-amber-400 bg-amber-500/10 text-xs">
+              <Badge variant="outline" className="border-amber-500/30 text-warning bg-amber-500/10 text-xs">
                 🔧 Advanced tools
               </Badge>
             </div>
@@ -166,19 +166,19 @@ export const DesignModeComparison: React.FC = () => {
       </div>
 
       {/* Feature Matrix */}
-      <Card className="border-amber-600/30 bg-slate-900/50">
+      <Card className="border-amber-600/30 bg-background/50">
         <CardHeader>
-          <CardTitle className="text-base font-semibold text-amber-200">Feature Comparison</CardTitle>
+          <CardTitle className="text-base font-semibold text-warning">Feature Comparison</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-amber-600/20">
-                  <th className="text-left py-3 px-4 text-amber-300 font-semibold">Feature</th>
-                  <th className="text-center py-3 px-4 text-amber-300 font-semibold">SmartDraw</th>
-                  <th className="text-center py-3 px-4 text-amber-300 font-semibold">Drafting</th>
-                  <th className="text-left py-3 px-4 text-amber-300 font-semibold">Best For</th>
+                  <th className="text-left py-3 px-4 text-warning font-semibold">Feature</th>
+                  <th className="text-center py-3 px-4 text-warning font-semibold">SmartDraw</th>
+                  <th className="text-center py-3 px-4 text-warning font-semibold">Drafting</th>
+                  <th className="text-left py-3 px-4 text-warning font-semibold">Best For</th>
                 </tr>
               </thead>
               <tbody>
@@ -186,13 +186,13 @@ export const DesignModeComparison: React.FC = () => {
                   <tr
                     key={feature.name}
                     className={`border-b border-amber-600/10 ${
-                      index % 2 === 0 ? 'bg-slate-900/30' : 'bg-slate-900/10'
+                      index % 2 === 0 ? 'bg-background/30' : 'bg-background/10'
                     }`}
                   >
                     <td className="py-3 px-4">
                       <div>
-                        <div className="font-medium text-slate-200">{feature.name}</div>
-                        <div className="text-xs text-slate-400 mt-1">{feature.description}</div>
+                        <div className="font-medium text-foreground">{feature.name}</div>
+                        <div className="text-xs text-muted-foreground mt-1">{feature.description}</div>
                       </div>
                     </td>
                     <td className="text-center py-3 px-4">
@@ -201,7 +201,7 @@ export const DesignModeComparison: React.FC = () => {
                     <td className="text-center py-3 px-4">
                       {getFeatureIcon(feature.drafting)}
                     </td>
-                    <td className="py-3 px-4 text-xs text-slate-400">
+                    <td className="py-3 px-4 text-xs text-muted-foreground">
                       {feature.bestFor || '-'}
                     </td>
                   </tr>
@@ -215,12 +215,12 @@ export const DesignModeComparison: React.FC = () => {
       {/* Recommendations */}
       <Card className="border-amber-600/30 bg-amber-500/5">
         <CardHeader>
-          <CardTitle className="text-base font-semibold text-amber-200">Recommendations</CardTitle>
+          <CardTitle className="text-base font-semibold text-warning">Recommendations</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3 text-sm text-slate-300">
+        <CardContent className="space-y-3 text-sm text-foreground">
           <div>
-            <strong className="text-amber-400">Choose SmartDraw if:</strong>
-            <ul className="list-disc list-inside mt-2 space-y-1 text-slate-400">
+            <strong className="text-warning">Choose SmartDraw if:</strong>
+            <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground">
               <li>You're new to window design</li>
               <li>You need quick layouts using templates</li>
               <li>You're working with standard window configurations</li>
@@ -228,16 +228,16 @@ export const DesignModeComparison: React.FC = () => {
             </ul>
           </div>
           <div>
-            <strong className="text-amber-400">Choose Drafting if:</strong>
-            <ul className="list-disc list-inside mt-2 space-y-1 text-slate-400">
+            <strong className="text-warning">Choose Drafting if:</strong>
+            <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground">
               <li>You need CAD-level precision</li>
               <li>You're designing custom or complex geometries</li>
               <li>You're a professional architect or engineer</li>
               <li>You need advanced features like layers and custom shapes</li>
             </ul>
           </div>
-          <div className="mt-4 p-3 bg-slate-900/50 rounded border border-amber-600/20">
-            <p className="text-xs text-amber-300">
+          <div className="mt-4 p-3 bg-background/50 rounded border border-amber-600/20">
+            <p className="text-xs text-warning">
               💡 <strong>Tip:</strong> You can switch between modes at any time. Your design state is automatically synchronized.
             </p>
           </div>

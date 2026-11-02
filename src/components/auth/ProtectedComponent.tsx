@@ -41,7 +41,7 @@ export const ProtectedComponent: React.FC<ProtectedComponentProps> = ({
           <CardTitle className="text-lg">مطلوب تسجيل الدخول</CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
-          <p className="text-gray-600">{message}</p>
+          <p className="text-muted-foreground">{message}</p>
           <Button 
             onClick={() => window.location.href = '/login'}
             className="btn-primary"
@@ -58,15 +58,15 @@ export const ProtectedComponent: React.FC<ProtectedComponentProps> = ({
       <Card className="max-w-md mx-auto">
         <CardHeader className="text-center">
           <div className="mx-auto w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
-            <AlertCircle className="h-6 w-6 text-red-600" />
+            <AlertCircle className="h-6 w-6 text-destructive" />
           </div>
           <CardTitle className="text-lg">غير مصرح بالوصول</CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             ليس لديك الصلاحية للوصول إلى هذه الميزة
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             المطلوب: {requireRole.join(' أو ')}
           </p>
         </CardContent>

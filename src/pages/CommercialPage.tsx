@@ -830,7 +830,7 @@ const CommercialPageComponent: React.FC = () => {
 
       {/* Tabs for Workspace and Reports */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'workspace' | 'reports' | 'reconciliation' | 'tax' | 'invoices' | 'templates')} className="w-full">
-        <TabsList className="bg-[#0f0f0f]/60 border-amber-600/20 mb-6 grid grid-cols-6">
+        <TabsList className="bg-background/60 border-amber-600/20 mb-6 grid grid-cols-6">
           <TabsTrigger value="workspace" className="text-amber-300 data-[state=active]:text-amber-200">
             <FileText className="w-4 h-4 mr-2" />
             Workspace
@@ -879,7 +879,7 @@ const CommercialPageComponent: React.FC = () => {
           )}
 
           {/* Search and Filters Bar */}
-          <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+          <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
             <CardContent className="pt-6">
               <div className="flex flex-col md:flex-row gap-4">
                 {/* Search Inputs */}
@@ -891,7 +891,7 @@ const CommercialPageComponent: React.FC = () => {
                       placeholder="Search quotes..."
                       value={quoteSearch}
                       onChange={(e) => setQuoteSearch(e.target.value)}
-                      className="pl-9 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
+                      className="pl-9 bg-background/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
                     />
                   </div>
                   <div className="flex-1 relative">
@@ -901,7 +901,7 @@ const CommercialPageComponent: React.FC = () => {
                       placeholder="Search invoices..."
                       value={invoiceSearch}
                       onChange={(e) => setInvoiceSearch(e.target.value)}
-                      className="pl-9 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
+                      className="pl-9 bg-background/60 border-amber-600/30 text-amber-200 placeholder:text-amber-600/50"
                     />
                   </div>
                 </div>
@@ -943,10 +943,10 @@ const CommercialPageComponent: React.FC = () => {
                     <div>
                       <Label className="text-xs text-amber-600/70 mb-2 block">Quote Status</Label>
                       <Select value={quoteStatusFilter} onValueChange={setQuoteStatusFilter}>
-                        <SelectTrigger className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200">
+                        <SelectTrigger className="bg-background/60 border-amber-600/30 text-amber-200">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#0f0f0f] border-amber-600/30">
+                        <SelectContent className="bg-background border-amber-600/30">
                           <SelectItem value="all">All Statuses</SelectItem>
                           <SelectItem value="draft">Draft</SelectItem>
                           <SelectItem value="sent">Sent</SelectItem>
@@ -958,10 +958,10 @@ const CommercialPageComponent: React.FC = () => {
                     <div>
                       <Label className="text-xs text-amber-600/70 mb-2 block">Invoice Status</Label>
                       <Select value={invoiceStatusFilter} onValueChange={setInvoiceStatusFilter}>
-                        <SelectTrigger className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200">
+                        <SelectTrigger className="bg-background/60 border-amber-600/30 text-amber-200">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#0f0f0f] border-amber-600/30">
+                        <SelectContent className="bg-background border-amber-600/30">
                           <SelectItem value="all">All Statuses</SelectItem>
                           <SelectItem value="draft">Draft</SelectItem>
                           <SelectItem value="booked">Booked</SelectItem>
@@ -972,10 +972,10 @@ const CommercialPageComponent: React.FC = () => {
                     <div>
                       <Label className="text-xs text-amber-600/70 mb-2 block">Currency</Label>
                       <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-                        <SelectTrigger className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200">
+                        <SelectTrigger className="bg-background/60 border-amber-600/30 text-amber-200">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#0f0f0f] border-amber-600/30">
+                        <SelectContent className="bg-background border-amber-600/30">
                           <SelectItem value="all">All Currencies</SelectItem>
                           {availableCurrencies.map(currency => (
                             <SelectItem key={currency} value={currency}>{currency}</SelectItem>
@@ -990,10 +990,10 @@ const CommercialPageComponent: React.FC = () => {
                     <div>
                       <Label className="text-xs text-amber-600/70 mb-2 block">Customer</Label>
                       <Select value={customerFilter} onValueChange={setCustomerFilter}>
-                        <SelectTrigger className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200">
+                        <SelectTrigger className="bg-background/60 border-amber-600/30 text-amber-200">
                           <SelectValue placeholder="All Customers" />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#0f0f0f] border-amber-600/30">
+                        <SelectContent className="bg-background border-amber-600/30">
                           <SelectItem value="all">All Customers</SelectItem>
                           {uniqueCustomerNames.map(name => (
                             <SelectItem key={name} value={name}>{name}</SelectItem>
@@ -1016,7 +1016,7 @@ const CommercialPageComponent: React.FC = () => {
                             type="date"
                             value={quoteDateFrom}
                             onChange={(e) => setQuoteDateFrom(e.target.value)}
-                            className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 text-xs h-8"
+                            className="bg-background/60 border-amber-600/30 text-amber-200 text-xs h-8"
                             placeholder="From"
                           />
                         </div>
@@ -1025,7 +1025,7 @@ const CommercialPageComponent: React.FC = () => {
                             type="date"
                             value={quoteDateTo}
                             onChange={(e) => setQuoteDateTo(e.target.value)}
-                            className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 text-xs h-8"
+                            className="bg-background/60 border-amber-600/30 text-amber-200 text-xs h-8"
                             placeholder="To"
                           />
                         </div>
@@ -1042,7 +1042,7 @@ const CommercialPageComponent: React.FC = () => {
                             type="date"
                             value={invoiceDateFrom}
                             onChange={(e) => setInvoiceDateFrom(e.target.value)}
-                            className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 text-xs h-8"
+                            className="bg-background/60 border-amber-600/30 text-amber-200 text-xs h-8"
                             placeholder="From"
                           />
                         </div>
@@ -1051,7 +1051,7 @@ const CommercialPageComponent: React.FC = () => {
                             type="date"
                             value={invoiceDateTo}
                             onChange={(e) => setInvoiceDateTo(e.target.value)}
-                            className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 text-xs h-8"
+                            className="bg-background/60 border-amber-600/30 text-amber-200 text-xs h-8"
                             placeholder="To"
                           />
                         </div>
@@ -1072,7 +1072,7 @@ const CommercialPageComponent: React.FC = () => {
                             type="date"
                             value={invoiceDueDateFrom}
                             onChange={(e) => setInvoiceDueDateFrom(e.target.value)}
-                            className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 text-xs h-8"
+                            className="bg-background/60 border-amber-600/30 text-amber-200 text-xs h-8"
                             placeholder="From"
                           />
                         </div>
@@ -1081,7 +1081,7 @@ const CommercialPageComponent: React.FC = () => {
                             type="date"
                             value={invoiceDueDateTo}
                             onChange={(e) => setInvoiceDueDateTo(e.target.value)}
-                            className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 text-xs h-8"
+                            className="bg-background/60 border-amber-600/30 text-amber-200 text-xs h-8"
                             placeholder="To"
                           />
                         </div>
@@ -1100,7 +1100,7 @@ const CommercialPageComponent: React.FC = () => {
                             value={amountMin}
                             onChange={(e) => setAmountMin(e.target.value)}
                             placeholder="Min amount"
-                            className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 text-xs h-8"
+                            className="bg-background/60 border-amber-600/30 text-amber-200 text-xs h-8"
                             step="0.01"
                             min="0"
                           />
@@ -1111,7 +1111,7 @@ const CommercialPageComponent: React.FC = () => {
                             value={amountMax}
                             onChange={(e) => setAmountMax(e.target.value)}
                             placeholder="Max amount"
-                            className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 text-xs h-8"
+                            className="bg-background/60 border-amber-600/30 text-amber-200 text-xs h-8"
                             step="0.01"
                             min="0"
                           />
@@ -1220,7 +1220,7 @@ const CommercialPageComponent: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Draft Quotes */}
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-amber-200">
@@ -1256,7 +1256,7 @@ const CommercialPageComponent: React.FC = () => {
                   size="sm"
                   variant="outline"
                   onClick={() => handleBulkDelete('quotes')}
-                  className="border-red-500/30 text-red-300 hover:bg-red-500/10 text-xs"
+                  className="border-red-500/30 text-destructive hover:bg-red-500/10 text-xs"
                 >
                   <Trash2 className="h-3 w-3 mr-1" />
                   Delete
@@ -1266,12 +1266,12 @@ const CommercialPageComponent: React.FC = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-blue-500/30 text-blue-300 hover:bg-blue-500/10 text-xs"
+                      className="border-blue-500/30 text-info hover:bg-blue-500/10 text-xs"
                     >
                       Status
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-[#0f0f0f] border-amber-600/30">
+                  <DropdownMenuContent className="bg-background border-amber-600/30">
                     <DropdownMenuItem
                       onClick={() => handleBulkUpdateStatus('quotes', 'draft')}
                       className="text-amber-200 hover:bg-amber-500/10"
@@ -1309,7 +1309,7 @@ const CommercialPageComponent: React.FC = () => {
                       Export
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-[#0f0f0f] border-amber-600/30">
+                  <DropdownMenuContent className="bg-background border-amber-600/30">
                     <DropdownMenuItem
                       onClick={() => void handleBulkExport('quotes', 'excel')}
                       className="text-amber-200 hover:bg-amber-500/10 cursor-pointer"
@@ -1358,7 +1358,7 @@ const CommercialPageComponent: React.FC = () => {
                   className={`border rounded-lg p-4 transition-colors ${
                     selectedQuotes.has(quote.id)
                       ? 'border-amber-500/50 bg-amber-900/20'
-                      : 'border-amber-600/30 bg-[#0f0f0f]/40'
+                      : 'border-amber-600/30 bg-background/40'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -1428,7 +1428,7 @@ const CommercialPageComponent: React.FC = () => {
                           size="sm"
                           variant="outline"
                           onClick={() => handleDeleteDraft(quote.id, 'quote')}
-                          className="border-red-500/30 text-red-300 hover:bg-red-500/20 text-xs"
+                          className="border-red-500/30 text-destructive hover:bg-red-500/20 text-xs"
                         >
                           {t('commercial.draft_quotes.delete', 'Delete')}
                         </Button>
@@ -1442,7 +1442,7 @@ const CommercialPageComponent: React.FC = () => {
         </Card>
 
         {/* Draft Invoices */}
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-amber-200">
@@ -1478,7 +1478,7 @@ const CommercialPageComponent: React.FC = () => {
                   size="sm"
                   variant="outline"
                   onClick={() => handleBulkDelete('invoices')}
-                  className="border-red-500/30 text-red-300 hover:bg-red-500/10 text-xs"
+                  className="border-red-500/30 text-destructive hover:bg-red-500/10 text-xs"
                 >
                   <Trash2 className="h-3 w-3 mr-1" />
                   Delete
@@ -1494,7 +1494,7 @@ const CommercialPageComponent: React.FC = () => {
                       Export
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-[#0f0f0f] border-amber-600/30">
+                  <DropdownMenuContent className="bg-background border-amber-600/30">
                     <DropdownMenuItem
                       onClick={() => void handleBulkExport('invoices', 'excel')}
                       className="text-amber-200 hover:bg-amber-500/10 cursor-pointer"
@@ -1514,12 +1514,12 @@ const CommercialPageComponent: React.FC = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-blue-500/30 text-blue-300 hover:bg-blue-500/10 text-xs"
+                      className="border-blue-500/30 text-info hover:bg-blue-500/10 text-xs"
                     >
                       Status
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-[#0f0f0f] border-amber-600/30">
+                  <DropdownMenuContent className="bg-background border-amber-600/30">
                     <DropdownMenuItem
                       onClick={() => handleBulkUpdateStatus('invoices', 'draft')}
                       className="text-amber-200 hover:bg-amber-500/10"
@@ -1575,7 +1575,7 @@ const CommercialPageComponent: React.FC = () => {
                     className={`border rounded-lg p-4 transition-colors ${
                       selectedInvoices.has(invoice.id)
                         ? 'border-amber-500/50 bg-amber-900/20'
-                        : 'border-amber-600/30 bg-[#0f0f0f]/40'
+                        : 'border-amber-600/30 bg-background/40'
                     }`}
                   >
                     <div className="flex items-start gap-3">
@@ -1643,7 +1643,7 @@ const CommercialPageComponent: React.FC = () => {
                             size="sm"
                             variant="outline"
                             onClick={() => handleDeleteDraft(invoice.id, 'invoice')}
-                            className="border-red-500/30 text-red-300 hover:bg-red-500/20 text-xs"
+                            className="border-red-500/30 text-destructive hover:bg-red-500/20 text-xs"
                           >
                             {t('commercial.draft_invoices.delete', 'Delete')}
                           </Button>
@@ -1763,7 +1763,7 @@ const CommercialPageComponent: React.FC = () => {
 
       {/* Bulk Action Confirmation Dialog */}
       <AlertDialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
-        <AlertDialogContent className="bg-[#0f0f0f] border-amber-600/30">
+        <AlertDialogContent className="bg-background border-amber-600/30">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-amber-200">
               Confirm Bulk Action

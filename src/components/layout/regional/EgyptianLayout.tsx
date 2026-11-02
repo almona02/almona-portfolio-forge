@@ -32,7 +32,7 @@ export const EgyptianLayout: React.FC<EgyptianLayoutProps> = ({
   const isMarketplaceRoute = location.pathname.startsWith('/used-machines') || location.pathname.startsWith('/usedmachines');
   
   return (
-    <div className="min-h-screen bg-almona-dark text-white" dir="rtl">
+    <div className="min-h-screen bg-background text-foreground" dir="rtl">
       {/* Main Navigation */}
       <ConditionalNavbar />
       

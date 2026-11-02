@@ -36,9 +36,9 @@ export function WorkshopBOMRulesEditor({ packId, ownerId }: {
     }, [pack]);
     if (!pack)
         return null;
-    return <section className="my-4 rounded border border-amber-700/40 bg-slate-900 p-4 space-y-3">
-  <h3 className="text-amber-200 font-semibold">Workshop BOM requirements</h3>
-  <p className="text-xs text-slate-400">Set quantities for hinges, rollers, handles, gaskets or other components. Each configured category replaces its standard quantity. Hardware categories: hinge, lock, handle, roller, corner_key, gasket or hardener. Disable a category to omit it. Perimeter quantities use the overall window perimeter in metres. Advanced: scope a requirement to one or more patterns (pose preset). Saved configuration remains an estimate until reviewed.</p>
+    return <section className="my-4 rounded border border-amber-700/40 bg-background p-4 space-y-3">
+  <h3 className="text-warning font-semibold">Workshop BOM requirements</h3>
+  <p className="text-xs text-muted-foreground">Set quantities for hinges, rollers, handles, gaskets or other components. Each configured category replaces its standard quantity. Hardware categories: hinge, lock, handle, roller, corner_key, gasket or hardener. Disable a category to omit it. Perimeter quantities use the overall window perimeter in metres. Advanced: scope a requirement to one or more patterns (pose preset). Saved configuration remains an estimate until reviewed.</p>
   {!owned ? <Button disabled={saving} onClick={() => { void (async () => { setSaving(true); try {
             const copy = { ...pack, meta: { ...pack.meta, id: 'custom-pack-' + crypto.randomUUID(), name: pack.meta.name + ' workshop' } };
             await addCustomSystemAsync(copy, ownerId);
@@ -50,7 +50,7 @@ export function WorkshopBOMRulesEditor({ packId, ownerId }: {
         finally {
             setSaving(false);
         } })(); }}>Create an owned workshop copy</Button> : <>
-   <div className="space-y-3">{rules.map((r, index) => <div key={r.id} className="grid grid-cols-2 md:grid-cols-4 gap-2 border-b border-slate-700 pb-3">
+   <div className="space-y-3">{rules.map((r, index) => <div key={r.id} className="grid grid-cols-2 md:grid-cols-4 gap-2 border-b border-border pb-3">
     <Input aria-label={'Component name ' + index} value={r.name} onChange={e => update(index, { name: e.target.value })}/>
     <Input aria-label={'Component category ' + index} value={r.category} onChange={e => update(index, { category: e.target.value })}/>
     <select aria-label={'Component kind ' + index} value={r.kind} onChange={e => update(index, { kind: e.target.value as WorkshopBOMRule['kind'], category: e.target.value === 'hardware' ? 'hinge' : 'seal', basis: 'window' })}><option value="hardware">Hardware</option><option value="accessory">Accessory / gasket</option></select>
@@ -58,10 +58,10 @@ export function WorkshopBOMRulesEditor({ packId, ownerId }: {
     <Input aria-label={'Component quantity ' + index} type="number" min="0" value={r.quantity} onChange={e => update(index, { quantity: Number(e.target.value) })}/>
     <Input aria-label={'Component unit price ' + index} type="number" min="0" value={r.unitPrice} onChange={e => update(index, { unitPrice: Number(e.target.value) })}/>
     <label className="text-xs col-span-2 md:col-span-4 space-y-1">
-      <span className="text-slate-400">Pattern scope (advanced — empty = all patterns)</span>
+      <span className="text-muted-foreground">Pattern scope (advanced — empty = all patterns)</span>
       <select
         multiple
-        className="w-full min-h-[4.5rem] rounded border border-slate-600 bg-slate-950 px-2 py-1 text-xs text-slate-100"
+        className="w-full min-h-[4.5rem] rounded border border-border bg-background px-2 py-1 text-xs text-foreground"
         aria-label={'Pattern scope ' + index}
         value={r.patternIds ?? []}
         onChange={(e) => {
@@ -95,6 +95,6 @@ export function WorkshopBOMRulesEditor({ packId, ownerId }: {
         } })(); }}>Save requirements</Button>
    {review && <details className="text-xs"><summary>Technical review reference</summary><p className="break-all">{review}</p><p>Include this value as workshopBomRulesFingerprint in the approved cutting rule applicability after reviewing this configuration.</p></details>}
   </>}
-  <a className="text-xs underline text-amber-300" href="/fabricator/studio/approvals">Open catalogue, pattern and cutting-rule approvals</a>
+  <a className="text-xs underline text-warning" href="/fabricator/studio/approvals">Open catalogue, pattern and cutting-rule approvals</a>
  </section>;
 }

@@ -26,7 +26,7 @@ export const HardwarePlacementTool: React.FC<HardwarePlacementToolProps> = ({
       <span className="text-sm font-medium">
         {hardwareType.charAt(0).toUpperCase() + hardwareType.slice(1)} Tool
       </span>
-      <span className="text-xs text-gray-600">
+      <span className="text-xs text-muted-foreground">
         Click on a window to place hardware
       </span>
     </div>

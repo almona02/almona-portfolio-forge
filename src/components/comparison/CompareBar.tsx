@@ -23,8 +23,8 @@ const CompareBar: React.FC<CompareBarProps> = ({
 
   return (
     <div
-      className="fixed left-2 right-2 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 top-[4.5rem] sm:top-[5.5rem] md:top-[6.25rem] lg:top-[6.5rem] bg-black/90 text-white/90 border border-white/10 backdrop-blur rounded-xl shadow-2xl p-3 sm:p-4 z-50 w-auto max-w-full sm:max-w-3xl animate-in fade-in slide-in-from-top-4 transition-all duration-200 opacity-20 hover:opacity-100 sm:opacity-40 sm:hover:opacity-100"
-      aria-label="Comparison bar (hover or tap to expand)"
+      className="fixed left-2 right-2 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 top-[4.5rem] sm:top-[5.5rem] md:top-[6.25rem] lg:top-[6.5rem] bg-card/95 surface-metal text-card-foreground border border-border backdrop-blur rounded-xl shadow-2xl p-3 sm:p-4 z-50 w-auto max-w-full sm:max-w-3xl animate-in fade-in slide-in-from-top-4 transition-all duration-200 opacity-100"
+      aria-label="Machine comparison"
     >
       <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-3 sm:gap-4">
         <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
@@ -32,12 +32,12 @@ const CompareBar: React.FC<CompareBarProps> = ({
             <Badge 
               key={machine.id}
               variant="outline"
-              className="flex items-center gap-2 py-1 px-3 flex-shrink-0 bg-white/5 border-white/20 text-white text-xs"
+              className="flex items-center gap-2 py-1 px-3 flex-shrink-0 bg-foreground/5 border-border text-foreground text-xs"
             >
               <span className="truncate max-w-[120px]">{machine.name}</span>
               <button 
                 onClick={() => onRemove(machine.id)}
-                className="text-white/70 hover:text-white transition-colors"
+                className="text-foreground/70 hover:text-foreground transition-colors"
                 aria-label={`Remove ${machine.name} from comparison`}
               >
                 <X size={14} />
@@ -51,7 +51,7 @@ const CompareBar: React.FC<CompareBarProps> = ({
             variant="outline"
             size="sm"
             onClick={onClear}
-            className="bg-white/5 border-white/20 text-white hover:bg-white/10 w-full"
+            className="bg-foreground/5 border-border text-foreground hover:bg-foreground/10 w-full"
           >
             {copy("Clear")}
           </Button>
@@ -61,7 +61,7 @@ const CompareBar: React.FC<CompareBarProps> = ({
             onClick={onCompare}
             disabled={machines.length < 2}
             aria-label="Open machine comparison"
-            className="w-full text-base sm:text-sm py-3 sm:py-2 rounded-lg bg-gradient-to-r from-amber-500 to-red-600 text-white hover:from-amber-400 hover:to-red-500 disabled:from-gray-600 disabled:to-gray-600 shadow-lg shadow-amber-500/25 ring-1 ring-amber-400/60 hover:ring-amber-300/70 transition-all active:translate-y-[1px]"
+            className="w-full text-base sm:text-sm py-3 sm:py-2 rounded-lg bg-brand text-brand-foreground hover:bg-brand/90 disabled:bg-muted disabled:text-muted-foreground shadow-sm ring-1 ring-border focus-visible:ring-ring transition-all active:translate-y-[1px]"
           >
             <BarChart2 size={14} className="mr-1" />
             {copy("Compare")} ({machines.length})

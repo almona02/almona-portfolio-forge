@@ -75,19 +75,19 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
     onChange: (value: number) => void;
     warning?: string | null;
   }> = ({ label, labelArabic, value, min, max, step, unit, description, descriptionArabic, onChange, warning }) => (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+    <div className="bg-card border border-border rounded-lg p-4 space-y-3">
       <div className="flex justify-between items-start">
         <div>
           <div className="flex items-center gap-2">
-            <label className="typography-label font-bold text-gray-900 text-sm">{label}</label>
-            <span className="text-xs text-gray-500">({labelArabic})</span>
+            <label className="typography-label font-bold text-foreground text-sm">{label}</label>
+            <span className="text-xs text-muted-foreground">({labelArabic})</span>
           </div>
-          <p className="text-xs text-gray-600 mt-1">{description}</p>
-          <p className="text-xs text-gray-500 mt-0.5" dir="rtl">{descriptionArabic}</p>
+          <p className="text-xs text-muted-foreground mt-1">{description}</p>
+          <p className="text-xs text-muted-foreground mt-0.5" dir="rtl">{descriptionArabic}</p>
         </div>
         <div className="text-right">
           <div className="text-2xl font-mono font-bold text-[#003366]">{value.toFixed(1)}</div>
-          <div className="text-xs text-gray-500">{unit}</div>
+          <div className="text-xs text-muted-foreground">{unit}</div>
         </div>
       </div>
       
@@ -99,12 +99,12 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
           step={step}
           value={value}
           onChange={(e) => onChange(parseFloat(e.target.value))}
-          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#003366]"
+          className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-[#003366]"
           style={{
             background: `linear-gradient(to right, #003366 0%, #003366 ${((value - min) / (max - min)) * 100}%, #e5e7eb ${((value - min) / (max - min)) * 100}%, #e5e7eb 100%)`
           }}
         />
-        <div className="flex justify-between text-xs text-gray-400">
+        <div className="flex justify-between text-xs text-muted-foreground">
           <span>{min} {unit}</span>
           <span>{max} {unit}</span>
         </div>
@@ -125,7 +125,7 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
         <h3 className="typography-h3 text-lg font-cairo">Micron Parameters</h3>
         <p className="text-sm text-yellow-100 mt-1">99.8% Accuracy Tuning</p>
         {systemName && (
-          <p className="text-xs text-gray-300 mt-1">System: {systemName}</p>
+          <p className="text-xs text-foreground mt-1">System: {systemName}</p>
         )}
       </div>
 
@@ -133,17 +133,17 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
       <div className="flex items-center gap-2">
         <span className={`px-3 py-1 rounded-full text-xs font-bold ${
           category === 'aluminum' 
-            ? 'bg-[#003366] text-white' 
-            : 'bg-[#27ae60] text-white'
+            ? 'bg-[#003366] text-primary-foreground'
+            : 'bg-[#27ae60] text-primary-foreground'
         }`}>
           {category === 'aluminum' ? 'Aluminum System' : 'UPVC System'}
         </span>
-        <span className="text-xs text-gray-500">These parameters affect cutting calculations</span>
+        <span className="text-xs text-muted-foreground">These parameters affect cutting calculations</span>
       </div>
 
       {/* Core Parameters (All Systems) */}
       <div className="space-y-4">
-        <h4 className="typography-h4 text-gray-700 text-sm">Core Parameters</h4>
+        <h4 className="typography-h4 text-foreground text-sm">Core Parameters</h4>
         
         <ParameterSlider
           label="Saw Blade Kerf"
@@ -191,7 +191,7 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
       {/* UPVC-Specific Parameters */}
       {category === 'upvc' && params.upvcWeldingLoss !== undefined && (
         <div className="space-y-4">
-          <h4 className="typography-h4 text-gray-700 text-sm">UPVC-Specific</h4>
+          <h4 className="typography-h4 text-foreground text-sm">UPVC-Specific</h4>
           
           <ParameterSlider
             label="Welding Loss"
@@ -212,7 +212,7 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
       {/* Aluminum-Specific Parameters (Panda Screen Adapter) */}
       {category === 'aluminum' && params.screenAdapterOffset !== undefined && (
         <div className="space-y-4">
-          <h4 className="typography-h4 text-gray-700 text-sm">Screen Adapter (Panda-Specific)</h4>
+          <h4 className="typography-h4 text-foreground text-sm">Screen Adapter (Panda-Specific)</h4>
           
           <ParameterSlider
             label="Screen Adapter Offset"
@@ -237,7 +237,7 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
       {/* Batch Calibration (Optional) */}
       {params.batchCalibrationOffset !== undefined && (
         <div className="space-y-4">
-          <h4 className="typography-h4 text-gray-700 text-sm">Machine Calibration</h4>
+          <h4 className="typography-h4 text-foreground text-sm">Machine Calibration</h4>
           
           <ParameterSlider
             label="Batch Calibration Offset"

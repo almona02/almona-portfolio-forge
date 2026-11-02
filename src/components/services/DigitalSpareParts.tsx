@@ -30,9 +30,9 @@ export function DigitalSpareParts({ modelName, parts = [] }: DigitalSparePartsPr
     return (
         <div className="flex flex-col lg:flex-row gap-6 h-[600px]">
             {/* Interactive Diagram Area */}
-            <GoldTierCard className="flex-1 relative overflow-hidden bg-slate-900 border-slate-800 group shadow-inner">
+            <GoldTierCard className="flex-1 relative overflow-hidden bg-background border-border group shadow-inner">
                 <div className="absolute top-4 left-4 z-10 flex gap-2">
-                    <Badge variant="outline" className="bg-slate-950/80 backdrop-blur border-amber-500/30 text-amber-500">
+                    <Badge variant="outline" className="bg-background/80 backdrop-blur border-amber-500/30 text-amber-500">
                         <MousePointer className="w-3 h-3 mr-1" /> Interactive Mode
                     </Badge>
                 </div>
@@ -74,8 +74,8 @@ export function DigitalSpareParts({ modelName, parts = [] }: DigitalSparePartsPr
                             className={cn(
                                 "absolute w-6 h-6 -ml-3 -mt-3 rounded-full flex items-center justify-center transition-all duration-300 z-20 shadow-lg",
                                 selectedPart?.id === part.id 
-                                    ? "bg-amber-500 text-slate-900 scale-125 ring-4 ring-amber-500/20 shadow-amber-500/50" 
-                                    : "bg-slate-700 text-slate-300 hover:bg-slate-600 hover:scale-110 ring-2 ring-slate-950"
+                                    ? "bg-amber-500 text-foreground scale-125 ring-4 ring-amber-500/20 shadow-amber-500/50"
+                                    : "bg-muted text-foreground hover:bg-muted hover:scale-110 ring-2 ring-slate-950"
                             )}
                             style={{ left: `${part.highlight_coordinates.x}%`, top: `${part.highlight_coordinates.y}%` }}
                             onClick={(e) => {
@@ -91,7 +91,7 @@ export function DigitalSpareParts({ modelName, parts = [] }: DigitalSparePartsPr
 
             {/* Part Details Panel */}
             <div className="w-full lg:w-96 flex flex-col gap-4">
-                <GoldTierCard className="flex-1 bg-slate-900/50 border-slate-800">
+                <GoldTierCard className="flex-1 bg-background/50 border-border">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                              <Info className="w-4 h-4 text-amber-500" />
@@ -102,20 +102,20 @@ export function DigitalSpareParts({ modelName, parts = [] }: DigitalSparePartsPr
                         {selectedPart ? (
                             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                                 <div>
-                                    <h3 className="text-xl font-bold text-white">{selectedPart.name}</h3>
-                                    <p className="text-slate-400 font-mono text-sm mt-1">SKU: {selectedPart.sku}</p>
+                                    <h3 className="text-xl font-bold text-foreground">{selectedPart.name}</h3>
+                                    <p className="text-muted-foreground font-mono text-sm mt-1">SKU: {selectedPart.sku}</p>
                                 </div>
 
-                                <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700/50 space-y-3">
+                                <div className="p-4 rounded-lg bg-card/50 border border-border/50 space-y-3">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-slate-400 text-sm">Status</span>
-                                        <Badge variant="outline" className={cn(selectedPart.inStock ? "bg-green-500/10 text-green-500 border-green-500/20" : "bg-red-500/10 text-red-500 border-red-500/20")}>
+                                        <span className="text-muted-foreground text-sm">Status</span>
+                                        <Badge variant="outline" className={cn(selectedPart.inStock ? "bg-green-500/10 text-success border-green-500/20" : "bg-red-500/10 text-destructive border-red-500/20")}>
                                             {selectedPart.inStock ? 'In Stock' : 'Backordered'}
                                         </Badge>
                                     </div>
-                                    <div className="flex justify-between items-center border-t border-slate-700 pt-3">
-                                        <span className="text-slate-400 text-sm">Unit Price</span>
-                                        <span className="text-xl font-bold text-white">{selectedPart.price.toLocaleString()} EGP</span>
+                                    <div className="flex justify-between items-center border-t border-border pt-3">
+                                        <span className="text-muted-foreground text-sm">Unit Price</span>
+                                        <span className="text-xl font-bold text-foreground">{selectedPart.price.toLocaleString()} EGP</span>
                                     </div>
                                 </div>
 
@@ -123,12 +123,12 @@ export function DigitalSpareParts({ modelName, parts = [] }: DigitalSparePartsPr
                                     Add to Order
                                 </Button>
 
-                                <p className="text-xs text-slate-500 text-center">
+                                <p className="text-xs text-muted-foreground text-center">
                                    Ensure compatibility with model {modelName} before ordering.
                                 </p>
                             </div>
                         ) : (
-                            <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-3 opacity-60">
+                            <div className="h-full flex flex-col items-center justify-center text-muted-foreground space-y-3 opacity-60">
                                 <MousePointer className="w-12 h-12 stroke-1" />
                                 <p className="text-sm">Select a highlighted part on the diagram</p>
                             </div>
@@ -137,13 +137,13 @@ export function DigitalSpareParts({ modelName, parts = [] }: DigitalSparePartsPr
                 </GoldTierCard>
 
                 {/* Mini Cart Summary */}
-                <GoldTierCard variant="filled" className="bg-slate-800 border-slate-700">
+                <GoldTierCard variant="filled" className="bg-card border-border">
                      <div className="p-4 flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-slate-300">
+                        <div className="flex items-center gap-2 text-foreground">
                              <ShoppingCart className="w-5 h-5" />
                              <span className="font-medium text-sm">Cart Total</span>
                         </div>
-                        <span className="font-bold text-white">0.00 EGP</span>
+                        <span className="font-bold text-foreground">0.00 EGP</span>
                      </div>
                 </GoldTierCard>
             </div>

@@ -307,12 +307,12 @@ const FabricationWorkflowDetail = () => {
   };
 
   return (
-    <div className="bg-almona-dark text-white min-h-screen">
+    <div className="bg-background text-foreground min-h-screen">
       <div className="container mx-auto px-4 py-8">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <Button
             onClick={() => void navigate(-1)}
-            className="flex items-center gap-2 bg-almona-light/10 hover:bg-almona-light/20 text-almona-light rounded-full mb-8"
+            className="flex items-center gap-2 bg-almona-light/10 hover:bg-almona-light/20 text-foreground rounded-full mb-8"
           >
             <ArrowLeft className="h-4 w-4" />
             Back
@@ -329,17 +329,17 @@ const FabricationWorkflowDetail = () => {
             مصر - Egypt
           </Badge>
           <h1 className="typography-h1 text-gradient-orange mb-4">Egyptian Fabrication Workflows</h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-foreground max-w-3xl mx-auto">
             Specialized processes developed for Egypt&apos;s unique climate and market needs
           </p>
         </motion.div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-almona-dark/80 rounded-lg p-1">
-            <TabsTrigger value="upvc" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md">UPVC Systems</TabsTrigger>
-            <TabsTrigger value="aluminum" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md">Aluminum</TabsTrigger>
-            <TabsTrigger value="glass" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md">Glass Processing</TabsTrigger>
-            <TabsTrigger value="hardware" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md">Hardware</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-background/80 rounded-lg p-1">
+            <TabsTrigger value="upvc" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-foreground rounded-md">UPVC Systems</TabsTrigger>
+            <TabsTrigger value="aluminum" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-foreground rounded-md">Aluminum</TabsTrigger>
+            <TabsTrigger value="glass" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-foreground rounded-md">Glass Processing</TabsTrigger>
+            <TabsTrigger value="hardware" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-foreground rounded-md">Hardware</TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -351,19 +351,19 @@ const FabricationWorkflowDetail = () => {
         >
           <div className="lg:w-2/3">
             <motion.div 
-              className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6 p-4 bg-almona-dark/60 backdrop-blur-sm rounded-xl border border-almona-light/10"
+              className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6 p-4 bg-background/60 backdrop-blur-sm rounded-xl border border-border/10"
               variants={itemVariants}
             >
               <div>
-                <h2 className="typography-h2 text-white">{workflowData[activeTab as keyof typeof workflowData].title}</h2>
-                <p className="text-gray-400">{workflowData[activeTab as keyof typeof workflowData].description}</p>
+                <h2 className="typography-h2 text-foreground">{workflowData[activeTab as keyof typeof workflowData].title}</h2>
+                <p className="text-muted-foreground">{workflowData[activeTab as keyof typeof workflowData].description}</p>
               </div>
               <div className="w-full md:w-64">
                 <Input
                   placeholder="Search steps..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-almona-dark/80 border-almona-light/30 focus:ring-2 focus:ring-almona-light focus:border-almona-light"
+                  className="bg-background/80 border-border/30 focus:ring-2 focus:ring-almona-light focus:border-border"
                 />
               </div>
             </motion.div>
@@ -372,7 +372,7 @@ const FabricationWorkflowDetail = () => {
               {filteredSteps.map((step: any, index: number) => (
                 <Card 
                   key={index} 
-                  className="bg-almona-dark/60 backdrop-blur-sm border border-almona-light/10 rounded-xl overflow-hidden"
+                  className="bg-background/60 backdrop-blur-sm border border-border/10 rounded-xl overflow-hidden"
                 >
                   <CardHeader 
                     className="p-6 cursor-pointer flex items-center justify-between hover:bg-almona-light/5 transition-colors"
@@ -383,8 +383,8 @@ const FabricationWorkflowDetail = () => {
                         {index + 1}
                       </Badge>
                       <div>
-                        <h3 className="typography-h3 text-lg font-medium text-white">{step.title}</h3>
-                        <p className="text-gray-400">{step.description}</p>
+                        <h3 className="typography-h3 text-lg font-medium text-foreground">{step.title}</h3>
+                        <p className="text-muted-foreground">{step.description}</p>
                       </div>
                     </div>
                     <motion.div animate={{ rotate: expandedStep === index ? 180 : 0 }}>
@@ -402,12 +402,12 @@ const FabricationWorkflowDetail = () => {
                         <CardContent className="p-6 pt-0">
                           <div className="mt-4 space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="bg-almona-light/5 p-4 rounded-lg border border-almona-light/10">
-                                <h4 className="typography-h4 text-sm flex items-center gap-2 mb-2 text-almona-light">
+                              <div className="bg-almona-light/5 p-4 rounded-lg border border-border/10">
+                                <h4 className="typography-h4 text-sm flex items-center gap-2 mb-2 text-foreground">
                                   <Icons.tip className="h-4 w-4" />
                                   Professional Tips
                                 </h4>
-                                <ul className="space-y-2 text-sm text-gray-300">
+                                <ul className="space-y-2 text-sm text-foreground">
                                   {step.tips.map((tip: any, i: number) => (
                                     <li key={i} className="flex items-start"><span className="mr-2 text-almona-orange">•</span>{tip}</li>
                                   ))}
@@ -419,29 +419,29 @@ const FabricationWorkflowDetail = () => {
                                   <Icons.egypt className="h-4 w-4" />
                                   Egypt-Specific Advice
                                 </h4>
-                                <p className="text-sm text-gray-200">{step.egyptTip}</p>
+                                <p className="text-sm text-foreground">{step.egyptTip}</p>
                               </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="bg-red-500/10 p-4 rounded-lg border border-red-500/30">
-                                <h4 className="typography-h4 text-sm flex items-center gap-2 mb-2 text-red-400">
+                                <h4 className="typography-h4 text-sm flex items-center gap-2 mb-2 text-destructive">
                                   <Icons.warning className="h-4 w-4" />
                                   Common Challenges
                                 </h4>
-                                <ul className="space-y-2 text-sm text-gray-300">
+                                <ul className="space-y-2 text-sm text-foreground">
                                   {step.commonIssues.map((issue: any, i: number) => (
-                                    <li key={i} className="flex items-start"><span className="mr-2 text-red-500">•</span>{issue}</li>
+                                    <li key={i} className="flex items-start"><span className="mr-2 text-destructive">•</span>{issue}</li>
                                   ))}
                                 </ul>
                               </div>
                               
                               <div className="bg-green-500/10 p-4 rounded-lg border border-green-500/30">
-                                <h4 className="typography-h4 text-sm flex items-center gap-2 mb-2 text-green-400">
+                                <h4 className="typography-h4 text-sm flex items-center gap-2 mb-2 text-success">
                                   <Icons.solution className="h-4 w-4" />
                                   Recommended Solutions
                                 </h4>
-                                <ul className="space-y-2 text-sm text-gray-300">
+                                <ul className="space-y-2 text-sm text-foreground">
                                   {step.solutions.map((solution: any, i: number) => (
                                     <li key={i} className="flex items-start"><span className="mr-2  status-valid">•</span>{solution}</li>
                                   ))}
@@ -464,17 +464,17 @@ const FabricationWorkflowDetail = () => {
 
           <div className="lg:w-1/3 space-y-6">
             <motion.div variants={itemVariants}>
-              <Card className="bg-almona-dark/60 backdrop-blur-sm border border-almona-light/10 rounded-xl">
+              <Card className="bg-background/60 backdrop-blur-sm border border-border/10 rounded-xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl text-white">
+                  <CardTitle className="flex items-center gap-2 text-xl text-foreground">
                     <Icons.standard className="h-5 w-5 text-almona-orange" />
                     Egyptian Standards
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <LocalStandardsTable standards={workflowData[activeTab as keyof typeof workflowData].standards} region="Egypt" />
-                  <p className="mt-4 text-sm text-gray-400 flex items-start">
-                    <Icons.info className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-almona-light" />
+                  <p className="mt-4 text-sm text-muted-foreground flex items-start">
+                    <Icons.info className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-foreground" />
                     Available at Egyptian Organization for Standardization (EOS) offices
                   </p>
                 </CardContent>
@@ -486,36 +486,36 @@ const FabricationWorkflowDetail = () => {
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <Card className="bg-almona-dark/60 backdrop-blur-sm border border-almona-light/10 rounded-xl">
+              <Card className="bg-background/60 backdrop-blur-sm border border-border/10 rounded-xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl text-white">
+                  <CardTitle className="flex items-center gap-2 text-xl text-foreground">
                     <Icons.support className="h-5 w-5 text-almona-orange" />
                     Egyptian Support Network
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="p-4 bg-almona-light/5 rounded-lg border border-almona-light/10">
-                    <h3 className="typography-h3 font-medium mb-1 flex items-center gap-2 text-almona-light"><Icons.phone className="h-4 w-4" />Technical Hotline</h3>
-                    <p className="text-sm text-gray-400">Arabic-speaking support: <span className="font-mono text-white">0122 345 6789</span></p>
-                    <p className="text-sm text-gray-400 mt-1">Hours: Sat-Thu 8AM-5PM (GMT+2)</p>
+                  <div className="p-4 bg-almona-light/5 rounded-lg border border-border/10">
+                    <h3 className="typography-h3 font-medium mb-1 flex items-center gap-2 text-foreground"><Icons.phone className="h-4 w-4" />Technical Hotline</h3>
+                    <p className="text-sm text-muted-foreground">Arabic-speaking support: <span className="font-mono text-foreground">0122 345 6789</span></p>
+                    <p className="text-sm text-muted-foreground mt-1">Hours: Sat-Thu 8AM-5PM (GMT+2)</p>
                   </div>
                   
-                  <div className="p-4 bg-almona-light/5 rounded-lg border border-almona-light/10">
-                    <h3 className="typography-h3 font-medium mb-1 flex items-center gap-2 text-almona-light"><Icons.training className="h-4 w-4" />Training Centers</h3>
-                    <ul className="text-sm text-gray-400 space-y-1">
+                  <div className="p-4 bg-almona-light/5 rounded-lg border border-border/10">
+                    <h3 className="typography-h3 font-medium mb-1 flex items-center gap-2 text-foreground"><Icons.training className="h-4 w-4" />Training Centers</h3>
+                    <ul className="text-sm text-muted-foreground space-y-1">
                       <li className="flex items-start"><span className="mr-2 text-almona-orange">•</span><strong>Cairo:</strong> 10th of Ramadan City, Thursdays</li>
                       <li className="flex items-start"><span className="mr-2 text-almona-orange">•</span><strong>Alexandria:</strong> Borg El Arab, Tuesdays</li>
                       <li className="flex items-start"><span className="mr-2 text-almona-orange">•</span><strong>Upper Egypt:</strong> Assiut, Monthly workshops</li>
                     </ul>
                   </div>
                   
-                  <div className="p-4 bg-almona-light/5 rounded-lg border border-almona-light/10">
-                    <h3 className="typography-h3 font-medium mb-1 flex items-center gap-2 text-almona-light"><Icons.certificate className="h-4 w-4" />Egyptian Fabricator Certification</h3>
-                    <p className="text-sm text-gray-400">Ministry of Trade & Industry recognized program</p>
+                  <div className="p-4 bg-almona-light/5 rounded-lg border border-border/10">
+                    <h3 className="typography-h3 font-medium mb-1 flex items-center gap-2 text-foreground"><Icons.certificate className="h-4 w-4" />Egyptian Fabricator Certification</h3>
+                    <p className="text-sm text-muted-foreground">Ministry of Trade & Industry recognized program</p>
                     <Button variant="link" className="text-almona-orange p-0 h-auto mt-2 hover:underline">View Certification Requirements</Button>
                   </div>
                   
-                  <Button className="w-full bg-almona-orange hover:bg-almona-orange/90 text-white flex items-center justify-center">
+                  <Button className="w-full bg-almona-orange hover:bg-almona-orange/90 text-primary-foreground flex items-center justify-center">
                     <Icons.calendar className="mr-2 h-4 w-4" />
                     Schedule On-Site Consultation
                   </Button>
@@ -524,15 +524,15 @@ const FabricationWorkflowDetail = () => {
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <Card className="bg-almona-dark/60 backdrop-blur-sm border border-almona-light/10 rounded-xl">
+              <Card className="bg-background/60 backdrop-blur-sm border border-border/10 rounded-xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl text-white">
+                  <CardTitle className="flex items-center gap-2 text-xl text-foreground">
                     <Icons.challenge className="h-5 w-5 text-almona-orange" />
                     Egypt-Specific Challenges
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-3 text-gray-300">
+                  <ul className="space-y-3 text-foreground">
                     {workflowData[activeTab as keyof typeof workflowData].challenges.map((challenge: any, i: number) => (
                       <li key={i} className="flex items-start">
                         <Icons.warning className="h-5 w-5 text-amber-500 mr-3 mt-0.5 flex-shrink-0" />
@@ -540,8 +540,8 @@ const FabricationWorkflowDetail = () => {
                       </li>
                     ))}
                   </ul>
-                  <p className="mt-4 text-sm text-gray-400 flex items-start">
-                    <Icons.info className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-almona-light" />
+                  <p className="mt-4 text-sm text-muted-foreground flex items-start">
+                    <Icons.info className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-foreground" />
                     Solutions for these challenges are in each workflow step.
                   </p>
                 </CardContent>
@@ -560,20 +560,20 @@ const FabricationWorkflowDetail = () => {
             <Badge variant="secondary" className="mb-4 bg-almona-orange/20 text-almona-orange border-almona-orange/50">
               Egyptian Fabricators Program
             </Badge>
-            <h2 className="typography-h2 text-white mb-4">Need a Custom Workflow Solution?</h2>
-            <p className="text-gray-300 mb-6">
+            <h2 className="typography-h2 text-foreground mb-4">Need a Custom Workflow Solution?</h2>
+            <p className="text-foreground mb-6">
               Our Egyptian engineering team will visit your facility to develop a fabrication 
               process tailored to your specific:
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-almona-dark/50 p-6 rounded-lg"><Icons.factory className="h-10 w-10 mx-auto mb-3 text-almona-orange" /><p>Factory Conditions</p></div>
-              <div className="bg-almona-dark/50 p-6 rounded-lg"><Icons.climate className="h-10 w-10 mx-auto mb-3 text-almona-orange" /><p>Regional Climate</p></div>
-              <div className="bg-almona-dark/50 p-6 rounded-lg"><Icons.product className="h-10 w-10 mx-auto mb-3 text-almona-orange" /><p>Product Mix</p></div>
+              <div className="bg-background/50 p-6 rounded-lg"><Icons.factory className="h-10 w-10 mx-auto mb-3 text-almona-orange" /><p>Factory Conditions</p></div>
+              <div className="bg-background/50 p-6 rounded-lg"><Icons.climate className="h-10 w-10 mx-auto mb-3 text-almona-orange" /><p>Regional Climate</p></div>
+              <div className="bg-background/50 p-6 rounded-lg"><Icons.product className="h-10 w-10 mx-auto mb-3 text-almona-orange" /><p>Product Mix</p></div>
             </div>
             <Button size="lg" className="bg-gradient-orange hover:bg-almona-orange-dark text-white font-bold py-3 px-8">
               Request Free Workflow Audit
             </Button>
-            <p className="text-sm text-gray-400 mt-4">
+            <p className="text-sm text-muted-foreground mt-4">
               Available for factories in Cairo, Alexandria, 10th of Ramadan, and 6th of October cities
             </p>
           </div>

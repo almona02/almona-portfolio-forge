@@ -86,13 +86,13 @@ export function SmartMaintenanceTab({ machineType, modelName }: SmartMaintenance
   return (
     <div className="space-y-6">
       {/* Maalem Tip / Status Header */}
-      <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-6 rounded-lg border border-slate-700 items-start flex gap-4">
+      <div className="bg-gradient-to-r from-background to-card p-6 rounded-lg border border-border items-start flex gap-4">
         <div className="p-3 bg-amber-500/10 rounded-full border border-amber-500/20">
           <HelpCircle className="w-6 h-6 text-amber-500" />
         </div>
         <div>
-          <h3 className="text-white font-bold text-lg mb-1">Maalem's Advice for {modelName}</h3>
-          <p className="text-slate-400 text-sm">
+          <h3 className="text-foreground font-bold text-lg mb-1">Maalem's Advice for {modelName}</h3>
+          <p className="text-muted-foreground text-sm">
             {machineType.includes('welding')
               ? "Keep that Teflon clean! Residue is the #1 cause of weak welds. Change it if you see any tears."
               : machineType.includes('cutting')
@@ -112,31 +112,31 @@ export function SmartMaintenanceTab({ machineType, modelName }: SmartMaintenance
           const progress = getProgress(freq);
 
           return (
-            <Card key={freq} className="border-slate-800 bg-slate-900/50">
+            <Card key={freq} className="border-border bg-background/50">
               <div
-                className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-800/50 transition-colors"
+                className="p-4 flex items-center justify-between cursor-pointer hover:bg-card/50 transition-colors"
                 onClick={() => setExpandedFreq(isExpanded ? 'daily' : freq as any)}
               >
                 <div className="flex items-center gap-3">
-                  {isExpanded ? <ChevronDown className="w-5 h-5 text-slate-500" /> : <ChevronRight className="w-5 h-5 text-slate-500" />}
+                  {isExpanded ? <ChevronDown className="w-5 h-5 text-muted-foreground" /> : <ChevronRight className="w-5 h-5 text-muted-foreground" />}
                   <div>
-                    <h4 className="font-semibold text-white capitalize">{freq} Routine</h4>
-                    <p className="text-xs text-slate-500">{freqTasks.length} tasks</p>
+                    <h4 className="font-semibold text-foreground capitalize">{freq} Routine</h4>
+                    <p className="text-xs text-muted-foreground">{freqTasks.length} tasks</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <div className="text-sm font-bold text-slate-200">{progress}%</div>
+                    <div className="text-sm font-bold text-foreground">{progress}%</div>
                   </div>
                   {/* Progress Bar Mini */}
-                  <div className="w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div className="w-24 h-2 bg-card rounded-full overflow-hidden">
                     <div className={`h-full rounded-full transition-all duration-500 ${progress === 100 ? 'bg-green-500' : 'bg-amber-500'}`} style={{ width: `${progress}%` }} />
                   </div>
                 </div>
               </div>
 
               {isExpanded && (
-                <CardContent className="pt-0 pb-4 px-4 space-y-2 border-t border-slate-800/50 mt-2">
+                <CardContent className="pt-0 pb-4 px-4 space-y-2 border-t border-border/50 mt-2">
                   {freqTasks.map(task => (
                     <div
                       key={task.id}
@@ -145,23 +145,23 @@ export function SmartMaintenanceTab({ machineType, modelName }: SmartMaintenance
                         "flex items-center justify-between p-3 rounded-md transition-all cursor-pointer border",
                         completed.has(task.id)
                           ? "bg-green-500/5 border-green-500/20"
-                          : "bg-slate-800/30 border-transparent hover:border-slate-700"
+                          : "bg-card/30 border-transparent hover:border-border"
                       )}
                     >
                       <div className="flex items-center gap-3">
                         {completed.has(task.id)
-                          ? <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                          : <Circle className="w-5 h-5 text-slate-500 flex-shrink-0" />
+                          ? <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
+                          : <Circle className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                         }
-                        <div className={cn(completed.has(task.id) && "line-through text-slate-500")}>
-                          <span className="text-sm font-medium text-slate-200">{task.label}</span>
+                        <div className={cn(completed.has(task.id) && "line-through text-muted-foreground")}>
+                          <span className="text-sm font-medium text-foreground">{task.label}</span>
                           {task.isCritical && (
-                            <span className="ml-2 px-1.5 py-0.5 text-[10px] bg-red-500/20 text-red-400 rounded border border-red-500/30 uppercase font-bold">Critical</span>
+                            <span className="ml-2 px-1.5 py-0.5 text-[10px] bg-red-500/20 text-destructive rounded border border-red-500/30 uppercase font-bold">Critical</span>
                           )}
                         </div>
                       </div>
                       {task.requiredValue && (
-                        <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-800 rounded text-xs text-amber-400 border border-slate-700">
+                        <div className="flex items-center gap-1.5 px-2 py-1 bg-card rounded text-xs text-amber-400 border border-border">
                           {task.label.includes('Temp') ? <Thermometer className="w-3 h-3" /> : <Gauge className="w-3 h-3" />}
                           {task.requiredValue}
                         </div>

@@ -93,7 +93,7 @@ export function SecurityDashboard() {
             <CardTitle className="text-sm font-medium">Failed Auth</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stats.failedAuths}</div>
+            <div className="text-2xl font-bold text-destructive">{stats.failedAuths}</div>
           </CardContent>
         </Card>
         
@@ -102,7 +102,7 @@ export function SecurityDashboard() {
             <CardTitle className="text-sm font-medium">Rate Limits</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-amber-600">{stats.rateLimits}</div>
+            <div className="text-2xl font-bold text-warning">{stats.rateLimits}</div>
           </CardContent>
         </Card>
         
@@ -111,7 +111,7 @@ export function SecurityDashboard() {
             <CardTitle className="text-sm font-medium">Suspicious</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{stats.suspiciousRequests}</div>
+            <div className="text-2xl font-bold text-warning">{stats.suspiciousRequests}</div>
           </CardContent>
         </Card>
       </div>
@@ -139,7 +139,7 @@ export function SecurityDashboard() {
                         </Badge>
                         <span className="font-medium">{event.event_type.replace('_', ' ')}</span>
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-muted-foreground">
                         {new Date(event.timestamp).toLocaleString()} • {event.ip_address}
                       </div>
                     </div>

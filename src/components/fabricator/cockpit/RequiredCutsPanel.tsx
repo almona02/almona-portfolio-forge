@@ -33,18 +33,18 @@ export const RequiredCutsPanel: React.FC<RequiredCutsPanelProps> = ({ plans, pro
 
   return (
     <section
-      className="h-full min-h-0 flex flex-col border border-amber-600/20 bg-[#0d0d0d]"
+      className="h-full min-h-0 flex flex-col border border-amber-600/20 bg-background"
       data-testid="required-cuts-panel"
     >
-      <header className="px-3 py-2 border-b border-amber-600/20 text-[10px] uppercase tracking-widest text-amber-500">
+      <header className="px-3 py-2 border-b border-amber-600/20 text-[10px] uppercase tracking-widest text-warning">
         {t('industrial.opt.required_cuts', 'Required cuts')}
       </header>
       <div className="flex-1 overflow-auto">
         {rows.length === 0 ? (
-          <p className="p-3 text-xs text-slate-500">{NOT_RECORDED}</p>
+          <p className="p-3 text-xs text-muted-foreground">{NOT_RECORDED}</p>
         ) : (
           <table className="w-full text-xs">
-            <thead className="sticky top-0 bg-[#111] text-[10px] uppercase text-amber-700">
+            <thead className="sticky top-0 bg-background text-[10px] uppercase text-amber-700">
               <tr>
                 <th className="text-start px-2 py-1 font-medium">Cut</th>
                 <th className="text-start px-2 py-1 font-medium">Profile</th>
@@ -55,10 +55,10 @@ export const RequiredCutsPanel: React.FC<RequiredCutsPanelProps> = ({ plans, pro
             <tbody>
               {rows.map((r) => (
                 <tr key={r.key} className="border-t border-amber-900/20">
-                  <td className="px-2 py-1 font-mono text-amber-200" dir="ltr">
+                  <td className="px-2 py-1 font-mono text-warning" dir="ltr">
                     {r.cutId || NOT_RECORDED}
                   </td>
-                  <td className="px-2 py-1 text-amber-100" dir="ltr">
+                  <td className="px-2 py-1 text-warning" dir="ltr">
                     {r.profile}
                   </td>
                   <td className="px-2 py-1 text-end font-mono tabular-nums" dir="ltr">

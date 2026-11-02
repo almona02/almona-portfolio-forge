@@ -80,66 +80,66 @@ export const AlmonaCutListViewer: React.FC<AlmonaCutListViewerProps> = ({
   return (
     <div className="space-y-6">
       {/* ALMONA Cut Optimisation header card */}
-      <Card className="border-2 border-slate-200 dark:border-slate-700">
+      <Card className="border-2 border-border dark:border-border">
         <CardHeader className="pb-3">
           <CardTitle className="text-xl flex items-center gap-2">
             <Scissors className="h-5 w-5" />
             Cut Optimisation
           </CardTitle>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground">
             {h.dateTime}
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Project:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Project:</span>
               <span className="ml-2 font-medium">{h.project}</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Job Number:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Job Number:</span>
               <span className="ml-2 font-medium">{h.jobNumber}</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Person in Charge:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Person in Charge:</span>
               <span className="ml-2 font-medium">{h.personInCharge}</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Directory:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Directory:</span>
               <span className="ml-2 font-medium">{h.directory || '—'}</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Profile Type:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Profile Type:</span>
               <span className="ml-2 font-medium">{h.profileType}</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Total Pieces:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Total Pieces:</span>
               <span className="ml-2 font-medium">{h.totalPieces}</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Material:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Material:</span>
               <span className="ml-2 font-medium">{h.material}</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Colour:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Colour:</span>
               <Badge variant="secondary" className="ml-2">
                 {h.color}
               </Badge>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Saw Cut Deduction:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Saw Cut Deduction:</span>
               <span className="ml-2 font-medium">{h.sawCutDeduction}</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">End Deduction Total:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">End Deduction Total:</span>
               <span className="ml-2 font-medium">{h.endDeductionTotal}</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Usable Residual Length:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Usable Residual Length:</span>
               <span className="ml-2 font-medium">{h.usableResidualLength}</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Wastage:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Wastage:</span>
               <span className="ml-2 font-medium">{h.wastage}</span>
             </div>
           </div>

@@ -21,7 +21,7 @@ export const NationalHeader: React.FC = () => {
               م
             </div>
             <div>
-              <h1 className="typography-h1 text-2xl md:text-3xl font-cairo text-white">
+              <h1 className="typography-h1 text-2xl md:text-3xl font-cairo text-foreground">
                 السجل القومي للأنظمة الصناعية
               </h1>
               <p className="text-yellow-100 text-sm font-cairo opacity-90">
@@ -33,7 +33,7 @@ export const NationalHeader: React.FC = () => {
           {/* Market Tickers */}
           <div className="flex flex-col gap-2 w-full md:w-auto">
             {/* Aluminum Ticker */}
-            <div className="bg-white/10 backdrop-blur-md rounded-lg px-4 py-2 flex justify-between items-center border border-white/20 min-w-[280px]">
+            <div className="bg-foreground/10 backdrop-blur-md rounded-lg px-4 py-2 flex justify-between items-center border border-white/20 min-w-[280px]">
               <div className="flex items-center gap-2">
                 <span className="text-xl">🏭</span>
                 <span className="font-bold text-sm">سعر الألومنيوم (LME)</span>
@@ -41,12 +41,12 @@ export const NationalHeader: React.FC = () => {
               <div className="flex items-center gap-2">
                 <span className="font-mono font-bold text-[#FFD700]">{aluminumPrice.toLocaleString()}</span>
                 <span className="text-xs">ج.م/طن</span>
-                <span className="text-green-400 text-xs">▲</span>
+                <span className="text-success text-xs">▲</span>
               </div>
             </div>
 
             {/* Date / Status */}
-            <div className="flex justify-between items-center px-2 text-xs text-gray-300">
+            <div className="flex justify-between items-center px-2 text-xs text-foreground">
               <span>{date}</span>
               <span className="flex items-center gap-1">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>

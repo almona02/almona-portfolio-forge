@@ -26,7 +26,7 @@ export const ImageLoading: React.FC<ImageLoadingProps> = ({
   return (
     <div
       className={cn(
-        'relative flex items-center justify-center bg-gray-100 dark:bg-gray-800',
+        'relative flex items-center justify-center bg-muted dark:bg-card',
         aspectRatioClasses[aspectRatio],
         className
       )}
@@ -39,10 +39,10 @@ export const ImageLoading: React.FC<ImageLoadingProps> = ({
       />
       
       {showIcon && (
-        <div className="relative z-10 flex flex-col items-center space-y-2 text-gray-500 dark:text-gray-400">
+        <div className="relative z-10 flex flex-col items-center space-y-2 text-muted-foreground dark:text-muted-foreground">
           <div className="relative">
             <Camera className="h-8 w-8 animate-pulse" />
-            <Loader2 className="absolute -top-1 -right-1 h-4 w-4 animate-spin text-blue-500" />
+            <Loader2 className="absolute -top-1 -right-1 h-4 w-4 animate-spin text-info" />
           </div>
           <p className="text-sm font-medium">{message}</p>
         </div>

@@ -74,7 +74,7 @@ export const UsedMachinesAdminPanel: React.FC = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">Mark machines as sold, or delete reported and sold listings.</p>
-        {error ? <p className="text-sm text-red-500" role="alert">{error}</p> : null}
+        {error ? <p className="text-sm text-destructive" role="alert">{error}</p> : null}
         {loading ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loading…</div>
         ) : listings.length === 0 ? (
@@ -111,7 +111,7 @@ export const UsedMachinesAdminPanel: React.FC = () => {
                               <CheckCircle2 className="mr-2 h-4 w-4" /> Mark sold
                             </DropdownMenuItem>
                           )}
-                          <DropdownMenuItem className="text-red-500" onClick={() => setConfirm({ id: l.id, title: l.title, action: 'delete' })}>
+                          <DropdownMenuItem className="text-destructive" onClick={() => setConfirm({ id: l.id, title: l.title, action: 'delete' })}>
                             <Trash2 className="mr-2 h-4 w-4" /> Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>

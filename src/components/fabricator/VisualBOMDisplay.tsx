@@ -221,7 +221,7 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
   if (!bomData) {
     return (
       <Card className={cn('card-glass-dark', className)}>
-        <CardContent className="p-6 text-center text-amber-600/70">
+        <CardContent className="p-6 text-center text-warning/70">
           {t('engineering_bay.bom_no_data', 'No BOM data available')}
         </CardContent>
       </Card>
@@ -239,8 +239,8 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
         <Card className="card-glass-dark">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-amber-200">
-                <FileText className="h-5 w-5 text-amber-500" />
+              <CardTitle className="flex items-center gap-2 text-warning">
+                <FileText className="h-5 w-5 text-warning" />
                 {t('engineering_bay.bill_of_materials', 'Bill of Materials')}
               </CardTitle>
               <div className="flex items-center gap-2">
@@ -277,8 +277,8 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
       {showCostBreakdown && costBreakdown && !isWorkshopMode && (
         <Card className="card-glass-dark">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-amber-200 text-sm">
-              <BarChart3 className="h-4 w-4 text-amber-500" />
+            <CardTitle className="flex items-center gap-2 text-warning text-sm">
+              <BarChart3 className="h-4 w-4 text-warning" />
               {t('engineering_bay.cost_breakdown', 'Cost Breakdown')}
             </CardTitle>
           </CardHeader>
@@ -292,13 +292,13 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
                     : 0;
                   return (
                     <div key={index} className="space-y-1">
-                      <div className="flex justify-between text-xs text-amber-300/80">
+                      <div className="flex justify-between text-xs text-warning/80">
                         <span>{item.name}</span>
                         <span className="font-mono font-semibold">
                           {item.value.toFixed(2)} {t('engineering_bay.currency', 'EGP')}
                         </span>
                       </div>
-                      <div className="h-2 bg-gray-800/50 rounded-full overflow-hidden">
+                      <div className="h-2 bg-card/50 rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all duration-300"
                           style={{
@@ -312,10 +312,10 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
                 })}
               </div>
               <div className="pt-2 border-t border-amber-600/30 flex justify-between items-center">
-                <span className="text-sm font-semibold text-amber-200">
+                <span className="text-sm font-semibold text-warning">
                   {t('engineering_bay.total_cost', 'Total Cost')}:
                 </span>
-                <span className="text-lg font-bold font-mono text-amber-400">
+                <span className="text-lg font-bold font-mono text-warning">
                   {costBreakdown.total.toFixed(2)} {t('engineering_bay.currency', 'EGP')}
                 </span>
               </div>
@@ -325,10 +325,10 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
       )}
 
       {/* Components by Category */}
-      <Card className={cn('card-glass-dark', isWorkshopMode && 'bg-gray-900')}>
+      <Card className={cn('card-glass-dark', isWorkshopMode && 'bg-background')}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-amber-200">
-            <Package className="h-5 w-5 text-amber-500" />
+          <CardTitle className="flex items-center gap-2 text-warning">
+            <Package className="h-5 w-5 text-warning" />
             {t('engineering_bay.components', 'Components')}
           </CardTitle>
         </CardHeader>
@@ -363,17 +363,17 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
                       />
                       <span className={cn(
                         'font-semibold',
-                        isWorkshopMode ? 'text-lg text-white' : 'text-sm text-amber-200'
+                        isWorkshopMode ? 'text-lg text-foreground' : 'text-sm text-warning'
                       )}>
                         {categoryLabels[category as keyof typeof categoryLabels]}
                       </span>
-                      <Badge variant="outline" className="bg-amber-950/30 border-amber-500/40 text-amber-300">
+                      <Badge variant="outline" className="bg-amber-950/30 border-amber-500/40 text-warning">
                         {Object.keys(aggregated).length} {t('engineering_bay.items', 'items')}
                       </Badge>
                     </div>
                     <ChevronDown
                       className={cn(
-                        'h-4 w-4 text-amber-500 transition-transform duration-200',
+                        'h-4 w-4 text-warning transition-transform duration-200',
                         isExpanded && 'rotate-180'
                       )}
                     />
@@ -389,7 +389,7 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
                         className={cn(
                           'p-3 rounded border',
                           isWorkshopMode 
-                            ? 'bg-white text-black border-gray-300 text-base'
+                            ? 'bg-card text-foreground border-border text-base'
                             : 'card-dark border-amber-600/30',
                           !isVerified && 'border-amber-500/50 bg-amber-950/20'
                         )}
@@ -401,7 +401,7 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
                                 <img
                                   src={item.profile.thumbnailUrl}
                                   alt={item.profile.name || item.type}
-                                  className="w-8 h-8 rounded object-contain bg-white/5 flex-shrink-0"
+                                  className="w-8 h-8 rounded object-contain bg-foreground/5 flex-shrink-0"
                                   onError={(e) => {
                                     (e.target as HTMLImageElement).style.display = 'none';
                                   }}
@@ -409,20 +409,20 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
                               )}
                               <span className={cn(
                                 'font-semibold truncate',
-                                isWorkshopMode ? 'text-lg' : 'text-sm text-amber-200'
+                                isWorkshopMode ? 'text-lg' : 'text-sm text-warning'
                               )}>
                                 {item.profile?.name || item.type}
                               </span>
                               {!isVerified && (
-                                <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                                <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0" />
                               )}
                               {isVerified && item.verification && (
-                                <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+                                <CheckCircle2 className="h-4 w-4 text-success flex-shrink-0" />
                               )}
                             </div>
                             <div className={cn(
                               'space-x-2',
-                              isWorkshopMode ? 'text-base' : 'text-xs text-amber-600/70'
+                              isWorkshopMode ? 'text-base' : 'text-xs text-warning/70'
                             )}>
                               {item.totalLength > 0 && (
                                 <span>{Math.round(item.totalLength)}{t('engineering_bay.units.mm', 'mm')}</span>
@@ -438,7 +438,7 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
                           <div className="flex items-center gap-3 flex-shrink-0">
                             <span className={cn(
                               'font-bold font-mono',
-                              isWorkshopMode ? 'text-2xl' : 'text-sm text-amber-300'
+                              isWorkshopMode ? 'text-2xl' : 'text-sm text-warning'
                             )}>
                               {item.quantity}x
                             </span>
@@ -465,8 +465,8 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
       {glassDetails.glassSpecs.length > 0 && (
         <Card className="card-glass-dark">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-amber-200 text-sm">
-              <Layers className="h-4 w-4 text-amber-500" />
+            <CardTitle className="flex items-center gap-2 text-warning text-sm">
+              <Layers className="h-4 w-4 text-warning" />
               {t('engineering_bay.bom_glass', 'Glass & Glazing')}
             </CardTitle>
           </CardHeader>
@@ -478,22 +478,22 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
                   className={cn(
                     'p-3 rounded border',
                     isWorkshopMode
-                      ? 'bg-white text-black border-gray-300 text-base'
+                      ? 'bg-card text-foreground border-border text-base'
                       : 'card-dark border-amber-600/30'
                   )}
                 >
                   <div className="flex justify-between items-center">
                     <div>
-                      <span className={cn('font-semibold', isWorkshopMode ? 'text-lg' : 'text-sm text-amber-200')}>
+                      <span className={cn('font-semibold', isWorkshopMode ? 'text-lg' : 'text-sm text-warning')}>
                         {t('engineering_bay.glass_sash', 'Sash')} {glass.sashIndex}
                       </span>
-                      <div className={cn('mt-1', isWorkshopMode ? 'text-base' : 'text-xs text-amber-600/70')}>
+                      <div className={cn('mt-1', isWorkshopMode ? 'text-base' : 'text-xs text-warning/70')}>
                         {Math.round(glass.width)}×{Math.round(glass.height)}mm
                         {' • '}
                         {glass.area.toFixed(2)}m²
                       </div>
                     </div>
-                    <Badge variant="outline" className="bg-amber-950/30 border-amber-500/40 text-amber-300">
+                    <Badge variant="outline" className="bg-amber-950/30 border-amber-500/40 text-warning">
                       {glass.type}
                     </Badge>
                   </div>
@@ -502,14 +502,14 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
               <div className={cn(
                 'p-3 rounded border mt-2',
                 isWorkshopMode
-                  ? 'bg-gray-100 text-black border-gray-400 text-lg'
+                  ? 'bg-muted text-foreground border-border text-lg'
                   : 'card-dark border-amber-600/30'
               )}>
                 <div className="flex justify-between">
-                  <span className={cn('font-semibold', isWorkshopMode ? 'text-lg' : 'text-sm text-amber-200')}>
+                  <span className={cn('font-semibold', isWorkshopMode ? 'text-lg' : 'text-sm text-warning')}>
                     {t('engineering_bay.total_glass_area', 'Total Glass Area')}:
                   </span>
-                  <span className={cn('font-bold font-mono', isWorkshopMode ? 'text-xl' : 'text-sm text-amber-400')}>
+                  <span className={cn('font-bold font-mono', isWorkshopMode ? 'text-xl' : 'text-sm text-warning')}>
                     {glassDetails.totalGlassArea.toFixed(2)}m²
                   </span>
                 </div>
@@ -522,36 +522,36 @@ export const VisualBOMDisplay: React.FC<VisualBOMDisplayProps> = ({
       {/* Summary Totals */}
       <Card className="card-glass-dark border-2 border-amber-500/50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-amber-200">
-            <DollarSign className="h-5 w-5 text-amber-500" />
+          <CardTitle className="flex items-center gap-2 text-warning">
+            <DollarSign className="h-5 w-5 text-warning" />
             {t('engineering_bay.bom_summary', 'Unit Summary')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className={cn('text-amber-500/80 font-semibold mb-1', isWorkshopMode && 'text-base')}>
+              <div className={cn('text-warning/80 font-semibold mb-1', isWorkshopMode && 'text-base')}>
                 {t('engineering_bay.unit_dimensions', 'Dimensions')}
               </div>
-              <div className={cn('font-mono font-bold text-amber-200', isWorkshopMode ? 'text-xl' : 'text-sm')}>
+              <div className={cn('font-mono font-bold text-warning', isWorkshopMode ? 'text-xl' : 'text-sm')}>
                 {Math.round(windowUnit.overallWidth)}×{Math.round(windowUnit.overallHeight)}mm
               </div>
             </div>
             <div>
-              <div className={cn('text-amber-500/80 font-semibold mb-1', isWorkshopMode && 'text-base')}>
+              <div className={cn('text-warning/80 font-semibold mb-1', isWorkshopMode && 'text-base')}>
                 {t('engineering_bay.total_weight', 'Total Weight')}
               </div>
-              <div className={cn('font-mono font-bold text-amber-300', isWorkshopMode ? 'text-xl' : 'text-sm')}>
+              <div className={cn('font-mono font-bold text-warning', isWorkshopMode ? 'text-xl' : 'text-sm')}>
                 {totals.weight.toFixed(2)}kg
               </div>
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-amber-600/30">
             <div className="flex justify-between items-center">
-              <span className={cn('font-semibold text-amber-200', isWorkshopMode && 'text-lg')}>
+              <span className={cn('font-semibold text-warning', isWorkshopMode && 'text-lg')}>
                 {t('engineering_bay.total_material_cost', 'Total Material Cost')}:
               </span>
-              <span className={cn('font-bold font-mono text-amber-400', isWorkshopMode ? 'text-2xl' : 'text-lg')}>
+              <span className={cn('font-bold font-mono text-warning', isWorkshopMode ? 'text-2xl' : 'text-lg')}>
                 {totals.materialCost.toFixed(2)} {t('engineering_bay.currency', 'EGP')}
               </span>
             </div>

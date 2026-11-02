@@ -127,16 +127,16 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="mb-4"
           >
-            <Card className="w-80 bg-white shadow-2xl border border-gray-200">
+            <Card className="w-80 bg-card shadow-2xl border border-border">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                      <MessageSquare className="h-5 w-5 text-white" />
+                      <MessageSquare className="h-5 w-5 text-foreground" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg text-gray-900">ALMONA Support</CardTitle>
-                      <div className="flex items-center gap-1 text-sm text-gray-500">
+                      <CardTitle className="text-lg text-foreground">ALMONA Support</CardTitle>
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                         <span>Online now</span>
                       </div>
@@ -156,12 +156,12 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
               
               <CardContent className="space-y-4">
                 {/* Business Info */}
-                <div className="bg-gray-50 rounded-lg p-3 space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="bg-background rounded-lg p-3 space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
                     <span>{businessHours}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>Cairo, Egypt</span>
                   </div>
@@ -170,7 +170,7 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
                 {/* Quick Messages */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Quick Messages</span>
+                    <span className="text-sm font-medium text-foreground">Quick Messages</span>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -212,12 +212,12 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
 
                 {/* Custom Message */}
                 <div className="space-y-2">
-                  <label className="typography-label text-sm font-medium text-gray-700">Your Message</label>
+                  <label className="typography-label text-sm font-medium text-foreground">Your Message</label>
                   <textarea
                     value={customMessage}
                     onChange={(e) => setCustomMessage(e.target.value)}
                     placeholder="Type your message here..."
-                    className="w-full p-3 border border-gray-300 rounded-lg resize-none text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full p-3 border border-border rounded-lg resize-none text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     rows={3}
                   />
                 </div>

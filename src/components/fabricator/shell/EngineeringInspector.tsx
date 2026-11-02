@@ -40,7 +40,7 @@ function Row({ label, value, ltr }: { label: string; value: string; ltr?: boolea
     <div className="flex items-baseline justify-between gap-2 py-1 border-b border-amber-900/20 min-w-0">
       <span className="text-[10px] uppercase tracking-wider text-amber-700 shrink-0">{label}</span>
       <span
-        className={cn('text-xs text-amber-100 min-w-0 truncate text-end', ltr && 'font-mono')}
+        className={cn('text-xs text-warning min-w-0 truncate text-end', ltr && 'font-mono')}
         dir={ltr ? 'ltr' : undefined}
         title={value}
       >
@@ -77,18 +77,18 @@ export const EngineeringInspector: React.FC<EngineeringInspectorProps> = ({
 
   return (
     <aside
-      className={cn('h-full overflow-y-auto bg-[#0d0d0d] p-3', className)}
+      className={cn('h-full overflow-y-auto bg-background p-3', className)}
       data-testid="engineering-inspector"
       data-selection={kind}
       data-occurrence-id={selectedOccurrence?.id || undefined}
       aria-label={t('industrial.inspector.title', 'Properties')}
     >
-      <h2 className="text-[10px] uppercase tracking-widest text-amber-500 mb-3">
+      <h2 className="text-[10px] uppercase tracking-widest text-warning mb-3">
         {t('industrial.inspector.title', 'Properties')} · {KIND_LABEL[kind]}
       </h2>
 
       {!project && (
-        <p className="text-xs text-slate-500">{NOT_RECORDED}</p>
+        <p className="text-xs text-muted-foreground">{NOT_RECORDED}</p>
       )}
 
       {project && kind === 'pose' && (
@@ -128,7 +128,7 @@ export const EngineeringInspector: React.FC<EngineeringInspectorProps> = ({
 
       {project && kind !== 'pose' && kind !== 'none' && (
         <div>
-          <p className="text-xs text-amber-200 mb-2">{KIND_LABEL[kind]}</p>
+          <p className="text-xs text-warning mb-2">{KIND_LABEL[kind]}</p>
           <Row label="Linked position" value={project.posNumber || NOT_RECORDED} ltr />
           <Row
             label="Occurrence"

@@ -39,7 +39,7 @@ export const ParameterControl: React.FC<ParameterControlProps> = ({
       <div className="space-y-2">
         <Label>{parameter.label}</Label>
         <Select value={String(value)} onValueChange={onChange}>
-          <SelectTrigger className="bg-gray-800 border-gray-700">
+          <SelectTrigger className="bg-card border-border">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -66,7 +66,7 @@ export const ParameterControl: React.FC<ParameterControlProps> = ({
           step={parameter.step}
           className="w-full"
         />
-        <div className="text-sm text-gray-400">{value || parameter.default || parameter.min || 0}</div>
+        <div className="text-sm text-muted-foreground">{value || parameter.default || parameter.min || 0}</div>
       </div>
     );
   }
@@ -79,7 +79,7 @@ export const ParameterControl: React.FC<ParameterControlProps> = ({
         type="number"
         value={value || parameter.default || ''}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="bg-gray-800 border-gray-700"
+        className="bg-card border-border"
         min={parameter.min}
         max={parameter.max}
         step={parameter.step}

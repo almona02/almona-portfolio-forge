@@ -120,11 +120,11 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
     if (!operationStatus) return null;
 
     const statusConfig = {
-      idle: { icon: Info, color: 'text-slate-400', bg: 'bg-slate-800/50' },
-      processing: { icon: Loader2, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-      success: { icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-      error: { icon: AlertCircle, color: 'text-red-400', bg: 'bg-red-500/10' },
-      warning: { icon: AlertCircle, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+      idle: { icon: Info, color: 'text-muted-foreground', bg: 'bg-card/50' },
+      processing: { icon: Loader2, color: 'text-warning', bg: 'bg-amber-500/10' },
+      success: { icon: CheckCircle2, color: 'text-success', bg: 'bg-emerald-500/10' },
+      error: { icon: AlertCircle, color: 'text-destructive', bg: 'bg-red-500/10' },
+      warning: { icon: AlertCircle, color: 'text-warning', bg: 'bg-amber-500/10' },
     };
 
     const config = statusConfig[operationStatus.status];
@@ -137,7 +137,7 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
           {operationStatus.name}
         </span>
         {operationStatus.message && (
-          <span className="text-[9px] text-slate-400 font-normal">{operationStatus.message}</span>
+          <span className="text-[9px] text-muted-foreground font-normal">{operationStatus.message}</span>
         )}
         {operationStatus.progress !== undefined && (
           <div className="w-16">
@@ -149,7 +149,7 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
   };
 
   return (
-    <div className={`h-6 border-t border-amber-600/30 bg-slate-950/95 backdrop-blur-sm flex items-center justify-between px-2 text-xs ${className}`}>
+    <div className={`h-6 border-t border-amber-600/30 bg-background/95 backdrop-blur-sm flex items-center justify-between px-2 text-xs ${className}`}>
       {/* Left Section - Status & Messages */}
       <div className="flex items-center gap-2 flex-1 min-w-0" style={{ minHeight: '24px' }}>
         {/* Operation Status */}
@@ -158,10 +158,10 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
         {/* Latest Message */}
         {latestMessage && !operationStatus && (
           <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded ${
-            latestMessage.type === 'error' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-            latestMessage.type === 'warning' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-            latestMessage.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-            'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+            latestMessage.type === 'error' ? 'bg-red-500/10 text-destructive border border-red-500/20' :
+            latestMessage.type === 'warning' ? 'bg-amber-500/10 text-warning border border-amber-500/20' :
+            latestMessage.type === 'success' ? 'bg-emerald-500/10 text-success border border-emerald-500/20' :
+            'bg-blue-500/10 text-info border border-blue-500/20'
           }`}>
             {latestMessage.type === 'error' && <AlertCircle className="h-2.5 w-2.5" />}
             {latestMessage.type === 'warning' && <AlertCircle className="h-2.5 w-2.5" />}
@@ -172,7 +172,7 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-3 w-3 ml-0.5 hover:bg-slate-700/50 transition-colors duration-150"
+                className="h-3 w-3 ml-0.5 hover:bg-muted/50 transition-colors duration-150"
                 onClick={() => onDismissMessage(latestMessage.id)}
               >
                 <X className="h-2 w-2" />
@@ -185,7 +185,7 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
         {validatedProgress !== undefined && !operationStatus && (
           <div className="flex items-center gap-1">
             <Progress value={validatedProgress} className="w-24 h-1" />
-            <span className="text-slate-400 text-[10px]">{Math.round(validatedProgress)}%</span>
+            <span className="text-muted-foreground text-[10px]">{Math.round(validatedProgress)}%</span>
           </div>
         )}
       </div>
@@ -194,16 +194,16 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
       <div className="flex items-center gap-2 flex-shrink-0">
         {currentTool && (
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-slate-500 font-medium">Tool:</span>
-            <Badge variant="outline" className="border-amber-600/30 text-amber-400 bg-amber-500/10 text-[10px] font-medium px-1.5 py-0.5">
+            <span className="text-[10px] text-muted-foreground font-medium">Tool:</span>
+            <Badge variant="outline" className="border-amber-600/30 text-warning bg-amber-500/10 text-[10px] font-medium px-1.5 py-0.5">
               {currentTool}
             </Badge>
           </div>
         )}
         {validatedElementCount !== undefined && (
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-slate-500 font-medium">Elements:</span>
-            <span className="text-[10px] text-amber-300 font-semibold">{validatedElementCount}</span>
+            <span className="text-[10px] text-muted-foreground font-medium">Elements:</span>
+            <span className="text-[10px] text-warning font-semibold">{validatedElementCount}</span>
           </div>
         )}
       </div>
@@ -212,29 +212,29 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
       <div className="flex items-center gap-2 flex-shrink-0">
         {validatedCoordinates && (
           <div className="flex items-center gap-1 font-mono text-[10px]" title="pointer location (world mm)">
-            <span className="text-slate-500 font-medium">Location:</span>
-            <span className="text-amber-300 font-semibold">{validatedCoordinates.x.toFixed(1)}</span>
-            <span className="text-slate-400">×</span>
-            <span className="text-amber-300 font-semibold">{validatedCoordinates.y.toFixed(1)}</span>
-            <span className="text-slate-500 font-medium">mm</span>
+            <span className="text-muted-foreground font-medium">Location:</span>
+            <span className="text-warning font-semibold">{validatedCoordinates.x.toFixed(1)}</span>
+            <span className="text-muted-foreground">×</span>
+            <span className="text-warning font-semibold">{validatedCoordinates.y.toFixed(1)}</span>
+            <span className="text-muted-foreground font-medium">mm</span>
           </div>
         )}
         {zoomLevel && (
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-slate-500 font-medium">Zoom:</span>
-            <span className="text-[10px] text-amber-300 font-semibold font-mono">{zoomLevel}</span>
+            <span className="text-[10px] text-muted-foreground font-medium">Zoom:</span>
+            <span className="text-[10px] text-warning font-semibold font-mono">{zoomLevel}</span>
           </div>
         )}
         <div className="flex items-center gap-1">
           <Badge 
             variant="outline" 
-            className={`text-[10px] font-medium px-1.5 py-0.5 ${gridVisible ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10' : 'border-slate-600/30 text-slate-500 bg-slate-800/50'}`}
+            className={`text-[10px] font-medium px-1.5 py-0.5 ${gridVisible ? 'border-emerald-500/30 text-success bg-emerald-500/10' : 'border-border/30 text-muted-foreground bg-card/50'}`}
           >
             Grid: {gridVisible ? 'ON' : 'OFF'}
           </Badge>
           <Badge 
             variant="outline" 
-            className={`text-[10px] font-medium px-1.5 py-0.5 ${snapEnabled ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10' : 'border-slate-600/30 text-slate-500 bg-slate-800/50'}`}
+            className={`text-[10px] font-medium px-1.5 py-0.5 ${snapEnabled ? 'border-emerald-500/30 text-success bg-emerald-500/10' : 'border-border/30 text-muted-foreground bg-card/50'}`}
           >
             Snap: {snapEnabled ? 'ON' : 'OFF'}
           </Badge>
@@ -246,7 +246,7 @@ export const EnhancedStatusBar: React.FC<EnhancedStatusBarProps> = React.memo(({
             variant="ghost"
             size="icon"
             onClick={onHelp}
-            className="h-4 w-4 text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors duration-200"
+            className="h-4 w-4 text-muted-foreground hover:text-warning hover:bg-amber-500/10 transition-colors duration-200"
             aria-label="Open help panel (F1)"
             title="Help (F1)"
           >

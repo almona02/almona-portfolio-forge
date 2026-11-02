@@ -142,12 +142,12 @@ export const LiveAssistance = () => {
     <div className="space-y-6">
       {!callActive ? (
         <div className="space-y-6">
-          <div className="bg-almona-darker/50 p-6 rounded-xl border border-almona-light/10">
+          <div className="bg-card/50 p-6 rounded-xl border border-border/10">
             <h3 className="typography-h3 mb-4 flex items-center">
               <AlertTriangle className="text-almona-orange mr-3" />
               Immediate Technical Support
             </h3>
-            <p className="text-gray-400 mb-6">
+            <p className="text-muted-foreground mb-6">
               Connect directly with our certified technicians for real-time assistance with your equipment.
             </p>
 
@@ -181,7 +181,7 @@ export const LiveAssistance = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   Available technicians will respond immediately to your call
                 </p>
               </div>
@@ -201,11 +201,11 @@ export const LiveAssistance = () => {
             {technicians.filter(t => t.available).map(tech => (
               <div 
                 key={tech.id}
-                className="border border-almona-light/10 rounded-lg p-4 hover:bg-almona-darker/30 cursor-pointer"
+                className="border border-border/10 rounded-lg p-4 hover:bg-card/30 cursor-pointer"
                 onClick={() => setSelectedTech(tech.id)}
               >
                 <div className="font-medium">{tech.name}</div>
-                <div className="text-sm text-gray-400 mb-2">{tech.specialty}</div>
+                <div className="text-sm text-muted-foreground mb-2">{tech.specialty}</div>
                 <div className="flex items-center">
                   <Badge>
                     {tech.rating} ★
@@ -225,9 +225,9 @@ export const LiveAssistance = () => {
               <div className="lg:col-span-2 space-y-4">
                 <div className="bg-black rounded-lg aspect-video relative overflow-hidden">
 
-                <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+                <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
                   {videoOff ? (
-                    <div className="bg-almona-darker rounded-full h-32 w-32 flex items-center justify-center">
+                    <div className="bg-card rounded-full h-32 w-32 flex items-center justify-center">
                       <Video className="h-8 w-8" />
                     </div>
                   ) : (
@@ -269,9 +269,9 @@ export const LiveAssistance = () => {
 
               {/* Whiteboard */}
               {whiteboardActive && (
-                <div className="bg-white rounded-lg aspect-video relative overflow-hidden border border-gray-300">
+                <div className="bg-card rounded-lg aspect-video relative overflow-hidden border border-border">
 
-                  <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+                  <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
                     Collaborative Whiteboard
                   </div>
                   <div className="absolute bottom-2 right-2">
@@ -286,8 +286,8 @@ export const LiveAssistance = () => {
             </div>
 
             {/* Chat Panel */}
-            <div className="border border-almona-light/10 rounded-lg flex flex-col h-full">
-              <div className="p-4 border-b border-almona-light/10 font-medium">
+            <div className="border border-border/10 rounded-lg flex flex-col h-full">
+              <div className="p-4 border-b border-border/10 font-medium">
                 Chat with Technician
               </div>
               <div className="flex-grow p-4 overflow-y-auto max-h-96">
@@ -299,11 +299,11 @@ export const LiveAssistance = () => {
                     >
                       <div 
                         className={`max-w-xs p-3 rounded-lg ${msg.sender === 'user' 
-                          ? 'bg-almona-orange/10 text-white' 
-                          : 'bg-almona-darker/50 text-gray-300'}`}
+                          ? 'bg-almona-orange/10 text-foreground'
+                          : 'bg-card/50 text-foreground'}`}
                       >
                         <div className="text-sm">{msg.text}</div>
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="text-xs text-muted-foreground mt-1">
                           {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </div>
                       </div>
@@ -312,7 +312,7 @@ export const LiveAssistance = () => {
                   <div ref={messagesEndRef} />
                 </div>
               </div>
-              <div className="p-4 border-t border-almona-light/10">
+              <div className="p-4 border-t border-border/10">
                 <div className="flex gap-2">
                   <Input
                     placeholder="Type your message..."

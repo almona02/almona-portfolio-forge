@@ -117,12 +117,12 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const CurrentStepComponent = steps[currentStep].component;
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800 card-dark">
+        <Card className="bg-background border-border card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Welcome to Almona Portfolio Forge</CardTitle>
-            <p className="text-gray-400">Let's get you set up in just 5 steps (15 minutes)</p>
+            <p className="text-muted-foreground">Let's get you set up in just 5 steps (15 minutes)</p>
           </CardHeader>
           <CardContent>
             {/* Progress Indicator */}
@@ -135,7 +135,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                         ? 'bg-green-600 text-white'
                         : index === currentStep
                         ? 'bg-blue-600 text-white'
-                        : 'bg-gray-700 text-gray-400'
+                        : 'bg-muted text-muted-foreground'
                     }`}>
                       {index < currentStep ? (
                         <CheckCircle2 className="h-6 w-6" />
@@ -144,14 +144,14 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                       )}
                     </div>
                     <div className={`text-xs mt-2 text-center ${
-                      index <= currentStep ? 'text-gray-300' : 'text-gray-500'
+                      index <= currentStep ? 'text-foreground' : 'text-muted-foreground'
                     }`}>
                       {step.title}
                     </div>
                   </div>
                   {index < steps.length - 1 && (
                     <div className={`h-1 flex-1 mx-2 ${
-                      index < currentStep ? 'bg-green-600' : 'bg-gray-700'
+                      index < currentStep ? 'bg-green-600' : 'bg-muted'
                     }`} />
                   )}
                 </div>
@@ -173,7 +173,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   <Button
                     variant="outline"
                     onClick={handlePrevious}
-                    className="bg-gray-800 border-gray-700"
+                    className="bg-card border-border"
                   >
                     Previous
                   </Button>
@@ -182,7 +182,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                   <Button
                     variant="ghost"
                     onClick={onSkip}
-                    className="ml-4 text-gray-400"
+                    className="ml-4 text-muted-foreground"
                   >
                     Skip Onboarding
                   </Button>

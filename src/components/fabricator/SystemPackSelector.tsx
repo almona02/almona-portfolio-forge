@@ -82,7 +82,7 @@ export const SystemPackSelector: React.FC<SystemPackSelectorProps> = ({
 
   if (filteredPacks.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-400">
+      <div className="text-center py-8 text-muted-foreground">
         <p>No system packs available for this category.</p>
       </div>
     );
@@ -95,13 +95,13 @@ export const SystemPackSelector: React.FC<SystemPackSelectorProps> = ({
         {filteredPacks.map((pack) => (
           <Card
             key={pack.id}
-            className="bg-gray-700 border-gray-600 cursor-pointer transition-colors card-premium"
+            className="bg-muted border-border cursor-pointer transition-colors card-premium"
             onClick={() => onSystemPackSelect(pack)}
           >
             <CardContent className="p-4">
               <div className="font-semibold mb-2">{pack.name}</div>
-              <div className="text-sm text-gray-400 mb-2">{pack.brand}</div>
-              <div className="text-xs text-gray-500">
+              <div className="text-sm text-muted-foreground mb-2">{pack.brand}</div>
+              <div className="text-xs text-muted-foreground">
                 {pack.compatibleProfiles?.length ?? 0} profiles • {pack.compatibleAccessories?.length ?? 0} accessories
               </div>
             </CardContent>

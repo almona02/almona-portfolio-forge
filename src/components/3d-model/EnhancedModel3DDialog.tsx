@@ -215,7 +215,7 @@ export function EnhancedModel3DDialog({
         onClick={onClose}
       >
         <LazyMotionDiv 
-          className={`bg-gradient-to-br from-gray-900 to-black rounded-2xl shadow-2xl border border-amber-500/20 ${
+          className={`bg-gradient-to-br from-background to-black rounded-2xl shadow-2xl border border-amber-500/20 ${
             isFullscreen ? 'w-full h-full max-w-none max-h-none' : 'max-w-7xl w-full max-h-[95vh]'
           } overflow-hidden`}
           variants={modalVariants}
@@ -225,7 +225,7 @@ export function EnhancedModel3DDialog({
           onClick={(e: React.MouseEvent) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex justify-between items-center p-6 border-b border-gray-700">
+          <div className="flex justify-between items-center p-6 border-b border-border">
             <div className="flex items-center gap-4">
               <LazyMotion component="h2" 
                 className="text-2xl font-bold text-white"
@@ -251,7 +251,7 @@ export function EnhancedModel3DDialog({
             
             <div className="flex items-center gap-2">
               {/* View Mode Toggle */}
-              <div className="flex bg-gray-800 rounded-lg p-1">
+              <div className="flex bg-card rounded-lg p-1">
                 <Button
                   size="sm"
                   variant={viewMode === 'desktop' ? 'default' : 'ghost'}
@@ -312,7 +312,7 @@ export function EnhancedModel3DDialog({
                 size="sm"
                 variant="ghost"
                 onClick={handleResetView}
-                className="text-gray-400 hover:text-white"
+                className="text-muted-foreground hover:text-white"
               >
                 <RotateCcw className="w-4 h-4" />
               </Button>
@@ -321,7 +321,7 @@ export function EnhancedModel3DDialog({
                 size="sm"
                 variant="ghost"
                 onClick={toggleFullscreen}
-                className="text-gray-400 hover:text-white"
+                className="text-muted-foreground hover:text-white"
               >
                 {isFullscreen ? <ZoomOut className="w-4 h-4" /> : <ZoomIn className="w-4 h-4" />}
               </Button>
@@ -330,7 +330,7 @@ export function EnhancedModel3DDialog({
                 size="sm"
                 variant="ghost"
                 onClick={onClose}
-                className="text-gray-400 hover:text-white"
+                className="text-muted-foreground hover:text-white"
               >
                 <X className="w-5 h-5" />
               </Button>
@@ -343,7 +343,7 @@ export function EnhancedModel3DDialog({
             <div className="flex-1 relative">
               <div className={`${isFullscreen ? 'h-[calc(100vh-120px)]' : 'h-[60vh]'} min-h-[480px] relative`}>
                 {viewMode === 'swiftxr' && isFR222 ? (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-900 rounded-lg overflow-hidden">
+                  <div className="w-full h-full flex items-center justify-center bg-background rounded-lg overflow-hidden">
                     <SwiftXRIframe
                       title="Almona"
                       projectUrl="https://almona.swiftxr.site/almona"
@@ -378,7 +378,7 @@ export function EnhancedModel3DDialog({
                         autoPlayAnimations={false}
                       />
                       {sharedMeasurements.length > 0 && (
-                        <div className="absolute bottom-3 left-3 text-xs text-gray-300 bg-black/50 px-2 py-1 rounded">
+                        <div className="absolute bottom-3 left-3 text-xs text-foreground bg-black/50 px-2 py-1 rounded">
                           {sharedMeasurements.map(m => (
                             <div key={`left_${m.id}`}>{m.distance.toFixed(2)} {m.unit}</div>
                           ))}
@@ -394,7 +394,7 @@ export function EnhancedModel3DDialog({
                         autoPlayAnimations={false}
                       />
                       {sharedMeasurements.length > 0 && (
-                        <div className="absolute bottom-3 left-3 text-xs text-gray-300 bg-black/50 px-2 py-1 rounded">
+                        <div className="absolute bottom-3 left-3 text-xs text-foreground bg-black/50 px-2 py-1 rounded">
                           {sharedMeasurements.map(m => (
                             <div key={`right_${m.id}`}>{m.distance.toFixed(2)} {m.unit}</div>
                           ))}
@@ -422,7 +422,7 @@ export function EnhancedModel3DDialog({
                         <div className="w-16 h-16 border-4 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mx-auto"></div>
                         <div className="space-y-2">
                           <p className="text-lg font-semibold">{loadingProgress.message}</p>
-                          <div className="w-64 bg-gray-700 rounded-full h-2">
+                          <div className="w-64 bg-muted rounded-full h-2">
                             <LazyMotionDiv 
                               className="bg-gradient-to-r from-amber-500 to-red-500 h-2 rounded-full"
                               initial={{ width: 0 }}
@@ -430,7 +430,7 @@ export function EnhancedModel3DDialog({
                               transition={{ duration: 0.5 }}
                             />
                           </div>
-                          <p className="text-sm text-gray-400">{loadingProgress.progress}%</p>
+                          <p className="text-sm text-muted-foreground">{loadingProgress.progress}%</p>
                         </div>
                       </LazyMotionDiv>
                     </LazyMotionDiv>
@@ -448,11 +448,11 @@ export function EnhancedModel3DDialog({
                     >
                       <div className="text-center space-y-4">
                         <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto">
-                          <X className="w-8 h-8 text-red-400" />
+                          <X className="w-8 h-8 text-destructive" />
                         </div>
                         <div>
-                          <h3 className="typography-h3 text-lg text-red-400">Error Loading Model</h3>
-                          <p className="text-sm text-gray-300 mt-2">{error}</p>
+                          <h3 className="typography-h3 text-lg text-destructive">Error Loading Model</h3>
+                          <p className="text-sm text-foreground mt-2">{error}</p>
                         </div>
                       </div>
                     </LazyMotionDiv>
@@ -465,7 +465,7 @@ export function EnhancedModel3DDialog({
                     size="sm"
                     variant="secondary"
                     onClick={() => setShowMeasurements(!showMeasurements)}
-                    className="bg-black/50 backdrop-blur-sm text-white border-gray-600"
+                    className="bg-black/50 backdrop-blur-sm text-white border-border"
                   >
                     <Ruler className="w-4 h-4 mr-2" />
                     {showMeasurements ? 'Hide' : 'Show'} Measurements
@@ -479,7 +479,7 @@ export function EnhancedModel3DDialog({
                       setAutoRotate(newState);
                       onAutoRotateChange?.(newState);
                     }}
-                    className="bg-black/50 backdrop-blur-sm text-white border-gray-600"
+                    className="bg-black/50 backdrop-blur-sm text-white border-border"
                   >
                     {autoRotate ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
                     {autoRotate ? 'Stop' : 'Auto'} Rotate
@@ -487,13 +487,13 @@ export function EnhancedModel3DDialog({
                 </div>
 
                 {viewMode === 'compare' && (
-                  <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm p-3 rounded-lg border border-gray-700 space-y-2">
-                    <div className="text-xs text-gray-300">Compare Models</div>
+                  <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm p-3 rounded-lg border border-border space-y-2">
+                    <div className="text-xs text-foreground">Compare Models</div>
                     <div className="flex gap-2">
-                      <input type="text" placeholder="Left model path" className="px-2 py-1 text-xs bg-gray-800 border border-gray-700 rounded" value={compareModels.left || ''} onChange={(e) => setCompareModels(s => ({ ...s, left: e.target.value }))} />
-                      <input type="text" placeholder="Right model path" className="px-2 py-1 text-xs bg-gray-800 border border-gray-700 rounded" value={compareModels.right || ''} onChange={(e) => setCompareModels(s => ({ ...s, right: e.target.value }))} />
+                      <input type="text" placeholder="Left model path" className="px-2 py-1 text-xs bg-card border border-border rounded" value={compareModels.left || ''} onChange={(e) => setCompareModels(s => ({ ...s, left: e.target.value }))} />
+                      <input type="text" placeholder="Right model path" className="px-2 py-1 text-xs bg-card border border-border rounded" value={compareModels.right || ''} onChange={(e) => setCompareModels(s => ({ ...s, right: e.target.value }))} />
                     </div>
-                    <div className="text-[10px] text-gray-400">Paths should be public GLB URLs</div>
+                    <div className="text-[10px] text-muted-foreground">Paths should be public GLB URLs</div>
                   </div>
                 )}
 
@@ -513,7 +513,7 @@ export function EnhancedModel3DDialog({
             </div>
 
             {/* Sidebar */}
-            <div className="w-full lg:w-80 border-l border-gray-700 bg-gray-900/50 backdrop-blur-sm">
+            <div className="w-full lg:w-80 border-l border-border bg-background/50 backdrop-blur-sm">
               <div className="p-6 space-y-6">
                 {/* Machine Info */}
                 <LazyMotionDiv
@@ -527,7 +527,7 @@ export function EnhancedModel3DDialog({
                       size="sm"
                       variant="ghost"
                       onClick={() => setShowInfo(!showInfo)}
-                      className="text-gray-400 hover:text-white"
+                      className="text-muted-foreground hover:text-white"
                     >
                       <Info className="w-4 h-4" />
                     </Button>
@@ -536,8 +536,8 @@ export function EnhancedModel3DDialog({
                   {machineData && (
                     <div className="space-y-3">
                       {machineData.dimensions && (
-                        <div className="bg-gray-800 p-3 rounded-lg">
-                          <div className="text-sm text-gray-400">Dimensions</div>
+                        <div className="bg-card p-3 rounded-lg">
+                          <div className="text-sm text-muted-foreground">Dimensions</div>
                           <div className="text-white font-medium">
                             {machineData.dimensions.length} × {machineData.dimensions.width} × {machineData.dimensions.height}
                           </div>
@@ -545,15 +545,15 @@ export function EnhancedModel3DDialog({
                       )}
                       
                       {machineData.power && (
-                        <div className="bg-gray-800 p-3 rounded-lg">
-                          <div className="text-sm text-gray-400">Power</div>
+                        <div className="bg-card p-3 rounded-lg">
+                          <div className="text-sm text-muted-foreground">Power</div>
                           <div className="text-white font-medium">{machineData.power}</div>
                         </div>
                       )}
                       
                       {machineData.weight && (
-                        <div className="bg-gray-800 p-3 rounded-lg">
-                          <div className="text-sm text-gray-400">Weight</div>
+                        <div className="bg-card p-3 rounded-lg">
+                          <div className="text-sm text-muted-foreground">Weight</div>
                           <div className="text-white font-medium">{machineData.weight}</div>
                         </div>
                       )}
@@ -575,7 +575,7 @@ export function EnhancedModel3DDialog({
                       size="sm"
                       variant="outline"
                       onClick={handleDownload}
-                      className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                      className="border-border text-foreground hover:bg-card hover:text-white"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Download
@@ -585,7 +585,7 @@ export function EnhancedModel3DDialog({
                       size="sm"
                       variant="outline"
                       onClick={handleShare}
-                      className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                      className="border-border text-foreground hover:bg-card hover:text-white"
                     >
                       <Share2 className="w-4 h-4 mr-2" />
                       Share
@@ -602,7 +602,7 @@ export function EnhancedModel3DDialog({
                 >
                   <h3 className="typography-h3 text-lg text-white">Controls</h3>
                   
-                  <div className="space-y-2 text-sm text-gray-400">
+                  <div className="space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <Move3D className="w-4 h-4" />
                       <span>Drag to rotate</span>

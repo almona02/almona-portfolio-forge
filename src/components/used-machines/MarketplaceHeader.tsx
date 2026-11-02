@@ -1,3 +1,4 @@
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -29,18 +30,19 @@ const MarketplaceHeader: React.FC = () => {
   }, [i18n]);
 
   return (
-    <header className="fixed top-0 inset-x-0 z-40 h-14 bg-almona-dark border-b border-almona-light/20">
+    <header className="fixed top-0 inset-x-0 z-40 h-14 bg-background border-b border-border/20">
       <div className="container mx-auto px-4 h-full flex items-center justify-between gap-3">
-        <Link to="/used-machines" className="flex items-center gap-2 text-white font-semibold min-w-0">
+        <Link to="/used-machines" className="flex items-center gap-2 text-foreground font-semibold min-w-0">
           <Wrench className="h-5 w-5 text-almona-orange shrink-0" aria-hidden="true" />
           <span className="truncate">{copy('Machines Market')}</span>
         </Link>
 
         <div className="flex items-center gap-2 shrink-0">
+          <ThemeToggle size="sm" />
           <button
             type="button"
             onClick={() => void i18n.changeLanguage(isArabic ? 'en' : 'ar')}
-            className="text-sm text-gray-300 hover:text-almona-orange px-2 py-1 transition-colors"
+            className="text-sm text-foreground hover:text-almona-orange px-2 py-1 transition-colors"
             aria-label={copy('Language')}
           >
             {isArabic ? 'English' : 'العربية'}

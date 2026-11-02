@@ -154,11 +154,11 @@ export const SystemPacksPage: React.FC = () => {
     if (tuningStatus.needsTuning) {
       return 'border-yellow-500/50';
     }
-    return 'border-slate-600/50';
+    return 'border-border/50';
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <motion.div
@@ -172,11 +172,11 @@ export const SystemPacksPage: React.FC = () => {
                 <Package className="h-8 w-8 text-amber-400" />
               </div>
               <div>
-                <h1 className="typography-h1 md:text-4xl text-white flex items-center gap-3">
+                <h1 className="typography-h1 md:text-4xl text-foreground flex items-center gap-3">
                   System Packs Gallery
                   <Sparkles className="h-6 w-6 text-amber-400" />
                 </h1>
-                <p className="text-slate-400 mt-2 text-sm md:text-base">
+                <p className="text-muted-foreground mt-2 text-sm md:text-base">
                   Explore and manage all available window and door system packs
                 </p>
               </div>
@@ -198,15 +198,15 @@ export const SystemPacksPage: React.FC = () => {
           transition={{ delay: 0.1 }}
           className="mb-8"
         >
-          <div className="bg-slate-900/60 -sm border border-slate-700/50 rounded-2xl p-6 card-glass-dark">
+          <div className="bg-background/60 -sm border border-border/50 rounded-2xl p-6 card-glass-dark">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   placeholder="Search system packs..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 border-slate-700/50 text-slate-100 placeholder-slate-500 h-12 rounded-xl focus:border-amber- 500/50 focus:ring-2 focus:ring-amber-500/20 card-premium"
+                  className="pl-12 border-border/50 text-foreground placeholder-muted-foreground h-12 rounded-xl focus:border-amber- 500/50 focus:ring-2 focus:ring-amber-500/20 card-premium"
                 />
               </div>
               <div className="flex flex-wrap gap-2">
@@ -217,7 +217,7 @@ export const SystemPacksPage: React.FC = () => {
                   className={`h-12 px-4 rounded-xl transition-all ${
                     filterType === 'all' 
                       ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-lg shadow-amber-500/20' 
-                      : 'bg-slate-800/50 border-slate-700/50 text-slate-300 hover:bg-slate-700/50'
+                      : 'bg-card/50 border-border/50 text-foreground hover:bg-muted/50'
                   }`}
                 >
                   All ({allSystems.length})
@@ -229,7 +229,7 @@ export const SystemPacksPage: React.FC = () => {
                   className={`h-12 px-4 rounded-xl transition-all ${
                     filterType === 'tuned' 
                       ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' 
-                      : 'bg-slate-800/50 border-slate-700/50 text-slate-300 hover:bg-slate-700/50'
+                      : 'bg-card/50 border-border/50 text-foreground hover:bg-muted/50'
                   }`}
                 >
                   <CheckCircle2 className="h-4 w-4 mr-2" />
@@ -242,7 +242,7 @@ export const SystemPacksPage: React.FC = () => {
                   className={`h-12 px-4 rounded-xl transition-all ${
                     filterType === 'untuned' 
                       ? 'bg-yellow-600 hover:bg-yellow-500 text-white shadow-lg shadow-yellow-500/20' 
-                      : 'bg-slate-800/50 border-slate-700/50 text-slate-300 hover:bg-slate-700/50'
+                      : 'bg-card/50 border-border/50 text-foreground hover:bg-muted/50'
                   }`}
                 >
                   <AlertTriangle className="h-4 w-4 mr-2" />
@@ -255,7 +255,7 @@ export const SystemPacksPage: React.FC = () => {
                   className={`h-12 px-4 rounded-xl transition-all ${
                     filterType === 'upvc' 
                       ? 'bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-500/20' 
-                      : 'bg-slate-800/50 border-slate-700/50 text-slate-300 hover:bg-slate-700/50'
+                      : 'bg-card/50 border-border/50 text-foreground hover:bg-muted/50'
                   }`}
                 >
                   UPVC ({allSystems.filter(s => !!(s as any).upvcSpec).length})
@@ -267,7 +267,7 @@ export const SystemPacksPage: React.FC = () => {
                   className={`h-12 px-4 rounded-xl transition-all ${
                     filterType === 'aluminum' 
                       ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20' 
-                      : 'bg-slate-800/50 border-slate-700/50 text-slate-300 hover:bg-slate-700/50'
+                      : 'bg-card/50 border-border/50 text-foreground hover:bg-muted/50'
                   }`}
                 >
                   Aluminum ({allSystems.filter(s => !(s as any).upvcSpec).length})
@@ -338,7 +338,7 @@ export const SystemPacksPage: React.FC = () => {
                       <div className="mb-4">
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1">
-                            <h3 className="typography-h3 text-white mb-2 flex items-center gap-2">
+                            <h3 className="typography-h3 text-foreground mb-2 flex items-center gap-2">
                               {system.meta.name}
                               {tuningStatus.isTuned && (
                                 <Badge className="bg-emerald-600/80 text-white border-emerald-400/50">
@@ -353,19 +353,19 @@ export const SystemPacksPage: React.FC = () => {
                                 </Badge>
                               )}
                             </h3>
-                            <div className="flex items-center gap-2 text-sm text-slate-300">
+                            <div className="flex items-center gap-2 text-sm text-foreground">
                               {system.meta.brands?.map((brand: string, i: number) => (
-                                <span key={i} className="px-2 py-1 bg-slate-800/50 rounded-lg text-xs">
+                                <span key={i} className="px-2 py-1 bg-card/50 rounded-lg text-xs">
                                   {brand}
                                 </span>
                               ))}
                               {isUPVC ? (
-                                <Badge className="bg-green-600/20 text-green-300 border-green-500/30">
+                                <Badge className="bg-green-600/20 text-success border-green-500/30">
                                   <Shield className="h-3 w-3 mr-1" />
                                   UPVC
                                 </Badge>
                               ) : (
-                                <Badge className="bg-blue-600/20 text-blue-300 border-blue-500/30">
+                                <Badge className="bg-blue-600/20 text-info border-blue-500/30">
                                   <Zap className="h-3 w-3 mr-1" />
                                   Aluminum
                                 </Badge>
@@ -377,31 +377,31 @@ export const SystemPacksPage: React.FC = () => {
 
                       {/* Stats */}
                       <div className="grid grid-cols-3 gap-3 mb-4">
-                        <div className="bg-slate-900/40 backdrop-blur-sm rounded-xl p-3 border border-slate-700/30">
-                          <div className="text-xs text-slate-400 mb-1">Frame</div>
-                          <div className="text-lg font-bold text-white">{frameProfiles.length}</div>
+                        <div className="bg-background/40 backdrop-blur-sm rounded-xl p-3 border border-border/30">
+                          <div className="text-xs text-muted-foreground mb-1">Frame</div>
+                          <div className="text-lg font-bold text-foreground">{frameProfiles.length}</div>
                         </div>
-                        <div className="bg-slate-900/40 backdrop-blur-sm rounded-xl p-3 border border-slate-700/30">
-                          <div className="text-xs text-slate-400 mb-1">Sash</div>
-                          <div className="text-lg font-bold text-white">{sashProfiles.length}</div>
+                        <div className="bg-background/40 backdrop-blur-sm rounded-xl p-3 border border-border/30">
+                          <div className="text-xs text-muted-foreground mb-1">Sash</div>
+                          <div className="text-lg font-bold text-foreground">{sashProfiles.length}</div>
                         </div>
-                        <div className="bg-slate-900/40 backdrop-blur-sm rounded-xl p-3 border border-slate-700/30">
-                          <div className="text-xs text-slate-400 mb-1">Total</div>
-                          <div className="text-lg font-bold text-white">{profiles.length}</div>
+                        <div className="bg-background/40 backdrop-blur-sm rounded-xl p-3 border border-border/30">
+                          <div className="text-xs text-muted-foreground mb-1">Total</div>
+                          <div className="text-lg font-bold text-foreground">{profiles.length}</div>
                         </div>
                       </div>
 
                       {/* Regions */}
                       {system.meta.regions && system.meta.regions.length > 0 && (
                         <div className="mb-4 flex items-center gap-2 flex-wrap">
-                          <Globe className="h-4 w-4 text-slate-400" />
+                          <Globe className="h-4 w-4 text-muted-foreground" />
                           {system.meta.regions.slice(0, 3).map((region: string, i: number) => (
-                            <Badge key={i} variant="outline" className="text-xs bg-slate-800/30 border-slate-700 /30 text-slate-300 card-dark">
+                            <Badge key={i} variant="outline" className="text-xs bg-card/30 border-border /30 text-foreground card-dark">
                               {region}
                             </Badge>
                           ))}
                           {system.meta.regions.length > 3 && (
-                            <Badge variant="outline" className="text-xs bg-slate-800/30 border-slate-700 /30 text-slate-300 card-dark">
+                            <Badge variant="outline" className="text-xs bg-card/30 border-border /30 text-foreground card-dark">
                               +{system.meta.regions.length - 3}
                             </Badge>
                           )}
@@ -409,7 +409,7 @@ export const SystemPacksPage: React.FC = () => {
                       )}
 
                       {/* Actions */}
-                      <div className="mt-auto pt-4 border-t border-slate-700/30 space-y-2">
+                      <div className="mt-auto pt-4 border-t border-border/30 space-y-2">
                         {tuningStatus.needsTuning ? (
                           <Button
                             size="sm"
@@ -435,7 +435,7 @@ export const SystemPacksPage: React.FC = () => {
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="w-full text-slate-300 hover:text-white hover:bg-slate-800/50"
+                          className="w-full text-foreground hover:text-foreground hover:bg-card/50"
                           onClick={() => handleTuneProfile(system.meta.id)}
                         >
                           <Layers className="h-4 w-4 mr-2" />
@@ -469,9 +469,9 @@ export const SystemPacksPage: React.FC = () => {
             animate={{ opacity: 1 }}
             className="text-center py-16"
           >
-            <Package className="h-16 w-16 text-slate-600 mx-auto mb-4" />
-            <h3 className="typography-h3 text-slate-400 mb-2">No system packs found</h3>
-            <p className="text-slate-500">Try adjusting your search or filter criteria</p>
+            <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="typography-h3 text-muted-foreground mb-2">No system packs found</h3>
+            <p className="text-muted-foreground">Try adjusting your search or filter criteria</p>
           </motion.div>
         )}
       </div>

@@ -79,20 +79,20 @@ const SmartScanAssembly: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 pt-24 bg-slate-950 min-h-screen">
+    <div className="container mx-auto px-4 py-8 pt-24 bg-background min-h-screen">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="mb-8 pb-6 border-b border-amber-500/20">
-          <h1 className="typography-h1 text-white font-bold tracking-wide uppercase mb-2">
+          <h1 className="typography-h1 text-foreground font-bold tracking-wide uppercase mb-2">
             {t('smart_scan_assembly.title', 'Smart Assembly Scan')}
           </h1>
-          <p className="text-zinc-400 text-sm">
+          <p className="text-muted-foreground text-sm">
             {t('smart_scan_assembly.description', 'Upload shop drawings to detect assembly structure and confirm component roles.')}
           </p>
         </div>
 
-        <Card className="bg-slate-900/60 backdrop-blur-sm border-amber-500/20 shadow-lg shadow-amber-500/5">
+        <Card className="bg-background/60 backdrop-blur-sm border-amber-500/20 shadow-lg shadow-amber-500/5">
           <CardHeader>
-            <CardTitle className="text-white font-semibold tracking-wide uppercase flex items-center gap-2">
+            <CardTitle className="text-foreground font-semibold tracking-wide uppercase flex items-center gap-2">
               <Scan className="h-5 w-5 text-amber-400" />
               {t('smart_scan_assembly.upload_drawing', 'Upload Drawing')}
             </CardTitle>
@@ -103,7 +103,7 @@ const SmartScanAssembly: React.FC = () => {
                 type="file"
                 accept="image/*,.pdf"
                 onChange={handleFileChange}
-                className="bg-slate-800/50 border-amber-500/20 text-white file:bg-amber-500/10 file:text-amber-400 file:border-amber-500/30 file:rounded file:px-3 file:py-1 file:mr-3 file:cursor-pointer hover:border-amber-500/40"
+                className="bg-card/50 border-amber-500/20 text-foreground file:bg-amber-500/10 file:text-amber-400 file:border-amber-500/30 file:rounded file:px-3 file:py-1 file:mr-3 file:cursor-pointer hover:border-amber-500/40"
               />
               <Button
                 onClick={() => void handleScan()}
@@ -116,25 +116,25 @@ const SmartScanAssembly: React.FC = () => {
               </Button>
             </div>
             {file && (
-              <div className="text-sm text-zinc-300 p-3 bg-slate-800/50 rounded-lg border border-amber-500/10">
-                <span className="text-zinc-400">{t('smart_scan_assembly.selected', 'Selected')}:</span>{" "}
-                <span className="font-medium text-white">{file.name}</span>
-                <span className="text-zinc-500 ml-2">
+              <div className="text-sm text-foreground p-3 bg-card/50 rounded-lg border border-amber-500/10">
+                <span className="text-muted-foreground">{t('smart_scan_assembly.selected', 'Selected')}:</span>{" "}
+                <span className="font-medium text-foreground">{file.name}</span>
+                <span className="text-muted-foreground ml-2">
                   ({(file.size / 1024 / 1024).toFixed(2)} MB)
                 </span>
               </div>
             )}
             {error && (
               <Alert variant="destructive" className="bg-red-500/10 border-red-500/50">
-                <AlertTitle className="text-red-400">{t('smart_scan_assembly.scan_failed', 'Scan failed')}</AlertTitle>
-                <AlertDescription className="text-red-300">{error}</AlertDescription>
+                <AlertTitle className="text-destructive">{t('smart_scan_assembly.scan_failed', 'Scan failed')}</AlertTitle>
+                <AlertDescription className="text-destructive">{error}</AlertDescription>
               </Alert>
             )}
           </CardContent>
         </Card>
 
         {assemblyData && (
-          <div className="bg-slate-900/60 backdrop-blur-sm rounded-xl border border-amber-500/20 shadow-lg shadow-amber-500/5 p-6">
+          <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-amber-500/20 shadow-lg shadow-amber-500/5 p-6">
             <AssemblyReview
               assemblyData={assemblyData}
               onConfirm={(e) => void handleConfirm(e)}

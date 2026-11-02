@@ -69,7 +69,7 @@ function ContextCell({
       </span>
       <span
         className={cn(
-          'text-xs text-amber-100/90 truncate',
+          'text-xs text-warning/90 truncate',
           ltr && 'font-mono',
         )}
         dir={ltr ? 'ltr' : undefined}
@@ -107,7 +107,7 @@ export const ActiveProjectHeader: React.FC<ActiveProjectHeaderProps> = ({
     return (
       <div
         className={cn(
-          'flex items-center gap-3 min-w-0 text-xs text-amber-600/70',
+          'flex items-center gap-3 min-w-0 text-xs text-warning/70',
           className,
         )}
         data-testid="active-project-header"
@@ -155,7 +155,7 @@ export const ActiveProjectHeader: React.FC<ActiveProjectHeaderProps> = ({
             <span className="text-[9px] uppercase tracking-wider text-amber-700/90 font-mono">
               {chip.label}
             </span>
-            <span className="text-[11px] text-amber-100/90 font-mono max-w-[11rem] truncate">
+            <span className="text-[11px] text-warning/90 font-mono max-w-[11rem] truncate">
               {chip.value}
             </span>
           </div>

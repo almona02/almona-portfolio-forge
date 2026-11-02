@@ -135,7 +135,7 @@ export const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
       {/* Loading skeleton */}
       {!isLoaded && !error && (
         <div 
-          className={`${className} bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-800 dark:to-slate-700 animate-pulse`}
+          className={`${className} bg-gradient-to-br from-muted to-muted dark:from-card dark:to-muted animate-pulse`}
           style={{ width, height }}
           aria-hidden="true"
         />
@@ -144,10 +144,10 @@ export const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
       {/* Error state */}
       {error && (
         <div 
-          className={`${className} bg-slate-100 dark:bg-slate-800 flex items-center justify-center`}
+          className={`${className} bg-muted dark:bg-card flex items-center justify-center`}
           style={{ width, height }}
         >
-          <span className="text-slate-400 text-sm">Image failed to load</span>
+          <span className="text-muted-foreground text-sm">Image failed to load</span>
         </div>
       )}
     </picture>

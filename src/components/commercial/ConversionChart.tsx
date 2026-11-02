@@ -103,7 +103,7 @@ export const ConversionChart: React.FC<ConversionChartProps> = ({
 
   if (loading) {
     return (
-      <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+      <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Conversion Metrics</CardTitle>
         </CardHeader>
@@ -118,7 +118,7 @@ export const ConversionChart: React.FC<ConversionChartProps> = ({
 
   if (!metrics) {
     return (
-      <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+      <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Conversion Metrics</CardTitle>
         </CardHeader>
@@ -136,7 +136,7 @@ export const ConversionChart: React.FC<ConversionChartProps> = ({
   }
 
   return (
-    <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+    <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -145,7 +145,7 @@ export const ConversionChart: React.FC<ConversionChartProps> = ({
               Quote-to-Invoice Conversion
             </CardTitle>
             <div className="flex items-center gap-4 mt-2">
-              <Badge variant="outline" className="bg-emerald-500/10 text-emerald-300 border-emerald-600/30 text-xs">
+              <Badge variant="outline" className="bg-emerald-500/10 text-success border-emerald-600/30 text-xs">
                 {metrics.conversionRate.toFixed(1)}% Conversion Rate
               </Badge>
               <span className="text-xs text-amber-600/70">
@@ -236,21 +236,21 @@ export const ConversionChart: React.FC<ConversionChartProps> = ({
 
         {/* Metrics Summary */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-          <div className="bg-[#0f0f0f]/60 border border-amber-600/20 rounded-md p-4">
+          <div className="bg-background/60 border border-amber-600/20 rounded-md p-4">
             <p className="text-xs text-amber-600/70 mb-1">Average Quote Value</p>
             <p className="text-xl font-bold text-amber-200">
               ${metrics.averageQuoteValue.toFixed(2)}
             </p>
           </div>
-          <div className="bg-[#0f0f0f]/60 border border-amber-600/20 rounded-md p-4">
+          <div className="bg-background/60 border border-amber-600/20 rounded-md p-4">
             <p className="text-xs text-amber-600/70 mb-1">Average Invoice Value</p>
             <p className="text-xl font-bold text-amber-200">
               ${metrics.averageInvoiceValue.toFixed(2)}
             </p>
           </div>
-          <div className="bg-[#0f0f0f]/60 border border-amber-600/20 rounded-md p-4">
+          <div className="bg-background/60 border border-amber-600/20 rounded-md p-4">
             <p className="text-xs text-amber-600/70 mb-1">Total Accepted</p>
-            <p className="text-xl font-bold text-emerald-300">
+            <p className="text-xl font-bold text-success">
               {metrics.quotesAccepted}
             </p>
           </div>

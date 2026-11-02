@@ -41,7 +41,7 @@ export const OperationModeBadge: React.FC<OperationModeBadgeProps> = ({
       label: 'SANDBOX',
       sub: 'Not Saved',
       icon: FlaskConical,
-      style: 'border-slate-600 bg-slate-900/90 text-slate-400',
+      style: 'border-border bg-background/90 text-muted-foreground',
       desc: 'Testing Mode'
     },
     production: {

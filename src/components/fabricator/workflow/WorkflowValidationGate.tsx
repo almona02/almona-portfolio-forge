@@ -67,12 +67,12 @@ export const WorkflowValidationGate: React.FC<WorkflowValidationGateProps> = ({
 
       {hasWarnings && !hasErrors && (
         <Alert className="bg-amber-900/20 border-amber-500/50">
-          <AlertTriangle className="h-4 w-4 text-amber-500" />
+          <AlertTriangle className="h-4 w-4 text-warning" />
           <AlertTitle>
             {t('workflow_validation.warnings', 'Warnings')}
           </AlertTitle>
           <AlertDescription>
-            <ul className="mt-2 list-disc list-inside space-y-1 text-sm text-amber-200/90">
+            <ul className="mt-2 list-disc list-inside space-y-1 text-sm text-warning/90">
               {result.warnings.map((w: ValidationIssue, i: number) => (
                 <li key={i}>{w.message}</li>
               ))}

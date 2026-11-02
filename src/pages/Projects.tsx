@@ -249,7 +249,7 @@ const ProjectsPage: React.FC = () => {
           url={currentUrl}
         />
         <main className="container mx-auto px-4 py-8">
-          <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+          <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
             <CardHeader className="pb-3">
               <CardTitle className="text-xl">{t('projects.title', 'Projects & Positions')}</CardTitle>
               <CardDescription className="text-sm text-amber-600/70">
@@ -257,7 +257,7 @@ const ProjectsPage: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-24 rounded-lg bg-[#0f0f0f]/60 animate-pulse" />
+              <div className="h-24 rounded-lg bg-background/60 animate-pulse" />
             </CardContent>
           </Card>
         </main>
@@ -274,7 +274,7 @@ const ProjectsPage: React.FC = () => {
       />
       <main className="container mx-auto px-4 py-8 space-y-6">
         {/* Summary Stats Card - Smaller, less prominent */}
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardHeader className="pb-3">
             <CardTitle className="text-xl">{t('projects.title', 'Projects & Positions')}</CardTitle>
             <CardDescription className="text-sm text-amber-600/70">
@@ -298,16 +298,16 @@ const ProjectsPage: React.FC = () => {
         </Card>
 
         <Tabs defaultValue="projects" className="space-y-6">
-          <TabsList className="bg-[#0f0f0f]/80 border border-amber-600/30 rounded-xl p-1 card-glass-dark">
+          <TabsList className="bg-background/80 border border-amber-600/30 rounded-xl p-1 card-glass-dark">
             <TabsTrigger
               value="projects"
-              className="data-[state=active]:btn-bronze data-[state=inactive]:bg-[#0f0f0f]/60 data-[state=inactive]:text-amber-600/70 data-[state=inactive]:border-amber-600/20 data-[state=inactive]:hover:bg-[#0f0f0f]/80 data-[state=inactive]:hover:text-amber-500"
+              className="data-[state=active]:btn-bronze data-[state=inactive]:bg-background/60 data-[state=inactive]:text-amber-600/70 data-[state=inactive]:border-amber-600/20 data-[state=inactive]:hover:bg-background/80 data-[state=inactive]:hover:text-amber-500"
             >
               {t('projects.tabs.projects', 'Projects')}
             </TabsTrigger>
             <TabsTrigger
               value="positions"
-              className="data-[state=active]:btn-bronze data-[state=inactive]:bg-[#0f0f0f]/60 data-[state=inactive]:text-amber-600/70 data-[state=inactive]:border-amber-600/20 data-[state=inactive]:hover:bg-[#0f0f0f]/80 data-[state=inactive]:hover:text-amber-500"
+              className="data-[state=active]:btn-bronze data-[state=inactive]:bg-background/60 data-[state=inactive]:text-amber-600/70 data-[state=inactive]:border-amber-600/20 data-[state=inactive]:hover:bg-background/80 data-[state=inactive]:hover:text-amber-500"
             >
               {t('projects.tabs.positions', 'Recent Poses')}
             </TabsTrigger>
@@ -315,7 +315,7 @@ const ProjectsPage: React.FC = () => {
 
           <TabsContent value="projects" className="space-y-4">
             {/* Main Projects Card - Enhanced size and prominence */}
-            <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark shadow-glow-strong">
+            <Card className="bg-background/80 border-amber-600/30 card-glass-dark shadow-glow-strong">
               <CardHeader className="pb-4 px-8 pt-8">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
@@ -341,7 +341,7 @@ const ProjectsPage: React.FC = () => {
                     onChange={(e) => setProjectSearch(e.target.value)}
                     placeholder={t('projects.projects_tab.search', 'Search projects, codes, customers…')}
                     aria-label={t('projects.projects_tab.search', 'Search projects, codes, customers…')}
-                    className="max-w-md bg-[#0a0a0a] border-amber-600/30 text-amber-100"
+                    className="max-w-md bg-background border-amber-600/30 text-amber-100"
                   />
                 ) : null}
                 {projectsSummary.length === 0 && !isLoadingList ? (
@@ -365,7 +365,7 @@ const ProjectsPage: React.FC = () => {
                   </div>
                 ) : projectsSummary.length === 0 && isLoadingList ? (
                   <div className="py-8">
-                    <div className="h-12 rounded-lg bg-[#0f0f0f]/60 animate-pulse" />
+                    <div className="h-12 rounded-lg bg-background/60 animate-pulse" />
                   </div>
                 ) : filteredProjectsSummary.length === 0 ? (
                   <div className="py-8 text-center text-amber-600/70 text-sm">
@@ -396,7 +396,7 @@ const ProjectsPage: React.FC = () => {
                       return (
                         <div
                           key={p.key}
-                          className="py-4 px-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 group hover:bg-[#0f0f0f]/40 transition-all duration-200 rounded-lg cursor-pointer border border-transparent hover:border-amber-600/20"
+                          className="py-4 px-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 group hover:bg-background/40 transition-all duration-200 rounded-lg cursor-pointer border border-transparent hover:border-amber-600/20"
                           onClick={isEditing ? undefined : handleProjectClick}
                         >
                           <div className="space-y-1.5 flex-1">
@@ -406,7 +406,7 @@ const ProjectsPage: React.FC = () => {
                                   <Input
                                     value={editName}
                                     onChange={(e) => setEditName(e.target.value)}
-                                    className="h-8 text-sm bg-[#0f0f0f] border-amber-600/30 text-amber-200 w-64"
+                                    className="h-8 text-sm bg-background border-amber-600/30 text-amber-200 w-64"
                                     placeholder="Project name"
                                     autoFocus
                                     onKeyDown={(e) => {
@@ -425,7 +425,7 @@ const ProjectsPage: React.FC = () => {
                                   <Input
                                     value={editClient}
                                     onChange={(e) => setEditClient(e.target.value)}
-                                    className="h-7 text-xs bg-[#0f0f0f] border-amber-600/30 text-amber-200 w-48"
+                                    className="h-7 text-xs bg-background border-amber-600/30 text-amber-200 w-48"
                                     placeholder="Client name"
                                     onKeyDown={(e) => {
                                       if (e.key === 'Enter') void saveEditing(p);
@@ -435,7 +435,7 @@ const ProjectsPage: React.FC = () => {
                                   <Button
                                     size="sm"
                                     variant="ghost"
-                                    className="h-7 w-7 p-0 text-green-400 hover:text-green-300 hover:bg-green-500/10"
+                                    className="h-7 w-7 p-0 text-success hover:text-success hover:bg-green-500/10"
                                     onClick={() => void saveEditing(p)}
                                   >
                                     <Check className="h-3.5 w-3.5" />
@@ -443,7 +443,7 @@ const ProjectsPage: React.FC = () => {
                                   <Button
                                     size="sm"
                                     variant="ghost"
-                                    className="h-7 w-7 p-0 text-gray-400 hover:text-gray-300 hover:bg-gray-500/10"
+                                    className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/10"
                                     onClick={cancelEditing}
                                   >
                                     <X className="h-3.5 w-3.5" />
@@ -498,7 +498,7 @@ const ProjectsPage: React.FC = () => {
                                 setProjectToDelete(p);
                                 setDeleteConfirmOpen(true);
                               }}
-                              className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
                               title="Delete project"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -515,7 +515,7 @@ const ProjectsPage: React.FC = () => {
 
           <TabsContent value="positions">
             <Suspense fallback={
-              <div className="h-64 rounded-lg bg-[#0f0f0f]/60 animate-pulse" />
+              <div className="h-64 rounded-lg bg-background/60 animate-pulse" />
             }>
               <PositionsGrid currentProject={null} />
             </Suspense>
@@ -524,7 +524,7 @@ const ProjectsPage: React.FC = () => {
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-          <AlertDialogContent className="bg-[#0f0f0f] border-amber-600/30 card-glass-dark">
+          <AlertDialogContent className="bg-background border-amber-600/30 card-glass-dark">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-amber-200">Delete Project?</AlertDialogTitle>
               <AlertDialogDescription className="text-amber-600/70">
@@ -555,7 +555,7 @@ const ProjectsPage: React.FC = () => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-[#0f0f0f] border-amber-600/30 text-amber-300 hover:bg-[#1a1a1a]">
+              <AlertDialogCancel className="bg-background border-amber-600/30 text-amber-300 hover:bg-background">
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction

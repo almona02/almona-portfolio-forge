@@ -31,7 +31,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
   const isMarketplaceRoute = location.pathname.startsWith('/used-machines') || location.pathname.startsWith('/usedmachines');
 
   return (
-    <div className="min-h-screen bg-almona-dark text-white">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Main Navigation */}
       <ConditionalNavbar />
 

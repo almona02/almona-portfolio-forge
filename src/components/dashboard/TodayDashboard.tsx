@@ -16,38 +16,38 @@ interface KPICardProps {
 const KPICard: React.FC<KPICardProps> = ({ title, value, trend, status = 'default' }) => {
   const color =
     status === 'alert'
-      ? 'text-red-400'
+      ? 'text-destructive'
       : status === 'warning'
       ? 'text-yellow-400'
-      : 'text-emerald-400';
+      : 'text-success';
 
   return (
-    <Card className="bg-gray-900/70 border-gray-700 card-dark">
+    <Card className="bg-background/70 border-border card-dark">
       <CardContent className="py-4 px-5 space-y-1">
-        <div className="text-xs uppercase tracking-wide text-gray-400">{title}</div>
+        <div className="text-xs uppercase tracking-wide text-muted-foreground">{title}</div>
         <div className={`text-xl font-semibold ${color}`}>{value}</div>
-        {trend && <div className="text-xs text-gray-500">{trend}</div>}
+        {trend && <div className="text-xs text-muted-foreground">{trend}</div>}
       </CardContent>
     </Card>
   );
 };
 
 const MachineStatusPanel: React.FC = () => (
-  <Card className="bg-gray-900/70 border-gray-700 card-dark">
+  <Card className="bg-background/70 border-border card-dark">
     <CardHeader className="pb-3">
       <CardTitle className="flex items-center gap-2 text-sm">
-        <Factory className="h-4 w-4 text-blue-400" />
+        <Factory className="h-4 w-4 text-info" />
         Machine Status
       </CardTitle>
     </CardHeader>
-    <CardContent className="space-y-2 text-xs text-gray-400">
+    <CardContent className="space-y-2 text-xs text-muted-foreground">
       <div className="flex items-center justify-between">
         <span>Connected Machines</span>
-        <span className="text-blue-300 font-semibold">0</span>
+        <span className="text-info font-semibold">0</span>
       </div>
       <div className="flex items-center justify-between">
         <span>Active Jobs</span>
-        <span className="text-green-300 font-semibold">0</span>
+        <span className="text-success font-semibold">0</span>
       </div>
       <p className="mt-2">
         Integrate your production line to monitor machine utilization and job progress in real time.
@@ -57,7 +57,7 @@ const MachineStatusPanel: React.FC = () => (
 );
 
 const QuickActionsPanel: React.FC = () => (
-  <Card className="bg-gray-900/70 border-gray-700 card-dark">
+  <Card className="bg-background/70 border-border card-dark">
     <CardHeader className="pb-3">
       <CardTitle className="flex items-center gap-2 text-sm">
         <ListChecks className="h-4 w-4 status-valid" />
@@ -71,12 +71,12 @@ const QuickActionsPanel: React.FC = () => (
         </Button>
       </Link>
       <Link to="/fabrication-services">
-        <Button variant="outline" className="w-full text-xs border-gray-700">
+        <Button variant="outline" className="w-full text-xs border-border">
           View Fabrication Services
         </Button>
       </Link>
       <Link to="/support/tickets/new">
-        <Button variant="outline" className="w-full text-xs border-gray-700">
+        <Button variant="outline" className="w-full text-xs border-border">
           Create Support Ticket
         </Button>
       </Link>
@@ -112,7 +112,7 @@ export const TodayDashboard: React.FC = () => {
       </div>
 
       {/* Footer hint */}
-      <div className="mt-8 text-xs text-gray-500 flex items-center gap-2">
+      <div className="mt-8 text-xs text-muted-foreground flex items-center gap-2">
         <Activity className="h-3 w-3" />
         <span>
           Fabricator Pro Dashboard – next step: connect this view to your Supabase-backed job and

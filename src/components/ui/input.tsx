@@ -5,7 +5,7 @@ import * as React from "react";
 
 // Gold-tier input variants with market-leader inspiration (Material Design 3, Ant Design)
 const inputVariants = cva(
-  "flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-150 hover:border-slate-400 focus:border-amber-400 invalid:border-red-500 invalid:ring-red-400 focus-visible:invalid:ring-red-400 select-text touch-manipulation",
+  "flex h-10 w-full rounded-md border border-border bg-card px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-150 hover:border-border focus:border-amber-400 invalid:border-red-500 invalid:ring-red-400 focus-visible:invalid:ring-red-400 select-text touch-manipulation",
   {
     variants: {
       variant: {
@@ -87,7 +87,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
         {showPasswordToggle && (
           <button
             type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             onClick={togglePasswordVisibility}
             tabIndex={-1}
           >
@@ -137,7 +137,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <input
           type="search"
           className={cn(inputVariants({ variant, size, fullWidth }), "pl-9", className)}
@@ -149,7 +149,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, InputProps>(
         {clearable && value && (
           <button
             type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             onClick={handleClear}
             tabIndex={-1}
           >
@@ -212,7 +212,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {label && (
             <label
               htmlFor={inputId}
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground"
             >
               {label}
             </label>
@@ -234,10 +234,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               id={error ? errorId : helperId}
               className={cn(
                 "text-xs",
-                error && "text-red-600",
-                success && "text-green-600",
+                error && "text-destructive",
+                success && "text-success",
                 warning && "text-amber-600",
-                !error && !success && !warning && "text-slate-500"
+                !error && !success && !warning && "text-muted-foreground"
               )}
             >
               {error || success || warning || helperText}
@@ -254,7 +254,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {label && (
             <label
               htmlFor={inputId}
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground"
             >
               {label}
             </label>
@@ -276,10 +276,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               id={error ? errorId : helperId}
               className={cn(
                 "text-xs",
-                error && "text-red-600",
-                success && "text-green-600",
+                error && "text-destructive",
+                success && "text-success",
                 warning && "text-amber-600",
-                !error && !success && !warning && "text-slate-500"
+                !error && !success && !warning && "text-muted-foreground"
               )}
             >
               {error || success || warning || helperText}
@@ -295,14 +295,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-medium text-slate-700"
+            className="text-sm font-medium text-foreground"
           >
             {label}
           </label>
         )}
         <div className="relative">
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
               {leftIcon}
             </div>
           )}
@@ -332,7 +332,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {clearable && value && !loading && (
             <button
               type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               onClick={handleClear}
               tabIndex={-1}
             >
@@ -340,7 +340,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             </button>
           )}
           {rightIcon && !clearable && !loading && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
               {rightIcon}
             </div>
           )}
@@ -350,10 +350,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             id={error ? errorId : helperId}
             className={cn(
               "text-xs",
-              error && "text-red-600",
-              success && "text-green-600",
+              error && "text-destructive",
+              success && "text-success",
               warning && "text-amber-600",
-              !error && !success && !warning && "text-slate-500"
+              !error && !success && !warning && "text-muted-foreground"
             )}
           >
             {error || success || warning || helperText}

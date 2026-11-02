@@ -455,7 +455,7 @@ export const Enhanced3DViewer = forwardRef<{ resetCamera: () => void; startWindo
               )}
             </div>
             {enableWebXR && !xrSupported && (
-              <span className="text-[10px] text-gray-400">SwiftXR WebXR not supported</span>
+              <span className="text-[10px] text-muted-foreground">SwiftXR WebXR not supported</span>
             )}
           </div>
         )}
@@ -463,7 +463,7 @@ export const Enhanced3DViewer = forwardRef<{ resetCamera: () => void; startWindo
         {/* Window Controls */}
         {isWindowMode && _enableWindowControls && !presentationMode && (
           <div className="absolute top-3 right-3 z-10">
-            <div className="bg-gray-900/90 backdrop-blur-sm border border-gray-700 rounded-lg p-2 space-y-2">
+            <div className="bg-background/90 backdrop-blur-sm border border-border rounded-lg p-2 space-y-2">
               <button
                 onClick={() => {
                   setIsWindowAnimating(!isWindowAnimating);
@@ -480,7 +480,7 @@ export const Enhanced3DViewer = forwardRef<{ resetCamera: () => void; startWindo
                   setWindowAnimationProgress(0);
                   setIsWindowAnimating(false);
                 }}
-                className="w-full px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white rounded text-xs font-medium transition-colors"
+                className="w-full px-3 py-1.5 bg-muted hover:bg-muted text-white rounded text-xs font-medium transition-colors"
               >
                 Reset
               </button>

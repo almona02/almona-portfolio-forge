@@ -28,7 +28,7 @@ const EgyptianTechnicalSupport = () => {
   ];
   
   return (
-    <div className="bg-almona-darker/50 p-6 rounded-lg space-y-6">
+    <div className="bg-card/50 p-6 rounded-lg space-y-6">
       <EmergencyResponse />
       <h2 className="typography-h2 mb-6">الدعم الفني المحلي</h2>
       
@@ -37,13 +37,13 @@ const EgyptianTechnicalSupport = () => {
           <h3 className="typography-h3 text-lg mb-4">فريق الدعم المحلي</h3>
           <div className="space-y-4">
             {supportContacts.map((contact, index) => (
-              <div key={index} className="border border-almona-light/20 p-4 rounded-lg">
+              <div key={index} className="border border-border/20 p-4 rounded-lg">
                 <div className="font-medium">{contact.name}</div>
                 <div className="flex justify-between items-center mt-2">
                   <a href={`tel:${contact.phone}`} className="text-amber-500 hover:underline">
                     {contact.phone}
                   </a>
-                  <span className="text-sm text-gray-400">{contact.hours}</span>
+                  <span className="text-sm text-muted-foreground">{contact.hours}</span>
                 </div>
               </div>
             ))}

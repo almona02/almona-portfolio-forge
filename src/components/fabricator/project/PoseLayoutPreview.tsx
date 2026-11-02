@@ -51,7 +51,7 @@ export const PoseLayoutPreview: React.FC<PoseLayoutPreviewProps> = ({
 
   if (poses.length === 0 && !onAdd) {
     return (
-      <p className="text-sm text-slate-500 py-6 text-center">
+      <p className="text-sm text-muted-foreground py-6 text-center">
         No poses yet. Measure the first window to see it here.
       </p>
     );
@@ -87,7 +87,7 @@ export const PoseLayoutPreview: React.FC<PoseLayoutPreviewProps> = ({
               'flex flex-col items-center gap-2 p-3 rounded-lg border transition-colors text-left w-full',
               active
                 ? 'border-amber-400 bg-amber-500/10'
-                : 'border-slate-700 bg-slate-900/40 hover:border-amber-600/40',
+                : 'border-border bg-background/40 hover:border-amber-600/40',
             )}
           >
             <div
@@ -112,7 +112,7 @@ export const PoseLayoutPreview: React.FC<PoseLayoutPreviewProps> = ({
                   <span
                     key={cell.id}
                     data-cell-type={cell.type}
-                    className={`absolute border border-slate-400/60 ${
+                    className={`absolute border border-border/60 ${
                       cell.type === 'sliding'
                         ? 'bg-amber-400/25'
                         : cell.type === 'sash'
@@ -131,8 +131,8 @@ export const PoseLayoutPreview: React.FC<PoseLayoutPreviewProps> = ({
               })}
             </div>
             <div className="text-center">
-              <div className="text-[10px] uppercase tracking-wide text-slate-500">{poseLabel}</div>
-              <div className="font-mono text-xs text-amber-200">
+              <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{poseLabel}</div>
+              <div className="font-mono text-xs text-warning">
                 {w > 0 && h > 0 ? `${Math.round(w)} × ${Math.round(h)} mm` : 'Not measured'}
               </div>
             </div>
@@ -152,8 +152,8 @@ export const PoseLayoutPreview: React.FC<PoseLayoutPreviewProps> = ({
             <ContextMenuTrigger asChild>
               <div className="min-w-[96px]">{card}</div>
             </ContextMenuTrigger>
-            <ContextMenuContent className="w-52 bg-slate-950 border-amber-600/40 text-amber-100">
-              <ContextMenuLabel className="text-amber-200/90 font-mono text-xs">
+            <ContextMenuContent className="w-52 bg-background border-amber-600/40 text-warning">
+              <ContextMenuLabel className="text-warning/90 font-mono text-xs">
                 {poseLabel}
                 {w > 0 && h > 0 ? ` · ${Math.round(w)}×${Math.round(h)}` : ''}
               </ContextMenuLabel>
@@ -163,7 +163,7 @@ export const PoseLayoutPreview: React.FC<PoseLayoutPreviewProps> = ({
                   className="focus:bg-amber-500/15 focus:text-amber-50 cursor-pointer gap-2"
                   onSelect={() => onEdit(pose.id)}
                 >
-                  <Pencil className="h-3.5 w-3.5 text-amber-400" />
+                  <Pencil className="h-3.5 w-3.5 text-warning" />
                   Edit / measure
                 </ContextMenuItem>
               )}
@@ -172,7 +172,7 @@ export const PoseLayoutPreview: React.FC<PoseLayoutPreviewProps> = ({
                   className="focus:bg-amber-500/15 focus:text-amber-50 cursor-pointer gap-2"
                   onSelect={() => onDuplicate(pose.id)}
                 >
-                  <Copy className="h-3.5 w-3.5 text-amber-400" />
+                  <Copy className="h-3.5 w-3.5 text-warning" />
                   Duplicate
                 </ContextMenuItem>
               )}
@@ -181,7 +181,7 @@ export const PoseLayoutPreview: React.FC<PoseLayoutPreviewProps> = ({
                   <ContextMenuSeparator className="bg-amber-600/25" />
                   <ContextMenuItem
                     disabled={!canDelete}
-                    className="focus:bg-red-500/20 focus:text-red-200 cursor-pointer gap-2 text-red-300 data-[disabled]:opacity-40"
+                    className="focus:bg-red-500/20 focus:text-red-200 cursor-pointer gap-2 text-destructive data-[disabled]:opacity-40"
                     onSelect={() => {
                       if (!canDelete) return;
                       onDelete(pose.id);
@@ -200,7 +200,7 @@ export const PoseLayoutPreview: React.FC<PoseLayoutPreviewProps> = ({
         <button
           type="button"
           onClick={onAdd}
-          className="flex flex-col items-center justify-center gap-2 p-3 rounded-lg border border-dashed border-amber-600/40 text-amber-400 hover:bg-amber-500/10 min-w-[96px] min-h-[120px]"
+          className="flex flex-col items-center justify-center gap-2 p-3 rounded-lg border border-dashed border-amber-600/40 text-warning hover:bg-amber-500/10 min-w-[96px] min-h-[120px]"
         >
           <Plus className="h-5 w-5" />
           <span className="text-xs font-medium">Add pose</span>

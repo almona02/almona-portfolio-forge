@@ -124,7 +124,7 @@ export const YDTImpactDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{metrics.timeSaved.toFixed(1)}</div>
-            <div className="text-sm text-gray-500">Hours saved</div>
+            <div className="text-sm text-muted-foreground">Hours saved</div>
           </CardContent>
         </Card>
 
@@ -137,7 +137,7 @@ export const YDTImpactDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{metrics.totalSavings.toLocaleString()}</div>
-            <div className="text-sm text-gray-500">EGP saved</div>
+            <div className="text-sm text-muted-foreground">EGP saved</div>
           </CardContent>
         </Card>
 
@@ -147,7 +147,7 @@ export const YDTImpactDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{metrics.projectsAnalyzed}</div>
-            <div className="text-sm text-gray-500">Total projects</div>
+            <div className="text-sm text-muted-foreground">Total projects</div>
           </CardContent>
         </Card>
       </div>
@@ -171,7 +171,7 @@ export const YDTImpactDashboard: React.FC = () => {
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-gray-500">No trending data available</p>
+                  <p className="text-muted-foreground">No trending data available</p>
                 )}
               </div>
             </div>
@@ -196,14 +196,14 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, description, tren
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>{title}</span>
-          <div className={`${trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
+          <div className={`${trend === 'up' ? 'text-success' : 'text-destructive'}`}>
             {icon}
           </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="text-3xl font-bold">{value}</div>
-        <div className="text-sm text-gray-500 mt-1">{description}</div>
+        <div className="text-sm text-muted-foreground mt-1">{description}</div>
       </CardContent>
     </Card>
   );

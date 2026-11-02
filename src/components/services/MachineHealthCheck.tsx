@@ -152,7 +152,7 @@ export const MachineHealthCheck = () => {
       <div className="space-y-4">
         <div className="border p-4 rounded-lg">
           <h3 className="typography-h3 font-medium mb-2">Audio Analysis</h3>
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="text-sm text-muted-foreground mb-3">
             Record machine sound to detect blade wear and other issues
           </p>
           <Button 
@@ -163,7 +163,7 @@ export const MachineHealthCheck = () => {
             {isListening ? 'Listening to machine... (3s)' : 'Check Blade Sound'}
           </Button>
           {audioDiagnosis && (
-            <div className="mt-3 p-3 rounded bg-gray-50">
+            <div className="mt-3 p-3 rounded bg-background">
               <p className="font-medium">Diagnosis:</p>
               <p>{audioDiagnosis}</p>
             </div>
@@ -172,7 +172,7 @@ export const MachineHealthCheck = () => {
 
         <div className="border p-4 rounded-lg">
           <h3 className="typography-h3 font-medium mb-2">Vibration Analysis</h3>
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="text-sm text-muted-foreground mb-3">
             Monitor machine vibration patterns for abnormalities
           </p>
           <Button 
@@ -183,7 +183,7 @@ export const MachineHealthCheck = () => {
             {isMonitoringVibration ? 'Stop Monitoring' : 'Start Vibration Check'}
           </Button>
           {vibrationDiagnosis && (
-            <div className="mt-3 p-3 rounded bg-gray-50">
+            <div className="mt-3 p-3 rounded bg-background">
               <p className="font-medium">Vibration Status:</p>
               <p>{vibrationDiagnosis}</p>
             </div>

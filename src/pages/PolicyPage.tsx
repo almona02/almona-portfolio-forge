@@ -41,18 +41,18 @@ export default function PolicyPage({ kind }: { kind: keyof typeof policies }) {
       </Helmet>
       <article className="max-w-3xl mx-auto space-y-8">
         <header className="space-y-4">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white">{copy(policy.title)}</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground">{copy(policy.title)}</h1>
           <div role="note" className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-amber-100">{copy("Draft for review — not an approved or effective policy. Business and legal review is required before publication.")}</div>
         </header>
         {policy.sections.map(([title, content]) => (
           <section key={title} className="space-y-3">
-            <h2 className="text-xl font-semibold text-white">{copy(title)}</h2>
-            <p className="text-gray-300 leading-relaxed">{copy(content)}</p>
+            <h2 className="text-xl font-semibold text-foreground">{copy(title)}</h2>
+            <p className="text-foreground leading-relaxed">{copy(content)}</p>
           </section>
         ))}
-        <section className="rounded-lg border border-gray-700 p-5 space-y-3">
-          <h2 className="text-xl font-semibold text-white">{copy("Before this draft is approved")}</h2>
-          <p className="text-gray-300 leading-relaxed">{copy(policy.pending)}</p>
+        <section className="rounded-lg border border-border p-5 space-y-3">
+          <h2 className="text-xl font-semibold text-foreground">{copy("Before this draft is approved")}</h2>
+          <p className="text-foreground leading-relaxed">{copy(policy.pending)}</p>
         </section>
         <nav className="flex gap-6 text-amber-400" aria-label={copy("Policy navigation")}>
           <Link to="/contact" className="underline">{copy("Contact ALMONA")}</Link>

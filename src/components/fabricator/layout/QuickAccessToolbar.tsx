@@ -152,7 +152,7 @@ export const QuickAccessToolbar: React.FC<QuickAccessToolbarProps> = ({
     >
       <div className={cn(
         'flex items-center rounded-lg shadow-xl backdrop-blur-sm',
-        'bg-gray-900/90 border border-gray-700/50',
+        'bg-background/90 border border-border/50',
         quickAccessToolbarPosition === 'top' || quickAccessToolbarPosition === 'bottom' 
           ? 'px-4 py-2 space-x-2' 
           : 'flex-col py-2 space-y-2'
@@ -162,10 +162,10 @@ export const QuickAccessToolbar: React.FC<QuickAccessToolbarProps> = ({
           onClick={handlePinToggle}
           className={cn(
             'p-1.5 rounded transition-colors',
-            'hover:bg-gray-800/50',
+            'hover:bg-card/50',
             quickAccessToolbarPinned 
-              ? 'text-amber-400 hover:text-amber-300' 
-              : 'text-gray-500 hover:text-gray-400'
+              ? 'text-warning hover:text-warning'
+              : 'text-muted-foreground hover:text-muted-foreground'
           )}
           aria-label={quickAccessToolbarPinned ? 'Unpin toolbar' : 'Pin toolbar'}
         >
@@ -174,8 +174,8 @@ export const QuickAccessToolbar: React.FC<QuickAccessToolbarProps> = ({
 
         <div className={cn(
           quickAccessToolbarPosition === 'top' || quickAccessToolbarPosition === 'bottom' 
-            ? 'w-px h-6 bg-gray-700/50' 
-            : 'h-px w-6 bg-gray-700/50'
+            ? 'w-px h-6 bg-muted/50'
+            : 'h-px w-6 bg-muted/50'
         )} />
 
         {/* Zoom Presets */}
@@ -183,8 +183,8 @@ export const QuickAccessToolbar: React.FC<QuickAccessToolbarProps> = ({
 
         <div className={cn(
           quickAccessToolbarPosition === 'top' || quickAccessToolbarPosition === 'bottom' 
-            ? 'w-px h-6 bg-gray-700/50' 
-            : 'h-px w-6 bg-gray-700/50'
+            ? 'w-px h-6 bg-muted/50'
+            : 'h-px w-6 bg-muted/50'
         )} />
 
         {/* Tools */}
@@ -195,7 +195,7 @@ export const QuickAccessToolbar: React.FC<QuickAccessToolbarProps> = ({
             disabled={tool.disabled}
             className={cn(
               'p-2 rounded transition-all duration-150',
-              'hover:bg-gray-800/50 hover:scale-105',
+              'hover:bg-card/50 hover:scale-105',
               'active:scale-95',
               'focus:outline-none focus:ring-2 focus:ring-amber-500/50',
               tool.disabled && 'opacity-50 cursor-not-allowed'
@@ -206,7 +206,7 @@ export const QuickAccessToolbar: React.FC<QuickAccessToolbarProps> = ({
             <div className="relative">
               {tool.icon}
               {tool.disabled && (
-                <div className="absolute inset-0 bg-gray-900/50 rounded" />
+                <div className="absolute inset-0 bg-background/50 rounded" />
               )}
             </div>
           </button>

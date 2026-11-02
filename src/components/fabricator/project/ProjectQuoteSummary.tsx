@@ -46,43 +46,43 @@ export const ProjectQuoteSummary: React.FC<ProjectQuoteSummaryProps> = ({ projec
 
   if (!results?.unitResults?.size) {
     return (
-      <Card className="bg-gray-800/50 border-gray-700">
-        <CardContent className="p-8 text-center text-gray-500">
+      <Card className="bg-card/50 border-border">
+        <CardContent className="p-8 text-center text-muted-foreground">
           <FileText className="h-12 w-12 mx-auto mb-4 opacity-30" aria-hidden />
           <p className="text-sm">Run optimization and generate quote to see summary.</p>
-          <p className="text-xs text-gray-500 mt-2">Click &quot;Optimize All&quot; then &quot;Generate Quote&quot;.</p>
+          <p className="text-xs text-muted-foreground mt-2">Click &quot;Optimize All&quot; then &quot;Generate Quote&quot;.</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="bg-gray-800/50 border-gray-700">
+    <Card className="bg-card/50 border-border">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <FileText className="h-5 w-5 text-green-400" />
+          <FileText className="h-5 w-5 text-success" />
           Quote Summary
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
-            <div className="text-xs text-gray-400 mb-1">Cost</div>
-            <div className="text-xl font-bold text-amber-300">{formatEGP(totalCost)}</div>
+          <div className="bg-background/50 rounded-lg p-4 border border-border">
+            <div className="text-xs text-muted-foreground mb-1">Cost</div>
+            <div className="text-xl font-bold text-warning">{formatEGP(totalCost)}</div>
           </div>
-          <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
-            <div className="text-xs text-gray-400 mb-1">Quote Total (40% margin)</div>
-            <div className="text-xl font-bold text-green-400">{formatEGP(totalProjectValue)}</div>
+          <div className="bg-background/50 rounded-lg p-4 border border-border">
+            <div className="text-xs text-muted-foreground mb-1">Quote Total (40% margin)</div>
+            <div className="text-xl font-bold text-success">{formatEGP(totalProjectValue)}</div>
           </div>
         </div>
 
-        <div className="flex justify-between text-sm text-gray-400 py-2 px-3 bg-gray-900/30 rounded border border-gray-700/50">
+        <div className="flex justify-between text-sm text-muted-foreground py-2 px-3 bg-background/30 rounded border border-border/50">
           <span>Margin</span>
-          <span className="text-green-400 font-mono">{formatEGP(margin)}</span>
+          <span className="text-success font-mono">{formatEGP(margin)}</span>
         </div>
 
         <div>
-          <h4 className="text-sm font-medium text-gray-400 mb-2">Per Position</h4>
+          <h4 className="text-sm font-medium text-muted-foreground mb-2">Per Position</h4>
           <div className="space-y-2 max-h-40 overflow-y-auto" role="list">
             {units.map((unit) => {
               const res = unitResults.get(unit.id);
@@ -91,10 +91,10 @@ export const ProjectQuoteSummary: React.FC<ProjectQuoteSummaryProps> = ({ projec
               return (
                 <div
                   key={unit.id}
-                  className="flex justify-between items-center py-2 px-3 bg-gray-900/30 rounded border border-gray-700/50"
+                  className="flex justify-between items-center py-2 px-3 bg-background/30 rounded border border-border/50"
                 >
-                  <span className="font-medium text-gray-200">{unit.posNumber}</span>
-                  <span className="font-mono text-sm text-green-400">{formatEGP(quoted)}</span>
+                  <span className="font-medium text-foreground">{unit.posNumber}</span>
+                  <span className="font-mono text-sm text-success">{formatEGP(quoted)}</span>
                 </div>
               );
             })}

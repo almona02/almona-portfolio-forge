@@ -39,7 +39,7 @@ export const RoleTagger: React.FC<RoleTaggerProps> = ({ profiles, roles, onChang
   };
 
   if (!profiles.length) {
-    return <p className="text-xs text-gray-400">Import profiles to start tagging roles.</p>;
+    return <p className="text-xs text-muted-foreground">Import profiles to start tagging roles.</p>;
   }
 
   return (
@@ -61,18 +61,18 @@ export const RoleTagger: React.FC<RoleTaggerProps> = ({ profiles, roles, onChang
         {profiles.map((p) => {
           const current = roles[p.id];
           return (
-            <div key={p.id} className="rounded border border-gray-800 bg-gray-900 /50 p-3 space-y-2 card-dark">
-              <div className="text-sm text-white font-semibold">{p.name || p.fileName}</div>
-              <div className="text-[11px] text-gray-400">
+            <div key={p.id} className="rounded border border-border bg-background /50 p-3 space-y-2 card-dark">
+              <div className="text-sm text-foreground font-semibold">{p.name || p.fileName}</div>
+              <div className="text-[11px] text-muted-foreground">
                 {p.widthMm} × {p.heightMm} mm
               </div>
               <div className="space-y-1">
-                <Label className="typography-label text-[11px] text-gray-400">Assign Role</Label>
+                <Label className="typography-label text-[11px] text-muted-foreground">Assign Role</Label>
                 <Select value={current} onValueChange={(val) => onChangeRole(p.id, val as ProfileRole)}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700 h-9 text-xs">
+                  <SelectTrigger className="bg-card border-border h-9 text-xs">
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-gray-700 text-xs">
+                  <SelectContent className="bg-background border-border text-xs">
                     {ROLE_OPTIONS.map((r) => (
                       <SelectItem key={r.value} value={r.value}>
                         {r.label}

@@ -49,7 +49,7 @@ const NODE_TYPES: NodeTypeDefinition[] = [
         description: 'Workflow entry point',
         icon: Play,
         category: 'start-end',
-        color: 'text-green-500',
+        color: 'text-success',
     },
     {
         type: 'end',
@@ -57,7 +57,7 @@ const NODE_TYPES: NodeTypeDefinition[] = [
         description: 'Workflow exit point',
         icon: Square,
         category: 'start-end',
-        color: 'text-red-500',
+        color: 'text-destructive',
     },
     {
         type: 'task',
@@ -65,7 +65,7 @@ const NODE_TYPES: NodeTypeDefinition[] = [
         description: 'Manual task assignment',
         icon: CheckSquare,
         category: 'task',
-        color: 'text-blue-500',
+        color: 'text-info',
     },
     {
         type: 'decision',
@@ -97,7 +97,7 @@ const NODE_TYPES: NodeTypeDefinition[] = [
         description: 'Send notification',
         icon: Bell,
         category: 'notification',
-        color: 'text-cyan-500',
+        color: 'text-info',
     },
 ];
 
@@ -165,7 +165,7 @@ export const NodePalette: React.FC<NodePaletteProps> = ({
                                 "px-2 py-1 text-xs rounded",
                                 selectedCategory === 'all'
                                     ? "bg-amber-600 text-amber-100"
-                                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                                    : "bg-muted text-foreground hover:bg-muted"
                             )}
                         >
                             All
@@ -178,7 +178,7 @@ export const NodePalette: React.FC<NodePaletteProps> = ({
                                     "px-2 py-1 text-xs rounded capitalize",
                                     selectedCategory === cat
                                         ? "bg-amber-600 text-amber-100"
-                                        : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                                        : "bg-muted text-foreground hover:bg-muted"
                                 )}
                             >
                                 {cat.replace('-', ' ')}
@@ -204,8 +204,8 @@ export const NodePalette: React.FC<NodePaletteProps> = ({
                                         onDragStart={(e) => handleDragStart(node.type, e)}
                                         className={cn(
                                             "flex items-center gap-3 p-3 rounded-lg border",
-                                            "bg-slate-800/50 border-slate-700",
-                                            "hover:bg-slate-700/50 hover:border-amber-600/50",
+                                            "bg-card/50 border-border",
+                                            "hover:bg-muted/50 hover:border-amber-600/50",
                                             "cursor-move transition-colors",
                                             "group"
                                         )}
@@ -214,16 +214,16 @@ export const NodePalette: React.FC<NodePaletteProps> = ({
                                     >
                                         <div className={cn(
                                             "flex-shrink-0 p-2 rounded",
-                                            "bg-slate-700/50 group-hover:bg-slate-600/50",
+                                            "bg-muted/50 group-hover:bg-muted/50",
                                             node.color
                                         )}>
                                             <Icon className="h-4 w-4" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="font-medium text-sm text-slate-200">
+                                            <div className="font-medium text-sm text-foreground">
                                                 {node.label}
                                             </div>
-                                            <div className="text-xs text-slate-400 truncate">
+                                            <div className="text-xs text-muted-foreground truncate">
                                                 {node.description}
                                             </div>
                                         </div>

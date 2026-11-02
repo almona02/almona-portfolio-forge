@@ -180,10 +180,10 @@ const EgyptianStandardsGuide = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'mandatory': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'mandatory': return 'bg-red-500/20 text-destructive border-red-500/30';
       case 'recommended': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'optional': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'optional': return 'bg-green-500/20 text-success border-green-500/30';
+      default: return 'bg-muted/20 text-muted-foreground border-border/30';
     }
   };
 
@@ -212,34 +212,34 @@ const EgyptianStandardsGuide = () => {
             <span className="text-gradient-orange">Egyptian Standards Guide</span>
           </h1>
         </div>
-        <p className="text-xl text-gray-400 max-w-4xl mx-auto mb-6">
+        <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-6">
           Comprehensive guide to Egyptian industrial standards, certifications, and compliance requirements
         </p>
         
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-amber-400">15+</div>
-              <div className="text-sm text-gray-400">Standards</div>
+              <div className="text-sm text-muted-foreground">Standards</div>
             </CardContent>
           </Card>
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-400">3</div>
-              <div className="text-sm text-gray-400">Authorities</div>
+              <div className="text-2xl font-bold text-success">3</div>
+              <div className="text-sm text-muted-foreground">Authorities</div>
             </CardContent>
           </Card>
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-400">4</div>
-              <div className="text-sm text-gray-400">Steps</div>
+              <div className="text-2xl font-bold text-info">4</div>
+              <div className="text-sm text-muted-foreground">Steps</div>
             </CardContent>
           </Card>
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-amber-400">24/7</div>
-              <div className="text-sm text-gray-400">Support</div>
+              <div className="text-sm text-muted-foreground">Support</div>
             </CardContent>
           </Card>
         </div>
@@ -256,7 +256,7 @@ const EgyptianStandardsGuide = () => {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Building2 className="h-6 w-6 text-amber-400" />
@@ -264,7 +264,7 @@ const EgyptianStandardsGuide = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-gray-300">
+              <p className="text-foreground">
                 Egyptian industrial standards ensure that all machinery and equipment imported or manufactured 
                 in Egypt meets the highest levels of safety, quality, and environmental compliance. Our comprehensive 
                 guide helps you navigate the complex regulatory landscape.
@@ -273,21 +273,21 @@ const EgyptianStandardsGuide = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-3">
                   <h4 className="typography-h4 text-amber-400">Key Benefits:</h4>
-                  <ul className="space-y-2 text-sm text-gray-300">
+                  <ul className="space-y-2 text-sm text-foreground">
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <CheckCircle className="h-4 w-4 text-success" />
                       Legal compliance and market access
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <CheckCircle className="h-4 w-4 text-success" />
                       Enhanced product safety and reliability
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <CheckCircle className="h-4 w-4 text-success" />
                       Competitive advantage in Egyptian market
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <CheckCircle className="h-4 w-4 text-success" />
                       Reduced liability and insurance costs
                     </li>
                   </ul>
@@ -295,21 +295,21 @@ const EgyptianStandardsGuide = () => {
                 
                 <div className="space-y-3">
                   <h4 className="typography-h4 text-amber-400">Our Services:</h4>
-                  <ul className="space-y-2 text-sm text-gray-300">
+                  <ul className="space-y-2 text-sm text-foreground">
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <CheckCircle className="h-4 w-4 text-success" />
                       Standards compliance assessment
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <CheckCircle className="h-4 w-4 text-success" />
                       Documentation preparation support
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <CheckCircle className="h-4 w-4 text-success" />
                       Testing coordination and management
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <CheckCircle className="h-4 w-4 text-success" />
                       Regulatory liaison and representation
                     </li>
                   </ul>
@@ -329,15 +329,15 @@ const EgyptianStandardsGuide = () => {
                 className="cursor-pointer"
                 onClick={() => setSelectedStandard(standard)}
               >
-                <Card className="bg-gray-800/50 border-gray-700 transition-colors card-premium">
+                <Card className="bg-card/50 border-border transition-colors card-premium">
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         {getCategoryIcon(standard.category)}
                         <div>
                           <CardTitle className="text-lg">{standard.title}</CardTitle>
-                          <p className="text-sm text-gray-400">{standard.titleAr}</p>
-                          <p className="text-xs text-gray-500 mt-1">Code: {standard.code}</p>
+                          <p className="text-sm text-muted-foreground">{standard.titleAr}</p>
+                          <p className="text-xs text-muted-foreground mt-1">Code: {standard.code}</p>
                         </div>
                       </div>
                       <Badge className={getStatusColor(standard.status)}>
@@ -346,7 +346,7 @@ const EgyptianStandardsGuide = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-300 text-sm mb-3">{standard.description}</p>
+                    <p className="text-foreground text-sm mb-3">{standard.description}</p>
                     <div className="flex flex-wrap gap-2">
                       {standard.applicableProducts.slice(0, 3).map((product) => (
                         <Badge key={product} variant="outline" className="text-xs">
@@ -368,7 +368,7 @@ const EgyptianStandardsGuide = () => {
 
         {/* Compliance Process Tab */}
         <TabsContent value="compliance" className="space-y-6">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle className="h-6 w-6 text-amber-400" />
@@ -392,8 +392,8 @@ const EgyptianStandardsGuide = () => {
                     </div>
                     <div className="flex-1">
                       <h4 className="typography-h4 mb-2">{step.title}</h4>
-                      <p className="text-gray-300 mb-2">{step.description}</p>
-                      <div className="flex gap-4 text-sm text-gray-400">
+                      <p className="text-foreground mb-2">{step.description}</p>
+                      <div className="flex gap-4 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <AlertTriangle className="h-4 w-4" />
                           {step.duration}
@@ -415,10 +415,10 @@ const EgyptianStandardsGuide = () => {
         <TabsContent value="contacts" className="space-y-6">
           <div className="grid gap-4">
             {regulatoryContacts.map((contact) => (
-              <Card key={contact.name} className="bg-gray-800/50 border-gray-700">
+              <Card key={contact.name} className="bg-card/50 border-border">
                 <CardHeader>
                   <CardTitle className="text-lg">{contact.name}</CardTitle>
-                  <p className="text-sm text-gray-400">{contact.nameAr}</p>
+                  <p className="text-sm text-muted-foreground">{contact.nameAr}</p>
                   <Badge variant="outline" className="w-fit">
                     {contact.role}
                   </Badge>
@@ -464,7 +464,7 @@ const EgyptianStandardsGuide = () => {
           <LazyMotionDiv
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            className="bg-card rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
             onClick={(e: any) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between mb-4">
@@ -472,8 +472,8 @@ const EgyptianStandardsGuide = () => {
                 {getCategoryIcon(selectedStandard.category)}
                 <div>
                   <h3 className="typography-h3">{selectedStandard.title}</h3>
-                  <p className="text-gray-400">{selectedStandard.titleAr}</p>
-                  <p className="text-sm text-gray-500">Code: {selectedStandard.code}</p>
+                  <p className="text-muted-foreground">{selectedStandard.titleAr}</p>
+                  <p className="text-sm text-muted-foreground">Code: {selectedStandard.code}</p>
                 </div>
               </div>
               <Button
@@ -486,14 +486,14 @@ const EgyptianStandardsGuide = () => {
             </div>
 
             <div className="space-y-4">
-              <p className="text-gray-300">{selectedStandard.description}</p>
+              <p className="text-foreground">{selectedStandard.description}</p>
               
               <div>
                 <h4 className="typography-h4 mb-2">Requirements:</h4>
                 <ul className="space-y-1">
                   {selectedStandard.requirements.map((req, index) => (
-                    <li key={index} className="flex items-center gap-2 text-sm text-gray-300">
-                      <CheckCircle className="h-4 w-4 text-green-400" />
+                    <li key={index} className="flex items-center gap-2 text-sm text-foreground">
+                      <CheckCircle className="h-4 w-4 text-success" />
                       {req}
                     </li>
                   ))}
@@ -503,17 +503,17 @@ const EgyptianStandardsGuide = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h4 className="typography-h4 mb-2">Cost:</h4>
-                  <p className="text-sm text-gray-300">
+                  <p className="text-sm text-foreground">
                     Initial: {selectedStandard.cost.initial.toLocaleString()} {selectedStandard.cost.currency}
                   </p>
-                  <p className="text-sm text-gray-300">
+                  <p className="text-sm text-foreground">
                     Renewal: {selectedStandard.cost.renewal.toLocaleString()} {selectedStandard.cost.currency}
                   </p>
                 </div>
                 <div>
                   <h4 className="typography-h4 mb-2">Processing:</h4>
-                  <p className="text-sm text-gray-300">{selectedStandard.processingTime}</p>
-                  <p className="text-sm text-gray-300">Valid for: {selectedStandard.validityPeriod}</p>
+                  <p className="text-sm text-foreground">{selectedStandard.processingTime}</p>
+                  <p className="text-sm text-foreground">Valid for: {selectedStandard.validityPeriod}</p>
                 </div>
               </div>
 
@@ -521,7 +521,7 @@ const EgyptianStandardsGuide = () => {
                 <h4 className="typography-h4 mb-2">Required Documents:</h4>
                 <ul className="space-y-1">
                   {selectedStandard.documents.map((doc, index) => (
-                    <li key={index} className="flex items-center gap-2 text-sm text-gray-300">
+                    <li key={index} className="flex items-center gap-2 text-sm text-foreground">
                       <FileText className="h-4 w-4 text-amber-400" />
                       {doc}
                     </li>

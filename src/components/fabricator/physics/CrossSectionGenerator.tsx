@@ -104,18 +104,18 @@ export const CrossSectionGenerator: React.FC<CrossSectionProps> = ({
     if (!pathData) return null;
 
     return (
-        <Card className={`bg-white border-2 border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow ${className}`}>
-            <CardHeader className="pb-2 border-b border-slate-100 bg-slate-50/80 backdrop-blur-sm">
+        <Card className={`bg-card border-2 border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow ${className}`}>
+            <CardHeader className="pb-2 border-b border-border bg-background/80 backdrop-blur-sm">
                 <div className="flex justify-between items-center">
-                    <CardTitle className="text-[10px] font-mono uppercase text-slate-500 tracking-wider">
+                    <CardTitle className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider">
                         {type} Analysis
                     </CardTitle>
-                    <Badge variant="outline" className="text-[9px] font-mono border-slate-300">
+                    <Badge variant="outline" className="text-[9px] font-mono border-border">
                         {width}x{depth}
                     </Badge>
                 </div>
             </CardHeader>
-            <CardContent className="p-4 flex justify-center items-center bg-slate-50 overflow-hidden relative">
+            <CardContent className="p-4 flex justify-center items-center bg-background overflow-hidden relative">
                 {/* Blueprint Grid Background */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:10px_10px]"></div>
 

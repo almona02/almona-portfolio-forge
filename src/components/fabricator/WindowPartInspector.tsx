@@ -63,7 +63,7 @@ export function describeSelection(
 
 function Row({ label, value }: { label: string; value: string | number | null | undefined }) {
   if (value === null || value === undefined || value === '') return null;
-  return <><dt className="text-slate-400">{label}</dt><dd className="break-words">{value}</dd></>;
+  return <><dt className="text-muted-foreground">{label}</dt><dd className="break-words">{value}</dd></>;
 }
 
 function EntryDetails({ entry, mode }: { entry: AssemblyManifestEntry; mode: PartViewMode }) {
@@ -115,28 +115,28 @@ export function WindowPartDetails({
       aria-live="polite"
       className={
         variant === 'embedded'
-          ? 'max-h-full w-full overflow-y-auto rounded-lg border border-amber-400/60 bg-slate-950/95 p-4 text-sm text-slate-100 shadow-lg'
-          : 'absolute bottom-4 right-4 z-20 max-h-[60%] w-[min(22rem,calc(100%-2rem))] overflow-y-auto rounded-lg border border-amber-400/60 bg-slate-950/95 p-4 text-sm text-slate-100 shadow-lg'
+          ? 'max-h-full w-full overflow-y-auto rounded-lg border border-amber-400/60 bg-background/95 p-4 text-sm text-foreground shadow-lg'
+          : 'absolute bottom-4 right-4 z-20 max-h-[60%] w-[min(22rem,calc(100%-2rem))] overflow-y-auto rounded-lg border border-amber-400/60 bg-background/95 p-4 text-sm text-foreground shadow-lg'
       }
     >
       <div className="mb-3 flex items-start justify-between gap-4">
         <h3 className="font-semibold">{description.title}</h3>
-        <button type="button" onClick={onClose} aria-label="Close part details" className="h-7 w-7 rounded hover:bg-slate-800">×</button>
+        <button type="button" onClick={onClose} aria-label="Close part details" className="h-7 w-7 rounded hover:bg-card">×</button>
       </div>
       {description.visualOnly && (
-        <p className="text-xs text-amber-200">
+        <p className="text-xs text-warning">
           Shown in the 3D model for appearance only — it has no record in the saved part list and is not cut or priced from this view.
         </p>
       )}
       {description.unmodelled && !description.visualOnly && (
-        <p className="mb-2 text-xs text-amber-200">This part is in the saved part list but is not drawn in the 3D model.</p>
+        <p className="mb-2 text-xs text-warning">This part is in the saved part list but is not drawn in the 3D model.</p>
       )}
       {description.entries.map(entry => (
-        <div key={entry.id} className={description.entries.length > 1 ? 'mt-3 border-t border-slate-800 pt-3 first:mt-0 first:border-0 first:pt-0' : ''}>
-          {description.entries.length > 1 && <p className="mb-1 text-xs font-medium text-slate-300">{entry.name}</p>}
+        <div key={entry.id} className={description.entries.length > 1 ? 'mt-3 border-t border-border pt-3 first:mt-0 first:border-0 first:pt-0' : ''}>
+          {description.entries.length > 1 && <p className="mb-1 text-xs font-medium text-foreground">{entry.name}</p>}
           <EntryDetails entry={entry} mode={mode} />
           {mode === 'manufacturing' && entry.notes.length > 0 && (
-            <ul className="mt-2 list-disc space-y-0.5 pl-4 text-xs text-slate-400">
+            <ul className="mt-2 list-disc space-y-0.5 pl-4 text-xs text-muted-foreground">
               {entry.notes.map(note => <li key={note}>{note}</li>)}
             </ul>
           )}

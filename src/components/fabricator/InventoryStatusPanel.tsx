@@ -48,19 +48,19 @@ const InventoryStatusPanelComponent: React.FC<InventoryStatusPanelProps> = ({ pr
   }, [inventory, project?.components]);
 
   return (
-    <Card className="bg-gray-800 border-gray-700">
+    <Card className="bg-card border-border">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2">
-          <Package className="h-4 w-4 text-amber-400" />
+          <Package className="h-4 w-4 text-warning" />
           Inventory Status
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 text-xs">
         {project && (
           <div className="space-y-2">
-            <h4 className="typography-h4 text-[11px] font-medium text-gray-400">For This Project</h4>
+            <h4 className="typography-h4 text-[11px] font-medium text-muted-foreground">For This Project</h4>
             {projectStockStatus.length === 0 ? (
-              <p className="text-[11px] text-gray-500">No profiles selected yet</p>
+              <p className="text-[11px] text-muted-foreground">No profiles selected yet</p>
             ) : (
               projectStockStatus.map(({ profile, status }) => (
                 <div
@@ -77,7 +77,7 @@ const InventoryStatusPanelComponent: React.FC<InventoryStatusPanelProps> = ({ pr
                         ? 'status-badge-low'
                         : status === 'high'
                         ? 'status-badge-high'
-                        : 'text-gray-300 border-gray-600'
+                        : 'text-foreground border-border'
                     }`}
                   >
                     {status === 'out_of_stock'
@@ -94,21 +94,21 @@ const InventoryStatusPanelComponent: React.FC<InventoryStatusPanelProps> = ({ pr
           </div>
         )}
 
-        <div className="pt-2 border-t border-gray-700">
+        <div className="pt-2 border-t border-border">
           <div className="flex justify-between items-center mb-2">
-            <h4 className="typography-h4 text-[11px] font-medium text-gray-400">Overall Alerts</h4>
+            <h4 className="typography-h4 text-[11px] font-medium text-muted-foreground">Overall Alerts</h4>
             {lowStockProfiles.length > 0 ? (
-              <AlertTriangle className="h-4 w-4 text-amber-400" />
+              <AlertTriangle className="h-4 w-4 text-warning" />
             ) : (
-              <CheckCircle className="h-4 w-4 text-green-400" />
+              <CheckCircle className="h-4 w-4 text-success" />
             )}
           </div>
 
           {lowStockProfiles.length === 0 ? (
-            <p className="text-[11px] text-green-400">All profiles in stock</p>
+            <p className="text-[11px] text-success">All profiles in stock</p>
           ) : (
             <div className="space-y-1">
-              <p className="text-[11px] text-amber-400">
+              <p className="text-[11px] text-warning">
                 {lowStockProfiles.length} profile(s) need attention
               </p>
               <button
@@ -116,7 +116,7 @@ const InventoryStatusPanelComponent: React.FC<InventoryStatusPanelProps> = ({ pr
                 onClick={() => {
                   window.location.href = '/fabricator';
                 }}
-                className="text-[11px] text-blue-400 hover:text-blue-300 underline"
+                className="text-[11px] text-info hover:text-info underline"
               >
                 View in Dashboard
               </button>
@@ -127,8 +127,8 @@ const InventoryStatusPanelComponent: React.FC<InventoryStatusPanelProps> = ({ pr
       
       {/* Real-time Cost Section */}
       {project && (
-        <div className="border-t border-gray-700 pt-4">
-          <Suspense fallback={<div className="h-32 rounded-lg bg-gray-800/60 animate-pulse" />}>
+        <div className="border-t border-border pt-4">
+          <Suspense fallback={<div className="h-32 rounded-lg bg-card/60 animate-pulse" />}>
             <RealTimeQuote
               dimensions={{
                 width: project.overallWidth,

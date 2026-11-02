@@ -47,10 +47,10 @@ export const DurabilityDetailsModal: React.FC<DurabilityDetailsModalProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] bg-almona-darker text-white border-almona-light/20">
+      <DialogContent className="sm:max-w-[600px] bg-card text-foreground border-border/20">
         <DialogHeader>
           <DialogTitle className="text-gradient-orange">Durability & Maintenance Details for {productName}</DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogDescription className="text-muted-foreground">
             Understand the long-term performance and recommended care for this machine.
           </DialogDescription>
         </DialogHeader>
@@ -60,23 +60,23 @@ export const DurabilityDetailsModal: React.FC<DurabilityDetailsModalProps> = ({
             <Badge className="btn-primary">
               {durabilityInfo.score}/5
             </Badge>
-            <p className="text-gray-300 mt-2">This score reflects the machine&apos;s expected resilience and lifespan under typical operating conditions.</p>
+            <p className="text-foreground mt-2">This score reflects the machine&apos;s expected resilience and lifespan under typical operating conditions.</p>
           </div>
 
           <div className="mb-4">
             <h4 className="typography-h4 mb-2">Recommended Maintenance Interval:</h4>
-            <p className="text-gray-300">{durabilityInfo.maintenanceInterval}</p>
-            <p className="text-sm text-gray-400 mt-1">Adhering to this schedule is crucial for maximizing the machine&apos;s lifespan and ensuring optimal performance.</p>
+            <p className="text-foreground">{durabilityInfo.maintenanceInterval}</p>
+            <p className="text-sm text-muted-foreground mt-1">Adhering to this schedule is crucial for maximizing the machine&apos;s lifespan and ensuring optimal performance.</p>
           </div>
 
           <div className="mb-4">
             <h4 className="typography-h4 mb-2">Key Durability Features:</h4>
-            <ul className="list-disc list-inside space-y-1 text-gray-300">
+            <ul className="list-disc list-inside space-y-1 text-foreground">
               {durabilityInfo.keyDurabilityFeatures.map((feature, index) => (
                 <li key={index}>{feature}</li>
               ))}
             </ul>
-            <p className="text-sm text-gray-400 mt-2">These features contribute significantly to the machine&apos;s robust construction and ability to withstand demanding industrial environments.</p>
+            <p className="text-sm text-muted-foreground mt-2">These features contribute significantly to the machine&apos;s robust construction and ability to withstand demanding industrial environments.</p>
           </div>
         </div>
       </DialogContent>

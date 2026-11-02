@@ -406,7 +406,7 @@ export const SearchBar = React.forwardRef<SearchBarRef, SearchBarProps>(({
       {/* Search Input */}
       <div className="relative">
         <Search 
-          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" 
+          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
           aria-hidden="true" 
         />
         <Input
@@ -418,7 +418,7 @@ export const SearchBar = React.forwardRef<SearchBarRef, SearchBarProps>(({
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="pl-9 pr-9 h-11 bg-slate-900 border-slate-700 text-slate-200 placeholder:text-slate-500 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+          className="pl-9 pr-9 h-11 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
           role="searchbox"
           aria-label={placeholder}
           aria-autocomplete="list"
@@ -430,7 +430,7 @@ export const SearchBar = React.forwardRef<SearchBarRef, SearchBarProps>(({
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 hover:text-slate-200 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Clear search"
           >
             <X className="h-4 w-4" aria-hidden="true" />
@@ -456,23 +456,23 @@ export const SearchBar = React.forwardRef<SearchBarRef, SearchBarProps>(({
         <div
           ref={dropdownRef}
           id="search-results-list"
-          className="absolute z-50 w-full mt-1 bg-slate-950 border border-amber-600/30 rounded-lg shadow-lg max-h-[500px] overflow-hidden"
+          className="absolute z-50 w-full mt-1 bg-background border border-amber-600/30 rounded-lg shadow-lg max-h-[500px] overflow-hidden"
           role="listbox"
         >
           <ScrollArea className="max-h-[500px]">
             <div className="p-2">
               {/* Error State */}
               {error && (
-                <div className="p-4 text-center text-red-400" role="alert">
+                <div className="p-4 text-center text-destructive" role="alert">
                   <AlertCircle className="h-5 w-5 mx-auto mb-2" aria-hidden="true" />
                   <p className="text-sm font-medium">Error searching</p>
-                  <p className="text-xs text-slate-400 mt-1">{error}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{error}</p>
                 </div>
               )}
 
               {/* Loading State */}
               {isLoading && !error && (
-                <div className="p-4 text-center text-slate-400">
+                <div className="p-4 text-center text-muted-foreground">
                   <Loader2 className="h-5 w-5 mx-auto mb-2 animate-spin" aria-hidden="true" />
                   <p className="text-sm">Searching...</p>
                 </div>
@@ -483,7 +483,7 @@ export const SearchBar = React.forwardRef<SearchBarRef, SearchBarProps>(({
                 <>
                   {results.total === 0 ? (
                     // Empty State
-                    <div className="p-4 text-center text-slate-400">
+                    <div className="p-4 text-center text-muted-foreground">
                       <p className="text-sm font-medium mb-1">No results found</p>
                       <p className="text-xs">Try different keywords</p>
                     </div>
@@ -513,14 +513,14 @@ export const SearchBar = React.forwardRef<SearchBarRef, SearchBarProps>(({
                                     className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
                                       isSelected
                                         ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                                        : 'text-slate-200 hover:bg-slate-800'
+                                        : 'text-foreground hover:bg-card'
                                     }`}
                                     role="option"
                                     aria-selected={isSelected}
                                   >
                                     <div className="font-medium text-sm">{item.title}</div>
                                     {item.subtitle && (
-                                      <div className="text-xs text-slate-400 mt-0.5">{item.subtitle}</div>
+                                      <div className="text-xs text-muted-foreground mt-0.5">{item.subtitle}</div>
                                     )}
                                   </button>
                                 );
@@ -537,7 +537,7 @@ export const SearchBar = React.forwardRef<SearchBarRef, SearchBarProps>(({
               {/* Recent Searches (shown when no query or no results) */}
               {!query && recentSearches.length > 0 && (
                 <div>
-                  <div className="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide flex items-center gap-2">
+                  <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
                     <Clock className="h-3 w-3" aria-hidden="true" />
                     Recent Searches
                   </div>
@@ -547,7 +547,7 @@ export const SearchBar = React.forwardRef<SearchBarRef, SearchBarProps>(({
                         key={idx}
                         type="button"
                         onClick={() => handleRecentSearchClick(recentQuery)}
-                        className="w-full text-left px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800 transition-colors text-sm"
+                        className="w-full text-left px-3 py-2 rounded-md text-foreground hover:bg-card transition-colors text-sm"
                       >
                         {recentQuery}
                       </button>
@@ -559,7 +559,7 @@ export const SearchBar = React.forwardRef<SearchBarRef, SearchBarProps>(({
               {/* Saved Searches */}
               {!query && savedSearches.length > 0 && (
                 <div className="mt-4">
-                  <div className="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                  <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                     Saved Searches
                   </div>
                   <div className="space-y-1">
@@ -568,7 +568,7 @@ export const SearchBar = React.forwardRef<SearchBarRef, SearchBarProps>(({
                         key={saved.id}
                         type="button"
                         onClick={() => handleRecentSearchClick(saved.query)}
-                        className="w-full text-left px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800 transition-colors text-sm"
+                        className="w-full text-left px-3 py-2 rounded-md text-foreground hover:bg-card transition-colors text-sm"
                       >
                         {saved.name}
                       </button>

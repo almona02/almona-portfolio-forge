@@ -342,8 +342,8 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
         </div>
       </div>
 
-      {ticketsError && <p role="alert" className="rounded border border-red-500/40 p-3 text-red-300">Unable to load tickets. Use Refresh to retry.</p>}
-      {metricsError && <p role="alert" className="text-red-300">Ticket metrics are unavailable.</p>}
+      {ticketsError && <p role="alert" className="rounded border border-red-500/40 p-3 text-destructive">Unable to load tickets. Use Refresh to retry.</p>}
+      {metricsError && <p role="alert" className="text-destructive">Ticket metrics are unavailable.</p>}
       {/* Metrics */}
       {metrics && (
         <TicketMetrics metrics={metrics} isLoading={loadingMetrics} />

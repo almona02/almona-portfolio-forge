@@ -280,11 +280,11 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
 
   return (
     <>
-    <Card className="bg-gray-900/60 border-gray-700 card-dark">
-      <CardHeader className="pb-3 border-b border-amber-500/10 bg-gradient-to-r from-gray-900 via-gray-900 to-amber-900/5">
+    <Card className="bg-background/60 border-border card-dark">
+      <CardHeader className="pb-3 border-b border-amber-500/10 bg-gradient-to-r from-background via-background to-amber-900/5">
         <CardTitle className="text-sm flex items-center gap-2">
           <div className="p-1.5 rounded-md bg-amber-500/10 border border-amber-500/20">
-            <FileText className="h-4 w-4 text-amber-400" />
+            <FileText className="h-4 w-4 text-warning" />
           </div>
           <span className="font-medium tracking-tight bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">
             Commercial Offer
@@ -292,8 +292,8 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
           <div className="ml-auto flex items-center gap-2">
             {/* Dealer Mode Toggle (Future) */}
             <div className="hidden group-hover:flex items-center gap-1 mx-2">
-               <span className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Dealer Mode</span>
-               <Badge variant="outline" className="border-dashed border-gray-600 text-gray-400 text-[9px] px-1 py-0 h-4">OFF</Badge>
+               <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Dealer Mode</span>
+               <Badge variant="outline" className="border-dashed border-border text-muted-foreground text-[9px] px-1 py-0 h-4">OFF</Badge>
             </div>
             
             {pricingSource !== 'checking' && (
@@ -301,8 +301,8 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
                 variant="outline"
                 className={
                   pricingSource === 'system_pricing'
-                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 text-[10px]'
-                    : 'bg-amber-500/10 border-amber-500/30 text-amber-400 text-[10px]'
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-success text-[10px]'
+                    : 'bg-amber-500/10 border-amber-500/30 text-warning text-[10px]'
                 }
               >
                 {pricingSource === 'system_pricing' ? 'Custom Pricing' : 'Default Pricing'}
@@ -322,7 +322,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
                   setPricingStudioProfileId(systemPackProfile?.id);
                   setShowPricingStudio(true);
                 }}
-                className="h-6 px-2 text-[10px] text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
+                className="h-6 px-2 text-[10px] text-warning hover:text-warning hover:bg-amber-500/10"
                 title="Configure Pricing"
               >
                 <Settings className="h-3 w-3 mr-1" />
@@ -339,8 +339,8 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
       </CardHeader>
       <CardContent className="space-y-3">
         {!optimization && (
-          <Alert className="bg-gray-800 border-gray-700">
-            <AlertDescription className="text-xs text-gray-300">
+          <Alert className="bg-card border-border">
+            <AlertDescription className="text-xs text-foreground">
               Generate a cutting optimization first to enable cost-based quoting.
             </AlertDescription>
           </Alert>
@@ -355,8 +355,8 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
         {/* Header: Client & basic info */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <div className="text-xs text-gray-400">Client</div>
-            <div className="flex items-center gap-1 text-[11px] text-gray-400">
+            <div className="text-xs text-muted-foreground">Client</div>
+            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
               <ShoppingCart className="h-3 w-3" />
               {project.customer || 'Unspecified'}
             </div>
@@ -376,7 +376,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
                 },
               }))
             }
-            className="h-8 text-xs bg-gray-800 border-gray-700"
+            className="h-8 text-xs bg-card border-border"
           />
         </div>
 
@@ -384,7 +384,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="space-y-1">
             <Label className="typography-label text-[11px] flex items-center gap-1">
-              <DollarSign className="h-3 w-3 text-green-400" />
+              <DollarSign className="h-3 w-3 text-success" />
               Currency
             </Label>
             <Input
@@ -398,12 +398,12 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
                   },
                 }))
               }
-              className="h-8 text-xs bg-gray-800 border-gray-700"
+              className="h-8 text-xs bg-card border-border"
             />
           </div>
           <div className="space-y-1">
             <Label className="typography-label text-[11px] flex items-center gap-1">
-              <Calendar className="h-3 w-3 text-blue-400" />
+              <Calendar className="h-3 w-3 text-info" />
               Validity (days)
             </Label>
             <Input
@@ -423,7 +423,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
                   },
                 }));
               }}
-              className="h-8 text-xs bg-gray-800 border-gray-700"
+              className="h-8 text-xs bg-card border-border"
             />
           </div>
         </div>
@@ -431,7 +431,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
         {/* Payment milestones */}
         <div className="space-y-1">
           <Label className="typography-label text-[11px] flex items-center gap-1">
-            <Scale className="h-3 w-3 text-yellow-400" />
+            <Scale className="h-3 w-3 text-warning" />
             Payment Milestones (%)
           </Label>
           <div className="grid grid-cols-3 gap-1 text-[11px]">
@@ -465,7 +465,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
                       };
                     });
                   }}
-                  className="h-8 text-[11px] bg-gray-800 border-gray-700"
+                  className="h-8 text-[11px] bg-card border-border"
                 />
               );
             })}
@@ -492,7 +492,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
                   },
                 }))
               }
-              className="h-8 text-[11px] bg-gray-800 border-gray-700"
+              className="h-8 text-[11px] bg-card border-border"
             />
             <Input
               type="number"
@@ -507,7 +507,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
                   },
                 }))
               }
-              className="h-8 text-[11px] bg-gray-800 border-gray-700"
+              className="h-8 text-[11px] bg-card border-border"
             />
             <Input
               type="number"
@@ -522,7 +522,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
                   },
                 }))
               }
-              className="h-8 text-[11px] bg-gray-800 border-gray-700"
+              className="h-8 text-[11px] bg-card border-border"
             />
             <Input
               type="number"
@@ -537,7 +537,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
                   },
                 }))
               }
-              className="h-8 text-[11px] bg-gray-800 border-gray-700"
+              className="h-8 text-[11px] bg-card border-border"
             />
           </div>
         </div>
@@ -558,7 +558,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
               }))
             }
             placeholder="e.g., Orders cancelled after fabrication start may incur restocking or fabrication charges..."
-            className="text-[11px] bg-gray-800 border-gray-700 resize-none"
+            className="text-[11px] bg-card border-border resize-none"
           />
           <Textarea
             rows={2}
@@ -573,7 +573,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
               }))
             }
             placeholder="e.g., Prices are based on current aluminium and glass costs and may be adjusted in case of significant market fluctuations..."
-            className="text-[11px] bg-gray-800 border-gray-700 resize-none mt-1"
+            className="text-[11px] bg-card border-border resize-none mt-1"
           />
         </div>
 
@@ -592,7 +592,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
               }))
             }
             placeholder="e.g., Delays caused by events beyond the control of the supplier (force majeure) extend the delivery timeline without penalty..."
-            className="text-[11px] bg-gray-800 border-gray-700 resize-none"
+            className="text-[11px] bg-card border-border resize-none"
           />
           <Input
             placeholder="Jurisdiction / Courts"
@@ -606,7 +606,7 @@ const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
                 },
               }))
             }
-            className="h-8 text-[11px] bg-gray-800 border-gray-700 mt-1"
+            className="h-8 text-[11px] bg-card border-border mt-1"
           />
         </div>
 

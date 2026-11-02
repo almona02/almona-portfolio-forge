@@ -177,10 +177,10 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
   }, [project, optimization, generatingReport]);
 
   return (
-    <Card className="bg-gray-800 border-gray-700">
+    <Card className="bg-card border-border">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2">
-          <FileText className="h-4 w-4 text-amber-400" />
+          <FileText className="h-4 w-4 text-warning" />
           Quick Reports
         </CardTitle>
       </CardHeader>
@@ -199,10 +199,10 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           )}
           Cutting List
           {!optimization && (
-            <span className="ml-auto text-[10px] text-gray-500">Need optimization</span>
+            <span className="ml-auto text-[10px] text-muted-foreground">Need optimization</span>
           )}
           {generatingReport === 'cutting' && (
-            <span className="ml-auto text-[10px] text-gray-500">Generating...</span>
+            <span className="ml-auto text-[10px] text-muted-foreground">Generating...</span>
           )}
         </Button>
 
@@ -220,7 +220,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           )}
           Machine CSV (Saw)
           {generatingReport === 'machine_csv' && (
-            <span className="ml-auto text-[10px] text-gray-500">Generating...</span>
+            <span className="ml-auto text-[10px] text-muted-foreground">Generating...</span>
           )}
         </Button>
 
@@ -238,7 +238,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           )}
           Machine DXF (Saw)
           {generatingReport === 'machine_dxf' && (
-            <span className="ml-auto text-[10px] text-gray-500">Generating...</span>
+            <span className="ml-auto text-[10px] text-muted-foreground">Generating...</span>
           )}
         </Button>
 
@@ -256,7 +256,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           )}
           Glass Report
           {generatingReport === 'glass' && (
-            <span className="ml-auto text-[10px] text-gray-500">Generating...</span>
+            <span className="ml-auto text-[10px] text-muted-foreground">Generating...</span>
           )}
         </Button>
 
@@ -274,13 +274,13 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
           )}
           Accessories List
           {generatingReport === 'accessories' && (
-            <span className="ml-auto text-[10px] text-gray-500">Generating...</span>
+            <span className="ml-auto text-[10px] text-muted-foreground">Generating...</span>
           )}
         </Button>
 
         {project && optimization && (
-          <div className="pt-2 border-t border-gray-700">
-            <p className="text-[11px] text-gray-400 text-center">
+          <div className="pt-2 border-t border-border">
+            <p className="text-[11px] text-muted-foreground text-center">
               Optimization ready – job can be sent to production.
             </p>
           </div>

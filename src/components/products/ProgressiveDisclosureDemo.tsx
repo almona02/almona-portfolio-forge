@@ -27,7 +27,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
       content: (
         <div className="space-y-4">
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-            <h4 className="typography-h4 text-red-400 mb-2">Before: Overwhelming List</h4>
+            <h4 className="typography-h4 text-destructive mb-2">Before: Overwhelming List</h4>
             <div className="grid grid-cols-2 gap-2 text-sm">
               {[
                 "ALM6510", "DC 421 PBS", "DK502", "KM 212", "KD 402 S", "FR 221 S",
@@ -37,12 +37,12 @@ const ProgressiveDisclosureDemo: React.FC = () => {
                 "KD 305", "KD 350 PS", "KD 350 M", "FR 223", "FR 223 S", "FR 222",
                 "KM 211 S"
               ].map((machine, index) => (
-                <div key={index} className="text-gray-400 truncate">
+                <div key={index} className="text-muted-foreground truncate">
                   {machine}
                 </div>
               ))}
             </div>
-            <p className="text-red-300 text-sm mt-2">
+            <p className="text-destructive text-sm mt-2">
               ❌ 31 machines shown at once - cognitive overload
             </p>
           </div>
@@ -56,10 +56,10 @@ const ProgressiveDisclosureDemo: React.FC = () => {
       content: (
         <div className="space-y-4">
           <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
-            <h4 className="typography-h4 text-green-400 mb-2">After: Hierarchical Navigation</h4>
+            <h4 className="typography-h4 text-success mb-2">After: Hierarchical Navigation</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <h5 className="font-medium text-white mb-2">Main Categories (5)</h5>
+                <h5 className="font-medium text-foreground mb-2">Main Categories (5)</h5>
                 <ul className="space-y-1 text-sm">
                   <li className="flex items-center gap-2">
                     <span className="text-amber-400">✂️</span>
@@ -67,7 +67,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
                     <Badge variant="secondary" className="text-xs">21 machines</Badge>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-blue-400">💻</span>
+                    <span className="text-info">💻</span>
                     <span>Processing Centers</span>
                     <Badge variant="secondary" className="text-xs">18 machines</Badge>
                   </li>
@@ -82,17 +82,17 @@ const ProgressiveDisclosureDemo: React.FC = () => {
                     <Badge variant="secondary" className="text-xs">4 machines</Badge>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-gray-400">🔧</span>
+                    <span className="text-muted-foreground">🔧</span>
                     <span>Accessories & Parts</span>
                     <Badge variant="secondary" className="text-xs">15 items</Badge>
                   </li>
                 </ul>
               </div>
               <div>
-                <h5 className="font-medium text-white mb-2">Subcategories Example</h5>
-                <div className="bg-gray-800/50 rounded-lg p-3">
+                <h5 className="font-medium text-foreground mb-2">Subcategories Example</h5>
+                <div className="bg-card/50 rounded-lg p-3">
                   <div className="text-amber-400 font-medium mb-2">Cutting Machines</div>
-                  <ul className="space-y-1 text-sm text-gray-300">
+                  <ul className="space-y-1 text-sm text-foreground">
                     <li>• Double Head Cutting (8 machines)</li>
                     <li>• Single Head Cutting (4 machines)</li>
                     <li>• Mitre Saws (6 machines)</li>
@@ -101,7 +101,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
                 </div>
               </div>
             </div>
-            <p className="text-green-300 text-sm mt-2">
+            <p className="text-success text-sm mt-2">
               ✅ Progressive disclosure - users see 5 main categories first, then drill down
             </p>
           </div>
@@ -114,9 +114,9 @@ const ProgressiveDisclosureDemo: React.FC = () => {
       icon: <Zap className="h-6 w-6" />,
       content: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg text-white">Navigation Components</CardTitle>
+              <CardTitle className="text-lg text-foreground">Navigation Components</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2">
@@ -138,9 +138,9 @@ const ProgressiveDisclosureDemo: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg text-white">User Experience</CardTitle>
+              <CardTitle className="text-lg text-foreground">User Experience</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2">
@@ -169,10 +169,10 @@ const ProgressiveDisclosureDemo: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
       <div className="text-center">
-        <h1 className="typography-h1 text-white mb-4">
+        <h1 className="typography-h1 text-foreground mb-4">
           Progressive Disclosure Implementation
         </h1>
-        <p className="text-gray-400 max-w-3xl mx-auto">
+        <p className="text-muted-foreground max-w-3xl mx-auto">
           Breaking complex product categories into logical subcategories to improve user experience
           and reduce cognitive overload when browsing industrial machinery.
         </p>
@@ -200,13 +200,13 @@ const ProgressiveDisclosureDemo: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-white">
+              <CardTitle className="flex items-center gap-3 text-foreground">
                 {demoSteps[demoStep].icon}
                 {demoSteps[demoStep].title}
               </CardTitle>
-              <p className="text-gray-400">{demoSteps[demoStep].description}</p>
+              <p className="text-muted-foreground">{demoSteps[demoStep].description}</p>
             </CardHeader>
             <CardContent>
               {demoSteps[demoStep].content}
@@ -218,9 +218,9 @@ const ProgressiveDisclosureDemo: React.FC = () => {
       {/* Live Demo */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
-              <CardTitle className="text-white">Category Navigation</CardTitle>
+              <CardTitle className="text-foreground">Category Navigation</CardTitle>
             </CardHeader>
             <CardContent>
               <ProgressiveCategoryNavigation
@@ -233,9 +233,9 @@ const ProgressiveDisclosureDemo: React.FC = () => {
         </div>
 
         <div className="lg:col-span-2 space-y-6">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
-              <CardTitle className="text-white">Breadcrumb Navigation</CardTitle>
+              <CardTitle className="text-foreground">Breadcrumb Navigation</CardTitle>
             </CardHeader>
             <CardContent>
               <CategoryBreadcrumb
@@ -246,9 +246,9 @@ const ProgressiveDisclosureDemo: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardHeader>
-              <CardTitle className="text-white">Category Filter</CardTitle>
+              <CardTitle className="text-foreground">Category Filter</CardTitle>
             </CardHeader>
             <CardContent>
               <CategoryFilter
@@ -264,7 +264,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
       {/* Benefits Summary */}
       <Card className="bg-gradient-to-r from-amber-500/10 to-blue-500/10 border-amber-500/20">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <Info className="h-5 w-5" />
             Implementation Benefits
           </CardTitle>
@@ -273,15 +273,15 @@ const ProgressiveDisclosureDemo: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-amber-400 mb-2">75%</div>
-              <div className="text-sm text-gray-300">Reduction in initial cognitive load</div>
+              <div className="text-sm text-foreground">Reduction in initial cognitive load</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400 mb-2">3x</div>
-              <div className="text-sm text-gray-300">Faster category discovery</div>
+              <div className="text-2xl font-bold text-info mb-2">3x</div>
+              <div className="text-sm text-foreground">Faster category discovery</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-400 mb-2">100%</div>
-              <div className="text-sm text-gray-300">Mobile responsive design</div>
+              <div className="text-2xl font-bold text-success mb-2">100%</div>
+              <div className="text-sm text-foreground">Mobile responsive design</div>
             </div>
           </div>
         </CardContent>

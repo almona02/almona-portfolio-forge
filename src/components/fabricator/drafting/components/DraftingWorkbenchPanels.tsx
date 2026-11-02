@@ -67,74 +67,74 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
     <div className="h-full min-h-0 flex flex-col">
       <Tabs defaultValue="properties" className="flex-1 min-h-0 flex flex-col">
         {/* Panel Tab Navigation */}
-        <div className="border-b border-slate-600/50 bg-slate-900 flex-shrink-0">
+        <div className="border-b border-border/50 bg-background flex-shrink-0">
           <TabsList className="mx-0 px-2 h-10 border-0 bg-transparent gap-1">
             <TabsTrigger
               value="properties"
-              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none"
+              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none"
             >
               <Settings size={14} />
               Props
             </TabsTrigger>
             <TabsTrigger
               value="layers"
-              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none"
+              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none"
             >
               <Layers size={14} />
               Layers
             </TabsTrigger>
             <TabsTrigger
               value="blocks"
-              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none"
+              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none"
             >
               <Wrench size={14} />
               Blocks
             </TabsTrigger>
             <TabsTrigger
               value="viewport"
-              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none"
+              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none"
             >
               <Eye size={14} />
               View
             </TabsTrigger>
             <TabsTrigger
               value="info"
-              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none"
+              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none"
             >
               <Info size={14} />
               Info
             </TabsTrigger>
             <TabsTrigger
               value="production"
-              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none"
+              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none"
             >
               <Factory size={14} />
               Production
             </TabsTrigger>
             <TabsTrigger
               value="execution"
-              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none"
+              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none"
             >
               <Wrench size={14} />
               Execution
             </TabsTrigger>
             <TabsTrigger
               value="quote"
-              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none"
+              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none"
             >
               <DollarSign size={14} />
               Quote
             </TabsTrigger>
             <TabsTrigger
               value="stock"
-              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none"
+              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none"
             >
               <Package size={14} />
               Stock
             </TabsTrigger>
             <TabsTrigger
               value="validation"
-              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors data-[state=active]:bg-slate-800 data-[state=active]:text-slate-100 data-[state=active]:shadow-none rounded-none"
+              className="flex items-center gap-1 px-3 h-8 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none"
             >
               <Shield size={14} />
               Validation
@@ -146,7 +146,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
           <TabsContent value="quote" className={`flex-1 overflow-auto m-0 ${getPadding('componentTight')}`}>
             <Suspense fallback={
-              <div className="flex items-center justify-center h-full text-slate-400">
+              <div className="flex items-center justify-center h-full text-muted-foreground">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400 mx-auto mb-2"></div>
                   <p className="text-sm">Calculating estimate...</p>
@@ -162,7 +162,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
 
           <TabsContent value="stock" className={`flex-1 overflow-auto m-0 ${getPadding('componentTight')}`}>
             <Suspense fallback={
-              <div className="flex items-center justify-center h-full text-slate-400">
+              <div className="flex items-center justify-center h-full text-muted-foreground">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400 mx-auto mb-2"></div>
                   <p className="text-sm">Optimizing stock...</p>
@@ -179,7 +179,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
           <TabsContent value="properties" className="flex-1 overflow-auto m-0 p-0">
             {/* Properties Panel - Element editing (position, dimensions, etc.) */}
             <Suspense fallback={
-              <div className="flex items-center justify-center h-full text-slate-400">
+              <div className="flex items-center justify-center h-full text-muted-foreground">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto mb-2"></div>
                   <p className="text-sm">Loading properties...</p>
@@ -190,9 +190,9 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
             </Suspense>
 
             {/* Material & System Selection */}
-            <div className={`${getMargin('element')} ${getPadding('componentTight')} border-t border-slate-700/30`}>
+            <div className={`${getMargin('element')} ${getPadding('componentTight')} border-t border-border/30`}>
               <Suspense fallback={
-                <div className="flex items-center justify-center h-20 text-slate-400">
+                <div className="flex items-center justify-center h-20 text-muted-foreground">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-400 mx-auto mb-1"></div>
                     <p className="text-xs">Loading materials...</p>
@@ -209,7 +209,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
             </div>
 
             {/* Template Selection (for 3D preview + grid-based tools) */}
-            <div className={`${getMargin('element')} ${getPadding('componentTight')} border-t border-slate-700/30`}>
+            <div className={`${getMargin('element')} ${getPadding('componentTight')} border-t border-border/30`}>
               <h3 className={`${getTypographyPreset('h3')} ${getMargin('elementTight')}`}>Template Selection</h3>
               <select
                 value={activeTemplate}
@@ -226,7 +226,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
                   </option>
                 ))}
               </select>
-              <p className={`${getTypographyPreset('caption')} text-slate-500 mt-2`}>
+              <p className={`${getTypographyPreset('caption')} text-muted-foreground mt-2`}>
                 Templates define the grid pattern used for 3D preview and optimization.
               </p>
             </div>
@@ -245,7 +245,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
               return (
                 <div className={`${getMargin('element')} ${getPadding('componentTight')}`}>
                   <Suspense fallback={
-                    <div className="flex items-center justify-center h-20 text-slate-400">
+                    <div className="flex items-center justify-center h-20 text-muted-foreground">
                       <div className="text-center">
                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-400 mx-auto mb-1"></div>
                         <p className="text-xs">Loading metrics...</p>
@@ -275,7 +275,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
 
           <TabsContent value="layers" className={`flex-1 overflow-auto m-0 ${getPadding('componentTight')}`}>
             <Suspense fallback={
-              <div className="flex items-center justify-center h-full text-slate-400">
+              <div className="flex items-center justify-center h-full text-muted-foreground">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto mb-2"></div>
                   <p className="text-sm">Loading layer manager...</p>
@@ -288,7 +288,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
 
           <TabsContent value="blocks" className={`flex-1 overflow-auto m-0 ${getPadding('componentTight')}`}>
             <Suspense fallback={
-              <div className="flex items-center justify-center h-full text-slate-400">
+              <div className="flex items-center justify-center h-full text-muted-foreground">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto mb-2"></div>
                   <p className="text-sm">Loading block library...</p>
@@ -303,7 +303,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
           {state.operations.optimizationResult && (
             <TabsContent value="optimization" className={`flex-1 overflow-auto m-0 ${getPadding('componentTight')}`}>
               <Suspense fallback={
-                <div className="flex items-center justify-center h-full text-slate-400">
+                <div className="flex items-center justify-center h-full text-muted-foreground">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto mb-2"></div>
                     <p className="text-sm">Loading optimization...</p>
@@ -321,7 +321,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
           )}
 
           <TabsContent value="viewport" className={`flex-1 overflow-auto m-0 p-0`}>
-            <div className={`border-t border-slate-600/30 ${getPadding('componentTight')} overflow-y-auto max-h-full`}>
+            <div className={`border-t border-border/30 ${getPadding('componentTight')} overflow-y-auto max-h-full`}>
               {/* Snap Spacing Selector */}
               <div className={getMargin('elementTight')}>
                 <SnapSpacingSelector
@@ -388,7 +388,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
               <div>
                 <h3 className={`${getTypographyPreset('h3')} ${getMargin('elementTight')}`}>Template Recommendations</h3>
                 <Suspense fallback={
-                  <div className="flex items-center justify-center h-20 text-slate-400">
+                  <div className="flex items-center justify-center h-20 text-muted-foreground">
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-400 mx-auto mb-1"></div>
                       <p className="text-xs">Loading recommendations...</p>
@@ -423,13 +423,13 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
                   <div className={getGap('tight')}>
                     {draftingEngine.getDimensions().map((dim, i) => (
                       <div key={i} className={`flex justify-between ${getPadding('buttonSmall')}`}>
-                        <span className={`${getTypographyPreset('bodySmall')} text-slate-400`}>{dim.label}</span>
-                        <span className={`${getTypographyPreset('bodySmall')} font-mono font-medium text-amber-300`}>{dim.value}mm</span>
+                        <span className={`${getTypographyPreset('bodySmall')} text-muted-foreground`}>{dim.label}</span>
+                        <span className={`${getTypographyPreset('bodySmall')} font-mono font-medium text-warning`}>{dim.value}mm</span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className={`${getTypographyPreset('caption')} text-slate-500 italic`}>No dimensions added yet</p>
+                  <p className={`${getTypographyPreset('caption')} text-muted-foreground italic`}>No dimensions added yet</p>
                 )}
               </div>
 
@@ -437,7 +437,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
               <div>
                 <h3 className={`${getTypographyPreset('h3')} ${getMargin('elementTight')}`}>Constraint Validation</h3>
                 <Suspense fallback={
-                  <div className="flex items-center justify-center h-20 text-slate-400">
+                  <div className="flex items-center justify-center h-20 text-muted-foreground">
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-400 mx-auto mb-1"></div>
                       <p className="text-xs">Loading validation...</p>
@@ -484,16 +484,16 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
                 <h3 className={`${getTypographyPreset('h3')} ${getMargin('elementTight')}`}>Geometry Info</h3>
                 <div className={getGap('tight')}>
                   <div className="flex justify-between">
-                    <span className={`${getTypographyPreset('bodySmall')} text-slate-400`}>Rectangles:</span>
-                    <span className={`${getTypographyPreset('bodySmall')} font-medium text-amber-300`}>{draftingEngine.getGeometry().rectangles.length}</span>
+                    <span className={`${getTypographyPreset('bodySmall')} text-muted-foreground`}>Rectangles:</span>
+                    <span className={`${getTypographyPreset('bodySmall')} font-medium text-warning`}>{draftingEngine.getGeometry().rectangles.length}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className={`${getTypographyPreset('bodySmall')} text-slate-400`}>Lines:</span>
-                    <span className={`${getTypographyPreset('bodySmall')} font-medium text-amber-300`}>{draftingEngine.getGeometry().lines.length}</span>
+                    <span className={`${getTypographyPreset('bodySmall')} text-muted-foreground`}>Lines:</span>
+                    <span className={`${getTypographyPreset('bodySmall')} font-medium text-warning`}>{draftingEngine.getGeometry().lines.length}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className={`${getTypographyPreset('bodySmall')} text-slate-400`}>Points:</span>
-                    <span className={`${getTypographyPreset('bodySmall')} font-medium text-amber-300`}>{draftingEngine.getGeometry().points.length}</span>
+                    <span className={`${getTypographyPreset('bodySmall')} text-muted-foreground`}>Points:</span>
+                    <span className={`${getTypographyPreset('bodySmall')} font-medium text-warning`}>{draftingEngine.getGeometry().points.length}</span>
                   </div>
                 </div>
               </div>
@@ -502,7 +502,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
 
           <TabsContent value="production" className={`flex-1 overflow-auto m-0 ${getPadding('componentTight')}`}>
             <Suspense fallback={
-              <div className="flex items-center justify-center h-full text-slate-400">
+              <div className="flex items-center justify-center h-full text-muted-foreground">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto mb-2"></div>
                   <p className="text-sm">Loading production workflow...</p>
@@ -520,7 +520,7 @@ export const DraftingWorkbenchPanels: React.FC<DraftingWorkbenchPanelsProps> = (
 
           <TabsContent value="execution" className={`flex-1 overflow-auto m-0 ${getPadding('componentTight')}`}>
             <Suspense fallback={
-              <div className="flex items-center justify-center h-full text-slate-400">
+              <div className="flex items-center justify-center h-full text-muted-foreground">
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto mb-2"></div>
                   <p className="text-sm">Loading execution tracking...</p>

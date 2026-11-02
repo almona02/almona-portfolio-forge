@@ -1289,7 +1289,7 @@ export const FabricatorWorkflow: React.FC = () => {
           workshopId={workshopId}
         />
       )}
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white pt-16 sm:pt-20">
+      <div className="min-h-screen bg-gradient-to-br from-background to-black text-white pt-16 sm:pt-20">
         <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl">
           {/* Alert System */}
           <LazyAnimatePresence>
@@ -1365,11 +1365,11 @@ export const FabricatorWorkflow: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="relative flex items-center justify-center">
-                    <Factory className="h-10 w-10 text-amber-400" />
+                    <Factory className="h-10 w-10 text-warning" />
                     <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse ring-2 ring-green-400/40" />
                   </div>
                   <div className="space-y-1">
-                    <div className="text-xs font-semibold tracking-[0.2em] text-amber-300/80 uppercase">
+                    <div className="text-xs font-semibold tracking-[0.2em] text-warning/80 uppercase">
                       {t('fabricator:workflow.header.fabricator_pro', 'FABRICATOR PRO')}
                     </div>
                     <h1 className="typography-h1 md:text-4xl lg:text-5xl bg-gradient-to-r from-amber-400 via-red-400 to-red-500 bg-clip-text text-transparent">
@@ -1377,19 +1377,19 @@ export const FabricatorWorkflow: React.FC = () => {
                     </h1>
                   </div>
                 </div>
-                <p className="text-sm md:text-base text-gray-300 max-w-xl leading-relaxed">
+                <p className="text-sm md:text-base text-foreground max-w-xl leading-relaxed">
                   {t(
                     'fabricator:workflow.tagline',
                     'Smart aluminum & UPVC fabrication pipeline: Smart Measuring, Technical Design, Stock Optimization, Inventory, Production, Quality Control.',
                   )}
                 </p>
                 {activeWorkshopLabel && (
-                  <div className="inline-flex items-center gap-2 rounded-full bg-gray-900/80 border border-amber-500/40 px-3 py-1 text-[11px] text-amber-200">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-background/80 border border-amber-500/40 px-3 py-1 text-[11px] text-warning">
                     <span className="inline-flex h-1.5 w-1.5 rounded-full animate-pulse status-valid" />
-                    <span className="uppercase tracking-[0.18em] text-amber-300/90">
+                    <span className="uppercase tracking-[0.18em] text-warning/90">
                       {t('fabricator:workflow.workshop_label', 'Workshop')}
                     </span>
-                    <span className="font-medium text-amber-100 truncate max-w-[220px] md:max-w-xs">
+                    <span className="font-medium text-warning truncate max-w-[220px] md:max-w-xs">
                       {activeWorkshopLabel}
                     </span>
                   </div>
@@ -1399,36 +1399,36 @@ export const FabricatorWorkflow: React.FC = () => {
               {/* Right: System status & search */}
               <div className="w-full lg:w-auto">
                 <div className="grid grid-cols-3 gap-3 mb-3">
-                  <Card className="bg-gray-900/70 border-gray-700 card-dark">
+                  <Card className="bg-background/70 border-border card-dark">
                     <CardContent className="py-3 px-4">
-                      <div className="text-[10px] uppercase tracking-wide text-gray-400">
+                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
                         {t('fabricator:workflow.status.system', 'System')}
                       </div>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="inline-flex h-2 w-2 rounded-full animate-pulse status-valid" />
-                        <span className="text-sm font-semibold text-emerald-300">
+                        <span className="text-sm font-semibold text-success">
                           {t('fabricator:workflow.status.optimal', 'Optimal')}
                         </span>
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-900/70 border-gray-700 card-dark">
+                  <Card className="bg-background/70 border-border card-dark">
                     <CardContent className="py-3 px-4">
-                      <div className="text-[10px] uppercase tracking-wide text-gray-400">
+                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
                         {t('fabricator:workflow.status.efficiency', 'Efficiency')}
                       </div>
                       <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-sm font-semibold text-amber-300">92.5%</span>
+                        <span className="text-sm font-semibold text-warning">92.5%</span>
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-900/70 border-gray-700 card-dark">
+                  <Card className="bg-background/70 border-border card-dark">
                     <CardContent className="py-3 px-4">
-                      <div className="text-[10px] uppercase tracking-wide text-gray-400">
+                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
                         {t('fabricator:workflow.status.active_jobs', 'Active Jobs')}
                       </div>
                       <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-sm font-semibold text-blue-300">12</span>
+                        <span className="text-sm font-semibold text-info">12</span>
                       </div>
                     </CardContent>
                   </Card>
@@ -1442,9 +1442,9 @@ export const FabricatorWorkflow: React.FC = () => {
                       'fabricator:workflow.search_placeholder',
                       'Search machines, orders...',
                     )}
-                    className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-gray-700 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/60 card-premium"
+                    className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-500/60 card-premium"
                   />
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 </div>
                 <div className="mt-3 flex justify-end gap-2">
                   <Suspense fallback={null}>
@@ -1463,20 +1463,20 @@ export const FabricatorWorkflow: React.FC = () => {
                     </Button>
                   </Suspense>
                   {projectMeta && (
-                    <div className="hidden md:flex flex-col items-end text-[11px] text-gray-400 mr-2">
-                      <span className="text-gray-300">
+                    <div className="hidden md:flex flex-col items-end text-[11px] text-muted-foreground mr-2">
+                      <span className="text-foreground">
                         Active project:{' '}
-                        <span className="text-gray-100 font-semibold">
+                        <span className="text-foreground font-semibold">
                           {projectMeta.projectName || 'Untitled'}
                         </span>
                       </span>
-                      <span className="text-gray-500">
+                      <span className="text-muted-foreground">
                         {projectMeta.projectCode && (
                           <>
                             Code: <span className="font-mono">{projectMeta.projectCode}</span>{' '}
                           </>
                         )}
-                        for <span className="text-gray-200">{projectMeta.clientName}</span>
+                        for <span className="text-foreground">{projectMeta.clientName}</span>
                       </span>
                     </div>
                   )}
@@ -1500,18 +1500,18 @@ export const FabricatorWorkflow: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-6"
           >
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 p-4 md:p-6 bg-gray-900/40 rounded-xl border border-gray-800 card-dark">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 p-4 md:p-6 bg-background/40 rounded-xl border border-border card-dark">
               <div className="space-y-1">
-                <p className="text-[11px] uppercase tracking-[0.25em] text-gray-500">
+                <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
                   {t('fabricator:workflow.module_label', 'MODULE')}
                 </p>
-                <h2 className="typography-h2 text-xl md:text-2xl font-semibold text-gray-100 flex items-center gap-2">
+                <h2 className="typography-h2 text-xl md:text-2xl font-semibold text-foreground flex items-center gap-2">
                   <span>{t('fabricator:workflow.title', 'Fabricator Workflow Pro')}</span>
                   <Badge variant="outline" className="btn-primary">
                     {t('fabricator:workflow.badge_end_to_end', 'End-to-End')}
                   </Badge>
                 </h2>
-                <p className="text-xs md:text-sm text-gray-400">
+                <p className="text-xs md:text-sm text-muted-foreground">
                   {t(
                     'fabricator:workflow.module_description',
                     'Complete project lifecycle from measurement to optimization, inventory, production, and quality.',
@@ -1545,11 +1545,11 @@ export const FabricatorWorkflow: React.FC = () => {
                             {currentProject.projectCode}
                           </Badge>
                         )}
-                        <Badge variant="secondary" className="bg-green-500/10 text-green-300 border-green-500/40 text-[11px] capitalize">
+                        <Badge variant="secondary" className="bg-green-500/10 text-success border-green-500/40 text-[11px] capitalize">
                           {currentProject.status}
                         </Badge>
                       </div>
-                      <div className="text-[11px] text-gray-400">
+                      <div className="text-[11px] text-muted-foreground">
                         {projectMeta?.projectName || 'Untitled Project'} ·{' '}
                         {projectMeta?.clientName || 'Unnamed Client'}
                       </div>
@@ -1603,7 +1603,7 @@ export const FabricatorWorkflow: React.FC = () => {
           {currentProject && (
             <Suspense
               fallback={
-                <div className="sticky top-0 z-50 h-20 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-amber-600/30 animate-pulse" />
+                <div className="sticky top-0 z-50 h-20 bg-background/95 backdrop-blur-md border-b border-amber-600/30 animate-pulse" />
               }
             >
               <WorkflowProgress currentStatus={currentProject.status} />
@@ -1628,9 +1628,9 @@ export const FabricatorWorkflow: React.FC = () => {
               <Suspense
                 fallback={
                   <div className="space-y-3">
-                    <div className="h-32 rounded-lg bg-gray-800/60 animate-pulse" />
-                    <div className="h-32 rounded-lg bg-gray-800/60 animate-pulse" />
-                    <div className="h-32 rounded-lg bg-gray-800/60 animate-pulse" />
+                    <div className="h-32 rounded-lg bg-card/60 animate-pulse" />
+                    <div className="h-32 rounded-lg bg-card/60 animate-pulse" />
+                    <div className="h-32 rounded-lg bg-card/60 animate-pulse" />
                   </div>
                 }
               >
@@ -1663,15 +1663,15 @@ export const FabricatorWorkflow: React.FC = () => {
                 {/* Measuring Tab */}
             <TabsContent value="measuring" className="space-y-6">
               {/* Main Measuring Card - Enhanced size and prominence */}
-              <Card className="bg-gray-800/50 border-gray-700 shadow-glow-strong">
+              <Card className="bg-card/50 border-border shadow-glow-strong">
                 <CardHeader className="pb-6 px-8 pt-8">
                   <CardTitle className="flex items-center gap-4 text-3xl">
                     <div className="btn-primary p-3">
-                      <Ruler className="h-8 w-8 text-amber-400" />
+                      <Ruler className="h-8 w-8 text-warning" />
                     </div>
                     <div>
                       Smart Measuring Interface
-                      <CardDescription className="text-xl text-gray-300 mt-2">
+                      <CardDescription className="text-xl text-foreground mt-2">
                         Digital measurement capture with software-assisted dimension verification and validation
                       </CardDescription>
                     </div>
@@ -1694,13 +1694,13 @@ export const FabricatorWorkflow: React.FC = () => {
                   {existingProjectGroups.length > 0 && (
                     <div className="mb-4 space-y-3">
                       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-muted-foreground">
                           Select an existing project to continue, then choose whether to edit a pose or add a new one.
                         </p>
                         <div className="flex items-center gap-2">
-                          <label className="typography-label text-[11px] text-gray-300">Existing project</label>
+                          <label className="typography-label text-[11px] text-foreground">Existing project</label>
                           <select
-                              className="h-8 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-gray-100"
+                              className="h-8 rounded-md bg-background border border-border text-xs px-2 text-foreground"
                             value={selectedExistingProjectKey}
                             onChange={(e) => {
                               const key = e.target.value;
@@ -1719,11 +1719,11 @@ export const FabricatorWorkflow: React.FC = () => {
                       </div>
 
                       {selectedExistingProjectKey && (
-                        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between rounded-lg border border-gray-700 bg-gray-900/40 p-3">
+                        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between rounded-lg border border-border bg-background/40 p-3">
                           <div className="flex flex-col gap-2">
-                            <label className="typography-label text-[11px] text-gray-300">Pose in selected project</label>
+                            <label className="typography-label text-[11px] text-foreground">Pose in selected project</label>
                             <select
-                              className="h-8 w-full md:w-64 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-gray-100"
+                              className="h-8 w-full md:w-64 rounded-md bg-background border border-border text-xs px-2 text-foreground"
                               value={selectedExistingPoseId}
                               onChange={(e) => setSelectedExistingPoseId(e.target.value)}
                             >
@@ -1778,20 +1778,20 @@ export const FabricatorWorkflow: React.FC = () => {
                   {/* System Tuned Success Message */}
                   {systemTunedMessage && (
                     <Alert className="mb-4 bg-green-900/20 border-green-500/50">
-                      <CheckCircle2 className="h-4 w-4 text-green-400" />
-                      <AlertTitle className="text-green-300">System Tuned Successfully!</AlertTitle>
-                      <AlertDescription className="text-sm text-gray-200 mt-1">
+                      <CheckCircle2 className="h-4 w-4 text-success" />
+                      <AlertTitle className="text-success">System Tuned Successfully!</AlertTitle>
+                      <AlertDescription className="text-sm text-foreground mt-1">
                         {systemTunedMessage}
                       </AlertDescription>
                     </Alert>
                   )}
 
                   {!projectMeta ? (
-                    <div className="border border-dashed border-gray-700 rounded-lg p-10 text-center space-y-5">
-                      <p className="text-base text-gray-300 font-semibold">
+                    <div className="border border-dashed border-border rounded-lg p-10 text-center space-y-5">
+                      <p className="text-base text-foreground font-semibold">
                         Project header required before measuring
                       </p>
-                      <p className="text-sm text-gray-400 max-w-lg mx-auto leading-relaxed">
+                      <p className="text-sm text-muted-foreground max-w-lg mx-auto leading-relaxed">
                         In professional workflows, each project starts with a clear client, site,
                         currency and system definition. Create the project header to continue.
                       </p>
@@ -1809,7 +1809,7 @@ export const FabricatorWorkflow: React.FC = () => {
                         <div className="lg:col-span-2">
                           <Suspense
                             fallback={
-                              <div className="h-80 rounded-lg bg-gray-800/60 animate-pulse" />
+                              <div className="h-80 rounded-lg bg-card/60 animate-pulse" />
                             }
                           >
                             <SmartMeasuringInterface
@@ -1831,16 +1831,16 @@ export const FabricatorWorkflow: React.FC = () => {
             {/* Design Tab */}
             {visibleTabs.includes('design') && (
               <TabsContent value="design" className="space-y-6">
-              <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
+              <Card className="bg-card/50 border-border shadow-xl">
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between gap-3">
                     <CardTitle className="flex items-center gap-3 text-2xl">
                       <div className="btn-primary">
-                        <Settings className="h-6 w-6 text-amber-400" />
+                        <Settings className="h-6 w-6 text-warning" />
                       </div>
                       <div>
                         Technical Design & Component Specification
-                        <CardDescription className="text-lg text-gray-300 mt-1">
+                        <CardDescription className="text-lg text-foreground mt-1">
                           Define window components, profiles, and manufacturing specifications with precision
                         </CardDescription>
                       </div>
@@ -1850,9 +1850,9 @@ export const FabricatorWorkflow: React.FC = () => {
                         {/* Pose selector: choose which position/unit of the project to engage in design */}
                         {relatedPositions.length > 0 && (
                           <div className="flex items-center gap-2">
-                            <label className="typography-label text-[11px] text-gray-400">Active pose</label>
+                            <label className="typography-label text-[11px] text-muted-foreground">Active pose</label>
                             <select
-                              className="h-8 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-gray-100"
+                              className="h-8 rounded-md bg-background border border-border text-xs px-2 text-foreground"
                               value={currentProject.id}
                               onChange={(e) => {
                                 const id = e.target.value;
@@ -1875,11 +1875,11 @@ export const FabricatorWorkflow: React.FC = () => {
                           </div>
                         )}
                         <div className="flex flex-col items-end gap-1">
-                          <label className="typography-label text-[11px] text-gray-400">Quantity (poses)</label>
+                          <label className="typography-label text-[11px] text-muted-foreground">Quantity (poses)</label>
                           <input
                             type="number"
                             min={1}
-                            className="w-20 h-8 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-right"
+                            className="w-20 h-8 rounded-md bg-background border border-border text-xs px-2 text-right"
                             value={currentProject.quantity || 1}
                             onChange={(e) => {
                               const qty = Math.max(1, Number(e.target.value) || 1);
@@ -1903,7 +1903,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   <ErrorBoundary level="component">
                     <Suspense
                       fallback={
-                        <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                        <div className="h-64 rounded-lg bg-card/60 animate-pulse" />
                       }
                     >
                       <>
@@ -1975,7 +1975,7 @@ export const FabricatorWorkflow: React.FC = () => {
                           </div>
                           <div className="lg:col-span-1">
                             {currentProject && (
-                              <Suspense fallback={<div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />}>
+                              <Suspense fallback={<div className="h-64 rounded-lg bg-card/60 animate-pulse" />}>
                                 <RealTimeQuote
                                   dimensions={{
                                     width: currentProject.overallWidth,
@@ -2017,15 +2017,15 @@ export const FabricatorWorkflow: React.FC = () => {
             {visibleTabs.includes('preview3d') && (
               <TabsContent value="preview3d" className="space-y-6">
                 <OutputClarity type="visual" />
-                <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
+                <Card className="bg-card/50 border-border shadow-xl">
                   <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
                     <div className="btn-primary">
-                      <Ruler className="h-6 w-6 text-amber-400" />
+                      <Ruler className="h-6 w-6 text-warning" />
                     </div>
                     <div>
                       Blueprint Preview
-                      <CardDescription className="text-lg text-gray-300 mt-1">
+                      <CardDescription className="text-lg text-foreground mt-1">
                         Engineering blueprint-style preview with precision dimensions and real-time updates
                       </CardDescription>
                     </div>
@@ -2035,11 +2035,11 @@ export const FabricatorWorkflow: React.FC = () => {
                   <ErrorBoundary level="component">
                     <Suspense
                       fallback={
-                        <div className="w-full h-[600px] rounded-lg bg-gray-800/60 animate-pulse" />
+                        <div className="w-full h-[600px] rounded-lg bg-card/60 animate-pulse" />
                       }
                     >
                       {currentProject ? (
-                        <div className="w-full h-[calc(100vh-300px)] min-h-[600px] rounded-lg border border-gray-700 shadow-2xl overflow-hidden">
+                        <div className="w-full h-[calc(100vh-300px)] min-h-[600px] rounded-lg border border-border shadow-2xl overflow-hidden">
                           <PrecisionDesignInterface
                             project={currentProject}
                             profiles={inventory}
@@ -2055,9 +2055,9 @@ export const FabricatorWorkflow: React.FC = () => {
                         </div>
                       ) : (
                         <div className="text-center py-16">
-                          <Ruler className="h-20 w-20 text-gray-600 mx-auto mb-4" />
-                          <h3 className="typography-h3 mb-3 text-gray-400">No Project Available</h3>
-                          <p className="text-gray-500 max-w-md mx-auto mb-6">
+                          <Ruler className="h-20 w-20 text-muted-foreground mx-auto mb-4" />
+                          <h3 className="typography-h3 mb-3 text-muted-foreground">No Project Available</h3>
+                          <p className="text-muted-foreground max-w-md mx-auto mb-6">
                             Please complete the measurement and design phases first to generate a blueprint preview of your window project.
                           </p>
                           <Button 
@@ -2080,16 +2080,16 @@ export const FabricatorWorkflow: React.FC = () => {
             {visibleTabs.includes('optimization') && (
               <TabsContent value="optimization" className="space-y-6">
                 <OutputClarity type="production" />
-                <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
+                <Card className="bg-card/50 border-border shadow-xl">
                   <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
                     <div className="btn-primary">
-                      <Scissors className="h-6 w-6 text-amber-400" />
+                      <Scissors className="h-6 w-6 text-warning" />
                     </div>
                     <div className="flex-1">
                       <div>
                         {t('cutting_optimization.title', 'software-assisted Cutting Optimization')}
-                        <CardDescription className="text-lg text-gray-300 mt-1">
+                        <CardDescription className="text-lg text-foreground mt-1">
                           {t('cutting_optimization.description', 'Advanced algorithms for material optimization, waste reduction, and cost efficiency')}
                         </CardDescription>
                       </div>
@@ -2103,7 +2103,7 @@ export const FabricatorWorkflow: React.FC = () => {
                           <Factory className="h-3 w-3 mr-1" />
                           {t('cutting_optimization.mass_production', 'Mass Production')}
                         </Button>
-                        <span className="text-[11px] text-gray-400">
+                        <span className="text-[11px] text-muted-foreground">
                           {t('cutting_optimization.open_mass_production', 'Open Mass Production Cockpit to batch-optimize across all optimized jobs.')}
                         </span>
                       </div>
@@ -2116,7 +2116,7 @@ export const FabricatorWorkflow: React.FC = () => {
                     <ErrorBoundary level="component">
                       <Suspense
                         fallback={
-                          <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                          <div className="h-64 rounded-lg bg-card/60 animate-pulse" />
                         }
                       >
                         <OptimizationEqualizer
@@ -2136,7 +2136,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   <ErrorBoundary level="component">
                     <Suspense
                       fallback={
-                        <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                        <div className="h-64 rounded-lg bg-card/60 animate-pulse" />
                       }
                     >
                       <ProductionCommand 
@@ -2152,15 +2152,15 @@ export const FabricatorWorkflow: React.FC = () => {
 
               {/* Personal Analytics Dashboard */}
               {userId && (
-                <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
+                <Card className="bg-card/50 border-border shadow-xl">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-2xl">
                       <div className="p-2 bg-amber-500/20 rounded-lg">
-                        <BarChart3 className="h-6 w-6 text-amber-400" />
+                        <BarChart3 className="h-6 w-6 text-warning" />
                       </div>
                       <div>
                         Personal Analytics
-                        <CardDescription className="text-lg text-gray-300 mt-1">
+                        <CardDescription className="text-lg text-foreground mt-1">
                           Insights from your calibration data to improve accuracy
                         </CardDescription>
                       </div>
@@ -2170,7 +2170,7 @@ export const FabricatorWorkflow: React.FC = () => {
                     <ErrorBoundary level="component">
                       <Suspense
                         fallback={
-                          <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                          <div className="h-64 rounded-lg bg-card/60 animate-pulse" />
                         }
                       >
                         <PersonalAnalyticsDashboard userId={userId} />
@@ -2185,15 +2185,15 @@ export const FabricatorWorkflow: React.FC = () => {
             {/* Inventory Tab */}
             <TabsContent value="inventory" className="space-y-8">
               {/* System Pack Management - FIRST */}
-              <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
+              <Card className="bg-card/50 border-border shadow-xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
                     <div className="p-2 bg-blue-500/20 rounded-lg">
-                      <Settings className="h-6 w-6 text-blue-400" />
+                      <Settings className="h-6 w-6 text-info" />
                     </div>
                     <div>
                       System Pack Management
-                      <CardDescription className="text-lg text-gray-300 mt-1">
+                      <CardDescription className="text-lg text-foreground mt-1">
                         View all system packs, check tuning status, and configure Frame/Sash profiles for accurate cut lists
                       </CardDescription>
                     </div>
@@ -2203,7 +2203,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   <ErrorBoundary level="component">
                     <Suspense
                       fallback={
-                        <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                        <div className="h-64 rounded-lg bg-card/60 animate-pulse" />
                       }
                     >
                       <SystemPackManagement />
@@ -2213,15 +2213,15 @@ export const FabricatorWorkflow: React.FC = () => {
               </Card>
 
               {/* Profile Management */}
-              <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
+              <Card className="bg-card/50 border-border shadow-xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
                     <div className="btn-primary">
-                      <Package className="h-6 w-6 text-amber-400" />
+                      <Package className="h-6 w-6 text-warning" />
                     </div>
                     <div>
                       Profile Management
-                      <CardDescription className="text-lg text-gray-300 mt-1">
+                      <CardDescription className="text-lg text-foreground mt-1">
                         Add, edit, and manage material profiles (aluminum, UPVC, wood) for cutting optimization and inventory tracking
                       </CardDescription>
                     </div>
@@ -2231,7 +2231,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   <ErrorBoundary level="component">
                     <Suspense
                       fallback={
-                        <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                        <div className="h-64 rounded-lg bg-card/60 animate-pulse" />
                       }
                     >
                       <ProfileManagement 
@@ -2247,7 +2247,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   <div className="mt-4">
                     <Suspense
                       fallback={
-                        <div className="h-24 rounded-lg bg-gray-800/60 animate-pulse" />
+                        <div className="h-24 rounded-lg bg-card/60 animate-pulse" />
                       }
                     >
                       <ProfileImportTool
@@ -2266,7 +2266,7 @@ export const FabricatorWorkflow: React.FC = () => {
                     <div className="mt-4">
                       <Suspense
                         fallback={
-                          <div className="h-40 rounded-lg bg-gray-800/60 animate-pulse" />
+                          <div className="h-40 rounded-lg bg-card/60 animate-pulse" />
                         }
                       >
                         <Rock60CuttingSummary profiles={inventory} />
@@ -2278,15 +2278,15 @@ export const FabricatorWorkflow: React.FC = () => {
 
 
               {/* Inventory Dashboard */}
-              <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
+              <Card className="bg-card/50 border-border shadow-xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
                     <div className="btn-primary">
-                      <Package className="h-6 w-6 text-amber-400" />
+                      <Package className="h-6 w-6 text-warning" />
                     </div>
                     <div>
                       Inventory Management & Stock Control
-                      <CardDescription className="text-lg text-gray-300 mt-1">
+                      <CardDescription className="text-lg text-foreground mt-1">
                         Real-time inventory tracking, stock alerts, automatic reordering, and remnant management
                       </CardDescription>
                     </div>
@@ -2296,7 +2296,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   <ErrorBoundary level="component">
                     <Suspense
                       fallback={
-                        <div className="h-80 rounded-lg bg-gray-800/60 animate-pulse" />
+                        <div className="h-80 rounded-lg bg-card/60 animate-pulse" />
                       }
                     >
                       <InventoryDashboard 
@@ -2312,15 +2312,15 @@ export const FabricatorWorkflow: React.FC = () => {
 
                 {/* Production Tab */}
             <TabsContent value="production" className="space-y-6">
-              <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
+              <Card className="bg-card/50 border-border shadow-xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
                     <div className="btn-primary">
-                      <Factory className="h-6 w-6 text-amber-400" />
+                      <Factory className="h-6 w-6 text-warning" />
                     </div>
                     <div>
                       Production Planning & Scheduling
-                      <CardDescription className="text-lg text-gray-300 mt-1">
+                      <CardDescription className="text-lg text-foreground mt-1">
                         Machine scheduling, operation sequencing, real-time monitoring, and production tracking
                       </CardDescription>
                     </div>
@@ -2330,7 +2330,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   <ErrorBoundary level="component">
                     <Suspense
                       fallback={
-                        <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                        <div className="h-64 rounded-lg bg-card/60 animate-pulse" />
                       }
                     >
                       <ProductionScheduler 
@@ -2345,15 +2345,15 @@ export const FabricatorWorkflow: React.FC = () => {
 
                 {/* Quality Tab */}
             <TabsContent value="quality" className="space-y-6">
-              <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
+              <Card className="bg-card/50 border-border shadow-xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
                     <div className="btn-primary">
-                      <Zap className="h-6 w-6 text-amber-400" />
+                      <Zap className="h-6 w-6 text-warning" />
                     </div>
                     <div>
                       Quality Control & Inspection
-                      <CardDescription className="text-lg text-gray-300 mt-1">
+                      <CardDescription className="text-lg text-foreground mt-1">
                         Automated quality checks, compliance verification, and inspection reporting
                       </CardDescription>
                     </div>
@@ -2363,7 +2363,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   <ErrorBoundary level="component">
                     <Suspense
                       fallback={
-                        <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                        <div className="h-64 rounded-lg bg-card/60 animate-pulse" />
                       }
                     >
                       <QualityControl project={currentProject} />
@@ -2380,9 +2380,9 @@ export const FabricatorWorkflow: React.FC = () => {
               <Suspense
                 fallback={
                   <>
-                    <div className="h-40 rounded-lg bg-gray-800/60 animate-pulse" />
-                    <div className="h-40 rounded-lg bg-gray-800/60 animate-pulse" />
-                    <div className="h-40 rounded-lg bg-gray-800/60 animate-pulse" />
+                    <div className="h-40 rounded-lg bg-card/60 animate-pulse" />
+                    <div className="h-40 rounded-lg bg-card/60 animate-pulse" />
+                    <div className="h-40 rounded-lg bg-card/60 animate-pulse" />
                   </>
                 }
               >
@@ -2422,7 +2422,7 @@ export const FabricatorWorkflow: React.FC = () => {
             >
               <Suspense
                 fallback={
-                  <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                  <div className="h-64 rounded-lg bg-card/60 animate-pulse" />
                 }
               >
                 <RealTimeMonitoring projects={projects} />
@@ -2438,7 +2438,7 @@ export const FabricatorWorkflow: React.FC = () => {
             className="mt-8"
           >
             <Suspense
-              fallback={<div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />}
+              fallback={<div className="h-64 rounded-lg bg-card/60 animate-pulse" />}
             >
               <PositionsGrid currentProject={currentProject} />
             </Suspense>
@@ -2449,7 +2449,7 @@ export const FabricatorWorkflow: React.FC = () => {
             <Suspense
               fallback={
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-                  <div className="w-80 h-40 rounded-xl bg-gray-900/80 border border-gray-700 animate-pulse" />
+                  <div className="w-80 h-40 rounded-xl bg-background/80 border border-border animate-pulse" />
                 </div>
               }
             >

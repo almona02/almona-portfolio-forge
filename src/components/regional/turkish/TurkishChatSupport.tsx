@@ -202,7 +202,7 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
 
   return (
     <div className={`fixed bottom-4 right-4 z-50 w-80 max-h-96 ${className}`}>
-      <Card className="bg-white dark:bg-gray-800 shadow-xl">
+      <Card className="bg-card dark:bg-card shadow-xl">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm flex items-center space-x-2">
@@ -210,14 +210,14 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
               <span>{t('turkish.chat.title', 'Türkçe Destek')}</span>
             </CardTitle>
             <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="text-green-600 border-green-600 text-xs">
+              <Badge variant="outline" className="text-success border-green-600 text-xs">
                 {t('turkish.chat.online', 'Çevrimiçi')}
               </Badge>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={endChat}
-                className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700"
+                className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
               >
                 ×
               </Button>
@@ -237,7 +237,7 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
                   className={`max-w-xs p-2 rounded-lg text-sm ${
                     message.type === 'user'
                       ? 'bg-amber-500 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                      : 'bg-muted dark:bg-muted text-foreground dark:text-foreground'
                   }`}
                 >
                   {message.message}
@@ -247,11 +247,11 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
             
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded-lg">
+                <div className="bg-muted dark:bg-muted p-2 rounded-lg">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-2 h-2 bg-muted rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-muted rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
                 </div>
               </div>

@@ -220,7 +220,7 @@ export const Prestige3DLoader: React.FC<Prestige3DLoaderProps> = ({
         <div className="fixed inset-0 z-[10000] pointer-events-auto flex">
           {/* Left Shutter */}
           <motion.div
-            className="w-1/2 h-full bg-[#0a0a0a] relative overflow-hidden"
+            className="w-1/2 h-full bg-background relative overflow-hidden"
             initial={{ x: 0 }}
             animate={isExiting ? { x: '-100%' } : { x: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} // Custom bezier for "heavy door" feel
@@ -235,7 +235,7 @@ export const Prestige3DLoader: React.FC<Prestige3DLoaderProps> = ({
 
           {/* Right Shutter */}
           <motion.div
-            className="w-1/2 h-full bg-[#0a0a0a] relative overflow-hidden"
+            className="w-1/2 h-full bg-background relative overflow-hidden"
             initial={{ x: 0 }}
             animate={isExiting ? { x: '100%' } : { x: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -305,7 +305,7 @@ export const Prestige3DLoader: React.FC<Prestige3DLoaderProps> = ({
                 </div>
 
                 {/* Progress Bar */}
-                <div className="relative h-2 bg-gray-800 rounded-full overflow-hidden">
+                <div className="relative h-2 bg-card rounded-full overflow-hidden">
                   <motion.div
                     className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600"
                     initial={{ width: 0 }}

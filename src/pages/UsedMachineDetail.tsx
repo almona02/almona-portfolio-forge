@@ -20,12 +20,12 @@ const UsedMachineDetailPage = () => {
   }, [id]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-white bg-almona-dark">Loading…</div>;
+    return <div className="min-h-screen flex items-center justify-center text-foreground bg-background">Loading…</div>;
   }
 
   if (!machine) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-white bg-almona-dark p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center text-foreground bg-background p-4">
         <h2 className="typography-h2 mb-4">Machine not found</h2>
         <button className="btn-primary" onClick={() => void navigate('/used-machines')}>Back to listings</button>
       </div>
@@ -35,7 +35,7 @@ const UsedMachineDetailPage = () => {
   return (
     <>
       <MachineSEO machine={machine} />
-      <div className="min-h-screen bg-almona-dark pt-16 pb-8">
+      <div className="min-h-screen bg-background pt-16 pb-8">
         <UsedMachineDetails machine={machine} onBack={() => void navigate('/used-machines')} />
       </div>
     </>

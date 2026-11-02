@@ -221,14 +221,14 @@ const RealTimeQuoteComponent: React.FC<RealTimeQuoteProps> = ({
     if (nested) {
       return (
         <div className="p-4">
-          <div className="text-center text-gray-400">جاري الحساب...</div>
+          <div className="text-center text-muted-foreground">جاري الحساب...</div>
         </div>
       );
     }
     return (
-      <Card className="bg-gray-900 border-gray-800 card-dark">
+      <Card className="bg-background border-border card-dark">
         <CardContent className="p-4">
-          <div className="text-center text-gray-400">جاري الحساب...</div>
+          <div className="text-center text-muted-foreground">جاري الحساب...</div>
         </CardContent>
       </Card>
     );
@@ -243,14 +243,14 @@ const RealTimeQuoteComponent: React.FC<RealTimeQuoteProps> = ({
     <div className={nested ? "space-y-1.5" : "space-y-1.5 p-6"}>
       <div className="flex items-center gap-2">
         {ydtIntelligence ? (
-          <BrainIcon className="w-5 h-5 text-blue-400" />
+          <BrainIcon className="w-5 h-5 text-info" />
         ) : (
-          <TrendingUpIcon className="w-5 h-5 text-white" />
+          <TrendingUpIcon className="w-5 h-5 text-foreground" />
         )}
-        <h3 className="typography-h3 tracking-tight text-lg text-white flex items-center gap-2">
+        <h3 className="typography-h3 tracking-tight text-lg text-foreground flex items-center gap-2">
           <span>💰 التكلفة في الوقت الحقيقي</span>
           {ydtIntelligence && (
-            <Badge variant="outline" className="ml-2 bg-blue-500/20 text-blue-400 border-blue-500">
+            <Badge variant="outline" className="ml-2 bg-blue-500/20 text-info border-blue-500">
               YDT Intelligence
             </Badge>
           )}
@@ -260,10 +260,10 @@ const RealTimeQuoteComponent: React.FC<RealTimeQuoteProps> = ({
         {/* Material Cost Breakdown */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-gray-300 font-medium">تكلفة المواد</span>
-            <span className="text-white font-bold">{quote.materialCost.toLocaleString()} ج.م</span>
+            <span className="text-foreground font-medium">تكلفة المواد</span>
+            <span className="text-foreground font-bold">{quote.materialCost.toLocaleString()} ج.م</span>
           </div>
-          <div className="pl-4 space-y-1 text-sm text-gray-400">
+          <div className="pl-4 space-y-1 text-sm text-muted-foreground">
             <div className="flex justify-between">
               <span>البروفايلات</span>
               <span>{quote.materialBreakdown.profiles.toLocaleString()} ج.م</span>
@@ -286,10 +286,10 @@ const RealTimeQuoteComponent: React.FC<RealTimeQuoteProps> = ({
         {/* Labor Cost Breakdown */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-gray-300 font-medium">تكلفة العمالة</span>
-            <span className="text-white font-bold">{quote.laborCost.toLocaleString()} ج.م</span>
+            <span className="text-foreground font-medium">تكلفة العمالة</span>
+            <span className="text-foreground font-bold">{quote.laborCost.toLocaleString()} ج.م</span>
           </div>
-          <div className="pl-4 space-y-1 text-sm text-gray-400">
+          <div className="pl-4 space-y-1 text-sm text-muted-foreground">
             <div className="flex justify-between">
               <span>القطع</span>
               <span>{quote.laborBreakdown.cutting.toLocaleString()} ج.م</span>
@@ -310,58 +310,58 @@ const RealTimeQuoteComponent: React.FC<RealTimeQuoteProps> = ({
           <div className="space-y-2">
             {quote.transportCost > 0 && (
               <div className="flex justify-between items-center">
-                <span className="text-gray-300">تكلفة النقل</span>
-                <span className="text-white">{quote.transportCost.toLocaleString()} ج.م</span>
+                <span className="text-foreground">تكلفة النقل</span>
+                <span className="text-foreground">{quote.transportCost.toLocaleString()} ج.م</span>
               </div>
             )}
             {quote.installationCost > 0 && (
               <div className="flex justify-between items-center">
-                <span className="text-gray-300">تكلفة التركيب</span>
-                <span className="text-white">{quote.installationCost.toLocaleString()} ج.م</span>
+                <span className="text-foreground">تكلفة التركيب</span>
+                <span className="text-foreground">{quote.installationCost.toLocaleString()} ج.م</span>
               </div>
             )}
           </div>
         )}
         
         {/* Subtotal */}
-        <div className="border-t border-gray-700 pt-2">
+        <div className="border-t border-border pt-2">
           <div className="flex justify-between items-center">
-            <span className="text-gray-300">المجموع الفرعي</span>
-            <span className="text-white">{quote.subtotal.toLocaleString()} ج.م</span>
+            <span className="text-foreground">المجموع الفرعي</span>
+            <span className="text-foreground">{quote.subtotal.toLocaleString()} ج.م</span>
           </div>
-          <div className="flex justify-between items-center text-sm text-gray-400">
+          <div className="flex justify-between items-center text-sm text-muted-foreground">
             <span>هامش الربح ({quote.profitMargin}%)</span>
             <span>{(quote.total - quote.subtotal).toLocaleString()} ج.م</span>
           </div>
         </div>
         
         {/* Total */}
-        <div className="border-t border-gray-700 pt-2">
+        <div className="border-t border-border pt-2">
           <div className="flex justify-between items-center">
-            <span className="text-white font-bold text-lg">الإجمالي</span>
-            <span className="text-white font-bold text-lg">{quote.total.toLocaleString()} ج.م</span>
+            <span className="text-foreground font-bold text-lg">الإجمالي</span>
+            <span className="text-foreground font-bold text-lg">{quote.total.toLocaleString()} ج.م</span>
           </div>
         </div>
         
         {/* Payment Terms */}
-        <div className="space-y-2 pt-2 border-t border-gray-700">
-          <div className="text-gray-300 font-medium mb-2">خيارات الدفع</div>
+        <div className="space-y-2 pt-2 border-t border-border">
+          <div className="text-foreground font-medium mb-2">خيارات الدفع</div>
           
           <div className="space-y-2">
             <div className={`p-3 rounded-lg border ${
               quote.recommendedPaymentTerms === 'cash' 
                 ? 'border-green-500 bg-green-500/10' 
-                : 'border-gray-700 bg-gray-800'
+                : 'border-border bg-card'
             }`}>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-white font-medium">نقداً</span>
+                <span className="text-foreground font-medium">نقداً</span>
                 {quote.recommendedPaymentTerms === 'cash' && (
-                  <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500">
+                  <Badge variant="outline" className="bg-green-500/20 text-success border-green-500">
                     موصى به
                   </Badge>
                 )}
               </div>
-              <div className="text-lg font-bold text-white">
+              <div className="text-lg font-bold text-foreground">
                 {quote.cashPrice.toLocaleString()} ج.م
               </div>
             </div>
@@ -369,17 +369,17 @@ const RealTimeQuoteComponent: React.FC<RealTimeQuoteProps> = ({
             <div className={`p-3 rounded-lg border ${
               quote.recommendedPaymentTerms === 'credit30' 
                 ? 'border-green-500 bg-green-500/10' 
-                : 'border-gray-700 bg-gray-800'
+                : 'border-border bg-card'
             }`}>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-white font-medium">آجل 30 يوم</span>
+                <span className="text-foreground font-medium">آجل 30 يوم</span>
                 {quote.recommendedPaymentTerms === 'credit30' && (
-                  <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500">
+                  <Badge variant="outline" className="bg-green-500/20 text-success border-green-500">
                     موصى به
                   </Badge>
                 )}
               </div>
-              <div className="text-lg font-bold text-white">
+              <div className="text-lg font-bold text-foreground">
                 {quote.credit30Days.toLocaleString()} ج.م
               </div>
             </div>
@@ -387,17 +387,17 @@ const RealTimeQuoteComponent: React.FC<RealTimeQuoteProps> = ({
             <div className={`p-3 rounded-lg border ${
               quote.recommendedPaymentTerms === 'credit90' 
                 ? 'border-green-500 bg-green-500/10' 
-                : 'border-gray-700 bg-gray-800'
+                : 'border-border bg-card'
             }`}>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-white font-medium">آجل 90 يوم</span>
+                <span className="text-foreground font-medium">آجل 90 يوم</span>
                 {quote.recommendedPaymentTerms === 'credit90' && (
-                  <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500">
+                  <Badge variant="outline" className="bg-green-500/20 text-success border-green-500">
                     موصى به
                   </Badge>
                 )}
               </div>
-              <div className="text-lg font-bold text-white">
+              <div className="text-lg font-bold text-foreground">
                 {quote.credit90Days.toLocaleString()} ج.م
               </div>
             </div>
@@ -406,8 +406,8 @@ const RealTimeQuoteComponent: React.FC<RealTimeQuoteProps> = ({
           {/* Recommendation */}
           {quote.recommendedPaymentTerms && (
             <Alert className="mt-2 bg-blue-500/10 border-blue-500">
-              <InfoIcon className="w-4 h-4 text-blue-400" />
-              <AlertDescription className="text-blue-300 text-sm">
+              <InfoIcon className="w-4 h-4 text-info" />
+              <AlertDescription className="text-info text-sm">
                 {quote.recommendationReasonArabic}
               </AlertDescription>
             </Alert>
@@ -416,31 +416,31 @@ const RealTimeQuoteComponent: React.FC<RealTimeQuoteProps> = ({
         
         {/* YDT Intelligence Insights */}
         {ydtIntelligence && (
-          <div className="space-y-2 pt-2 border-t border-gray-700">
-            <div className="text-gray-300 font-medium mb-2 flex items-center gap-2">
-              <BrainIcon className="w-4 h-4 text-blue-400" />
+          <div className="space-y-2 pt-2 border-t border-border">
+            <div className="text-foreground font-medium mb-2 flex items-center gap-2">
+              <BrainIcon className="w-4 h-4 text-info" />
               <span>YDT Intelligence Insights</span>
             </div>
             {ydtIntelligence.marketTrend && (
               <Alert className="bg-blue-500/10 border-blue-500">
-                <InfoIcon className="w-4 h-4 text-blue-400" />
-                <AlertDescription className="text-blue-300 text-sm">
+                <InfoIcon className="w-4 h-4 text-info" />
+                <AlertDescription className="text-info text-sm">
                   سعر السوق الحالي: {ydtIntelligence.marketTrend}
                 </AlertDescription>
               </Alert>
             )}
             {ydtIntelligence.shortages && ydtIntelligence.shortages.length > 0 && (
               <Alert className="bg-yellow-500/10 border-yellow-500">
-                <InfoIcon className="w-4 h-4 text-yellow-400" />
-                <AlertDescription className="text-yellow-300 text-sm">
+                <InfoIcon className="w-4 h-4 text-warning" />
+                <AlertDescription className="text-warning text-sm">
                   تنبيهات نقص المواد: {ydtIntelligence.shortages.join(', ')}
                 </AlertDescription>
               </Alert>
             )}
             {ydtIntelligence.recommendations && ydtIntelligence.recommendations.length > 0 && (
               <Alert className="bg-green-500/10 border-green-500">
-                <InfoIcon className="w-4 h-4 text-green-400" />
-                <AlertDescription className="text-green-300 text-sm">
+                <InfoIcon className="w-4 h-4 text-success" />
+                <AlertDescription className="text-success text-sm">
                   توصيات: {ydtIntelligence.recommendations.join('، ')}
                 </AlertDescription>
               </Alert>
@@ -451,8 +451,8 @@ const RealTimeQuoteComponent: React.FC<RealTimeQuoteProps> = ({
         {/* Maalem Advice */}
         {shape?.maalemAdvice && (
           <Alert className="bg-yellow-500/10 border-yellow-500">
-            <InfoIcon className="w-4 h-4 text-yellow-400" />
-            <AlertDescription className="text-yellow-300 text-sm">
+            <InfoIcon className="w-4 h-4 text-warning" />
+            <AlertDescription className="text-warning text-sm">
               {shape.maalemAdvice}
             </AlertDescription>
           </Alert>
@@ -466,17 +466,17 @@ const RealTimeQuoteComponent: React.FC<RealTimeQuoteProps> = ({
   }
 
   return (
-    <Card className="bg-gray-900 border-gray-800 card-dark">
+    <Card className="bg-background border-border card-dark">
       <CardHeader>
-        <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
+        <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
           {ydtIntelligence ? (
-            <BrainIcon className="w-5 h-5 text-blue-400" />
+            <BrainIcon className="w-5 h-5 text-info" />
           ) : (
             <TrendingUpIcon className="w-5 h-5" />
           )}
           <span>💰 التكلفة في الوقت الحقيقي</span>
           {ydtIntelligence && (
-            <Badge variant="outline" className="ml-2 bg-blue-500/20 text-blue-400 border-blue-500">
+            <Badge variant="outline" className="ml-2 bg-blue-500/20 text-info border-blue-500">
               YDT Intelligence
             </Badge>
           )}

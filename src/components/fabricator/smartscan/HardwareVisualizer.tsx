@@ -16,10 +16,10 @@ export const HardwareVisualizer: React.FC<HardwareVisualizerProps> = ({
   const svgContent = profile.svgPreview || generateSimpleProfileSVG(profile);
 
   return (
-    <div className="border rounded bg-white p-4 relative">
+    <div className="border rounded bg-card p-4 relative">
       <div className="flex justify-between items-center mb-3">
-        <h3 className="typography-h3 font-medium text-gray-800">Profile Cross-Section</h3>
-        <div className="text-xs text-gray-500">
+        <h3 className="typography-h3 font-medium text-foreground">Profile Cross-Section</h3>
+        <div className="text-xs text-muted-foreground">
           {profile.widthMm || '?'} × {profile.heightMm || '?'} mm
         </div>
       </div>
@@ -66,10 +66,10 @@ export const HardwareVisualizer: React.FC<HardwareVisualizerProps> = ({
                   }`}
                 />
                 <div>
-                  <div className="font-medium text-gray-800">
+                  <div className="font-medium text-foreground">
                     {idx + 1}. {hw.name}
                   </div>
-                  <div className="text-gray-500">{hw.category.replace('_', ' ')}</div>
+                  <div className="text-muted-foreground">{hw.category.replace('_', ' ')}</div>
                 </div>
               </div>
             );

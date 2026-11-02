@@ -184,13 +184,13 @@ export const MacroRecorderPanel: React.FC<MacroRecorderPanelProps> = ({
 
             {/* Playback Speed */}
             <div className="flex items-center gap-2">
-              <label className="text-xs text-amber-600/80">
+              <label className="text-xs text-warning/80">
                 {t('macro_recorder.speed', 'Speed')}:
               </label>
               <select
                 value={playbackSpeed}
                 onChange={(e) => setPlaybackSpeed(parseFloat(e.target.value))}
-                className="flex-1 text-xs bg-gray-900 border border-amber-600/30 rounded px-2 py-1 text-amber-200"
+                className="flex-1 text-xs bg-background border border-amber-600/30 rounded px-2 py-1 text-warning"
                 disabled={isPlaying || isRecording}
               >
                 <option value={0.25}>0.25x</option>
@@ -203,7 +203,7 @@ export const MacroRecorderPanel: React.FC<MacroRecorderPanelProps> = ({
 
             {/* Progress */}
             {isPlaying && (
-              <div className="w-full bg-gray-800 rounded-full h-1.5">
+              <div className="w-full bg-card rounded-full h-1.5">
                 <div
                   className="bg-amber-500 h-1.5 rounded-full transition-all duration-300"
                   style={{ width: `${playbackProgress}%` }}
@@ -212,9 +212,9 @@ export const MacroRecorderPanel: React.FC<MacroRecorderPanelProps> = ({
             )}
 
             {/* Macro Info */}
-            <div className="text-xs text-amber-600/80">
+            <div className="text-xs text-warning/80">
               <div>{currentMacro.name}</div>
-              <div className="text-amber-600/60">
+              <div className="text-warning/60">
                 {currentMacro.actions.length} {t('macro_recorder.actions', 'actions')}
               </div>
             </div>
@@ -245,19 +245,19 @@ export const MacroRecorderPanel: React.FC<MacroRecorderPanelProps> = ({
         {/* Macros List */}
         {macros.length > 0 && (
           <div className="space-y-1">
-            <div className="text-xs font-semibold text-amber-600/80">
+            <div className="text-xs font-semibold text-warning/80">
               {t('macro_recorder.saved_macros', 'Saved Macros')}
             </div>
             <div className="max-h-32 overflow-y-auto space-y-1">
               {macros.map((macro) => (
                 <div
                   key={macro.id}
-                  className="flex items-center justify-between p-2 bg-gray-900/50 rounded text-xs hover:bg-gray-900/70 cursor-pointer"
+                  className="flex items-center justify-between p-2 bg-background/50 rounded text-xs hover:bg-background/70 cursor-pointer"
                   onClick={() => setCurrentMacro(macro)}
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="truncate text-amber-200">{macro.name}</div>
-                    <div className="text-amber-600/60 text-[10px]">
+                    <div className="truncate text-warning">{macro.name}</div>
+                    <div className="text-warning/60 text-[10px]">
                       {macro.actions.length} actions
                     </div>
                   </div>
@@ -281,7 +281,7 @@ export const MacroRecorderPanel: React.FC<MacroRecorderPanelProps> = ({
                         e.stopPropagation();
                         handleDelete(macro.id);
                       }}
-                      className="h-6 w-6 p-0 text-red-400 hover:text-red-300"
+                      className="h-6 w-6 p-0 text-destructive hover:text-destructive"
                     >
                       <Trash2 className="h-3 w-3" />
                     </Button>
@@ -300,7 +300,7 @@ export const MacroRecorderPanel: React.FC<MacroRecorderPanelProps> = ({
                 isRecording ? 'bg-red-500 animate-pulse' : 'bg-amber-500 animate-pulse'
               }`}
             />
-            <span className="text-amber-600/80">
+            <span className="text-warning/80">
               {isRecording
                 ? t('macro_recorder.recording', 'Recording...')
                 : t('macro_recorder.playing', 'Playing...')}

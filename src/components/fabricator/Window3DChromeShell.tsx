@@ -109,7 +109,7 @@ export function Window3DChromeShell({
             {policy.inspectionMode === 'exclusive-parts' && details ? (
               <p
                 data-testid="window-3d-details-deferred"
-                className="shrink-0 rounded border border-amber-500/40 bg-slate-950/90 px-2 py-1 text-[10px] text-amber-100"
+                className="shrink-0 rounded border border-amber-500/40 bg-background/90 px-2 py-1 text-[10px] text-warning"
               >
                 Close Parts to inspect the selected part details in this narrow rail.
               </p>

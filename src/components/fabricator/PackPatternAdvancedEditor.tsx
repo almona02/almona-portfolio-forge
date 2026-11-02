@@ -84,7 +84,7 @@ export function PackPatternAdvancedEditor({ packId, ownerId }: { packId: string;
 
   return (
     <section
-      className="my-4 rounded border border-slate-600/60 bg-slate-950/60 p-4 space-y-3"
+      className="my-4 rounded border border-border/60 bg-background/60 p-4 space-y-3"
       data-testid="pack-pattern-advanced-editor"
     >
       <button
@@ -94,17 +94,17 @@ export function PackPatternAdvancedEditor({ packId, ownerId }: { packId: string;
         aria-expanded={open}
       >
         <div>
-          <h3 className="text-slate-100 font-semibold">Advanced · patterns & default</h3>
-          <p className="text-xs text-slate-400 mt-1">
+          <h3 className="text-foreground font-semibold">Advanced · patterns & default</h3>
+          <p className="text-xs text-muted-foreground mt-1">
             Certify layout patterns on this pack, pick one default, then scope workshop BOM components
             per pattern. Cut-ledger identity stays fail-closed.
           </p>
         </div>
-        <span className="text-xs text-amber-300 shrink-0 ml-3">{open ? 'Hide' : 'Show'}</span>
+        <span className="text-xs text-warning shrink-0 ml-3">{open ? 'Hide' : 'Show'}</span>
       </button>
 
       {open && (
-        <div className="space-y-4 pt-2 border-t border-slate-700">
+        <div className="space-y-4 pt-2 border-t border-border">
           {!owned ? (
             <Button
               disabled={saving}
@@ -136,16 +136,16 @@ export function PackPatternAdvancedEditor({ packId, ownerId }: { packId: string;
             </Button>
           ) : (
             <>
-              <div className="text-xs text-slate-400 space-y-1">
+              <div className="text-xs text-muted-foreground space-y-1">
                 <p>
                   Catalogue-certified (read-only):{' '}
-                  <span className="text-slate-200">
+                  <span className="text-foreground">
                     {catalogueCertified.length ? catalogueCertified.join(', ') : 'none'}
                   </span>
                 </p>
                 <p>
                   Pack-owned certified:{' '}
-                  <span className="text-slate-200">
+                  <span className="text-foreground">
                     {config.certifiedPatternIds.length
                       ? config.certifiedPatternIds.join(', ')
                       : 'none yet'}
@@ -159,13 +159,13 @@ export function PackPatternAdvancedEditor({ packId, ownerId }: { packId: string;
                   return (
                     <li
                       key={id}
-                      className="flex flex-wrap items-center gap-2 rounded border border-slate-700 px-3 py-2 text-sm"
+                      className="flex flex-wrap items-center gap-2 rounded border border-border px-3 py-2 text-sm"
                     >
-                      <span className="text-amber-100 font-medium min-w-0 flex-1">
+                      <span className="text-warning font-medium min-w-0 flex-1">
                         {pattern?.name ?? id}
-                        <span className="block text-xs text-slate-500">{id}</span>
+                        <span className="block text-xs text-muted-foreground">{id}</span>
                       </span>
-                      <label className="text-xs text-slate-300 flex items-center gap-1">
+                      <label className="text-xs text-foreground flex items-center gap-1">
                         <input
                           type="radio"
                           name="default-pattern"
@@ -192,10 +192,10 @@ export function PackPatternAdvancedEditor({ packId, ownerId }: { packId: string;
               </ul>
 
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-                <label className="flex-1 text-xs text-slate-400 space-y-1">
+                <label className="flex-1 text-xs text-muted-foreground space-y-1">
                   Add pattern to pack
                   <select
-                    className="w-full rounded border border-slate-600 bg-slate-900 px-2 py-2 text-sm text-slate-100"
+                    className="w-full rounded border border-border bg-background px-2 py-2 text-sm text-foreground"
                     value={addPatternId}
                     onChange={(e) => setAddPatternId(e.target.value)}
                     aria-label="Pattern to certify on pack"
@@ -238,7 +238,7 @@ export function PackPatternAdvancedEditor({ packId, ownerId }: { packId: string;
                   Clear default
                 </Button>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Scope BOM components per pattern in Workshop BOM requirements below (pattern scope
                 field). Regenerating the BOM and manufacturing approvals remain separate steps.
               </p>

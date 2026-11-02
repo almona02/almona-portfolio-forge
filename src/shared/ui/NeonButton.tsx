@@ -28,9 +28,9 @@ const sizeStyles = {
 
 const variantStyles = {
   outline:
-    'bg-transparent border border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-gray-900 transition-colors duration-300',
+    'bg-transparent border border-cyan-400 text-info hover:bg-cyan-400 hover:text-foreground transition-colors duration-300',
   industrial:
-    'bg-cyan-500 text-gray-900 font-semibold border border-cyan-400 hover:bg-cyan-600 transition-colors duration-300',
+    'bg-cyan-500 text-foreground font-semibold border border-cyan-400 hover:bg-cyan-600 transition-colors duration-300',
 };
 
 const NeonButton: React.FC<NeonButtonProps> = ({

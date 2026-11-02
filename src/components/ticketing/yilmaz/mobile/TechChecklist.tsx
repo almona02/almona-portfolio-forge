@@ -190,13 +190,13 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                 {t('YILMAZ Tech Checklist', 'قائمة فحص فني YILMAZ')}
               </h3>
             </div>
-            <p className="text-white/90 text-sm">
+            <p className="text-foreground/90 text-sm">
               {t('Human-as-a-Sensor Data Collection', 'جمع البيانات من الإنسان كمستشعر')}
             </p>
-            <div className="flex items-center gap-2 text-xs text-white/90">
+            <div className="flex items-center gap-2 text-xs text-foreground/90">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-card opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-card" />
               </span>
               {t('Tier 1 Presentation → Tier 2 Advisory', 'الطبقة 1 عرض ← الطبقة 2 استشارة')}
             </div>
@@ -588,7 +588,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
         <Card className="mt-4">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-base">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+              <CheckCircle className="w-5 h-5 text-success" />
               {t('Advisory Generated', 'تم توليد الاستشارة')}
             </CardTitle>
             {renderUrgencyBadge(advisory.urgency)}
@@ -664,7 +664,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
                     <Card className="bg-blue-50 dark:bg-blue-950/30 border-blue-200">
                       <CardContent className="pt-4 flex justify-between">
                         <span className="font-medium">{t('Total Cost:', 'التكلفة الإجمالية:')}</span>
-                        <span className="font-bold text-blue-600">
+                        <span className="font-bold text-info">
                           {advisory.totalCostEGP.toLocaleString(selectedLanguage === 'ar' ? 'ar-EG' : 'en-EG')} {t('EGP', 'جنيه')}
                         </span>
                       </CardContent>

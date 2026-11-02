@@ -34,10 +34,10 @@ export const EgyptianConstraintsCard: React.FC<EgyptianConstraintsCardProps> = (
       <div className="flex items-start justify-between">
         <div className="flex-1 space-y-3">
           <div className="flex items-center gap-2">
-            <Flag className="h-5 w-5 text-amber-600" />
+            <Flag className="h-5 w-5 text-warning" />
             <div>
               <h4 className="typography-h4 text-amber-800">Egyptian Engineering Standards</h4>
-              <p className="text-xs text-amber-600">
+              <p className="text-xs text-warning">
                 {constraints.governorate || 'Egypt'} {constraints.wizardVersion ? `• v${constraints.wizardVersion}` : ''}
               </p>
             </div>
@@ -45,48 +45,48 @@ export const EgyptianConstraintsCard: React.FC<EgyptianConstraintsCardProps> = (
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div className="space-y-1">
-              <div className="flex items-center gap-1 text-amber-600 font-medium">
-                <Building className="h-4 w-4 text-amber-500" />
+              <div className="flex items-center gap-1 text-warning font-medium">
+                <Building className="h-4 w-4 text-warning" />
                 <span>Location</span>
               </div>
-              <p className="text-gray-800">{constraints.governorate || '—'}</p>
-              <div className="flex items-center gap-1 text-xs text-gray-600">
+              <p className="text-foreground">{constraints.governorate || '—'}</p>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Wind className="h-4 w-4" />
                 <span>{windLabel}</span>
               </div>
             </div>
 
             <div className="space-y-1">
-              <div className="flex items-center gap-1 text-gray-700 font-medium">
+              <div className="flex items-center gap-1 text-foreground font-medium">
                 <User className="h-4 w-4" />
                 <span>Usage</span>
               </div>
-              <p className="text-gray-800 capitalize">{constraints.usageType || '—'}</p>
-              <p className="text-xs text-gray-600">Floor: {constraints.floorLevel ?? '—'}</p>
+              <p className="text-foreground capitalize">{constraints.usageType || '—'}</p>
+              <p className="text-xs text-muted-foreground">Floor: {constraints.floorLevel ?? '—'}</p>
             </div>
 
             <div className="space-y-1">
-              <div className="flex items-center gap-1 text-gray-700 font-medium">
+              <div className="flex items-center gap-1 text-foreground font-medium">
                 <Shield className="h-4 w-4" />
                 <span>Safety</span>
               </div>
-              <p className="text-gray-800">
+              <p className="text-foreground">
                 Wall deduction: {constraints.wallDeduction ?? 15}mm
               </p>
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-muted-foreground">
                 {constraints.recommendedByWizard ? 'Wizard recommended' : 'Custom'}
               </p>
             </div>
 
             <div className="space-y-1">
-              <div className="flex items-center gap-1 text-gray-700 font-medium">
+              <div className="flex items-center gap-1 text-foreground font-medium">
                 <Settings className="h-4 w-4" />
                 <span>Design</span>
               </div>
-              <p className="text-gray-800 capitalize">
+              <p className="text-foreground capitalize">
                 {constraints.baseShape || '—'} {constraints.openingType || ''}
               </p>
-              <p className="text-xs text-gray-600">{constraints.exposure || '—'}</p>
+              <p className="text-xs text-muted-foreground">{constraints.exposure || '—'}</p>
             </div>
           </div>
         </div>

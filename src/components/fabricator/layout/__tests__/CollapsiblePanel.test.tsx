@@ -353,7 +353,7 @@ describe('CollapsiblePanel', () => {
     );
 
     const header = container.querySelector('[role="button"]');
-    expect(header).toHaveClass('hover:bg-gray-800/50');
+    expect(header).toHaveClass('hover:bg-card/50');
     expect(header).toHaveClass('transition-colors');
   });
 

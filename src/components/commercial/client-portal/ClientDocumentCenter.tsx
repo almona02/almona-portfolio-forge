@@ -180,7 +180,7 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
 
   if (loading || loadedFor !== customerId) {
     return (
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-8">
           <div className="text-center text-amber-600/70">Loading documents...</div>
         </CardContent>
@@ -191,7 +191,7 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
   return (
     <div className="space-y-6">
       {/* Search Bar */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardContent className="p-4">
           <div className="flex gap-2">
             <div className="relative flex-1">
@@ -201,7 +201,7 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
                 placeholder="Search documents..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                className="pl-10 bg-background/60 border-amber-600/30 text-amber-200"
               />
             </div>
             <Button
@@ -216,7 +216,7 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
       </Card>
 
       {/* Documents Table */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Your Documents</CardTitle>
           <CardDescription className="text-sm text-amber-600/70">
@@ -229,7 +229,7 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#0f0f0f]/60 border-amber-600/20">
+                <TableRow className="bg-background/60 border-amber-600/20">
                   <TableHead className="text-amber-300/70">Type</TableHead>
                   <TableHead className="text-amber-300/70">Reference</TableHead>
                   <TableHead className="text-amber-300/70">Date</TableHead>

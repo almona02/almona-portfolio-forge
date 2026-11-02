@@ -83,11 +83,11 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
     >
       <div 
         ref={dialogRef}
-        className="bg-slate-950 rounded-lg shadow-xl border border-amber-600/30 p-6 max-w-md w-full"
+        className="bg-background rounded-lg shadow-xl border border-amber-600/30 p-6 max-w-md w-full"
         role="document"
       >
         <div className="flex items-center justify-between mb-4">
-          <h3 id="pattern-dialog-title" className="text-lg font-semibold text-slate-100">
+          <h3 id="pattern-dialog-title" className="text-lg font-semibold text-foreground">
             {patternType === 'rectangular' && 'Rectangular Array'}
             {patternType === 'circular' && 'Circular Array'}
             {patternType === 'linear' && 'Linear Array'}
@@ -95,7 +95,7 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
           </h3>
           <button
             onClick={onCancel}
-            className="text-slate-400 hover:text-slate-200 transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Close dialog"
           >
             <X size={20} />
@@ -107,7 +107,7 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
           {patternType === 'rectangular' && (
             <>
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Rows
                 </label>
                 <input
@@ -116,11 +116,11 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
                   max="100"
                   value={rows}
                   onChange={(e) => setRows(parseInt(e.target.value) || 1)}
-                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-slate-900/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Columns
                 </label>
                 <input
@@ -129,11 +129,11 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
                   max="100"
                   value={cols}
                   onChange={(e) => setCols(parseInt(e.target.value) || 1)}
-                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-slate-900/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Row Spacing (mm)
                 </label>
                 <input
@@ -141,11 +141,11 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
                   min="5"
                   value={rowSpacing}
                   onChange={(e) => setRowSpacing(parseFloat(e.target.value) || 5)}
-                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-slate-900/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Column Spacing (mm)
                 </label>
                 <input
@@ -153,7 +153,7 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
                   min="5"
                   value={colSpacing}
                   onChange={(e) => setColSpacing(parseFloat(e.target.value) || 5)}
-                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-slate-900/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                 />
               </div>
             </>
@@ -162,7 +162,7 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
           {patternType === 'circular' && (
             <>
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Radius (mm)
                 </label>
                 <input
@@ -170,11 +170,11 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
                   min="5"
                   value={radius}
                   onChange={(e) => setRadius(parseFloat(e.target.value) || 5)}
-                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-slate-900/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Count
                 </label>
                 <input
@@ -183,11 +183,11 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
                   max="1000"
                   value={count}
                   onChange={(e) => setCount(parseInt(e.target.value) || 2)}
-                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-slate-900/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Start Angle (degrees)
                 </label>
                 <input
@@ -196,7 +196,7 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
                   max="360"
                   value={startAngle}
                   onChange={(e) => setStartAngle(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-slate-900/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                 />
               </div>
             </>
@@ -204,7 +204,7 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
 
           {patternType === 'linear' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 Count
               </label>
               <input
@@ -213,9 +213,9 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
                 max="1000"
                 value={count}
                 onChange={(e) => setCount(parseInt(e.target.value) || 2)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Click start point, then end point on canvas
               </p>
             </div>
@@ -224,29 +224,29 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
           {patternType === 'offset' && (
             <>
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Offset X (mm)
                 </label>
                 <input
                   type="number"
                   value={offsetX}
                   onChange={(e) => setOffsetX(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-slate-900/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Offset Y (mm)
                 </label>
                 <input
                   type="number"
                   value={offsetY}
                   onChange={(e) => setOffsetY(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-slate-900/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-200 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Count
                 </label>
                 <input
@@ -255,7 +255,7 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
                   max="1000"
                   value={count}
                   onChange={(e) => setCount(parseInt(e.target.value) || 2)}
-                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-slate-900/50 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                  className="w-full px-3 py-2 border border-amber-600/30 rounded-md bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                 />
               </div>
             </>
@@ -272,7 +272,7 @@ export const PatternConfigDialog: React.FC<PatternConfigDialogProps> = ({
           <Button
             onClick={onCancel}
             variant="outline"
-            className="flex-1 border-amber-600/30 text-slate-200 hover:bg-slate-800/50 hover:text-amber-300"
+            className="flex-1 border-amber-600/30 text-foreground hover:bg-card/50 hover:text-warning"
           >
             Cancel
           </Button>

@@ -129,10 +129,10 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
           {/* Logo */}
           <Link 
             to="/" 
-            className="flex items-center space-x-3 text-white font-bold text-xl"
+            className="flex items-center space-x-3 text-foreground font-bold text-xl"
           >
             <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-red-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">A</span>
+              <span className="text-foreground font-bold text-sm">A</span>
             </div>
             <span>ALMONA</span>
           </Link>
@@ -151,8 +151,8 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                     to={item.path}
                     className={`px-4 py-2 rounded-lg transition-all duration-200 font-medium ${
                       isActivePath(item.path)
-                        ? "text-amber-400 bg-amber-500/10"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
+                        ? "text-warning bg-amber-500/10"
+                        : "text-foreground hover:text-foreground hover:bg-foreground/5"
                     }`}
                   >
                     {item.name}
@@ -162,8 +162,8 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                     <button
                       className={`px-4 py-2 rounded-lg transition-all duration-200 font-medium flex items-center space-x-1 ${
                         isActivePath(item.path) || activeDropdown === item.name
-                          ? "text-amber-400 bg-amber-500/10"
-                          : "text-gray-300 hover:text-white hover:bg-white/5"
+                          ? "text-warning bg-amber-500/10"
+                          : "text-foreground hover:text-foreground hover:bg-foreground/5"
                       }`}
                     >
                       <span>{item.name}</span>
@@ -174,7 +174,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
 
                     {/* Dropdown Menu */}
                     {activeDropdown === item.name && (
-                      <div className="absolute top-full left-0 mt-2 w-64 bg-gray-900/95 border 500/20 rounded-xl shadow-2xl overflow-hidden card-glass-dark">
+                      <div className="absolute top-full left-0 mt-2 w-64 bg-background/95 border 500/20 rounded-xl shadow-2xl overflow-hidden card-glass-dark">
                         <div className="p-2">
                           {item.items?.map((subItem) => (
                             <Link
@@ -199,7 +199,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
             {/* Region Selector */}
             <div className="relative">
               <button
-                className="flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200"
+                className="flex items-center space-x-2 px-3 py-2 text-foreground hover:text-foreground hover:bg-foreground/5 rounded-lg transition-all duration-200"
                 onClick={() => setActiveDropdown(activeDropdown === "region" ? null : "region")}
               >
                 <Globe className="h-4 w-4" />
@@ -208,7 +208,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
               </button>
 
               {activeDropdown === "region" && (
-                <div className="absolute top-full right-0 mt-2 w-48 bg-gray-900/95 border 500/20 rounded-xl shadow-2xl overflow-hidden card-glass-dark">
+                <div className="absolute top-full right-0 mt-2 w-48 bg-background/95 border 500/20 rounded-xl shadow-2xl overflow-hidden card-glass-dark">
                   <div className="p-2">
                     {regions.map((region) => (
                       <button
@@ -227,7 +227,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
             {/* Quote Cart */}
             <Link
               to="/quote"
-              className="relative p-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200"
+              className="relative p-2 text-foreground hover:text-foreground hover:bg-foreground/5 rounded-lg transition-all duration-200"
             >
               <ShoppingCart className="h-5 w-5" />
               {quoteItems.length > 0 && (
@@ -241,7 +241,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
             {user ? (
               <div className="relative">
                 <button
-                  className="flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200"
+                  className="flex items-center space-x-2 px-3 py-2 text-foreground hover:text-foreground hover:bg-foreground/5 rounded-lg transition-all duration-200"
                   onClick={() => setActiveDropdown(activeDropdown === "user" ? null : "user")}
                 >
                   <User className="h-5 w-5" />
@@ -249,7 +249,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                 </button>
 
                 {activeDropdown === "user" && (
-                  <div className="absolute top-full right-0 mt-2 w-48 bg-gray-900/95 border 500/20 rounded-xl shadow-2xl overflow-hidden card-glass-dark">
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-background/95 border 500/20 rounded-xl shadow-2xl overflow-hidden card-glass-dark">
                     <div className="p-2 space-y-1">
                       {user.role === "admin" && (
                         <Link
@@ -282,7 +282,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
               <div className="flex items-center space-x-2">
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-gray-300 hover:text-white transition-all duration-200"
+                  className="px-4 py-2 text-foreground hover:text-foreground transition-all duration-200"
                 >
                   Login
                 </Link>
@@ -298,7 +298,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 text-gray-300 hover:text-white transition-all duration-200"
+            className="lg:hidden p-2 text-foreground hover:text-foreground transition-all duration-200"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -316,8 +316,8 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                       to={item.path}
                       className={`block px-4 py-3 text-lg font-medium transition-all duration-200 ${
                         isActivePath(item.path)
-                          ? "text-amber-400 bg-amber-500/10"
-                          : "text-gray-300 hover:text-white hover:bg-white/5"
+                          ? "text-warning bg-amber-500/10"
+                          : "text-foreground hover:text-foreground hover:bg-foreground/5"
                       }`}
                     >
                       {item.name}
@@ -327,8 +327,8 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                       <button
                         className={`w-full text-left px-4 py-3 text-lg font-medium flex items-center justify-between transition-all duration-200 ${
                           isActivePath(item.path) || activeDropdown === item.name
-                            ? "text-amber-400 bg-amber-500/10"
-                            : "text-gray-300 hover:text-white hover:bg-white/5"
+                            ? "text-warning bg-amber-500/10"
+                            : "text-foreground hover:text-foreground hover:bg-foreground/5"
                         }`}
                         onClick={() => setActiveDropdown(activeDropdown === item.name ? null : item.name)}
                       >
@@ -360,18 +360,18 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
               <div className="pt-4 border-t border-amber-500/20">
                 {user ? (
                   <div className="space-y-2">
-                    <div className="px-4 py-2 text-gray-300">
+                    <div className="px-4 py-2 text-foreground">
                       Welcome, {user.name}
                     </div>
                     <Link
                       to="/portal"
-                      className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-200"
+                      className="block px-4 py-3 text-foreground hover:text-foreground hover:bg-foreground/5 transition-all duration-200"
                     >
                       My Portal
                     </Link>
                     <button
                       onClick={onLogout}
-                      className="w-full text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-200"
+                      className="w-full text-left px-4 py-3 text-foreground hover:text-foreground hover:bg-foreground/5 transition-all duration-200"
                     >
                       Logout
                     </button>
@@ -380,7 +380,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                   <div className="space-y-2">
                     <Link
                       to="/login"
-                      className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-200"
+                      className="block px-4 py-3 text-foreground hover:text-foreground hover:bg-foreground/5 transition-all duration-200"
                     >
                       Login
                     </Link>

@@ -62,7 +62,7 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className = '' })
           <Button
             variant="ghost"
             size="sm"
-            className="p-2 text-white hover:bg-white/10"
+            className="p-2 text-foreground hover:bg-foreground/10"
             aria-label="Open navigation menu"
           >
             <Menu className="h-6 w-6" />
@@ -71,22 +71,22 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className = '' })
         
         <SheetContent 
           side="left" 
-          className="w-80 bg-gray-900 border-gray-800 p-0 card-dark"
+          className="w-80 bg-background border-border p-0 card-dark"
         >
           <div className="flex flex-col h-full">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-800">
+            <div className="flex items-center justify-between p-6 border-b border-border">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-red-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">A</span>
+                  <span className="text-foreground font-bold text-sm">A</span>
                 </div>
-                <span className="text-white font-semibold text-lg">ALMONA</span>
+                <span className="text-foreground font-semibold text-lg">ALMONA</span>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsOpen(false)}
-                className="p-2 text-gray-400 hover:text-white hover:bg-gray-800"
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-card"
               >
                 <X className="h-5 w-5" />
               </Button>
@@ -109,7 +109,7 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className = '' })
                           touch-manipulation
                           ${isActive 
                             ? 'bg-gradient-to-r from-amber-500/20 to-red-500/20 text-amber-400 border border-amber-500/30' 
-                            : 'text-gray-300 hover:text-white hover:bg-gray-800'
+                            : 'text-foreground hover:text-foreground hover:bg-card'
                           }
                         `}
                       >
@@ -123,9 +123,9 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className = '' })
             </nav>
 
             {/* Footer */}
-            <div className="p-6 border-t border-gray-800">
+            <div className="p-6 border-t border-border">
               <div className="text-center">
-                <p className="text-gray-400 text-sm mb-3">
+                <p className="text-muted-foreground text-sm mb-3">
                   Industrial Machinery Solutions
                 </p>
                 <div className="flex gap-2">
@@ -139,7 +139,7 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className = '' })
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800"
+                    className="flex-1 border-border text-foreground hover:bg-card"
                     asChild
                   >
                     <Link to="/contact">Contact</Link>

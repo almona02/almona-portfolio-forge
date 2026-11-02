@@ -240,23 +240,23 @@ export const EnhancedTooltip: React.FC<EnhancedTooltipProps> = React.memo(({
           role="tooltip"
           aria-live="polite"
         >
-          <div className="bg-slate-950 text-slate-100 rounded-lg shadow-xl border border-amber-600/30 p-3 text-sm backdrop-blur-sm">
+          <div className="bg-background text-foreground rounded-lg shadow-xl border border-amber-600/30 p-3 text-sm backdrop-blur-sm">
             {/* Title */}
             <div className="flex items-center gap-2 mb-2">
-              {showInfoIcon && <Info className="w-4 h-4 text-amber-400" />}
-              <h4 className="font-semibold text-slate-100">{content.title}</h4>
+              {showInfoIcon && <Info className="w-4 h-4 text-warning" />}
+              <h4 className="font-semibold text-foreground">{content.title}</h4>
             </div>
             
             {/* Description */}
             {content.description && (
-              <p className="text-slate-300 mb-2 leading-relaxed">{content.description}</p>
+              <p className="text-foreground mb-2 leading-relaxed">{content.description}</p>
             )}
             
             {/* Keyboard Shortcut */}
             {content.keyboardShortcut && (
               <div className="flex items-center gap-2 mb-2 text-xs">
-                <span className="text-slate-400">Shortcut:</span>
-                <kbd className="px-2 py-1 bg-slate-900 border border-amber-600/30 rounded font-mono text-amber-300">
+                <span className="text-muted-foreground">Shortcut:</span>
+                <kbd className="px-2 py-1 bg-background border border-amber-600/30 rounded font-mono text-warning">
                   {formatKeyboardShortcut(content.keyboardShortcut)}
                 </kbd>
               </div>
@@ -265,15 +265,15 @@ export const EnhancedTooltip: React.FC<EnhancedTooltipProps> = React.memo(({
             {/* Usage Example */}
             {content.usageExample && (
               <div className="mt-2 pt-2 border-t border-amber-600/20">
-                <p className="text-xs text-slate-400 italic">
-                  <span className="font-semibold text-slate-300">Example:</span> {content.usageExample}
+                <p className="text-xs text-muted-foreground italic">
+                  <span className="font-semibold text-foreground">Example:</span> {content.usageExample}
                 </p>
               </div>
             )}
             
             {/* Category badge */}
             <div className="mt-2 pt-2 border-t border-amber-600/20">
-              <span className="text-xs text-slate-500 uppercase tracking-wide">
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">
                 {content.category}
               </span>
             </div>

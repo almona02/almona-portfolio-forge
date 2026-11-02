@@ -10,12 +10,12 @@ import { Briefcase, Eye, Shield, User } from 'lucide-react';
 import React from 'react';
 
 const PERSONA_CONFIG = {
-  operator: { icon: User, color: 'bg-blue-500/20 text-blue-300 border-blue-500/50', label: 'Operator' },
+  operator: { icon: User, color: 'bg-blue-500/20 text-info border-blue-500/50', label: 'Operator' },
   supervisor: { icon: Shield, color: 'bg-amber-500/20 text-amber-300 border-amber-500/50', label: 'Supervisor' },
   manager: { icon: Briefcase, color: 'bg-amber-500/20 text-amber-300 border-amber-500/50', label: 'Manager' },
   inspector: { icon: Eye, color: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50', label: 'Inspector' },
-  fabricator: { icon: Shield, color: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50', label: 'Fabricator' },
-  accountant: { icon: Briefcase, color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50', label: 'Accountant' },
+  fabricator: { icon: Shield, color: 'bg-cyan-500/20 text-info border-cyan-500/50', label: 'Fabricator' },
+  accountant: { icon: Briefcase, color: 'bg-emerald-500/20 text-success border-emerald-500/50', label: 'Accountant' },
   owner: { icon: User, color: 'bg-purple-500/20 text-purple-300 border-purple-500/50', label: 'Owner' },
 };
 

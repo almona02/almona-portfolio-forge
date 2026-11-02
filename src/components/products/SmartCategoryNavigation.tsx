@@ -199,10 +199,10 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
   const getMaterialBadge = (machine: Machine) => {
     const materialType = detectMaterialType(machine);
     const colors = {
-      aluminum: 'border-blue-500/50 text-blue-400',
-      upvc: 'border-green-500/50 text-green-400',
+      aluminum: 'border-blue-500/50 text-info',
+      upvc: 'border-green-500/50 text-success',
       both: 'border-amber-500/50 text-amber-400',
-      unknown: 'border-gray-500/50 text-gray-400'
+      unknown: 'border-border/50 text-muted-foreground'
     };
 
     return (
@@ -223,7 +223,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
         <LazyMotionButton
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           aria-label={copy("Toggle automation Smart Categories")}
-          className="relative w-full flex items-center justify-between p-4 rounded-xl border border-gray-700/60 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-800/70 shadow-[0_10px_40px_rgba(0,0,0,0.35)] overflow-hidden transition-all duration-200 group card-premium"
+          className="relative w-full flex items-center justify-between p-4 rounded-xl border border-border/60 bg-gradient-to-r from-background/90 via-background/70 to-card/70 shadow-[0_10px_40px_rgba(0,0,0,0.35)] overflow-hidden transition-all duration-200 group card-premium"
           whileHover={{ scale: 1.01, y: -1 }}
           whileTap={{ scale: 0.99 }}
         >
@@ -234,10 +234,10 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
             </div>
             <div className="flex flex-col">
               <span className="text-[11px] uppercase tracking-[0.08em] text-amber-200">{copy("Smart Categories")}</span>
-              <span className="text-sm font-semibold text-white">
+              <span className="text-sm font-semibold text-foreground">
                 {selectedCategoryInfo ? `${selectedCategoryInfo.icon} ${copy(selectedCategoryInfo.name)}` : copy('All Machines')}
               </span>
-              <span className="text-[11px] text-gray-400">{copy("Filter by category")}</span>
+              <span className="text-[11px] text-muted-foreground">{copy("Filter by category")}</span>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1 relative z-10">
@@ -248,12 +248,12 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
               <LazyMotionDiv
                 animate={{ rotate: isDropdownOpen ? 180 : 0 }}
                 transition={{ duration: 0.2 }}
-                className="rounded-full bg-gray-800/60 border border-gray-700 p-1 text-gray-300"
+                className="rounded-full bg-card/60 border border-border p-1 text-foreground"
               >
                 <ChevronDown className="h-4 w-4" />
               </LazyMotionDiv>
             </div>
-            <span className="text-[11px] text-gray-400">{copy("Tap to personalize")}</span>
+            <span className="text-[11px] text-muted-foreground">{copy("Tap to personalize")}</span>
           </div>
         </LazyMotionButton>
 
@@ -265,7 +265,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="absolute top-full left-0 right-0 mt-2 bg-[linear-gradient(160deg,rgba(0,0,0,0.98)_0%,rgba(28,28,28,0.98)_60%,rgba(46,46,46,0.95)_100%)] md:bg-[linear-gradient(160deg,rgba(0,0,0,0.95)_0%,rgba(28,28,28,0.95)_60%,rgba(46,46,46,0.9)_100%)] border border-gray-700 rounded-lg shadow-2xl z-50 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 hover:scrollbar-thumb-gray-500 backdrop-blur-xl"
+              className="absolute top-full left-0 right-0 mt-2 bg-[linear-gradient(160deg,rgba(0,0,0,0.98)_0%,rgba(28,28,28,0.98)_60%,rgba(46,46,46,0.95)_100%)] md:bg-[linear-gradient(160deg,rgba(0,0,0,0.95)_0%,rgba(28,28,28,0.95)_60%,rgba(46,46,46,0.9)_100%)] border border-border rounded-lg shadow-2xl z-50 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 hover:scrollbar-thumb-gray-500 backdrop-blur-xl"
               style={{ scrollBehavior: 'smooth' }}
             >
               <div className="p-4">
@@ -273,12 +273,12 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                 {showSearch && (
                   <div className="mb-4">
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                       <Input
                         placeholder={copy("Search machines... (e.g. cutting, welding)")}
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
-                        className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors"
+                        className="pl-10 bg-black/90 md:bg-black/70 border-border focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors"
                       />
                       {isSearching && (
                         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -311,7 +311,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                               setSearchQuery(suggestion);
                               handleSearch(suggestion);
                             }}
-                            className="w-full text-left p-2 text-xs bg-gray-700/80 md:bg-gray-700/50 rounded hover:bg-gray-700/90 md:hover:bg-gray-700/70 transition-colors text-gray-300 hover:text-white"
+                            className="w-full text-left p-2 text-xs bg-muted/80 md:bg-muted/50 rounded hover:bg-muted/90 md:hover:bg-muted/70 transition-colors text-foreground hover:text-foreground"
                           >
                             {suggestion}
                           </LazyMotionButton>
@@ -327,7 +327,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                         className="mt-3 space-y-2"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <p className="text-xs text-gray-400">{copy("Found")}{searchResults.length}{copy("machines:")}</p>
+                          <p className="text-xs text-muted-foreground">{copy("Found")}{searchResults.length}{copy("machines:")}</p>
                           <ShareFilteredResults
                             searchQuery={searchQuery}
                             resultCount={searchResults.length}
@@ -340,7 +340,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                           {searchResults.slice(0, 5).map(machine => (
                             <div
                               key={machine.id}
-                              className="flex items-center justify-between p-2 bg-gray-700/60 md:bg-gray-700/30 rounded cursor-pointer hover:bg-gray-700/80 md:hover:bg-gray-700/50 transition-colors"
+                              className="flex items-center justify-between p-2 bg-muted/60 md:bg-muted/30 rounded cursor-pointer hover:bg-muted/80 md:hover:bg-muted/50 transition-colors"
                               onClick={() => {
                                 setSelectedMachine(machine);
                                 handleCategorySelect('all');
@@ -348,8 +348,8 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                               }}
                             >
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-white truncate">{machine.name}</p>
-                                <p className="text-xs text-gray-400 truncate">{copy(machine.description ?? '')}</p>
+                                <p className="text-sm font-medium text-foreground truncate">{machine.name}</p>
+                                <p className="text-xs text-muted-foreground truncate">{copy(machine.description ?? '')}</p>
                               </div>
                               {getMaterialBadge(machine)}
                             </div>
@@ -377,7 +377,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                           w-full text-left p-3 rounded-lg transition-all duration-200
                           ${isSelected 
                             ? 'bg-amber-500/30 md:bg-amber-500/20 border border-amber-500/40 md:border-amber-500/30 text-amber-400' 
-                            : 'text-gray-300 hover:bg-gray-700/70 md:hover:bg-gray-700/50 hover:text-white border border-transparent'
+                            : 'text-foreground hover:bg-muted/70 md:hover:bg-muted/50 hover:text-foreground border border-transparent'
                           }
                         `}
                         whileHover={{ scale: 1.02 }}
@@ -388,10 +388,10 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                             <span className="text-lg">{category.icon}</span>
                             <div>
                               <div className="font-medium">{copy(category.name)}</div>
-                              <div className="text-xs text-gray-400">{copy(category.description)}</div>
+                              <div className="text-xs text-muted-foreground">{copy(category.description)}</div>
                             </div>
                           </div>
-                          <Badge variant="secondary" className="text-xs bg-gray-600/50 text-gray-300">
+                          <Badge variant="secondary" className="text-xs bg-muted/50 text-foreground">
                             {count}
                           </Badge>
                         </div>
@@ -402,24 +402,24 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
 
                 {/* Smart Recommendations */}
                 {showRecommendations && selectedMachine && recommendations.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-gray-700/50">
+                  <div className="mt-4 pt-4 border-t border-border/50">
                     <div className="flex items-center gap-2 mb-3">
                       <Lightbulb className="h-4 w-4 text-yellow-400" />
-                      <h3 className="typography-h3 text-sm font-medium text-white">{copy("Recommendations")}</h3>
+                      <h3 className="typography-h3 text-sm font-medium text-foreground">{copy("Recommendations")}</h3>
                     </div>
                     <div className="space-y-2 max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 hover:scrollbar-thumb-gray-500" style={{ scrollBehavior: 'smooth' }}>
                       {recommendations.map(machine => (
                         <div
                           key={machine.id}
-                          className="flex items-center justify-between p-2 bg-gray-700/60 md:bg-gray-700/30 rounded cursor-pointer hover:bg-gray-700/80 md:hover:bg-gray-700/50 transition-colors"
+                          className="flex items-center justify-between p-2 bg-muted/60 md:bg-muted/30 rounded cursor-pointer hover:bg-muted/80 md:hover:bg-muted/50 transition-colors"
                           onClick={() => {
                             setSelectedMachine(machine);
                             setIsDropdownOpen(false);
                           }}
                         >
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-white truncate">{machine.name}</p>
-                            <p className="text-xs text-gray-400 truncate">{copy(machine.description ?? '')}</p>
+                            <p className="text-sm font-medium text-foreground truncate">{machine.name}</p>
+                            <p className="text-xs text-muted-foreground truncate">{copy(machine.description ?? '')}</p>
                           </div>
                           {getMaterialBadge(machine)}
                         </div>
@@ -436,17 +436,17 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
   }
 
   return (
-    <div className={`bg-gray-800/90 md:bg-gray-800/50 rounded-lg border border-gray-700/50 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 hover:scrollbar-thumb-gray-500 ${className}`} style={{ scrollBehavior: 'smooth' }}>
+    <div className={`bg-card/90 md:bg-card/50 rounded-lg border border-border/50 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 hover:scrollbar-thumb-gray-500 ${className}`} style={{ scrollBehavior: 'smooth' }}>
       {/* Search Section */}
       {showSearch && (
-        <div className="p-4 border-b border-gray-700/50">
+        <div className="p-4 border-b border-border/50">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder={copy("Search machines... (e.g. cutting, welding)")}
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors"
+              className="pl-10 bg-black/90 md:bg-black/70 border-border focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors"
             />
             {isSearching && (
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -463,7 +463,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
               className="mt-3 space-y-2"
             >
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-gray-400">{copy("Found")}{searchResults.length}{copy("machines:")}</p>
+                <p className="text-xs text-muted-foreground">{copy("Found")}{searchResults.length}{copy("machines:")}</p>
                 <ShareFilteredResults
                   searchQuery={searchQuery}
                   resultCount={searchResults.length}
@@ -478,15 +478,15 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                 {searchResults.slice(0, 5).map(machine => (
                   <div
                     key={machine.id}
-                    className="flex items-center justify-between p-2 bg-gray-700/80 md:bg-gray-700/50 rounded cursor-pointer hover:bg-gray-700/90 md:hover:bg-gray-700/70 transition-colors"
+                    className="flex items-center justify-between p-2 bg-muted/80 md:bg-muted/50 rounded cursor-pointer hover:bg-muted/90 md:hover:bg-muted/70 transition-colors"
                     onClick={() => {
                       setSelectedMachine(machine);
                       handleCategorySelect('all');
                     }}
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">{machine.name}</p>
-                      <p className="text-xs text-gray-400 truncate">{copy(machine.description ?? '')}</p>
+                      <p className="text-sm font-medium text-foreground truncate">{machine.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{copy(machine.description ?? '')}</p>
                     </div>
                     {getMaterialBadge(machine)}
                   </div>
@@ -499,10 +499,10 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
 
       {/* Popular Categories */}
       {showPopular && popularCategories.length > 0 && (
-        <div className="p-4 border-b border-gray-700/50">
+        <div className="p-4 border-b border-border/50">
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp className="h-4 w-4 text-amber-400" />
-            <h3 className="typography-h3 text-sm font-medium text-white">{copy("Popular")}</h3>
+            <h3 className="typography-h3 text-sm font-medium text-foreground">{copy("Popular")}</h3>
           </div>
           <div className="flex flex-wrap gap-2">
             {popularCategories.map(categoryId => {
@@ -529,7 +529,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
       <div className="p-4">
         <div className="flex items-center gap-2 mb-4">
           <Filter className="h-4 w-4 text-amber-400" />
-          <h3 className="typography-h3 text-lg text-white">{copy("Smart Categories")}</h3>
+          <h3 className="typography-h3 text-lg text-foreground">{copy("Smart Categories")}</h3>
         </div>
 
         <div className="space-y-2">
@@ -545,7 +545,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                   w-full text-left p-3 rounded-lg transition-all duration-200
                   ${isSelected 
                     ? 'bg-amber-500/30 md:bg-amber-500/20 border border-amber-500/40 md:border-amber-500/30 text-amber-400' 
-                    : 'text-gray-300 hover:bg-gray-700/70 md:hover:bg-gray-700/50 hover:text-white border border-transparent'
+                    : 'text-foreground hover:bg-muted/70 md:hover:bg-muted/50 hover:text-foreground border border-transparent'
                   }
                 `}
                 whileHover={{ scale: 1.02 }}
@@ -557,13 +557,13 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                     <div>
                       <div className="font-medium">{copy(category.name)}</div>
                       {!compact && (
-                        <div className="text-xs text-gray-400 mt-1">
+                        <div className="text-xs text-muted-foreground mt-1">
                           {copy(category.description)}
                         </div>
                       )}
                     </div>
                   </div>
-                  <Badge variant="secondary" className="text-xs bg-gray-600/50 text-gray-300">
+                  <Badge variant="secondary" className="text-xs bg-muted/50 text-foreground">
                     {count}
                   </Badge>
                 </div>
@@ -575,21 +575,21 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
 
       {/* Smart Recommendations */}
       {showRecommendations && selectedMachine && recommendations.length > 0 && (
-        <div className="p-4 border-t border-gray-700/50">
+        <div className="p-4 border-t border-border/50">
           <div className="flex items-center gap-2 mb-3">
             <Lightbulb className="h-4 w-4 text-yellow-400" />
-            <h3 className="typography-h3 text-sm font-medium text-white">{copy("Recommended")}</h3>
+            <h3 className="typography-h3 text-sm font-medium text-foreground">{copy("Recommended")}</h3>
           </div>
           <div className="space-y-2 max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 hover:scrollbar-thumb-gray-500" style={{ scrollBehavior: 'smooth' }}>
             {recommendations.map(machine => (
               <div
                 key={machine.id}
-                className="flex items-center justify-between p-2 bg-gray-700/60 md:bg-gray-700/30 rounded cursor-pointer hover:bg-gray-700/80 md:hover:bg-gray-700/50 transition-colors"
+                className="flex items-center justify-between p-2 bg-muted/60 md:bg-muted/30 rounded cursor-pointer hover:bg-muted/80 md:hover:bg-muted/50 transition-colors"
                 onClick={() => setSelectedMachine(machine)}
               >
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{machine.name}</p>
-                  <p className="text-xs text-gray-400 truncate">{copy(machine.description ?? '')}</p>
+                  <p className="text-sm font-medium text-foreground truncate">{machine.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{copy(machine.description ?? '')}</p>
                 </div>
                 {getMaterialBadge(machine)}
               </div>

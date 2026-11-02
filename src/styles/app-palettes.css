@@ -1,0 +1,174 @@
+/* RAL screen approximations: 1013 Oyster White #E3D9C6; 9004 Signal Black #2B2B2C.
+   Physical finish and display rendering vary. Application palettes. Imported after legacy design tokens; all UI surfaces use
+   semantic roles. Root classes also reach Radix portals under document.body. */
+:root, :root.light {
+  color-scheme: light;
+  --background: 39.3103 34.1176% 83.3333%;
+  --foreground: 240.0000 1.3333% 14.7059%;
+  --card: 40.0000 42.8571% 93.1373%;
+  --card-foreground: 240.0000 1.3333% 14.7059%;
+  --popover: 42.0000 50.0000% 96.0784%;
+  --popover-foreground: 240.0000 1.3333% 14.7059%;
+  --primary: 213 100% 19%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 39.3750 31.3725% 80.0000%;
+  --secondary-foreground: 42.0000 9.8039% 20.0000%;
+  --muted: 40.0000 28.3019% 79.2157%;
+  --muted-foreground: 36.5217 14.2857% 31.5686%;
+  --accent: 34.5455 49.2537% 86.8627%;
+  --accent-foreground: 18.1034 81.6901% 27.8431%;
+  --destructive: 0 72% 42%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 37.6744 22.7513% 62.9412%;
+  --input: 37.2000 21.7391% 45.0980%;
+  --ring: 213 100% 28%;
+  --brand: 15.8282 89.0710% 35.8824%;
+  --brand-foreground: 0.0000 0.0000% 100.0000%;
+  --success: 152 76% 22%;
+  --warning: 28 89% 31%;
+  --info: 209 90% 28%;
+  --surface-raised: 42.0000 50.0000% 96.0784%;
+  --metal-text: 36.0000 3.5461% 27.6471%;
+}
+
+:root.dark {
+  color-scheme: dark;
+  --background: 240.0000 1.1494% 17.0588%;
+  --foreground: 41.5385 39.3939% 93.5294%;
+  --card: 240.0000 0.9709% 20.1961%;
+  --card-foreground: 41.5385 39.3939% 93.5294%;
+  --popover: 240.0000 1.7544% 22.3529%;
+  --popover-foreground: 41.5385 39.3939% 93.5294%;
+  --primary: 213 80% 35%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240.0000 1.5152% 25.8824%;
+  --secondary-foreground: 40.0000 25.7143% 86.2745%;
+  --muted: 240.0000 1.6393% 23.9216%;
+  --muted-foreground: 40.0000 12.5000% 71.7647%;
+  --accent: 24.3750 28.0702% 22.3529%;
+  --accent-foreground: 20.6897 100.0000% 77.2549%;
+  --destructive: 0 70% 42%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 240.0000 1.4634% 40.1961%;
+  --input: 240.0000 1.8868% 58.4314%;
+  --ring: 43 96% 62%;
+  --brand: 19.7688 100.0000% 66.0784%;
+  --brand-foreground: 0.0000 0.0000% 14.1176%;
+  --success: 151 63% 62%;
+  --warning: 43 96% 62%;
+  --info: 199 95% 74%;
+  --surface-raised: 240.0000 1.5152% 25.8824%;
+  --metal-text: 204.0000 9.0909% 89.2157%;
+}
+
+/* Aliases for existing Fabricator, Prestige and sidebar components. */
+:root {
+  --bg: hsl(var(--background));
+  --ad: hsl(var(--background));
+  --fg: hsl(var(--foreground));
+  --br: hsl(var(--border));
+  --mf: hsl(var(--muted-foreground));
+  --de: hsl(var(--destructive));
+  --radius: .5rem;
+  --sidebar-background: var(--card);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+  --fabricator-bg: hsl(var(--background));
+  --fabricator-bg-secondary: hsl(var(--card));
+  --fabricator-bg-tertiary: hsl(var(--muted));
+  --fabricator-bg-glass: hsl(var(--card) / .92);
+  --fabricator-bg-glass-light: hsl(var(--card) / .85);
+  --fabricator-text: hsl(var(--foreground));
+  --fabricator-text-secondary: hsl(var(--secondary-foreground));
+  --fabricator-text-muted: hsl(var(--muted-foreground));
+  --fabricator-text-accent: hsl(var(--accent-foreground));
+  --fabricator-text-inverse: hsl(var(--brand-foreground));
+  --fabricator-border: hsl(var(--border));
+  --fabricator-border-subtle: hsl(var(--border) / .6);
+  --fabricator-border-accent: hsl(var(--brand) / .5);
+  --fabricator-border-strong: hsl(var(--input));
+  --fabricator-status-success: hsl(var(--success));
+  --fabricator-status-warning: hsl(var(--warning));
+  --fabricator-status-error: hsl(var(--destructive));
+  --fabricator-status-info: hsl(var(--info));
+  --color-bg-primary: hsl(var(--background));
+  --color-bg-secondary: hsl(var(--card));
+  --color-bg-tertiary: hsl(var(--muted));
+  --color-bg-deep: hsl(var(--background));
+  --color-text-primary: hsl(var(--foreground));
+  --color-text-secondary: hsl(var(--secondary-foreground));
+  --color-text-tertiary: hsl(var(--muted-foreground));
+  --color-text-inverse: hsl(var(--brand-foreground));
+  --color-accent-gold-primary: hsl(var(--brand));
+  --color-accent-gold-secondary: hsl(var(--brand));
+  --color-status-success: hsl(var(--success));
+  --color-status-warning: hsl(var(--warning));
+  --color-status-error: hsl(var(--destructive));
+  --color-status-info: hsl(var(--info));
+  --color-border-subtle: hsl(var(--border) / .6);
+  --color-border-default: hsl(var(--border));
+  --color-border-accent: hsl(var(--brand) / .5);
+}
+
+html, body, #root { background-color: hsl(var(--background)); color: hsl(var(--foreground)); }
+body { accent-color: hsl(var(--primary)); }
+::selection { background: hsl(var(--brand) / .3); color: hsl(var(--foreground)); }
+:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; }
+input::placeholder, textarea::placeholder { color: hsl(var(--muted-foreground)); opacity: 1; }
+/* Do not animate the entire tree while changing palettes. Respect OS motion settings. */
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+:root {
+  --fabricator-amber-50: var(--gold-50);
+  --fabricator-amber-100: var(--gold-100);
+  --fabricator-amber-200: var(--gold-200);
+  --fabricator-amber-300: var(--gold-300);
+  --fabricator-amber-400: var(--gold-400);
+  --fabricator-amber-500: var(--gold-500);
+  --fabricator-amber-600: var(--gold-600);
+  --fabricator-amber-700: var(--gold-700);
+  --fabricator-amber-800: var(--gold-800);
+  --fabricator-amber-900: var(--gold-900);
+  --fabricator-amber-950: var(--gold-950);
+}
+
+:root {
+  --fabricator-shadow-subtle: var(--shadow-xs);
+  --fabricator-shadow-card: var(--shadow-sm);
+  --fabricator-shadow-elevated: var(--shadow-lg);
+  --fabricator-glow-subtle: 0 0 10px hsl(var(--brand) / .12);
+  --fabricator-glow-strong: 0 0 20px hsl(var(--brand) / .18);
+  --fabricator-glow-premium: 0 0 30px hsl(var(--brand) / .2);
+}
+
+/* Aluminium mill-finish depth: use on chrome/panels, not physical material swatches. */
+:root {
+  --surface-gradient: linear-gradient(135deg, #f5f0e6 0%, #e6dece 52%, #faf7f0 100%);
+  --hero-overlay: linear-gradient(90deg, rgba(227,217,198,.98) 0%, rgba(227,217,198,.94) 35%, rgba(227,217,198,.76) 65%, rgba(227,217,198,.5) 100%);
+  --hero-image-opacity: .65;
+  --hero-copy-shadow: none;
+  --metal-edge: rgba(137,132,122,.35);
+}
+:root.dark {
+  --surface-gradient: linear-gradient(135deg, #2b2b2c 0%, #343637 45%, #44484a 73%, #323334 100%);
+  --hero-overlay: linear-gradient(90deg, rgba(43,43,44,.98) 0%, rgba(43,43,44,.93) 35%, rgba(43,43,44,.74) 65%, rgba(43,43,44,.48) 100%);
+  --hero-image-opacity: .7;
+  --hero-copy-shadow: 0 2px 8px rgba(0,0,0,.35);
+  --metal-edge: rgba(196,203,207,.25);
+}
+.surface-metal { background-image: var(--surface-gradient); color: hsl(var(--foreground)); }
+.text-metal { color: hsl(var(--metal-text)); }
+.hero-photograph { opacity: var(--hero-image-opacity); }
+.hero-copy-shadow { text-shadow: var(--hero-copy-shadow); }
+
+.btn-primary, .btn-primary-gradient {
+  background: hsl(var(--brand));
+  color: hsl(var(--brand-foreground));
+  border-color: hsl(var(--brand));
+}
+.btn-primary:hover, .btn-primary-gradient:hover { background: hsl(var(--brand) / .9); }

@@ -99,7 +99,7 @@ export const ProductHoverPreview: React.FC<ProductHoverPreviewProps> = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="fixed z-50 w-80 bg-almona-darker border border-almona-light rounded-lg shadow-2xl"
+            className="fixed z-50 w-80 bg-card border border-border rounded-lg shadow-2xl"
             style={positionStyles[position]}
           >
             {/* Preview Content */}
@@ -112,10 +112,10 @@ export const ProductHoverPreview: React.FC<ProductHoverPreviewProps> = ({
                   className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
                 />
                 <div className="flex-1 min-w-0">
-                  <h3 className="typography-h3 text-white text-sm truncate">
+                  <h3 className="typography-h3 text-foreground text-sm truncate">
                     {product.name}
                   </h3>
-                  <p className="text-gray-400 text-xs truncate">
+                  <p className="text-muted-foreground text-xs truncate">
                     {product.description}
                   </p>
                 </div>
@@ -132,22 +132,22 @@ export const ProductHoverPreview: React.FC<ProductHoverPreviewProps> = ({
                 {product.specifications?.slice(0, 2).map((spec, index) => (
                   <div key={index} className="flex items-center gap-2 text-xs">
                     <Zap className="w-3 h-3 text-amber-500 flex-shrink-0" />
-                    <span className="text-gray-300 truncate">{spec}</span>
+                    <span className="text-foreground truncate">{spec}</span>
                   </div>
                 ))}
               </div>
 
               {/* Pricing & Status */}
-              <div className="flex items-center justify-between pt-2 border-t border-gray-700">
+              <div className="flex items-center justify-between pt-2 border-t border-border">
                 <div>
                   <p className="text-lg font-bold text-gradient-orange">
                     {product.pricing?.basePrice ? `${product.pricing.basePrice.toLocaleString()} EGP` : 'Price on Request'}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="outline" className="text-xs bg-green-500/20 text-green-400 border-green-500">
+                    <Badge variant="outline" className="text-xs bg-green-500/20 text-success border-green-500">
                       In Stock
                     </Badge>
-                    <Shield className="w-3 h-3 text-blue-400" />
+                    <Shield className="w-3 h-3 text-info" />
                   </div>
                 </div>
                 

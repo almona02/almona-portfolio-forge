@@ -32,7 +32,7 @@ interface UsedMachineCardProps {
 
 const UsedMachineCard: React.FC<UsedMachineCardProps> = ({ machine }) => {
   return (
-    <Card className="bg-almona-darker border-almona-light overflow-hidden">
+    <Card className="bg-card border-border overflow-hidden">
       <div className="relative">
         <div className="h-48 overflow-hidden">
           <EnhancedImage 
@@ -60,7 +60,7 @@ const UsedMachineCard: React.FC<UsedMachineCardProps> = ({ machine }) => {
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-gray-400 mb-4">{machine.description}</p>
+        <p className="text-muted-foreground mb-4">{machine.description}</p>
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-center">
             <MapPin className="w-4 h-4 mr-2 text-amber-500" />

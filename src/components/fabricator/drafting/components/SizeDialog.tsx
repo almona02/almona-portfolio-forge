@@ -78,16 +78,16 @@ export const SizeDialog: React.FC<SizeDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="bg-gray-900 border-gray-700 text-gray-200 sm:max-w-sm"
+        className="bg-background border-border text-foreground sm:max-w-sm"
         onKeyDown={handleKeyDown}
       >
         <DialogHeader>
-          <DialogTitle className="text-amber-200">Size (mm)</DialogTitle>
+          <DialogTitle className="text-warning">Size (mm)</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-2">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="size-width" className="text-gray-300">
+              <Label htmlFor="size-width" className="text-foreground">
                 Width
               </Label>
               <Input
@@ -97,12 +97,12 @@ export const SizeDialog: React.FC<SizeDialogProps> = ({
                 max={maxWidth}
                 value={width}
                 onChange={(e) => setWidth(e.target.value)}
-                className="bg-gray-800 border-gray-600 text-gray-100"
+                className="bg-card border-border text-foreground"
                 aria-invalid={!validWidth}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="size-height" className="text-gray-300">
+              <Label htmlFor="size-height" className="text-foreground">
                 Height
               </Label>
               <Input
@@ -112,7 +112,7 @@ export const SizeDialog: React.FC<SizeDialogProps> = ({
                 max={maxHeight}
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
-                className="bg-gray-800 border-gray-600 text-gray-100"
+                className="bg-card border-border text-foreground"
                 aria-invalid={!validHeight}
               />
             </div>
@@ -122,7 +122,7 @@ export const SizeDialog: React.FC<SizeDialogProps> = ({
           <Button
             type="button"
             variant="outline"
-            className="border-gray-600 text-gray-300"
+            className="border-border text-foreground"
             onClick={() => onOpenChange(false)}
           >
             Cancel

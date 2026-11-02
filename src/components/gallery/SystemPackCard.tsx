@@ -22,7 +22,7 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 group flex flex-col h-full">
+    <div className="bg-card rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-border group flex flex-col h-full">
 
       {/* Header Bar - Color Coded by Category */}
       <div className={`h-2 w-full ${system.category === 'aluminum' ? 'bg-[#003366]' : 'bg-[#27ae60]'}`}></div>
@@ -30,7 +30,7 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
       <div className="p-5 flex-1 flex flex-col relative">
 
         {/* Market Share Badge */}
-        <div className="absolute top-4 left-4 bg-gray-100 px-2 py-1 rounded text-xs font-mono font-bold text-gray-600 border border-gray-200">
+        <div className="absolute top-4 left-4 bg-muted px-2 py-1 rounded text-xs font-mono font-bold text-muted-foreground border border-border">
           Share: {system.marketShare}%
         </div>
 
@@ -43,35 +43,35 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
 
         {/* Title */}
         <div className="mb-4 mt-2">
-          <h3 className="typography-h3 font-cairo text-gray-900 group-hover:text-[#003366] transition-colors">
+          <h3 className="typography-h3 font-cairo text-foreground group-hover:text-[#003366] transition-colors">
             {system.nameArabic}
           </h3>
-          <p className="text-sm text-gray-500 font-mono">{system.name}</p>
-          <p className="text-xs text-gray-400 mt-1">{system.manufacturer}</p>
+          <p className="text-sm text-muted-foreground font-mono">{system.name}</p>
+          <p className="text-xs text-muted-foreground mt-1">{system.manufacturer}</p>
         </div>
 
         {/* Technical Grid (Blueprint Style) */}
-        <div className="grid grid-cols-2 gap-px bg-gray-200 border border-gray-200 rounded mb-4 overflow-hidden text-xs">
+        <div className="grid grid-cols-2 gap-px bg-muted border border-border rounded mb-4 overflow-hidden text-xs">
           <div className="bg-blue-50/50 p-2">
-            <span className="block text-gray-500 text-[10px]">U-VALUE</span>
+            <span className="block text-muted-foreground text-[10px]">U-VALUE</span>
             <span className="font-mono font-bold text-[#003366]">{system.specs.uValue} W/m²K</span>
           </div>
           <div className="bg-blue-50/50 p-2">
-            <span className="block text-gray-500 text-[10px]">WIND LOAD</span>
+            <span className="block text-muted-foreground text-[10px]">WIND LOAD</span>
             <span className="font-mono font-bold text-[#003366]">{system.specs.windLoadClass}</span>
           </div>
-          <div className="bg-white p-2">
-            <span className="block text-gray-500 text-[10px]">PRICE RANGE</span>
+          <div className="bg-card p-2">
+            <span className="block text-muted-foreground text-[10px]">PRICE RANGE</span>
             <span className="font-mono font-bold">{system.priceRange.min}-{system.priceRange.max} {system.priceRange.currency}/m²</span>
           </div>
-          <div className="bg-white p-2">
-            <span className="block text-gray-500 text-[10px]">DEPTH</span>
+          <div className="bg-card p-2">
+            <span className="block text-muted-foreground text-[10px]">DEPTH</span>
             <span className="font-mono font-bold">{system.specs.profileDepth}mm</span>
           </div>
         </div>
 
         {/* Description */}
-        <p className="text-sm text-gray-600 mb-4 line-clamp-2 flex-1">
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-1">
           {system.descriptionArabic}
         </p>
 
@@ -121,26 +121,26 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
           {system.pilotAvailable ? (
             <button 
               onClick={handleUseInPilot}
-              className="flex-1 bg-[#003366] hover:bg-[#004488] text-white py-2 rounded-lg font-bold text-sm transition-colors shadow-sm flex items-center justify-center gap-2"
+              className="flex-1 bg-[#003366] hover:bg-[#004488] text-primary-foreground py-2 rounded-lg font-bold text-sm transition-colors shadow-sm flex items-center justify-center gap-2"
             >
               <span>🛠️</span>
               <span>استخدم في الورشة</span>
             </button>
           ) : (
-            <button disabled className="flex-1 bg-gray-100 text-gray-400 py-2 rounded-lg font-bold text-sm cursor-not-allowed">
+            <button disabled className="flex-1 bg-muted text-muted-foreground py-2 rounded-lg font-bold text-sm cursor-not-allowed">
               غير متاح للورشة
             </button>
           )}
 
           <button 
             onClick={handleTuneSystem}
-            className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors"
+            className="px-3 py-2 border border-border rounded-lg hover:bg-background text-muted-foreground transition-colors"
             title="Tune System Parameters"
           >
             ⚙️
           </button>
 
-          <button className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors">
+          <button className="px-3 py-2 border border-border rounded-lg hover:bg-background text-muted-foreground transition-colors">
             📄
           </button>
         </div>

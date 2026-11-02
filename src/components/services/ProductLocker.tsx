@@ -52,10 +52,10 @@ export default function ProductLocker({ machineId, machineModel = 'Unknown Model
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold text-white tracking-tight">{machineModel}</h1>
+              <h1 className="text-3xl font-bold text-foreground tracking-tight">{machineModel}</h1>
               <Badge variant="outline" className="border-amber-500 text-amber-500 bg-amber-500/10">Connected</Badge>
            </div>
-           <p className="text-slate-400 font-mono text-sm mt-1">SN: {serialNumber || 'N/A'} • {machineType.replace('_', ' ').toUpperCase()}</p>
+           <p className="text-muted-foreground font-mono text-sm mt-1">SN: {serialNumber || 'N/A'} • {machineType.replace('_', ' ').toUpperCase()}</p>
         </div>
         
         <div className="flex gap-3">
@@ -70,17 +70,17 @@ export default function ProductLocker({ machineId, machineModel = 'Unknown Model
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="bg-slate-900/80 border border-slate-800 p-1 w-full flex justify-start overflow-x-auto">
-           <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">
+        <TabsList className="bg-background/80 border border-border p-1 w-full flex justify-start overflow-x-auto">
+           <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-foreground">
                <Activity className="w-4 h-4" /> Overview
            </TabsTrigger>
-           <TabsTrigger value="maintenance" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">
+           <TabsTrigger value="maintenance" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-foreground">
                <CheckCircle2 className="w-4 h-4" /> Smart Maintenance
            </TabsTrigger>
-           <TabsTrigger value="parts" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">
+           <TabsTrigger value="parts" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-foreground">
                <Wrench className="w-4 h-4" /> Parts & Manuals
            </TabsTrigger>
-           <TabsTrigger value="history" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">
+           <TabsTrigger value="history" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-foreground">
                <HardHat className="w-4 h-4" /> History
            </TabsTrigger>
         </TabsList>
@@ -95,20 +95,20 @@ export default function ProductLocker({ machineId, machineModel = 'Unknown Model
 
                 {/* Quick Status / Upsell */}
                 <div className="space-y-6">
-                    <GoldTierCard variant="elevated" className="bg-gradient-to-br from-slate-900 to-slate-950 border-slate-800">
+                    <GoldTierCard variant="elevated" className="bg-gradient-to-br from-background to-background border-border">
                         <CardHeader>
-                            <CardTitle className="text-white">Health Score</CardTitle>
+                            <CardTitle className="text-foreground">Health Score</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="flex flex-col items-center py-4">
                                 <div className="relative w-32 h-32 flex items-center justify-center">
                                     <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                                        <path className="text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
-                                        <path className="text-green-500" strokeDasharray="92, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                                        <path className="text-foreground" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
+                                        <path className="text-success" strokeDasharray="92, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
                                     </svg>
-                                    <span className="absolute text-3xl font-bold text-white">92%</span>
+                                    <span className="absolute text-3xl font-bold text-foreground">92%</span>
                                 </div>
-                                <p className="text-slate-400 text-sm mt-4 text-center">Your machine is running optimally. Next service due in 14 days.</p>
+                                <p className="text-muted-foreground text-sm mt-4 text-center">Your machine is running optimally. Next service due in 14 days.</p>
                             </div>
                         </CardContent>
                     </GoldTierCard>
@@ -119,13 +119,13 @@ export default function ProductLocker({ machineId, machineModel = 'Unknown Model
                         </CardHeader>
                         <CardContent>
                             <div className="flex justify-between items-center mb-2">
-                                <span className="text-slate-400 text-sm">Valid Until</span>
-                                <span className="text-white font-medium">Dec 2026</span>
+                                <span className="text-muted-foreground text-sm">Valid Until</span>
+                                <span className="text-foreground font-medium">Dec 2026</span>
                             </div>
-                            <div className="w-full bg-slate-800 rounded-full h-1.5 mb-4">
+                            <div className="w-full bg-card rounded-full h-1.5 mb-4">
                                 <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: '65%' }}></div>
                             </div>
-                            <Button size="sm" variant="outline" className="w-full border-amber-500/50 text-amber-500 hover:bg-amber-500 hover:text-slate-900">
+                            <Button size="sm" variant="outline" className="w-full border-amber-500/50 text-amber-500 hover:bg-amber-500 hover:text-foreground">
                                 Extend Warranty
                             </Button>
                         </CardContent>
@@ -147,21 +147,21 @@ export default function ProductLocker({ machineId, machineModel = 'Unknown Model
                 </div>
 
                 <div className="space-y-4">
-                     <h3 className="text-lg font-bold text-white">Recommended Spares</h3>
+                     <h3 className="text-lg font-bold text-foreground">Recommended Spares</h3>
                      {knowledge?.parts ? (
                          <div className="space-y-3">
                              {knowledge.parts.map((part: any) => (
-                                 <GoldTierCard key={part.id} variant="outlined" className="bg-slate-900/50 border-slate-700 flex flex-row items-center p-3">
-                                     <div className="bg-slate-800 w-12 h-12 rounded flex items-center justify-center mr-4">
+                                 <GoldTierCard key={part.id} variant="outlined" className="bg-background/50 border-border flex flex-row items-center p-3">
+                                     <div className="bg-card w-12 h-12 rounded flex items-center justify-center mr-4">
                                         <Wrench className="w-6 h-6 text-amber-500" />
                                      </div>
                                      <div className="flex-1">
-                                         <h4 className="text-white font-medium">{part.name}</h4>
-                                         <p className="text-slate-500 text-xs">#{part.partNumber}</p>
+                                         <h4 className="text-foreground font-medium">{part.name}</h4>
+                                         <p className="text-muted-foreground text-xs">#{part.partNumber}</p>
                                      </div>
                                      <div className="text-right">
-                                         <p className="text-white font-bold">{part.price} EGP</p>
-                                         <Badge variant="outline" className={cn("text-[10px]", part.inStock ? "text-green-500 border-green-500/30" : "text-red-500 border-red-500/30")}>
+                                         <p className="text-foreground font-bold">{part.price} EGP</p>
+                                         <Badge variant="outline" className={cn("text-[10px]", part.inStock ? "text-success border-green-500/30" : "text-destructive border-red-500/30")}>
                                             {part.inStock ? 'In Stock' : 'Order'}
                                          </Badge>
                                      </div>
@@ -169,7 +169,7 @@ export default function ProductLocker({ machineId, machineModel = 'Unknown Model
                              ))}
                          </div>
                      ) : (
-                         <p className="text-slate-500 text-sm">Loading parts data...</p>
+                         <p className="text-muted-foreground text-sm">Loading parts data...</p>
                      )}
                 </div>
             </div>

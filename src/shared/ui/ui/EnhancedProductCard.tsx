@@ -142,10 +142,10 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         animate="animate"
         whileHover="hover"
         whileTap="tap"
-        className={`group relative h-full flex flex-col bg-gradient-to-br from-gray-900 to-black rounded-xl border-2 transition-all duration-300 hover:shadow-xl ${
+        className={`group relative h-full flex flex-col surface-metal bg-card text-card-foreground rounded-xl border-2 transition-all duration-300 hover:shadow-xl ${
           isSelected
             ? 'border-amber-500 shadow-lg shadow-amber-500/20'
-            : 'border-gray-700 hover:border-amber-400/50'
+            : 'border-border hover:border-amber-400/50'
         }`}
       >
       {/* 3D Model Badge - Clickable */}
@@ -220,7 +220,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
       </div>
 
       {/* Image Container with Fixed Aspect Ratio - KEY CHANGE: object-contain */}
-      <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-gradient-to-br from-gray-800 to-gray-900">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-gradient-to-br from-card to-background">
         {/* Product Image */}
         <LazyMotionDiv
           variants={imageVariants}
@@ -252,8 +252,8 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         )}
 
         {/* Quick Preview Overlay - CSS hover instead of Framer Motion for reliability */}
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-          <div className="flex gap-2 scale-90 group-hover:scale-100 transition-transform duration-200">
+        {(onQuickPreview || (machine.has3DModel && on3DView)) && <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+          <div className="flex gap-2 scale-90 group-hover:scale-100 group-focus-within:scale-100 transition-transform duration-200">
             {onQuickPreview && (
               <Button
                 size="sm"
@@ -272,7 +272,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 <Eye className="w-4 h-4 mr-1" />{copy("3D View")}</Button>
             )}
           </div>
-        </div>
+        </div>}
       </div>
 
       {/* Content */}
@@ -285,13 +285,13 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         {/* Title and Description */}
         <div className="space-y-2">
           <LazyMotion component="h3"
-            className="font-semibold text-white text-lg leading-tight line-clamp-2"
+            className="font-semibold text-foreground text-lg leading-tight line-clamp-2"
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.2 }}
           >
             {machine.name}
           </LazyMotion>
-          <p className="text-gray-400 text-sm leading-relaxed line-clamp-2">
+          <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
             {copy(machine.description)}
           </p>
         </div>
@@ -303,7 +303,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="text-gray-400 text-xs mb-1">{copy("Price")}</div>
+            <div className="text-muted-foreground text-xs mb-1">{copy("Price")}</div>
             <div className="text-amber-400 font-bold text-xl">
               {livePrice != null ? `${livePrice.toLocaleString()} EGP` : copy("Contact for a quote")}
             </div>
@@ -314,22 +314,22 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         <div className="grid grid-cols-2 gap-2 text-xs">
           {machine.powerSpec?.consumption && (
             <LazyMotionDiv
-              className="text-gray-400"
+              className="text-muted-foreground"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="text-gray-500 text-xs">{copy("Power")}</div>
-              <div className="text-white font-medium">{machine.powerSpec.consumption}</div>
+              <div className="text-muted-foreground text-xs">{copy("Power")}</div>
+              <div className="text-foreground font-medium">{machine.powerSpec.consumption}</div>
             </LazyMotionDiv>
           )}
           {machine.category && (
             <LazyMotionDiv
-              className="text-gray-400"
+              className="text-muted-foreground"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="text-gray-500 text-xs">{copy("Category")}</div>
-              <div className="text-white font-medium capitalize">{machine.category}</div>
+              <div className="text-muted-foreground text-xs">{copy("Category")}</div>
+              <div className="text-foreground font-medium capitalize">{machine.category}</div>
             </LazyMotionDiv>
           )}
         </div>
@@ -349,7 +349,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 }}
                 whileHover={{ scale: 1.1 }}
               >
-                <Badge variant="outline" className="text-xs text-gray-400 border-gray-600">
+                <Badge variant="outline" className="text-xs text-muted-foreground border-border">
                   {copy(tag)}
                 </Badge>
               </LazyMotionDiv>
@@ -373,7 +373,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 <Button
                   size="sm"
                   variant="outline"
-                  className="w-full border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-300"
+                  className="w-full border-border text-foreground hover:bg-card hover:text-foreground transition-all duration-300"
                 >
                   <Download className="w-4 h-4 mr-1" />{copy("PDF")}</Button>
               </a>
@@ -410,7 +410,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
               <Button
                 size="sm"
                 variant="outline"
-                className="w-full border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-300"
+                className="w-full border-border text-foreground hover:bg-card hover:text-foreground transition-all duration-300"
                 onClick={handleQuote}
               >
                 <ShoppingCart className="w-4 h-4 mr-1" />{copy("Quote")}</Button>

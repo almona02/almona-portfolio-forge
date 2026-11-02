@@ -66,7 +66,7 @@ export const QuoteAIHelper: React.FC<QuoteAIHelperProps> = ({
   }
 
   return (
-    <Card className="bg-almona-dark border-almona-light/20">
+    <Card className="bg-background border-border/20">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <span className="text-gradient-orange">automation Suggestions</span>
@@ -78,8 +78,8 @@ export const QuoteAIHelper: React.FC<QuoteAIHelperProps> = ({
       <CardContent>
         {loading ? (
           <div className="space-y-4">
-            <div className="h-4 bg-almona-darker rounded animate-pulse"></div>
-            <div className="h-4 bg-almona-darker rounded animate-pulse w-3/4"></div>
+            <div className="h-4 bg-card rounded animate-pulse"></div>
+            <div className="h-4 bg-card rounded animate-pulse w-3/4"></div>
           </div>
         ) : (
           <div className="space-y-4">

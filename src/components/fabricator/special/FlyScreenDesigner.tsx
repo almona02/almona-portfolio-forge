@@ -92,16 +92,16 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
   }, [design]);
 
   return (
-    <div className="min-h-screen bg-gray-950 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="typography-h1 text-white flex items-center gap-3">
-              <Grid3x3 className="h-8 w-8 text-amber-500" />
+            <h1 className="typography-h1 text-foreground flex items-center gap-3">
+              <Grid3x3 className="h-8 w-8 text-warning" />
               Fly Screen Designer
             </h1>
-            <p className="text-gray-400 mt-2">
+            <p className="text-muted-foreground mt-2">
               Design fly screens with 99.5% accuracy BOM for Egyptian market
             </p>
           </div>
@@ -114,13 +114,13 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Parameters */}
-          <Card className="bg-gray-900/50 border-gray-800 card-dark">
+          <Card className="bg-background/50 border-border card-dark">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Ruler className="h-5 w-5 text-amber-500" />
+              <CardTitle className="text-foreground flex items-center gap-2">
+                <Ruler className="h-5 w-5 text-warning" />
                 Design Parameters
               </CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardDescription className="text-muted-foreground">
                 Configure your fly screen specifications
               </CardDescription>
             </CardHeader>
@@ -128,40 +128,40 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
               {/* Window Dimensions (Read-only) */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="typography-label text-gray-300">
+                  <Label className="typography-label text-foreground">
                     Width (mm)
                   </Label>
                   <Input
                     type="number"
                     value={windowUnit.overallWidth || 0}
                     disabled
-                    className="bg-gray-800 border-gray-700 text-gray-400"
+                    className="bg-card border-border text-muted-foreground"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="typography-label text-gray-300">
+                  <Label className="typography-label text-foreground">
                     Height (mm)
                   </Label>
                   <Input
                     type="number"
                     value={windowUnit.overallHeight || 0}
                     disabled
-                    className="bg-gray-800 border-gray-700 text-gray-400"
+                    className="bg-card border-border text-muted-foreground"
                   />
                 </div>
               </div>
 
               {/* Screen Type */}
               <div className="space-y-2">
-                <Label className="typography-label text-gray-300">Screen Type</Label>
+                <Label className="typography-label text-foreground">Screen Type</Label>
                 <Select
                   value={screenType}
                   onValueChange={(value: FlyScreenType) => setScreenType(value)}
                 >
-                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                  <SelectTrigger className="bg-card border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-gray-700">
+                  <SelectContent className="bg-background border-border">
                     <SelectItem value="magnetic">
                       Magnetic Clips (Easy Cleaning)
                     </SelectItem>
@@ -200,7 +200,7 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
               {error && (
                 <Alert variant="destructive" className="bg-red-900/20 border-red-800">
                   <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription className="text-red-300">{error}</AlertDescription>
+                  <AlertDescription className="text-destructive">{error}</AlertDescription>
                 </Alert>
               )}
             </CardContent>
@@ -211,9 +211,9 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
             {design ? (
               <>
                 {/* Design Summary */}
-                <Card className="bg-gray-900/50 border-gray-800 card-dark">
+                <Card className="bg-background/50 border-border card-dark">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
+                    <CardTitle className="text-foreground flex items-center gap-2">
                       <CheckCircle2 className="h-5 w-5 status-valid" />
                       Design Summary
                     </CardTitle>
@@ -221,39 +221,39 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-gray-400">Frame Dimensions</p>
-                        <p className="text-lg font-semibold text-white">
+                        <p className="text-sm text-muted-foreground">Frame Dimensions</p>
+                        <p className="text-lg font-semibold text-foreground">
                           {windowUnit.overallWidth} × {windowUnit.overallHeight} mm
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400">Mesh Area</p>
-                        <p className="text-lg font-semibold text-white">
+                        <p className="text-sm text-muted-foreground">Mesh Area</p>
+                        <p className="text-lg font-semibold text-foreground">
                           {design.mesh.area.toFixed(2)} m²
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400">Estimated Cost</p>
-                        <p className="text-lg font-semibold text-amber-500">
+                        <p className="text-sm text-muted-foreground">Estimated Cost</p>
+                        <p className="text-lg font-semibold text-warning">
                           {totalCost.toFixed(2)} EGP
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400">Assembly Time</p>
-                        <p className="text-lg font-semibold text-white">
+                        <p className="text-sm text-muted-foreground">Assembly Time</p>
+                        <p className="text-lg font-semibold text-foreground">
                           {totalTime} min
                         </p>
                       </div>
                     </div>
 
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-gray-800 text-gray-300">
+                      <Badge variant="outline" className="bg-card text-foreground">
                         {design.type}
                       </Badge>
-                      <Badge variant="outline" className="bg-gray-800 text-gray-300">
+                      <Badge variant="outline" className="bg-card text-foreground">
                         {design.mesh.type}
                       </Badge>
-                      <Badge variant="outline" className="bg-green-900/30 text-green-400">
+                      <Badge variant="outline" className="bg-green-900/30 text-success">
                         99.5% Accuracy
                       </Badge>
                     </div>
@@ -261,25 +261,25 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
                 </Card>
 
                 {/* BOM Preview */}
-                <Card className="bg-gray-900/50 border-gray-800 card-dark">
+                <Card className="bg-background/50 border-border card-dark">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-amber-500" />
+                    <CardTitle className="text-foreground flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-warning" />
                       Bill of Materials
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {/* Frame */}
                     <div>
-                      <p className="text-sm font-medium text-gray-300 mb-2">Frame Profile</p>
-                      <div className="bg-gray-800/50 p-3 rounded mb-2">
+                      <p className="text-sm font-medium text-foreground mb-2">Frame Profile</p>
+                      <div className="bg-card/50 p-3 rounded mb-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-white text-sm">{design.frame.profile.type}</span>
-                          <span className="text-gray-400 text-sm">
+                          <span className="text-foreground text-sm">{design.frame.profile.type}</span>
+                          <span className="text-muted-foreground text-sm">
                             {design.frame.totalLength.toFixed(0)} mm
                           </span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Supplier: {design.frame.profile.supplier}
                         </p>
                       </div>
@@ -287,14 +287,14 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
 
                     {/* Hardware */}
                     <div>
-                      <p className="text-sm font-medium text-gray-300 mb-2">Hardware</p>
+                      <p className="text-sm font-medium text-foreground mb-2">Hardware</p>
                       {design.hardware.map((item) => (
-                        <div key={item.id} className="bg-gray-800/50 p-3 rounded mb-2">
+                        <div key={item.id} className="bg-card/50 p-3 rounded mb-2">
                           <div className="flex justify-between items-center">
-                            <span className="text-white text-sm">{item.name}</span>
-                            <span className="text-gray-400 text-sm">Qty: {item.quantity}</span>
+                            <span className="text-foreground text-sm">{item.name}</span>
+                            <span className="text-muted-foreground text-sm">Qty: {item.quantity}</span>
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-muted-foreground mt-1">
                             {item.totalCost.toFixed(2)} EGP
                           </p>
                         </div>
@@ -303,17 +303,17 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
 
                     {/* Mesh */}
                     <div>
-                      <p className="text-sm font-medium text-gray-300 mb-2">Mesh</p>
-                      <div className="bg-gray-800/50 p-3 rounded">
+                      <p className="text-sm font-medium text-foreground mb-2">Mesh</p>
+                      <div className="bg-card/50 p-3 rounded">
                         <div className="flex justify-between items-center">
-                          <span className="text-white text-sm">
+                          <span className="text-foreground text-sm">
                             {design.mesh.type} ({design.mesh.meshSize}mm)
                           </span>
-                          <span className="text-gray-400 text-sm">
+                          <span className="text-muted-foreground text-sm">
                             {design.mesh.area.toFixed(2)} m²
                           </span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Supplier: {design.mesh.supplier} • {design.mesh.totalCost.toFixed(2)} EGP
                         </p>
                       </div>
@@ -322,10 +322,10 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
                 </Card>
 
                 {/* Assembly Sequence */}
-                <Card className="bg-gray-900/50 border-gray-800 card-dark">
+                <Card className="bg-background/50 border-border card-dark">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Wrench className="h-5 w-5 text-amber-500" />
+                    <CardTitle className="text-foreground flex items-center gap-2">
+                      <Wrench className="h-5 w-5 text-warning" />
                       Assembly Sequence
                     </CardTitle>
                   </CardHeader>
@@ -337,8 +337,8 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
                             {step.step}
                           </div>
                           <div className="flex-1">
-                            <p className="text-white text-sm font-medium">{step.operation}</p>
-                            <p className="text-gray-400 text-xs mt-1">
+                            <p className="text-foreground text-sm font-medium">{step.operation}</p>
+                            <p className="text-muted-foreground text-xs mt-1">
                               {step.estimatedTime} min • {step.toolsRequired.join(', ')}
                             </p>
                           </div>
@@ -374,10 +374,10 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
                 </div>
               </>
             ) : (
-              <Card className="bg-gray-900/50 border-gray-800 card-dark">
+              <Card className="bg-background/50 border-border card-dark">
                 <CardContent className="py-12 text-center">
-                  <Grid3x3 className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-400">
+                  <Grid3x3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
                     Configure parameters and click "Generate Design" to create your fly screen
                   </p>
                 </CardContent>

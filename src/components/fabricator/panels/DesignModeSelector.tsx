@@ -94,7 +94,7 @@ export const DesignModeSelector: React.FC<DesignModeSelectorProps> = ({
           className={`cursor-pointer transition-all duration-300 ${
             mode === 'smartdraw'
               ? 'border-amber-500/50 bg-amber-500/5 shadow-lg shadow-amber-500/20 ring-2 ring-amber-500/30'
-              : 'border-amber-600/20 bg-slate-900/50 hover:border-amber-600/40 hover:bg-slate-900/70'
+              : 'border-amber-600/20 bg-background/50 hover:border-amber-600/40 hover:bg-background/70'
           }`}
           onClick={() => handleModeChange('smartdraw')}
         >
@@ -103,40 +103,40 @@ export const DesignModeSelector: React.FC<DesignModeSelectorProps> = ({
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-lg ${
                   mode === 'smartdraw' 
-                    ? 'bg-amber-500/20 text-amber-400' 
-                    : 'bg-slate-800 text-slate-400'
+                    ? 'bg-amber-500/20 text-warning'
+                    : 'bg-card text-muted-foreground'
                 }`}>
                   <Grid3x3 className="h-5 w-5" />
                 </div>
-                <CardTitle className="text-lg font-semibold text-amber-200">
+                <CardTitle className="text-lg font-semibold text-warning">
                   SmartDraw
                 </CardTitle>
               </div>
               {mode === 'smartdraw' && (
-                <Badge variant="outline" className="border-amber-500/50 text-amber-400 bg-amber-500/10">
+                <Badge variant="outline" className="border-amber-500/50 text-warning bg-amber-500/10">
                   Active
                 </Badge>
               )}
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <CardDescription className="text-sm text-slate-400">
+            <CardDescription className="text-sm text-muted-foreground">
               Quick grid-based design with Egyptian templates
             </CardDescription>
             <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary" className="text-xs border-amber-600/30 text-amber-300 bg-amber-500/10">
+              <Badge variant="secondary" className="text-xs border-amber-600/30 text-warning bg-amber-500/10">
                 <Sparkles className="h-3 w-3 mr-1" />
                 Template-based
               </Badge>
-              <Badge variant="secondary" className="text-xs border-amber-600/30 text-amber-300 bg-amber-500/10">
+              <Badge variant="secondary" className="text-xs border-amber-600/30 text-warning bg-amber-500/10">
                 Beginner-friendly
               </Badge>
-              <Badge variant="secondary" className="text-xs border-amber-600/30 text-amber-300 bg-amber-500/10">
+              <Badge variant="secondary" className="text-xs border-amber-600/30 text-warning bg-amber-500/10">
                 Fast workflow
               </Badge>
             </div>
             {recommendation?.mode === 'smartdraw' && recommendation.reason && (
-              <div className="mt-2 p-2 bg-emerald-500/10 border border-emerald-500/20 rounded text-xs text-emerald-400">
+              <div className="mt-2 p-2 bg-emerald-500/10 border border-emerald-500/20 rounded text-xs text-success">
                 💡 {recommendation.reason}
               </div>
             )}
@@ -148,7 +148,7 @@ export const DesignModeSelector: React.FC<DesignModeSelectorProps> = ({
           className={`cursor-pointer transition-all duration-300 ${
             mode === 'drafting'
               ? 'border-amber-500/50 bg-amber-500/5 shadow-lg shadow-amber-500/20 ring-2 ring-amber-500/30'
-              : 'border-amber-600/20 bg-slate-900/50 hover:border-amber-600/40 hover:bg-slate-900/70'
+              : 'border-amber-600/20 bg-background/50 hover:border-amber-600/40 hover:bg-background/70'
           }`}
           onClick={() => handleModeChange('drafting')}
         >
@@ -157,45 +157,45 @@ export const DesignModeSelector: React.FC<DesignModeSelectorProps> = ({
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-lg ${
                   mode === 'drafting' 
-                    ? 'bg-amber-500/20 text-amber-400' 
-                    : 'bg-slate-800 text-slate-400'
+                    ? 'bg-amber-500/20 text-warning'
+                    : 'bg-card text-muted-foreground'
                 }`}>
                   <Ruler className="h-5 w-5" />
                 </div>
-                <CardTitle className="text-lg font-semibold text-amber-200">
+                <CardTitle className="text-lg font-semibold text-warning">
                   Professional Drafting
                 </CardTitle>
               </div>
               {mode === 'drafting' && (
-                <Badge variant="outline" className="border-amber-500/50 text-amber-400 bg-amber-500/10">
+                <Badge variant="outline" className="border-amber-500/50 text-warning bg-amber-500/10">
                   Active
                 </Badge>
               )}
               {mode !== 'drafting' && (
-                <Badge variant="outline" className="border-amber-500/50 text-amber-400 bg-amber-500/10">
+                <Badge variant="outline" className="border-amber-500/50 text-warning bg-amber-500/10">
                   Premium
                 </Badge>
               )}
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <CardDescription className="text-sm text-slate-400">
+            <CardDescription className="text-sm text-muted-foreground">
               CAD-level precision tools for custom designs
             </CardDescription>
             <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary" className="text-xs border-amber-600/30 text-amber-300 bg-amber-500/10">
+              <Badge variant="secondary" className="text-xs border-amber-600/30 text-warning bg-amber-500/10">
                 <Zap className="h-3 w-3 mr-1" />
                 CAD precision
               </Badge>
-              <Badge variant="secondary" className="text-xs border-amber-600/30 text-amber-300 bg-amber-500/10">
+              <Badge variant="secondary" className="text-xs border-amber-600/30 text-warning bg-amber-500/10">
                 Advanced tools
               </Badge>
-              <Badge variant="secondary" className="text-xs border-amber-600/30 text-amber-300 bg-amber-500/10">
+              <Badge variant="secondary" className="text-xs border-amber-600/30 text-warning bg-amber-500/10">
                 Keyboard shortcuts
               </Badge>
             </div>
             {recommendation?.mode === 'drafting' && recommendation.reason && (
-              <div className="mt-2 p-2 bg-emerald-500/10 border border-emerald-500/20 rounded text-xs text-emerald-400">
+              <div className="mt-2 p-2 bg-emerald-500/10 border border-emerald-500/20 rounded text-xs text-success">
                 💡 {recommendation.reason}
               </div>
             )}
@@ -210,7 +210,7 @@ export const DesignModeSelector: React.FC<DesignModeSelectorProps> = ({
             <Button
               variant="outline"
               size="sm"
-              className="border-amber-600/30 text-amber-400 hover:bg-amber-500/10"
+              className="border-amber-600/30 text-warning hover:bg-amber-500/10"
             >
               <HelpCircle className="h-4 w-4 mr-2" />
               Which mode should I use?
@@ -229,14 +229,14 @@ export const DesignModeSelector: React.FC<DesignModeSelectorProps> = ({
       </div>
 
       {/* Unified Canvas Area */}
-      <div className="flex-1 min-h-0 border border-amber-600/30 rounded-lg overflow-hidden bg-slate-950">
+      <div className="flex-1 min-h-0 border border-amber-600/30 rounded-lg overflow-hidden bg-background">
         <div className="w-full h-full">
           {mode === 'smartdraw' ? (
             <div className="w-full h-full">
               {smartDrawCanvas || (
-                <div className="flex items-center justify-center h-full text-slate-400">
+                <div className="flex items-center justify-center h-full text-muted-foreground">
                   <div className="text-center">
-                    <Grid3x3 className="h-12 w-12 mx-auto mb-4 text-slate-600" />
+                    <Grid3x3 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                     <p className="text-sm">SmartDraw canvas will render here</p>
                   </div>
                 </div>
@@ -245,9 +245,9 @@ export const DesignModeSelector: React.FC<DesignModeSelectorProps> = ({
           ) : (
             <div className="w-full h-full">
               {draftingWorkbench || (
-                <div className="flex items-center justify-center h-full text-slate-400">
+                <div className="flex items-center justify-center h-full text-muted-foreground">
                   <div className="text-center">
-                    <Ruler className="h-12 w-12 mx-auto mb-4 text-slate-600" />
+                    <Ruler className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                     <p className="text-sm">Drafting workbench will render here</p>
                   </div>
                 </div>

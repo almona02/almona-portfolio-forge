@@ -39,23 +39,23 @@ const MetricCard: React.FC<{
   const isHealthy = percentage >= 95;
 
   return (
-    <Card className={`bg-slate-800/50 border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 ${className}`}>
+    <Card className={`bg-card/50 border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 ${className}`}>
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-3">
-          <div className="text-xs text-slate-400 uppercase tracking-wider">{title}</div>
-          <div className={`${isHealthy ? 'text-emerald-400' : 'text-amber-400'}`}>{icon}</div>
+          <div className="text-xs text-muted-foreground uppercase tracking-wider">{title}</div>
+          <div className={`${isHealthy ? 'text-success' : 'text-warning'}`}>{icon}</div>
         </div>
         <div className="flex items-baseline gap-2 mb-2">
-          <div className="text-2xl font-bold text-amber-400">{value.toFixed(1)}{unit}</div>
+          <div className="text-2xl font-bold text-warning">{value.toFixed(1)}{unit}</div>
           {trend !== undefined && (
-            <div className={`text-xs flex items-center gap-1 ${trend >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            <div className={`text-xs flex items-center gap-1 ${trend >= 0 ? 'text-success' : 'text-destructive'}`}>
               <TrendingUp className={`h-3 w-3 ${trend < 0 ? 'rotate-180' : ''}`} />
               {Math.abs(trend).toFixed(1)}%
             </div>
           )}
         </div>
-        <Progress value={percentage} className="h-2 bg-slate-700/50" />
-        <div className="text-xs text-slate-500 mt-2">
+        <Progress value={percentage} className="h-2 bg-muted/50" />
+        <div className="text-xs text-muted-foreground mt-2">
           {value} of {total} compliant
         </div>
       </CardContent>
@@ -199,7 +199,7 @@ export const ConstitutionalHealthDashboard: React.FC<ConstitutionalHealthDashboa
     return (
       <Card className={className}>
         <CardContent className="p-8 text-center">
-          <div className="text-slate-400">Loading constitutional health data...</div>
+          <div className="text-muted-foreground">Loading constitutional health data...</div>
         </CardContent>
       </Card>
     );
@@ -210,25 +210,25 @@ export const ConstitutionalHealthDashboard: React.FC<ConstitutionalHealthDashboa
                        healthMetrics.overallHealth >= 60 ? 'fair' : 'poor';
 
   const healthColors = {
-    excellent: { bg: 'bg-emerald-950/20', border: 'border-emerald-500/50', text: 'text-emerald-400' },
-    good: { bg: 'bg-amber-950/20', border: 'border-amber-500/50', text: 'text-amber-400' },
+    excellent: { bg: 'bg-emerald-950/20', border: 'border-emerald-500/50', text: 'text-success' },
+    good: { bg: 'bg-amber-950/20', border: 'border-amber-500/50', text: 'text-warning' },
     fair: { bg: 'bg-orange-950/20', border: 'border-orange-500/50', text: 'text-orange-400' },
-    poor: { bg: 'bg-red-950/20', border: 'border-red-500/50', text: 'text-red-400' },
+    poor: { bg: 'bg-red-950/20', border: 'border-red-500/50', text: 'text-destructive' },
   };
 
   const status = healthColors[healthStatus];
 
   return (
     <div className={className}>
-      <Card className="bg-slate-900/50 border-slate-700/50">
+      <Card className="bg-background/50 border-border/50">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-xl font-bold text-amber-200 flex items-center gap-2">
-                <Shield className="h-5 w-5 text-amber-500" />
+              <CardTitle className="text-xl font-bold text-warning flex items-center gap-2">
+                <Shield className="h-5 w-5 text-warning" />
                 Constitutional Health Dashboard
               </CardTitle>
-              <CardDescription className="text-slate-400 mt-1">
+              <CardDescription className="text-muted-foreground mt-1">
                 AICS-001 compliance monitoring and metrics
               </CardDescription>
             </div>
@@ -239,61 +239,61 @@ export const ConstitutionalHealthDashboard: React.FC<ConstitutionalHealthDashboa
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Migration Health (v1 <-> v2) */}
-          <Card className="bg-slate-800/30 border-amber-500/20">
+          <Card className="bg-card/30 border-amber-500/20">
             <CardHeader>
-              <CardTitle className="text-sm text-amber-300 flex items-center gap-2">
+              <CardTitle className="text-sm text-warning flex items-center gap-2">
                 <Shield className="h-4 w-4" />
                 Fabricator Migration Health
               </CardTitle>
-              <CardDescription className="text-slate-400">
+              <CardDescription className="text-muted-foreground">
                 Event-derived mode and dual-write drift (30-day window)
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {migrationMode ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                  <div className="bg-slate-900/40 border border-slate-700 rounded p-3">
-                    <div className="text-slate-400 text-xs uppercase tracking-wider">Mode</div>
-                    <div className="text-amber-200 font-semibold">{migrationMode.mode}</div>
-                    <div className="text-slate-500 text-xs mt-1">Read source: {migrationMode.readSource}</div>
+                  <div className="bg-background/40 border border-border rounded p-3">
+                    <div className="text-muted-foreground text-xs uppercase tracking-wider">Mode</div>
+                    <div className="text-warning font-semibold">{migrationMode.mode}</div>
+                    <div className="text-muted-foreground text-xs mt-1">Read source: {migrationMode.readSource}</div>
                   </div>
-                  <div className="bg-slate-900/40 border border-slate-700 rounded p-3">
-                    <div className="text-slate-400 text-xs uppercase tracking-wider">Writes</div>
-                    <div className="text-slate-200">
+                  <div className="bg-background/40 border border-border rounded p-3">
+                    <div className="text-muted-foreground text-xs uppercase tracking-wider">Writes</div>
+                    <div className="text-foreground">
                       v1:{' '}
-                      <span className={migrationMode.allowsWritesToV1 ? 'text-emerald-400' : 'text-red-400'}>
+                      <span className={migrationMode.allowsWritesToV1 ? 'text-success' : 'text-destructive'}>
                         {migrationMode.allowsWritesToV1 ? 'allowed' : 'blocked'}
                       </span>
                       {'  '}| v2:{' '}
-                      <span className={migrationMode.allowsWritesToV2 ? 'text-emerald-400' : 'text-red-400'}>
+                      <span className={migrationMode.allowsWritesToV2 ? 'text-success' : 'text-destructive'}>
                         {migrationMode.allowsWritesToV2 ? 'allowed' : 'blocked'}
                       </span>
                     </div>
-                    <div className="text-slate-500 text-xs mt-1 font-mono truncate">
+                    <div className="text-muted-foreground text-xs mt-1 font-mono truncate">
                       event: {migrationMode.derivedFromEventHash}
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="text-slate-500 text-sm">Migration mode not available.</div>
+                <div className="text-muted-foreground text-sm">Migration mode not available.</div>
               )}
 
               {drift ? (
-                <div className="bg-slate-900/40 border border-slate-700 rounded p-3 text-sm">
+                <div className="bg-background/40 border border-border rounded p-3 text-sm">
                   <div className="flex items-center justify-between">
-                    <div className="text-slate-400 text-xs uppercase tracking-wider">Latest drift</div>
-                    <div className="text-slate-500 text-xs">{new Date(drift.created_at).toLocaleString()}</div>
+                    <div className="text-muted-foreground text-xs uppercase tracking-wider">Latest drift</div>
+                    <div className="text-muted-foreground text-xs">{new Date(drift.created_at).toLocaleString()}</div>
                   </div>
-                  <div className="text-slate-200 mt-1">
+                  <div className="text-foreground mt-1">
                     Drift:{' '}
-                    <span className={drift.drift_rate <= 0.001 ? 'text-emerald-400' : 'text-amber-400'}>
+                    <span className={drift.drift_rate <= 0.001 ? 'text-success' : 'text-warning'}>
                       {(drift.drift_rate * 100).toFixed(3)}%
                     </span>
                     {'  '}({drift.mismatch_count}/{drift.sample_size})
                   </div>
                 </div>
               ) : (
-                <div className="text-slate-500 text-sm">No drift report found (monitor not running yet).</div>
+                <div className="text-muted-foreground text-sm">No drift report found (monitor not running yet).</div>
               )}
             </CardContent>
           </Card>
@@ -303,20 +303,20 @@ export const ConstitutionalHealthDashboard: React.FC<ConstitutionalHealthDashboa
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <div className="text-sm text-slate-400 uppercase tracking-wider mb-1">Overall Health Score</div>
+                  <div className="text-sm text-muted-foreground uppercase tracking-wider mb-1">Overall Health Score</div>
                   <div className={`text-4xl font-bold ${status.text}`}>
                     {healthMetrics.overallHealth.toFixed(1)}%
                   </div>
                 </div>
                 {healthStatus === 'excellent' ? (
-                  <CheckCircle2 className="h-12 w-12 text-emerald-400" />
+                  <CheckCircle2 className="h-12 w-12 text-success" />
                 ) : healthStatus === 'poor' ? (
-                  <XCircle className="h-12 w-12 text-red-400" />
+                  <XCircle className="h-12 w-12 text-destructive" />
                 ) : (
-                  <AlertTriangle className="h-12 w-12 text-amber-400" />
+                  <AlertTriangle className="h-12 w-12 text-warning" />
                 )}
               </div>
-              <Progress value={healthMetrics.overallHealth} className="h-3 bg-slate-700/50" />
+              <Progress value={healthMetrics.overallHealth} className="h-3 bg-muted/50" />
             </CardContent>
           </Card>
 
@@ -343,9 +343,9 @@ export const ConstitutionalHealthDashboard: React.FC<ConstitutionalHealthDashboa
           </div>
 
           {/* Compliance History Chart */}
-          <Card className="bg-slate-800/30 border-amber-500/20">
+          <Card className="bg-card/30 border-amber-500/20">
             <CardHeader>
-              <CardTitle className="text-sm text-amber-300 flex items-center gap-2">
+              <CardTitle className="text-sm text-warning flex items-center gap-2">
                 <TrendingUp className="h-4 w-4" />
                 Compliance History (Last 30 Days)
               </CardTitle>

@@ -416,26 +416,26 @@ export const SmartScanUploader: React.FC = () => {
   const StatusIcon: React.FC<{ status: JobStatus }> = useCallback(({ status }) => {
     switch (status) {
       case "pending":
-        return <FileText className="w-5 h-5 text-zinc-500" />;
+        return <FileText className="w-5 h-5 text-muted-foreground" />;
       case "processing":
-        return <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />;
+        return <Loader2 className="w-5 h-5 text-warning animate-spin" />;
       case "success":
-        return <CheckCircle className="w-5 h-5 text-emerald-400" />;
+        return <CheckCircle className="w-5 h-5 text-success" />;
       case "error":
-        return <AlertCircle className="w-5 h-5 text-red-400" />;
+        return <AlertCircle className="w-5 h-5 text-destructive" />;
       default:
-        return <FileText className="w-5 h-5 text-zinc-500" />;
+        return <FileText className="w-5 h-5 text-muted-foreground" />;
     }
   }, []);
 
   return (
-    <div className="space-y-6 p-4 bg-slate-900/60 backdrop-blur-sm rounded-xl border border-amber-500/20 shadow-lg shadow-amber-500/5">
+    <div className="space-y-6 p-4 bg-background/60 backdrop-blur-sm rounded-xl border border-amber-500/20 shadow-lg shadow-amber-500/5">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="typography-h2 text-xl font-semibold text-white tracking-wide uppercase">
+          <h2 className="typography-h2 text-xl font-semibold text-foreground tracking-wide uppercase">
             Engineering Drawing Scanner
           </h2>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-muted-foreground">
             Convert catalog pages to vector profiles with automatic dimension detection
           </p>
         </div>
@@ -465,7 +465,7 @@ export const SmartScanUploader: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                <div className="text-sm text-zinc-500 space-y-2">
+                <div className="text-sm text-muted-foreground space-y-2">
                   {Object.entries(supportedFormats.notes).map(([k, v]) => (
                     <div key={k} className="flex items-start gap-2">
                       <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
@@ -494,13 +494,13 @@ export const SmartScanUploader: React.FC = () => {
             <input {...getInputProps()} />
             <div className="flex flex-col items-center gap-4">
               <div className="p-3 rounded-full bg-amber-500/10 border border-amber-500/20">
-                <Upload className="w-6 h-6 text-amber-400" />
+                <Upload className="w-6 h-6 text-warning" />
               </div>
               <div className="space-y-1">
-                <h3 className="typography-h3 text-lg font-medium text-zinc-200">
+                <h3 className="typography-h3 text-lg font-medium text-foreground">
                   {isDragActive ? "Drop files here" : "Drag & drop catalog pages"}
                 </h3>
-                <p className="text-sm text-zinc-500">Or click to browse · Max 50MB per file</p>
+                <p className="text-sm text-muted-foreground">Or click to browse · Max 50MB per file</p>
               </div>
             </div>
           </div>
@@ -508,7 +508,7 @@ export const SmartScanUploader: React.FC = () => {
 
         <div className="space-y-4">
           <div>
-            <Label htmlFor="knownWidth" className="typography-label text-sm text-zinc-400">
+            <Label htmlFor="knownWidth" className="typography-label text-sm text-muted-foreground">
               Known Width (mm) - Optional
             </Label>
             <Input
@@ -518,16 +518,16 @@ export const SmartScanUploader: React.FC = () => {
               placeholder="e.g., 100"
               value={knownWidthMm}
               onChange={(e) => setKnownWidthMm(e.target.value)}
-              className="bg-zinc-900 border-zinc-700"
+              className="bg-background border-border"
             />
-            <p className="text-xs text-zinc-500 mt-1">Leave empty for auto-detection</p>
+            <p className="text-xs text-muted-foreground mt-1">Leave empty for auto-detection</p>
           </div>
 
-          <div className="space-y-3 p-3 bg-zinc-900/50 rounded-lg border border-zinc-800">
+          <div className="space-y-3 p-3 bg-background/50 rounded-lg border border-border">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label className="typography-label text-sm font-medium text-zinc-300">Batch Processing</Label>
-                <p className="text-xs text-zinc-500">
+                <Label className="typography-label text-sm font-medium text-foreground">Batch Processing</Label>
+                <p className="text-xs text-muted-foreground">
                   Process multiple files simultaneously (faster)
                 </p>
               </div>
@@ -541,8 +541,8 @@ export const SmartScanUploader: React.FC = () => {
 
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label className="typography-label text-sm font-medium text-zinc-300">Enhanced SmartScan</Label>
-                <p className="text-xs text-zinc-500">
+                <Label className="typography-label text-sm font-medium text-foreground">Enhanced SmartScan</Label>
+                <p className="text-xs text-muted-foreground">
                   Better accuracy with OCR and scale detection
                 </p>
               </div>
@@ -556,7 +556,7 @@ export const SmartScanUploader: React.FC = () => {
             {useEnhancedScan && (
               <div className="space-y-2 pl-1 border-l-2 border-amber-500/30 ml-1">
                 <div className="flex items-center justify-between">
-                  <Label className="typography-label text-xs text-zinc-400">Extract text (OCR)</Label>
+                  <Label className="typography-label text-xs text-muted-foreground">Extract text (OCR)</Label>
                   <Switch
                     checked={enableOCR}
                     onCheckedChange={setEnableOCR}
@@ -564,7 +564,7 @@ export const SmartScanUploader: React.FC = () => {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label className="typography-label text-xs text-zinc-400">Strict validation</Label>
+                  <Label className="typography-label text-xs text-muted-foreground">Strict validation</Label>
                   <Switch
                     checked={requireValidation}
                     onCheckedChange={setRequireValidation}
@@ -596,7 +596,7 @@ export const SmartScanUploader: React.FC = () => {
               <Button
                 onClick={retryFailedJobs}
                 variant="outline"
-                className="border-amber-500/30 hover:bg-amber-500/10 text-amber-400"
+                className="border-amber-500/30 hover:bg-amber-500/10 text-warning"
                 size="sm"
               >
                 Retry Failed ({failedJobsCount})
@@ -606,7 +606,7 @@ export const SmartScanUploader: React.FC = () => {
               <Button
                 onClick={clearAll}
                 variant="outline"
-                className="border-zinc-700 hover:bg-zinc-800"
+                className="border-border hover:bg-card"
                 size="sm"
               >
                 <X className="w-4 h-4" />
@@ -619,8 +619,8 @@ export const SmartScanUploader: React.FC = () => {
       {isProcessing && (
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-zinc-400">Processing batch...</span>
-            <span className="text-white font-medium">{Math.round(overallProgress)}%</span>
+            <span className="text-muted-foreground">Processing batch...</span>
+            <span className="text-foreground font-medium">{Math.round(overallProgress)}%</span>
           </div>
           <Progress value={overallProgress} className="h-2" />
         </div>
@@ -628,27 +628,27 @@ export const SmartScanUploader: React.FC = () => {
 
       {jobs.length > 0 && (
         <div className="grid grid-cols-4 gap-4 text-center">
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-amber-500/10 shadow-md">
-            <div className="text-2xl font-bold text-white">{jobs.length}</div>
-            <div className="text-xs text-zinc-400 uppercase tracking-wide">Total Files</div>
+          <div className="bg-card/50 backdrop-blur-sm rounded-lg p-3 border border-amber-500/10 shadow-md">
+            <div className="text-2xl font-bold text-foreground">{jobs.length}</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">Total Files</div>
           </div>
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-emerald-500/20 shadow-md">
-            <div className="text-2xl font-bold text-emerald-400">
+          <div className="bg-card/50 backdrop-blur-sm rounded-lg p-3 border border-emerald-500/20 shadow-md">
+            <div className="text-2xl font-bold text-success">
               {jobs.filter((j) => j.status === "success").length}
             </div>
-            <div className="text-xs text-zinc-400 uppercase tracking-wide">Successful</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">Successful</div>
           </div>
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-amber-500/20 shadow-md">
-            <div className="text-2xl font-bold text-amber-400">
+          <div className="bg-card/50 backdrop-blur-sm rounded-lg p-3 border border-amber-500/20 shadow-md">
+            <div className="text-2xl font-bold text-warning">
               {jobs.filter((j) => j.status === "pending").length}
             </div>
-            <div className="text-xs text-zinc-400 uppercase tracking-wide">Pending</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">Pending</div>
           </div>
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-red-500/20 shadow-md">
-            <div className="text-2xl font-bold text-red-400">
+          <div className="bg-card/50 backdrop-blur-sm rounded-lg p-3 border border-red-500/20 shadow-md">
+            <div className="text-2xl font-bold text-destructive">
               {jobs.filter((j) => j.status === "error").length}
             </div>
-            <div className="text-xs text-zinc-400 uppercase tracking-wide">Failed</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">Failed</div>
           </div>
         </div>
       )}
@@ -657,7 +657,7 @@ export const SmartScanUploader: React.FC = () => {
         {jobs.map((job) => (
           <div
             key={job.id}
-            className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-800 flex gap-4 items-start"
+            className="bg-background/50 rounded-lg p-4 border border-border flex gap-4 items-start"
           >
             <div className="mt-1">
               <StatusIcon status={job.status} />
@@ -667,12 +667,12 @@ export const SmartScanUploader: React.FC = () => {
               <div className="flex justify-between items-start">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-zinc-200 truncate">{job.file.name}</span>
+                    <span className="font-medium text-foreground truncate">{job.file.name}</span>
                     <Badge variant="outline" className="text-xs">
                       {(job.file.size / 1024 / 1024).toFixed(1)} MB
                     </Badge>
                   </div>
-                  <p className="text-xs text-zinc-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Last modified: {new Date(job.file.lastModified).toLocaleDateString()}
                   </p>
                 </div>
@@ -700,7 +700,7 @@ export const SmartScanUploader: React.FC = () => {
                   )}
                   <button
                     onClick={() => removeJob(job.id)}
-                    className="p-1 text-zinc-500 hover:text-zinc-300"
+                    className="p-1 text-muted-foreground hover:text-foreground"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -710,8 +710,8 @@ export const SmartScanUploader: React.FC = () => {
               {job.status === "processing" && job.progress !== undefined && (
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs">
-                    <span className="text-zinc-400">Vectorizing...</span>
-                    <span className="text-white">{job.progress}%</span>
+                    <span className="text-muted-foreground">Vectorizing...</span>
+                    <span className="text-foreground">{job.progress}%</span>
                   </div>
                   <Progress value={job.progress} className="h-1.5" />
                 </div>
@@ -725,10 +725,10 @@ export const SmartScanUploader: React.FC = () => {
               )}
 
               {job.status === "success" && job.result && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t border-zinc-800">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t border-border">
                   <div className="space-y-2">
-                    <h4 className="typography-h4 text-sm font-medium text-zinc-400">Vector Preview</h4>
-                    <div className="bg-white rounded p-2 border border-zinc-700">
+                    <h4 className="typography-h4 text-sm font-medium text-muted-foreground">Vector Preview</h4>
+                    <div className="bg-card rounded p-2 border border-border">
                       <svg viewBox={job.result.view_box} className="w-full h-32">
                         <path d={job.result.svg_path} fill="#333333" stroke="none" />
                       </svg>
@@ -737,37 +737,37 @@ export const SmartScanUploader: React.FC = () => {
 
                   <div className="space-y-3">
                     <div>
-                      <h4 className="typography-h4 text-sm font-medium text-zinc-400 mb-2">Detected Dimensions</h4>
+                      <h4 className="typography-h4 text-sm font-medium text-muted-foreground mb-2">Detected Dimensions</h4>
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-zinc-400">Width:</span>
-                          <span className="font-mono text-white">
+                          <span className="text-muted-foreground">Width:</span>
+                          <span className="font-mono text-foreground">
                             {job.result.dimensions.width_mm.toFixed(1)} mm
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-zinc-400">Height:</span>
-                          <span className="font-mono text-white">
+                          <span className="text-muted-foreground">Height:</span>
+                          <span className="font-mono text-foreground">
                             {job.result.dimensions.height_mm.toFixed(1)} mm
                           </span>
                         </div>
                         <div className="flex justify-between items-center gap-2">
-                          <span className="text-zinc-400">Scale Source:</span>
+                          <span className="text-muted-foreground">Scale Source:</span>
                           <Badge variant="secondary" className="text-xs capitalize">
                             {(job.result.dimensions.scale_source || "auto").replace("_", " ")}
                           </Badge>
                         </div>
 
                         {job.result.dimensions.enhanced_scale && (
-                          <div className="pt-2 border-t border-zinc-800 space-y-2">
+                          <div className="pt-2 border-t border-border space-y-2">
                             <div className="flex justify-between items-center gap-2">
-                              <span className="text-xs text-zinc-500">Scale method:</span>
+                              <span className="text-xs text-muted-foreground">Scale method:</span>
                               <Badge variant="outline" className="text-xs capitalize">
                                 {job.result.dimensions.enhanced_scale.method || "heuristic"}
                               </Badge>
                             </div>
                             <div className="flex justify-between items-center gap-2">
-                              <span className="text-xs text-zinc-500">Scale confidence:</span>
+                              <span className="text-xs text-muted-foreground">Scale confidence:</span>
                               <Progress
                                 value={
                                   (job.result.dimensions.scale_confidence ||
@@ -776,7 +776,7 @@ export const SmartScanUploader: React.FC = () => {
                                 }
                                 className="w-24 h-1.5"
                               />
-                              <span className="text-xs font-mono text-zinc-400 w-10 text-right">
+                              <span className="text-xs font-mono text-muted-foreground w-10 text-right">
                                 {(
                                   (job.result.dimensions.scale_confidence ||
                                     job.result.dimensions.enhanced_scale.confidence ||
@@ -792,22 +792,22 @@ export const SmartScanUploader: React.FC = () => {
 
                     {job.result.technical_data && (
                       <div className="space-y-2">
-                        <h4 className="typography-h4 text-sm font-medium text-zinc-400">OCR Extracted</h4>
+                        <h4 className="typography-h4 text-sm font-medium text-muted-foreground">OCR Extracted</h4>
                         <div className="space-y-2">
                           {job.result.technical_data.profile_name && (
                             <div className="p-2 bg-blue-500/10 rounded border border-blue-500/20">
                               <div className="flex items-center gap-2 mb-1">
                                 <Badge
                                   variant="outline"
-                                  className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs"
+                                  className="bg-blue-500/20 text-info border-blue-500/30 text-xs"
                                 >
                                   Profile Name
                                 </Badge>
-                                <span className="text-xs text-zinc-500">
+                                <span className="text-xs text-muted-foreground">
                                   Confidence: {((job.result.technical_data.confidence ?? 0) * 100).toFixed(0)}%
                                 </span>
                               </div>
-                              <p className="text-sm font-medium text-white truncate">
+                              <p className="text-sm font-medium text-foreground truncate">
                                 {job.result.technical_data.profile_name}
                               </p>
                             </div>
@@ -815,7 +815,7 @@ export const SmartScanUploader: React.FC = () => {
 
                           {(job.result.technical_data.material_hints ?? []).length > 0 && (
                             <div className="flex flex-wrap gap-1">
-                              <span className="text-xs text-zinc-500">Materials:</span>
+                              <span className="text-xs text-muted-foreground">Materials:</span>
                               {(job.result.technical_data.material_hints ?? []).map((material, idx) => (
                                 <Badge key={idx} variant="secondary" className="text-xs capitalize">
                                   {material}
@@ -826,9 +826,9 @@ export const SmartScanUploader: React.FC = () => {
 
                           {Array.isArray(job.result.technical_data.detected_brands) && job.result.technical_data.detected_brands.length > 0 && (
                             <div className="flex flex-wrap gap-1">
-                              <span className="text-xs text-zinc-500">Brands:</span>
+                              <span className="text-xs text-muted-foreground">Brands:</span>
                               {job.result.technical_data.detected_brands.map((brand: string, idx: number) => (
-                                <Badge key={idx} variant="outline" className="text-xs bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
+                                <Badge key={idx} variant="outline" className="text-xs bg-emerald-500/10 text-success border-emerald-500/30">
                                   {brand}
                                 </Badge>
                               ))}
@@ -838,7 +838,7 @@ export const SmartScanUploader: React.FC = () => {
                           {job.result.technical_data.thermal_break_mentions && (
                             <div className="flex items-center gap-2 p-1.5 bg-yellow-500/10 rounded border border-yellow-500/20">
                               <div className="w-2 h-2 bg-yellow-500 rounded-full" />
-                              <span className="text-xs text-yellow-400">Thermal break detected</span>
+                              <span className="text-xs text-warning">Thermal break detected</span>
                             </div>
                           )}
                         </div>
@@ -848,7 +848,7 @@ export const SmartScanUploader: React.FC = () => {
 
                   <div className="space-y-3">
                     <div>
-                      <h4 className="typography-h4 text-sm font-medium text-zinc-400 mb-2">Quality Assessment</h4>
+                      <h4 className="typography-h4 text-sm font-medium text-muted-foreground mb-2">Quality Assessment</h4>
                       <div className="space-y-3">
                         {job.result.quality?.accuracy_tier && (
                           <div
@@ -863,13 +863,13 @@ export const SmartScanUploader: React.FC = () => {
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center gap-2">
                                 {job.result.quality.accuracy_tier === "production" && (
-                                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                                  <CheckCircle className="w-4 h-4 text-success" />
                                 )}
                                 {job.result.quality.accuracy_tier === "verified_required" && (
-                                  <AlertTriangle className="w-4 h-4 text-amber-400" />
+                                  <AlertTriangle className="w-4 h-4 text-warning" />
                                 )}
                                 {job.result.quality.accuracy_tier === "review_required" && (
-                                  <AlertCircle className="w-4 h-4 text-red-500" />
+                                  <AlertCircle className="w-4 h-4 text-destructive" />
                                 )}
                                 <span className="font-medium text-sm">
                                   {job.result.quality.accuracy_tier === "production" && "✅ Production Ready"}
@@ -883,10 +883,10 @@ export const SmartScanUploader: React.FC = () => {
                                 variant="outline"
                                 className={`text-xs ${
                                   job.result.quality.accuracy_tier === "production"
-                                    ? "text-emerald-400 border-emerald-400/30"
+                                    ? "text-success border-emerald-400/30"
                                     : job.result.quality.accuracy_tier === "verified_required"
-                                    ? "text-amber-400 border-amber-400/30"
-                                    : "text-red-400 border-red-400/30"
+                                    ? "text-warning border-amber-400/30"
+                                    : "text-destructive border-red-400/30"
                                 }`}
                               >
                                 Tier: {job.result.quality.accuracy_tier}
@@ -895,8 +895,8 @@ export const SmartScanUploader: React.FC = () => {
 
                             <Progress value={job.result.quality.confidence_score * 100} className="h-2 mb-1" />
                             <div className="flex justify-between text-xs">
-                              <span className="text-zinc-500">Confidence</span>
-                              <span className="font-mono text-white">
+                              <span className="text-muted-foreground">Confidence</span>
+                              <span className="font-mono text-foreground">
                                 {(job.result.quality.confidence_score * 100).toFixed(1)}%
                               </span>
                             </div>
@@ -907,29 +907,29 @@ export const SmartScanUploader: React.FC = () => {
                           <div className="p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-lg border border-emerald-500/30">
                             <div className="flex items-center gap-2 mb-2">
                               <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                                <span className="text-xs font-bold text-emerald-400">EG</span>
+                                <span className="text-xs font-bold text-success">EG</span>
                               </div>
-                              <span className="font-medium text-sm text-emerald-400">Egyptian Standard Match</span>
+                              <span className="font-medium text-sm text-success">Egyptian Standard Match</span>
                             </div>
                             <div className="space-y-1">
                               <div className="flex justify-between items-center">
-                                <span className="text-xs text-zinc-500">Profile:</span>
-                                <span className="text-sm font-medium text-white">
+                                <span className="text-xs text-muted-foreground">Profile:</span>
+                                <span className="text-sm font-medium text-foreground">
                                   {(job.result.suggestions.egyptian_standard_match as any)?.name || 'Unknown'}
                                 </span>
                               </div>
                               <div className="flex justify-between items-center">
-                                <span className="text-xs text-zinc-500">Match score:</span>
+                                <span className="text-xs text-muted-foreground">Match score:</span>
                                 <Progress
                                   value={((job.result.suggestions.egyptian_standard_match as any)?.match_score || 0) * 100}
                                   className="w-16 h-1.5"
                                 />
-                                <span className="text-xs font-mono text-white w-8 text-right">
+                                <span className="text-xs font-mono text-foreground w-8 text-right">
                                   {(((job.result.suggestions.egyptian_standard_match as any)?.match_score || 0) * 100).toFixed(0)}%
                                 </span>
                               </div>
                               {(job.result.suggestions.egyptian_standard_match as any)?.deviation_mm && (
-                                <div className="text-xs text-zinc-500 mt-1">
+                                <div className="text-xs text-muted-foreground mt-1">
                                   Deviation:{" "}
                                   {((job.result.suggestions.egyptian_standard_match as any).deviation_mm.width || 0).toFixed(1)}mm width,{" "}
                                   {((job.result.suggestions.egyptian_standard_match as any).deviation_mm.height || 0).toFixed(1)}mm height
@@ -941,14 +941,14 @@ export const SmartScanUploader: React.FC = () => {
 
                         {job.result.suggestions && (
                           <div className="space-y-2">
-                            <h5 className="text-xs font-medium text-zinc-400">Suggestions</h5>
+                            <h5 className="text-xs font-medium text-muted-foreground">Suggestions</h5>
                             <div className="space-y-1.5">
                               {job.result.suggestions.profile_name && (
                                 <div className="flex items-center gap-2">
                                   <Badge variant="outline" className="text-xs">
                                     Suggested name
                                   </Badge>
-                                  <span className="text-xs text-white truncate">
+                                  <span className="text-xs text-foreground truncate">
                                     {job.result.suggestions.profile_name}
                                   </span>
                                 </div>
@@ -958,7 +958,7 @@ export const SmartScanUploader: React.FC = () => {
                                   <Badge variant="outline" className="text-xs">
                                     Likely material
                                   </Badge>
-                                  <span className="text-xs text-white capitalize">
+                                  <span className="text-xs text-foreground capitalize">
                                     {job.result.suggestions.likely_material}
                                   </span>
                                 </div>
@@ -968,7 +968,7 @@ export const SmartScanUploader: React.FC = () => {
                                   <Badge variant="outline" className="text-xs">
                                     Suggested role
                                   </Badge>
-                                  <span className="text-xs text-white capitalize">
+                                  <span className="text-xs text-foreground capitalize">
                                     {job.result.suggestions.likely_role}
                                   </span>
                                 </div>
@@ -979,12 +979,12 @@ export const SmartScanUploader: React.FC = () => {
 
                         {(job.result.quality?.verification_notes ?? []).length > 0 && (
                           <div className="space-y-1">
-                            <h5 className="text-xs font-medium text-zinc-400">Verification Notes</h5>
+                            <h5 className="text-xs font-medium text-muted-foreground">Verification Notes</h5>
                             <div className="space-y-1">
                               {(job.result.quality?.verification_notes ?? []).map((note: string, idx: number) => (
                                 <div key={idx} className="flex items-start gap-2">
-                                  <AlertTriangle className="w-3 h-3 text-yellow-500 mt-0.5 flex-shrink-0" />
-                                  <span className="text-xs text-yellow-400">{note}</span>
+                                  <AlertTriangle className="w-3 h-3 text-warning mt-0.5 flex-shrink-0" />
+                                  <span className="text-xs text-warning">{note}</span>
                                 </div>
                               ))}
                             </div>
@@ -1003,7 +1003,7 @@ export const SmartScanUploader: React.FC = () => {
                             if (!standard) return;
                             toast.info(`Applied ${standard?.name || 'Egyptian standard'} standard dimensions`);
                           }}
-                          className="h-7 text-xs border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-400"
+                          className="h-7 text-xs border-emerald-500/30 hover:bg-emerald-500/10 text-success"
                         >
                           <CheckCircle className="w-3 h-3 mr-1" />
                           Apply Egyptian Standard
@@ -1028,14 +1028,14 @@ export const SmartScanUploader: React.FC = () => {
       </div>
 
       {jobs.length === 0 && !isProcessing && (
-        <div className="text-center py-12 text-zinc-400">
+        <div className="text-center py-12 text-muted-foreground">
           <div className="mb-4">
-            <Upload className="w-12 h-12 mx-auto opacity-50 text-amber-500/30" />
+            <Upload className="w-12 h-12 mx-auto opacity-50 text-warning/30" />
           </div>
-          <h3 className="typography-h3 text-lg font-medium mb-2 text-white tracking-wide uppercase">
+          <h3 className="typography-h3 text-lg font-medium mb-2 text-foreground tracking-wide uppercase">
             No files uploaded
           </h3>
-          <p className="text-sm max-w-md mx-auto text-zinc-400">
+          <p className="text-sm max-w-md mx-auto text-muted-foreground">
             Drag & drop catalog pages or browse to start converting engineering drawings to vector
             profiles
           </p>

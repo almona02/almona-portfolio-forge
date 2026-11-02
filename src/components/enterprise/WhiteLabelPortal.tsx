@@ -212,7 +212,7 @@ export const WhiteLabelPortal: React.FC = () => {
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">
-            <div className={`p-2 rounded-lg ${enabled ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'}`}>
+            <div className={`p-2 rounded-lg ${enabled ? 'bg-blue-100 text-info' : 'bg-muted text-muted-foreground'}`}>
               {icon}
             </div>
             <div>
@@ -234,15 +234,15 @@ export const WhiteLabelPortal: React.FC = () => {
   );
 
   const PreviewFrame = () => (
-    <div className="border rounded-lg bg-white">
-      <div className="flex items-center justify-between p-3 border-b bg-gray-50">
+    <div className="border rounded-lg bg-card">
+      <div className="flex items-center justify-between p-3 border-b bg-background">
         <div className="flex items-center gap-2">
           <div className="flex gap-1">
             <div className="w-3 h-3 rounded-full bg-red-500"></div>
             <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
             <div className="w-3 h-3 rounded-full bg-green-500"></div>
           </div>
-          <span className="text-xs text-gray-600">{tenantConfig.domain}</span>
+          <span className="text-xs text-muted-foreground">{tenantConfig.domain}</span>
         </div>
         <div className="flex items-center gap-1">
           <Button
@@ -284,32 +284,32 @@ export const WhiteLabelPortal: React.FC = () => {
         {/* Mock website preview */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
               <Building2 className="h-6 w-6" style={{ color: tenantConfig.branding.primaryColor }} />
             </div>
             <div>
               <h1 className="typography-h1 text-xl" style={{ color: tenantConfig.branding.primaryColor }}>
                 {tenantConfig.branding.companyName}
               </h1>
-              <p className="text-sm text-gray-600">Industrial Equipment Solutions</p>
+              <p className="text-sm text-muted-foreground">Industrial Equipment Solutions</p>
             </div>
           </div>
           
           <div className="grid grid-cols-3 gap-3">
             <div 
-              className="p-3 rounded-lg text-white text-center"
+              className="p-3 rounded-lg text-foreground text-center"
               style={{ backgroundColor: tenantConfig.branding.primaryColor }}
             >
               <h3 className="typography-h3 font-medium">Products</h3>
             </div>
             <div 
-              className="p-3 rounded-lg text-white text-center"
+              className="p-3 rounded-lg text-foreground text-center"
               style={{ backgroundColor: tenantConfig.branding.secondaryColor }}
             >
               <h3 className="typography-h3 font-medium">Services</h3>
             </div>
             <div 
-              className="p-3 rounded-lg text-white text-center"
+              className="p-3 rounded-lg text-foreground text-center"
               style={{ backgroundColor: tenantConfig.branding.accentColor }}
             >
               <h3 className="typography-h3 font-medium">Contact</h3>
@@ -318,11 +318,11 @@ export const WhiteLabelPortal: React.FC = () => {
           
           <div className="p-4 border rounded-lg">
             <h3 className="typography-h3 font-medium mb-2">Welcome to Our Platform</h3>
-            <p className="text-sm text-gray-600 mb-3">
+            <p className="text-sm text-muted-foreground mb-3">
               Discover our comprehensive range of industrial equipment and services.
             </p>
             <button 
-              className="px-4 py-2 rounded text-white text-sm"
+              className="px-4 py-2 rounded text-foreground text-sm"
               style={{ backgroundColor: tenantConfig.branding.accentColor }}
             >
               Get Started
@@ -547,7 +547,7 @@ export const WhiteLabelPortal: React.FC = () => {
                       <span className="text-sm">Users</span>
                       <span className="text-sm font-medium">25 / {tenantConfig.limits.users}</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-muted rounded-full h-2">
                       <div className="bg-blue-600 h-2 rounded-full" style={{ width: '50%' }}></div>
                     </div>
                   </div>
@@ -557,7 +557,7 @@ export const WhiteLabelPortal: React.FC = () => {
                       <span className="text-sm">Storage</span>
                       <span className="text-sm font-medium">45 GB / {tenantConfig.limits.storage} GB</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-muted rounded-full h-2">
                       <div className="bg-green-600 h-2 rounded-full" style={{ width: '45%' }}></div>
                     </div>
                   </div>
@@ -567,7 +567,7 @@ export const WhiteLabelPortal: React.FC = () => {
                       <span className="text-sm">API Calls (Monthly)</span>
                       <span className="text-sm font-medium">3,456 / {tenantConfig.limits.apiCalls.toLocaleString()}</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-muted rounded-full h-2">
                       <div className="btn-primary" style={{ width: '35%' }}></div>
                     </div>
                   </div>
@@ -577,7 +577,7 @@ export const WhiteLabelPortal: React.FC = () => {
                       <span className="text-sm">Custom Reports</span>
                       <span className="text-sm font-medium">8 / {tenantConfig.limits.customReports}</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-muted rounded-full h-2">
                       <div className="bg-amber-600 h-2 rounded-full" style={{ width: '32%' }}></div>
                     </div>
                   </div>

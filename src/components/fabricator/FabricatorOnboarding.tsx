@@ -291,7 +291,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
             <div className="flex items-center justify-between mb-4">
               <div>
                 <DialogTitle className="text-2xl font-bold">{t('onboarding.title', 'Welcome to Fabricator Pro')}</DialogTitle>
-                <p className="text-amber-100 text-sm mt-1">
+                <p className="text-warning text-sm mt-1">
                   {t('onboarding.subtitle', "Let's get you started with a quick tutorial")}
                 </p>
               </div>
@@ -299,7 +299,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="text-white hover:bg-amber-800"
+                className="text-foreground hover:bg-amber-800"
               >
                 <X className="h-5 w-5" />
               </Button>
@@ -316,7 +316,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
           </div>
 
           {/* Step Indicators */}
-          <div className="px-6 py-4 bg-gray-50 border-b">
+          <div className="px-6 py-4 bg-background border-b">
             <div className="flex items-center justify-between">
               {steps.map((step, index) => (
                 <React.Fragment key={step.id}>
@@ -328,7 +328,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
                           ? 'bg-green-500 border-green-500 text-white'
                           : index === currentStep
                           ? 'bg-amber-500 border-amber-500 text-white'
-                          : 'bg-gray-200 border-gray-300 text-gray-400'
+                          : 'bg-muted border-border text-muted-foreground'
                       )}
                     >
                       {index < currentStep ? (
@@ -339,7 +339,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
                     </div>
                     <span className={cn(
                       'text-xs mt-2 text-center max-w-[80px]',
-                      index === currentStep ? 'font-semibold text-gray-900' : 'text-gray-500'
+                      index === currentStep ? 'font-semibold text-foreground' : 'text-muted-foreground'
                     )}>
                       {step.title}
                     </span>
@@ -347,7 +347,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
                   {index < steps.length - 1 && (
                     <div className={cn(
                       'h-0.5 flex-1 mx-2',
-                      index < currentStep ? 'bg-green-500' : 'bg-gray-300'
+                      index < currentStep ? 'bg-green-500' : 'bg-muted'
                     )} />
                   )}
                 </React.Fragment>
@@ -361,9 +361,9 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
               {/* Step Title and Description */}
               <div>
                 <h3 className="typography-h3 mb-2">{currentStepData.title}</h3>
-                <p className="text-gray-600 mb-4">{currentStepData.description}</p>
+                <p className="text-muted-foreground mb-4">{currentStepData.description}</p>
                 {currentStepData.duration && (
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Play className="h-4 w-4" />
                     <span>Duration: {currentStepData.duration}</span>
                   </div>
@@ -382,14 +382,14 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
                   className="rounded-lg"
                 />
               ) : (
-                <div className="bg-gray-100 rounded-lg p-12 text-center border-2 border-dashed border-gray-300">
+                <div className="bg-muted rounded-lg p-12 text-center border-2 border-dashed border-border">
                   <div className="space-y-4">
                     <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center">
-                      <Play className="h-8 w-8 text-amber-600" />
+                      <Play className="h-8 w-8 text-warning" />
                     </div>
                     <div>
-                      <p className="text-gray-600 font-medium">{t('onboarding.video_coming_soon', 'Video Tutorial Coming Soon')}</p>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-muted-foreground font-medium">{t('onboarding.video_coming_soon', 'Video Tutorial Coming Soon')}</p>
+                      <p className="text-sm text-muted-foreground mt-1">
                         {t('onboarding.video_placeholder', 'Interactive video content for "{title}" will be available here.', { title: currentStepData.title })}
                       </p>
                     </div>
@@ -408,13 +408,13 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
           </CardContent>
 
           {/* Footer Actions */}
-          <div className="sticky bottom-0 bg-white border-t p-6 flex items-center justify-between">
+          <div className="sticky bottom-0 bg-card border-t p-6 flex items-center justify-between">
             <div>
               {showSkip && (
                 <Button
                   variant="ghost"
                   onClick={handleSkip}
-                  className="text-gray-600"
+                  className="text-muted-foreground"
                 >
                   <SkipForward className="h-4 w-4 mr-2" />
                   {finalSkipText}

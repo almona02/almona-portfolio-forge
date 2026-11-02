@@ -297,7 +297,7 @@ export const SalesAcceleration: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <Target className="h-8 w-8 text-red-600" />
+              <Target className="h-8 w-8 text-destructive" />
               <div>
                 <p className="text-sm text-muted-foreground">Hot Leads</p>
                 <p className="text-2xl font-bold">{leads.filter(l => l.qualification === 'hot').length}</p>
@@ -321,7 +321,7 @@ export const SalesAcceleration: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <DollarSign className="h-8 w-8 text-success" />
               <div>
                 <p className="text-sm text-muted-foreground">Pipeline Value</p>
                 <p className="text-2xl font-bold">€{leads.reduce((sum, l) => sum + l.predictedValue, 0).toLocaleString()}</p>
@@ -333,7 +333,7 @@ export const SalesAcceleration: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <BarChart3 className="h-8 w-8 text-blue-600" />
+              <BarChart3 className="h-8 w-8 text-info" />
               <div>
                 <p className="text-sm text-muted-foreground">Avg automation Score</p>
                 <p className="text-2xl font-bold">{Math.round(leads.reduce((sum, l) => sum + l.aiScore, 0) / leads.length)}</p>
@@ -351,7 +351,7 @@ export const SalesAcceleration: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="p-2 bg-blue-100 rounded-lg">
-                    <Users className="h-6 w-6 text-blue-600" />
+                    <Users className="h-6 w-6 text-info" />
                   </div>
                   <div>
                     <h3 className="typography-h3">{lead.companyName}</h3>
@@ -398,7 +398,7 @@ export const SalesAcceleration: React.FC = () => {
                       <div className="space-y-1">
                         {lead.aiRecommendations.map((rec, index) => (
                           <div key={index} className="flex items-start gap-2">
-                            <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />
+                            <CheckCircle className="h-4 w-4 text-success mt-0.5" />
                             <span className="text-sm">{rec}</span>
                           </div>
                         ))}
@@ -465,7 +465,7 @@ export const SalesAcceleration: React.FC = () => {
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">
-                  <TypeIcon className="h-6 w-6 text-blue-600 mt-1" />
+                  <TypeIcon className="h-6 w-6 text-info mt-1" />
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="typography-h3">{insight.title}</h3>
@@ -476,7 +476,7 @@ export const SalesAcceleration: React.FC = () => {
                     <p className="text-sm text-muted-foreground mb-2">{insight.description}</p>
 
                     <div className="space-y-1">
-                      <p className="text-sm font-medium text-green-600">Impact: {insight.impact}</p>
+                      <p className="text-sm font-medium text-success">Impact: {insight.impact}</p>
                       <p className="text-sm">
                         <strong>Recommendation:</strong> {insight.recommendation}
                       </p>

@@ -389,7 +389,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
               {anyCompatible ? (
                 <>
                   <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <CheckCircle className="h-5 w-5 text-success" />
                     <span className="font-semibold text-green-800">
                       Yilmaz Ready
                     </span>
@@ -398,7 +398,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
                     {bestMachine.machineModel}
                   </Badge>
                   {compatibleCount > 1 && (
-                    <span className="text-sm text-green-600">
+                    <span className="text-sm text-success">
                       +{compatibleCount - 1} more machine{compatibleCount > 2 ? 's' : ''}
                     </span>
                   )}
@@ -406,7 +406,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
               ) : (
                 <>
                   <div className="flex items-center space-x-2">
-                    <XCircle className="h-5 w-5 text-red-600" />
+                    <XCircle className="h-5 w-5 text-destructive" />
                     <span className="font-semibold text-red-800">
                       Machine Conflict
                     </span>
@@ -437,7 +437,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
 
           {/* Show violations in production mode */}
           {visualizationMode === 'production' && bestMachine.violations.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-gray-200 space-y-2">
+            <div className="mt-3 pt-3 border-t border-border space-y-2">
               {bestMachine.violations.map((v, i) => (
                 <div key={i} className={`flex items-start text-sm ${
                   v.severity === 'error' ? 'text-red-700' : 'text-amber-700'
@@ -450,7 +450,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
                   <div>
                     <span className="font-medium">{v.constraint}</span>
                     {v.suggestion && (
-                      <span className="text-gray-600 ml-1">— {v.suggestion}</span>
+                      <span className="text-muted-foreground ml-1">— {v.suggestion}</span>
                     )}
                   </div>
                 </div>
@@ -471,13 +471,13 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
               BETA
             </div>
             <div className="flex items-center space-x-2">
-              <Eye className="h-4 w-4 text-amber-600" />
+              <Eye className="h-4 w-4 text-warning" />
               <span className="text-sm font-medium text-amber-800">
                 Visual Preview: ~85% accuracy
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <Factory className="h-4 w-4 text-green-600" />
+              <Factory className="h-4 w-4 text-success" />
               <span className="text-sm font-medium text-green-800">
                 Production Data: 99.8% accurate
               </span>
@@ -544,8 +544,8 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
       <CardContent>
         {state.status === 'loading' ? (
           <div className="flex flex-col items-center justify-center h-64" role="status" aria-busy="true" aria-live="polite" aria-label="Loading 3D Model">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-4" aria-hidden="true" />
-            <p className="text-sm text-gray-600">Generating 3D visualization...</p>
+            <Loader2 className="h-8 w-8 animate-spin text-info mb-4" aria-hidden="true" />
+            <p className="text-sm text-muted-foreground">Generating 3D visualization...</p>
             <Progress value={45} className="w-full mt-4" />
           </div>
         ) : state.geometry ? (
@@ -574,23 +574,23 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-64 p-6 text-center">
-            <XCircle className="h-12 w-12 text-amber-500 mb-4" />
-            <h4 className="typography-h4 font-medium text-gray-900 mb-2">Visual Preview Unavailable</h4>
-            <p className="text-sm text-gray-600 mb-4">
+            <XCircle className="h-12 w-12 text-warning mb-4" />
+            <h4 className="typography-h4 font-medium text-foreground mb-2">Visual Preview Unavailable</h4>
+            <p className="text-sm text-muted-foreground mb-4">
               {(windowUnit as any).presetId
                 ? `Using pattern: ${(windowUnit as any).presetId}`
                 : 'No pattern selected'}
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Production data below is still 99.8% accurate
             </p>
           </div>
         )}
 
-        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+        <div className="mt-4 p-3 bg-background rounded-lg">
           <div className="flex items-start">
-            <Info className="h-4 w-4 text-gray-500 mt-0.5 mr-2 flex-shrink-0" />
-            <p className="text-xs text-gray-600">
+            <Info className="h-4 w-4 text-muted-foreground mt-0.5 mr-2 flex-shrink-0" />
+            <p className="text-xs text-muted-foreground">
               <strong>Note:</strong> 3D visualization is optimized for customer presentation.
               For manufacturing, always refer to the production data panel.
             </p>
@@ -614,7 +614,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
               <span className="text-xs">99.8% Accuracy</span>
             </Badge>
             {state.lastUpdated && (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-muted-foreground">
                 Updated: {state.lastUpdated.toLocaleTimeString()}
               </span>
             )}
@@ -654,7 +654,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
               discrepancies={state.discrepancies}
             />
 
-            <div className="flex items-center justify-between text-sm text-gray-600">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>
                 Total profiles: {state.fabrication?.profiles?.length || 0}
               </span>
@@ -684,7 +684,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
 
         {/* Trust Seal */}
         <div className="flex items-center p-3 bg-green-50 rounded-lg border border-green-200">
-          <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
+          <CheckCircle className="h-5 w-5 text-success mr-3" />
           <div>
             <div className="font-medium text-green-800">Production-Ready Data</div>
             <div className="text-xs text-green-700">
@@ -735,7 +735,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
             {sendStatus && (
               sendStatus.success ? (
                 <div className="p-6 rounded-xl border-2 border-green-400 bg-green-100 text-center animate-in fade-in duration-300">
-                  <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-2" />
+                  <CheckCircle className="h-12 w-12 text-success mx-auto mb-2" />
                   <div className="text-xl font-bold text-green-800">
                     Sent to {machineDriver?.machineName}
                   </div>
@@ -745,7 +745,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
                 </div>
               ) : (
                 <div className="p-6 rounded-xl border-2 border-red-400 bg-red-100 text-center animate-in fade-in duration-300">
-                  <XCircle className="h-12 w-12 text-red-600 mx-auto mb-2" />
+                  <XCircle className="h-12 w-12 text-destructive mx-auto mb-2" />
                   <div className="text-xl font-bold text-red-800">
                     Transfer Failed
                   </div>
@@ -796,22 +796,22 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
         <CardContent className="p-4">
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-info">
                 {state.performance.generationTime.toFixed(0)}ms
               </div>
-              <div className="text-xs text-gray-600">3D Generation</div>
+              <div className="text-xs text-muted-foreground">3D Generation</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-success">
                 {state.performance.validationTime.toFixed(0)}ms
               </div>
-              <div className="text-xs text-gray-600">Validation</div>
+              <div className="text-xs text-muted-foreground">Validation</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-amber-600">
+              <div className="text-2xl font-bold text-warning">
                 {state.performance.totalTime.toFixed(0)}ms
               </div>
-              <div className="text-xs text-gray-600">Total</div>
+              <div className="text-xs text-muted-foreground">Total</div>
             </div>
           </div>
         </CardContent>
@@ -850,7 +850,7 @@ const CutListComparison: React.FC<CutListComparisonProps> = ({
 }) => {
   if (!existing && !enhanced) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-muted-foreground">
         No cut list data available
       </div>
     );
@@ -863,7 +863,7 @@ const CutListComparison: React.FC<CutListComparisonProps> = ({
       {hasDiscrepancies && (
         <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
           <div className="flex items-center">
-            <AlertCircle className="h-4 w-4 text-amber-600 mr-2" />
+            <AlertCircle className="h-4 w-4 text-warning mr-2" />
             <span className="text-sm font-medium text-amber-800">
               {discrepancies.length} discrepancy{discrepancies.length !== 1 ? 's' : ''} found
             </span>
@@ -884,10 +884,10 @@ const CutListComparison: React.FC<CutListComparisonProps> = ({
           </thead>
           <tbody>
             {enhanced?.map((profile, index) => (
-              <tr key={index} className="border-b hover:bg-gray-50">
+              <tr key={index} className="border-b hover:bg-background">
                 <td className="py-2">
                   <div className="font-medium">{profile.profileCode}</div>
-                  <div className="text-xs text-gray-500">{profile.role}</div>
+                  <div className="text-xs text-muted-foreground">{profile.role}</div>
                 </td>
                 <td className="py-2">{profile.length.toFixed(1)}mm</td>
                 <td className="py-2">{profile.quantity}</td>
@@ -916,7 +916,7 @@ interface HardwareBOMProps {
 const HardwareBOM: React.FC<HardwareBOMProps> = ({ hardware, pattern: _pattern }) => {
   if (!hardware || hardware.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-muted-foreground">
         No hardware specified for this pattern
       </div>
     );
@@ -930,12 +930,12 @@ const HardwareBOM: React.FC<HardwareBOMProps> = ({ hardware, pattern: _pattern }
             <div className="flex items-start justify-between">
               <div>
                 <div className="font-medium">{item.name}</div>
-                <div className="text-sm text-gray-600">{item.supplierCode}</div>
-                <div className="text-xs text-gray-500 mt-1">{item.positionSpec}</div>
+                <div className="text-sm text-muted-foreground">{item.supplierCode}</div>
+                <div className="text-xs text-muted-foreground mt-1">{item.positionSpec}</div>
               </div>
               <div className="text-right">
                 <div className="font-bold text-lg">×{item.quantity}</div>
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-muted-foreground">
                   {item.estimatedTime ? `${item.estimatedTime}min each` : ''}
                 </div>
               </div>
@@ -964,7 +964,7 @@ const ValidationDashboard: React.FC<ValidationDashboardProps> = ({
 
   if (!validation) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-muted-foreground">
         No validation data available
       </div>
     );
@@ -984,7 +984,7 @@ const ValidationDashboard: React.FC<ValidationDashboardProps> = ({
               <div className="text-2xl font-bold">
                 {(validation.score * 100).toFixed(1)}%
               </div>
-              <div className="text-sm text-gray-600">Validation Score</div>
+              <div className="text-sm text-muted-foreground">Validation Score</div>
             </div>
             <div>
               {validation.valid ? (
@@ -1003,15 +1003,15 @@ const ValidationDashboard: React.FC<ValidationDashboardProps> = ({
 
           <div className="mt-4 grid grid-cols-3 gap-2 text-center">
             <div className="p-2 bg-red-50 rounded">
-              <div className="text-lg font-bold text-red-600">{errorWarnings.length}</div>
+              <div className="text-lg font-bold text-destructive">{errorWarnings.length}</div>
               <div className="text-xs text-red-800">Errors</div>
             </div>
             <div className="p-2 bg-amber-50 rounded">
-              <div className="text-lg font-bold text-amber-600">{warningWarnings.length}</div>
+              <div className="text-lg font-bold text-warning">{warningWarnings.length}</div>
               <div className="text-xs text-amber-800">Warnings</div>
             </div>
             <div className="p-2 bg-blue-50 rounded">
-              <div className="text-lg font-bold text-blue-600">{infoWarnings.length}</div>
+              <div className="text-lg font-bold text-info">{infoWarnings.length}</div>
               <div className="text-xs text-blue-800">Info</div>
             </div>
           </div>
@@ -1035,18 +1035,18 @@ const ValidationDashboard: React.FC<ValidationDashboardProps> = ({
               >
                 <div className="flex items-start">
                   {warning.severity === 'error' ? (
-                    <XCircle className="h-4 w-4 text-red-600 mt-0.5 mr-2 flex-shrink-0" />
+                    <XCircle className="h-4 w-4 text-destructive mt-0.5 mr-2 flex-shrink-0" />
                   ) : warning.severity === 'warning' ? (
-                    <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 mr-2 flex-shrink-0" />
+                    <AlertTriangle className="h-4 w-4 text-warning mt-0.5 mr-2 flex-shrink-0" />
                   ) : (
-                    <Info className="h-4 w-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
+                    <Info className="h-4 w-4 text-info mt-0.5 mr-2 flex-shrink-0" />
                   )}
                   <div className="flex-1">
                     <div className="font-medium">{warning.message}</div>
-                    <div className="text-sm text-gray-600 mt-1">
+                    <div className="text-sm text-muted-foreground mt-1">
                       <strong>Affects:</strong> {warning.affectedComponents.join(', ')}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-muted-foreground">
                       <strong>Action:</strong> {warning.suggestedAction}
                     </div>
                   </div>

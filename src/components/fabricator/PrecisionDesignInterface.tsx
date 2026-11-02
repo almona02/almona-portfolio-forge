@@ -619,28 +619,28 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
 
   if (!project) {
     return (
-      <div className={cn("flex items-center justify-center h-96 bg-white border-2 border-gray-300", className)}>
-        <p className="text-gray-500 text-lg">No project loaded</p>
+      <div className={cn("flex items-center justify-center h-96 bg-card border-2 border-border", className)}>
+        <p className="text-muted-foreground text-lg">No project loaded</p>
       </div>
     );
   }
 
   return (
-    <div className={cn("flex flex-col h-full bg-white", className)}>
+    <div className={cn("flex flex-col h-full bg-card", className)}>
       {/* Top Bar: System Info */}
-      <div className="flex items-center justify-between px-6 py-3 bg-gray-50 border-b-2 border-gray-300">
+      <div className="flex items-center justify-between px-6 py-3 bg-background border-b-2 border-border">
         <div className="flex items-center gap-6 text-sm font-semibold">
           <div>
-            <span className="text-gray-600">System: </span>
-            <span className="text-gray-900">{systemPack?.meta.name || project.systemPackId || 'N/A'}</span>
+            <span className="text-muted-foreground">System: </span>
+            <span className="text-foreground">{systemPack?.meta.name || project.systemPackId || 'N/A'}</span>
           </div>
           <div>
-            <span className="text-gray-600">Glass: </span>
-            <span className="text-gray-900">{glassInfo}</span>
+            <span className="text-muted-foreground">Glass: </span>
+            <span className="text-foreground">{glassInfo}</span>
           </div>
           <div>
-            <span className="text-gray-600">Color: </span>
-            <span className="text-gray-900">{colorInfo}</span>
+            <span className="text-muted-foreground">Color: </span>
+            <span className="text-foreground">{colorInfo}</span>
           </div>
         </div>
 
@@ -648,20 +648,20 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
           {/* Pattern Selector */}
           {availablePatterns.length > 0 && (
             <div className="flex items-center gap-3">
-              <Label className="typography-label text-sm text-gray-600 font-semibold">Pattern:</Label>
+              <Label className="typography-label text-sm text-muted-foreground font-semibold">Pattern:</Label>
               <Select
                 value={selectedPatternId}
                 onValueChange={handlePatternSelect}
               >
-                <SelectTrigger className="w-[200px] bg-white border-gray-300 text-sm">
+                <SelectTrigger className="w-[200px] bg-card border-border text-sm">
                   <SelectValue placeholder="Select Pattern..." />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   {availablePatterns.map((pattern) => (
                     <SelectItem key={pattern.id} value={pattern.id}>
                       <div className="flex flex-col">
                         <span className="font-medium">{pattern.name}</span>
-                        <span className="text-xs text-gray-500">{pattern.layout}</span>
+                        <span className="text-xs text-muted-foreground">{pattern.layout}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -671,21 +671,21 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
           )}
 
           {/* Quick Zoom Controls in Top Bar */}
-          <div className="flex items-center gap-2 border-l border-gray-300 pl-4">
-            <span className="text-xs text-gray-500 mr-1">Zoom:</span>
+          <div className="flex items-center gap-2 border-l border-border pl-4">
+            <span className="text-xs text-muted-foreground mr-1">Zoom:</span>
             <button
               onClick={handleZoomOut}
-              className="px-2 py-1 bg-white hover:bg-gray-100 border border-gray-300 rounded text-sm font-semibold transition-colors"
+              className="px-2 py-1 bg-card hover:bg-muted border border-border rounded text-sm font-semibold transition-colors"
               title="Zoom Out (Ctrl + Scroll)"
             >
               −
             </button>
-            <span className="px-2 text-xs font-medium text-gray-700 min-w-[50px] text-center">
+            <span className="px-2 text-xs font-medium text-foreground min-w-[50px] text-center">
               {Math.round(zoom * 100)}%
             </span>
             <button
               onClick={handleZoomIn}
-              className="px-2 py-1 bg-white hover:bg-gray-100 border border-gray-300 rounded text-sm font-semibold transition-colors"
+              className="px-2 py-1 bg-card hover:bg-muted border border-border rounded text-sm font-semibold transition-colors"
               title="Zoom In (Ctrl + Scroll)"
             >
               +
@@ -704,7 +704,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
       {/* Center: Blueprint Canvas with Zoom/Pan */}
       <div 
         ref={containerRef}
-        className="flex-1 relative overflow-auto bg-gray-50" 
+        className="flex-1 relative overflow-auto bg-background"
         style={{ 
           backgroundImage: 'linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px)', 
           backgroundSize: '20px 20px',
@@ -717,22 +717,22 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
         onMouseLeave={handlePanEnd}
       >
         {/* Zoom Controls Toolbar */}
-        <div className="absolute top-4 right-4 z-20 bg-white border-2 border-gray-800 shadow-lg rounded-lg p-2 flex flex-col gap-2">
+        <div className="absolute top-4 right-4 z-20 bg-card border-2 border-border shadow-lg rounded-lg p-2 flex flex-col gap-2">
           <button
             onClick={handleZoomIn}
-            className="px-3 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded font-semibold text-sm transition-colors"
+            className="px-3 py-2 bg-muted hover:bg-muted border border-border rounded font-semibold text-sm transition-colors"
             title="Zoom In (Ctrl + Scroll)"
           >
             +
           </button>
           <button
             onClick={handleZoomOut}
-            className="px-3 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded font-semibold text-sm transition-colors"
+            className="px-3 py-2 bg-muted hover:bg-muted border border-border rounded font-semibold text-sm transition-colors"
             title="Zoom Out (Ctrl + Scroll)"
           >
             −
           </button>
-          <div className="px-3 py-1 text-xs text-center text-gray-600 border-t border-gray-300 mt-1">
+          <div className="px-3 py-1 text-xs text-center text-muted-foreground border-t border-border mt-1">
             {Math.round(zoom * 100)}%
           </div>
           <button
@@ -765,7 +765,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
             viewBox={`0 0 ${Math.round(svgWidth)} ${Math.round(svgHeight)}`}
             width={Math.round(svgWidth)}
             height={Math.round(svgHeight)}
-            className="bg-white border-2 border-gray-800 shadow-2xl"
+            className="bg-card border-2 border-border shadow-2xl"
             style={{
               minWidth: Math.round(svgWidth),
               minHeight: Math.round(svgHeight),
@@ -946,7 +946,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
         {/* HUD Panel (floating) - positioned relative to container */}
         {hudState.cellId && (
           <div
-            className="absolute bg-white border-2 border-gray-800 shadow-2xl p-4 z-30 rounded-lg"
+            className="absolute bg-card border-2 border-border shadow-2xl p-4 z-30 rounded-lg"
             style={{
               left: `${hudState.x + 20}px`,
               top: `${hudState.y}px`,
@@ -958,7 +958,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
               <h3 className="typography-h3 text-sm">Cell Properties</h3>
               <button
                 onClick={() => setHudState({ cellId: null, x: 0, y: 0 })}
-                className="text-gray-500 hover:text-gray-900"
+                className="text-muted-foreground hover:text-foreground"
               >
                 ×
               </button>
@@ -975,11 +975,11 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
                       "w-full text-left px-3 py-2 text-sm border-2 transition-all duration-200 font-medium",
                       isActive
                         ? "border-blue-600 bg-blue-50 text-blue-900 shadow-sm"
-                        : "border-gray-300 hover:border-gray-500 hover:bg-gray-50 text-gray-700"
+                        : "border-border hover:border-border hover:bg-background text-foreground"
                     )}
                   >
                     <span className="flex items-center gap-2">
-                      {isActive && <span className="text-blue-600">✓</span>}
+                      {isActive && <span className="text-info">✓</span>}
                       {type.charAt(0).toUpperCase() + type.slice(1)}
                     </span>
                   </button>
@@ -991,40 +991,40 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
       </div>
 
       {/* Bottom: Waste Meter & Live Stats */}
-      <div className="px-6 py-4 bg-gray-50 border-t-2 border-gray-300 flex-shrink-0">
+      <div className="px-6 py-4 bg-background border-t-2 border-border flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-8">
             <div>
-              <span className="text-sm text-gray-600">Current Design Efficiency: </span>
+              <span className="text-sm text-muted-foreground">Current Design Efficiency: </span>
               <span className={cn(
                 "text-lg font-bold",
-                wasteMetrics.efficiency >= 90 ? "text-green-600" : 
-                wasteMetrics.efficiency >= 75 ? "text-yellow-600" : "text-red-600"
+                wasteMetrics.efficiency >= 90 ? "text-success" :
+                wasteMetrics.efficiency >= 75 ? "text-warning" : "text-destructive"
               )}>
                 {wasteMetrics.efficiency}%
               </span>
               <span className={cn(
                 "ml-2 text-sm",
-                wasteMetrics.efficiency >= 90 ? "text-green-600" : 
-                wasteMetrics.efficiency >= 75 ? "text-yellow-600" : "text-red-600"
+                wasteMetrics.efficiency >= 90 ? "text-success" :
+                wasteMetrics.efficiency >= 75 ? "text-warning" : "text-destructive"
               )}>
                 {wasteMetrics.efficiency >= 90 ? "(Excellent)" : 
                  wasteMetrics.efficiency >= 75 ? "(Good)" : "(Needs Improvement)"}
               </span>
             </div>
             <div>
-              <span className="text-sm text-gray-600">Waste: </span>
-              <span className="text-lg font-bold text-red-600">{wasteMetrics.wastePercentage}%</span>
+              <span className="text-sm text-muted-foreground">Waste: </span>
+              <span className="text-lg font-bold text-destructive">{wasteMetrics.wastePercentage}%</span>
             </div>
           </div>
           <div className="flex items-center gap-8">
             <div>
-              <span className="text-sm text-gray-600">Price: </span>
-              <span className="text-lg font-bold text-blue-600">{wasteMetrics.price.toFixed(2)} EGP</span>
+              <span className="text-sm text-muted-foreground">Price: </span>
+              <span className="text-lg font-bold text-info">{wasteMetrics.price.toFixed(2)} EGP</span>
             </div>
             <div>
-              <span className="text-sm text-gray-600">Material Weight: </span>
-              <span className="text-lg font-bold text-gray-900">{wasteMetrics.materialWeight} kg</span>
+              <span className="text-sm text-muted-foreground">Material Weight: </span>
+              <span className="text-lg font-bold text-foreground">{wasteMetrics.materialWeight} kg</span>
             </div>
           </div>
         </div>

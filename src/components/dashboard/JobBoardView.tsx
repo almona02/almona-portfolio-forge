@@ -26,7 +26,7 @@ export const JobBoardView: React.FC = () => {
 
   if (isLoading && !jobs.length) {
     return (
-      <div className="flex items-center justify-center py-10 text-sm text-gray-400">
+      <div className="flex items-center justify-center py-10 text-sm text-muted-foreground">
         Loading jobs...
       </div>
     );
@@ -36,19 +36,19 @@ export const JobBoardView: React.FC = () => {
     return (
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="typography-h2 text-lg font-semibold text-gray-100">Job Board</h2>
-          <span className="text-xs text-gray-400">No projects yet</span>
+          <h2 className="typography-h2 text-lg font-semibold text-foreground">Job Board</h2>
+          <span className="text-xs text-muted-foreground">No projects yet</span>
         </div>
 
-        <div className="rounded-xl border border-gray-700 bg-gray-900/80 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="space-y-1 text-sm text-gray-300 max-w-md">
-            <div className="text-xs uppercase tracking-[0.18em] text-gray-500">
+        <div className="rounded-xl border border-border bg-background/80 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="space-y-1 text-sm text-foreground max-w-md">
+            <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
               First time setup
             </div>
-            <div className="font-medium text-gray-100">
+            <div className="font-medium text-foreground">
               You don&apos;t have any saved projects yet.
             </div>
-            <div className="text-xs text-gray-400">
+            <div className="text-xs text-muted-foreground">
               Start by creating your first fabrication project, or register a customer that you can
               later pick from the New Project Wizard dropdown.
             </div>
@@ -63,7 +63,7 @@ export const JobBoardView: React.FC = () => {
               <Button
                 size="sm"
                 variant="outline"
-                className="text-xs border-gray-700 text-gray-200"
+                className="text-xs border-border text-foreground"
               >
                 Add customer
               </Button>
@@ -77,8 +77,8 @@ export const JobBoardView: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="typography-h2 text-lg font-semibold text-gray-100">Job Board</h2>
-        <span className="text-xs text-gray-400">{jobs.length} jobs</span>
+        <h2 className="typography-h2 text-lg font-semibold text-foreground">Job Board</h2>
+        <span className="text-xs text-muted-foreground">{jobs.length} jobs</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 overflow-x-auto min-w-[640px] md:min-w-0">

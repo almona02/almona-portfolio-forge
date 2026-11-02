@@ -219,7 +219,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       title="مش مفيد"
                       data-feedback-id={`alert_${idx}`}
                     >
-                      <ThumbsDown className="h-3 w-3 text-red-500" />
+                      <ThumbsDown className="h-3 w-3 text-destructive" />
                     </Button>
                   </span>
                 </AlertTitle>
@@ -239,7 +239,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
         {highAlerts.length > 0 && (
           <div className="space-y-2">
             <h3 className="typography-h3 text-sm flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-500" />
+              <AlertTriangle className="h-4 w-4 text-warning" />
               Important Updates
             </h3>
             {highAlerts.slice(0, 3).map((alert, idx) => (
@@ -271,7 +271,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       data-feedback-id={`high_alert_${idx}`}
                       disabled={feedbackSubmitting.has(`high_alert_${idx}`)}
                     >
-                      <ThumbsDown className="h-3 w-3 text-red-500" />
+                      <ThumbsDown className="h-3 w-3 text-destructive" />
                     </Button>
                   </span>
                 </AlertTitle>

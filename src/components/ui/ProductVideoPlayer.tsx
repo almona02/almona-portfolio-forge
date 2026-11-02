@@ -178,7 +178,7 @@ export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
             
             {/* Product Name Overlay */}
             <div className="absolute bottom-2 left-2 right-12 z-30">
-              <p className="text-white text-xs font-medium truncate drop-shadow-lg">
+              <p className="text-foreground text-xs font-medium truncate drop-shadow-lg">
                 {productName}
               </p>
             </div>

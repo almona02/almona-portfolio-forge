@@ -228,13 +228,13 @@ export const QualityControlPage: React.FC = () => {
     : fabricatorRoutes.studioProductionDelivery();
 
   return (
-    <div className="flex h-full min-h-0 min-w-0 flex-col overflow-y-auto bg-slate-950 p-3 sm:p-6">
+    <div className="flex h-full min-h-0 min-w-0 flex-col overflow-y-auto bg-background p-3 sm:p-6">
       <div className="mx-auto w-full max-w-4xl">
         <div className="mb-6 flex items-center gap-3">
-          <CheckCircle2 className="h-8 w-8 text-green-400" />
+          <CheckCircle2 className="h-8 w-8 text-success" />
           <h2 className="text-2xl font-bold text-amber-200">Quality Control</h2>
         </div>
-        <p className="mb-8 text-slate-400">Final inspection and validation before production approval.</p>
+        <p className="mb-8 text-muted-foreground">Final inspection and validation before production approval.</p>
 
         {isLoading ? (
           <div className="mb-6 flex items-center gap-2 text-amber-200/80">
@@ -272,14 +272,14 @@ export const QualityControlPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="mb-6 rounded-lg border border-slate-700 bg-slate-900 p-6">
+          <div className="mb-6 rounded-lg border border-border bg-background p-6">
             <h3 className="mb-4 text-lg font-semibold text-amber-200">Inspection Evidence</h3>
             <div className="space-y-3">
               {QUALITY_CHECK_IDS.map((id) => (
                 <label
                   key={id}
                   htmlFor={`qc-${id}`}
-                  className="flex cursor-pointer items-center gap-3 text-slate-300 hover:text-amber-200"
+                  className="flex cursor-pointer items-center gap-3 text-foreground hover:text-amber-200"
                 >
                   <input
                     id={`qc-${id}`}
@@ -288,85 +288,85 @@ export const QualityControlPage: React.FC = () => {
                     onChange={(event) =>
                       setChecks((value) => ({ ...value, [id]: event.target.checked }))
                     }
-                    className="h-5 w-5 shrink-0 rounded border-slate-600 text-amber-500 focus:ring-amber-500"
+                    className="h-5 w-5 shrink-0 rounded border-border text-amber-500 focus:ring-amber-500"
                   />
                   <span>{LABELS[id]}</span>
                 </label>
               ))}
             </div>
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              <label className="text-sm text-slate-300">
+              <label className="text-sm text-foreground">
                 Measured width (mm)
                 <input
                   aria-label="Measured width (mm)"
                   value={actualWidth}
                   onChange={(event) => setActualWidth(event.target.value)}
                   inputMode="decimal"
-                  className="mt-1 w-full rounded border border-slate-600 bg-slate-950 p-2"
+                  className="mt-1 w-full rounded border border-border bg-background p-2"
                 />
               </label>
-              <label className="text-sm text-slate-300">
+              <label className="text-sm text-foreground">
                 Measured height (mm)
                 <input
                   aria-label="Measured height (mm)"
                   value={actualHeight}
                   onChange={(event) => setActualHeight(event.target.value)}
                   inputMode="decimal"
-                  className="mt-1 w-full rounded border border-slate-600 bg-slate-950 p-2"
+                  className="mt-1 w-full rounded border border-border bg-background p-2"
                 />
               </label>
-              <label className="text-sm text-slate-300">
+              <label className="text-sm text-foreground">
                 Approved tolerance ± mm
                 <input
                   aria-label="Approved tolerance (mm)"
                   value={authority?.toleranceMm ?? ''}
                   readOnly
-                  className="mt-1 w-full rounded border border-slate-600 bg-slate-950 p-2 text-slate-400"
+                  className="mt-1 w-full rounded border border-border bg-background p-2 text-muted-foreground"
                 />
               </label>
             </div>
-            <label className="mt-4 block text-sm text-slate-300">
+            <label className="mt-4 block text-sm text-foreground">
               Inspection notes
               <textarea
                 aria-label="Inspection notes"
                 value={notes}
                 onChange={(event) => setNotes(event.target.value)}
-                className="mt-1 min-h-20 w-full rounded border border-slate-600 bg-slate-950 p-2"
+                className="mt-1 min-h-20 w-full rounded border border-border bg-background p-2"
               />
             </label>
           </div>
         )}
 
         {error && (
-          <p role="alert" className="mb-4 text-sm text-red-300">
+          <p role="alert" className="mb-4 text-sm text-destructive">
             {error}
           </p>
         )}
         {!error && authority && (
-          <p className="mb-4 text-xs text-slate-500">Verified revision {authority.revision}</p>
+          <p className="mb-4 text-xs text-muted-foreground">Verified revision {authority.revision}</p>
         )}
 
         {currentProject && (
-          <div className="mb-6 rounded-lg border border-slate-700 bg-slate-900 p-6">
+          <div className="mb-6 rounded-lg border border-border bg-background p-6">
             <h3 className="mb-4 text-lg font-semibold text-amber-200">Project Summary</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm break-words [overflow-wrap:anywhere]">
               <div>
-                <span className="text-slate-500">Position ID:</span>
-                <span className="ml-2 text-slate-300">{currentProject.id}</span>
+                <span className="text-muted-foreground">Position ID:</span>
+                <span className="ml-2 text-foreground">{currentProject.id}</span>
               </div>
               <div>
-                <span className="text-slate-500">Order:</span>
-                <span className="ml-2 text-slate-300">{currentProject.orderNumber}</span>
+                <span className="text-muted-foreground">Order:</span>
+                <span className="ml-2 text-foreground">{currentProject.orderNumber}</span>
               </div>
               <div>
-                <span className="text-slate-500">Target:</span>
-                <span className="ml-2 text-slate-300">
+                <span className="text-muted-foreground">Target:</span>
+                <span className="ml-2 text-foreground">
                   {currentProject.overallWidth} × {currentProject.overallHeight} mm
                 </span>
               </div>
               <div>
-                <span className="text-slate-500">Inspector:</span>
-                <span className="ml-2 text-slate-300">{user?.id ?? 'Unavailable'}</span>
+                <span className="text-muted-foreground">Inspector:</span>
+                <span className="ml-2 text-foreground">{user?.id ?? 'Unavailable'}</span>
               </div>
             </div>
           </div>

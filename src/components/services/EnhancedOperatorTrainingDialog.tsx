@@ -23,7 +23,7 @@ export const EnhancedOperatorTrainingDialog = ({ open, onOpenChange }: { open: b
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl bg-almona-darker text-white border-almona-light/20">
+      <DialogContent className="max-w-3xl bg-card text-foreground border-border/20">
         <DialogHeader>
           <DialogTitle className="text-2xl">Enhanced Operator Training</DialogTitle>
         </DialogHeader>
@@ -32,14 +32,14 @@ export const EnhancedOperatorTrainingDialog = ({ open, onOpenChange }: { open: b
             <LazyMotionDiv
               key={module.id}
               onClick={() => toggleModule(module.id)}
-              className={`p-4 border rounded-lg cursor-pointer ${selectedModules.includes(module.id) ? 'border-amber-500' : 'border-almona-light/20'}`}
+              className={`p-4 border rounded-lg cursor-pointer ${selectedModules.includes(module.id) ? 'border-amber-500' : 'border-border/20'}`}
               whileHover={{ scale: 1.05 }}
             >
               <div className="flex justify-between items-center">
                 <h3 className="typography-h3">{module.title}</h3>
                 <Badge>{module.level}</Badge>
               </div>
-              <p className="text-sm text-gray-400">Duration: {module.duration}</p>
+              <p className="text-sm text-muted-foreground">Duration: {module.duration}</p>
             </LazyMotionDiv>
           ))}
         </div>

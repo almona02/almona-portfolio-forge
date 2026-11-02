@@ -121,10 +121,10 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
   }
 
   const getROITrend = () => {
-    if (metrics.roiPercentage > 200) return { icon: TrendingUp, color: 'text-green-500', label: 'Excellent' }
-    if (metrics.roiPercentage > 100) return { icon: TrendingUp, color: 'text-blue-500', label: 'Good' }
+    if (metrics.roiPercentage > 200) return { icon: TrendingUp, color: 'text-success', label: 'Excellent' }
+    if (metrics.roiPercentage > 100) return { icon: TrendingUp, color: 'text-info', label: 'Good' }
     if (metrics.roiPercentage > 50) return { icon: TrendingDown, color: 'text-yellow-500', label: 'Fair' }
-    return { icon: TrendingDown, color: 'text-red-500', label: 'Poor' }
+    return { icon: TrendingDown, color: 'text-destructive', label: 'Poor' }
   }
 
   const roiTrend = getROITrend()
@@ -144,14 +144,14 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="typography-h3 text-lg text-gray-900">Service ROI Analytics</h3>
-          <p className="text-sm text-gray-600">Return on investment from service improvements</p>
+          <h3 className="typography-h3 text-lg text-foreground">Service ROI Analytics</h3>
+          <p className="text-sm text-muted-foreground">Return on investment from service improvements</p>
         </div>
         <div className="flex items-center gap-2">
           <select
             value={timeRange}
             onChange={(e) => onTimeRangeChange?.(e.target.value)}
-            className="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="px-3 py-1 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
           >
             <option value="3m">Last 3 Months</option>
             <option value="6m">Last 6 Months</option>
@@ -169,25 +169,25 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Savings</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Savings</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-success">
               {formatCurrency(metrics.totalSavings)}
             </div>
             <div className="flex items-center mt-1">
               <TrendingUp className="h-4 w-4  mr-1 status-valid" />
-              <span className="text-sm text-green-600">+{formatPercentage(metrics.roiPercentage)} ROI</span>
+              <span className="text-sm text-success">+{formatPercentage(metrics.roiPercentage)} ROI</span>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Maintenance Cost Reduction</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Maintenance Cost Reduction</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-bold text-info">
               {formatPercentage(metrics.maintenanceCostReduction)}
             </div>
             <Progress value={metrics.maintenanceCostReduction} className="mt-2" />
@@ -196,7 +196,7 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Uptime Improvement</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Uptime Improvement</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-amber-600">
@@ -208,7 +208,7 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Response Time Reduction</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Response Time Reduction</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-amber-600">
@@ -220,10 +220,10 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Customer Satisfaction</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Customer Satisfaction</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">
+            <div className="text-2xl font-bold text-success">
               {formatPercentage(metrics.customerSatisfactionIncrease)}
             </div>
             <Progress value={metrics.customerSatisfactionIncrease} className="mt-2" />
@@ -232,14 +232,14 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">ROI Performance</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">ROI Performance</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center">
               <roiTrend.icon className={`h-6 w-6 ${roiTrend.color} mr-2`} />
               <div>
                 <div className="text-2xl font-bold">{roiTrend.label}</div>
-                <div className="text-sm text-gray-600">{metrics.roiPercentage}% ROI</div>
+                <div className="text-sm text-muted-foreground">{metrics.roiPercentage}% ROI</div>
               </div>
             </div>
           </CardContent>
@@ -329,19 +329,19 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <label className="typography-label text-sm font-medium text-gray-700">Initial Investment</label>
-              <div className="text-2xl font-bold text-gray-900">
+              <label className="typography-label text-sm font-medium text-foreground">Initial Investment</label>
+              <div className="text-2xl font-bold text-foreground">
                 {formatCurrency(45000)}
               </div>
             </div>
             <div className="space-y-2">
-              <label className="typography-label text-sm font-medium text-gray-700">Annual Savings</label>
-              <div className="text-2xl font-bold text-green-600">
+              <label className="typography-label text-sm font-medium text-foreground">Annual Savings</label>
+              <div className="text-2xl font-bold text-success">
                 {formatCurrency(metrics.totalSavings)}
               </div>
             </div>
             <div className="space-y-2">
-              <label className="typography-label text-sm font-medium text-gray-700">ROI</label>
+              <label className="typography-label text-sm font-medium text-foreground">ROI</label>
               <div className="text-2xl font-bold text-amber-600">
                 {formatPercentage(metrics.roiPercentage)}
               </div>

@@ -94,18 +94,18 @@ export const StandaloneOptimizer: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-black text-white py-12 px-4">
       <div className="container mx-auto max-w-4xl space-y-6">
         <div className="text-center space-y-4">
           <h1 className="typography-h1 bg-gradient-to-r from-amber-400 to-red-500 bg-clip-text text-transparent">
             Free Cutting Optimizer
           </h1>
-          <p className="text-gray-400">
+          <p className="text-muted-foreground">
             Optimize your material cutting to reduce waste and save money
           </p>
         </div>
 
-        <Card className="bg-gray-800/50 border-gray-700">
+        <Card className="bg-card/50 border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Scissors className="h-5 w-5 text-amber-400" />
@@ -122,7 +122,7 @@ export const StandaloneOptimizer: React.FC = () => {
                 type="number"
                 value={stockLength}
                 onChange={(e) => setStockLength(Number(e.target.value))}
-                className="bg-gray-900 border-gray-700"
+                className="bg-background border-border"
               />
             </div>
 
@@ -139,7 +139,7 @@ export const StandaloneOptimizer: React.FC = () => {
                       newCuts[idx].length = Number(e.target.value);
                       setCuts(newCuts);
                     }}
-                    className="bg-gray-900 border-gray-700"
+                    className="bg-background border-border"
                   />
                   <Input
                     type="number"
@@ -150,7 +150,7 @@ export const StandaloneOptimizer: React.FC = () => {
                       newCuts[idx].quantity = Number(e.target.value);
                       setCuts(newCuts);
                     }}
-                    className="bg-gray-900 border-gray-700 w-24"
+                    className="bg-background border-border w-24"
                   />
                   <Button
                     variant="ghost"
@@ -195,7 +195,7 @@ export const StandaloneOptimizer: React.FC = () => {
             <WasteComparisonReport comparison={result} currency="EGP" />
 
             {!emailSubmitted ? (
-              <Card className="bg-gray-800/50 border-gray-700">
+              <Card className="bg-card/50 border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Mail className="h-5 w-5 text-amber-400" />
@@ -214,7 +214,7 @@ export const StandaloneOptimizer: React.FC = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="your@email.com"
-                      className="bg-gray-900 border-gray-700"
+                      className="bg-background border-border"
                     />
                   </div>
                   <Button
@@ -228,8 +228,8 @@ export const StandaloneOptimizer: React.FC = () => {
               </Card>
             ) : (
               <Alert className="bg-green-500/10 border-green-500/30">
-                <CheckCircle2 className="h-4 w-4 text-green-400" />
-                <AlertDescription className="text-green-300">
+                <CheckCircle2 className="h-4 w-4 text-success" />
+                <AlertDescription className="text-success">
                   Thank you! Check your email for the full report and information about Fabricator
                   Pro.
                 </AlertDescription>
@@ -239,7 +239,7 @@ export const StandaloneOptimizer: React.FC = () => {
             <Card className="bg-blue-500/10 border-blue-500/30">
               <CardContent className="p-6">
                 <h3 className="typography-h3 text-lg mb-2">Want More?</h3>
-                <p className="text-sm text-gray-300 mb-4">
+                <p className="text-sm text-foreground mb-4">
                   Manage your entire workshop, save these results, and track remnants with
                   Fabricator Pro.
                 </p>

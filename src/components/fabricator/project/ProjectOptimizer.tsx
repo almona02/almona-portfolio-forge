@@ -71,9 +71,9 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
 
     if (!results) {
         return (
-            <div className="h-full flex flex-col items-center justify-center p-8 text-center text-gray-500">
+            <div className="h-full flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
                 <Scissors className="h-16 w-16 mb-4 opacity-20" />
-                <h3 className="text-xl font-medium text-gray-300 mb-2">Optimization Required</h3>
+                <h3 className="text-xl font-medium text-foreground mb-2">Optimization Required</h3>
                 <p className="max-w-md mb-6">
                     Run the Apex Engine optimization to generate cut lists and material requirements for all {project.units.length} units.
                 </p>
@@ -109,42 +109,42 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
     }, 0);
 
     return (
-        <div className="h-full flex flex-col bg-gray-900 p-6 overflow-hidden">
+        <div className="h-full flex flex-col bg-background p-6 overflow-hidden">
 
             {/* Top Stats Bar */}
             <div className="grid grid-cols-4 gap-4 mb-6 flex-shrink-0">
                 <Card className="bg-blue-900/20 border-blue-500/30">
                     <CardContent className="p-4 flex items-center gap-4">
-                        <div className="p-3 bg-blue-500/20 rounded-full text-blue-400">
+                        <div className="p-3 bg-blue-500/20 rounded-full text-info">
                             <Layers className="h-6 w-6" />
                         </div>
                         <div>
-                            <div className="text-xs text-blue-300 uppercase font-bold">Total Material</div>
-                            <div className="text-2xl font-bold text-white">{totalBars} <span className="text-sm font-normal text-gray-400">bars (6m)</span></div>
+                            <div className="text-xs text-info uppercase font-bold">Total Material</div>
+                            <div className="text-2xl font-bold text-foreground">{totalBars} <span className="text-sm font-normal text-muted-foreground">bars (6m)</span></div>
                         </div>
                     </CardContent>
                 </Card>
 
                 <Card className="bg-red-900/20 border-red-500/30">
                     <CardContent className="p-4 flex items-center gap-4">
-                        <div className="p-3 bg-red-500/20 rounded-full text-red-400">
+                        <div className="p-3 bg-red-500/20 rounded-full text-destructive">
                             <Scissors className="h-6 w-6" />
                         </div>
                         <div>
-                            <div className="text-xs text-red-300 uppercase font-bold">Total Waste</div>
-                            <div className="text-2xl font-bold text-white">{totalWaste.toFixed(2)}m</div>
+                            <div className="text-xs text-destructive uppercase font-bold">Total Waste</div>
+                            <div className="text-2xl font-bold text-foreground">{totalWaste.toFixed(2)}m</div>
                         </div>
                     </CardContent>
                 </Card>
 
                 <Card className="bg-emerald-900/20 border-emerald-500/30">
                     <CardContent className="p-4 flex items-center gap-4">
-                        <div className="p-3 bg-emerald-500/20 rounded-full text-emerald-400">
+                        <div className="p-3 bg-emerald-500/20 rounded-full text-success">
                             <BarChart className="h-6 w-6" />
                         </div>
                         <div>
-                            <div className="text-xs text-emerald-300 uppercase font-bold">Optimization Efficiency</div>
-                            <div className="text-2xl font-bold text-white">94.2% <span className="text-sm font-normal text-gray-400">Global Average</span></div>
+                            <div className="text-xs text-success uppercase font-bold">Optimization Efficiency</div>
+                            <div className="text-2xl font-bold text-foreground">94.2% <span className="text-sm font-normal text-muted-foreground">Global Average</span></div>
                         </div>
                     </CardContent>
                 </Card>
@@ -152,13 +152,13 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                 <Card className="bg-amber-900/20 border-amber-500/30">
                     <CardContent className="p-4 flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 bg-amber-500/20 rounded-full text-amber-400">
+                            <div className="p-3 bg-amber-500/20 rounded-full text-warning">
                                 <Layers className="h-6 w-6" />
                             </div>
                             <div>
-                                <div className="text-xs text-amber-300 uppercase font-bold">Project BOM Total</div>
-                                <div className="text-2xl font-bold text-white">{project.units.length} poses</div>
-                                <div className="text-sm text-amber-200/80">${totalProjectCost.toFixed(2)} total value</div>
+                                <div className="text-xs text-warning uppercase font-bold">Project BOM Total</div>
+                                <div className="text-2xl font-bold text-foreground">{project.units.length} poses</div>
+                                <div className="text-sm text-warning/80">${totalProjectCost.toFixed(2)} total value</div>
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -167,12 +167,12 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                                     onClick={() => setBatchMode(!batchMode)}
                                     variant={batchMode ? 'default' : 'outline'}
                                     size="sm"
-                                    className={batchMode ? 'bg-emerald-600 hover:bg-emerald-700' : 'border-emerald-500/50 text-emerald-400 hover:bg-emerald-900/30'}
+                                    className={batchMode ? 'bg-emerald-600 hover:bg-emerald-700' : 'border-emerald-500/50 text-success hover:bg-emerald-900/30'}
                                 >
                                     <Zap className="h-3 w-3 mr-2" /> Batch
                                 </Button>
                             )}
-                            <Button onClick={onReoptimize} variant="outline" size="sm" className="border-amber-500/50 text-amber-400 hover:bg-amber-900/30">
+                            <Button onClick={onReoptimize} variant="outline" size="sm" className="border-amber-500/50 text-warning hover:bg-amber-900/30">
                                 <RefreshCw className="h-3 w-3 mr-2" /> Re-Run
                             </Button>
                         </div>
@@ -182,14 +182,14 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
 
             {batchMode && batchBlockedReason && (
                 <div className="mb-4 px-4 py-2 bg-amber-900/30 border border-amber-700/50 rounded-lg flex items-center gap-4 text-sm">
-                    <Zap className="h-5 w-5 text-amber-400" />
-                    <span className="text-amber-100">{batchBlockedReason}</span>
+                    <Zap className="h-5 w-5 text-warning" />
+                    <span className="text-warning">{batchBlockedReason}</span>
                 </div>
             )}
 
             {isBatch && batchResult && (batchResult.barsSaved > 0 || batchResult.wasteSavedMm > 0) && (
                 <div className="mb-4 px-4 py-2 bg-emerald-900/30 border border-emerald-700/50 rounded-lg flex items-center gap-4 text-sm">
-                    <Zap className="h-5 w-5 text-emerald-400" />
+                    <Zap className="h-5 w-5 text-success" />
                     <span className="text-emerald-200">
                         Batch optimization: <strong>{batchResult.barsSaved}</strong> bars saved, <strong>{(batchResult.wasteSavedMm / 1000).toFixed(2)} m</strong> waste saved
                     </span>
@@ -199,9 +199,9 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
             <div className="flex-1 flex gap-6 min-h-0">
 
                 {/* Left List of Units */}
-                <Card className="w-64 flex flex-col bg-gray-950 border-gray-800">
-                    <CardHeader className="py-3 px-4 border-b border-gray-800">
-                        <CardTitle className="text-sm font-medium text-gray-400">Units</CardTitle>
+                <Card className="w-64 flex flex-col bg-background border-border">
+                    <CardHeader className="py-3 px-4 border-b border-border">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">Units</CardTitle>
                     </CardHeader>
                     <ScrollArea className="flex-1">
                         <div className="p-2 space-y-1">
@@ -215,11 +215,11 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                                     <button
                                         key={unit.id}
                                         onClick={() => setSelectedUnitId(unit.id)}
-                                        className={`w-full text-left p-2 rounded text-sm flex justify-between items-center ${selectedUnitId === unit.id ? 'bg-blue-900/30 text-blue-200 border border-blue-800' : 'text-gray-400 hover:bg-gray-900'
+                                        className={`w-full text-left p-2 rounded text-sm flex justify-between items-center ${selectedUnitId === unit.id ? 'bg-blue-900/30 text-blue-200 border border-blue-800' : 'text-muted-foreground hover:bg-background'
                                             }`}
                                     >
                                         <span>{unit.posNumber}</span>
-                                        <Badge variant="outline" className={`text-[10px] h-4 px-1 ${efficiency > 90 ? 'border-green-800 text-green-500' : 'border-amber-800 text-amber-500'}`}>
+                                        <Badge variant="outline" className={`text-[10px] h-4 px-1 ${efficiency > 90 ? 'border-green-800 text-success' : 'border-amber-800 text-warning'}`}>
                                             {efficiency.toFixed(0)}%
                                         </Badge>
                                     </button>
@@ -230,13 +230,13 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                 </Card>
 
                 {/* Main Cut List View */}
-                <Card className="flex-1 flex flex-col bg-gray-950 border-gray-800 overflow-hidden">
+                <Card className="flex-1 flex flex-col bg-background border-border overflow-hidden">
                     {isBatch && batchResult ? (
                         <>
-                            <CardHeader className="py-3 px-6 border-b border-gray-800 flex flex-row justify-between items-center">
+                            <CardHeader className="py-3 px-6 border-b border-border flex flex-row justify-between items-center">
                                 <div>
                                     <CardTitle className="text-lg flex items-center gap-2">
-                                        <Zap className="h-5 w-5 text-emerald-400" />
+                                        <Zap className="h-5 w-5 text-success" />
                                         Batch Cut Optimization (All {project.units.length} Positions)
                                     </CardTitle>
                                     <CardDescription>Cross-position nesting • Shared stock bars</CardDescription>
@@ -245,7 +245,7 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="border-gray-700 bg-gray-800"
+                                        className="border-border bg-card"
                                         onClick={() => {
                                             const csv = exportCutListToCSV(batchResult.frameStock as any, project.clientName);
                                             downloadCSV(csv, `batch-frame-cutlist.csv`);
@@ -256,7 +256,7 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="border-gray-700 bg-gray-800"
+                                        className="border-border bg-card"
                                         onClick={() => {
                                             const csv = exportCutListToCSV(batchResult.sashStock as any, project.clientName);
                                             downloadCSV(csv, `batch-sash-cutlist.csv`);
@@ -268,13 +268,13 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                             </CardHeader>
                             <div className="flex-1 overflow-hidden p-0">
                                 <Tabs defaultValue="frame" className="h-full flex flex-col">
-                                    <div className="px-6 py-2 border-b border-gray-800">
-                                        <TabsList className="bg-gray-900 border border-gray-700">
+                                    <div className="px-6 py-2 border-b border-border">
+                                        <TabsList className="bg-background border border-border">
                                             <TabsTrigger value="frame">Frame ({batchResult.frameStock.barsCount} bars)</TabsTrigger>
                                             <TabsTrigger value="sash">Sash ({batchResult.sashStock.barsCount} bars)</TabsTrigger>
                                         </TabsList>
                                     </div>
-                                    <div className="flex-1 overflow-y-auto p-6 bg-gray-900/50">
+                                    <div className="flex-1 overflow-y-auto p-6 bg-background/50">
                                         <TabsContent value="frame" className="m-0 space-y-4">
                                             <CutListViewer cutList={batchResult.frameStock as any} />
                                         </TabsContent>
@@ -287,7 +287,7 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                         </>
                     ) : selectedResult && selectedUnitId ? (
                         <>
-                            <CardHeader className="py-3 px-6 border-b border-gray-800 flex flex-row justify-between items-center">
+                            <CardHeader className="py-3 px-6 border-b border-border flex flex-row justify-between items-center">
                                 <div>
                                     <CardTitle className="text-lg">Cut Optimization: {project.units.find(u => u.id === selectedUnitId)?.posNumber}</CardTitle>
                                     <CardDescription>Apex V6 Algorithm • {selectedResult.strategyUsed} Strategy</CardDescription>
@@ -296,7 +296,7 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="border-gray-700 bg-gray-800"
+                                        className="border-border bg-card"
                                         onClick={() => {
                                             // Create optimized cut list structure if needed, or pass as is if compatible
                                             // Assuming exportCutListToCSV handles it or we adapt. For now passing as any to suppress strict checks if needed
@@ -361,14 +361,14 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
 
                             <div className="flex-1 overflow-hidden p-0">
                                 <Tabs defaultValue="frame" className="h-full flex flex-col">
-                                    <div className="px-6 py-2 border-b border-gray-800">
-                                        <TabsList className="bg-gray-900 border border-gray-700">
+                                    <div className="px-6 py-2 border-b border-border">
+                                        <TabsList className="bg-background border border-border">
                                             <TabsTrigger value="frame">Frame Profiles</TabsTrigger>
                                             <TabsTrigger value="sash">Sash Profiles</TabsTrigger>
                                         </TabsList>
                                     </div>
 
-                                    <div className="flex-1 overflow-y-auto p-6 bg-gray-900/50">
+                                    <div className="flex-1 overflow-y-auto p-6 bg-background/50">
                                         <TabsContent value="frame" className="m-0 space-y-4">
                                             {/* CutListViewer likely expects 'item' prop or cutList with items.
                                  Our optimization result is 'stockUsed'. We might need to map it or verify props.
@@ -388,7 +388,7 @@ export const ProjectOptimizer: React.FC<ProjectOptimizerProps> = ({
                             </div>
                         </>
                     ) : (
-                        <div className="flex items-center justify-center h-full text-gray-500">
+                        <div className="flex items-center justify-center h-full text-muted-foreground">
                             Select a unit to view details
                         </div>
                     )}

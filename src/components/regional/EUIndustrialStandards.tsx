@@ -410,7 +410,7 @@ export const EUIndustrialStandards: React.FC = () => {
                   compliant: 'bg-green-100 text-green-800',
                   'non-compliant': 'bg-red-100 text-red-800',
                   pending: 'bg-yellow-100 text-yellow-800',
-                  'not-assessed': 'bg-gray-100 text-gray-800'
+                  'not-assessed': 'bg-muted text-foreground'
                 };
 
                 return (
@@ -421,7 +421,7 @@ export const EUIndustrialStandards: React.FC = () => {
                         {getStandardTitle(standard!)}
                       </p>
                       {compliance.gaps && (
-                        <p className="text-xs text-red-600 mt-1">
+                        <p className="text-xs text-destructive mt-1">
                           Gaps: {compliance.gaps.join(', ')}
                         </p>
                       )}
@@ -440,7 +440,7 @@ export const EUIndustrialStandards: React.FC = () => {
               <h4 className="typography-h4 font-medium">Recommended Actions</h4>
               {complianceAssessment.recommendedActions.map((action, index) => (
                 <div key={index} className="flex items-start gap-2">
-                  <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5" />
+                  <CheckCircle className="h-4 w-4 text-info mt-0.5" />
                   <span className="text-sm">{action}</span>
                 </div>
               ))}
@@ -491,7 +491,7 @@ export const EUIndustrialStandards: React.FC = () => {
                   <ul className="text-sm space-y-1">
                     {standard.requirements.map((req, index) => (
                       <li key={index} className="flex items-start gap-2">
-                        <CheckCircle className="h-3 w-3 text-green-600 mt-0.5" />
+                        <CheckCircle className="h-3 w-3 text-success mt-0.5" />
                         {req}
                       </li>
                     ))}
@@ -702,13 +702,13 @@ export const EUIndustrialStandards: React.FC = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <Globe className="h-4 w-4" />
-                  <a href={`https://${contact.website}`} className="text-blue-600 hover:underline">
+                  <a href={`https://${contact.website}`} className="text-info hover:underline">
                     {contact.website}
                   </a>
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  <a href={`mailto:${contact.email}`} className="text-blue-600 hover:underline">
+                  <a href={`mailto:${contact.email}`} className="text-info hover:underline">
                     {contact.email}
                   </a>
                 </div>
@@ -734,7 +734,7 @@ export const EUIndustrialStandards: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="typography-h2 tracking-tight flex items-center gap-2">
-            <Shield className="h-8 w-8 text-blue-600" />
+            <Shield className="h-8 w-8 text-info" />
             EU Industrial Standards
           </h2>
           <p className="text-muted-foreground">

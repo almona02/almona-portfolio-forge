@@ -34,7 +34,7 @@ export const WorkspaceSnapshotManager: React.FC = () => {
             value={label}
             onChange={(e) => setLabel(e.target.value)}
             placeholder="Snapshot name"
-            className="h-8 text-xs bg-slate-900/70 border-slate-700/70"
+            className="h-8 text-xs bg-background/70 border-border/70"
           />
           <Button
             size="sm"
@@ -55,7 +55,7 @@ export const WorkspaceSnapshotManager: React.FC = () => {
           value={label}
           onChange={(e) => setLabel(e.target.value)}
           placeholder="Snapshot name"
-          className="h-8 text-xs bg-slate-900/70 border-slate-700/70"
+          className="h-8 text-xs bg-background/70 border-border/70"
         />
         <Button
           size="sm"
@@ -65,9 +65,9 @@ export const WorkspaceSnapshotManager: React.FC = () => {
           Save Snapshot
         </Button>
       </div>
-      <Card className="bg-slate-900/70 border-slate-800/80">
+      <Card className="bg-background/70 border-border/80">
         <CardHeader className="py-2 px-3">
-          <CardTitle className="flex items-center justify-between text-xs text-slate-200">
+          <CardTitle className="flex items-center justify-between text-xs text-foreground">
             <span>Workspace Snapshots</span>
             <Badge variant="outline" className="text-[10px]">
               {state.snapshots.length}
@@ -81,7 +81,7 @@ export const WorkspaceSnapshotManager: React.FC = () => {
               className={`flex items-center justify-between rounded-md px-2 py-1 text-[11px] ${
                 state.currentSnapshotId === snap.id
                   ? 'bg-blue-900/40 border border-blue-500/40'
-                  : 'bg-slate-900/60 border border-slate-800/60'
+                  : 'bg-background/60 border border-border/60'
               }`}
             >
               <div className="flex-1 min-w-0">
@@ -93,7 +93,7 @@ export const WorkspaceSnapshotManager: React.FC = () => {
                     </Badge>
                   )}
                 </div>
-                <div className="flex items-center gap-1 text-[10px] text-slate-400 mt-0.5">
+                <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
                   <Calendar className="w-3 h-3" />
                   <span className="truncate">{formatDate(snap.createdAt)}</span>
                 </div>

@@ -16,8 +16,8 @@ html {
 
 body {
   margin: 0;
-  background-color: #0a0a0a;
-  color: #ffffff;
+  background-color: var(--bg, var(--initial-background));
+  color: var(--fg, var(--initial-foreground));
   font-family: inherit;
   line-height: inherit;
 }
@@ -82,13 +82,13 @@ nav {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #f97316, #dc2626);
-  color: white;
+  background: hsl(var(--brand));
+  color: hsl(var(--brand-foreground));
   padding: 0.5rem 1rem;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #ea580c, #b91c1c);
+  background: hsl(var(--brand) / .9);
 }
 
 /* Critical loading states */

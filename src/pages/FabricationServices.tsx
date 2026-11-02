@@ -289,14 +289,14 @@ const FabricationServices = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-almona-dark text-white">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
           style={{ backgroundImage: "url('/images/fabrication/fabrication-hero.jpg')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-almona-dark/90 via-almona-dark/70 to-almona-dark/90 z-0" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background/90 z-0" />
         
         <div className="container relative z-10 mx-auto px-4">
           <motion.div
@@ -311,7 +311,7 @@ const FabricationServices = () => {
             <h1 className="typography-h1 md:text-6xl mb-6 text-gradient-orange">
               Precision Fabrication for Discerning Clients
             </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-10">
+            <p className="text-xl text-foreground max-w-3xl mx-auto mb-10">
               Expertly crafted windows and doors that combine aesthetic elegance with unmatched performance for Egyptian homes and climate
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -325,7 +325,7 @@ const FabricationServices = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-almona-light text-almona-light hover:bg-almona-light/10"
+                className="border-border text-foreground hover:bg-almona-light/10"
                 onClick={() => {
                   setCalculatorActive(true);
                   document.getElementById('calculator-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -347,7 +347,7 @@ const FabricationServices = () => {
               { icon: Clock, title: "Timely Delivery", description: "Precise project timelines with minimal disruption" },
               { icon: CheckCircle, title: "Certified Excellence", description: "ISO-certified fabrication processes" }
             ].map((item, index) => (
-              <Card key={index} className="bg-almona-dark/60 backdrop-blur-md border-almona-light/20 text-center">
+              <Card key={index} className="bg-background/60 backdrop-blur-md border-border/20 text-center">
                 <CardContent className="p-6">
                   <div className="flex justify-center mb-4">
                     <div className="p-3 bg-almona-orange/20 rounded-full">
@@ -355,7 +355,7 @@ const FabricationServices = () => {
                     </div>
                   </div>
                   <h3 className="typography-h3 mb-2">{item.title}</h3>
-                  <p className="text-gray-300">{item.description}</p>
+                  <p className="text-foreground">{item.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -364,7 +364,7 @@ const FabricationServices = () => {
       </section>
 
       {/* Professional Calculator Section */}
-      <section id="calculator-section" className="py-20 bg-gradient-to-b from-almona-dark to-almona-darker">
+      <section id="calculator-section" className="py-20 bg-gradient-to-b from-background to-almona-darker">
         <div className="container mx-auto px-4">
           <motion.div 
             className="text-center mb-16"
@@ -374,7 +374,7 @@ const FabricationServices = () => {
             transition={{ duration: 0.5 }}
           >
             <h2 className="typography-h2 text-4xl mb-6">Professional Estimation Calculator</h2>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Get an instant preliminary estimate for your window and door project with our advanced calculator
             </p>
           </motion.div>
@@ -384,7 +384,7 @@ const FabricationServices = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="bg-almona-dark/60 backdrop-blur-md rounded-2xl border border-almona-light/20 p-6 md:p-8"
+            className="bg-background/60 backdrop-blur-md rounded-2xl border border-border/20 p-6 md:p-8"
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Calculator Inputs */}
@@ -396,31 +396,31 @@ const FabricationServices = () => {
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="width" className="typography-label text-almona-light">Width (cm)</Label>
+                      <Label htmlFor="width" className="typography-label text-foreground">Width (cm)</Label>
                       <Input
                         id="width"
                         type="number"
                         placeholder="150"
                         value={calculatorValues.width}
                         onChange={(e) => handleCalculatorChange('width', e.target.value)}
-                        className="bg-almona-dark/80 border-almona-light/30 focus:ring-2 focus:ring-almona-orange/80"
+                        className="bg-background/80 border-border/30 focus:ring-2 focus:ring-almona-orange/80"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="height" className="typography-label text-almona-light">Height (cm)</Label>
+                      <Label htmlFor="height" className="typography-label text-foreground">Height (cm)</Label>
                       <Input
                         id="height"
                         type="number"
                         placeholder="120"
                         value={calculatorValues.height}
                         onChange={(e) => handleCalculatorChange('height', e.target.value)}
-                        className="bg-almona-dark/80 border-almona-light/30 focus:ring-2 focus:ring-almona-orange/80"
+                        className="bg-background/80 border-border/30 focus:ring-2 focus:ring-almona-orange/80"
                       />
                     </div>
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="quantity" className="typography-label text-almona-light">Quantity</Label>
+                    <Label htmlFor="quantity" className="typography-label text-foreground">Quantity</Label>
                     <Slider
                       defaultValue={[1]}
                       max={10}
@@ -430,7 +430,7 @@ const FabricationServices = () => {
                       onValueChange={(value) => handleCalculatorChange('quantity', value[0].toString())}
                       className="my-4 text-almona-orange"
                     />
-                    <div className="flex justify-between text-sm text-gray-400">
+                    <div className="flex justify-between text-sm text-muted-foreground">
                       <span>1 unit</span>
                       <span>{calculatorValues.quantity} units</span>
                       <span>10 units</span>
@@ -438,20 +438,20 @@ const FabricationServices = () => {
                   </div>
                   
                   <div className="space-y-3">
-                    <Label className="typography-label text-almona-light">System Type</Label>
+                    <Label className="typography-label text-foreground">System Type</Label>
                     <RadioGroup
                         value={calculatorValues.systemType}
                         onValueChange={(value) => handleCalculatorChange('systemType', value)}
                         className="grid grid-cols-2 gap-4"
                     >
                         <Label htmlFor="upvc"
-                            className="typography-label flex items-center justify-center rounded-md border-2 p-4 font-semibold cursor-pointer transition-colors duration-300 border-almona-light/30 bg-almona-dark/80 text-almona-light peer-data-[state=checked]:border-almona-orange peer-data-[state=checked]:bg-almona-orange/10 peer-data-[state=checked]:text-almona-orange hover:bg-almona-light/10 hover:border-almona-light/50"
+                            className="typography-label flex items-center justify-center rounded-md border-2 p-4 font-semibold cursor-pointer transition-colors duration-300 border-border/30 bg-background/80 text-foreground peer-data-[state=checked]:border-almona-orange peer-data-[state=checked]:bg-almona-orange/10 peer-data-[state=checked]:text-almona-orange hover:bg-almona-light/10 hover:border-border/50"
                         >
                             <RadioGroupItem value="upvc" id="upvc" className="peer sr-only" />
                             UPVC System
                         </Label>
                         <Label htmlFor="aluminum"
-                            className="typography-label flex items-center justify-center rounded-md border-2 p-4 font-semibold cursor-pointer transition-colors duration-300 border-almona-light/30 bg-almona-dark/80 text-almona-light peer-data-[state=checked]:border-almona-orange peer-data-[state=checked]:bg-almona-orange/10 peer-data-[state=checked]:text-almona-orange hover:bg-almona-light/10 hover:border-almona-light/50"
+                            className="typography-label flex items-center justify-center rounded-md border-2 p-4 font-semibold cursor-pointer transition-colors duration-300 border-border/30 bg-background/80 text-foreground peer-data-[state=checked]:border-almona-orange peer-data-[state=checked]:bg-almona-orange/10 peer-data-[state=checked]:text-almona-orange hover:bg-almona-light/10 hover:border-border/50"
                         >
                             <RadioGroupItem value="aluminum" id="aluminum" className="peer sr-only" />
                             Aluminum System
@@ -460,7 +460,7 @@ const FabricationServices = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="profileType" className="typography-label text-almona-light">Profile Quality</Label>
+                    <Label htmlFor="profileType" className="typography-label text-foreground">Profile Quality</Label>
                     <Select 
                       value={calculatorValues.profileType} 
                       onValueChange={(value) => handleCalculatorChange('profileType', value)}
@@ -478,7 +478,7 @@ const FabricationServices = () => {
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="glassType" className="typography-label text-almona-light">Glass Type</Label>
+                      <Label htmlFor="glassType" className="typography-label text-foreground">Glass Type</Label>
                       <Select 
                         value={calculatorValues.glassType} 
                         onValueChange={(value) => handleCalculatorChange('glassType', value)}
@@ -495,7 +495,7 @@ const FabricationServices = () => {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="openingType" className="typography-label text-almona-light">Opening Type</Label>
+                      <Label htmlFor="openingType" className="typography-label text-foreground">Opening Type</Label>
                       <Select 
                         value={calculatorValues.openingType} 
                         onValueChange={(value) => handleCalculatorChange('openingType', value)}
@@ -516,7 +516,7 @@ const FabricationServices = () => {
                     <Button 
                       onClick={resetCalculator}
                       variant="outline" 
-                      className="flex-1 border-almona-light/30 text-almona-light hover:bg-almona-light/10"
+                      className="flex-1 border-border/30 text-foreground hover:bg-almona-light/10"
                     >
                       <RotateCcw className="h-4 w-4 mr-2" /> Reset
                     </Button>
@@ -544,57 +544,57 @@ const FabricationServices = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="bg-almona-dark/80 rounded-xl p-6 space-y-6"
+                      className="bg-background/80 rounded-xl p-6 space-y-6"
                     >
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
-                          <p className="text-gray-400 text-sm">System Type</p>
+                          <p className="text-muted-foreground text-sm">System Type</p>
                           <p className="font-semibold capitalize">{calculatorResults.system}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-gray-400 text-sm">Profile</p>
+                          <p className="text-muted-foreground text-sm">Profile</p>
                           <p className="font-semibold">{calculatorResults.profile}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-gray-400 text-sm">Glass Type</p>
+                          <p className="text-muted-foreground text-sm">Glass Type</p>
                           <p className="font-semibold">{calculatorResults.glass}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-gray-400 text-sm">Opening Type</p>
+                          <p className="text-muted-foreground text-sm">Opening Type</p>
                           <p className="font-semibold">{calculatorResults.opening}</p>
                         </div>
                       </div>
                       
-                      <div className="pt-4 border-t border-almona-light/20">
+                      <div className="pt-4 border-t border-border/20">
                         <div className="flex justify-between items-center mb-2">
-                          <p className="text-gray-400">Area per unit</p>
+                          <p className="text-muted-foreground">Area per unit</p>
                           <p className="font-semibold">{calculatorResults.area} m²</p>
                         </div>
                         <div className="flex justify-between items-center mb-2">
-                          <p className="text-gray-400">Total area ({calculatorValues.quantity} units)</p>
+                          <p className="text-muted-foreground">Total area ({calculatorValues.quantity} units)</p>
                           <p className="font-semibold">{calculatorResults.totalArea} m²</p>
                         </div>
                         <div className="flex justify-between items-center mb-2">
-                          <p className="text-gray-400">Price per m²</p>
+                          <p className="text-muted-foreground">Price per m²</p>
                           <p className="font-semibold">EGP {calculatorResults.pricePerSqm.toLocaleString()}</p>
                         </div>
                       </div>
                       
-                      <div className="pt-4 border-t border-almona-light/20 space-y-3">
+                      <div className="pt-4 border-t border-border/20 space-y-3">
                         <div className="flex justify-between items-center">
-                          <p className="text-gray-400">Product Cost</p>
+                          <p className="text-muted-foreground">Product Cost</p>
                           <p className="font-semibold">EGP {calculatorResults.subtotal.toLocaleString()}</p>
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                          <p className="text-gray-400">+ Installation (15%)</p>
+                          <p className="text-muted-foreground">+ Installation (15%)</p>
                           <p>EGP {calculatorResults.installationCost.toLocaleString()}</p>
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                          <p className="text-gray-400">+ Hardware (8%)</p>
+                          <p className="text-muted-foreground">+ Hardware (8%)</p>
                           <p>EGP {calculatorResults.hardwareCost.toLocaleString()}</p>
                         </div>
                         <div className="flex justify-between items-center text-sm">
-                          <p className="text-gray-400">+ Taxes (14%)</p>
+                          <p className="text-muted-foreground">+ Taxes (14%)</p>
                           <p>EGP {calculatorResults.taxes.toLocaleString()}</p>
                         </div>
                       </div>
@@ -607,7 +607,7 @@ const FabricationServices = () => {
                       </div>
                       
                       <div className="pt-4">
-                        <p className="text-xs text-gray-500 text-center">
+                        <p className="text-xs text-muted-foreground text-center">
                           This is a preliminary estimate. Final pricing may vary based on site conditions and custom requirements.
                         </p>
                         <Button 
@@ -624,11 +624,11 @@ const FabricationServices = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="bg-almona-dark/80 rounded-xl p-12 text-center border border-almona-light/20 border-dashed flex flex-col justify-center items-center h-full"
+                      className="bg-background/80 rounded-xl p-12 text-center border border-border/20 border-dashed flex flex-col justify-center items-center h-full"
                     >
-                      <Calculator className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                      <h4 className="typography-h4 font-medium text-gray-500 mb-2">Calculation Results</h4>
-                      <p className="text-gray-600">Enter your project details and click Calculate to see your estimate</p>
+                      <Calculator className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <h4 className="typography-h4 font-medium text-muted-foreground mb-2">Calculation Results</h4>
+                      <p className="text-muted-foreground">Enter your project details and click Calculate to see your estimate</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -644,7 +644,7 @@ const FabricationServices = () => {
             transition={{ duration: 0.5 }}
           >
             <h3 className="typography-h3 mb-4">Need a Precise Quotation?</h3>
-            <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+            <p className="text-foreground mb-6 max-w-2xl mx-auto">
               Our experts will provide you with a detailed quotation tailored to your specific project requirements
             </p>
             <Button 
@@ -659,7 +659,7 @@ const FabricationServices = () => {
       </section>
 
       {/* Systems Comparison */}
-      <section className="py-20 bg-almona-darker">
+      <section className="py-20 bg-card">
         <div className="container mx-auto px-4">
           <motion.div 
             className="text-center mb-16"
@@ -669,17 +669,17 @@ const FabricationServices = () => {
             transition={{ duration: 0.5 }}
           >
             <h2 className="typography-h2 text-4xl mb-6">Advanced Window & Door Systems</h2>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Discover the perfect solution for your home or project with our premium fabrication technologies
             </p>
           </motion.div>
 
           <Tabs value={activeSystem} onValueChange={value => { if (value === 'upvc' || value === 'aluminum') setActiveSystem(value); }} className="mb-16">
-            <TabsList className="grid w-full grid-cols-2 max-w-2xl mx-auto bg-almona-dark/80 rounded-lg p-1 mb-12">
-              <TabsTrigger value="upvc" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md text-lg transition-all duration-300">
+            <TabsList className="grid w-full grid-cols-2 max-w-2xl mx-auto bg-background/80 rounded-lg p-1 mb-12">
+              <TabsTrigger value="upvc" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-foreground rounded-md text-lg transition-all duration-300">
                 UPVC Systems
               </TabsTrigger>
-              <TabsTrigger value="aluminum" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md text-lg transition-all duration-300">
+              <TabsTrigger value="aluminum" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-foreground rounded-md text-lg transition-all duration-300">
                 Aluminum Systems
               </TabsTrigger>
             </TabsList>
@@ -694,10 +694,10 @@ const FabricationServices = () => {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
                     <div>
                       <h3 className="typography-h3 text-3xl mb-4">{system.title}</h3>
-                      <p className="text-xl text-gray-300 mb-6">{system.description}</p>
+                      <p className="text-xl text-foreground mb-6">{system.description}</p>
                       
                       <div className="mb-8">
-                        <h4 className="typography-h4 mb-3 text-almona-light">Ideal For:</h4>
+                        <h4 className="typography-h4 mb-3 text-foreground">Ideal For:</h4>
                         <div className="flex flex-wrap gap-2">
                           {system.applications.map((app, i) => (
                             <Badge key={i} variant="secondary" className="bg-almona-orange/20 text-almona-orange border-almona-orange/30">
@@ -718,7 +718,7 @@ const FabricationServices = () => {
                     <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-r from-almona-orange/20 to-almona-light/20 rounded-2xl blur-xl"></div>
                       <div 
-                        className="relative h-80 bg-cover bg-center rounded-2xl border border-almona-light/20"
+                        className="relative h-80 bg-cover bg-center rounded-2xl border border-border/20"
                         style={{ backgroundImage: `url('/images/fabrication/${key}-showcase.jpg')` }}
                       ></div>
                     </div>
@@ -734,8 +734,8 @@ const FabricationServices = () => {
                         transition={{ duration: 0.5, delay: index * 0.1 }}
                       >
                         <Card 
-                          className={`bg-almona-dark/60 backdrop-blur-sm border-almona-light/20 cursor-pointer transition-all duration-300 ${
-                            expandedFeature === index ? 'border-almona-orange/50 bg-almona-dark/80 scale-[1.02]' : 'hover:border-almona-light/40 hover:bg-almona-dark/70'
+                          className={`bg-background/60 backdrop-blur-sm border-border/20 cursor-pointer transition-all duration-300 ${
+                            expandedFeature === index ? 'border-almona-orange/50 bg-background/80 scale-[1.02]' : 'hover:border-border/40 hover:bg-background/70'
                           }`}
                           onClick={() => toggleFeature(index)}
                         >
@@ -747,15 +747,15 @@ const FabricationServices = () => {
                                 </div>
                                 <div>
                                   <CardTitle className="text-xl">{feature.title}</CardTitle>
-                                  <CardDescription className="text-gray-400 mt-1">
+                                  <CardDescription className="text-muted-foreground mt-1">
                                     {feature.stats}
                                   </CardDescription>
                                 </div>
                               </div>
                               {expandedFeature === index ? (
-                                <ChevronUp className="h-5 w-5 text-almona-light" />
+                                <ChevronUp className="h-5 w-5 text-foreground" />
                               ) : (
-                                <ChevronDown className="h-5 w-5 text-almona-light" />
+                                <ChevronDown className="h-5 w-5 text-foreground" />
                               )}
                             </div>
                           </CardHeader>
@@ -769,9 +769,9 @@ const FabricationServices = () => {
                                 transition={{ duration: 0.3 }}
                               >
                                 <CardContent className="pt-0">
-                                  <p className="text-gray-300 mb-4">{feature.description}</p>
-                                  <div className="bg-almona-dark/40 p-4 rounded-lg">
-                                    <h5 className="font-semibold text-almona-light mb-2">Key Benefits:</h5>
+                                  <p className="text-foreground mb-4">{feature.description}</p>
+                                  <div className="bg-background/40 p-4 rounded-lg">
+                                    <h5 className="font-semibold text-foreground mb-2">Key Benefits:</h5>
                                     <ul className="space-y-1">
                                       {feature.benefits.map((benefit, i) => (
                                         <li key={i} className="flex items-center">
@@ -790,11 +790,11 @@ const FabricationServices = () => {
                     ))}
                   </div>
 
-                  <div className="bg-almona-dark/60 p-8 rounded-2xl border border-almona-light/20">
+                  <div className="bg-background/60 p-8 rounded-2xl border border-border/20">
                     <h4 className="typography-h4 text-2xl mb-6 text-center">Advanced Technologies</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       {system.technologies.map((tech, i) => (
-                        <div key={i} className="text-center p-4 bg-almona-dark/40 rounded-lg">
+                        <div key={i} className="text-center p-4 bg-background/40 rounded-lg">
                           <Sparkles className="h-6 w-6 text-almona-orange mx-auto mb-2" />
                           <p className="font-medium">{tech}</p>
                         </div>
@@ -814,7 +814,7 @@ const FabricationServices = () => {
             transition={{ duration: 0.5 }}
           >
             <h3 className="typography-h3 mb-4">Ready to Start Your Project?</h3>
-            <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+            <p className="text-foreground mb-6 max-w-2xl mx-auto">
               Our team is ready to assist you with a detailed consultation and quote
             </p>
             <Button 
@@ -829,7 +829,7 @@ const FabricationServices = () => {
       </section>
 
       {/* Project Gallery */}
-      <section className="py-20 bg-almona-dark">
+      <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <motion.div 
             className="text-center mb-16"
@@ -839,7 +839,7 @@ const FabricationServices = () => {
             transition={{ duration: 0.5 }}
           >
             <h2 className="typography-h2 text-4xl mb-6">Our Premium Projects</h2>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Discover our exceptional fabrication work across Egypt's most prestigious residences and commercial properties
             </p>
           </motion.div>
@@ -858,10 +858,10 @@ const FabricationServices = () => {
                   className="h-80 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
                   style={{ backgroundImage: `url('/images/projects/project-${item}.jpg')` }}
                 ></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-almona-dark/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
                   <div className="p-6">
                     <h3 className="typography-h3 mb-2">Luxury {item % 2 === 0 ? 'UPVC' : 'Aluminum'} Installation</h3>
-                    <p className="text-gray-300">Cairo, Egypt</p>
+                    <p className="text-foreground">Cairo, Egypt</p>
                   </div>
                 </div>
               </motion.div>
@@ -869,7 +869,7 @@ const FabricationServices = () => {
           </div>
 
           <div className="text-center">
-            <Button onClick={() => handleConsultationClick()} variant="outline" className="border-almona-light text-almona-light hover:bg-almona-light/10">
+            <Button onClick={() => handleConsultationClick()} variant="outline" className="border-border text-foreground hover:bg-almona-light/10">
               Discuss a Similar Project
             </Button>
           </div>
@@ -877,7 +877,7 @@ const FabricationServices = () => {
       </section>
 
       {/* Resources Section */}
-      <section className="py-20 bg-almona-darker">
+      <section className="py-20 bg-card">
         <div className="container mx-auto px-4">
           <motion.div 
             className="text-center mb-16"
@@ -887,7 +887,7 @@ const FabricationServices = () => {
             transition={{ duration: 0.5 }}
           >
             <h2 className="typography-h2 text-4xl mb-6">Client Resources</h2>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Everything you need to make an informed decision about your window and door investment
             </p>
           </motion.div>
@@ -905,7 +905,7 @@ const FabricationServices = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Card className="bg-almona-dark/60 backdrop-blur-sm border-almona-light/20 h-full text-center hover:border-almona-orange/50 transition-colors">
+                <Card className="bg-background/60 backdrop-blur-sm border-border/20 h-full text-center hover:border-almona-orange/50 transition-colors">
                   <CardContent className="p-6">
                     <div className="flex justify-center mb-4">
                       <div className="p-3 bg-almona-orange/20 rounded-full">
@@ -913,8 +913,8 @@ const FabricationServices = () => {
                       </div>
                     </div>
                     <h3 className="typography-h3 mb-2">{item.title}</h3>
-                    <p className="text-gray-300 mb-4">{item.description}</p>
-                    <Button onClick={() => void navigate(`/contact?subject=${encodeURIComponent(item.title)}`)} variant="outline" className="border-almona-light text-almona-light hover:bg-almona-light/10">
+                    <p className="text-foreground mb-4">{item.description}</p>
+                    <Button onClick={() => void navigate(`/contact?subject=${encodeURIComponent(item.title)}`)} variant="outline" className="border-border text-foreground hover:bg-almona-light/10">
                       <Download className="mr-2 h-4 w-4" /> Request Resource
                     </Button>
                   </CardContent>
@@ -929,76 +929,76 @@ const FabricationServices = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-almona-dark/60 p-8 rounded-2xl border border-almona-light/20"
+            className="bg-background/60 p-8 rounded-2xl border border-border/20"
           >
             <h3 className="typography-h3 mb-6 text-center">Advanced Comparison Tools</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
-                <h4 className="typography-h4 font-medium text-almona-light flex items-center">
+                <h4 className="typography-h4 font-medium text-foreground flex items-center">
                   <Square className="h-5 w-5 mr-2 text-almona-orange" /> Material Comparison
                 </h4>
-                <div className="bg-almona-dark/40 p-4 rounded-lg">
-                  <div className="flex justify-between items-center py-2 border-b border-almona-light/10">
-                    <span className="text-gray-400">Thermal Insulation</span>
+                <div className="bg-background/40 p-4 rounded-lg">
+                  <div className="flex justify-between items-center py-2 border-b border-border/10">
+                    <span className="text-muted-foreground">Thermal Insulation</span>
                     <div className="flex items-center">
                       <span className="text-almona-orange font-medium mr-2">UPVC</span>
-                      <span className="text-gray-400">vs</span>
-                      <span className="text-almona-light font-medium ml-2">Aluminum</span>
+                      <span className="text-muted-foreground">vs</span>
+                      <span className="text-foreground font-medium ml-2">Aluminum</span>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-almona-light/10">
-                    <span className="text-gray-400">Maintenance</span>
+                  <div className="flex justify-between items-center py-2 border-b border-border/10">
+                    <span className="text-muted-foreground">Maintenance</span>
                     <div className="flex items-center">
                       <span className="text-almona-orange font-medium mr-2">Low</span>
-                      <span className="text-gray-400">vs</span>
-                      <span className="text-almona-light font-medium ml-2">Moderate</span>
+                      <span className="text-muted-foreground">vs</span>
+                      <span className="text-foreground font-medium ml-2">Moderate</span>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-almona-light/10">
-                    <span className="text-gray-400">Lifespan</span>
+                  <div className="flex justify-between items-center py-2 border-b border-border/10">
+                    <span className="text-muted-foreground">Lifespan</span>
                     <div className="flex items-center">
                       <span className="text-almona-orange font-medium mr-2">30+ years</span>
-                      <span className="text-gray-400">vs</span>
-                      <span className="text-almona-light font-medium ml-2">40+ years</span>
+                      <span className="text-muted-foreground">vs</span>
+                      <span className="text-foreground font-medium ml-2">40+ years</span>
                     </div>
                   </div>
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-400">Cost Efficiency</span>
+                    <span className="text-muted-foreground">Cost Efficiency</span>
                     <div className="flex items-center">
                       <span className="text-almona-orange font-medium mr-2">Higher</span>
-                      <span className="text-gray-400">vs</span>
-                      <span className="text-almona-light font-medium ml-2">Premium</span>
+                      <span className="text-muted-foreground">vs</span>
+                      <span className="text-foreground font-medium ml-2">Premium</span>
                     </div>
                   </div>
                 </div>
               </div>
               
               <div className="space-y-4">
-                <h4 className="typography-h4 font-medium text-almona-light flex items-center">
+                <h4 className="typography-h4 font-medium text-foreground flex items-center">
                   <Thermometer className="h-5 w-5 mr-2 text-almona-orange" /> Climate Performance
                 </h4>
-                <div className="bg-almona-dark/40 p-4 rounded-lg">
-                  <div className="flex justify-between items-center py-2 border-b border-almona-light/10">
-                    <span className="text-gray-400">Heat Resistance</span>
-                    <div className="w-32 bg-gray-600 rounded-full h-2">
+                <div className="bg-background/40 p-4 rounded-lg">
+                  <div className="flex justify-between items-center py-2 border-b border-border/10">
+                    <span className="text-muted-foreground">Heat Resistance</span>
+                    <div className="w-32 bg-muted rounded-full h-2">
                       <div className="bg-almona-orange h-2 rounded-full" style={{ width: '85%' }}></div>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-almona-light/10">
-                    <span className="text-gray-400">Dust Protection</span>
-                    <div className="w-32 bg-gray-600 rounded-full h-2">
+                  <div className="flex justify-between items-center py-2 border-b border-border/10">
+                    <span className="text-muted-foreground">Dust Protection</span>
+                    <div className="w-32 bg-muted rounded-full h-2">
                       <div className="bg-almona-orange h-2 rounded-full" style={{ width: '90%' }}></div>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-almona-light/10">
-                    <span className="text-gray-400">Humidity Resistance</span>
-                    <div className="w-32 bg-gray-600 rounded-full h-2">
+                  <div className="flex justify-between items-center py-2 border-b border-border/10">
+                    <span className="text-muted-foreground">Humidity Resistance</span>
+                    <div className="w-32 bg-muted rounded-full h-2">
                       <div className="bg-almona-orange h-2 rounded-full" style={{ width: '95%' }}></div>
                     </div>
                   </div>
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-400">UV Protection</span>
-                    <div className="w-32 bg-gray-600 rounded-full h-2">
+                    <span className="text-muted-foreground">UV Protection</span>
+                    <div className="w-32 bg-muted rounded-full h-2">
                       <div className="bg-almona-orange h-2 rounded-full" style={{ width: '88%' }}></div>
                     </div>
                   </div>
@@ -1023,23 +1023,23 @@ const FabricationServices = () => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-almona-dark/95 backdrop-blur-md rounded-2xl border border-almona-light/20 p-6 max-w-md w-full"
+              className="bg-background/95 backdrop-blur-md rounded-2xl border border-border/20 p-6 max-w-md w-full"
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="typography-h3 mb-2">Request Consultation</h3>
-              <p className="text-gray-400 mb-6">Submit your project details for a consultation.</p>
+              <p className="text-muted-foreground mb-6">Submit your project details for a consultation.</p>
               {consultationReceipt && <p role="status">Request received. Reference: {consultationReceipt}</p>}
               {consultationError && <p role="alert">{consultationError} <a href="/contact?subject=Fabrication%20consultation" className="underline">Contact us directly</a>.</p>}
               
               <form className="space-y-4" onSubmit={(e) => void handleConsultationSubmit(e)}>
                 <div className="space-y-2">
                   <Label htmlFor="name" className="typography-label">Full Name</Label>
-                  <Input id="name" name="name" required minLength={2} maxLength={120} placeholder="Your name" className="bg-almona-dark/80 border-almona-light/30" />
+                  <Input id="name" name="name" required minLength={2} maxLength={120} placeholder="Your name" className="bg-background/80 border-border/30" />
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="typography-label">Phone Number</Label>
-                  <Input id="phone" name="phone" type="tel" required pattern="\+20[0-9]{10}" placeholder="+20XXXXXXXXXX" className="bg-almona-dark/80 border-almona-light/30" />
+                  <Input id="phone" name="phone" type="tel" required pattern="\+20[0-9]{10}" placeholder="+20XXXXXXXXXX" className="bg-background/80 border-border/30" />
                 </div>
                 
                 <div className="space-y-2">
@@ -1061,7 +1061,7 @@ const FabricationServices = () => {
                   <Textarea 
                     id="message" name="message" maxLength={2000}
                     placeholder="Tell us about your project, preferred system, or any specific requirements..." 
-                    className="bg-almona-dark/80 border-almona-light/30 min-h-32" 
+                    className="bg-background/80 border-border/30 min-h-32"
                   />
                 </div>
                 
@@ -1069,7 +1069,7 @@ const FabricationServices = () => {
                   <Button 
                     type="button" 
                     variant="outline" 
-                    className="flex-1 border-almona-light/30 text-almona-light hover:bg-almona-light/10"
+                    className="flex-1 border-border/30 text-foreground hover:bg-almona-light/10"
                     onClick={() => setShowConsultationForm(false)}
                   >
                     Cancel

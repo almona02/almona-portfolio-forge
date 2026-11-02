@@ -127,11 +127,11 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
 
   if (loading) {
     return (
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
-            <Loader2 className="h-5 w-5 animate-spin text-blue-400" />
-            <span className="text-gray-300">{t('calibration_wizard.ai.analyzing', 'Analyzing calibration patterns...')}</span>
+            <Loader2 className="h-5 w-5 animate-spin text-info" />
+            <span className="text-foreground">{t('calibration_wizard.ai.analyzing', 'Analyzing calibration patterns...')}</span>
           </div>
         </CardContent>
       </Card>
@@ -140,13 +140,13 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
 
   if (!modelStatus?.isTrained) {
     return (
-      <Card className="bg-gray-800/50 border-gray-700 border-dashed">
+      <Card className="bg-card/50 border-border border-dashed">
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
-            <AlertTriangle className="h-5 w-5 text-yellow-400" />
+            <AlertTriangle className="h-5 w-5 text-warning" />
             <div className="flex-1">
-              <p className="text-sm text-gray-300">{t('calibration_wizard.ai.training_title', 'Calibration Analysis')}</p>
-              <p className="text-xs text-gray-400">
+              <p className="text-sm text-foreground">{t('calibration_wizard.ai.training_title', 'Calibration Analysis')}</p>
+              <p className="text-xs text-muted-foreground">
                 {t('calibration_wizard.ai.training_desc', 'The system is learning from calibration data. Suggestions will appear once enough data is collected.')}
               </p>
             </div>
@@ -158,13 +158,13 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
 
   if (!prediction || prediction.confidence < 0.3) {
     return (
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
-            <AlertTriangle className="h-5 w-5 text-yellow-400" />
+            <AlertTriangle className="h-5 w-5 text-warning" />
             <div className="flex-1">
-              <p className="text-sm text-gray-300">Low Confidence Prediction</p>
-              <p className="text-xs text-gray-400">
+              <p className="text-sm text-foreground">Low Confidence Prediction</p>
+              <p className="text-xs text-muted-foreground">
                 Not enough similar calibration data. Recommend manual calibration.
               </p>
             </div>
@@ -177,36 +177,36 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
   const confidencePercent = Math.round(prediction.confidence * 100);
   const confidenceColor =
     confidencePercent >= 70
-      ? 'text-green-400'
+      ? 'text-success'
       : confidencePercent >= 50
-      ? 'text-yellow-400'
-      : 'text-amber-400';
+      ? 'text-warning'
+      : 'text-warning';
 
   return (
     <Card className="bg-gradient-to-br from-blue-900/20 to-amber-900/20 border-blue-500/30">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Sparkles className="h-5 w-5 text-blue-400" />
+          <Sparkles className="h-5 w-5 text-info" />
           automation Suggestion
           <Badge variant="outline" className={`ml-auto ${confidenceColor} border-current`}>
             {confidencePercent}% Confidence
           </Badge>
         </CardTitle>
-        <CardDescription className="text-gray-400 text-sm">
+        <CardDescription className="text-muted-foreground text-sm">
           Based on {prediction.sampleCount} calibration examples
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Prediction Display */}
-        <div className="p-4 bg-gray-900/50 rounded-lg border border-gray-700">
+        <div className="p-4 bg-background/50 rounded-lg border border-border">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-400">Predicted K-Factor</span>
-            <TrendingUp className="h-4 w-4 text-green-400" />
+            <span className="text-sm text-muted-foreground">Predicted K-Factor</span>
+            <TrendingUp className="h-4 w-4 text-success" />
           </div>
-          <div className="text-3xl font-bold text-blue-400 mb-2">
+          <div className="text-3xl font-bold text-info mb-2">
             {prediction.predictedKFactor.toFixed(2)} mm
           </div>
-          <p className="text-xs text-gray-400">{prediction.reasoning}</p>
+          <p className="text-xs text-muted-foreground">{prediction.reasoning}</p>
         </div>
 
         {/* Action Buttons */}
@@ -222,7 +222,7 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
             <Button
               onClick={() => void handleIgnore()}
               variant="outline"
-              className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+              className="flex-1 border-border text-foreground hover:bg-muted"
             >
               <X className="h-4 w-4 mr-2" />
               Ignore
@@ -230,16 +230,16 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
           </div>
         ) : (
           <Alert className="bg-green-500/10 border-green-500/30">
-            <CheckCircle2 className="h-4 w-4 text-green-400" />
-            <AlertDescription className="text-sm text-green-300">
+            <CheckCircle2 className="h-4 w-4 text-success" />
+            <AlertDescription className="text-sm text-success">
               Your feedback has been recorded. The system will learn from this to improve future suggestions.
             </AlertDescription>
           </Alert>
         )}
 
         {/* Model Info */}
-        <div className="pt-2 border-t border-gray-700">
-          <p className="text-xs text-gray-500">
+        <div className="pt-2 border-t border-border">
+          <p className="text-xs text-muted-foreground">
             Model trained on {modelStatus.sampleCount} successful calibrations. Your actions help improve
             predictions for everyone.
           </p>

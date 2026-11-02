@@ -50,7 +50,7 @@ export function CommercialLockGuard({
       case 'production':
         return 'border-red-500 bg-red-50 dark:bg-red-950';
       default:
-        return 'border-gray-500 bg-gray-50 dark:bg-gray-950';
+        return 'border-border bg-background dark:bg-background';
     }
   };
 
@@ -59,9 +59,9 @@ export function CommercialLockGuard({
       case 'quoted':
         return <Lock className="h-16 w-16 text-amber-500" />;
       case 'production':
-        return <Lock className="h-16 w-16 text-red-500" />;
+        return <Lock className="h-16 w-16 text-destructive" />;
       default:
-        return <Lock className="h-16 w-16 text-gray-500" />;
+        return <Lock className="h-16 w-16 text-muted-foreground" />;
     }
   };
 
@@ -119,7 +119,7 @@ export function CommercialLockGuard({
           <CardContent className="space-y-6">
             {/* Lock reason */}
             {lockStatus.lockReason && (
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-lg border-2 border-dashed">
+              <div className="bg-card dark:bg-background p-6 rounded-lg border-2 border-dashed">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="h-6 w-6 text-amber-500 mt-1" />
                   <div className="flex-1">
@@ -135,7 +135,7 @@ export function CommercialLockGuard({
             {/* Lock metadata */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg">
               {lockStatus.lockedBy && (
-                <div className="bg-white dark:bg-slate-900 p-4 rounded-lg">
+                <div className="bg-card dark:bg-background p-4 rounded-lg">
                   <div className="flex items-center gap-2 text-muted-foreground mb-1">
                     <User className="h-5 w-5" />
                     <span>{locale === 'ar' ? 'قفل بواسطة' : 'Locked by'}</span>
@@ -145,7 +145,7 @@ export function CommercialLockGuard({
               )}
 
               {lockStatus.lockedAt && (
-                <div className="bg-white dark:bg-slate-900 p-4 rounded-lg">
+                <div className="bg-card dark:bg-background p-4 rounded-lg">
                   <div className="flex items-center gap-2 text-muted-foreground mb-1">
                     <Calendar className="h-5 w-5" />
                     <span>{locale === 'ar' ? 'تاريخ القفل' : 'Locked on'}</span>

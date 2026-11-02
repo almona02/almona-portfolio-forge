@@ -91,7 +91,7 @@ export const MaterialAwareWindowTool: React.FC<MaterialAwareWindowToolProps> = (
   return (
     <div className="space-y-3 p-3 bg-amber-50 rounded border border-amber-200">
       <div className="flex items-center gap-2">
-        <Layers size={16} className="text-amber-600" />
+        <Layers size={16} className="text-warning" />
         <span className="text-sm font-medium text-amber-800">
           {material === 'aluminum' ? 'Aluminum' : 'UPVC'} Window Tool
         </span>
@@ -105,7 +105,7 @@ export const MaterialAwareWindowTool: React.FC<MaterialAwareWindowToolProps> = (
           <select
             value={selectedSystemPack}
             onChange={(e) => setSelectedSystemPack(e.target.value)}
-            className="w-full text-xs border border-amber-300 rounded px-2 py-1 bg-white"
+            className="w-full text-xs border border-amber-300 rounded px-2 py-1 bg-card"
           >
             {availableSystemPacks.map(pack => (
               <option key={pack.meta.id} value={pack.meta.id}>

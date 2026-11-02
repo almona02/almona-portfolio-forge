@@ -349,42 +349,42 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
       <div className="p-5">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center shadow-glow">
-            <Zap className="w-5 h-5 text-slate-900" />
+            <Zap className="w-5 h-5 text-foreground" />
           </div>
           <div>
-            <div className="text-xs text-amber-400 uppercase tracking-wider">{t('cutting_optimization.algorithm', 'Algorithm')}</div>
-            <div className="text-sm font-bold text-slate-100">{algorithmRationale.algorithm}</div>
+            <div className="text-xs text-warning uppercase tracking-wider">{t('cutting_optimization.algorithm', 'Algorithm')}</div>
+            <div className="text-sm font-bold text-foreground">{algorithmRationale.algorithm}</div>
           </div>
         </div>
 
         <div className={`transition-all duration-500 overflow-hidden ${
           isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}>
-          <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
+          <div className="space-y-3 text-xs text-foreground leading-relaxed">
             <div className="card-dark rounded-lg p-3">
-              <div className="text-cyan-400 font-semibold mb-1">{t('cutting_optimization.selection_rationale', 'Selection Rationale:')}</div>
+              <div className="text-info font-semibold mb-1">{t('cutting_optimization.selection_rationale', 'Selection Rationale:')}</div>
               <p>{algorithmRationale.rule}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-2">
                 <div className="text-xs mb-1 status-valid">{t('cutting_optimization.waste', 'Waste')}</div>
-                <div className="text-lg font-bold text-emerald-300">{algorithmRationale.waste}</div>
+                <div className="text-lg font-bold text-success">{algorithmRationale.waste}</div>
               </div>
               <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-2">
-                <div className="text-cyan-400 text-xs mb-1">{t('cutting_optimization.duration', 'Duration')}</div>
-                <div className="text-lg font-bold text-cyan-300">{algorithmRationale.duration}</div>
+                <div className="text-info text-xs mb-1">{t('cutting_optimization.duration', 'Duration')}</div>
+                <div className="text-lg font-bold text-info">{algorithmRationale.duration}</div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-slate-500">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Sparkles className="w-3 h-3" />
               <span>{t('cutting_optimization.deterministic', 'Deterministic • Auditable • Constitutional')}</span>
             </div>
 
-            <div className="flex items-center gap-2 pt-2 border-t border-slate-700/50">
+            <div className="flex items-center gap-2 pt-2 border-t border-border/50">
               <Shield className="w-4 h-4 status-valid" />
-              <span className="text-xs text-emerald-300 font-semibold">{t('cutting_optimization.tier_3', 'Tier 3 Deterministic')}</span>
+              <span className="text-xs text-success font-semibold">{t('cutting_optimization.tier_3', 'Tier 3 Deterministic')}</span>
             </div>
           </div>
         </div>
@@ -397,7 +397,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
         <Card className="bg-transparent border-none shadow-none">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm tracking-[0.02em] uppercase">
-              <Scissors className="w-4 h-4 text-amber-400" />
+              <Scissors className="w-4 h-4 text-warning" />
               {t('cutting_optimization.panel_title', 'Cutting Optimization')}
             </CardTitle>
           </CardHeader>
@@ -436,7 +436,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                   className="p-3 card-dark rounded-lg grid grid-cols-12 gap-2 items-center"
                 >
                   <div className="col-span-3">
-                    <Label className="typography-label text-[10px] text-slate-400 tracking-[0.05em] uppercase">{t('cutting_optimization.length', 'Length (mm)')}</Label>
+                    <Label className="typography-label text-[10px] text-muted-foreground tracking-[0.05em] uppercase">{t('cutting_optimization.length', 'Length (mm)')}</Label>
                     <Input
                       type="number"
                       value={piece.length}
@@ -445,7 +445,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                     />
                   </div>
                   <div className="col-span-2">
-                    <Label className="typography-label text-[10px] text-gray-400">{t('cutting_optimization.quantity', 'Qty')}</Label>
+                    <Label className="typography-label text-[10px] text-muted-foreground">{t('cutting_optimization.quantity', 'Qty')}</Label>
                     <Input
                       type="number"
                       value={piece.quantity}
@@ -454,7 +454,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                     />
                   </div>
                   <div className="col-span-3">
-                    <Label className="typography-label text-[10px] text-gray-400">{t('cutting_optimization.label', 'Label')}</Label>
+                    <Label className="typography-label text-[10px] text-muted-foreground">{t('cutting_optimization.label', 'Label')}</Label>
                     <Input
                       value={piece.label}
                       onChange={(e) => updateCutPiece(piece.id, 'label', e.target.value)}
@@ -462,7 +462,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                     />
                   </div>
                   <div className="col-span-2">
-                    <Label className="typography-label text-[10px] text-gray-400">{t('cutting_optimization.priority', 'Priority')}</Label>
+                    <Label className="typography-label text-[10px] text-muted-foreground">{t('cutting_optimization.priority', 'Priority')}</Label>
                     <Select
                       value={piece.priority.toString()}
                       onValueChange={(v) => updateCutPiece(piece.id, 'priority', Number(v))}
@@ -481,7 +481,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-8 w-8 p-0 text-red-400 hover:text-red-300"
+                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                       onClick={() => removeCutPiece(piece.id)}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -491,7 +491,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
               ))}
             </div>
             
-            <div className="flex justify-between text-xs text-slate-400 pt-2 border-t border-slate-700/50">
+            <div className="flex justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
               <span>{t('cutting_optimization.total_cuts', 'Total cuts: {count}', { count: totalCuts })}</span>
               <span>{t('cutting_optimization.total_length', 'Total length: {length} mm', { length: totalCutLength.toLocaleString() })}</span>
             </div>
@@ -518,7 +518,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                       {t('cutting_optimization.available', '{count} available', { count: stock.quantity })}
                     </Badge>
                   </div>
-                  <div className="grid grid-cols-3 gap-2 text-xs text-slate-400">
+                  <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
                     <span>{t('cutting_optimization.material', 'Material: {material}', { material: stock.material })}</span>
                     <span>{t('cutting_optimization.profile', 'Profile: {profile}', { profile: stock.profile })}</span>
                     <span>{t('cutting_optimization.cost', 'Cost: ${cost}', { cost: stock.cost })}</span>
@@ -527,7 +527,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
               ))}
             </div>
             
-            <div className="flex justify-between text-xs text-slate-400 pt-2 border-t border-slate-700/50">
+            <div className="flex justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
               <span>{t('cutting_optimization.total_stock', 'Total stock: {length} mm', { length: totalStockLength.toLocaleString() })}</span>
             </div>
           </TabsContent>
@@ -585,10 +585,10 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                 <div className="grid grid-cols-4 gap-2">
                   <Card className="card-dark p-3 shadow-card">
                     <div className="text-center">
-                      <div className="text-xl font-bold text-green-400">
+                      <div className="text-xl font-bold text-success">
                         {(optimizationResult.summary.overallUtilization * 100).toFixed(1)}%
                       </div>
-                      <div className="text-[10px] text-slate-400 tracking-[0.05em] uppercase">{t('cutting_optimization.utilization', 'Utilization')}</div>
+                      <div className="text-[10px] text-muted-foreground tracking-[0.05em] uppercase">{t('cutting_optimization.utilization', 'Utilization')}</div>
                     </div>
                   </Card>
                   <Card className="card-dark p-3 shadow-card">
@@ -596,23 +596,23 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                       <div className="text-xl font-bold">
                         {optimizationResult.summary.stockPiecesUsed}
                       </div>
-                      <div className="text-[10px] text-gray-400">{t('cutting_optimization.bars_used', 'Bars Used')}</div>
+                      <div className="text-[10px] text-muted-foreground">{t('cutting_optimization.bars_used', 'Bars Used')}</div>
                     </div>
                   </Card>
                   <Card className="card-dark p-3 shadow-card">
                     <div className="text-center">
-                      <div className="text-xl font-bold text-red-400">
+                      <div className="text-xl font-bold text-destructive">
                         {optimizationResult.summary.totalWaste.toFixed(0)}
                       </div>
-                      <div className="text-[10px] text-gray-400">{t('cutting_optimization.waste', 'Waste (mm)')}</div>
+                      <div className="text-[10px] text-muted-foreground">{t('cutting_optimization.waste', 'Waste (mm)')}</div>
                     </div>
                   </Card>
                   <Card className="card-dark p-3 shadow-card">
                     <div className="text-center">
-                      <div className="text-xl font-bold text-blue-400">
+                      <div className="text-xl font-bold text-info">
                         ${optimizationResult.summary.estimatedSavings.toFixed(2)}
                       </div>
-                      <div className="text-[10px] text-gray-400">{t('cutting_optimization.savings', 'Savings')}</div>
+                      <div className="text-[10px] text-muted-foreground">{t('cutting_optimization.savings', 'Savings')}</div>
                     </div>
                   </Card>
                 </div>

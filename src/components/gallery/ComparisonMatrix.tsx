@@ -9,9 +9,9 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ systems }) =
   if (systems.length === 0) return null;
 
   return (
-    <div className="overflow-x-auto bg-white rounded-xl shadow border border-gray-200 mt-8">
+    <div className="overflow-x-auto bg-card rounded-xl shadow border border-border mt-8">
       <table className="w-full text-sm text-right">
-        <thead className="bg-[#003366] text-white">
+        <thead className="bg-[#003366] text-primary-foreground">
           <tr>
             <th className="p-4 font-bold border-l border-blue-800 w-48">المواصفات الفنية</th>
             {systems.map(sys => (
@@ -21,11 +21,11 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ systems }) =
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-border">
           
           {/* U-Value */}
-          <tr className="hover:bg-gray-50">
-            <td className="p-4 font-bold text-gray-700 bg-gray-50">العزل الحراري (U-Value)</td>
+          <tr className="hover:bg-background">
+            <td className="p-4 font-bold text-foreground bg-background">العزل الحراري (U-Value)</td>
             {systems.map(sys => (
               <td key={sys.id} className="p-4 font-mono text-[#003366] font-bold">
                 {sys.specs.uValue} W/m²K
@@ -34,8 +34,8 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ systems }) =
           </tr>
 
           {/* Wind Load */}
-          <tr className="hover:bg-gray-50">
-            <td className="p-4 font-bold text-gray-700 bg-gray-50">مقاومة الرياح</td>
+          <tr className="hover:bg-background">
+            <td className="p-4 font-bold text-foreground bg-background">مقاومة الرياح</td>
             {systems.map(sys => (
               <td key={sys.id} className="p-4 font-mono">
                 {sys.specs.windLoadClass}
@@ -44,8 +44,8 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ systems }) =
           </tr>
 
           {/* Air Permeability */}
-          <tr className="hover:bg-gray-50">
-            <td className="p-4 font-bold text-gray-700 bg-gray-50">نفاذية الهواء</td>
+          <tr className="hover:bg-background">
+            <td className="p-4 font-bold text-foreground bg-background">نفاذية الهواء</td>
             {systems.map(sys => (
               <td key={sys.id} className="p-4 font-mono">
                 {sys.specs.airPermeability}
@@ -54,8 +54,8 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ systems }) =
           </tr>
 
           {/* Water Tightness */}
-          <tr className="hover:bg-gray-50">
-            <td className="p-4 font-bold text-gray-700 bg-gray-50">مقاومة الماء</td>
+          <tr className="hover:bg-background">
+            <td className="p-4 font-bold text-foreground bg-background">مقاومة الماء</td>
             {systems.map(sys => (
               <td key={sys.id} className="p-4 font-mono">
                 {sys.specs.waterTightness}
@@ -64,8 +64,8 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ systems }) =
           </tr>
 
           {/* Sound Reduction */}
-          <tr className="hover:bg-gray-50">
-            <td className="p-4 font-bold text-gray-700 bg-gray-50">عزل الصوت</td>
+          <tr className="hover:bg-background">
+            <td className="p-4 font-bold text-foreground bg-background">عزل الصوت</td>
             {systems.map(sys => (
               <td key={sys.id} className="p-4 font-mono">
                 {sys.specs.soundReduction} dB
@@ -74,8 +74,8 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ systems }) =
           </tr>
 
           {/* Profile Depth */}
-          <tr className="hover:bg-gray-50">
-            <td className="p-4 font-bold text-gray-700 bg-gray-50">عمق المقطع</td>
+          <tr className="hover:bg-background">
+            <td className="p-4 font-bold text-foreground bg-background">عمق المقطع</td>
             {systems.map(sys => (
               <td key={sys.id} className="p-4 font-mono">
                 {sys.specs.profileDepth} mm
@@ -84,8 +84,8 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ systems }) =
           </tr>
 
           {/* Price Range */}
-          <tr className="hover:bg-gray-50">
-            <td className="p-4 font-bold text-gray-700 bg-gray-50">متوسط السعر</td>
+          <tr className="hover:bg-background">
+            <td className="p-4 font-bold text-foreground bg-background">متوسط السعر</td>
             {systems.map(sys => (
               <td key={sys.id} className="p-4 font-mono text-green-700 font-bold">
                 {sys.priceRange.min} - {sys.priceRange.max} EGP
@@ -94,12 +94,12 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ systems }) =
           </tr>
 
           {/* Market Share */}
-          <tr className="hover:bg-gray-50">
-            <td className="p-4 font-bold text-gray-700 bg-gray-50">حصة السوق</td>
+          <tr className="hover:bg-background">
+            <td className="p-4 font-bold text-foreground bg-background">حصة السوق</td>
             {systems.map(sys => (
               <td key={sys.id} className="p-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-full bg-gray-200 rounded-full h-2.5 max-w-[100px]">
+                  <div className="w-full bg-muted rounded-full h-2.5 max-w-[100px]">
                     <div className="bg-[#FFD700] h-2.5 rounded-full" style={{ width: `${sys.marketShare}%` }}></div>
                   </div>
                   <span className="text-xs font-bold">{sys.marketShare}%</span>
@@ -109,8 +109,8 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ systems }) =
           </tr>
 
           {/* Certifications */}
-          <tr className="hover:bg-gray-50">
-            <td className="p-4 font-bold text-gray-700 bg-gray-50">الشهادات</td>
+          <tr className="hover:bg-background">
+            <td className="p-4 font-bold text-foreground bg-background">الشهادات</td>
             {systems.map(sys => (
               <td key={sys.id} className="p-4">
                 <div className="flex flex-wrap gap-1">

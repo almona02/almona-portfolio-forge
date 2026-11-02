@@ -116,11 +116,11 @@ export const PrestigeSystemPackSelector: React.FC<PrestigeSystemPackSelectorProp
                 'active:scale-[0.98] touch-manipulation',
                 isSelected
                   ? 'border-amber-500 bg-amber-500/15 ring-1 ring-amber-500/35'
-                  : 'border-amber-600/30 bg-slate-950/60 hover:border-amber-500/50 hover:bg-amber-500/5',
+                  : 'border-amber-600/30 bg-background/60 hover:border-amber-500/50 hover:bg-amber-500/5',
               )}
             >
               {isSelected && (
-                <span className="absolute top-1.5 right-1.5 text-amber-400" aria-hidden>
+                <span className="absolute top-1.5 right-1.5 text-warning" aria-hidden>
                   <CheckCircle2 className="h-3.5 w-3.5" />
                 </span>
               )}
@@ -131,14 +131,14 @@ export const PrestigeSystemPackSelector: React.FC<PrestigeSystemPackSelectorProp
               </span>
 
               <span
-                className="w-full truncate text-center text-[11px] font-semibold text-amber-100/95 px-0.5"
+                className="w-full truncate text-center text-[11px] font-semibold text-warning/95 px-0.5"
                 title={pack.meta.name}
               >
                 {pack.meta.name}
               </span>
 
               {showPatternCount && (
-                <span className="text-[10px] text-slate-500 tabular-nums">
+                <span className="text-[10px] text-muted-foreground tabular-nums">
                   {patterns.length} pattern{patterns.length === 1 ? '' : 's'}
                 </span>
               )}
@@ -148,7 +148,7 @@ export const PrestigeSystemPackSelector: React.FC<PrestigeSystemPackSelectorProp
       </div>
 
       {availablePacks.length === 0 && (
-        <p className="text-xs text-slate-500 py-4 text-center">No systems available for this project.</p>
+        <p className="text-xs text-muted-foreground py-4 text-center">No systems available for this project.</p>
       )}
     </div>
   );

@@ -58,7 +58,7 @@ export const ManufacturingStatusBar: React.FC = () => {
   return (
     <footer
       className={cn(
-        'h-7 flex-shrink-0 border-t border-amber-600/20 bg-[#080808]',
+        'h-7 flex-shrink-0 border-t border-amber-600/20 bg-background',
         'flex items-center gap-3 sm:gap-4 px-2 sm:px-3 overflow-x-auto text-[10px] font-mono text-amber-700/90',
         'scrollbar-thin scrollbar-thumb-amber-900/40',
       )}
@@ -73,12 +73,12 @@ export const ManufacturingStatusBar: React.FC = () => {
             index >= 3 && 'hidden sm:flex',
           )}
         >
-          <span className="text-amber-600/70" aria-hidden>
+          <span className="text-warning/70" aria-hidden>
             {c.icon}
           </span>
           <span className="uppercase tracking-wider hidden md:inline">{c.label}</span>
           <span
-            className="text-amber-200/80"
+            className="text-warning/80"
             dir={'ltr' in c && c.ltr ? 'ltr' : undefined}
             title={`${c.label}: ${c.value}`}
           >

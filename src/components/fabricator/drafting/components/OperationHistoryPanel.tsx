@@ -120,25 +120,25 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
   };
 
   const getOperationColor = (type: string, isCheckpoint?: boolean) => {
-    if (isCheckpoint) return 'text-amber-400';
-    if (type.includes('undo')) return 'text-blue-400';
-    if (type.includes('redo')) return 'text-amber-400';
-    return 'text-slate-400';
+    if (isCheckpoint) return 'text-warning';
+    if (type.includes('undo')) return 'text-info';
+    if (type.includes('redo')) return 'text-warning';
+    return 'text-muted-foreground';
   };
 
   return (
-    <div className={`flex flex-col h-full bg-slate-900 border-l border-amber-600/30 ${className}`}>
+    <div className={`flex flex-col h-full bg-background border-l border-amber-600/30 ${className}`}>
       {/* Header */}
       <div className={`flex items-center justify-between ${getPadding('panelHeader')} border-b border-amber-600/20`}>
         <div className="flex items-center gap-2">
-          <History className="h-5 w-5 text-amber-400" />
-          <h3 className={`${getTypographyPreset('h4')} text-amber-200`}>Operation History</h3>
+          <History className="h-5 w-5 text-warning" />
+          <h3 className={`${getTypographyPreset('h4')} text-warning`}>Operation History</h3>
         </div>
         {onClose && (
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6 text-slate-400 hover:text-amber-400"
+            className="h-6 w-6 text-muted-foreground hover:text-warning"
             onClick={onClose}
           >
             <X className="h-4 w-4" />
@@ -152,8 +152,8 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
           onClick={() => setSelectedTab('history')}
           className={`flex-1 ${getPadding('buttonSmall')} text-sm font-medium transition-colors ${
             selectedTab === 'history'
-              ? 'text-amber-400 border-b-2 border-amber-400 bg-amber-500/5'
-              : 'text-slate-400 hover:text-amber-300'
+              ? 'text-warning border-b-2 border-amber-400 bg-amber-500/5'
+              : 'text-muted-foreground hover:text-warning'
           }`}
         >
           History ({sortedItems.length})
@@ -162,8 +162,8 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
           onClick={() => setSelectedTab('versions')}
           className={`flex-1 ${getPadding('buttonSmall')} text-sm font-medium transition-colors ${
             selectedTab === 'versions'
-              ? 'text-amber-400 border-b-2 border-amber-400 bg-amber-500/5'
-              : 'text-slate-400 hover:text-amber-300'
+              ? 'text-warning border-b-2 border-amber-400 bg-amber-500/5'
+              : 'text-muted-foreground hover:text-warning'
           }`}
         >
           Versions ({sortedVersions.length})
@@ -177,7 +177,7 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
           size="sm"
           onClick={onUndo}
           disabled={!canUndo}
-          className="flex-1 border-amber-600/30 text-amber-400 hover:bg-amber-500/10 disabled:opacity-50"
+          className="flex-1 border-amber-600/30 text-warning hover:bg-amber-500/10 disabled:opacity-50"
         >
           <RotateCcw className="h-3 w-3 mr-1" />
           Undo
@@ -187,7 +187,7 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
           size="sm"
           onClick={onRedo}
           disabled={!canRedo}
-          className="flex-1 border-amber-600/30 text-amber-400 hover:bg-amber-500/10 disabled:opacity-50"
+          className="flex-1 border-amber-600/30 text-warning hover:bg-amber-500/10 disabled:opacity-50"
         >
           <RotateCw className="h-3 w-3 mr-1" />
           Redo
@@ -197,7 +197,7 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
             variant="outline"
             size="sm"
             onClick={onCreateCheckpoint}
-            className="border-amber-600/30 text-amber-400 hover:bg-amber-500/10"
+            className="border-amber-600/30 text-warning hover:bg-amber-500/10"
           >
             <Save className="h-3 w-3 mr-1" />
             Checkpoint
@@ -212,11 +212,11 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
             <div className={`flex flex-col ${getGap('tight')}`}>
               {sortedItems.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <History className="h-12 w-12 text-slate-600 mb-4" />
-                  <p className={`${getTypographyPreset('body')} text-slate-400`}>
+                  <History className="h-12 w-12 text-muted-foreground mb-4" />
+                  <p className={`${getTypographyPreset('body')} text-muted-foreground`}>
                     No operation history yet
                   </p>
-                  <p className={`${getTypographyPreset('caption')} text-slate-500 mt-2`}>
+                  <p className={`${getTypographyPreset('caption')} text-muted-foreground mt-2`}>
                     Operations will appear here as you work
                   </p>
                 </div>
@@ -232,7 +232,7 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
                       className={`p-3 rounded-lg border transition-colors ${
                         isCurrent
                           ? 'bg-amber-500/10 border-amber-500/30'
-                          : 'bg-slate-800/50 border-amber-600/20 hover:border-amber-600/30'
+                          : 'bg-card/50 border-amber-600/20 hover:border-amber-600/30'
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -241,21 +241,21 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <p className={`${getTypographyPreset('bodySmall')} font-medium text-slate-200`}>
+                            <p className={`${getTypographyPreset('bodySmall')} font-medium text-foreground`}>
                               {item.description}
                             </p>
                             {item.isCheckpoint && (
-                              <span className="px-1.5 py-0.5 text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded">
+                              <span className="px-1.5 py-0.5 text-xs font-medium bg-amber-500/20 text-warning border border-amber-500/30 rounded">
                                 Checkpoint
                               </span>
                             )}
                             {isCurrent && (
-                              <span className="px-1.5 py-0.5 text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded">
+                              <span className="px-1.5 py-0.5 text-xs font-medium bg-emerald-500/20 text-success border border-emerald-500/30 rounded">
                                 Current
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center gap-2 text-xs text-slate-500">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <Clock className="h-3 w-3" />
                             <span>{formatVersionTimestamp(item.timestamp)}</span>
                           </div>
@@ -266,7 +266,7 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-6 w-6 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+                                className="h-6 w-6 text-info hover:text-info hover:bg-blue-500/10"
                                 onClick={onUndo}
                                 title="Undo to this point"
                               >
@@ -277,7 +277,7 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-6 w-6 text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
+                                className="h-6 w-6 text-warning hover:text-warning hover:bg-amber-500/10"
                                 onClick={onRedo}
                                 title="Redo to this point"
                               >
@@ -296,11 +296,11 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
             <div className={`flex flex-col ${getGap('tight')}`}>
               {sortedVersions.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <Save className="h-12 w-12 text-slate-600 mb-4" />
-                  <p className={`${getTypographyPreset('body')} text-slate-400`}>
+                  <Save className="h-12 w-12 text-muted-foreground mb-4" />
+                  <p className={`${getTypographyPreset('body')} text-muted-foreground`}>
                     No saved versions yet
                   </p>
-                  <p className={`${getTypographyPreset('caption')} text-slate-500 mt-2`}>
+                  <p className={`${getTypographyPreset('caption')} text-muted-foreground mt-2`}>
                     Create checkpoints to save versions
                   </p>
                 </div>
@@ -308,10 +308,10 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
                 sortedVersions.map((version) => (
                   <div
                     key={version.id}
-                    className="p-3 rounded-lg border bg-slate-800/50 border-amber-600/20 hover:border-amber-600/30 transition-colors"
+                    className="p-3 rounded-lg border bg-card/50 border-amber-600/20 hover:border-amber-600/30 transition-colors"
                   >
                     <div className="flex items-start gap-3">
-                      <div className="mt-0.5 text-amber-400">
+                      <div className="mt-0.5 text-warning">
                         {version.isCheckpoint ? (
                           <CheckCircle2 className="h-4 w-4" />
                         ) : (
@@ -320,16 +320,16 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <p className={`${getTypographyPreset('bodySmall')} font-medium text-slate-200`}>
+                          <p className={`${getTypographyPreset('bodySmall')} font-medium text-foreground`}>
                             {version.label || (version.isCheckpoint ? 'Checkpoint' : 'Auto-save')}
                           </p>
                           {version.isCheckpoint && (
-                            <span className="px-1.5 py-0.5 text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded">
+                            <span className="px-1.5 py-0.5 text-xs font-medium bg-amber-500/20 text-warning border border-amber-500/30 rounded">
                               Checkpoint
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-4 text-xs text-slate-500">
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
                             <span>{formatVersionTimestamp(version.timestamp)}</span>
@@ -344,7 +344,7 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
+                            className="h-6 w-6 text-warning hover:text-warning hover:bg-amber-500/10"
                             onClick={() => onRestoreVersion(version.id)}
                             title="Restore this version"
                           >
@@ -355,7 +355,7 @@ export const OperationHistoryPanel: React.FC<OperationHistoryPanelProps> = ({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                            className="h-6 w-6 text-destructive hover:text-destructive hover:bg-red-500/10"
                             onClick={() => onDeleteVersion(version.id)}
                             title="Delete this version"
                           >

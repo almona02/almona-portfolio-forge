@@ -141,9 +141,9 @@ export function OptimizationCheck({ wizardData, profiles = [] }: OptimizationChe
   if (!results) return null;
 
   const getWasteColor = (p: number) => {
-    if (p < 5) return 'text-green-600';
-    if (p < 10) return 'text-amber-600';
-    return 'text-red-600';
+    if (p < 5) return 'text-success';
+    if (p < 10) return 'text-warning';
+    return 'text-destructive';
   };
 
   const getWasteStatus = (p: number) => {
@@ -154,10 +154,10 @@ export function OptimizationCheck({ wizardData, profiles = [] }: OptimizationChe
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <Card className="border-2 border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
-            <CardHeader className="bg-slate-50 dark:bg-slate-900 border-b">
+        <Card className="border-2 border-border dark:border-border shadow-xl overflow-hidden">
+            <CardHeader className="bg-background dark:bg-background border-b">
                 <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="w-6 h-6 text-blue-600" />
+                    <TrendingUp className="w-6 h-6 text-info" />
                     <span>{locale === 'ar' ? 'تحليل التحسين والتكاليف (حقيقي)' : 'Optimization & Cost Analysis (Real-time)'}</span>
                 </CardTitle>
             </CardHeader>
@@ -166,24 +166,24 @@ export function OptimizationCheck({ wizardData, profiles = [] }: OptimizationChe
                 {/* Section 1: Material & Optimization */}
                 <div className="space-y-6">
                     <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl border border-blue-100 dark:border-blue-800 text-center">
-                        <div className="text-sm text-blue-600 dark:text-blue-400 font-medium uppercase tracking-wider mb-1">
+                        <div className="text-sm text-info dark:text-info font-medium uppercase tracking-wider mb-1">
                             {locale === 'ar' ? 'عدد القضبان المطلوب' : 'Bars Needed'}
                         </div>
-                        <div className="text-6xl font-black text-slate-900 dark:text-white flex items-center justify-center gap-2">
-                            <Package className="w-12 h-12 text-blue-500 opacity-50" />
+                        <div className="text-6xl font-black text-foreground dark:text-foreground flex items-center justify-center gap-2">
+                            <Package className="w-12 h-12 text-info opacity-50" />
                             {results.barsNeeded}
                         </div>
-                        <div className="text-sm text-slate-500 mt-2">
+                        <div className="text-sm text-muted-foreground mt-2">
                             {locale === 'ar' ? 'طول القضيب: 6 متر' : 'Standard Length: 6m'}
                         </div>
-                        <div className="text-xs text-slate-400 mt-1">
+                        <div className="text-xs text-muted-foreground mt-1">
                             ({results.barsNeeded} bars for {wizardData.quantity || 1} windows)
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <div className="flex justify-between items-end">
-                            <span className="text-sm font-medium text-slate-600">
+                            <span className="text-sm font-medium text-muted-foreground">
                                 {locale === 'ar' ? 'نسبة الهالك' : 'Waste Percentage'}
                             </span>
                             <Badge variant="outline" className={`${getWasteColor(results.wastePercentage)} border-current`}>
@@ -191,7 +191,7 @@ export function OptimizationCheck({ wizardData, profiles = [] }: OptimizationChe
                             </Badge>
                         </div>
                         <Progress value={results.wastePercentage} max={20} className="h-4" />
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-muted-foreground">
                             {locale === 'ar' 
                                 ? 'نسبة الهالك محسوبة بدقة بناءً على القطاعات الفعلية.' 
                                 : 'Waste % calculated precisely based on actual profiles.'}
@@ -202,21 +202,21 @@ export function OptimizationCheck({ wizardData, profiles = [] }: OptimizationChe
                 {/* Section 2: Financials */}
                 <div className="space-y-4">
                     <h3 className="font-semibold text-lg flex items-center gap-2">
-                        <DollarSign className="w-5 h-5 text-green-600" />
+                        <DollarSign className="w-5 h-5 text-success" />
                         {locale === 'ar' ? 'التقديرات المالية' : 'Financial Estimates'}
                     </h3>
                     
                     <div className="grid grid-cols-1 gap-4">
-                        <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-800">
-                            <div className="text-sm text-slate-500 mb-1">{locale === 'ar' ? 'تكلفة التصنيع التقديرية' : 'Est. Manufacturing Cost'}</div>
-                            <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                        <div className="p-4 rounded-lg border border-border dark:border-border">
+                            <div className="text-sm text-muted-foreground mb-1">{locale === 'ar' ? 'تكلفة التصنيع التقديرية' : 'Est. Manufacturing Cost'}</div>
+                            <div className="text-2xl font-bold text-foreground dark:text-foreground">
                                 {results.totalCost.toLocaleString(undefined, { maximumFractionDigits: 0 })} EGP
                             </div>
                         </div>
 
                         <div className="p-4 rounded-lg border border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-900/10">
-                            <div className="text-sm text-green-700 dark:text-green-400 mb-1">{locale === 'ar' ? 'سعر البيع المقترح' : 'Suggested Selling Price'}</div>
-                            <div className="text-3xl font-bold text-green-700 dark:text-green-400">
+                            <div className="text-sm text-green-700 dark:text-success mb-1">{locale === 'ar' ? 'سعر البيع المقترح' : 'Suggested Selling Price'}</div>
+                            <div className="text-3xl font-bold text-green-700 dark:text-success">
                                 {results.sellingPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })} EGP
                             </div>
                         </div>
@@ -224,12 +224,12 @@ export function OptimizationCheck({ wizardData, profiles = [] }: OptimizationChe
 
                     <div className="flex items-center justify-between pt-4 border-t">
                         <div className="flex items-center gap-2">
-                            {parseFloat(results.margin) > 25 ? <TrendingUp className="text-green-500" /> : <TrendingDown className="text-amber-500" />}
-                            <span className="font-medium text-slate-700 dark:text-slate-300">
+                            {parseFloat(results.margin) > 25 ? <TrendingUp className="text-success" /> : <TrendingDown className="text-warning" />}
+                            <span className="font-medium text-foreground dark:text-foreground">
                                 {locale === 'ar' ? 'هامش الربح المتوقع' : 'Expected Margin'}
                             </span>
                         </div>
-                        <div className={`text-xl font-bold ${parseFloat(results.margin) > 25 ? 'text-green-600' : 'text-amber-600'}`}>
+                        <div className={`text-xl font-bold ${parseFloat(results.margin) > 25 ? 'text-success' : 'text-warning'}`}>
                             {results.margin}%
                         </div>
                     </div>

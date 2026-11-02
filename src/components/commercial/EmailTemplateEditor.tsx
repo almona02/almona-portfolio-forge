@@ -172,7 +172,7 @@ export const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({
   return (
     <div className={cn('space-y-6', className)}>
       {/* Header */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -198,7 +198,7 @@ export const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Editor */}
         <div className="space-y-4">
-          <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+          <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
             <CardHeader>
               <CardTitle className="text-base text-amber-200">Template Editor</CardTitle>
             </CardHeader>
@@ -209,7 +209,7 @@ export const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({
                 <Input
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                  className="mt-1 bg-background/60 border-amber-600/30 text-amber-200"
                   placeholder="Email subject with ${variables}"
                 />
               </div>
@@ -221,7 +221,7 @@ export const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({
                   value={htmlBody}
                   onChange={(e) => setHtmlBody(e.target.value)}
                   rows={12}
-                  className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 font-mono text-sm"
+                  className="mt-1 bg-background/60 border-amber-600/30 text-amber-200 font-mono text-sm"
                   placeholder="HTML email body with ${variables}"
                 />
               </div>
@@ -233,7 +233,7 @@ export const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({
                   value={textBody}
                   onChange={(e) => setTextBody(e.target.value)}
                   rows={8}
-                  className="mt-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 font-mono text-sm"
+                  className="mt-1 bg-background/60 border-amber-600/30 text-amber-200 font-mono text-sm"
                   placeholder="Plain text email body with ${variables}"
                 />
               </div>
@@ -260,12 +260,12 @@ export const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({
 
         {/* Preview */}
         <div className="space-y-4">
-          <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+          <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base text-amber-200">Preview</CardTitle>
                 <Tabs value={previewMode} onValueChange={(v) => setPreviewMode(v as 'html' | 'text')}>
-                  <TabsList className="bg-[#0f0f0f]/60 border-amber-600/20 h-8">
+                  <TabsList className="bg-background/60 border-amber-600/20 h-8">
                     <TabsTrigger value="html" className="text-xs text-amber-300 data-[state=active]:text-amber-200">
                       <Eye className="w-3 h-3 mr-1" />
                       HTML
@@ -293,7 +293,7 @@ export const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({
                           return typeof raw === 'string' || typeof raw === 'number' ? String(raw) : '';
                         })()}
                           onChange={(e) => setPreviewData({ ...previewData, [variable]: e.target.value } as EmailTemplateData)}
-                          className="flex-1 bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200 text-xs"
+                          className="flex-1 bg-background/60 border-amber-600/30 text-amber-200 text-xs"
                           placeholder={`${variable} value`}
                         />
                       </div>
@@ -304,14 +304,14 @@ export const EmailTemplateEditor: React.FC<EmailTemplateEditorProps> = ({
                 {/* Preview Display */}
                 <div>
                   <Label className="text-sm text-amber-300/70">Subject</Label>
-                  <div className="mt-1 p-2 bg-[#0f0f0f]/60 border border-amber-600/30 rounded text-amber-200 text-sm">
+                  <div className="mt-1 p-2 bg-background/60 border border-amber-600/30 rounded text-amber-200 text-sm">
                     {previewTemplate.subject}
                   </div>
                 </div>
 
                 <div>
                   <Label className="text-sm text-amber-300/70">Body</Label>
-                  <div className="mt-1 p-4 bg-[#0f0f0f]/60 border border-amber-600/30 rounded max-h-96 overflow-y-auto">
+                  <div className="mt-1 p-4 bg-background/60 border border-amber-600/30 rounded max-h-96 overflow-y-auto">
                     {previewMode === 'html' ? (
                       <div
                         dangerouslySetInnerHTML={{ __html: previewTemplate.htmlBody }}

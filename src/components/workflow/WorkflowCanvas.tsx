@@ -154,17 +154,17 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
     if (!ReactFlow) {
         return (
             <div className={cn(
-                "flex items-center justify-center h-full bg-slate-900 border border-slate-700 rounded-lg",
+                "flex items-center justify-center h-full bg-background border border-border rounded-lg",
                 className
             )}>
                 <div className="text-center p-8">
-                    <p className="text-lg font-medium text-slate-200 mb-2">
+                    <p className="text-lg font-medium text-foreground mb-2">
                         React Flow Not Installed
                     </p>
-                    <p className="text-sm text-slate-400 mb-4">
+                    <p className="text-sm text-muted-foreground mb-4">
                         Install @xyflow/react to use the workflow canvas:
                     </p>
-                    <code className="block bg-slate-800 px-4 py-2 rounded text-amber-400">
+                    <code className="block bg-card px-4 py-2 rounded text-amber-400">
                         npm install @xyflow/react
                     </code>
                 </div>
@@ -173,7 +173,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
     }
 
     return (
-        <div className={cn("h-full w-full bg-slate-900 rounded-lg", className)}>
+        <div className={cn("h-full w-full bg-background rounded-lg", className)}>
             <ReactFlow
                 nodes={rfNodes}
                 edges={rfEdges}
@@ -182,7 +182,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                 onConnect={handleConnect}
                 onNodeClick={handleNodeClick}
                 fitView
-                className="bg-slate-900"
+                className="bg-background"
                 nodeTypes={undefined} // Use default node types for now
                 defaultEdgeOptions={{
                     type: 'smoothstep',
@@ -190,9 +190,9 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                 }}
             >
                 <Background color="#374151" gap={16} />
-                <Controls className="bg-slate-800 border-slate-700" />
+                <Controls className="bg-card border-border" />
                 <MiniMap 
-                    className="bg-slate-800 border-slate-700"
+                    className="bg-card border-border"
                     nodeColor={(node: any) => {
                         const colors: Record<string, string> = {
                             start: '#10b981',

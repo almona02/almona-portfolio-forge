@@ -57,8 +57,8 @@ export const MaterialGallery: React.FC<MaterialGalleryProps> = ({
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <Sparkles className="w-6 h-6 text-amber-500" />
-        <h2 className="typography-h2 text-gray-900">Choose Your Foundation</h2>
+        <Sparkles className="w-6 h-6 text-warning" />
+        <h2 className="typography-h2 text-foreground">Choose Your Foundation</h2>
         {recommendedFor && (
           <Badge variant="outline" className="ml-auto">
             Recommended for: {recommendedFor}
@@ -78,7 +78,7 @@ export const MaterialGallery: React.FC<MaterialGalleryProps> = ({
                 "hover:shadow-2xl hover:-translate-y-2",
                 isSelected 
                   ? "border-2 border-amber-500 bg-gradient-to-br from-amber-50 to-white shadow-xl"
-                  : "border border-gray-200 hover:border-amber-300"
+                  : "border border-border hover:border-amber-300"
               )}
               onClick={() => handleSelect(material.id)}
             >
@@ -86,7 +86,7 @@ export const MaterialGallery: React.FC<MaterialGalleryProps> = ({
               {isSelected && (
                 <div className="absolute top-4 right-4 z-10">
                   <div className="btn-primary">
-                    <CheckCircle2 className="w-5 h-5 text-white" />
+                    <CheckCircle2 className="w-5 h-5 text-foreground" />
                   </div>
                 </div>
               )}
@@ -99,7 +99,7 @@ export const MaterialGallery: React.FC<MaterialGalleryProps> = ({
                       "shadow-md",
                       material.priceTier === 'Premium' && "bg-amber-500 text-white",
                       material.priceTier === 'Value' && "bg-blue-500 text-white",
-                      material.priceTier === 'Industrial' && "bg-gray-800 text-white"
+                      material.priceTier === 'Industrial' && "bg-card text-foreground"
                     )}
                   >
                     {material.badge}
@@ -110,27 +110,27 @@ export const MaterialGallery: React.FC<MaterialGalleryProps> = ({
               <CardContent className="p-6">
                 {/* Header */}
                 <div className="mb-4">
-                  <h3 className="typography-h3 text-gray-900 mb-2">
+                  <h3 className="typography-h3 text-foreground mb-2">
                     {material.title}
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-muted-foreground">
                     {material.description}
                   </p>
                 </div>
 
                 {/* Visual Placeholder */}
                 {material.visual && (
-                  <div className="mb-4 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+                  <div className="mb-4 h-32 bg-gradient-to-br from-muted to-muted rounded-lg flex items-center justify-center">
                     {material.visual}
                   </div>
                 )}
 
                 {/* Features */}
                 <div className="mb-4">
-                  <h4 className="typography-h4 text-sm text-gray-700 mb-2">Key Features</h4>
+                  <h4 className="typography-h4 text-sm text-foreground mb-2">Key Features</h4>
                   <ul className="space-y-1">
                     {material.features.map((feature, i) => (
-                      <li key={i} className="text-sm text-gray-600 flex items-center gap-2">
+                      <li key={i} className="text-sm text-muted-foreground flex items-center gap-2">
                         <div className="btn-primary" />
                         {feature}
                       </li>
@@ -140,13 +140,13 @@ export const MaterialGallery: React.FC<MaterialGalleryProps> = ({
 
                 {/* Applications */}
                 <div>
-                  <h4 className="typography-h4 text-sm text-gray-700 mb-2">Ideal For</h4>
+                  <h4 className="typography-h4 text-sm text-foreground mb-2">Ideal For</h4>
                   <div className="flex flex-wrap gap-2">
                     {material.applications.map((app, i) => (
                       <Badge 
                         key={i} 
                         variant="secondary" 
-                        className="text-xs bg-gray-100 text-gray-700"
+                        className="text-xs bg-muted text-foreground"
                       >
                         {app}
                       </Badge>
@@ -155,15 +155,15 @@ export const MaterialGallery: React.FC<MaterialGalleryProps> = ({
                 </div>
 
                 {/* Price Tier Indicator */}
-                <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="mt-4 pt-4 border-t border-border">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">Price Tier</span>
+                    <span className="text-xs text-muted-foreground">Price Tier</span>
                     <Badge 
                       variant="outline"
                       className={cn(
                         material.priceTier === 'Premium' && "border-amber-500 text-amber-700",
                         material.priceTier === 'Value' && "border-blue-500 text-blue-700",
-                        material.priceTier === 'Industrial' && "border-gray-500 text-gray-700"
+                        material.priceTier === 'Industrial' && "border-border text-foreground"
                       )}
                     >
                       {material.priceTier}

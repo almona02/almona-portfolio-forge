@@ -339,7 +339,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
       case 'pass':
         return <CheckCircle2 className="w-5 h-5 status-valid" />;
       case 'fail':
-        return <XCircle className="w-5 h-5 text-red-400" />;
+        return <XCircle className="w-5 h-5 text-destructive" />;
       case 'pending':
         return <AlertCircle className="w-5 h-5 text-amber-400" />;
       default:
@@ -381,7 +381,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                     {check.measurements.map((m, idx) => (
                       <div
                         key={idx}
-                        className={`text-xs ${m.withinTolerance ? 'text-green-400' : 'text-red-400'}`}
+                        className={`text-xs ${m.withinTolerance ? 'text-success' : 'text-destructive'}`}
                       >
                         Deviation: {m.deviation.toFixed(2)}mm (
                         {m.deviationPercent.toFixed(2)}%)
@@ -472,7 +472,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                     width: parseFloat(e.target.value) || 0,
                   })
                 }
-                className="bg-gray-800 border-amber-600/30 text-amber-200"
+                className="bg-card border-amber-600/30 text-amber-200"
               />
             </div>
             <div className="space-y-2">
@@ -489,7 +489,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                     height: parseFloat(e.target.value) || 0,
                   })
                 }
-                className="bg-gray-800 border-amber-600/30 text-amber-200"
+                className="bg-card border-amber-600/30 text-amber-200"
               />
             </div>
             <div className="space-y-2">
@@ -506,7 +506,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                     diagonal: parseFloat(e.target.value) || 0,
                   })
                 }
-                className="bg-gray-800 border-amber-600/30 text-amber-200"
+                className="bg-card border-amber-600/30 text-amber-200"
               />
             </div>
             <div className="space-y-2">
@@ -523,7 +523,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                     squareness: parseFloat(e.target.value) || 0,
                   })
                 }
-                className="bg-gray-800 border-amber-600/30 text-amber-200"
+                className="bg-card border-amber-600/30 text-amber-200"
               />
             </div>
             <div className="space-y-2">
@@ -540,7 +540,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                     flatness: parseFloat(e.target.value) || 0,
                   })
                 }
-                className="bg-gray-800 border-amber-600/30 text-amber-200"
+                className="bg-card border-amber-600/30 text-amber-200"
               />
             </div>
           </div>
@@ -573,7 +573,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                 <div className="text-2xl font-bold status-valid">
                   {verificationResult.passCount}
                 </div>
-                <p className="text-sm text-emerald-300">Passed</p>
+                <p className="text-sm text-success">Passed</p>
               </CardContent>
             </Card>
             <Card className="btn-primary">
@@ -586,10 +586,10 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
             </Card>
             <Card className="bg-red-500/10 border-red-500/30">
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-red-400">
+                <div className="text-2xl font-bold text-destructive">
                   {verificationResult.failCount}
                 </div>
-                <p className="text-sm text-red-300">Failed</p>
+                <p className="text-sm text-destructive">Failed</p>
               </CardContent>
             </Card>
           </div>
@@ -653,7 +653,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                     {productPhotoHash ? 'Retake Photo' : 'Capture Photo'}
                   </Button>
                   {productPhotoHash && (
-                    <span className="text-xs text-green-400">
+                    <span className="text-xs text-success">
                       ✓ Hash: {productPhotoHash.substring(0, 16)}...
                     </span>
                   )}
@@ -713,7 +713,7 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
                     )}
                   </Button>
                   {productQR && (
-                    <span className="text-xs text-green-400 font-mono">✓ {productQR}</span>
+                    <span className="text-xs text-success font-mono">✓ {productQR}</span>
                   )}
                 </div>
               </div>
@@ -724,15 +724,15 @@ export const QualityControlPage: React.FC<QualityControlPageProps> = ({
           {verificationResult.overallStatus === 'pass' ? (
             <Alert className="bg-emerald-500/10 border-emerald-500/30">
               <CheckCircle2 className="h-5 w-5 status-valid" />
-              <AlertDescription className="text-emerald-300 font-semibold">
+              <AlertDescription className="text-success font-semibold">
                 ✅ APPROVED FOR DELIVERY - All quality checks passed (
                 {verificationResult.accuracy.toFixed(1)}% accuracy)
               </AlertDescription>
             </Alert>
           ) : verificationResult.overallStatus === 'fail' ? (
             <Alert className="bg-red-500/10 border-red-500/30">
-              <XCircle className="h-5 w-5 text-red-400" />
-              <AlertDescription className="text-red-300 font-semibold">
+              <XCircle className="h-5 w-5 text-destructive" />
+              <AlertDescription className="text-destructive font-semibold">
                 ❌ QUALITY ISSUES DETECTED - {verificationResult.failCount} check(s) failed,{' '}
                 {verificationResult.criticalFailures.length} critical
               </AlertDescription>

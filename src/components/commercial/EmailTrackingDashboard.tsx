@@ -225,7 +225,7 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
 
   if (loading) {
     return (
-      <Card className={cn('bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark', className)}>
+      <Card className={cn('bg-background/80 border-amber-600/30 card-glass-dark', className)}>
         <CardContent className="p-8">
           <div className="flex items-center justify-center">
             <RefreshCw className="w-8 h-8 animate-spin text-amber-500" />
@@ -238,7 +238,7 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
   return (
     <div className={cn('space-y-6', className)}>
       {/* Period Selection */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -278,7 +278,7 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
                 type="date"
                 value={format(periodStart, 'yyyy-MM-dd')}
                 onChange={(e) => setPeriodStart(new Date(e.target.value))}
-                className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                className="bg-background/60 border-amber-600/30 text-amber-200"
               />
             </div>
             <div className="space-y-2">
@@ -287,7 +287,7 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
                 type="date"
                 value={format(periodEnd, 'yyyy-MM-dd')}
                 onChange={(e) => setPeriodEnd(new Date(e.target.value))}
-                className="bg-[#0f0f0f]/60 border-amber-600/30 text-amber-200"
+                className="bg-background/60 border-amber-600/30 text-amber-200"
               />
             </div>
           </div>
@@ -312,7 +312,7 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -323,7 +323,7 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -334,7 +334,7 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -345,7 +345,7 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+        <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -360,7 +360,7 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
       </div>
 
       {/* Email History Table */}
-      <Card className="bg-[#0f0f0f]/80 border-amber-600/30 card-glass-dark">
+      <Card className="bg-background/80 border-amber-600/30 card-glass-dark">
         <CardHeader>
           <CardTitle className="text-lg text-amber-200">Email History</CardTitle>
         </CardHeader>
@@ -372,7 +372,7 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#0f0f0f]/60 border-amber-600/20">
+                <TableRow className="bg-background/60 border-amber-600/20">
                   <TableHead className="text-amber-300/70">Template</TableHead>
                   <TableHead className="text-amber-300/70">Recipient</TableHead>
                   <TableHead className="text-amber-300/70">Subject</TableHead>
@@ -395,14 +395,14 @@ export const EmailTrackingDashboard: React.FC<EmailTrackingDashboardProps> = ({
                     </TableCell>
                     <TableCell className="text-center">
                       {email.openCount > 0 ? (
-                        <span className="text-emerald-400">✓ {email.openCount}</span>
+                        <span className="text-success">✓ {email.openCount}</span>
                       ) : (
                         <span className="text-amber-600/50">—</span>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
                       {email.clickCount > 0 ? (
-                        <span className="text-cyan-400">✓ {email.clickCount}</span>
+                        <span className="text-info">✓ {email.clickCount}</span>
                       ) : (
                         <span className="text-amber-600/50">—</span>
                       )}

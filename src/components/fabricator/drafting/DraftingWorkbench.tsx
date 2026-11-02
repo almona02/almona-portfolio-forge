@@ -225,7 +225,7 @@ export const DraftingWorkbench: React.FC<{
       {/* 9.2 Accessibility: Skip to Canvas */}
       <a
         href="#drawing-canvas"
-        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-amber-500 focus:text-black focus:top-4 focus:left-4 focus:font-bold focus:shadow-xl focus:rounded-md transition-all"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-amber-500 focus:text-foreground focus:top-4 focus:left-4 focus:font-bold focus:shadow-xl focus:rounded-md transition-all"
       >
         Skip directly to Drawing Canvas
       </a>
@@ -264,7 +264,7 @@ export const DraftingWorkbench: React.FC<{
             <Button
               variant="ghost"
               size="sm"
-              className="flex items-center gap-1.5 h-8 text-xs text-slate-400 hover:text-white border border-slate-700/50 hover:bg-slate-800"
+              className="flex items-center gap-1.5 h-8 text-xs text-muted-foreground hover:text-foreground border border-border/50 hover:bg-card"
               onClick={onExit}
             >
               <span className="text-base pb-0.5">←</span>
@@ -272,26 +272,26 @@ export const DraftingWorkbench: React.FC<{
             </Button>
           )}
 
-          <div className="flex items-center gap-0.5 p-0.5 bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-lg shadow-inner">
+          <div className="flex items-center gap-0.5 p-0.5 bg-background/80 backdrop-blur-sm border border-border/50 rounded-lg shadow-inner">
             <button
               onClick={() => setMode('window')}
               className={`
                relative px-4 py-2 text-xs font-medium rounded-md transition-all duration-200
                ${mode === 'window'
-                  ? 'text-slate-100 bg-slate-700 shadow-sm shadow-black/20'
-                  : 'text-slate-300 hover:text-slate-100 hover:bg-slate-800/50'}
+                  ? 'text-foreground bg-muted shadow-sm shadow-black/20'
+                  : 'text-foreground hover:text-foreground hover:bg-card/50'}
              `}
             >
               Window / Door
             </button>
-            <div className="w-[1px] h-3 bg-slate-700/50 mx-0.5" />
+            <div className="w-[1px] h-3 bg-muted/50 mx-0.5" />
             <button
               onClick={() => setMode('facade')}
               className={`
                relative px-4 py-2 text-xs font-medium rounded-md transition-all duration-200
                ${mode === 'facade'
-                  ? 'text-amber-100 bg-amber-900/30 border border-amber-500/20 shadow-sm shadow-amber-900/10'
-                  : 'text-slate-300 hover:text-slate-100 hover:bg-slate-800/50'}
+                  ? 'text-warning bg-amber-900/30 border border-amber-500/20 shadow-sm shadow-amber-900/10'
+                  : 'text-foreground hover:text-foreground hover:bg-card/50'}
              `}
             >
               Curtain Wall (Facade)
@@ -308,8 +308,8 @@ export const DraftingWorkbench: React.FC<{
             disabled={!facadeModel}
           >
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-card opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-card"></span>
             </span>
             Generate Facade Report (PDF)
           </Button>
@@ -363,12 +363,12 @@ export const DraftingWorkbench: React.FC<{
   // MOVED: Check at the end to avoid Hook violations
   if (typeof React === 'undefined' || !React) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-slate-900">
+      <div className="w-full h-full flex items-center justify-center bg-background">
         <div className="text-center p-8">
-          <div className="text-amber-400 text-lg font-semibold mb-4">
+          <div className="text-warning text-lg font-semibold mb-4">
             Drafting Workbench Unavailable
           </div>
-          <div className="text-slate-400 text-sm">
+          <div className="text-muted-foreground text-sm">
             This feature requires a valid session. Please refresh the page and try again.
           </div>
         </div>

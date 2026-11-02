@@ -283,11 +283,11 @@ export const WasteMetricsPanelComponent: React.FC<WasteMetricsPanelProps> = ({
 
   if (!grid || profiles.length === 0) {
     return (
-      <Card className={`bg-slate-900/60 border-slate-700/50 ${className}`}>
+      <Card className={`bg-background/60 border-border/50 ${className}`}>
         <CardContent className="p-4">
           <Alert className="bg-cyan-500/10 border-cyan-500/30">
-            <AlertCircle className="h-4 w-4 text-cyan-400" />
-            <AlertDescription className="text-sm text-cyan-300">
+            <AlertCircle className="h-4 w-4 text-info" />
+            <AlertDescription className="text-sm text-info">
               Profiles required for waste calculation. Select a system pack to enable metrics.
             </AlertDescription>
           </Alert>
@@ -298,9 +298,9 @@ export const WasteMetricsPanelComponent: React.FC<WasteMetricsPanelProps> = ({
 
   if (!wasteMetrics) {
     return (
-      <Card className={`bg-slate-900/60 border-slate-700/50 ${className}`}>
+      <Card className={`bg-background/60 border-border/50 ${className}`}>
         <CardContent className="p-4">
-          <div className="flex items-center gap-2 text-slate-400">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
             <span className="text-sm">Calculating waste metrics...</span>
           </div>
@@ -310,31 +310,31 @@ export const WasteMetricsPanelComponent: React.FC<WasteMetricsPanelProps> = ({
   }
 
   const efficiencyColor = wasteMetrics.efficiency >= 90 
-    ? 'text-green-400' 
+    ? 'text-success'
     : wasteMetrics.efficiency >= 75 
-    ? 'text-yellow-400' 
-    : 'text-red-400';
+    ? 'text-warning'
+    : 'text-destructive';
 
   const wasteColor = wasteMetrics.wastePercentage <= 10 
-    ? 'text-green-400' 
+    ? 'text-success'
     : wasteMetrics.wastePercentage <= 20 
-    ? 'text-yellow-400' 
-    : 'text-red-400';
+    ? 'text-warning'
+    : 'text-destructive';
 
   return (
-    <Card className={`bg-slate-900/60 border-slate-700/50 ${className}`}>
+    <Card className={`bg-background/60 border-border/50 ${className}`}>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-sm">
-          <TrendingUp className="h-4 w-4 text-amber-400" />
+          <TrendingUp className="h-4 w-4 text-warning" />
           Real-time Waste Metrics
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {/* Efficiency */}
-        <div className="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
+        <div className="flex items-center justify-between p-2 bg-card/50 rounded-lg">
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-slate-400" />
-            <span className="text-xs text-slate-300">Efficiency</span>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs text-foreground">Efficiency</span>
           </div>
           <div className="flex items-center gap-2">
             <span className={`text-lg font-bold ${efficiencyColor}`}>
@@ -344,10 +344,10 @@ export const WasteMetricsPanelComponent: React.FC<WasteMetricsPanelProps> = ({
               variant="outline" 
               className={`text-[10px] ${
                 wasteMetrics.efficiency >= 90 
-                  ? 'border-green-500/30 text-green-400 bg-green-500/10' 
+                  ? 'border-green-500/30 text-success bg-green-500/10'
                   : wasteMetrics.efficiency >= 75 
-                  ? 'border-yellow-500/30 text-yellow-400 bg-yellow-500/10' 
-                  : 'border-red-500/30 text-red-400 bg-red-500/10'
+                  ? 'border-yellow-500/30 text-warning bg-yellow-500/10'
+                  : 'border-red-500/30 text-destructive bg-red-500/10'
               }`}
             >
               {wasteMetrics.efficiency >= 90 
@@ -360,10 +360,10 @@ export const WasteMetricsPanelComponent: React.FC<WasteMetricsPanelProps> = ({
         </div>
 
         {/* Waste Percentage */}
-        <div className="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
+        <div className="flex items-center justify-between p-2 bg-card/50 rounded-lg">
           <div className="flex items-center gap-2">
-            <TrendingDown className="h-4 w-4 text-slate-400" />
-            <span className="text-xs text-slate-300">Waste</span>
+            <TrendingDown className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs text-foreground">Waste</span>
           </div>
           <span className={`text-lg font-bold ${wasteColor}`}>
             {wasteMetrics.wastePercentage}%
@@ -371,38 +371,38 @@ export const WasteMetricsPanelComponent: React.FC<WasteMetricsPanelProps> = ({
         </div>
 
         {/* Material Cost */}
-        <div className="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
+        <div className="flex items-center justify-between p-2 bg-card/50 rounded-lg">
           <div className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-slate-400" />
-            <span className="text-xs text-slate-300">Material Cost</span>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs text-foreground">Material Cost</span>
           </div>
-          <span className="text-lg font-bold text-blue-400">
+          <span className="text-lg font-bold text-info">
             {wasteMetrics.price.toFixed(2)} EGP
           </span>
         </div>
 
         {/* Material Weight */}
-        <div className="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
+        <div className="flex items-center justify-between p-2 bg-card/50 rounded-lg">
           <div className="flex items-center gap-2">
-            <Package className="h-4 w-4 text-slate-400" />
-            <span className="text-xs text-slate-300">Weight</span>
+            <Package className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs text-foreground">Weight</span>
           </div>
-          <span className="text-lg font-bold text-slate-100">
+          <span className="text-lg font-bold text-foreground">
             {wasteMetrics.materialWeight} kg
           </span>
         </div>
 
         {/* Additional Stats */}
-        <div className="pt-2 border-t border-slate-700/50 grid grid-cols-2 gap-2 text-xs">
+        <div className="pt-2 border-t border-border/50 grid grid-cols-2 gap-2 text-xs">
           <div>
-            <span className="text-slate-400">Total Material:</span>
-            <span className="ml-2 text-slate-200 font-semibold">
+            <span className="text-muted-foreground">Total Material:</span>
+            <span className="ml-2 text-foreground font-semibold">
               {(wasteMetrics.totalMaterial / 1000).toFixed(2)} m
             </span>
           </div>
           <div>
-            <span className="text-slate-400">Total Waste:</span>
-            <span className="ml-2 text-slate-200 font-semibold">
+            <span className="text-muted-foreground">Total Waste:</span>
+            <span className="ml-2 text-foreground font-semibold">
               {(wasteMetrics.totalWaste / 1000).toFixed(2)} m
             </span>
           </div>

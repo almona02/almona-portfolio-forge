@@ -40,10 +40,10 @@ export function RMAVisualizer({ rmaId, currentStage, estimatedCompletion, events
       {/* Header Info */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
          <div>
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
                RMA Tracker <Badge variant="outline" className="border-amber-500 text-amber-500">#{rmaId}</Badge>
             </h3>
-            <p className="text-slate-400 text-sm">Estimated Completion: <span className="text-slate-200 font-medium">{estimatedCompletion}</span></p>
+            <p className="text-muted-foreground text-sm">Estimated Completion: <span className="text-foreground font-medium">{estimatedCompletion}</span></p>
          </div>
       </div>
 
@@ -51,7 +51,7 @@ export function RMAVisualizer({ rmaId, currentStage, estimatedCompletion, events
       <div className="relative pt-8 pb-12 px-4">
           
           {/* Progress Bar Background */}
-          <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-800 -translate-y-1/2 rounded-full overflow-hidden">
+          <div className="absolute top-1/2 left-0 w-full h-1 bg-card -translate-y-1/2 rounded-full overflow-hidden">
              {/* Active Progress */}
              <div 
                 className="h-full bg-amber-500 transition-all duration-1000 ease-in-out" 
@@ -71,11 +71,11 @@ export function RMAVisualizer({ rmaId, currentStage, estimatedCompletion, events
                           {/* Node */}
                           <div className={cn(
                               "w-10 h-10 rounded-full flex items-center justify-center border-4 z-10 transition-all duration-500",
-                              isActive ? "bg-slate-900 border-amber-500 scale-125 shadow-[0_0_15px_rgba(245,158,11,0.5)]" :
-                              isCompleted ? "bg-amber-500 border-amber-500 text-slate-900" :
-                              "bg-slate-900 border-slate-700 text-slate-600"
+                              isActive ? "bg-background border-amber-500 scale-125 shadow-[0_0_15px_rgba(245,158,11,0.5)]" :
+                              isCompleted ? "bg-amber-500 border-amber-500 text-foreground" :
+                              "bg-background border-border text-muted-foreground"
                           )}>
-                              <config.icon className={cn("w-4 h-4", isActive && "text-amber-500", isCompleted && "text-white fill-slate-900")} />
+                              <config.icon className={cn("w-4 h-4", isActive && "text-amber-500", isCompleted && "text-foreground fill-slate-900")} />
                           </div>
 
                           {/* Label */}
@@ -83,11 +83,11 @@ export function RMAVisualizer({ rmaId, currentStage, estimatedCompletion, events
                               "absolute top-14 text-center w-32 transition-all",
                               isActive ? "opacity-100 transform translate-y-0" : "opacity-70"
                           )}>
-                              <p className={cn("text-xs font-bold uppercase tracking-wider mb-1", isActive ? "text-amber-500" : isCompleted ? "text-slate-300" : "text-slate-600")}>
+                              <p className={cn("text-xs font-bold uppercase tracking-wider mb-1", isActive ? "text-amber-500" : isCompleted ? "text-foreground" : "text-muted-foreground")}>
                                   {config.label}
                               </p>
                               {event?.timestamp && (
-                                  <p className="text-[10px] text-slate-500 font-mono">{event.timestamp}</p>
+                                  <p className="text-[10px] text-muted-foreground font-mono">{event.timestamp}</p>
                               )}
                           </div>
                       </div>
@@ -97,17 +97,17 @@ export function RMAVisualizer({ rmaId, currentStage, estimatedCompletion, events
       </div>
 
       {/* Current Stage Detail Card */}
-      <GoldTierCard className="bg-gradient-to-br from-slate-900 via-slate-900/50 to-slate-950 border-amber-500/20">
+      <GoldTierCard className="bg-gradient-to-br from-background via-background/50 to-background border-amber-500/20">
           <CardContent className="p-6">
               <div className="flex items-start gap-4">
                  <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/20 animate-pulse">
                      <Microscope className="w-8 h-8 text-amber-500" />
                  </div>
                  <div>
-                     <h4 className="text-white font-bold text-lg">Current Status: {STAGE_CONFIG[currentStage].label}</h4>
-                     <p className="text-slate-400 text-sm mt-1">{STAGE_CONFIG[currentStage].description}</p>
+                     <h4 className="text-foreground font-bold text-lg">Current Status: {STAGE_CONFIG[currentStage].label}</h4>
+                     <p className="text-muted-foreground text-sm mt-1">{STAGE_CONFIG[currentStage].description}</p>
                      
-                     <div className="mt-4 p-3 bg-slate-900 rounded border border-slate-800 text-sm font-mono text-green-400">
+                     <div className="mt-4 p-3 bg-background rounded border border-border text-sm font-mono text-success">
                         &gt; {events.find(e => e.stage === currentStage)?.notes || "Processing..."} <span className="animate-blink">_</span>
                      </div>
                  </div>

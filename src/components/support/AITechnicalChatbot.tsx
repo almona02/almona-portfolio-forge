@@ -273,11 +273,11 @@ export const AITechnicalChatbot: React.FC = () => {
   // Get message badge color based on severity
   const getSeverityColor = (severity?: string) => {
     switch (severity) {
-      case 'critical': return 'bg-red-500/20 text-red-300 border-red-500/50';
+      case 'critical': return 'bg-red-500/20 text-destructive border-red-500/50';
       case 'high': return 'bg-amber-500/20 text-amber-300 border-amber-500/50';
       case 'medium': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50';
-      case 'low': return 'bg-blue-500/20 text-blue-300 border-blue-500/50';
-      default: return 'bg-gray-500/20 text-gray-300 border-gray-500/50';
+      case 'low': return 'bg-blue-500/20 text-info border-blue-500/50';
+      default: return 'bg-muted/20 text-foreground border-border/50';
     }
   };
 
@@ -308,9 +308,9 @@ export const AITechnicalChatbot: React.FC = () => {
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             className="fixed bottom-24 right-6 z-50 w-96 h-[600px]"
           >
-            <Card className="bg-almona-dark/95 border-almona-light/30 backdrop-blur-sm shadow-2xl h-full flex flex-col">
+            <Card className="bg-background/95 border-border/30 backdrop-blur-sm shadow-2xl h-full flex flex-col">
               {/* Header */}
-              <CardHeader className="pb-3 border-b border-almona-light/20">
+              <CardHeader className="pb-3 border-b border-border/20">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 text-almona-orange">
                     <Sparkles className="h-5 w-5" />
@@ -324,7 +324,7 @@ export const AITechnicalChatbot: React.FC = () => {
                     <MinusCircle className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="flex items-center gap-1 text-xs text-green-400">
+                <div className="flex items-center gap-1 text-xs text-success">
                   <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                   مساعد ذكي متاح 24/7
                 </div>
@@ -332,15 +332,15 @@ export const AITechnicalChatbot: React.FC = () => {
 
               {/* Quick Response Buttons */}
               {messages.length <= 1 && (
-                <div className="p-3 border-b border-almona-light/10">
+                <div className="p-3 border-b border-border/10">
                   <div className="flex flex-wrap gap-2">
                     {QUICK_RESPONSES.map((response) => (
                       <Button
                         key={response.id}
                         variant="outline"
                         size="sm"
-                        className={`text-xs border-almona-light/30 hover:bg-almona-orange/20 ${
-                          response.severity === 'critical' ? 'border-red-500/50 text-red-400' : ''
+                        className={`text-xs border-border/30 hover:bg-almona-orange/20 ${
+                          response.severity === 'critical' ? 'border-red-500/50 text-destructive' : ''
                         }`}
                         onClick={() => void handleQuickResponse(response)}
                       >
@@ -365,15 +365,15 @@ export const AITechnicalChatbot: React.FC = () => {
                         <div className={`max-w-[85%] ${
                           message.type === 'user' 
                             ? 'bg-almona-orange/20 border-almona-orange/50' 
-                            : 'bg-almona-dark/40 border-almona-light/20'
+                            : 'bg-background/40 border-border/20'
                         } border rounded-lg p-3`}>
                           <div className="flex items-center gap-2 mb-1">
                             {message.type === 'user' ? (
                               <User className="h-4 w-4 text-almona-orange" />
                             ) : (
-                              <Bot className="h-4 w-4 text-blue-400" />
+                              <Bot className="h-4 w-4 text-info" />
                             )}
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-muted-foreground">
                               {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                             </span>
                             {message.severity && (
@@ -410,10 +410,10 @@ export const AITechnicalChatbot: React.FC = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className="flex justify-start"
                       >
-                        <div className="bg-almona-dark/40 border border-almona-light/20 rounded-lg p-3">
+                        <div className="bg-background/40 border border-border/20 rounded-lg p-3">
                           <div className="flex items-center gap-2">
-                            <Loader2 className="h-4 w-4 text-blue-400 animate-spin" />
-                            <span className="text-sm text-gray-400">automation يقوم بالتحليل...</span>
+                            <Loader2 className="h-4 w-4 text-info animate-spin" />
+                            <span className="text-sm text-muted-foreground">automation يقوم بالتحليل...</span>
                           </div>
                         </div>
                       </LazyMotionDiv>
@@ -424,13 +424,13 @@ export const AITechnicalChatbot: React.FC = () => {
               </CardContent>
 
               {/* Input Area */}
-              <div className="p-3 border-t border-almona-light/20">
+              <div className="p-3 border-t border-border/20">
                 <div className="flex gap-2">
                   <Input
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     placeholder="اكتب مشكلتك التقنية..."
-                    className="flex-1 bg-almona-dark/60 border-almona-light/30"
+                    className="flex-1 bg-background/60 border-border/30"
                     onKeyPress={(e) => { if (e.key === 'Enter' && !e.shiftKey) void sendMessage(); }}
                     disabled={isLoading}
                   />
@@ -438,7 +438,7 @@ export const AITechnicalChatbot: React.FC = () => {
                     variant="outline"
                     size="sm"
                     onClick={handleFileAttach}
-                    className="border-almona-light/30 hover:bg-almona-light/10"
+                    className="border-border/30 hover:bg-almona-light/10"
                     disabled={isLoading}
                   >
                     📷

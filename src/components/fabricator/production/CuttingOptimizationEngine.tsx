@@ -342,11 +342,11 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
 
   if (isGenerating) {
     return (
-      <Card className="bg-slate-800/50 border-slate-700/50">
+      <Card className="bg-card/50 border-border/50">
         <CardContent className="p-8 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div>
           <h3 className="typography-h3 text-lg mb-2">Generating Cutting Plan</h3>
-          <p className="text-slate-400">automation is optimizing your material usage...</p>
+          <p className="text-muted-foreground">automation is optimizing your material usage...</p>
         </CardContent>
       </Card>
     );
@@ -354,11 +354,11 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
 
   if (!optimization) {
     return (
-      <Card className="bg-slate-800/50 border-slate-700/50">
+      <Card className="bg-card/50 border-border/50">
         <CardContent className="p-8 text-center">
-          <Scissors className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+          <Scissors className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="typography-h3 text-lg mb-2">No Optimization Data</h3>
-          <p className="text-slate-400">Complete the design phase to generate cutting optimization.</p>
+          <p className="text-muted-foreground">Complete the design phase to generate cutting optimization.</p>
         </CardContent>
       </Card>
     );
@@ -395,52 +395,52 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
 
       {/* Optimization Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-slate-800/50 border-slate-700/50">
+        <Card className="bg-card/50 border-border/50">
           <CardContent className="p-4 text-center">
-            <TrendingUp className="h-8 w-8 text-green-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-green-400">{optimization.nestingEfficiency.toFixed(1)}%</div>
-            <div className="text-sm text-slate-400">Efficiency</div>
+            <TrendingUp className="h-8 w-8 text-success mx-auto mb-2" />
+            <div className="text-2xl font-bold text-success">{optimization.nestingEfficiency.toFixed(1)}%</div>
+            <div className="text-sm text-muted-foreground">Efficiency</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700/50">
+        <Card className="bg-card/50 border-border/50">
           <CardContent className="p-4 text-center">
-            <Package className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-blue-400">{optimization.wastePercentage.toFixed(1)}%</div>
-            <div className="text-sm text-slate-400">Waste</div>
+            <Package className="h-8 w-8 text-info mx-auto mb-2" />
+            <div className="text-2xl font-bold text-info">{optimization.wastePercentage.toFixed(1)}%</div>
+            <div className="text-sm text-muted-foreground">Waste</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700/50">
+        <Card className="bg-card/50 border-border/50">
           <CardContent className="p-4 text-center">
-            <Clock className="h-8 w-8 text-yellow-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-yellow-400">{optimization.estimatedProductionTime.toFixed(1)}m</div>
-            <div className="text-sm text-slate-400">Production Time</div>
+            <Clock className="h-8 w-8 text-warning mx-auto mb-2" />
+            <div className="text-2xl font-bold text-warning">{optimization.estimatedProductionTime.toFixed(1)}m</div>
+            <div className="text-sm text-muted-foreground">Production Time</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700/50">
+        <Card className="bg-card/50 border-border/50">
           <CardContent className="p-4 text-center">
-            <DollarSign className="h-8 w-8 text-amber-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-amber-400">${optimization.costBreakdown.totalCost.toFixed(0)}</div>
-            <div className="text-sm text-slate-400">Total Cost</div>
+            <DollarSign className="h-8 w-8 text-warning mx-auto mb-2" />
+            <div className="text-2xl font-bold text-warning">${optimization.costBreakdown.totalCost.toFixed(0)}</div>
+            <div className="text-sm text-muted-foreground">Total Cost</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Bar Drawings - Auto-generated (Collapsible) */}
-      <Card className="bg-slate-800/50 border-slate-700/50">
+      <Card className="bg-card/50 border-border/50">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Ruler className="h-5 w-5 text-amber-400" />
+              <Ruler className="h-5 w-5 text-warning" />
               Bar Drawings
             </CardTitle>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsBarDrawingsCollapsed(!isBarDrawingsCollapsed)}
-              className="h-6 w-6 p-0 text-amber-400 hover:text-amber-300"
+              className="h-6 w-6 p-0 text-warning hover:text-warning"
             >
               {isBarDrawingsCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
             </Button>
@@ -467,18 +467,18 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
       </Card>
 
       {/* Cutting Plans (Collapsible) */}
-      <Card className="bg-slate-800/50 border-slate-700/50">
+      <Card className="bg-card/50 border-border/50">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Scissors className="h-5 w-5 text-amber-400" />
+              <Scissors className="h-5 w-5 text-warning" />
               Cutting Plans
             </CardTitle>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsCuttingPlansCollapsed(!isCuttingPlansCollapsed)}
-              className="h-6 w-6 p-0 text-amber-400 hover:text-amber-300"
+              className="h-6 w-6 p-0 text-warning hover:text-warning"
             >
               {isCuttingPlansCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
             </Button>
@@ -488,11 +488,11 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
           <CardContent>
             <div className="space-y-4">
               {optimizedPlans.map((plan, index) => (
-                <div key={index} className="p-4 bg-slate-900 rounded-lg">
+                <div key={index} className="p-4 bg-background rounded-lg">
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <h4 className="typography-h4">{plan.profile.name}</h4>
-                      <p className="text-sm text-slate-400">
+                      <p className="text-sm text-muted-foreground">
                         Stock Length: {plan.stockLength}mm
                       </p>
                     </div>
@@ -505,9 +505,9 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                     {plan.cuts.map((cut, cutIndex) => (
-                      <div key={cutIndex} className="p-2 bg-slate-800 rounded text-center">
+                      <div key={cutIndex} className="p-2 bg-card rounded text-center">
                         <div className="font-medium">{cut.length}mm</div>
-                        <div className="text-slate-400">{cut.angle}°</div>
+                        <div className="text-muted-foreground">{cut.angle}°</div>
                       </div>
                     ))}
                   </div>
@@ -519,7 +519,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
       </Card>
 
       {/* Cost Breakdown (Collapsible) */}
-      <Card className="bg-slate-800/50 border-slate-700/50">
+      <Card className="bg-card/50 border-border/50">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Cost Breakdown</CardTitle>
@@ -527,7 +527,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
               variant="ghost"
               size="sm"
               onClick={() => setIsCostBreakdownCollapsed(!isCostBreakdownCollapsed)}
-              className="h-6 w-6 p-0 text-amber-400 hover:text-amber-300"
+              className="h-6 w-6 p-0 text-warning hover:text-warning"
             >
               {isCostBreakdownCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
             </Button>
@@ -552,7 +552,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
                 <span>Glazing Cost:</span>
                 <span>${optimization.costBreakdown.glazingCost.toFixed(2)}</span>
               </div>
-              <hr className="border-slate-700/50" />
+              <hr className="border-border/50" />
               <div className="flex justify-between font-semibold">
                 <span>Total Cost:</span>
                 <span>${optimization.costBreakdown.totalCost.toFixed(2)}</span>
@@ -563,18 +563,18 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
       </Card>
 
       {/* Report Export Section (Collapsible) */}
-      <Card className="bg-slate-800/50 border-slate-700/50">
+      <Card className="bg-card/50 border-border/50">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-amber-400" />
+              <FileText className="h-5 w-5 text-warning" />
               Export Cutting Report
             </CardTitle>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsExportCollapsed(!isExportCollapsed)}
-              className="h-6 w-6 p-0 text-amber-400 hover:text-amber-300"
+              className="h-6 w-6 p-0 text-warning hover:text-warning"
             >
               {isExportCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
             </Button>
@@ -604,18 +604,18 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
       </Card>
 
       {/* G-code Export Section (Collapsible) */}
-      <Card className="bg-slate-800/50 border-slate-700/50">
+      <Card className="bg-card/50 border-border/50">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Code className="h-5 w-5 text-amber-400" />
+              <Code className="h-5 w-5 text-warning" />
               G-code Export for Yilmaz Machines
             </CardTitle>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsGCodeCollapsed(!isGCodeCollapsed)}
-              className="h-6 w-6 p-0 text-amber-400 hover:text-amber-300"
+              className="h-6 w-6 p-0 text-warning hover:text-warning"
             >
               {isGCodeCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
             </Button>
@@ -629,7 +629,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
               <select
                 value={selectedMachine}
                 onChange={(e) => setSelectedMachine(e.target.value as YilmazMachineModel)}
-                className="w-full p-2 bg-slate-900 border border-slate-700/50 rounded-md text-slate-200"
+                className="w-full p-2 bg-background border border-border/50 rounded-md text-foreground"
               >
                 {availableMachines.map((machine) => (
                   <option key={machine} value={machine}>
@@ -730,7 +730,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
                     onClick={() => void handleSendToMachine()}
                     disabled={isSendingToMachine}
                     variant="outline"
-                    className="flex-1 border-green-500 text-green-400 hover:bg-green-500/10"
+                    className="flex-1 border-green-500 text-success hover:bg-green-500/10"
                   >
                     {isSendingToMachine ? (
                       <>
@@ -771,7 +771,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
             {gCodePreview && (
               <div className="mt-4">
                 <label className="typography-label text-sm font-medium mb-2 block">G-code Preview:</label>
-                <pre className="p-4 bg-gray-900 rounded-md text-xs text-green-400 font-mono overflow-auto max-h-64">
+                <pre className="p-4 bg-background rounded-md text-xs text-success font-mono overflow-auto max-h-64">
                   {gCodePreview.substring(0, 2000)}
                   {gCodePreview.length > 2000 && '\n... (truncated, download to see full code)'}
                 </pre>
@@ -782,16 +782,16 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
       </Card>
 
       {/* ALM 6510 MDB Export Section - Turkish Pilot */}
-      <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-amber-500/30">
+      <Card className="bg-gradient-to-br from-card/50 to-background/50 border-amber-500/30">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Download className="h-5 w-5 text-amber-400" />
+            <Download className="h-5 w-5 text-warning" />
             ALM 6510 Machine Export (Turkish Pilot)
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
-            <p className="text-sm text-blue-300">
+            <p className="text-sm text-info">
               <strong>🇹🇷 Turkish Pilot Program:</strong> Download MDB file for Yılmaz ALM 6510 machine.
               The file is 100% aligned with the machine's software requirements.
             </p>
@@ -799,10 +799,10 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
 
           <div className="space-y-3">
             <div>
-              <label className="typography-label text-sm font-medium text-gray-300 mb-2 block">
-                Machine: <span className="text-amber-400 font-bold">ALM 6510</span>
+              <label className="typography-label text-sm font-medium text-foreground mb-2 block">
+                Machine: <span className="text-warning font-bold">ALM 6510</span>
               </label>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 8-axis CNC machining center with operation codes (P1-P7).
                 MDB file contains Table1 with 37 columns matching machine software.
               </p>

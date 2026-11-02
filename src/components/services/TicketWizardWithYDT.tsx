@@ -253,7 +253,7 @@ export function TicketWizardWithYDT({
           />
           
           {ydtError && (
-            <div className="mt-2 p-2 bg-red-500/10 border border-red-500/20 rounded text-sm text-red-400">
+            <div className="mt-2 p-2 bg-red-500/10 border border-red-500/20 rounded text-sm text-destructive">
               YDT Error: {ydtError}
             </div>
           )}

@@ -67,11 +67,11 @@ export const Step2MaterialSuppliers: React.FC<Step2MaterialSuppliersProps> = ({
     <div className="space-y-6">
       <div>
         <h3 className="typography-h3 text-lg mb-4">Material Suppliers</h3>
-        <p className="text-gray-400 mb-6">Configure your material suppliers or use our Egyptian defaults</p>
+        <p className="text-muted-foreground mb-6">Configure your material suppliers or use our Egyptian defaults</p>
         <Button
           variant="outline"
           onClick={useDefaultSuppliers}
-          className="bg-gray-800 border-gray-700"
+          className="bg-card border-border"
         >
           Use Egyptian Default Suppliers
         </Button>
@@ -92,7 +92,7 @@ export const Step2MaterialSuppliers: React.FC<Step2MaterialSuppliersProps> = ({
                       suppliers: { ...data.suppliers, [type]: newSuppliers }
                     });
                   }}
-                  className="bg-gray-800 border-gray-700 flex-1"
+                  className="bg-card border-border flex-1"
                   placeholder="Supplier name"
                 />
                 <Input
@@ -104,14 +104,14 @@ export const Step2MaterialSuppliers: React.FC<Step2MaterialSuppliersProps> = ({
                       suppliers: { ...data.suppliers, [type]: newSuppliers }
                     });
                   }}
-                  className="bg-gray-800 border-gray-700 flex-1"
+                  className="bg-card border-border flex-1"
                   placeholder="Contact"
                 />
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => removeSupplier(type, index)}
-                  className="text-red-400"
+                  className="text-destructive"
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -121,7 +121,7 @@ export const Step2MaterialSuppliers: React.FC<Step2MaterialSuppliersProps> = ({
               variant="outline"
               size="sm"
               onClick={() => addSupplier(type, { name: '', contact: '' })}
-              className="bg-gray-800 border-gray-700"
+              className="bg-card border-border"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Supplier

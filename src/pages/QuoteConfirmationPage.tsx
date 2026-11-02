@@ -10,23 +10,23 @@ const QuoteConfirmationPage: React.FC = () => {
   const quoteId = location.state?.quoteId || "QR-XXXXXX";
 
   return (
-    <div className="flex flex-col min-h-screen bg-almona-dark text-white">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <main className="flex-grow pt-24">
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-2xl mx-auto text-center">
             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-8 w-8 text-success" />
             </div>
             <h1 className="typography-h1 mb-4 text-gradient-orange">
               Quote Request Submitted!
             </h1>
-            <p className="text-xl text-gray-400 mb-6">
+            <p className="text-xl text-muted-foreground mb-6">
               Your quote request <span className="text-amber-500 font-bold">{quoteId}</span> has been received.
             </p>
             
-            <div className="bg-almona-darker p-6 rounded-lg border border-almona-light/20 mb-8 text-left">
+            <div className="bg-card p-6 rounded-lg border border-border/20 mb-8 text-left">
               <h2 className="typography-h2 text-lg font-semibold mb-4">What happens next?</h2>
-              <ul className="space-y-3 text-gray-400">
+              <ul className="space-y-3 text-muted-foreground">
                 <li className="flex items-start">
                   <span className="text-amber-500 mr-2">✓</span>
                   <span>Our sales team will review your request within 24 hours</span>

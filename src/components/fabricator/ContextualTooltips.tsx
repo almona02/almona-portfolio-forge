@@ -230,12 +230,12 @@ export const ContextualTooltips: React.FC<ContextualTooltipsProps> = ({
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 mt-0.5">
                     <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
-                      <Lightbulb className="h-4 w-4 text-amber-600" />
+                      <Lightbulb className="h-4 w-4 text-warning" />
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="typography-h4 text-sm mb-1">{activeTooltip.title}</h4>
-                    <p className="text-xs text-gray-600 mb-3">{activeTooltip.description}</p>
+                    <p className="text-xs text-muted-foreground mb-3">{activeTooltip.description}</p>
                     <div className="flex items-center gap-2">
                       <Button
                         size="sm"
@@ -249,7 +249,7 @@ export const ContextualTooltips: React.FC<ContextualTooltipsProps> = ({
                         size="sm"
                         variant="ghost"
                         onClick={() => handleDismiss(true)}
-                        className="text-xs h-7 text-gray-500"
+                        className="text-xs h-7 text-muted-foreground"
                       >
                         Don't show again
                       </Button>

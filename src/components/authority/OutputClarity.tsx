@@ -36,8 +36,8 @@ export const OutputClarity: React.FC<OutputClarityProps> = ({
         icon: Eye,
         bgColor: 'bg-blue-950/90',
         borderColor: 'border-blue-500/50',
-        textColor: 'text-blue-300',
-        badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/50',
+        textColor: 'text-info',
+        badgeColor: 'bg-blue-500/20 text-info border-blue-500/50',
         description: isRTL 
           ? 'هذه معاينة تقريبية للأغراض التصورية. البيانات الفعلية للإنتاج دقيقة بنسبة 99.8%'
           : 'This is an approximate preview for visualization purposes. Actual production data is 99.8% accurate',
@@ -48,8 +48,8 @@ export const OutputClarity: React.FC<OutputClarityProps> = ({
         icon: Factory,
         bgColor: 'bg-green-950/90',
         borderColor: 'border-green-500/50',
-        textColor: 'text-green-300',
-        badgeColor: 'bg-green-500/20 text-green-300 border-green-500/50',
+        textColor: 'text-success',
+        badgeColor: 'bg-green-500/20 text-success border-green-500/50',
         description: isRTL
           ? 'بيانات الإنتاج المعتمدة - دقيقة بنسبة 99.8% ومعدة للاستخدام في التصنيع'
           : 'Certified production data - 99.8% accurate and ready for manufacturing use',

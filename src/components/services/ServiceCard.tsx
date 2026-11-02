@@ -79,11 +79,11 @@ export const ServiceCard = ({
     <div className={`h-full rounded-lg border-2 transition-all duration-300 hover:shadow-lg ${
       highlight 
         ? 'border-amber-500 shadow-amber-500/20 shadow-lg' 
-        : 'border-gray-600 hover:border-gray-500'
+        : 'border-border hover:border-border'
     }`}>
-      <div className="bg-almona-darker/50 p-6 flex flex-col h-full rounded-lg">
+      <div className="bg-card/50 p-6 flex flex-col h-full rounded-lg">
         <div className="flex items-center gap-3 mb-4">
-          <div className="bg-almona-dark/50 p-3 rounded-full">
+          <div className="bg-background/50 p-3 rounded-full">
             {iconMap[icon]}
           </div>
           <div>
@@ -94,7 +94,7 @@ export const ServiceCard = ({
           </div>
         </div>
         
-        <p className="text-gray-400 mb-6">{description}</p>
+        <p className="text-muted-foreground mb-6">{description}</p>
         
         <div className="space-y-3 mb-6">
           {features.map((feature, index) => (

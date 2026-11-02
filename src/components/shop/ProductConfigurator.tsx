@@ -399,7 +399,7 @@ export const ProductConfigurator: React.FC<ProductConfiguratorProps> = ({
               ))}
               
               {quantity > 1 && (
-                <div className="flex justify-between text-green-600">
+                <div className="flex justify-between text-success">
                   <span>{t('shop.filters.priceRange')} ({t('shop.filters.bestRated')})</span>
                   <span>-{formatCurrency((basePrice + configurationsPrice) * quantity - totalPrice)}</span>
                 </div>

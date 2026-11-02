@@ -209,12 +209,12 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
     const getStatusIcon = (status: ReportJobStatus) => {
         switch (status) {
             case 'completed':
-                return <CheckCircle2 className="h-5 w-5 text-green-500" />;
+                return <CheckCircle2 className="h-5 w-5 text-success" />;
             case 'failed':
-                return <XCircle className="h-5 w-5 text-red-500" />;
+                return <XCircle className="h-5 w-5 text-destructive" />;
             case 'processing':
             case 'queued':
-                return <Loader2 className="h-5 w-5 animate-spin text-blue-500" />;
+                return <Loader2 className="h-5 w-5 animate-spin text-info" />;
             default:
                 return <FileText className="h-5 w-5 text-muted-foreground" />;
         }
@@ -355,7 +355,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
                                         Report generated successfully
                                     </p>
                                     {activeJob.generation_time_ms && (
-                                        <p className="mt-1 text-xs text-green-600 dark:text-green-300">
+                                        <p className="mt-1 text-xs text-success dark:text-success">
                                             Generated in{' '}
                                             {(activeJob.generation_time_ms / 1000).toFixed(1)}s
                                         </p>
@@ -381,7 +381,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
                                     Generation failed
                                 </p>
                                 {activeJob.error_message && (
-                                    <p className="mt-1 text-xs text-red-600 dark:text-red-300">
+                                    <p className="mt-1 text-xs text-destructive dark:text-destructive">
                                         {activeJob.error_message}
                                     </p>
                                 )}

@@ -214,7 +214,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
       case 'basic': return 'bg-green-500';
       case 'professional': return 'bg-yellow-500';
       case 'enterprise': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      default: return 'bg-muted';
     }
   };
 
@@ -239,10 +239,10 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
           <Award className="h-6 w-6 text-amber-400" />
           <span className="text-amber-400 font-semibold">{t('services.success_stories')}</span>
         </div>
-        <h2 className="typography-h2 text-4xl text-white mb-4">
+        <h2 className="typography-h2 text-4xl text-foreground mb-4">
           {t('services.real_results_real_customers')}
         </h2>
-        <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
           {t('services.see_how_almona_transformed')}
         </p>
       </LazyMotionDiv>
@@ -262,7 +262,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
           >
             {stories.map((story, _index) => (
               <div key={story.id} className="w-full flex-shrink-0">
-                <Card className="bg-slate-800/50 -sm border border-white/10 card-glass-dark card-dark">
+                <Card className="bg-card/50 -sm border border-white/10 card-glass-dark card-dark">
                   <CardContent className="p-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                       {/* Customer Info */}
@@ -273,14 +273,14 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
                             <AvatarFallback className="text-lg">{story.name.charAt(0)}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <h3 className="typography-h3 text-white">{story.name}</h3>
+                            <h3 className="typography-h3 text-foreground">{story.name}</h3>
                             <p className="text-amber-400 font-semibold">{story.company}</p>
-                            <p className="text-gray-400">{story.role} • {story.location}</p>
+                            <p className="text-muted-foreground">{story.role} • {story.location}</p>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <Badge className={`${getPackageColor(story.packageUsed)} text-white`}>
+                          <Badge className={`${getPackageColor(story.packageUsed)} text-foreground`}>
                             {getPackageLabel(story.packageUsed)}
                           </Badge>
                           <div className="flex items-center gap-1">
@@ -290,20 +290,20 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
                           </div>
                         </div>
 
-                        <blockquote className="text-lg text-gray-300 italic border-l-4 border-amber-500 pl-4">
+                        <blockquote className="text-lg text-foreground italic border-l-4 border-amber-500 pl-4">
                           <Quote className="h-5 w-5 text-amber-400 mb-2" />
                           "{story.testimonial}"
                         </blockquote>
 
                         <div className="flex gap-3">
                           {story.videoUrl && (
-                            <Button variant="outline" size="sm" className="text-amber-400 border-amber-400 hover:bg-amber-400 hover:text-white">
+                            <Button variant="outline" size="sm" className="text-amber-400 border-amber-400 hover:bg-amber-400 hover:text-foreground">
                               <Play className="h-4 w-4 mr-2" />
                               Watch Video
                             </Button>
                           )}
                           {story.caseStudyUrl && (
-                            <Button variant="outline" size="sm" className="text-amber-400 border-amber-400 hover:bg-amber-400 hover:text-white">
+                            <Button variant="outline" size="sm" className="text-amber-400 border-amber-400 hover:bg-amber-400 hover:text-foreground">
                               <ExternalLink className="h-4 w-4 mr-2" />
                               Full Case Study
                             </Button>
@@ -313,34 +313,34 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
 
                       {/* Metrics */}
                       <div className="space-y-6">
-                        <h4 className="typography-h4 text-white">{t('services.results_achieved')}</h4>
+                        <h4 className="typography-h4 text-foreground">{t('services.results_achieved')}</h4>
 
                         <div className="grid grid-cols-3 gap-4">
                           <div className="btn-secondary">
-                            <TrendingUp className="h-6 w-6 text-green-400 mx-auto mb-2" />
-                            <div className="text-2xl font-bold text-white">{story.metrics.after.production}</div>
-                            <div className="text-sm text-gray-400">{t('services.production')}</div>
-                            <div className="text-xs text-green-400">vs {story.metrics.before.production}</div>
+                            <TrendingUp className="h-6 w-6 text-success mx-auto mb-2" />
+                            <div className="text-2xl font-bold text-foreground">{story.metrics.after.production}</div>
+                            <div className="text-sm text-muted-foreground">{t('services.production')}</div>
+                            <div className="text-xs text-success">vs {story.metrics.before.production}</div>
                           </div>
                           <div className="btn-secondary">
-                            <Clock className="h-6 w-6 text-blue-400 mx-auto mb-2" />
-                            <div className="text-2xl font-bold text-white">{story.metrics.after.downtime}</div>
-                            <div className="text-sm text-gray-400">{t('services.downtime')}</div>
-                            <div className="text-xs text-blue-400">vs {story.metrics.before.downtime}</div>
+                            <Clock className="h-6 w-6 text-info mx-auto mb-2" />
+                            <div className="text-2xl font-bold text-foreground">{story.metrics.after.downtime}</div>
+                            <div className="text-sm text-muted-foreground">{t('services.downtime')}</div>
+                            <div className="text-xs text-info">vs {story.metrics.before.downtime}</div>
                           </div>
                           <div className="btn-secondary">
                             <Factory className="h-6 w-6 text-amber-400 mx-auto mb-2" />
-                            <div className="text-2xl font-bold text-white">{story.metrics.after.efficiency}</div>
-                            <div className="text-sm text-gray-400">{t('services.efficiency')}</div>
+                            <div className="text-2xl font-bold text-foreground">{story.metrics.after.efficiency}</div>
+                            <div className="text-sm text-muted-foreground">{t('services.efficiency')}</div>
                             <div className="text-xs text-amber-400">vs {story.metrics.before.efficiency}</div>
                           </div>
                         </div>
 
                         <div className="space-y-3">
-                          <h5 className="font-semibold text-white">{t('services.key_results')}</h5>
+                          <h5 className="font-semibold text-foreground">{t('services.key_results')}</h5>
                           <ul className="space-y-1">
                             {story.results.slice(0, 3).map((result, idx) => (
-                              <li key={idx} className="flex items-center gap-2 text-sm text-gray-300">
+                              <li key={idx} className="flex items-center gap-2 text-sm text-foreground">
                                 <div className="w-2 h-2 bg-amber-400 rounded-full flex-shrink-0" />
                                 {result}
                               </li>
@@ -363,7 +363,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
               variant="outline"
               size="sm"
               onClick={prevStory}
-              className="text-amber-400 border-amber-400 hover:bg-amber-400 hover:text-white"
+              className="text-amber-400 border-amber-400 hover:bg-amber-400 hover:text-foreground"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -374,7 +374,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
                   key={index}
                   onClick={() => setCurrentStory(index)}
                   className={`w-3 h-3 rounded-full transition-colors ${
-                    index === currentStory ? 'bg-amber-400' : 'bg-gray-600'
+                    index === currentStory ? 'bg-amber-400' : 'bg-muted'
                   }`}
                 />
               ))}
@@ -384,7 +384,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
               variant="outline"
               size="sm"
               onClick={nextStory}
-              className="text-amber-400 border-amber-400 hover:bg-amber-400 hover:text-white"
+              className="text-amber-400 border-amber-400 hover:bg-amber-400 hover:text-foreground"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -412,7 +412,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
                   <AvatarFallback>{story.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <CardTitle className="text-lg text-white">{story.name}</CardTitle>
+                  <CardTitle className="text-lg text-foreground">{story.name}</CardTitle>
                   <p className="text-amber-400 text-sm">{story.company}</p>
                 </div>
               </div>
@@ -420,7 +420,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <Badge className={`${getPackageColor(story.packageUsed)} text-white text-xs`}>
+                  <Badge className={`${getPackageColor(story.packageUsed)} text-foreground text-xs`}>
                     {getPackageLabel(story.packageUsed)}
                   </Badge>
                   <div className="flex items-center gap-1">
@@ -430,12 +430,12 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
                   </div>
                 </div>
 
-                <p className="text-gray-300 text-sm line-clamp-3">
+                <p className="text-foreground text-sm line-clamp-3">
                   {story.testimonial}
                 </p>
 
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-400">{story.location}</span>
+                  <span className="text-muted-foreground">{story.location}</span>
                   <span className="text-amber-400 font-semibold">
                     {story.metrics.after.production} Production
                   </span>
@@ -454,17 +454,17 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
         className="text-center"
       >
         <div className="bg-gradient-to-r from-amber-500/10 to-amber-500/10 rounded-2xl p-8 border border-white/10">
-          <h3 className="typography-h3 text-white mb-4">
+          <h3 className="typography-h3 text-foreground mb-4">
             {t('services.ready_write_success_story')}
           </h3>
-          <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+          <p className="text-foreground mb-6 max-w-2xl mx-auto">
             {t('services.join_hundreds_satisfied_customers')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button className="bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600 text-white px-8 py-3">
               {t('services.get_free_consultation')}
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-slate-900 px-8 py-3">
+            <Button variant="outline" className="border-white text-foreground hover:bg-card hover:text-foreground px-8 py-3">
               {t('services.view_all_case_studies')}
             </Button>
           </div>

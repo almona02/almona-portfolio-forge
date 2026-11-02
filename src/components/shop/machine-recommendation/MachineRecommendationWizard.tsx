@@ -120,12 +120,12 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
     }
   }, [answers, copy]);
   const SelectionStrip = () => (
-    <div className="flex flex-wrap items-center gap-2 text-xs text-gray-300">
-      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Material:")}{answerLabel('material')}</Badge>
-      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Operation:")}{answerLabel('application')}</Badge>
-      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Automation:")}{answerLabel('automation')}</Badge>
-      <Badge variant="outline" className="border-gray-600 text-gray-200">{copy("Production:")}{answerLabel('production')}</Badge>
-      <Badge variant="secondary" className="bg-gray-700/60 text-gray-100 border-gray-600">{copy("Matching:")}{previewMatches.length} / {totalMachines}
+    <div className="flex flex-wrap items-center gap-2 text-xs text-foreground">
+      <Badge variant="outline" className="border-border text-foreground">{copy("Material:")}{answerLabel('material')}</Badge>
+      <Badge variant="outline" className="border-border text-foreground">{copy("Operation:")}{answerLabel('application')}</Badge>
+      <Badge variant="outline" className="border-border text-foreground">{copy("Automation:")}{answerLabel('automation')}</Badge>
+      <Badge variant="outline" className="border-border text-foreground">{copy("Production:")}{answerLabel('production')}</Badge>
+      <Badge variant="secondary" className="bg-muted/60 text-foreground border-border">{copy("Matching:")}{previewMatches.length} / {totalMachines}
       </Badge>
       {usePresetBundle && (
         <Badge variant="secondary" className="btn-primary">{copy("Preset bundles on")}</Badge>
@@ -347,13 +347,13 @@ ${copy('Prepared by ALMONA.')}
           >
             <div className="mb-4">
               <h3 className="text-lg font-semibold">{copy("Select Material")}</h3>
-              <p className="text-gray-400 text-sm">{copy("Which material dominates your production mix?")}</p>
+              <p className="text-muted-foreground text-sm">{copy("Which material dominates your production mix?")}</p>
             </div>
             <SelectionStrip />
             <RadioGroup value={answers.material} onValueChange={(v) => handleValueChange('material', v)}>
               <div className="grid gap-3 sm:grid-cols-3">
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.material === 'aluminium' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  className={`cursor-pointer transition-all ${answers.material === 'aluminium' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-card/50'}`}
                   onClick={() => handleValueChange('material', 'aluminium')}
                 >
                   <CardContent className="p-3 sm:p-4">
@@ -361,7 +361,7 @@ ${copy('Prepared by ALMONA.')}
                       <RadioGroupItem value="aluminium" id="aluminium" className="mt-1" />
                       <div className="flex-1 min-w-0">
                         <Label htmlFor="aluminium" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("Aluminum")}</Label>
-                        <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("Rigid frames, premium finish and corrosion resistance")}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-1">{copy("Rigid frames, premium finish and corrosion resistance")}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                           <Badge variant="secondary" className="text-xs">{copy("High Strength")}</Badge>
                           <Badge variant="secondary" className="text-xs">{copy("Weather Resistant")}</Badge>
@@ -371,7 +371,7 @@ ${copy('Prepared by ALMONA.')}
                   </CardContent>
                 </Card>
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.material === 'pvc' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  className={`cursor-pointer transition-all ${answers.material === 'pvc' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-card/50'}`}
                   onClick={() => handleValueChange('material', 'pvc')}
                 >
                   <CardContent className="p-3 sm:p-4">
@@ -379,7 +379,7 @@ ${copy('Prepared by ALMONA.')}
                       <RadioGroupItem value="pvc" id="pvc" className="mt-1" />
                       <div className="flex-1 min-w-0">
                         <Label htmlFor="pvc" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("UPVC")}</Label>
-                        <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("Thermal insulation, low maintenance and acoustic insulation")}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-1">{copy("Thermal insulation, low maintenance and acoustic insulation")}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                           <Badge variant="secondary" className="text-xs">{copy("Energy Efficient")}</Badge>
                           <Badge variant="secondary" className="text-xs">{copy("Low Maintenance")}</Badge>
@@ -389,7 +389,7 @@ ${copy('Prepared by ALMONA.')}
                   </CardContent>
                 </Card>
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.material === 'both' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  className={`cursor-pointer transition-all ${answers.material === 'both' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-card/50'}`}
                   onClick={() => handleValueChange('material', 'both')}
                 >
                   <CardContent className="p-3 sm:p-4">
@@ -397,7 +397,7 @@ ${copy('Prepared by ALMONA.')}
                       <RadioGroupItem value="both" id="both" className="mt-1" />
                       <div className="flex-1 min-w-0">
                         <Label htmlFor="both" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("Both Materials")}</Label>
-                        <p className="text-xs sm:text-sm text-gray-400 mt-1">{copy("Mixed aluminium and UPVC production")}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-1">{copy("Mixed aluminium and UPVC production")}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                           <Badge variant="secondary" className="text-xs">{copy("Versatile")}</Badge>
                           <Badge variant="secondary" className="text-xs">{copy("Multi-Material")}</Badge>
@@ -420,11 +420,11 @@ ${copy('Prepared by ALMONA.')}
           >
             <div className="mb-4">
               <h3 className="text-lg font-semibold">{copy("Application")}</h3>
-              <p className="text-gray-400 text-sm">{copy("Select the operation that matches your main workload.")}</p>
+              <p className="text-muted-foreground text-sm">{copy("Select the operation that matches your main workload.")}</p>
             </div>
             <SelectionStrip />
             <Card
-              className={`cursor-pointer transition-all ${usePresetBundle ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+              className={`cursor-pointer transition-all ${usePresetBundle ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-card/50'}`}
               onClick={() => setUsePresetBundle(prev => !prev)}
               role="button"
               tabIndex={0}
@@ -434,14 +434,14 @@ ${copy('Prepared by ALMONA.')}
                   <div className="flex items-center gap-2">
                     <span
                       className={`mt-1 inline-flex h-4 w-4 items-center justify-center rounded-full border ${
-                        usePresetBundle ? 'border-amber-400 bg-amber-500' : 'border-gray-500'
+                        usePresetBundle ? 'border-amber-400 bg-amber-500' : 'border-border'
                       }`}
                       aria-hidden="true"
                     />
                     <Label className="typography-label text-base sm:text-lg font-semibold cursor-pointer">{copy("Workshop Bundle (recommended)")}</Label>
                   </div>
                 </div>
-                <p className="text-xs sm:text-sm text-gray-400 mt-2">{copy("Selects a complete workshop set based on your production scale: 1-50 units/day ≈ 7 machines, 50-100 units/day ≈ 12 machines, 100+ units/day scales accordingly.")}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-2">{copy("Selects a complete workshop set based on your production scale: 1-50 units/day ≈ 7 machines, 50-100 units/day ≈ 12 machines, 100+ units/day scales accordingly.")}</p>
               </CardContent>
             </Card>
             <RadioGroup value={answers.application} onValueChange={(v) => handleValueChange('application', v)}>
@@ -452,7 +452,7 @@ ${copy('Prepared by ALMONA.')}
                     <Card
                       key={op.id}
                       className={`cursor-pointer transition-all ${
-                        isSelected ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'
+                        isSelected ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-card/50'
                       }`}
                       onClick={() => handleValueChange('application', op.id)}
                     >
@@ -463,7 +463,7 @@ ${copy('Prepared by ALMONA.')}
                             <Label htmlFor={op.id} className="typography-label text-base sm:text-lg font-semibold cursor-pointer">
                               {op.label}
                             </Label>
-                            <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                               {copy(op.description)}
                             </p>
                             <div className="flex flex-wrap gap-1 sm:gap-2 mt-2 items-center">
@@ -490,13 +490,13 @@ ${copy('Prepared by ALMONA.')}
           >
             <div className="mb-4">
               <h3 className="text-lg font-semibold">{copy("Automation Level")}</h3>
-              <p className="text-gray-400">{copy("Select the automation level for your quality and throughput targets.")}</p>
+              <p className="text-muted-foreground">{copy("Select the automation level for your quality and throughput targets.")}</p>
             </div>
             <SelectionStrip />
             <RadioGroup value={answers.automation} onValueChange={(v) => handleValueChange('automation', v)}>
               <div className="grid gap-3 sm:grid-cols-2">
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.automation === 'manual' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  className={`cursor-pointer transition-all ${answers.automation === 'manual' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-card/50'}`}
                   onClick={() => handleValueChange('automation', 'manual')}
                 >
                   <CardContent className="p-4">
@@ -504,7 +504,7 @@ ${copy('Prepared by ALMONA.')}
                       <RadioGroupItem value="manual" id="manual" />
                       <div className="flex-1">
                         <Label htmlFor="manual" className="typography-label text-lg font-semibold cursor-pointer">{copy("Manual Operation")}</Label>
-                        <p className="text-sm text-gray-400 mt-1">{copy("Operator-controlled for custom work and low-volume production")}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{copy("Operator-controlled for custom work and low-volume production")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Operator Control")}</Badge>
                           <Badge variant="secondary">{copy("Custom Work")}</Badge>
@@ -514,7 +514,7 @@ ${copy('Prepared by ALMONA.')}
                   </CardContent>
                 </Card>
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.automation === 'semi-automatic' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  className={`cursor-pointer transition-all ${answers.automation === 'semi-automatic' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-card/50'}`}
                   onClick={() => handleValueChange('automation', 'semi-automatic')}
                 >
                   <CardContent className="p-4">
@@ -522,7 +522,7 @@ ${copy('Prepared by ALMONA.')}
                       <RadioGroupItem value="semi-automatic" id="semi-automatic" />
                       <div className="flex-1">
                         <Label htmlFor="semi-automatic" className="typography-label text-lg font-semibold cursor-pointer">{copy("Semi-Automatic")}</Label>
-                        <p className="text-sm text-gray-400 mt-1">{copy("Semi-automatic with operator supervision")}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{copy("Semi-automatic with operator supervision")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Automated Process")}</Badge>
                           <Badge variant="secondary">{copy("Operator Supervised")}</Badge>
@@ -532,7 +532,7 @@ ${copy('Prepared by ALMONA.')}
                   </CardContent>
                 </Card>
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.automation === 'optimized' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  className={`cursor-pointer transition-all ${answers.automation === 'optimized' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-card/50'}`}
                   onClick={() => handleValueChange('automation', 'optimized')}
                 >
                   <CardContent className="p-4">
@@ -540,7 +540,7 @@ ${copy('Prepared by ALMONA.')}
                       <RadioGroupItem value="optimized" id="optimized" />
                       <div className="flex-1">
                         <Label htmlFor="optimized" className="typography-label text-lg font-semibold cursor-pointer">{copy("Optimized (Recommended)")}</Label>
-                        <p className="text-sm text-gray-400 mt-1">{copy("Prioritize CNC/automatic machines for throughput and quality.")}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{copy("Prioritize CNC/automatic machines for throughput and quality.")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Preset")}</Badge>
                           <Badge variant="secondary">{copy("Balanced Speed/QA")}</Badge>
@@ -550,7 +550,7 @@ ${copy('Prepared by ALMONA.')}
                   </CardContent>
                 </Card>
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.automation === 'cnc' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  className={`cursor-pointer transition-all ${answers.automation === 'cnc' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-card/50'}`}
                   onClick={() => handleValueChange('automation', 'cnc')}
                 >
                   <CardContent className="p-4">
@@ -558,7 +558,7 @@ ${copy('Prepared by ALMONA.')}
                       <RadioGroupItem value="cnc" id="cnc" />
                       <div className="flex-1">
                         <Label htmlFor="cnc" className="typography-label text-lg font-semibold cursor-pointer">{copy("CNC & Fully Automatic")}</Label>
-                        <p className="text-sm text-gray-400 mt-1">{copy("CNC control for high-volume output and repeatable precision")}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{copy("CNC control for high-volume output and repeatable precision")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("CNC Control")}</Badge>
                           <Badge variant="secondary">{copy("High Precision")}</Badge>
@@ -581,13 +581,13 @@ ${copy('Prepared by ALMONA.')}
           >
             <div className="mb-4">
               <h3 className="text-lg font-semibold">{copy("Production Scale")}</h3>
-              <p className="text-gray-400">{copy("Match capacity to your daily production target.")}</p>
+              <p className="text-muted-foreground">{copy("Match capacity to your daily production target.")}</p>
             </div>
             <SelectionStrip />
             <RadioGroup value={answers.production} onValueChange={(v) => handleValueChange('production', v)}>
               <div className="grid gap-3 sm:grid-cols-3">
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.production === 'small' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  className={`cursor-pointer transition-all ${answers.production === 'small' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-card/50'}`}
                   onClick={() => handleValueChange('production', 'small')}
                 >
                   <CardContent className="p-4">
@@ -595,7 +595,7 @@ ${copy('Prepared by ALMONA.')}
                       <RadioGroupItem value="small" id="small" />
                       <div className="flex-1">
                         <Label htmlFor="small" className="typography-label text-lg font-semibold cursor-pointer">{copy("Small Scale (1-50 units/day)")}</Label>
-                        <p className="text-sm text-gray-400 mt-1">{copy("Custom work and prototyping")}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{copy("Custom work and prototyping")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Custom Work")}</Badge>
                           <Badge variant="secondary">{copy("Flexible")}</Badge>
@@ -605,7 +605,7 @@ ${copy('Prepared by ALMONA.')}
                   </CardContent>
                 </Card>
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.production === 'medium' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  className={`cursor-pointer transition-all ${answers.production === 'medium' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-card/50'}`}
                   onClick={() => handleValueChange('production', 'medium')}
                 >
                   <CardContent className="p-4">
@@ -613,7 +613,7 @@ ${copy('Prepared by ALMONA.')}
                       <RadioGroupItem value="medium" id="medium" />
                       <div className="flex-1">
                         <Label htmlFor="medium" className="typography-label text-lg font-semibold cursor-pointer">{copy("Medium Scale (50-200 units/day)")}</Label>
-                        <p className="text-sm text-gray-400 mt-1">{copy("Balanced throughput for regional demand")}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{copy("Balanced throughput for regional demand")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Regional Scale")}</Badge>
                           <Badge variant="secondary">{copy("Growing Business")}</Badge>
@@ -623,7 +623,7 @@ ${copy('Prepared by ALMONA.')}
                   </CardContent>
                 </Card>
                 <Card 
-                  className={`cursor-pointer transition-all ${answers.production === 'high' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-gray-800/50'}`}
+                  className={`cursor-pointer transition-all ${answers.production === 'high' ? 'ring-2 ring-almona-orange bg-almona-orange/10' : 'hover:bg-card/50'}`}
                   onClick={() => handleValueChange('production', 'high')}
                 >
                   <CardContent className="p-4">
@@ -631,7 +631,7 @@ ${copy('Prepared by ALMONA.')}
                       <RadioGroupItem value="high" id="high" />
                       <div className="flex-1">
                         <Label htmlFor="high" className="typography-label text-lg font-semibold cursor-pointer">{copy("High Volume (200+ units/day)")}</Label>
-                        <p className="text-sm text-gray-400 mt-1">{copy("Integrated production lines for sustained volume with QA checkpoints")}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{copy("Integrated production lines for sustained volume with QA checkpoints")}</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">{copy("Production Line")}</Badge>
                           <Badge variant="secondary">{copy("High Volume")}</Badge>
@@ -643,7 +643,7 @@ ${copy('Prepared by ALMONA.')}
           </div>
             </RadioGroup>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mt-2">
-              <p className="text-xs text-gray-400">{copy("Production scale is mandatory — it drives the final recommendation set.")}</p>
+              <p className="text-xs text-muted-foreground">{copy("Production scale is mandatory — it drives the final recommendation set.")}</p>
               <Button
                 size="sm"
                 variant={usePresetBundle ? 'default' : 'outline'}
@@ -654,7 +654,7 @@ ${copy('Prepared by ALMONA.')}
               </Button>
             </div>
             {answers.production && usePresetBundle && (
-              <div className="text-xs text-gray-300 bg-gray-800/60 border border-gray-700/60 rounded-lg p-3">{copy("A balanced production set for")}{answerLabel('production')}{copy(". Example bundle for high-volume could include dual cutters, routers, milling, cleaning, and welding stations sized to ~100 units/day.")}</div>
+              <div className="text-xs text-foreground bg-card/60 border border-border/60 rounded-lg p-3">{copy("A balanced production set for")}{answerLabel('production')}{copy(". Example bundle for high-volume could include dual cutters, routers, milling, cleaning, and welding stations sized to ~100 units/day.")}</div>
             )}
           </LazyMotionDiv>
         );
@@ -668,11 +668,11 @@ ${copy('Prepared by ALMONA.')}
           >
             <div className="mb-4">
               <h3 className="text-lg font-semibold">{copy("Recommended Machines")}</h3>
-              <p className="text-gray-400 text-sm">{copy("Matched to your selections.")}</p>
+              <p className="text-muted-foreground text-sm">{copy("Matched to your selections.")}</p>
             </div>
 
             {/* Summary Report */}
-            <Card className="bg-gray-800/50 border-gray-600">
+            <Card className="bg-card/50 border-border">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="typography-h4 flex items-center gap-2">
@@ -687,19 +687,19 @@ ${copy('Prepared by ALMONA.')}
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-400">{copy("Material:")}</span>
+                    <span className="text-muted-foreground">{copy("Material:")}</span>
                     <p className="font-medium capitalize">{answerLabel('material')}</p>
                   </div>
                   <div>
-                    <span className="text-gray-400">{copy("Application:")}</span>
+                    <span className="text-muted-foreground">{copy("Application:")}</span>
                     <p className="font-medium capitalize">{answerLabel('application')}</p>
                   </div>
                   <div>
-                    <span className="text-gray-400">{copy("Automation:")}</span>
+                    <span className="text-muted-foreground">{copy("Automation:")}</span>
                     <p className="font-medium capitalize">{answerLabel('automation')}</p>
                   </div>
                   <div>
-                    <span className="text-gray-400">{copy("Production:")}</span>
+                    <span className="text-muted-foreground">{copy("Production:")}</span>
                     <p className="font-medium capitalize">{answerLabel('production')}</p>
                   </div>
                 </div>
@@ -708,16 +708,16 @@ ${copy('Prepared by ALMONA.')}
 
             <div className="grid grid-cols-1 gap-3 sm:gap-4 max-h-[40vh] sm:max-h-[50vh] overflow-y-auto">
               {recommendations.length > 0 ? recommendations.map(machine => (
-                <Card key={machine.id} className="hover:bg-gray-800/50 transition-colors">
+                <Card key={machine.id} className="hover:bg-card/50 transition-colors">
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex flex-col sm:flex-row sm:items-start gap-3">
                       <div className="flex items-start gap-3 flex-1 min-w-0">
-                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
                           <Settings className="h-6 w-6 sm:h-8 sm:w-8 text-almona-orange" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="typography-h4 text-base sm:text-lg">{machine.name}</h4>
-                          <p className="text-xs sm:text-sm text-gray-400 mt-1 line-clamp-2">{copy(machine.description)}</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">{copy(machine.description)}</p>
                           <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                             {machine.tags?.slice(0, 3).map(tag => (
                               <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>
@@ -746,9 +746,9 @@ ${copy('Prepared by ALMONA.')}
               )) : (
                 <Card>
                   <CardContent className="p-8 text-center">
-                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <h4 className="typography-h4 mb-2">{copy("No Machines Matched")}</h4>
-                    <p className="text-gray-400 mb-4">{copy("Adjust your selections to see matching machines.")}</p>
+                    <p className="text-muted-foreground mb-4">{copy("Adjust your selections to see matching machines.")}</p>
                     <Button asChild className="bg-almona-orange hover:bg-almona-orange-dark">
                       <Link to="/contact">{copy("Contact Our Experts")}</Link>
                     </Button>
@@ -764,15 +764,15 @@ ${copy('Prepared by ALMONA.')}
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[94vw] sm:w-[92vw] max-w-3xl sm:max-w-4xl h-[88vh] max-h-[840px] overflow-hidden flex flex-col top-[50%]">
-        <DialogHeader className="border-b border-gray-700 pb-3 flex-shrink-0">
+        <DialogHeader className="border-b border-border pb-3 flex-shrink-0">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-baseline gap-3 min-w-0">
               <DialogTitle className="text-lg font-bold truncate">{copy("Machine Wizard")}</DialogTitle>
-              <span className="text-xs text-gray-400 flex-shrink-0">{copy("Step")} {currentStepIndex + 1}/{steps.length}</span>
+              <span className="text-xs text-muted-foreground flex-shrink-0">{copy("Step")} {currentStepIndex + 1}/{steps.length}</span>
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
               {steps.map((_, index) => (
-                <div key={index} className={`w-2 h-2 rounded-full transition-all ${index <= currentStepIndex ? 'bg-almona-orange' : 'bg-gray-600'}`} />
+                <div key={index} className={`w-2 h-2 rounded-full transition-all ${index <= currentStepIndex ? 'bg-almona-orange' : 'bg-muted'}`} />
               ))}
             </div>
           </div>
@@ -785,13 +785,13 @@ ${copy('Prepared by ALMONA.')}
           </LazyAnimatePresence>
         </div>
 
-        <DialogFooter className="border-t border-gray-700 pt-4 flex-shrink-0">
+        <DialogFooter className="border-t border-border pt-4 flex-shrink-0">
           <div className="w-full flex flex-col gap-3">
-            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-gray-300">
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-foreground">
               <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="bg-gray-700/60 text-gray-100 border-gray-600">
+                <Badge variant="secondary" className="bg-muted/60 text-foreground border-border">
                   {previewMatches.length}{copy("matching")}</Badge>
-                <span className="text-[11px] text-gray-400">{copy("Filters stay active through the wizard.")}</span>
+                <span className="text-[11px] text-muted-foreground">{copy("Filters stay active through the wizard.")}</span>
               </div>
               {usePresetBundle && (
                 <Badge variant="outline" className="text-[11px] border-amber-400/50 text-amber-200">{copy("Preset bundles enabled")}</Badge>

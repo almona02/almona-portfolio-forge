@@ -233,9 +233,9 @@ export const CalibrationView: React.FC<CalibrationViewProps> = ({
         {accuracy !== null && (
           <Alert className={accuracy >= 98 ? 'bg-green-50 border-green-200' : accuracy >= 95 ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200'}>
             {accuracy >= 98 ? (
-              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <CheckCircle2 className="h-4 w-4 text-success" />
             ) : (
-              <AlertTriangle className="h-4 w-4 text-yellow-600" />
+              <AlertTriangle className="h-4 w-4 text-warning" />
             )}
             <AlertTitle>Accuracy: {calculateAccuracy()}%</AlertTitle>
             <AlertDescription>
@@ -254,24 +254,24 @@ export const CalibrationView: React.FC<CalibrationViewProps> = ({
             return (
               <div
                 key={cut.id}
-                className="border rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors"
+                className="border rounded-lg p-4 bg-card hover:bg-background transition-colors"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   {/* Piece Label */}
                   <div className="flex-1">
                     <p className="font-semibold text-base">{cut.label}</p>
-                    <p className="text-sm text-gray-500">{cut.role}</p>
+                    <p className="text-sm text-muted-foreground">{cut.role}</p>
                   </div>
 
                   {/* Planned Length */}
                   <div className="text-center sm:text-right">
-                    <p className="text-xs text-gray-500 mb-1">Planned</p>
+                    <p className="text-xs text-muted-foreground mb-1">Planned</p>
                     <p className="text-lg font-mono font-semibold">{cut.plannedLength.toFixed(1)}mm</p>
                   </div>
 
                   {/* Actual Input - Mobile-Optimized */}
                   <div className="flex-1 sm:flex-initial">
-                    <label className="typography-label block text-xs text-gray-500 mb-2">Actual (mm)</label>
+                    <label className="typography-label block text-xs text-muted-foreground mb-2">Actual (mm)</label>
                     <Input
                       type="number"
                       step="0.1"
@@ -286,16 +286,16 @@ export const CalibrationView: React.FC<CalibrationViewProps> = ({
 
                   {/* Delta Display */}
                   <div className="text-center sm:text-right">
-                    <p className="text-xs text-gray-500 mb-1">Delta</p>
+                    <p className="text-xs text-muted-foreground mb-1">Delta</p>
                     {delta !== undefined ? (
                       <div className={`flex items-center justify-center sm:justify-end gap-1 text-lg font-mono font-semibold ${
-                        isNegative ? 'text-red-600' : 'text-green-600'
+                        isNegative ? 'text-destructive' : 'text-success'
                       }`}>
                         {isNegative ? <TrendingDown className="h-5 w-5" /> : <TrendingUp className="h-5 w-5" />}
                         <span>{delta > 0 ? '+' : ''}{delta.toFixed(1)}mm</span>
                       </div>
                     ) : (
-                      <p className="text-gray-400 text-lg">-</p>
+                      <p className="text-muted-foreground text-lg">-</p>
                     )}
                   </div>
                 </div>
@@ -307,7 +307,7 @@ export const CalibrationView: React.FC<CalibrationViewProps> = ({
         {/* Patterns Detected */}
         {patterns.length > 0 && (
           <Alert className="bg-blue-50 border-blue-200">
-            <AlertTriangle className="h-4 w-4 text-blue-600" />
+            <AlertTriangle className="h-4 w-4 text-info" />
             <AlertTitle>Patterns Detected:</AlertTitle>
             <AlertDescription>
               <ul className="list-disc list-inside space-y-1 mt-2">
@@ -329,19 +329,19 @@ export const CalibrationView: React.FC<CalibrationViewProps> = ({
 
         {/* Stats - Mobile-Optimized */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t">
-          <div className="text-center sm:text-left p-3 bg-gray-50 rounded-lg">
+          <div className="text-center sm:text-left p-3 bg-background rounded-lg">
             <p className="text-xs text-muted-foreground mb-1">Accuracy</p>
             <p className="text-2xl sm:text-3xl font-bold font-mono">
               {accuracy !== null ? `${calculateAccuracy()}%` : '-'}
             </p>
           </div>
-          <div className="text-center sm:text-left p-3 bg-gray-50 rounded-lg">
+          <div className="text-center sm:text-left p-3 bg-background rounded-lg">
             <p className="text-xs text-muted-foreground mb-1">Total Error</p>
             <p className="text-2xl sm:text-3xl font-bold font-mono">
               {totalError.toFixed(1)}mm
             </p>
           </div>
-          <div className="text-center sm:text-left p-3 bg-gray-50 rounded-lg">
+          <div className="text-center sm:text-left p-3 bg-background rounded-lg">
             <p className="text-xs text-muted-foreground mb-1">Material Waste</p>
             <p className="text-2xl sm:text-3xl font-bold font-mono">
               {(materialWaste / 1000).toFixed(3)}m

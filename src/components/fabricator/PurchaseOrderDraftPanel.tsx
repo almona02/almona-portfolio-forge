@@ -55,7 +55,7 @@ export function PurchaseOrderDraftPanel({ bom, pose, ownerId, revision }: {
         toast.error(error instanceof Error ? error.message : 'Unable to build purchase draft');
     } }}>Create purchase order from active BOM</Button>
   {open && <div className="mt-3 space-y-3">
-   <p className="text-xs text-amber-200">{reference} · quantity {pose.quantity ?? 1}. Gross demand before stock allocation. Proposed bars are {stockLength} mm with {kerf} mm kerf; confirm with the supplier. This draft does not receive stock.</p>
+   <p className="text-xs text-warning">{reference} · quantity {pose.quantity ?? 1}. Gross demand before stock allocation. Proposed bars are {stockLength} mm with {kerf} mm kerf; confirm with the supplier. This draft does not receive stock.</p>
    <div className="flex flex-wrap gap-2"><label>Stock length mm<Input aria-label="Proposed order stock length" type="number" value={stockLength} onChange={e => setStockLength(Number(e.target.value))}/></label><label>Kerf mm<Input aria-label="Proposed order kerf" type="number" value={kerf} onChange={e => setKerf(Number(e.target.value))}/></label><Button variant="outline" onClick={() => { try {
             setLines(buildPurchaseOrderLines(bom, pose, stockLength, kerf));
         }
@@ -79,7 +79,7 @@ export function PurchaseOrderDraftPanel({ bom, pose, ownerId, revision }: {
         catch (error) {
             toast.error(error instanceof Error ? error.message : 'Invalid purchase draft');
         } }}>Save draft & export purchase order</Button>
-   <p className="text-xs text-slate-400">Includes profile bars, hardware and accessories. Replace unknown names and supplier codes, and confirm units and prices; receive delivered profiles through the purchase wizard to establish owned catalogue mappings.</p>
+   <p className="text-xs text-muted-foreground">Includes profile bars, hardware and accessories. Replace unknown names and supplier codes, and confirm units and prices; receive delivered profiles through the purchase wizard to establish owned catalogue mappings.</p>
   </div>}
  </section>;
 }

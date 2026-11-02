@@ -297,7 +297,7 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
   const hasRecoveryPoint = Boolean(recoveryTimestamp);
 
   return (
-    <div className={`h-10 border-b border-amber-600/30 bg-slate-950/95 backdrop-blur-sm flex items-center gap-1 px-3 ${className}`} style={{ marginTop: '-37.8px' }}>
+    <div className={`h-10 border-b border-amber-600/30 bg-background/95 backdrop-blur-sm flex items-center gap-1 px-3 ${className}`} style={{ marginTop: '-37.8px' }}>
       <ThemeToggle size="sm" variant="ghost" className="mr-2" />
       {/* File Menu */}
       <DropdownMenu>
@@ -305,30 +305,30 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 px-3 text-xs font-medium text-amber-600/70 hover:text-amber-400 hover:bg-amber-500/10 transition-colors"
+            className="h-8 px-3 text-xs font-medium text-warning/70 hover:text-warning hover:bg-amber-500/10 transition-colors"
           >
             File
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="bg-slate-900 border-amber-600/30">
-          <DropdownMenuLabel className="text-amber-300">File</DropdownMenuLabel>
+        <DropdownMenuContent align="start" className="bg-background border-amber-600/30">
+          <DropdownMenuLabel className="text-warning">File</DropdownMenuLabel>
           <DropdownMenuSeparator className="bg-amber-600/20" />
           <EnhancedTooltip toolKey="new" placement="right" delay={200}>
-            <DropdownMenuItem onClick={handleNew} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={handleNew} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <FileText className="mr-2 h-4 w-4" />
               New
               <DropdownMenuShortcut>Ctrl+N</DropdownMenuShortcut>
             </DropdownMenuItem>
           </EnhancedTooltip>
           <EnhancedTooltip toolKey="open" placement="right" delay={200}>
-            <DropdownMenuItem onClick={handleOpen} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={handleOpen} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <FolderOpen className="mr-2 h-4 w-4" />
               Open
               <DropdownMenuShortcut>Ctrl+O</DropdownMenuShortcut>
             </DropdownMenuItem>
           </EnhancedTooltip>
           <EnhancedTooltip toolKey="save" placement="right" delay={200}>
-            <DropdownMenuItem onClick={handleSave} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={handleSave} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <Save className="mr-2 h-4 w-4" />
               Save
               <DropdownMenuShortcut>Ctrl+S</DropdownMenuShortcut>
@@ -336,27 +336,27 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
           </EnhancedTooltip>
           <DropdownMenuSeparator className="bg-amber-600/20" />
           <EnhancedTooltip toolKey="import" placement="right" delay={200}>
-            <DropdownMenuItem onClick={handleImport} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={handleImport} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <Upload className="mr-2 h-4 w-4" />
               Import
               <DropdownMenuShortcut>Ctrl+I</DropdownMenuShortcut>
             </DropdownMenuItem>
           </EnhancedTooltip>
           <EnhancedTooltip toolKey="export-dxf" placement="right" delay={200}>
-            <DropdownMenuItem onClick={handleExportDXF} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={handleExportDXF} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <Download className="mr-2 h-4 w-4" />
               Export DXF
               <DropdownMenuShortcut>Ctrl+E</DropdownMenuShortcut>
             </DropdownMenuItem>
           </EnhancedTooltip>
           <EnhancedTooltip toolKey="export-json" placement="right" delay={200}>
-            <DropdownMenuItem onClick={handleExportJSON} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={handleExportJSON} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <Download className="mr-2 h-4 w-4" />
               Export JSON
             </DropdownMenuItem>
           </EnhancedTooltip>
           <EnhancedTooltip toolKey="export-pdf" placement="right" delay={200}>
-            <DropdownMenuItem onClick={handleExportPDF} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={handleExportPDF} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <Download className="mr-2 h-4 w-4" />
               Export PDF
               <DropdownMenuShortcut>Ctrl+Shift+P</DropdownMenuShortcut>
@@ -371,19 +371,19 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 px-3 text-xs font-medium text-amber-600/70 hover:text-amber-400 hover:bg-amber-500/10 transition-colors"
+            className="h-8 px-3 text-xs font-medium text-warning/70 hover:text-warning hover:bg-amber-500/10 transition-colors"
           >
             Edit
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="bg-slate-900 border-amber-600/30">
-          <DropdownMenuLabel className="text-amber-300">Edit</DropdownMenuLabel>
+        <DropdownMenuContent align="start" className="bg-background border-amber-600/30">
+          <DropdownMenuLabel className="text-warning">Edit</DropdownMenuLabel>
           <DropdownMenuSeparator className="bg-amber-600/20" />
           <EnhancedTooltip toolKey="undo" placement="right" delay={200}>
             <DropdownMenuItem 
               onClick={handleUndo} 
               disabled={!canUndo}
-              className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-foreground hover:bg-amber-500/10 hover:text-warning disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Undo className="mr-2 h-4 w-4" />
               Undo
@@ -394,7 +394,7 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
             <DropdownMenuItem 
               onClick={handleRedo} 
               disabled={!canRedo}
-              className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-foreground hover:bg-amber-500/10 hover:text-warning disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Redo className="mr-2 h-4 w-4" />
               Redo
@@ -406,7 +406,7 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
             <DropdownMenuItem 
               onClick={handleCut} 
               disabled={!hasSelection}
-              className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-foreground hover:bg-amber-500/10 hover:text-warning disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Scissors className="mr-2 h-4 w-4" />
               Cut
@@ -417,7 +417,7 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
             <DropdownMenuItem 
               onClick={handleCopy} 
               disabled={!hasSelection}
-              className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-foreground hover:bg-amber-500/10 hover:text-warning disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Copy className="mr-2 h-4 w-4" />
               Copy
@@ -427,7 +427,7 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
           <EnhancedTooltip toolKey="paste" placement="right" delay={200}>
             <DropdownMenuItem 
               onClick={handlePaste}
-              className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300"
+              className="text-foreground hover:bg-amber-500/10 hover:text-warning"
             >
               <Clipboard className="mr-2 h-4 w-4" />
               Paste
@@ -439,7 +439,7 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
             <DropdownMenuItem 
               onClick={handleDelete} 
               disabled={!hasSelection}
-              className="text-slate-200 hover:bg-red-500/10 hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-foreground hover:bg-red-500/10 hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
@@ -455,30 +455,30 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 px-3 text-xs font-medium text-amber-600/70 hover:text-amber-400 hover:bg-amber-500/10 transition-colors"
+            className="h-8 px-3 text-xs font-medium text-warning/70 hover:text-warning hover:bg-amber-500/10 transition-colors"
           >
             View
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="bg-slate-900 border-amber-600/30">
-          <DropdownMenuLabel className="text-amber-300">View</DropdownMenuLabel>
+        <DropdownMenuContent align="start" className="bg-background border-amber-600/30">
+          <DropdownMenuLabel className="text-warning">View</DropdownMenuLabel>
           <DropdownMenuSeparator className="bg-amber-600/20" />
           <EnhancedTooltip toolKey="zoom-in" placement="right" delay={200}>
-            <DropdownMenuItem onClick={handleZoomIn} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={handleZoomIn} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <ZoomIn className="mr-2 h-4 w-4" />
               Zoom In
               <DropdownMenuShortcut>Ctrl++</DropdownMenuShortcut>
             </DropdownMenuItem>
           </EnhancedTooltip>
           <EnhancedTooltip toolKey="zoom-out" placement="right" delay={200}>
-            <DropdownMenuItem onClick={handleZoomOut} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={handleZoomOut} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <ZoomOut className="mr-2 h-4 w-4" />
               Zoom Out
               <DropdownMenuShortcut>Ctrl+-</DropdownMenuShortcut>
             </DropdownMenuItem>
           </EnhancedTooltip>
           <EnhancedTooltip toolKey="zoom-to-fit" placement="right" delay={200}>
-            <DropdownMenuItem onClick={handleZoomToFit} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={handleZoomToFit} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <Maximize2 className="mr-2 h-4 w-4" />
               Zoom to Fit
               <DropdownMenuShortcut>Ctrl+0</DropdownMenuShortcut>
@@ -488,7 +488,7 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
             <DropdownMenuItem 
               onClick={handleZoomToSelection} 
               disabled={!hasSelection}
-              className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-foreground hover:bg-amber-500/10 hover:text-warning disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Maximize2 className="mr-2 h-4 w-4" />
               Zoom to Selection
@@ -497,7 +497,7 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
           </EnhancedTooltip>
           <DropdownMenuSeparator className="bg-amber-600/20" />
           <EnhancedTooltip toolKey="toggle-grid" placement="right" delay={200}>
-            <DropdownMenuItem onClick={handleToggleGrid} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={handleToggleGrid} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               {gridVisible ? (
                 <>
                   <EyeOff className="mr-2 h-4 w-4" />
@@ -513,7 +513,7 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
             </DropdownMenuItem>
           </EnhancedTooltip>
           <EnhancedTooltip toolKey="toggle-snap" placement="right" delay={200}>
-            <DropdownMenuItem onClick={handleToggleSnap} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={handleToggleSnap} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <Grid3x3 className="mr-2 h-4 w-4" />
               {snapEnabled ? 'Disable' : 'Enable'} Snap
               <DropdownMenuShortcut>S</DropdownMenuShortcut>
@@ -528,18 +528,18 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 px-3 text-xs font-medium text-amber-600/70 hover:text-amber-400 hover:bg-amber-500/10 transition-colors"
+            className="h-8 px-3 text-xs font-medium text-warning/70 hover:text-warning hover:bg-amber-500/10 transition-colors"
           >
             Tools
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="bg-slate-900 border-amber-600/30">
-          <DropdownMenuLabel className="text-amber-300">Tools</DropdownMenuLabel>
+        <DropdownMenuContent align="start" className="bg-background border-amber-600/30">
+          <DropdownMenuLabel className="text-warning">Tools</DropdownMenuLabel>
           <DropdownMenuSeparator className="bg-amber-600/20" />
           <EnhancedTooltip toolKey="validate" placement="right" delay={200}>
             <DropdownMenuItem
               onClick={handleValidate}
-              className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300"
+              className="text-foreground hover:bg-amber-500/10 hover:text-warning"
             >
               <ShieldCheck className="mr-2 h-4 w-4" />
               Validate for Execution
@@ -550,19 +550,19 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
             <DropdownMenuItem
               onClick={() => void handleOptimize()}
               disabled={isOptimizing}
-              className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-foreground hover:bg-amber-500/10 hover:text-warning disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Zap className="mr-2 h-4 w-4" />
               Optimize Cutting Plan
             </DropdownMenuItem>
           </EnhancedTooltip>
           <DropdownMenuSeparator className="bg-amber-600/20" />
-          <DropdownMenuLabel className="text-amber-300">Recovery</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-warning">Recovery</DropdownMenuLabel>
           <EnhancedTooltip toolKey="recovery-restore" placement="right" delay={200}>
             <DropdownMenuItem
               onClick={handleRecoveryRestore}
               disabled={!hasRecoveryPoint}
-              className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-foreground hover:bg-amber-500/10 hover:text-warning disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <RotateCcw className="mr-2 h-4 w-4" />
               Restore Recovery Point
@@ -572,7 +572,7 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
             <DropdownMenuItem
               onClick={handleRecoveryDiscard}
               disabled={!hasRecoveryPoint}
-              className="text-slate-200 hover:bg-red-500/10 hover:text-red-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-foreground hover:bg-red-500/10 hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Discard Recovery Point
@@ -581,7 +581,7 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
           <EnhancedTooltip toolKey="create-checkpoint" placement="right" delay={200}>
             <DropdownMenuItem
               onClick={handleCreateCheckpoint}
-              className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300"
+              className="text-foreground hover:bg-amber-500/10 hover:text-warning"
             >
               <Wrench className="mr-2 h-4 w-4" />
               Create Checkpoint
@@ -591,7 +591,7 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
             <EnhancedTooltip toolKey="settings" placement="right" delay={200}>
               <DropdownMenuItem 
                 onClick={onSettings}
-                className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300"
+                className="text-foreground hover:bg-amber-500/10 hover:text-warning"
               >
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
@@ -599,28 +599,28 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
             </EnhancedTooltip>
           )}
           <DropdownMenuSeparator className="bg-amber-600/20" />
-          <DropdownMenuItem className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+          <DropdownMenuItem className="text-foreground hover:bg-amber-500/10 hover:text-warning">
             <Wrench className="mr-2 h-4 w-4" />
             Select Tool
             <DropdownMenuShortcut>V</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+          <DropdownMenuItem className="text-foreground hover:bg-amber-500/10 hover:text-warning">
             <Grid3x3 className="mr-2 h-4 w-4" />
             Rectangle Tool
             <DropdownMenuShortcut>R</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+          <DropdownMenuItem className="text-foreground hover:bg-amber-500/10 hover:text-warning">
             <Grid3x3 className="mr-2 h-4 w-4" />
             Circle Tool
             <DropdownMenuShortcut>C</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+          <DropdownMenuItem className="text-foreground hover:bg-amber-500/10 hover:text-warning">
             <Grid3x3 className="mr-2 h-4 w-4" />
             Line Tool
             <DropdownMenuShortcut>L</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSeparator className="bg-amber-600/20" />
-          <DropdownMenuItem className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+          <DropdownMenuItem className="text-foreground hover:bg-amber-500/10 hover:text-warning">
             <Settings className="mr-2 h-4 w-4" />
             Settings
             <DropdownMenuShortcut>Ctrl+,</DropdownMenuShortcut>
@@ -634,29 +634,29 @@ export const DraftingMenuBar: React.FC<DraftingMenuBarProps> = React.memo(({
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 px-3 text-xs font-medium text-amber-600/70 hover:text-amber-400 hover:bg-amber-500/10 transition-colors"
+            className="h-8 px-3 text-xs font-medium text-warning/70 hover:text-warning hover:bg-amber-500/10 transition-colors"
           >
             Help
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="bg-slate-900 border-amber-600/30">
-          <DropdownMenuLabel className="text-amber-300">Help</DropdownMenuLabel>
+        <DropdownMenuContent align="start" className="bg-background border-amber-600/30">
+          <DropdownMenuLabel className="text-warning">Help</DropdownMenuLabel>
           <DropdownMenuSeparator className="bg-amber-600/20" />
           <EnhancedTooltip toolKey="help-panel" placement="right" delay={200}>
-            <DropdownMenuItem onClick={onHelp} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={onHelp} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <BookOpen className="mr-2 h-4 w-4" />
               Help Panel
               <DropdownMenuShortcut>F1</DropdownMenuShortcut>
             </DropdownMenuItem>
           </EnhancedTooltip>
           <EnhancedTooltip toolKey="documentation" placement="right" delay={200}>
-            <DropdownMenuItem onClick={() => window.open('https://docs.almona.ai', '_blank')} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={() => window.open('https://docs.almona.ai', '_blank')} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <HelpCircle className="mr-2 h-4 w-4" />
               Documentation
             </DropdownMenuItem>
           </EnhancedTooltip>
           <EnhancedTooltip toolKey="keyboard-shortcuts" placement="right" delay={200}>
-            <DropdownMenuItem onClick={() => window.open('https://docs.almona.ai/shortcuts', '_blank')} className="text-slate-200 hover:bg-amber-500/10 hover:text-amber-300">
+            <DropdownMenuItem onClick={() => window.open('https://docs.almona.ai/shortcuts', '_blank')} className="text-foreground hover:bg-amber-500/10 hover:text-warning">
               <Keyboard className="mr-2 h-4 w-4" />
               Keyboard Shortcuts
               <DropdownMenuShortcut>?</DropdownMenuShortcut>

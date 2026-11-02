@@ -285,7 +285,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
   }, [positions, engineeringPacks, projectId, projectMeta, updateProject]);
 
   return (
-    <div className="h-full overflow-auto p-6 space-y-6 bg-[#0a0a0a]">
+    <div className="h-full overflow-auto p-6 space-y-6 bg-background">
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <KPICard label="Positions" value={positions.length} icon={<Layers size={16} />} />
@@ -302,8 +302,8 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
 
       {aggregatedBOM?.isPartialEstimate ? (
         <Alert className="border-amber-600/40 bg-amber-500/5">
-          <AlertTriangle className="h-4 w-4 text-amber-400" />
-          <AlertDescription className="text-amber-200 text-sm">
+          <AlertTriangle className="h-4 w-4 text-warning" />
+          <AlertDescription className="text-warning text-sm">
             Partial estimate only — {aggregatedBOM.positionBOMs.size}/{positions.length} positions
             resolved
             {aggregatedBOM.failedPositionIds.length
@@ -320,10 +320,10 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
         </Alert>
       )}
       {/* Positions Table */}
-      <Card className="bg-slate-900/40 border-amber-600/20">
+      <Card className="bg-background/40 border-amber-600/20">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm text-amber-200 flex items-center gap-2">
+            <CardTitle className="text-sm text-warning flex items-center gap-2">
               <ClipboardList size={16} />
               Positions ({positions.length})
             </CardTitle>
@@ -337,7 +337,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                 {isAggregating ? <Loader2 size={14} className="mr-1 animate-spin" /> : <ClipboardList size={14} className="mr-1" />}
                 {isAggregating ? 'Aggregating...' : 'Aggregate Project BOM'}
               </Button>
-              <Button size="sm" onClick={onOpenStudio} variant="outline" className="border-amber-600/30 text-amber-300 text-xs">
+              <Button size="sm" onClick={onOpenStudio} variant="outline" className="border-amber-600/30 text-warning text-xs">
                 Open Studio
               </Button>
             </div>
@@ -345,10 +345,10 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
         </CardHeader>
         <CardContent>
           {positions.length === 0 ? (
-            <div className="text-center py-8 text-slate-500">
+            <div className="text-center py-8 text-muted-foreground">
               <Layers size={40} className="mx-auto mb-3 opacity-30" />
               <p>No positions in this project yet.</p>
-              <Button onClick={onOpenStudio} variant="outline" className="mt-4 border-amber-600/30 text-amber-300" size="sm">
+              <Button onClick={onOpenStudio} variant="outline" className="mt-4 border-amber-600/30 text-warning" size="sm">
                 Open Studio to Add Positions
               </Button>
             </div>
@@ -364,7 +364,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-amber-600/20 text-xs text-slate-500 uppercase">
+                  <tr className="border-b border-amber-600/20 text-xs text-muted-foreground uppercase">
                     <th className="text-left py-2 px-3">Pos</th>
                     <th className="text-left py-2 px-3">Type</th>
                     <th className="text-right py-2 px-3">Width</th>
@@ -381,32 +381,32 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                     const posBOM = aggregatedBOM?.positionBOMs.get(pos.id);
                     const failed = aggregatedBOM?.failedPositionIds.includes(pos.id);
                     return (
-                      <tr key={pos.id} className="border-b border-slate-800/50 hover:bg-amber-500/5">
-                        <td className="py-2 px-3 text-amber-300 font-mono text-xs">{pos.posNumber || i + 1}</td>
-                        <td className="py-2 px-3 text-slate-300">{pos.type || 'window'}</td>
-                        <td className="py-2 px-3 text-right text-slate-300 font-mono">{pos.overallWidth}</td>
-                        <td className="py-2 px-3 text-right text-slate-300 font-mono">{pos.overallHeight}</td>
-                        <td className="py-2 px-3 text-right text-slate-300">
+                      <tr key={pos.id} className="border-b border-border/50 hover:bg-amber-500/5">
+                        <td className="py-2 px-3 text-warning font-mono text-xs">{pos.posNumber || i + 1}</td>
+                        <td className="py-2 px-3 text-foreground">{pos.type || 'window'}</td>
+                        <td className="py-2 px-3 text-right text-foreground font-mono">{pos.overallWidth}</td>
+                        <td className="py-2 px-3 text-right text-foreground font-mono">{pos.overallHeight}</td>
+                        <td className="py-2 px-3 text-right text-foreground">
                           <Input key={`${pos.id}:${pos.quantity}`} type="number" min={1} step={1}
                             aria-label={`Quantity for pose ${pos.posNumber || i + 1}`}
                             defaultValue={pos.quantity ?? 1} className="w-16 ml-auto h-8"
                             onBlur={event => { void handleQuantityChange(pos, event.target.value); }} />
                         </td>
                         <td className="py-2 px-3">
-                          <Badge variant="outline" className="text-[10px] border-slate-700 text-slate-400">
+                          <Badge variant="outline" className="text-[10px] border-border text-muted-foreground">
                             {pos.systemPackId || '—'}
                           </Badge>
                         </td>
                         <td className="py-2 px-3">
                           {failed ? (
-                            <div><Badge variant="outline" className="text-[10px] border-red-500/40 text-red-300">
+                            <div><Badge variant="outline" className="text-[10px] border-red-500/40 text-destructive">
                               BOM failed
-                            </Badge><p className="text-xs text-red-300 mt-1">{aggregatedBOM?.failureReasons.get(pos.id)}</p></div>
+                            </Badge><p className="text-xs text-destructive mt-1">{aggregatedBOM?.failureReasons.get(pos.id)}</p></div>
                           ) : (
                             <StatusBadge status={pos.status} />
                           )}
                         </td>
-                        <td className="py-2 px-3 text-right text-amber-200 font-mono text-xs">
+                        <td className="py-2 px-3 text-right text-warning font-mono text-xs">
                           {failed
                             ? '—'
                             : posBOM
@@ -418,7 +418,7 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-6 text-xs text-amber-400 hover:text-amber-300"
+                              className="h-6 text-xs text-warning hover:text-warning"
                               onClick={() => void navigate(fabricatorRoutes.poseDesign(projectId, pos.id))}
                             >
                               <ArrowRight size={12} />
@@ -432,10 +432,10 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
                 {aggregatedBOM && aggregatedBOM.positionBOMs.size > 0 && (
                   <tfoot>
                     <tr className="border-t border-amber-600/30 font-bold">
-                      <td colSpan={4} className="py-2 px-3 text-amber-200">{aggregatedBOM.isPartialEstimate ? 'Partial estimate subtotal' : 'Project estimate total'}</td>
-                      <td className="py-2 px-3 text-right text-amber-200">{totalUnits}</td>
+                      <td colSpan={4} className="py-2 px-3 text-warning">{aggregatedBOM.isPartialEstimate ? 'Partial estimate subtotal' : 'Project estimate total'}</td>
+                      <td className="py-2 px-3 text-right text-warning">{totalUnits}</td>
                       <td colSpan={2} />
-                      <td className="py-2 px-3 text-right text-amber-300 font-mono">
+                      <td className="py-2 px-3 text-right text-warning font-mono">
                         {aggregatedBOM.totalCost.toLocaleString('en-EG', { maximumFractionDigits: 0 })} EGP
                       </td>
                       <td />
@@ -451,12 +451,12 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
 
       {/* Aggregated Cost Breakdown */}
       {aggregatedBOM && aggregatedBOM.positionBOMs.size > 0 && (
-        <Card className="bg-slate-900/40 border-amber-600/20">
+        <Card className="bg-background/40 border-amber-600/20">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-amber-200 flex items-center gap-2">
+            <CardTitle className="text-sm text-warning flex items-center gap-2">
               <DollarSign size={16} />
               Estimated Cost Breakdown
-              <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px]">
+              <Badge className="bg-amber-500/20 text-warning border-amber-500/40 text-[10px]">
                 <CheckCircle2 size={10} className="mr-1" />
                 {aggregatedBOM.positionBOMs.size}/{positions.length} positions calculated
                 {aggregatedBOM.isPartialEstimate ? ' (partial estimate)' : ''}
@@ -475,11 +475,11 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
 
             {/* System breakdown */}
             {systemBreakdown.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-slate-800/50">
-                <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">System Pack Distribution</p>
+              <div className="mt-4 pt-4 border-t border-border/50">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">System Pack Distribution</p>
                 <div className="flex flex-wrap gap-2">
                   {systemBreakdown.map(([sys, count]) => (
-                    <Badge key={sys} variant="outline" className="text-xs border-amber-600/30 text-amber-300">
+                    <Badge key={sys} variant="outline" className="text-xs border-amber-600/30 text-warning">
                       {sys}: {count} unit{count > 1 ? 's' : ''}
                     </Badge>
                   ))}
@@ -496,13 +496,13 @@ export const ProjectSummaryDashboard: React.FC<ProjectSummaryDashboardProps> = (
 const KPICard: React.FC<{ label: string; value: string | number; icon: React.ReactNode; highlight?: boolean }> = ({
   label, value, icon, highlight,
 }) => (
-  <Card className={highlight ? 'bg-amber-500/10 border-amber-500/40' : 'bg-slate-900/40 border-amber-600/20'}>
+  <Card className={highlight ? 'bg-amber-500/10 border-amber-500/40' : 'bg-background/40 border-amber-600/20'}>
     <CardContent className="pt-4 pb-3 px-4">
-      <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-slate-500">
+      <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground">
         {icon}
         {label}
       </div>
-      <p className={`text-lg font-bold mt-1 ${highlight ? 'text-amber-300' : 'text-amber-200'}`}>
+      <p className={`text-lg font-bold mt-1 ${highlight ? 'text-warning' : 'text-warning'}`}>
         {value}
       </p>
     </CardContent>
@@ -512,27 +512,27 @@ const KPICard: React.FC<{ label: string; value: string | number; icon: React.Rea
 const CostCard: React.FC<{ label: string; value: number; count?: number; highlight?: boolean }> = ({
   label, value, count, highlight,
 }) => (
-  <div className={`rounded-lg border p-3 ${highlight ? 'bg-amber-500/10 border-amber-500/40' : 'bg-slate-800/30 border-slate-700/30'}`}>
-    <p className="text-[10px] uppercase tracking-wider text-slate-500">{label}</p>
-    <p className={`text-lg font-bold mt-0.5 ${highlight ? 'text-amber-300' : 'text-amber-200'}`}>
+  <div className={`rounded-lg border p-3 ${highlight ? 'bg-amber-500/10 border-amber-500/40' : 'bg-card/30 border-border/30'}`}>
+    <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
+    <p className={`text-lg font-bold mt-0.5 ${highlight ? 'text-warning' : 'text-warning'}`}>
       {value.toLocaleString('en-EG', { maximumFractionDigits: 0 })}
-      <span className="text-xs font-normal text-slate-500 ml-1">EGP</span>
+      <span className="text-xs font-normal text-muted-foreground ml-1">EGP</span>
     </p>
     {count !== undefined && (
-      <p className="text-[10px] text-slate-600 mt-0.5">{count} items</p>
+      <p className="text-[10px] text-muted-foreground mt-0.5">{count} items</p>
     )}
   </div>
 );
 
 const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
   const config: Record<string, { bg: string; text: string }> = {
-    draft: { bg: 'bg-slate-500/20', text: 'text-slate-300' },
-    measuring: { bg: 'bg-blue-500/20', text: 'text-blue-300' },
-    design: { bg: 'bg-amber-500/20', text: 'text-amber-300' },
-    optimized: { bg: 'bg-green-500/20', text: 'text-green-300' },
+    draft: { bg: 'bg-muted/20', text: 'text-foreground' },
+    measuring: { bg: 'bg-blue-500/20', text: 'text-info' },
+    design: { bg: 'bg-amber-500/20', text: 'text-warning' },
+    optimized: { bg: 'bg-green-500/20', text: 'text-success' },
     production: { bg: 'bg-purple-500/20', text: 'text-purple-300' },
-    quality: { bg: 'bg-cyan-500/20', text: 'text-cyan-300' },
-    delivered: { bg: 'bg-emerald-500/20', text: 'text-emerald-300' },
+    quality: { bg: 'bg-cyan-500/20', text: 'text-info' },
+    delivered: { bg: 'bg-emerald-500/20', text: 'text-success' },
   };
   const c = config[status] || config.draft;
   return (

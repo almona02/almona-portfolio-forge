@@ -16,11 +16,11 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({
 }) => {
   if (!inventory || inventory.length === 0) {
     return (
-      <Card className="bg-gray-700/50 border-gray-600">
+      <Card className="bg-muted/50 border-border">
         <CardContent className="p-8 text-center">
-          <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="typography-h3 text-lg mb-2">No Inventory Data</h3>
-          <p className="text-gray-400">
+          <p className="text-muted-foreground">
             Inventory data is not available. Please refresh the page or contact support.
           </p>
         </CardContent>
@@ -37,10 +37,10 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'low': return 'text-red-400';
-      case 'medium': return 'text-yellow-400';
-      case 'high': return 'text-green-400';
-      default: return 'text-gray-400';
+      case 'low': return 'text-destructive';
+      case 'medium': return 'text-warning';
+      case 'high': return 'text-success';
+      default: return 'text-muted-foreground';
     }
   };
 
@@ -57,40 +57,40 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({
     <div className="space-y-6">
       {/* Inventory Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-gray-700/50 border-gray-600">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-4 text-center">
-            <Package className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-blue-400">{inventory.length}</div>
-            <div className="text-sm text-gray-400">Total Profiles</div>
+            <Package className="h-8 w-8 text-info mx-auto mb-2" />
+            <div className="text-2xl font-bold text-info">{inventory.length}</div>
+            <div className="text-sm text-muted-foreground">Total Profiles</div>
           </CardContent>
         </Card>
         
-        <Card className="bg-gray-700/50 border-gray-600">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-4 text-center">
-            <AlertTriangle className="h-8 w-8 text-red-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-red-400">
+            <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-2" />
+            <div className="text-2xl font-bold text-destructive">
               {inventory.filter(p => getStockStatus(p) === 'low').length}
             </div>
-            <div className="text-sm text-gray-400">Low Stock</div>
+            <div className="text-sm text-muted-foreground">Low Stock</div>
           </CardContent>
         </Card>
         
-        <Card className="bg-gray-700/50 border-gray-600">
+        <Card className="bg-muted/50 border-border">
           <CardContent className="p-4 text-center">
-            <CheckCircle className="h-8 w-8 text-green-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-green-400">
+            <CheckCircle className="h-8 w-8 text-success mx-auto mb-2" />
+            <div className="text-2xl font-bold text-success">
               {inventory.filter(p => getStockStatus(p) === 'high').length}
             </div>
-            <div className="text-sm text-gray-400">Good Stock</div>
+            <div className="text-sm text-muted-foreground">Good Stock</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Inventory List */}
-      <Card className="bg-gray-700/50 border-gray-600">
+      <Card className="bg-muted/50 border-border">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Package className="h-5 w-5 text-amber-400" />
+            <Package className="h-5 w-5 text-warning" />
             Profile Inventory
           </CardTitle>
         </CardHeader>
@@ -101,11 +101,11 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({
               const stockPercentage = (profile.stockQuantity / (profile.minStockLevel * 2)) * 100;
               
               return (
-                <div key={profile.id} className="p-4 bg-gray-800 rounded-lg">
+                <div key={profile.id} className="p-4 bg-card rounded-lg">
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <h4 className="typography-h4">{profile.name}</h4>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-muted-foreground">
                         {profile.material} • {profile.width}mm • {profile.color}
                       </p>
                     </div>
@@ -126,7 +126,7 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({
                       <span>Min Level: {profile.minStockLevel}m</span>
                     </div>
                     <Progress value={Math.min(stockPercentage, 100)} className="h-2" />
-                    <div className="flex justify-between text-sm text-gray-400">
+                    <div className="flex justify-between text-sm text-muted-foreground">
                       <span>Cost: ${profile.costPerMeter}/m</span>
                       <span>Supplier: {profile.supplier}</span>
                     </div>

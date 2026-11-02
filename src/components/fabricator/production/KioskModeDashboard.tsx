@@ -279,7 +279,7 @@ export function KioskModeDashboard({
 
       {lastPiece && (
         <div className="text-center p-6 bg-green-50 dark:bg-green-950 rounded-lg">
-          <div className="text-green-700 dark:text-green-300" style={{ fontSize: KIOSK_TOKENS.FONT_BODY }}>
+          <div className="text-green-700 dark:text-success" style={{ fontSize: KIOSK_TOKENS.FONT_BODY }}>
             {locale === 'ar' ? 'آخر قطعة' : 'Last Piece'}: {lastPiece.barcode} - ✓ {locale === 'ar' ? 'نجحت' : 'Success'}
           </div>
         </div>
@@ -418,7 +418,7 @@ export function KioskModeDashboard({
                 className="w-full text-2xl justify-start"
               >
                 {check.passed ? (
-                  <CheckCircle className="mr-4 h-10 w-10 text-green-500" />
+                  <CheckCircle className="mr-4 h-10 w-10 text-success" />
                 ) : (
                   <XCircle className="mr-4 h-10 w-10 text-muted-foreground" />
                 )}

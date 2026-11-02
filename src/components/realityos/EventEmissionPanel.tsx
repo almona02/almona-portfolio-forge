@@ -110,14 +110,14 @@ export const EventEmissionPanel: React.FC<EventEmissionPanelProps> = ({
     if (emissionStatus.lastResult?.success) {
       if (emissionStatus.lastResult.faultEvent) {
         return (
-          <Badge variant="outline" className="border-red-600/50 text-red-400">
+          <Badge variant="outline" className="border-red-600/50 text-destructive">
             <AlertTriangle className="h-3 w-3 mr-1" />
             FAULT
           </Badge>
         );
       }
       return (
-        <Badge variant="default" className="bg-green-600/20 text-green-400 border-green-600/50">
+        <Badge variant="default" className="bg-green-600/20 text-success border-green-600/50">
           <CheckCircle2 className="h-3 w-3 mr-1" />
           EMITTED
         </Badge>
@@ -126,7 +126,7 @@ export const EventEmissionPanel: React.FC<EventEmissionPanelProps> = ({
 
     if (emissionStatus.error) {
       return (
-        <Badge variant="outline" className="border-red-600/50 text-red-400">
+        <Badge variant="outline" className="border-red-600/50 text-destructive">
           <AlertCircle className="h-3 w-3 mr-1" />
           ERROR
         </Badge>
@@ -157,7 +157,7 @@ export const EventEmissionPanel: React.FC<EventEmissionPanelProps> = ({
         </CardHeader>
         <CardContent className="space-y-4">
           {emissionStatus.error && (
-            <div className="flex items-center gap-2 text-sm text-red-400 p-3 rounded-lg bg-red-900/20 border border-red-700">
+            <div className="flex items-center gap-2 text-sm text-destructive p-3 rounded-lg bg-red-900/20 border border-red-700">
               <AlertCircle className="h-4 w-4" />
               <span>Error: {emissionStatus.error}</span>
             </div>
@@ -178,7 +178,7 @@ export const EventEmissionPanel: React.FC<EventEmissionPanelProps> = ({
           {emissionStatus.lastEvent && (
             <div className="space-y-2 p-3 rounded-lg bg-amber-900/20 border border-amber-600/30">
               <div className="flex items-center gap-2 text-sm">
-                <CheckCircle2 className="h-4 w-4 text-green-400" />
+                <CheckCircle2 className="h-4 w-4 text-success" />
                 <span className="font-semibold text-amber-200">Last Event Emitted</span>
               </div>
               <div className="space-y-1 text-xs text-amber-600/70">

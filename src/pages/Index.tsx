@@ -13,7 +13,7 @@ const FeaturedProducts = lazyRetry(() => import("@/components/home/FeaturedProdu
 
 // Lightweight loading placeholder
 const SectionPlaceholder = () => (
-  <div className="min-h-[400px] w-full bg-almona-dark/50 animate-pulse" />
+  <div className="min-h-[400px] w-full bg-background/50 animate-pulse" />
 );
 
 const Index = memo(() => {

@@ -131,34 +131,34 @@ export default function BatchCutListDemo() {
             <Scissors className="h-6 w-6" />
             Cut List Demo – 1×1000×1000 mm aluminium casement
           </CardTitle>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">
             Single window 1000×1000 mm, Alumil M9660 aluminium casement (frame + sash). Verify cut lengths and bar layout below.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-4 text-sm">
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Total windows:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Total windows:</span>
               <span className="ml-2 font-semibold">{totalWindows}</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">System:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">System:</span>
               <span className="ml-2 font-semibold">Alumil M9660 Alutherm</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Total bars (6.5 m):</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Total bars (6.5 m):</span>
               <span className="ml-2 font-semibold">{cutList.totalBarsUsed}</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Waste:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Waste:</span>
               <span className="ml-2 font-semibold">{cutList.wastePercentage.toFixed(1)}%</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Frame cut lines:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Frame cut lines:</span>
               <span className="ml-2 font-semibold">{frameItems.length}</span>
             </div>
             <div>
-              <span className="text-slate-500 dark:text-slate-400">Sash cut lines:</span>
+              <span className="text-muted-foreground dark:text-muted-foreground">Sash cut lines:</span>
               <span className="ml-2 font-semibold">{sashItems.length}</span>
             </div>
           </div>

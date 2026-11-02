@@ -47,9 +47,9 @@ export const CostOptimizationInsights: React.FC<CostOptimizationInsightsProps> =
 
   if (loading) {
     return (
-      <Card className="bg-gray-900 border-gray-700 card-dark">
+      <Card className="bg-background border-border card-dark">
         <CardContent className="pt-6">
-          <div className="text-center text-gray-500">Analyzing cost optimization...</div>
+          <div className="text-center text-muted-foreground">Analyzing cost optimization...</div>
         </CardContent>
       </Card>
     );
@@ -62,21 +62,21 @@ export const CostOptimizationInsights: React.FC<CostOptimizationInsightsProps> =
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
-        return 'bg-red-900/20 border-red-700 text-red-400';
+        return 'bg-red-900/20 border-red-700 text-destructive';
       case 'medium':
         return 'bg-yellow-900/20 border-yellow-700 text-yellow-400';
       case 'low':
-        return 'bg-blue-900/20 border-blue-700 text-blue-400';
+        return 'bg-blue-900/20 border-blue-700 text-info';
       default:
-        return 'bg-gray-900/20 border-gray-700 text-gray-400';
+        return 'bg-background/20 border-border text-muted-foreground';
     }
   };
 
   return (
-    <Card className="bg-gray-900 border-gray-700 card-dark">
+    <Card className="bg-background border-border card-dark">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <TrendingDown className="h-5 w-5 text-green-400" />
+          <TrendingDown className="h-5 w-5 text-success" />
           Cost Optimization Insights
         </CardTitle>
       </CardHeader>
@@ -95,16 +95,16 @@ export const CostOptimizationInsights: React.FC<CostOptimizationInsightsProps> =
 
         {/* Suggestions */}
         <div className="space-y-3">
-          <h4 className="typography-h4 text-sm font-medium text-gray-300">Optimization Suggestions</h4>
+          <h4 className="typography-h4 text-sm font-medium text-foreground">Optimization Suggestions</h4>
           {analysis.suggestions.length === 0 ? (
-            <div className="text-sm text-gray-500 text-center py-4">
+            <div className="text-sm text-muted-foreground text-center py-4">
               No optimization suggestions at this time
             </div>
           ) : (
             analysis.suggestions.map((suggestion: any, index: number) => (
               <Alert
                 key={index}
-                className={`bg-gray-800 border-gray-700 ${getPriorityColor(suggestion.priority)}`}
+                className={`bg-card border-border ${getPriorityColor(suggestion.priority)}`}
               >
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle className="flex items-center justify-between">
@@ -116,11 +116,11 @@ export const CostOptimizationInsights: React.FC<CostOptimizationInsightsProps> =
                 <AlertDescription className="text-sm mt-2">
                   <p className="mb-2">{suggestion.description}</p>
                   {suggestion.potentialSavings > 0 && (
-                    <p className="text-green-400 font-medium">
+                    <p className="text-success font-medium">
                       Potential savings: {suggestion.potentialSavings.toFixed(2)}
                     </p>
                   )}
-                  <p className="text-gray-400 mt-2">
+                  <p className="text-muted-foreground mt-2">
                     <Info className="h-3 w-3 inline mr-1" />
                     {suggestion.actionRequired}
                   </p>

@@ -33,11 +33,11 @@ const ProductionSchedulerComponent: React.FC<ProductionSchedulerProps> = ({
   }, [project]);
   if (!project || !projectMeta) {
     return (
-      <Card className="bg-gray-700/50 border-gray-600">
+      <Card className="bg-muted/50 border-border">
         <CardContent className="p-8 text-center">
-          <Factory className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <Factory className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="typography-h3 text-lg mb-2">No Project Selected</h3>
-          <p className="text-gray-400">Complete the design and optimization phases first.</p>
+          <p className="text-muted-foreground">Complete the design and optimization phases first.</p>
         </CardContent>
       </Card>
     );
@@ -46,10 +46,10 @@ const ProductionSchedulerComponent: React.FC<ProductionSchedulerProps> = ({
   return (
     <div className="space-y-6">
       {/* Production Status */}
-      <Card className="bg-gray-700/50 border-gray-600">
+      <Card className="bg-muted/50 border-border">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Factory className="h-5 w-5 text-amber-400" />
+            <Factory className="h-5 w-5 text-warning" />
             Production Status
           </CardTitle>
         </CardHeader>
@@ -57,7 +57,7 @@ const ProductionSchedulerComponent: React.FC<ProductionSchedulerProps> = ({
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="typography-h3">{projectMeta.orderNumber}</h3>
-              <p className="text-sm text-gray-400">{projectMeta.type}</p>
+              <p className="text-sm text-muted-foreground">{projectMeta.type}</p>
             </div>
             <Badge variant="outline" className="btn-primary">
               {projectMeta.status}
@@ -66,11 +66,11 @@ const ProductionSchedulerComponent: React.FC<ProductionSchedulerProps> = ({
           
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-gray-400">Dimensions:</span>
+              <span className="text-muted-foreground">Dimensions:</span>
               <div className="font-medium">{projectMeta.dimensions}</div>
             </div>
             <div>
-              <span className="text-gray-400">Components:</span>
+              <span className="text-muted-foreground">Components:</span>
               <div className="font-medium">{projectMeta.componentCount} parts</div>
             </div>
           </div>
@@ -78,7 +78,7 @@ const ProductionSchedulerComponent: React.FC<ProductionSchedulerProps> = ({
       </Card>
 
       {/* Production Controls */}
-      <Card className="bg-gray-700/50 border-gray-600">
+      <Card className="bg-muted/50 border-border">
         <CardHeader>
           <CardTitle>Production Controls</CardTitle>
         </CardHeader>

@@ -125,7 +125,7 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
         <button
           type="button"
           onClick={toggleNav}
-          className="w-8 flex-shrink-0 border-e border-amber-600/20 flex items-start justify-center pt-3 text-amber-500 hover:bg-amber-500/10"
+          className="w-8 flex-shrink-0 border-e border-amber-600/20 flex items-start justify-center pt-3 text-warning hover:bg-amber-500/10"
           aria-label={t('industrial.positions.open', 'Open positions')}
           aria-expanded={navOpen}
         >
@@ -137,7 +137,7 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
         <button
           type="button"
           onClick={toggleNav}
-          className="w-8 flex-shrink-0 border-e border-amber-600/20 flex items-start justify-center pt-3 text-amber-500 hover:bg-amber-500/10"
+          className="w-8 flex-shrink-0 border-e border-amber-600/20 flex items-start justify-center pt-3 text-warning hover:bg-amber-500/10"
           aria-label={t('industrial.positions.open', 'Open positions')}
           aria-expanded={navOpen}
         >
@@ -160,7 +160,7 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
         {!cadOk ? (
           <div className="p-3 space-y-3">
             {project && (
-              <section aria-label="Position design summary" className="rounded border border-amber-600/30 p-4 text-sm text-amber-100 break-words">
+              <section aria-label="Position design summary" className="rounded border border-amber-600/30 p-4 text-sm text-warning break-words">
                 <h2 className="font-semibold">{project.posNumber || 'Position'} · Design summary</h2>
                 <p className="mt-2">{project.overallWidth} × {project.overallHeight} mm</p>
                 <p>{project.systemPackId || 'System not selected'}</p>
@@ -185,7 +185,7 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
         <button
           type="button"
           onClick={toggleInspector}
-          className="w-8 flex-shrink-0 border-s border-amber-600/20 flex items-start justify-center pt-3 text-amber-500 hover:bg-amber-500/10"
+          className="w-8 flex-shrink-0 border-s border-amber-600/20 flex items-start justify-center pt-3 text-warning hover:bg-amber-500/10"
           aria-label={t('industrial.inspector.open', 'Open inspector')}
           aria-expanded={inspectorOpen}
         >
@@ -196,10 +196,10 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
       <Sheet open={navOpen} onOpenChange={setNavOpen}>
         <SheetContent
           side={rtl ? 'right' : 'left'}
-          className="w-72 p-0 bg-[#0d0d0d] border-amber-600/30"
+          className="w-72 p-0 bg-background border-amber-600/30"
         >
           <SheetHeader className="p-3 border-b border-amber-600/20">
-            <SheetTitle className="text-amber-200 text-sm">
+            <SheetTitle className="text-warning text-sm">
               {t('industrial.positions.title', 'Positions')}
             </SheetTitle>
             <SheetDescription className="sr-only">
@@ -214,10 +214,10 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
         <Sheet open={inspectorOpen} onOpenChange={setInspectorOpen}>
           <SheetContent
             side={rtl ? 'left' : 'right'}
-            className="w-80 p-0 bg-[#0d0d0d] border-amber-600/30"
+            className="w-80 p-0 bg-background border-amber-600/30"
           >
             <SheetHeader className="p-3 border-b border-amber-600/20">
-              <SheetTitle className="text-amber-200 text-sm">
+              <SheetTitle className="text-warning text-sm">
                 {t('industrial.inspector.title', 'Properties')}
               </SheetTitle>
               <SheetDescription className="sr-only">

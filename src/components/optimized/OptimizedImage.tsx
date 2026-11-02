@@ -96,7 +96,7 @@ export const OptimizedImage = memo<OptimizedImageProps>(({
     return (
       <div
         ref={imgRef}
-        className={`bg-gray-800 animate-pulse flex items-center justify-center ${className}`}
+        className={`bg-card animate-pulse flex items-center justify-center ${className}`}
         style={{ width, height }}
       >
         {placeholder ? (
@@ -106,7 +106,7 @@ export const OptimizedImage = memo<OptimizedImageProps>(({
             className="w-full h-full object-cover opacity-50"
           />
         ) : (
-          <div className="text-gray-500 text-sm">Loading...</div>
+          <div className="text-muted-foreground text-sm">Loading...</div>
         )}
       </div>
     );
@@ -116,7 +116,7 @@ export const OptimizedImage = memo<OptimizedImageProps>(({
     <div className={`relative ${className}`} style={{ width, height }}>
       {/* Loading placeholder */}
       {!isLoaded && !hasError && (
-        <div className="absolute inset-0 bg-gray-800 animate-pulse flex items-center justify-center">
+        <div className="absolute inset-0 bg-card animate-pulse flex items-center justify-center">
           {placeholder ? (
             <img
               src={placeholder}
@@ -124,15 +124,15 @@ export const OptimizedImage = memo<OptimizedImageProps>(({
               className="w-full h-full object-cover opacity-50"
             />
           ) : (
-            <div className="text-gray-500 text-sm">Loading...</div>
+            <div className="text-muted-foreground text-sm">Loading...</div>
           )}
         </div>
       )}
 
       {/* Error state */}
       {hasError && (
-        <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
-          <div className="text-gray-500 text-sm text-center">
+        <div className="absolute inset-0 bg-card flex items-center justify-center">
+          <div className="text-muted-foreground text-sm text-center">
             <div className="mb-2">⚠️</div>
             <div>Image unavailable</div>
           </div>

@@ -34,9 +34,9 @@ const NationalDashboard: React.FC = () => {
         <meta name="description" content="Strategic dashboard for tracking Egypt's industrial transformation progress aligned with Vision 2030." />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+      <div className="min-h-screen bg-gradient-to-b from-background via-background to-background">
         {/* Hero Header */}
-        <div className="relative overflow-hidden border-b border-slate-800">
+        <div className="relative overflow-hidden border-b border-border">
           {/* Background decorative elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="btn-primary" />
@@ -48,18 +48,18 @@ const NationalDashboard: React.FC = () => {
               <div>
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-500 rounded-xl shadow-lg shadow-amber-500/20">
-                    <Target className="h-8 w-8 text-white" />
+                    <Target className="h-8 w-8 text-foreground" />
                   </div>
                   <div>
                     <span className="btn-primary">
                       🇪🇬 GOVERNMENT PORTAL
                     </span>
-                    <h1 className="typography-h1 md:text-4xl text-white">
+                    <h1 className="typography-h1 md:text-4xl text-foreground">
                       National Service Dashboard
                     </h1>
                   </div>
                 </div>
-                <p className="text-slate-400 text-lg max-w-2xl">
+                <p className="text-muted-foreground text-lg max-w-2xl">
                   Strategic overview of Almona's contribution to <span className="text-amber-400 font-semibold">Egypt Vision 2030</span> and national industrial digitization initiatives.
                 </p>
               </div>
@@ -67,7 +67,7 @@ const NationalDashboard: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button 
                   variant="outline" 
-                  className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white card-dark"
+                  className="border-border text-foreground hover:bg-card hover:text-foreground card-dark"
                 >
                   <Calendar className="h-4 w-4 mr-2" />
                   Q4 2024 Report
@@ -89,14 +89,14 @@ const NationalDashboard: React.FC = () => {
               ].map((stat, index) => (
                 <div 
                   key={index}
-                  className="border border-slate-700/50 rounded-xl p-4 hover:border-amber- 500/30 transition-colors card-premium"
+                  className="border border-border/50 rounded-xl p-4 hover:border-amber- 500/30 transition-colors card-premium"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <stat.icon className="h-4 w-4 text-amber-400" />
-                    <span className="text-xs text-slate-500 uppercase tracking-wide">{stat.label}</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide">{stat.label}</span>
                   </div>
-                  <div className="text-2xl font-bold text-white">{stat.value}</div>
-                  <div className="text-xs text-slate-400 mt-1">{stat.trend}</div>
+                  <div className="text-2xl font-bold text-foreground">{stat.value}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{stat.trend}</div>
                 </div>
               ))}
             </div>
@@ -106,28 +106,28 @@ const NationalDashboard: React.FC = () => {
         {/* Main Dashboard Content */}
         <div className="container mx-auto px-4 py-8">
           <Tabs defaultValue="overview" className="space-y-8">
-            <TabsList className="bg-slate-800/50 border border-slate-700 /50 p-1 card-dark">
+            <TabsList className="bg-card/50 border border-border /50 p-1 card-dark">
               <TabsTrigger 
                 value="overview" 
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-500 data-[state=active]:text-white"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-500 data-[state=active]:text-foreground"
               >
                 Overview
               </TabsTrigger>
               <TabsTrigger 
                 value="impact"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-500 data-[state=active]:text-white"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-500 data-[state=active]:text-foreground"
               >
                 National Impact
               </TabsTrigger>
               <TabsTrigger 
                 value="compliance"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-500 data-[state=active]:text-white"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-500 data-[state=active]:text-foreground"
               >
                 Compliance
               </TabsTrigger>
               <TabsTrigger 
                 value="pledge"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-500 data-[state=active]:text-white"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-500 data-[state=active]:text-foreground"
               >
                 Our Pledge
               </TabsTrigger>
@@ -172,8 +172,8 @@ const NationalDashboard: React.FC = () => {
                 <BuildingCodeValidator />
                 
                 {/* Compliance Stats */}
-                <div className="bg-slate-800/50 border border-slate-700 /50 rounded-xl p-6 card-dark">
-                  <h3 className="typography-h3 text-white mb-4 flex items-center gap-2">
+                <div className="bg-card/50 border border-border /50 rounded-xl p-6 card-dark">
+                  <h3 className="typography-h3 text-foreground mb-4 flex items-center gap-2">
                     <Shield className="h-5 w-5 text-amber-400" />
                     Compliance Summary
                   </h3>
@@ -184,8 +184,8 @@ const NationalDashboard: React.FC = () => {
                       { label: 'ETA E-Invoice Ready', status: 'Certified', color: 'emerald' },
                       { label: 'Data Residency (Egypt)', status: 'Sovereign', color: 'orange' },
                     ].map((item, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-slate-900/50 rounded-lg">
-                        <span className="text-slate-300">{item.label}</span>
+                      <div key={index} className="flex items-center justify-between p-3 bg-background/50 rounded-lg">
+                        <span className="text-foreground">{item.label}</span>
                         <span className={`px-2 py-1 text-xs font-semibold rounded-full bg-${item.color}-500/20 text-${item.color}-400`}>
                           {item.status}
                         </span>
@@ -204,9 +204,9 @@ const NationalDashboard: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-slate-800 bg-slate-900/50">
+        <div className="border-t border-border bg-background/50">
           <div className="container mx-auto px-4 py-6">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <span>Aligned with</span>
                 <span className="text-amber-400 font-semibold">Egypt Vision 2030</span>

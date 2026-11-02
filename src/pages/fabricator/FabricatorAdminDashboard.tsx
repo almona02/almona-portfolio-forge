@@ -103,7 +103,7 @@ const FabricatorAdminDashboard: React.FC = () => {
                           <SelectContent>{FACTORY_ROLES.map((r) => <SelectItem key={r} value={r} className="capitalize">{r.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
                         </Select>
                       </td>
-                      <td className="p-2"><Button size="sm" variant="ghost" onClick={() => void remove(m)}><Trash2 className="h-4 w-4 text-red-500" /></Button></td>
+                      <td className="p-2"><Button size="sm" variant="ghost" onClick={() => void remove(m)}><Trash2 className="h-4 w-4 text-destructive" /></Button></td>
                     </tr>
                   ))}
                 </tbody>

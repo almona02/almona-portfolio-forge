@@ -33,12 +33,12 @@ const CreateTicketPage = () => {
       <>
         <main className="flex-grow pt-24 pb-12">
           <div className="container mx-auto px-4">
-            <Card className="max-w-2xl mx-auto bg-almona-dark/60 border-almona-light/20">
+            <Card className="max-w-2xl mx-auto bg-background/60 border-border/20">
               <CardContent className="flex items-center justify-center py-12">
                 <div className="text-center">
                   <AlertCircle className="h-12 w-12 text-almona-orange mx-auto mb-4" />
                   <h2 className="typography-h2 text-xl font-semibold mb-2">Authentication Required</h2>
-                  <p className="text-gray-400 mb-4">Please log in to create a support ticket</p>
+                  <p className="text-muted-foreground mb-4">Please log in to create a support ticket</p>
                   <Link to="/login" className="text-almona-orange hover:underline">Go to Login</Link>
                 </div>
               </CardContent>
@@ -59,10 +59,10 @@ const CreateTicketPage = () => {
             </Link>
           </div>
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5 }}>
-            <Card className="max-w-4xl mx-auto bg-almona-dark/60 border-almona-light/20">
+            <Card className="max-w-4xl mx-auto bg-background/60 border-border/20">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl bg-gradient-orange bg-clip-text text-transparent">Create Support Ticket</CardTitle>
-                <CardDescription className="text-gray-400">Describe your issue and we'll help you resolve it quickly</CardDescription>
+                <CardDescription className="text-muted-foreground">Describe your issue and we'll help you resolve it quickly</CardDescription>
               </CardHeader>
               <CardContent>
                 <TicketForm mode="page" showAttachments showContactFields initialValues={normalizedPrefill} onSuccess={handleSuccess} />

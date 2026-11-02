@@ -36,7 +36,7 @@ export function ServiceHistory() {
         {/* Active RMA Tracker */}
         {activeRMA && (
             <div className="space-y-4">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
                     <AlertTriangle className="w-5 h-5 text-amber-500" />
                     Active Service Request
                 </h3>
@@ -51,8 +51,8 @@ export function ServiceHistory() {
 
         {/* History List */}
         <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <FileText className="w-5 h-5 text-slate-400" />
+            <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+                <FileText className="w-5 h-5 text-muted-foreground" />
                 Service Log
             </h3>
             
@@ -60,21 +60,21 @@ export function ServiceHistory() {
                 {MOCK_HISTORY.map((item) => (
                     <GoldTierCard 
                         key={item.id} 
-                        className="bg-slate-900/50 border-slate-800 hover:border-amber-500/50 hover:bg-slate-800/50 transition-all cursor-pointer group"
+                        className="bg-background/50 border-border hover:border-amber-500/50 hover:bg-card/50 transition-all cursor-pointer group"
                         onClick={() => setSelectedTicket(item)}
                     >
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className={cn(
                                     "w-10 h-10 rounded-full flex items-center justify-center border transition-colors group-hover:scale-110",
-                                    item.type === 'repair' ? "bg-red-500/10 border-red-500/20 text-red-500" : "bg-blue-500/10 border-blue-500/20 text-blue-500"
+                                    item.type === 'repair' ? "bg-red-500/10 border-red-500/20 text-destructive" : "bg-blue-500/10 border-blue-500/20 text-info"
                                 )}>
                                     {item.type === 'repair' ? <WrenchIcon className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
                                 </div>
                                 <div>
-                                    <h4 className="font-medium text-slate-200 group-hover:text-amber-500 transition-colors">{item.description}</h4>
-                                    <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
-                                        <Badge variant="outline" className="text-[10px] border-slate-700 text-slate-400 capitalize">{item.type}</Badge>
+                                    <h4 className="font-medium text-foreground group-hover:text-amber-500 transition-colors">{item.description}</h4>
+                                    <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                                        <Badge variant="outline" className="text-[10px] border-border text-muted-foreground capitalize">{item.type}</Badge>
                                         <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {item.date}</span>
                                         <span>• ID: {item.id}</span>
                                     </div>
@@ -82,12 +82,12 @@ export function ServiceHistory() {
                             </div>
                             <div className="flex items-center gap-4">
                                 {item.status === 'active' ? (
-                                    <Badge className="bg-amber-500 text-slate-900 hover:bg-amber-600">Active</Badge>
+                                    <Badge className="bg-amber-500 text-foreground hover:bg-amber-600">Active</Badge>
                                 ) : (
-                                    <Badge variant="outline" className="border-green-500/30 text-green-500 bg-green-500/5">Completed</Badge>
+                                    <Badge variant="outline" className="border-green-500/30 text-success bg-green-500/5">Completed</Badge>
                                 )}
                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity -mr-2">
-                                    <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
+                                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                                         <ArrowRight className="w-5 h-5" />
                                     </Button>
                                 </div>

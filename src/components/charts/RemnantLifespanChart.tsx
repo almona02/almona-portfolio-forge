@@ -41,7 +41,7 @@ export const RemnantLifespanChart: React.FC<RemnantLifespanChartProps> = ({ data
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <h4 className="typography-h4 text-sm font-medium mb-2 text-gray-300">By Age</h4>
+        <h4 className="typography-h4 text-sm font-medium mb-2 text-foreground">By Age</h4>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={ageData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
@@ -65,7 +65,7 @@ export const RemnantLifespanChart: React.FC<RemnantLifespanChartProps> = ({ data
         </div>
       </div>
       <div>
-        <h4 className="typography-h4 text-sm font-medium mb-2 text-gray-300">By Status</h4>
+        <h4 className="typography-h4 text-sm font-medium mb-2 text-foreground">By Status</h4>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>

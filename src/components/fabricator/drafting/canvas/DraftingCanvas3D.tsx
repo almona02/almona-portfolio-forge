@@ -109,7 +109,7 @@ export const DraftingCanvas3D: React.FC<DraftingCanvas3DProps> = ({
     );
 
     return (
-        <div className="w-full h-full bg-slate-900">
+        <div className="w-full h-full bg-background">
             <Canvas shadows camera={{ position: [0, 0, 2000], fov: 50 }}>
                 <OrbitControls makeDefault />
                 <Environment preset="city" />
@@ -129,7 +129,7 @@ export const DraftingCanvas3D: React.FC<DraftingCanvas3DProps> = ({
                     cellColor="#1e293b"
                 />
             </Canvas>
-            <div className="absolute bottom-4 left-4 bg-black/50 p-2 rounded text-xs text-white backdrop-blur">
+            <div className="absolute bottom-4 left-4 bg-black/50 p-2 rounded text-xs text-foreground backdrop-blur">
                 <p>Orbit: Left Click | Pan: Right Click | Zoom: Scroll</p>
                 <p>Renderer: Three.js (Deterministic)</p>
             </div>
