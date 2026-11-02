@@ -50,7 +50,7 @@ const UsedMachineCard: React.FC<UsedMachineCardProps> = ({ machine }) => {
       </div>
       <CardHeader>
         <CardTitle className="text-xl">{machine.title}</CardTitle>
-        <div className="flex justify-between items-center text-amber-400 font-bold text-lg">
+        <div className="flex justify-between items-center text-brand font-bold text-lg tracking-tight">
           {machine.price}
           {machine.seller.verified && (
             <Badge variant="secondary" className="bg-blue-600">

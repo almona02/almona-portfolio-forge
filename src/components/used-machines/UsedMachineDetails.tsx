@@ -51,7 +51,7 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
         <div className="space-y-4">
           <div>
             <h1 className="text-2xl font-bold">{machine.title}</h1>
-            <div className="text-amber-400 font-bold text-2xl mt-1">{machine.price}</div>
+            <div className="text-brand font-bold text-2xl mt-1 tracking-tight">{machine.price}</div>
           </div>
 
           <p className="text-foreground">{machine.description}</p>

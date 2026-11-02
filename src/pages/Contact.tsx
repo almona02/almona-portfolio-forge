@@ -40,7 +40,7 @@ const Contact = () => {
 
   const onSubmit = useCallback((data: ContactFormValues) => {
     const body = `Name: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\n\n${data.message}`;
-    setEmailDraft(`mailto:almona02@yahoo.com?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(body)}`);
+    setEmailDraft(`mailto:info@almona02.com?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(body)}`);
   }, []);
 
   const currentUrl = useMemo(() => `https://www.almona02.com${location.pathname}`, [location.pathname]);
@@ -75,13 +75,13 @@ const Contact = () => {
             <div className="bg-card p-5 sm:p-8 rounded-xl border border-border/20 fade-in-up">
               <h2 className="typography-h2 font-semibold mb-6">{copy("Send us a message")}</h2>
 
-              <p className="text-foreground mb-6">{copy("Prepare your enquiry here, then send it from your email app to almona02@yahoo.com.")}</p>
+              <p className="text-foreground mb-6">{copy("Prepare your enquiry here, then send it from your email app to info@almona02.com.")}</p>
               {emailDraft && (
                 <div role="status" className="mb-6 p-4 bg-blue-900/30 border border-blue-500 rounded-lg">
                   <p className="text-foreground">{copy("Your email draft is ready. Your message has not been sent. Open your email app to review and send it.")}</p>
                   <a href={emailDraft} className="inline-block mt-3 text-amber-400 underline">{copy("Open email draft")}</a>
                   <EmailDraftDownload mailto={emailDraft} />
-                  <p className="mt-2 text-sm text-foreground">{copy("No email app? Email almona02@yahoo.com directly or call +20 100 309 7177.")}</p>
+                  <p className="mt-2 text-sm text-foreground">{copy("No email app? Email info@almona02.com directly or call +20 100 309 7177.")}</p>
                 </div>
               )}
 
@@ -209,7 +209,7 @@ const Contact = () => {
                     <div>
                       <h3 className="typography-h3 font-medium text-lg mb-1">{copy("Email")}</h3>
                       <p className="text-muted-foreground">
-                        almona02@yahoo.com
+                        info@almona02.com
                         <br />
                         Info@almona.com
                       </p>

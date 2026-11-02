@@ -243,7 +243,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                   {/* Price overlay on image */}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3 sm:p-4">
                     <div>
-                      <p className="text-lg sm:text-xl lg:text-2xl font-bold text-amber-400">
+                      <p className="text-lg sm:text-xl lg:text-2xl font-bold text-brand tracking-tight">
                         {copy(priceLabel)}
                       </p>
                       <div className="flex items-center gap-2 mt-1">

@@ -17,7 +17,7 @@ describe('Contact enquiry handoff', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Prepare Email' }));
     const link = await screen.findByRole('link', { name: 'Open email draft' });
     const href = link.getAttribute('href')!;
-    expect(href).toContain('mailto:almona02@yahoo.com?subject=Parts%20%26%20service%3F');
+    expect(href).toContain('mailto:info@almona02.com?subject=Parts%20%26%20service%3F');
     expect(decodeURIComponent(href)).toContain('Please confirm stock & delivery.');
     expect(screen.getByRole('status')).toHaveTextContent('Your message has not been sent');
     expect(screen.queryByText('Your message has been sent successfully!')).not.toBeInTheDocument();

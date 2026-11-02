@@ -24,7 +24,7 @@ const QuotePage = () => {
     const form = new FormData(e.currentTarget);
     const items = quoteItems.map(item => `${item.quantity} x ${item.product_name_en} (${item.product_sku || item.product_id})`).join('\n');
     const body = `Name: ${form.get('name') as string}\nEmail: ${form.get('email') as string}\nPhone: ${form.get('phone') as string}\nCompany: ${(form.get('company') as string) || '-'}\n\nRequested items:\n${items}\n\nPlease confirm pricing, availability, taxes and delivery.`;
-    setEmailDraft(`mailto:almona02@yahoo.com?subject=${encodeURIComponent('ALMONA machine quote request')}&body=${encodeURIComponent(body)}`);
+    setEmailDraft(`mailto:info@almona02.com?subject=${encodeURIComponent('ALMONA machine quote request')}&body=${encodeURIComponent(body)}`);
   };
 
   return (
@@ -119,7 +119,7 @@ const QuotePage = () => {
                       <p>{copy("Your draft is ready. Your request has not been sent.")}</p>
                       <a href={emailDraft} className="text-amber-400 underline">{copy("Open quote email draft")}</a>
                       <EmailDraftDownload mailto={emailDraft} />
-                      <p>{copy("No email app? Contact almona02@yahoo.com or call +20 100 309 7177.")}</p>
+                      <p>{copy("No email app? Contact info@almona02.com or call +20 100 309 7177.")}</p>
                     </div>}
                   </CardContent>
                 </Card>

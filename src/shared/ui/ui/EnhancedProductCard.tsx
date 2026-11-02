@@ -299,12 +299,12 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         {/* Price Display */}
         {(
           <LazyMotionDiv
-            className="bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/30 rounded-lg p-3"
+            className="bg-brand/10 border border-brand/35 rounded-lg p-3"
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.2 }}
           >
             <div className="text-muted-foreground text-xs mb-1">{copy("Price")}</div>
-            <div className="text-amber-400 font-bold text-xl">
+            <div className="text-brand font-bold text-xl tracking-tight">
               {livePrice != null ? `${livePrice.toLocaleString()} EGP` : copy("Contact for a quote")}
             </div>
           </LazyMotionDiv>
