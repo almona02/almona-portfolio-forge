@@ -119,11 +119,11 @@ describe('PresetAwareBOMGenerator', () => {
       expect(bom.assemblySequence[0].step).toBe(1);
     });
 
-    it('should include metadata with checksum', async () => {
-      if (!mockPattern || !mockSystemPack) {
-        console.warn('Mock pattern or system pack not found, skipping test');
-        return;
-      }
+    it('should include metadata with checksum and catalogue pack identity', async () => {
+      expect(mockPattern).toBeDefined();
+      expect(mockSystemPack).toBeDefined();
+      expect(mockSystemPack.id).toBeUndefined();
+      expect(mockSystemPack.meta.id).toBe('rock60');
 
       const bom = await generator.generateCompleteBOM(
         mockWindowUnit,
@@ -133,7 +133,21 @@ describe('PresetAwareBOMGenerator', () => {
 
       expect(bom.metadata.checksum).toBeDefined();
       expect(bom.metadata.patternUsed).toBe(mockPattern.id);
-      expect(bom.metadata.systemPackUsed).toBe(mockSystemPack.id);
+      expect(bom.metadata.systemPackUsed).toBe('rock60');
+    });
+
+    it('should prefer an explicit pack id over the catalogue metadata id', async () => {
+      expect(mockPattern).toBeDefined();
+      expect(mockSystemPack).toBeDefined();
+      const packWithId = { ...mockSystemPack, id: 'explicit-rock60' };
+
+      const bom = await generator.generateCompleteBOM(
+        mockWindowUnit,
+        mockPattern,
+        packWithId
+      );
+
+      expect(bom.metadata.systemPackUsed).toBe('explicit-rock60');
     });
   });
 });
