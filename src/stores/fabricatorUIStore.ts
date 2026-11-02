@@ -1,3 +1,4 @@
+import { useTheme as useAppTheme } from 'next-themes';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -25,7 +26,7 @@ interface PanelState {
 }
 
 interface FabricatorUIState {
-  // Global state
+  // Deprecated saved-preference compatibility; rendered themes use next-themes.
   theme: Theme;
   
   // Quick access toolbar
@@ -190,8 +191,8 @@ export const useFabricatorUIStore = create<FabricatorUIState>()(
 );
 
 // Export hooks for convenience
-export const useTheme = () => useFabricatorUIStore((state) => state.theme);
-export const useSetTheme = () => useFabricatorUIStore((state) => state.setTheme);
+export const useTheme = (): Theme => useAppTheme().resolvedTheme === 'light' ? 'light' : 'dark';
+export const useSetTheme = () => useAppTheme().setTheme;
 export const usePanelState = (sectionId: SectionId) => 
   useFabricatorUIStore((state) => state.panelStates[sectionId]);
 export const useTogglePanel = () => useFabricatorUIStore((state) => state.togglePanel);

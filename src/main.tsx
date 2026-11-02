@@ -423,7 +423,7 @@ const renderApp = () => {
     console.error("Root element not found. Check your index.html file.");
     // Show error message to user
     document.body.innerHTML = `
-      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #0d0f12; color: white; font-family: system-ui;">
+      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; background: var(--bg); color: var(--fg); font-family: system-ui;">
         <div style="text-align: center; padding: 2rem;">
           <h1>Application Error</h1>
           <p>Root element not found. Please refresh the page.</p>
@@ -487,7 +487,7 @@ const renderApp = () => {
   } catch (error) {
     console.error('Failed to render application:', error);
     rootElement.innerHTML = `
-      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #0d0f12; color: white; font-family: system-ui;">
+      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; background: var(--bg); color: var(--fg); font-family: system-ui;">
         <div style="text-align: center; padding: 2rem;">
           <h1>Rendering Error</h1>
           <p>Failed to render application. Please refresh the page.</p>

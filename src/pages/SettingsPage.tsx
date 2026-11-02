@@ -93,19 +93,19 @@ export const SettingsPage: React.FC = () => {
 
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-slate-200">
+        <div className="min-h-screen bg-background text-foreground">
             {/* Header with Gold Tier Gradient */}
-            <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-amber-950/20 border-b border-amber-500/10 pt-20 pb-8 px-4 sm:px-6 lg:px-8">
+            <div className="bg-gradient-to-r from-background via-background to-amber-950/20 border-b border-amber-500/10 pt-20 pb-8 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
-                            <Settings className="h-8 w-8 text-amber-500" />
+                            <Settings className="h-8 w-8 text-warning" />
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-amber-500">
                                 {t('settings.title', 'Settings & Preferences')}
                             </h1>
-                            <p className="text-slate-400 mt-1">
+                            <p className="text-muted-foreground mt-1">
                                 {t('settings.subtitle', 'Manage your account, appearance, and workspace configuration')}
                             </p>
                         </div>
@@ -120,32 +120,32 @@ export const SettingsPage: React.FC = () => {
                     className="space-y-8"
                 >
                     {/* Navigation Tabs */}
-                    <TabsList className="bg-slate-900/50 border border-slate-800 p-1 rounded-xl h-auto flex-wrap">
-                        <TabsTrigger value="general" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg transition-all">
+                    <TabsList className="bg-background/50 border border-border p-1 rounded-xl h-auto flex-wrap">
+                        <TabsTrigger value="general" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-foreground rounded-lg transition-all">
                             <Monitor className="h-4 w-4 mr-2" />
                             General
                         </TabsTrigger>
-                        <TabsTrigger value="account" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg transition-all">
+                        <TabsTrigger value="account" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-foreground rounded-lg transition-all">
                             <User className="h-4 w-4 mr-2" />
                             Account
                         </TabsTrigger>
-                        <TabsTrigger value="branding" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg transition-all">
+                        <TabsTrigger value="branding" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-foreground rounded-lg transition-all">
                             <Palette className="h-4 w-4 mr-2" />
                             Branding
                         </TabsTrigger>
-                        <TabsTrigger value="manufacturing" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg transition-all">
+                        <TabsTrigger value="manufacturing" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-foreground rounded-lg transition-all">
                             <Wrench className="h-4 w-4 mr-2" />
                             Manufacturing
                         </TabsTrigger>
-                        <TabsTrigger value="keyboard" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg transition-all">
+                        <TabsTrigger value="keyboard" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-foreground rounded-lg transition-all">
                             <Keyboard className="h-4 w-4 mr-2" />
                             Keyboard
                         </TabsTrigger>
-                        <TabsTrigger value="notifications" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg transition-all">
+                        <TabsTrigger value="notifications" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-foreground rounded-lg transition-all">
                             <Bell className="h-4 w-4 mr-2" />
                             Notifications
                         </TabsTrigger>
-                        <TabsTrigger value="integrations" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg transition-all">
+                        <TabsTrigger value="integrations" className="px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-foreground rounded-lg transition-all">
                             <Globe className="h-4 w-4 mr-2" />
                             Integrations
                         </TabsTrigger>
@@ -153,10 +153,10 @@ export const SettingsPage: React.FC = () => {
 
                     {/* GENERAL TAB */}
                     <TabsContent value="general" className="space-y-6">
-                        <Card className="bg-slate-900/50 border-slate-800 card-premium">
+                        <Card className="bg-background/50 border-border card-premium">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Monitor className="h-5 w-5 text-amber-500" />
+                                    <Monitor className="h-5 w-5 text-warning" />
                                     Appearance
                                 </CardTitle>
                                 <CardDescription>Customize how Fabricator Pro looks on your device</CardDescription>
@@ -164,45 +164,53 @@ export const SettingsPage: React.FC = () => {
                             <CardContent className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <button 
+                                        type="button"
+                                        aria-pressed={theme === 'light'}
                                         onClick={() => setTheme('light')}
-                                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${theme === 'light' ? 'border-amber-500 bg-amber-500/10' : 'border-slate-800 hover:border-slate-700'}`}
+                                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${theme === 'light' ? 'border-amber-500 bg-amber-500/10' : 'border-border hover:border-border'}`}
                                     >
-                                        <Sun className="h-8 w-8 text-amber-500" />
+                                        <Sun className="h-8 w-8 text-warning" />
                                         <span className="font-medium">Light</span>
+                                        <span className="text-xs text-muted-foreground">RAL 1013 · Oyster White</span>
                                     </button>
                                     <button 
+                                        type="button"
+                                        aria-pressed={theme === 'dark'}
                                         onClick={() => setTheme('dark')}
-                                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${theme === 'dark' ? 'border-amber-500 bg-amber-500/10' : 'border-slate-800 hover:border-slate-700'}`}
+                                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${theme === 'dark' ? 'border-amber-500 bg-amber-500/10' : 'border-border hover:border-border'}`}
                                     >
-                                        <Moon className="h-8 w-8 text-amber-400" />
+                                        <Moon className="h-8 w-8 text-warning" />
                                         <span className="font-medium">Dark</span>
+                                        <span className="text-xs text-muted-foreground">RAL 9004 · Signal Black</span>
                                     </button>
                                     <button 
+                                        type="button"
+                                        aria-pressed={theme === 'system'}
                                         onClick={() => setTheme('system')}
-                                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${theme === 'system' ? 'border-amber-500 bg-amber-500/10' : 'border-slate-800 hover:border-slate-700'}`}
+                                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${theme === 'system' ? 'border-amber-500 bg-amber-500/10' : 'border-border hover:border-border'}`}
                                     >
-                                        <Monitor className="h-8 w-8 text-blue-400" />
+                                        <Monitor className="h-8 w-8 text-info" />
                                         <span className="font-medium">System</span>
                                     </button>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-slate-900/50 border-slate-800 card-premium">
+                        <Card className="bg-background/50 border-border card-premium">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Languages className="h-5 w-5 text-amber-500" />
+                                    <Languages className="h-5 w-5 text-warning" />
                                     Language & Region
                                 </CardTitle>
                                 <CardDescription>Manage your preferred language and regional formats</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="flex items-center justify-between p-4 bg-slate-800/30 rounded-lg border border-slate-700">
+                                <div className="flex items-center justify-between p-4 bg-card/30 rounded-lg border border-border">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold">EN</div>
+                                        <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center text-info font-bold">EN</div>
                                         <div>
                                             <div className="font-medium">English (US)</div>
-                                            <div className="text-sm text-slate-400">Default for interface</div>
+                                            <div className="text-sm text-muted-foreground">Default for interface</div>
                                         </div>
                                     </div>
                                     <Button 
@@ -215,12 +223,12 @@ export const SettingsPage: React.FC = () => {
                                     </Button>
                                 </div>
 
-                                <div className="flex items-center justify-between p-4 bg-slate-800/30 rounded-lg border border-slate-700">
+                                <div className="flex items-center justify-between p-4 bg-card/30 rounded-lg border border-border">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 font-bold">ع</div>
+                                        <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center text-success font-bold">ع</div>
                                         <div>
                                             <div className="font-medium">العربية (Arabic)</div>
-                                            <div className="text-sm text-slate-400">RTL Layout & Formats</div>
+                                            <div className="text-sm text-muted-foreground">RTL Layout & Formats</div>
                                         </div>
                                     </div>
                                     <Button 
@@ -238,10 +246,10 @@ export const SettingsPage: React.FC = () => {
 
                     {/* ACCOUNT TAB */}
                     <TabsContent value="account" className="space-y-6">
-                        <Card className="bg-slate-900/50 border-slate-800 card-premium">
+                        <Card className="bg-background/50 border-border card-premium">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <User className="h-5 w-5 text-amber-500" />
+                                    <User className="h-5 w-5 text-warning" />
                                     Profile Information
                                 </CardTitle>
                                 <CardDescription>Update your personal information and contact details</CardDescription>
@@ -249,28 +257,28 @@ export const SettingsPage: React.FC = () => {
                             <CardContent className="space-y-6">
                                 <div className="flex items-center gap-6">
                                     <div className="h-24 w-24 rounded-full bg-amber-500/10 border-2 border-amber-500/30 flex items-center justify-center">
-                                        <User className="h-12 w-12 text-amber-500" />
+                                        <User className="h-12 w-12 text-warning" />
                                     </div>
                                     <div className="space-y-1">
                                         <h3 className="text-lg font-semibold">{user?.full_name || user?.email || 'User Name'}</h3>
                                         <div className="flex gap-2">
-                                            <Badge variant="outline" className="border-amber-500/30 text-amber-400">{user?.role || 'Operator'}</Badge>
-                                            <Badge variant="outline" className="border-green-500/30 text-green-400">Active</Badge>
+                                            <Badge variant="outline" className="border-amber-500/30 text-warning">{user?.role || 'Operator'}</Badge>
+                                            <Badge variant="outline" className="border-green-500/30 text-success">Active</Badge>
                                         </div>
                                     </div>
                                 </div>
-                                <Separator className="bg-slate-800" />
+                                <Separator className="bg-card" />
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <Label>Email Address</Label>
-                                        <Input value={user?.email || ''} disabled className="bg-slate-950 border-slate-800" />
+                                        <Input value={user?.email || ''} disabled className="bg-background border-border" />
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Full Name</Label>
                                         <Input 
                                             placeholder="Enter your full name" 
                                             defaultValue={user?.full_name || ''}
-                                            className="bg-slate-950 border-slate-800" 
+                                            className="bg-background border-border"
                                             onChange={(e) => setDraftName(e.target.value)}
                                         />
                                     </div>
@@ -283,17 +291,17 @@ export const SettingsPage: React.FC = () => {
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-slate-900/50 border-slate-800 card-premium">
+                        <Card className="bg-background/50 border-border card-premium">
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-red-400">
+                                <CardTitle className="flex items-center gap-2 text-destructive">
                                     <LogOut className="h-5 w-5" />
                                     Danger Zone
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="flex items-center justify-between">
                                 <div>
-                                    <div className="font-medium text-slate-200">Sign Out</div>
-                                    <div className="text-sm text-slate-400">Log out of your account on all devices</div>
+                                    <div className="font-medium text-foreground">Sign Out</div>
+                                    <div className="text-sm text-muted-foreground">Log out of your account on all devices</div>
                                 </div>
                                 <Button variant="destructive" onClick={() => void signOut()}>
                                     Sign Out
@@ -305,17 +313,17 @@ export const SettingsPage: React.FC = () => {
                     {/* BRANDING TAB */}
                     <TabsContent value="branding">
                         {/* Reusing existing component but wrapped in a clean container */}
-                        <div className="bg-slate-900/30 rounded-xl">
+                        <div className="bg-background/30 rounded-xl">
                             <CompanyBrandingSettings />
                         </div>
                     </TabsContent>
 
                     {/* MANUFACTURING / WORKSHOP CONFIG */}
                     <TabsContent value="manufacturing" className="space-y-6">
-                        <Card className="bg-slate-900/50 border-slate-800 card-premium">
+                        <Card className="bg-background/50 border-border card-premium">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Package className="h-5 w-5 text-amber-500" />
+                                    <Package className="h-5 w-5 text-warning" />
                                     System pack accessories
                                 </CardTitle>
                                 <CardDescription>
@@ -324,7 +332,7 @@ export const SettingsPage: React.FC = () => {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="flex flex-wrap items-center justify-between gap-4">
-                                <div className="text-sm text-slate-400 max-w-xl">
+                                <div className="text-sm text-muted-foreground max-w-xl">
                                     Opens Data Studio → Accessories kits. Overrides stay on this workshop device and
                                     apply as admin unit-price overrides when they differ from catalogue evidence.
                                 </div>
@@ -339,21 +347,21 @@ export const SettingsPage: React.FC = () => {
                                 </Button>
                             </CardContent>
                         </Card>
-                        <Card className="bg-slate-900/50 border-slate-800 card-premium">
+                        <Card className="bg-background/50 border-border card-premium">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Settings className="h-5 w-5 text-amber-500" />
+                                    <Settings className="h-5 w-5 text-warning" />
                                     Related workshop surfaces
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="flex flex-wrap gap-3">
-                                <Button asChild variant="outline" className="border-slate-700">
+                                <Button asChild variant="outline" className="border-border">
                                     <Link to={fabricatorRoutes.studioDataProfiles()}>Profiles library</Link>
                                 </Button>
-                                <Button asChild variant="outline" className="border-slate-700">
+                                <Button asChild variant="outline" className="border-border">
                                     <Link to={fabricatorRoutes.studioApprovals()}>Manufacturing approvals</Link>
                                 </Button>
-                                <Button asChild variant="outline" className="border-slate-700">
+                                <Button asChild variant="outline" className="border-border">
                                     <Link to={fabricatorRoutes.studioDataStock()}>Stock / remnants</Link>
                                 </Button>
                             </CardContent>
@@ -362,50 +370,50 @@ export const SettingsPage: React.FC = () => {
 
                     {/* KEYBOARD TAB */}
                     <TabsContent value="keyboard">
-                         <Card className="bg-slate-900/50 border-slate-800 card-premium overflow-hidden h-[600px]">
+                         <Card className="bg-background/50 border-border card-premium overflow-hidden h-[600px]">
                             <KeyboardShortcutsPanel />
                         </Card>
                     </TabsContent>
 
                     {/* INTEGRATIONS TAB */}
                     <TabsContent value="integrations" className="space-y-6">
-                         <Card className="bg-slate-900/50 border-slate-800 card-premium">
+                         <Card className="bg-background/50 border-border card-premium">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Globe className="h-5 w-5 text-amber-500" />
+                                    <Globe className="h-5 w-5 text-warning" />
                                     Connected Services
                                 </CardTitle>
                                 <CardDescription>Manage connections to external ERP and CRM systems</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="flex items-center justify-between p-4 bg-slate-800/30 rounded-lg border border-slate-700">
+                                <div className="flex items-center justify-between p-4 bg-card/30 rounded-lg border border-border">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-lg bg-amber-900/20 flex items-center justify-center font-bold text-amber-400">O</div>
+                                        <div className="h-10 w-10 rounded-lg bg-amber-900/20 flex items-center justify-center font-bold text-warning">O</div>
                                         <div>
                                             <div className="font-medium">Odoo ERP</div>
-                                            <div className="text-sm text-slate-400">Sync Inventory & Invoices</div>
+                                            <div className="text-sm text-muted-foreground">Sync Inventory & Invoices</div>
                                         </div>
                                     </div>
                                     <Switch />
                                 </div>
                                 
-                                <div className="flex items-center justify-between p-4 bg-slate-800/30 rounded-lg border border-slate-700">
+                                <div className="flex items-center justify-between p-4 bg-card/30 rounded-lg border border-border">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-lg bg-blue-900/20 flex items-center justify-center font-bold text-blue-400">S</div>
+                                        <div className="h-10 w-10 rounded-lg bg-blue-900/20 flex items-center justify-center font-bold text-info">S</div>
                                         <div>
                                             <div className="font-medium">SAP Connect</div>
-                                            <div className="text-sm text-slate-400">Enterprise Resource Planning</div>
+                                            <div className="text-sm text-muted-foreground">Enterprise Resource Planning</div>
                                         </div>
                                     </div>
                                     <Switch />
                                 </div>
 
-                                <div className="flex items-center justify-between p-4 bg-slate-800/30 rounded-lg border border-slate-700">
+                                <div className="flex items-center justify-between p-4 bg-card/30 rounded-lg border border-border">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-lg bg-green-900/20 flex items-center justify-center font-bold text-green-400">W</div>
+                                        <div className="h-10 w-10 rounded-lg bg-green-900/20 flex items-center justify-center font-bold text-success">W</div>
                                         <div>
                                             <div className="font-medium">WhatsApp Business</div>
-                                            <div className="text-sm text-slate-400">Automated Client Updates</div>
+                                            <div className="text-sm text-muted-foreground">Automated Client Updates</div>
                                         </div>
                                     </div>
                                     <Switch defaultChecked />
@@ -416,10 +424,10 @@ export const SettingsPage: React.FC = () => {
 
                      {/* NOTIFICATIONS TAB */}
                      <TabsContent value="notifications" className="space-y-6">
-                        <Card className="bg-slate-900/50 border-slate-800 card-premium">
+                        <Card className="bg-background/50 border-border card-premium">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Bell className="h-5 w-5 text-amber-500" />
+                                    <Bell className="h-5 w-5 text-warning" />
                                     Alert Preferences
                                 </CardTitle>
                                 <CardDescription>Control what you get notified about</CardDescription>
@@ -428,18 +436,18 @@ export const SettingsPage: React.FC = () => {
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-0.5">
                                         <Label className="text-base">Email Notifications</Label>
-                                        <p className="text-sm text-slate-400">Receive daily summaries and critical alerts via email</p>
+                                        <p className="text-sm text-muted-foreground">Receive daily summaries and critical alerts via email</p>
                                     </div>
                                     <Switch 
                                         checked={notifications.email} 
                                         onCheckedChange={(c) => setNotifications({...notifications, email: c})}
                                     />
                                 </div>
-                                <Separator className="bg-slate-800" />
+                                <Separator className="bg-card" />
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-0.5">
                                         <Label className="text-base">Push Notifications</Label>
-                                        <p className="text-sm text-slate-400">Real-time alerts on your desktop</p>
+                                        <p className="text-sm text-muted-foreground">Real-time alerts on your desktop</p>
                                     </div>
                                     <Switch 
                                         checked={notifications.push} 

@@ -61,8 +61,8 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: '#002D62', // Nile Deep Blue - The Authority
-					foreground: '#FFFFFF',
+					DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
+					foreground: 'hsl(var(--primary-foreground) / <alpha-value>)',
 					light: '#003D7A',
 					dark: '#001D4A'
 				},
@@ -79,11 +79,15 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: '#D4AF37', // Royal Gold - The Standard
-					foreground: '#000000',
+					DEFAULT: 'hsl(var(--accent) / <alpha-value>)',
+					foreground: 'hsl(var(--accent-foreground) / <alpha-value>)',
 					light: '#E5C158',
 					dark: '#B8941F'
 				},
+				brand: { DEFAULT: 'hsl(var(--brand) / <alpha-value>)', foreground: 'hsl(var(--brand-foreground) / <alpha-value>)' },
+				success: 'hsl(var(--success) / <alpha-value>)',
+				warning: 'hsl(var(--warning) / <alpha-value>)',
+				info: 'hsl(var(--info) / <alpha-value>)',
 				canvas: {
 					DEFAULT: '#F0F0F0', // Limestone - The Workspace
 					foreground: '#000000'

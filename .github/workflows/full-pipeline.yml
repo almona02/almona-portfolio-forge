@@ -42,6 +42,9 @@ jobs:
         run: npm run type-check
       - name: Unit Tests (vitest)
         run: npm run test -- --run
+
+      - name: Verify palette contrast and theme startup
+        run: node --test scripts/theme-palettes.test.mjs
       - name: Build
         run: npm run build
       - name: Upload Dist Artifact

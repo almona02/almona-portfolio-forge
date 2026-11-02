@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/shared/ui/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { ThemeProvider } from "next-themes";
+import { AppThemeProvider } from "@/components/theme/AppThemeProvider";
 import React, { Suspense, lazy, memo, useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
 import SEO from "./components/SEO";
@@ -339,11 +339,11 @@ const EntryLoader = ({ children }: { children: React.ReactNode }) => {
 // Memoize App component to prevent unnecessary re-renders
 const App = memo(() => {
   return (
+    <AppThemeProvider>
     <ChunkLoadingErrorBoundary>
       <ErrorBoundary>
         <EntryLoader>
           <QueryClientProvider client={queryClient}>
-            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
               <TooltipProvider>
                 <SEO />
                 <Toaster />
@@ -720,12 +720,12 @@ const App = memo(() => {
                   </LoadingProvider>
                 </AuthProvider>
               </TooltipProvider>
-            </ThemeProvider>
           </QueryClientProvider>
         </EntryLoader>
       </ErrorBoundary>
       {isProd && isVercel && <SpeedInsights />}
     </ChunkLoadingErrorBoundary>
+    </AppThemeProvider>
   );
 });
 

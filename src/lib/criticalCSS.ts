@@ -16,8 +16,8 @@ html {
 
 body {
   margin: 0;
-  background-color: #0a0a0a;
-  color: #ffffff;
+  background-color: var(--bg, var(--initial-background));
+  color: var(--fg, var(--initial-foreground));
   font-family: inherit;
   line-height: inherit;
 }
