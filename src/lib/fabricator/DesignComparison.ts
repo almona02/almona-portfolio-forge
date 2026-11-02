@@ -91,7 +91,7 @@ export const compareDesigns = (
 ): ComparisonResult | null => {
   if (!design1 || !design2) return null;
 
-  const gridDifferences = compareGrids(design1.grid, design2.grid);
+  const gridDifferences = compareGrids(design1.grid as WindowGrid, design2.grid as WindowGrid);
   const componentDifferences = compareComponents(design1.components, design2.components);
   const costDifference = calculateCostDifference(bomData1, bomData2);
   const weightDifference = calculateWeightDifference(bomData1, bomData2);

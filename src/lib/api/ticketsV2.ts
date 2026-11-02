@@ -26,7 +26,7 @@ export interface V2PreventiveMaintenancePayload {
   maintenance_metadata?: Record<string, unknown>
 }
 
-export interface V2ScheduledMaintenancePayload extends V2PreventiveMaintenancePayload {
+export interface V2ScheduledMaintenancePayload extends Omit<V2PreventiveMaintenancePayload, 'category'> {
   category: 'scheduled_maintenance'
   scheduled_for: string // ISO datetime
 }

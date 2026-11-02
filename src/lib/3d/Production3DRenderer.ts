@@ -133,7 +133,7 @@ export class Production3DRenderer {
       // Switch to 2D fallback if memory is critical
       if (event.type === 'critical' && this.config.fallbackTo2D && !this.status.is2DFallback) {
         this.switchTo2DFallback(
-          this.securityGateway.getLocalizedError('LOW_MEMORY_FALLBACK', this.config.locale).message_en,
+          this.securityGateway.getLocalizedError('LOW_MEMORY_FALLBACK', this.config.locale).message,
           this.securityGateway.getLocalizedError('LOW_MEMORY_FALLBACK', this.config.locale).messageAr
         );
       }
@@ -157,7 +157,7 @@ export class Production3DRenderer {
       // Check if we should switch to 2D fallback
       if (stats.usagePercent >= this.config.memoryThreshold && this.config.fallbackTo2D && !this.status.is2DFallback) {
         this.switchTo2DFallback(
-          this.securityGateway.getLocalizedError('LOW_MEMORY_FALLBACK', this.config.locale).message_en,
+          this.securityGateway.getLocalizedError('LOW_MEMORY_FALLBACK', this.config.locale).message,
           this.securityGateway.getLocalizedError('LOW_MEMORY_FALLBACK', this.config.locale).messageAr
         );
       } else if (stats.usagePercent < this.config.memoryThreshold && this.status.is2DFallback) {

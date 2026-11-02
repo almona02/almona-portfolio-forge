@@ -56,7 +56,7 @@ const DIVERSE_POSES: ReadonlyArray<{
 ];
 
 function packProfile(code: string): Profile {
-  const found = CALUMINIUM_PS_PACK.profiles.find((p: Profile) => p.id === code);
+  const found = (CALUMINIUM_PS_PACK.profiles || []).find((p: Profile) => p.id === code);
   if (!found) throw new Error(`Missing pack profile ${code}`);
   return found;
 }

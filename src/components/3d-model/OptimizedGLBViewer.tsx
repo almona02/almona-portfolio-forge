@@ -90,7 +90,7 @@ const OptimizedModel = ({
         setIsARSession(false)
       } else {
         /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- WebXR requestSession; three.js types may not align with browser XRSession */
-        const session: XRSession = await renderer.xr.requestSession('immersive-ar', {
+        const session: XRSession = await (navigator as any).xr.requestSession('immersive-ar', {
           requiredFeatures: ['local'],
         })
         await renderer.xr.setSession(session)
@@ -179,13 +179,13 @@ export function OptimizedGLBViewer(props: OptimizedGLBViewerProps) {
         const lightingProps = threeJS.getOptimizedLightingProps()
         const controlsProps = threeJS.getOptimizedControlsProps()
 
-        const { Canvas, AmbientLight, DirectionalLight, PointLight, OrbitControls } = threeJS
+        const { Canvas, OrbitControls } = threeJS
 
         return (
-          <Canvas {...canvasProps}>
-            <AmbientLight {...lightingProps.ambientLight} />
-            <DirectionalLight {...lightingProps.directionalLight} />
-            <PointLight {...lightingProps.pointLight} />
+          <Canvas {...(canvasProps as any)}>
+            <ambientLight {...lightingProps.ambientLight} />
+            <directionalLight {...lightingProps.directionalLight} />
+            <pointLight {...lightingProps.pointLight} />
             <Suspense fallback={<ModelLoadingFallback />}>
               <Initializer />
               <OptimizedModel {...props} threeJS={threeJS} />

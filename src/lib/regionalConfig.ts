@@ -254,7 +254,7 @@ export function formatCurrency(
   const config = getRegionalConfig(regionCode);
   const { currency } = config;
   
-  const formattedAmount = amount.toLocaleString(currency.locale || 'en-US', {
+  const formattedAmount = amount.toLocaleString((currency as any).locale || 'en-US', {
     minimumFractionDigits: currency.decimalPlaces,
     maximumFractionDigits: currency.decimalPlaces
   });

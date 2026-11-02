@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { useRegionDetection, useRegionUtils } from '@/hooks/useRegionDetection';
+import { useRegionDetection } from '@/hooks/useRegionDetection';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -33,7 +33,6 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
 }) => {
   const { t } = useTranslation();
   const { regionState } = useRegionDetection();
-  const _utils = useRegionUtils();
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);

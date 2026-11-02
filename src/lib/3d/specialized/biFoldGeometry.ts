@@ -105,7 +105,7 @@ function createBiFoldTracks(
  */
 function createBiFoldPivots(
   width: number,
-  height: number,
+  _height: number,
   pattern: EgyptianPattern
 ): BufferGeometry[] {
   const pivots: BufferGeometry[] = [];

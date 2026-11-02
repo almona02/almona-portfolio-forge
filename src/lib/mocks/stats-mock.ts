@@ -1,7 +1,6 @@
 // This provides a proper stats.js mock that handles both ESM and CommonJS
 
 class Stats {
-  private mode: number = 0;
   public dom: HTMLDivElement;
 
   constructor() {
@@ -14,8 +13,7 @@ class Stats {
     this.dom.appendChild(panel);
   }
 
-  showPanel(panel: number) {
-    this.mode = panel;
+  showPanel(_panel: number) {
     return this;
   }
 

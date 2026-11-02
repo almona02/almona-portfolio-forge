@@ -54,7 +54,7 @@ export class UnifiedProfileCatalog {
         // Helper to extract from JUMBO100 style
         const packSpec = pack.windowSystemSpec;
         if (packSpec.aluminum_profiles) {
-          for (const p of packSpec.aluminum_profiles) {
+          for (const p of packSpec.aluminum_profiles as any[]) {
             // Check if user has this profile in database with a defined role
             const dbRole = undefined;
             
@@ -78,7 +78,7 @@ export class UnifiedProfileCatalog {
 
         // Helper for ROCK60 style (from cutting config)
         if (packSpec.rock60_45_degree_config) {
-          const config = packSpec.rock60_45_degree_config;
+          const config = packSpec.rock60_45_degree_config as any;
           
           // Frames
           Object.values(config.frame_profiles || {}).forEach((fp: any) => {
@@ -227,14 +227,14 @@ export class UnifiedProfileCatalog {
                system = {
                  id: `user-${sysName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
                  name: sysName,
-                 brand: (items[0] as any).system_brand || 'Custom',
-                 category: (items[0] as any).category || 'window',
+                 brand: (items as any[])[0]?.system_brand || 'Custom',
+                 category: (items as any[])[0]?.category || 'window',
                  profiles: [],
                };
                systems.push(system);
             }
 
-            for (const p of items) {
+            for (const p of items as any[]) {
               const specs = p.specifications || {};
               const code = specs.supplierCode || specs.profileCode || specs.internalCode || p.name;
               

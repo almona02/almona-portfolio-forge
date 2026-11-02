@@ -13,7 +13,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Plus, Trash2, Info, Move, Maximize2, Grid, Target } from 'lucide-react';
 import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
-import type { MachiningZone } from './MachiningZoneEditor';
+interface MachiningZone {
+  id: string;
+  zoneName: string;
+  zoneType: string;
+  xOffset: number;
+  yOffset: number;
+  width: number;
+  height: number;
+  depth?: number;
+  isReusable?: boolean;
+  referenceCorner: 'top_left' | 'top_right' | 'bottom_left' | 'bottom_right';
+}
 
 interface MachiningZoneJoystickProps {
   zones: MachiningZone[];
@@ -38,8 +49,8 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
   profileHeight = 100, // Default 100mm
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [selectedZone, setSelectedZone] = useState<MachiningZone>(null);
-  const [editingZone, setEditingZone] = useState<MachiningZone>(null);
+  const [selectedZone, setSelectedZone] = useState<MachiningZone | null>(null);
+  const [editingZone, setEditingZone] = useState<MachiningZone | null>(null);
   const [joystickState, setJoystickState] = useState<JoystickState>({
     activeZoneId: null,
     isDragging: false,
@@ -68,40 +79,6 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
     window.addEventListener('resize', updateCanvasSize);
     return () => window.removeEventListener('resize', updateCanvasSize);
   }, []);
-
-  // Convert zone coordinates to canvas coordinates
-  const _zoneToCanvas = useCallback((zone: MachiningZone) => {
-    const centerX = canvasSize.width / 2;
-    const centerY = canvasSize.height / 2;
-
-    // Calculate position based on reference corner
-    let x = 0, y = 0;
-    switch (zone.referenceCorner) {
-      case 'top_left':
-        x = zone.xOffset;
-        y = zone.yOffset;
-        break;
-      case 'top_right':
-        x = profileWidth - zone.xOffset - zone.width;
-        y = zone.yOffset;
-        break;
-      case 'bottom_left':
-        x = zone.xOffset;
-        y = profileHeight - zone.yOffset - zone.height;
-        break;
-      case 'bottom_right':
-        x = profileWidth - zone.xOffset - zone.width;
-        y = profileHeight - zone.yOffset - zone.height;
-        break;
-    }
-
-    return {
-      x: centerX + (x - profileWidth / 2) * scale,
-      y: centerY + (y - profileHeight / 2) * scale,
-      width: zone.width * scale,
-      height: zone.height * scale,
-    };
-  }, [canvasSize, profileWidth, profileHeight, scale]);
 
   // Handle mouse/touch start
   const handlePointerDown = (e: React.PointerEvent, zone: MachiningZone, type: 'position' | 'resize') => {
@@ -328,6 +305,18 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                   {zones.map((zone) => {
                     const isSelected = selectedZone?.id === zone.id;
                     const isActive = joystickState.activeZoneId === zone.id;
+                    const centerX = canvasSize.width / 2;
+                    const centerY = canvasSize.height / 2;
+                    let zx = zone.xOffset;
+                    let zy = zone.yOffset;
+                    if (zone.referenceCorner === 'top_right' || zone.referenceCorner === 'bottom_right') zx = profileWidth - zone.xOffset - zone.width;
+                    if (zone.referenceCorner === 'bottom_left' || zone.referenceCorner === 'bottom_right') zy = profileHeight - zone.yOffset - zone.height;
+                    const canvas = {
+                      x: centerX + (zx - profileWidth / 2) * scale,
+                      y: centerY + (zy - profileHeight / 2) * scale,
+                      width: zone.width * scale,
+                      height: zone.height * scale,
+                    };
 
                     return (
                       <LazyMotionDiv
@@ -347,7 +336,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                           width: `${canvas.width}px`,
                           height: `${canvas.height}px`,
                         }}
-                        onPointerDown={(e) => handlePointerDown(e, zone, 'position')}
+                        onPointerDown={(e: React.PointerEvent<HTMLDivElement>) => handlePointerDown(e, zone, 'position')}
                         onClick={() => {
                           setSelectedZone(zone);
                           setEditingZone(zone);

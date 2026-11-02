@@ -115,7 +115,8 @@ export function cullGeometry(geometry: Geometry2D, viewport: Viewport): Geometry
       point.x <= viewport.x + viewport.width &&
       point.y >= viewport.y &&
       point.y <= viewport.y + viewport.height
-    )
+    ),
+    splines: geometry.splines
   };
 }
 
@@ -163,7 +164,6 @@ export function throttle<T extends (...args: any[]) => any>(
  * Calculate viewport from SVG element
  */
 export function getSVGViewport(svg: SVGSVGElement): Viewport {
-  const _viewBox = svg.viewBox.baseVal;
   const ctm = svg.getScreenCTM();
   
   if (!ctm) {

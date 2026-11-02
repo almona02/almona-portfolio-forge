@@ -41,7 +41,7 @@ export class MaterialStrategyCalculator {
    * Choose material for shape complexity
    */
   chooseMaterialForShape(
-    shapeType: ShapeType,
+    _shapeType: ShapeType,
     complexityLevel: MaterialStrategy['complexityLevel'],
     machineCapabilities?: MachineCapabilities,
     workshopPreferences?: {

@@ -140,7 +140,7 @@ export const DraftingToolbar: React.FC<DraftingToolbarProps> = ({
           <div className="flex flex-col gap-0.5">
             {group.tools.map((tool) => {
               const isActive = validatedSelectedTool === tool.id;
-              const IconComponent = tool.iconComponent;
+              const IconComponent = tool.iconComponent as any;
               const iconColorClass = isActive ? 'text-amber-400' : 'text-slate-400';
               const iconClassName = tool.iconProps 
                 ? `${iconColorClass} ${tool.iconProps}` 

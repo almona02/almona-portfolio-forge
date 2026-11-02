@@ -101,8 +101,8 @@ export class EgyptianInstallationCalculator {
    * Calculate fixing materials needed
    */
   private calculateFixingMaterials(
-    projectAreaM2: number,
-    variables: InstallationVariables,
+    _projectAreaM2: number,
+    _variables: InstallationVariables,
     openingCount: number
   ): InstallationCostBreakdown['fixingMaterials'] {
     // Calculate perimeter (approximate: 2 × (width + height) for each opening)

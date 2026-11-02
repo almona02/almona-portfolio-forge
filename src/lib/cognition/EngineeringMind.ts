@@ -109,7 +109,7 @@ export class EngineeringMind {
   /**
    * Recommend opening type based on structural suitability
    */
-  private recommendOpeningType(width: number, height: number): EngineeringAnalysis['openingType'] {
+  private recommendOpeningType(_width: number, height: number): EngineeringAnalysis['openingType'] {
     if (height > 2400) {
       // Tall windows: fixed or casement recommended
       return {

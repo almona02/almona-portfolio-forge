@@ -137,7 +137,7 @@ executionClasses:
     aiAllowed: false
     stateMutation: false
     components:
-      - src/future/ui-experiments/ZoomPresets.tsx
+      - src/components/fabricator/ui/ZoomPresets.tsx
       - src/future/ui-experiments/ContextMenu.tsx
       - src/future/ui-experiments/ThemeToggle.tsx
       - src/future/ui-experiments/CostCalculator.tsx
@@ -146,7 +146,6 @@ executionClasses:
     execution: Blocked
     components:
       - src/future/material-labs/
-      - src/future/special-designers/
       - src/future/template-library/
       - src/future/wizard-engine/
       - src/future/process-labs/

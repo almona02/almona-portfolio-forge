@@ -345,9 +345,9 @@ export function generateComponentsFromGrid(
     
     // 2. Try system pack profiles
     if (systemPack?.profiles) {
-      const systemProfile = systemPack.profiles.find((p: Profile) => p.profileRole === role);
+      const systemProfile = (systemPack.profiles as Profile[]).find((p) => p.profileRole === role);
       if (systemProfile) {
-        const matched = profiles.find(p => 
+        const matched = profiles.find((p) => 
           p.id === systemProfile.id || 
           (p.name === systemProfile.name && p.profileRole === role)
         );

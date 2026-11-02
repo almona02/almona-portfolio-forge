@@ -44,7 +44,7 @@ interface DeviceInfo {
   platform: 'ios' | 'android' | 'desktop' | 'unknown';
   browser: string;
   supportsAR: boolean;
-  preferredARMethod: 'webxr' | 'sceneviewer' | 'quicklook' | 'fallback';
+  preferredARMethod: 'webxr' | 'sceneviewer' | 'quicklook' | 'swiftxr' | 'fallback';
 }
 
 export function SwiftXRManager({

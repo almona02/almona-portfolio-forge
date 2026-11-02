@@ -163,7 +163,7 @@ describe('ML Predictor Integration Tests', () => {
       vi.useRealTimers();
 
       // Summer should have higher demand than winter
-      expect(julFeatures.seasonalDemand).toBeGreaterThan(janFeatures.seasonalDemand);
+      expect(julFeatures.seasonalDemand).toBeGreaterThan(janFeatures.seasonalDemand ?? 0);
     });
   });
 

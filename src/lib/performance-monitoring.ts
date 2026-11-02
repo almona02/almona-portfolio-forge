@@ -74,7 +74,6 @@ class PerformanceMonitoringService {
   private metrics: Map<string, PerformanceMetric[]> = new Map();
   private featureUsage: FeatureUsageMetric[] = [];
   private observer: PerformanceObserver | null = null;
-  private _isMonitoring = false;
   // Track if tables exist to avoid repeated 404 errors
   private featureUsageTableExists: boolean | null = null;
   private satisfactionTableExists: boolean | null = null;
@@ -103,8 +102,6 @@ class PerformanceMonitoringService {
 
     // Network performance monitoring
     this.initializeNetworkMonitoring();
-
-    this._isMonitoring = true;
   }
 
   private initializeCoreWebVitals() {
@@ -120,14 +117,14 @@ class PerformanceMonitoringService {
 
     // First Input Delay (FID)
     this.observePerformanceEntry('first-input', (entry) => {
-      const fid = entry.processingStart - entry.startTime;
+      const fid = (entry.processingStart ?? entry.startTime) - entry.startTime;
       this.recordMetric('FID', fid, 'ms', 'interaction');
     });
 
     // Cumulative Layout Shift (CLS)
     this.observePerformanceEntry('layout-shift', (entry) => {
       if (!entry.hadRecentInput) {
-        this.recordMetric('CLS', entry.value, 'score', 'render');
+        this.recordMetric('CLS', entry.value ?? 0, 'score', 'render');
       }
     });
   }
@@ -585,7 +582,6 @@ class PerformanceMonitoringService {
 
   // Cleanup
   public stopMonitoring() {
-    this._isMonitoring = false;
     if (this.observer) {
       this.observer.disconnect();
     }

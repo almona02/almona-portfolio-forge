@@ -10,9 +10,7 @@
  */
 
 import type { YDTIntelligenceResponse } from './YDTCoreService';
-import { YDTCoreService } from './YDTCoreService';
 import { YDTEnforcementService } from './YDTEnforcementService';
-import { YDTPerformanceMonitor } from './YDTPerformanceMonitor';
 
 export enum DecisionTier {
   STRATEGIC = 'strategic', // Tier 1: YDT mandatory
@@ -51,8 +49,6 @@ export interface TierViolationMetrics {
  */
 export class IntelligenceGate {
   private static enforcer = YDTEnforcementService.getInstance();
-  private static ydt = YDTCoreService.getInstance();
-  private static performanceMonitor = YDTPerformanceMonitor.getInstance();
   private static violationMetrics: TierViolationMetrics = {
     tierViolationCount: 0,
     ydtCalledInDeterministicPath: 0,

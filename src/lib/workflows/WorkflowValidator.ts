@@ -192,7 +192,7 @@ export class WorkflowValidator {
    */
   private static _getReachableNodes(
     startNodeId: string,
-    nodes: WorkflowNode[],
+    _nodes: WorkflowNode[],
     edges: WorkflowEdge[]
   ): Set<string> {
     const reachable = new Set<string>([startNodeId]);

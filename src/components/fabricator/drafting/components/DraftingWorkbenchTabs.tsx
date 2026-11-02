@@ -29,6 +29,8 @@ interface DraftingWorkbenchTabsProps {
   };
   onMoveToNext?: () => void;
   onOpenPoseQuickEdit?: () => void;
+  /** Saved position (authoritative revision) the drafting is editing, if any. */
+  project?: WindowUnit;
   handlers: {
     handleCursorMove: (pos: { x: number; y: number }) => void;
     handleGridToggle: () => void;
@@ -44,6 +46,7 @@ export const DraftingWorkbenchTabs: React.FC<DraftingWorkbenchTabsProps> = ({
   collaboration,
   onMoveToNext,
   onOpenPoseQuickEdit,
+  project,
   handlers,
 }) => {
   return (
@@ -100,7 +103,7 @@ export const DraftingWorkbenchTabs: React.FC<DraftingWorkbenchTabsProps> = ({
           onStatusMessageAdd={(msg) => actions.setStatusMessages(prev => [...prev, msg].slice(-10))}
           operationProgress={state.operations.operationProgress}
           onOperationProgressChange={actions.setOperationProgress}
-          collaborativeUsers={collaboration.users}
+          collaborativeUsers={collaboration.users as any}
           currentUserId={state.collaboration.userId}
           onMousePositionChange={handlers.handleCursorMove}
           onSelectionChange={collaboration.broadcastSelection}
@@ -119,20 +122,21 @@ export const DraftingWorkbenchTabs: React.FC<DraftingWorkbenchTabsProps> = ({
           selectedMaterial={state.preferences.selectedMaterial}
           selectedSystemPackId={state.preferences.selectedSystemPackId}
           profiles={profiles}
-          color="white"
+          color={project?.color || 'white'}
+          authoritativeUnit={project}
         />
       </TabsContent>
 
       <TabsContent value="validation" className="flex-1 overflow-auto m-0 p-4">
-        <DraftingValidationGate
-          result={state.operations.validationResult}
-          onFixIssues={() => {
+        {React.createElement(DraftingValidationGate as any, {
+          result: state.operations.validationResult,
+          onFixIssues: () => {
             actions.setActiveTab('2d');
             if (state.operations.validationResult?.issues) {
               draftingEngine.highlightIssues(state.operations.validationResult.issues);
             }
-          }}
-        />
+          }
+        })}
       </TabsContent>
 
       <TabsContent value="templates" className="flex-1 overflow-y-auto overflow-x-hidden m-0">

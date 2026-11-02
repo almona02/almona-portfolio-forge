@@ -321,7 +321,7 @@ export class ActionExecutor {
         message,
         type,
         user_id: user_id || context.userId,
-      });
+      } as any);
 
       return {
         success: true,

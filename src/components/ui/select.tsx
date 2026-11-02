@@ -17,6 +17,7 @@ interface SelectItemProps {
 
 interface SelectTriggerProps {
   children: React.ReactNode;
+  className?: string;
 }
 
 interface SelectValueProps {
@@ -39,8 +40,8 @@ export const Select = ({ children, value, onValueChange }: SelectProps) => {
   );
 };
 
-export const SelectTrigger = ({ children }: SelectTriggerProps) => {
-  return <div className="select-trigger">{children}</div>;
+export const SelectTrigger = ({ children, className }: SelectTriggerProps) => {
+  return <div className={`select-trigger ${className || ''}`}>{children}</div>;
 };
 
 export const SelectValue = ({ placeholder }: SelectValueProps) => {

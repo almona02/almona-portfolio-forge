@@ -132,7 +132,7 @@ export class HardwarePlacementEngine {
    */
   validateEgyptianCode2020(
     placement: HardwarePlacement,
-    windowWidth: number,
+    _windowWidth: number,
     windowHeight: number
   ): boolean {
     // Check all validation flags
@@ -141,8 +141,8 @@ export class HardwarePlacementEngine {
     if (!placement.validation.structural) return false;
 
     // Additional checks
-    const hinges = placement.hardware.filter(h => h.type === 'hinge');
-    const handles = placement.hardware.filter(h => h.type === 'handle');
+    const hinges = placement.hardware.filter((h: any) => h.type === 'hinge');
+    const handles = placement.hardware.filter((h: any) => h.type === 'handle');
 
     // Tall windows must have middle hinge
     if (windowHeight > 2.4 && hinges.length < 3) {

@@ -320,7 +320,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
           <Button
             onClick={handleApply}
             className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-            disabled={calculatedKFactor === null || (validation && !validation.isValid)}
+            disabled={calculatedKFactor === null || (validation ? !validation.isValid : false)}
           >
             {t('calibration_wizard.k_factor.apply', 'Apply K-Factor')}
           </Button>

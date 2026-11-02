@@ -237,7 +237,7 @@ export const getCostDetails = (
 
     liveProject.hardware.forEach(hw => {
       if (hw.costPerUnit) {
-        const key = hw.id;
+        const key = hw.id ?? '';
         const quantity = hw.quantity || 1;
 
         if (hardwareMap.has(key)) {
@@ -245,8 +245,8 @@ export const getCostDetails = (
           existing.quantity += quantity;
         } else {
           hardwareMap.set(key, {
-            hardwareId: hw.id,
-            hardwareName: hw.name,
+            hardwareId: hw.id ?? '',
+            hardwareName: hw.name ?? '',
             costPerUnit: hw.costPerUnit,
             quantity
           });

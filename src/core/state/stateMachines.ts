@@ -5,7 +5,7 @@
  * These machines enforce explicit state transitions with validation.
  */
 
-import type { StateMachine } from './StateMachine';
+import { StateMachineEngine, type StateMachine } from './StateMachine';
 
 /**
  * Commercial Quote/Invoice State Machine

@@ -46,7 +46,6 @@ const AI_PATTERNS = [
 
 export class WiringValidator {
   private violations: ConstitutionalViolation[] = [];
-  private manifest: any;
 
   async validate(): Promise<WiringValidationResult> {
     console.log('⚖️  AICS-001 Constitutional Wiring Validation\n');
@@ -86,13 +85,11 @@ export class WiringValidator {
         remediation: 'Create wiring manifest at src/components/fabricator/wiring-manifest.yaml',
         aicsReference: 'AICS-001 §6.4'
       });
-      this.manifest = {};
       return;
     }
 
     // Simple YAML parsing (key: value format)
-    const content = fs.readFileSync(manifestPath, 'utf-8');
-    this.manifest = { raw: content };
+    fs.readFileSync(manifestPath, 'utf-8');
   }
 
   /**

@@ -111,7 +111,7 @@ describe('IntelligenceGate - Tier 1: Strategic Decisions', () => {
     };
 
     const ydtMethod = vi.fn().mockResolvedValue(mockYDTResponse);
-    const _recordSpy = vi.spyOn(TierMetrics, 'recordTier1Decision');
+    vi.spyOn(TierMetrics, 'recordTier1Decision');
 
     await IntelligenceGate.strategic(
       'pricing_decision',

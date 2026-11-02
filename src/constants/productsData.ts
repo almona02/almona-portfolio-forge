@@ -1,11 +1,9 @@
 export type { 
   Machine, 
-  Part, 
   Profile, 
   PowerSpecification, 
   Certification, 
-  SafetyStandard,
-  MachineCategory
+  SafetyStandard
 } from '../types';
 
 // Import the Profile type directly for use in the arrays

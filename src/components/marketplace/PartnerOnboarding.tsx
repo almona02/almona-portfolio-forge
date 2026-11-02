@@ -124,38 +124,6 @@ const mockPartnerApplication: PartnerApplication = {
   status: 'draft',
 };
 
-const _mockPartner: Partner = {
-  id: 'partner-001',
-  companyName: 'Alexandria Industrial Equipment',
-  contactName: 'Omar Farouk',
-  email: 'omar@alexequip.com',
-  partnerType: 'distributor',
-  status: 'active',
-  tier: 'gold',
-  joinedAt: '2023-03-15T00:00:00Z',
-  apiKey: 'pk_live_abc123...xyz789',
-  commissionRate: 15,
-  metrics: {
-    totalSales: 2450000,
-    monthlyGrowth: 23.5,
-    customerCount: 156,
-    averageOrderValue: 15700,
-    satisfaction: 4.8
-  },
-  certifications: [
-    {
-      name: 'YILMAZ Certified Partner',
-      validUntil: '2024-12-31T23:59:59Z',
-      status: 'active'
-    },
-    {
-      name: 'Technical Support Certification',
-      validUntil: '2024-06-30T23:59:59Z',
-      status: 'active'
-    }
-  ]
-};
-
 /**
  * Partner Onboarding Component
  * 

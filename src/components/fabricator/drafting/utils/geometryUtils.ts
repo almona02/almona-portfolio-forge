@@ -443,7 +443,6 @@ export function calculateCircleFromThreePoints(
   const Ux = ((x1 * x1 + y1 * y1) * (y2 - y3) + (x2 * x2 + y2 * y2) * (y3 - y1) + (x3 * x3 + y3 * y3) * (y1 - y2)) / D;
   const Uy = ((x1 * x1 + y1 * y1) * (x3 - x2) + (x2 * x2 + y2 * y2) * (x1 - x3) + (x3 * x3 + y3 * y3) * (x2 - x1)) / D;
 
-  const _center = { x: Ux, y: Uy };
   const radius = Math.sqrt(Math.pow(x1 - Ux, 2) + Math.pow(y1 - Uy, 2));
 
   // Calculate angles

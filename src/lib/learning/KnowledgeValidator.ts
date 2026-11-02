@@ -7,8 +7,6 @@
  * 3. Subjective Claims (deep reasoning)
  */
 
-import { DocumentationKnowledgeGraph } from '@/lib/ydt/DocumentationKnowledgeGraph';
-
 export interface ValidationResult {
   valid: boolean;
   confidence: number; // 0.0 to 1.0
@@ -53,11 +51,6 @@ export interface ClaimContext {
  * Knowledge Validator - The Judge
  */
 export class KnowledgeValidator {
-  private knowledgeGraph: DocumentationKnowledgeGraph;
-
-  constructor() {
-    this.knowledgeGraph = new DocumentationKnowledgeGraph();
-  }
 
   /**
    * Evaluate a user claim
@@ -109,8 +102,6 @@ export class KnowledgeValidator {
    * Check against physics (immutable truth)
    */
   private async checkPhysics(claim: string): Promise<PhysicsCheck> {
-    const _lowerClaim = claim.toLowerCase();
-
     // Physics violations
     const violations = [
       {
@@ -167,12 +158,6 @@ export class KnowledgeValidator {
    * Check against system documentation
    */
   private async checkDocumentation(claim: string): Promise<SystemCheck> {
-    // Query knowledge graph for contradictions
-    const _query = this.knowledgeGraph.query({
-      type: 'system',
-      keyword: claim.substring(0, 50), // First 50 chars
-    });
-
     // Check for direct contradictions
     const contradictions = [
       {
@@ -218,8 +203,6 @@ export class KnowledgeValidator {
     claim: string,
     _context: ClaimContext
   ): Promise<SubjectiveCheck> {
-    const _lowerClaim = claim.toLowerCase();
-
     // Classify claim type
     let classification: ValidationResult['classification'] = 'fact';
     let plausible = true;

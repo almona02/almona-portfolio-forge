@@ -24,7 +24,7 @@ export async function generateManualCuttingPacket(
 
   // Project Info
   yPos = 45;
-  doc.setTextColor(0,0,0); doc.setFillColor(245); doc.rect(14, yPos - 5, pageWidth - 28, 20, 'F');
+  doc.setTextColor(0,0,0); doc.setFillColor(245 as any); doc.rect(14, yPos - 5, pageWidth - 28, 20, 'F');
   doc.setFontSize(11);
   doc.text(`System: ${inputs.system.toUpperCase()}`, 20, yPos + 8);
   doc.text(`Size: ${inputs.width} x ${inputs.height} mm`, 100, yPos + 8);

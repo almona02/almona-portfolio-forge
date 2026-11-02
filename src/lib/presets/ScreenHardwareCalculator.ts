@@ -119,7 +119,7 @@ export class ScreenHardwareCalculator {
   private calculateFixedHardware(
     width: number,
     height: number,
-    perimeter: number,
+    _perimeter: number,
     location: string
   ): ScreenHardwareItem[] {
     const hardware: ScreenHardwareItem[] = [];
@@ -154,7 +154,7 @@ export class ScreenHardwareCalculator {
   private calculateSlidingHardware(
     width: number,
     height: number,
-    perimeter: number,
+    _perimeter: number,
     location: string
   ): ScreenHardwareItem[] {
     const hardware: ScreenHardwareItem[] = [];
@@ -220,9 +220,9 @@ export class ScreenHardwareCalculator {
    * Calculate plisee (pleated) screen hardware
    */
   private calculatePliseeHardware(
-    width: number,
+    _width: number,
     height: number,
-    perimeter: number,
+    _perimeter: number,
     location: string
   ): ScreenHardwareItem[] {
     const hardware: ScreenHardwareItem[] = [];

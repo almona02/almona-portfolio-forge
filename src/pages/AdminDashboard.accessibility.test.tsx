@@ -51,6 +51,15 @@ describe('Admin accessibility and navigation', () => {
     expect(screen.getByRole('button', { name: 'Orders' })).toHaveAttribute('aria-current', 'page')
   })
 
+  it('surfaces Fabricator Pro manufacturing shortcuts on overview', () => {
+    setup('/admin')
+    const hub = screen.getByTestId('admin-fabricator-hub')
+    expect(within(hub).getByText(/Fabricator Pro · manufacturing/i)).toBeInTheDocument()
+    expect(within(hub).getByRole('link', { name: 'Open Fabricator Pro' })).toHaveAttribute('href', '/fabricator/studio/command')
+    expect(within(hub).getByRole('link', { name: 'Manufacturing approvals' })).toHaveAttribute('href', '/fabricator/studio/approvals')
+    expect(within(hub).getByRole('link', { name: 'System packs / profiles' })).toHaveAttribute('href', '/fabricator/studio/data/profiles')
+  })
+
   it('keeps section selection in browser history and focuses its heading', async () => {
     const user = userEvent.setup()
     setup('/admin?keep=yes')

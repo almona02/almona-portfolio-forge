@@ -29,6 +29,8 @@ describe('HardwareModelLibrary', () => {
       optimization: null,
       createdAt: new Date(),
       updatedAt: new Date(),
+      orderNumber: 'TEST-001',
+      posNumber: 'POS-1',
       systemPackId: 'rock60',
       presetId: 'casement-1s'
     };
@@ -54,6 +56,8 @@ describe('HardwareModelLibrary', () => {
       optimization: null,
       createdAt: new Date(),
       updatedAt: new Date(),
+      orderNumber: 'TEST-001',
+      posNumber: 'POS-1',
       systemPackId: 'rock60',
       presetId: 'casement-1s'
     };
@@ -89,6 +93,8 @@ describe('HardwareModelLibrary', () => {
       optimization: null,
       createdAt: new Date(),
       updatedAt: new Date(),
+      orderNumber: 'TEST-001',
+      posNumber: 'POS-1',
       systemPackId: 'rock60',
       presetId: 'casement-1s'
     };
@@ -120,6 +126,8 @@ describe('HardwareModelLibrary', () => {
       optimization: null,
       createdAt: new Date(),
       updatedAt: new Date(),
+      orderNumber: 'TEST-001',
+      posNumber: 'POS-1',
       systemPackId: 'rock60',
       presetId: 'casement-1s'
     };
@@ -144,6 +152,8 @@ describe('HardwareModelLibrary', () => {
       optimization: null,
       createdAt: new Date(),
       updatedAt: new Date(),
+      orderNumber: 'TEST-001',
+      posNumber: 'POS-1',
       systemPackId: 'rock60',
       presetId: 'casement-1s'
     };

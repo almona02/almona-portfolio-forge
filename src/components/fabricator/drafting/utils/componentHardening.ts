@@ -290,7 +290,7 @@ export function memoizeWithLimit<T extends (...args: any[]) => any>(
     // Evict oldest if cache is full
     if (cache.size >= maxSize) {
       const firstKey = cache.keys().next().value;
-      cache.delete(firstKey);
+      cache.delete(firstKey as string);
     }
     
     cache.set(key, result);

@@ -53,7 +53,6 @@ export const StandaloneOptimizer: React.FC = () => {
         requiredCuts.reduce((sum, c) => sum + c.length, 0) / stockLength
       );
       const optimizedWaste = optimizedBarsUsed * stockLength - requiredCuts.reduce((sum, c) => sum + c.length, 0);
-      const _optimizedWastePercentage = (optimizedWaste / (optimizedBarsUsed * stockLength)) * 100;
 
       const comparison = compareWaste(
         manualPlan,

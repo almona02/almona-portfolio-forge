@@ -35,6 +35,8 @@ const profile: Profile = {
   costPerMeter: 1,
   cuttingAllowance: 0,
   stockQuantity: 10,
+  minStockLevel: 5,
+  supplier: 'Test Supplier',
 };
 
 const resultWithoutAuthority: OptimizationResult = {

@@ -277,7 +277,7 @@ export const AuditTrailDashboard: React.FC<AuditTrailDashboardProps> = ({ classN
                       <div className="text-xs text-slate-400 uppercase tracking-wider mb-1">Anchor ID</div>
                       <div className="text-xs font-mono text-amber-400 break-all">{selectedAnchor.anchorId}</div>
                     </div>
-                    {selectedAnchor.decisionContext.validationResults?.replayMetadata && (
+                    {(selectedAnchor.decisionContext.validationResults?.replayMetadata as any) && (
                       <div>
                         <div className="text-xs text-slate-400 uppercase tracking-wider mb-1">Replay Metadata</div>
                         <div className="text-xs font-mono text-emerald-400 break-all">

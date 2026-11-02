@@ -27,6 +27,13 @@ export interface ImportedProfile {
     source?: string;
     units?: string;
     hasSvgPreview?: boolean;
+    isMultiProfile?: boolean;
+    totalProfiles?: number;
+    apiResponse?: any;
+    detectedRole?: string;
+    profileIndex?: number;
+    center?: unknown;
+    boundingBox?: unknown;
   };
 }
 
@@ -206,7 +213,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
           // Check if we should extract multiple profiles
           // Auto-detect if backend returned multiple profiles OR if filename suggests system pack
           const isMultiProfileFile = prof.metadata?.isMultiProfile || 
-                                    prof.metadata?.totalProfiles > 1 ||
+                                    (prof.metadata?.totalProfiles ?? 0) > 1 ||
                                     extractMultipleProfiles || 
                                     file.name.toLowerCase().includes('system') || 
                                     file.name.toLowerCase().includes('pack') ||
@@ -320,22 +327,22 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
     try {
       // Base profile data
       const baseProfileData: Partial<Profile> = {
-        user_id: userId,
+        userId: userId,
         name: profile.name || profile.fileName.replace(/\.(dxf|dwg)$/i, ''),
         material: 'aluminum' as const,
         width: profile.widthMm || 50,
         height: profile.heightMm || 50,
         thickness: 1.5, // Will be refined by auto-config
         color: '#C0C0C0',
-        cost_per_meter: 0,
-        cutting_allowance: 3,
-        stock_quantity: 0,
-        min_stock_level: 0,
-        max_stock_level: 1000,
+        costPerMeter: 0,
+        cuttingAllowance: 3,
+        stockQuantity: 0,
+        minStockLevel: 0,
+        maxStockLevel: 1000,
         supplier: 'Imported from DXF',
-        system_brand: defaultSystemPack || 'Custom',
-        profileRole: defaultRole,
-        systemType: defaultWindowType,
+        systemBrand: defaultSystemPack || 'Custom',
+        profileRole: defaultRole as any,
+        systemType: defaultWindowType as any,
         specifications: {
           importSource: 'dxf',
           dxfFileName: profile.fileName,
@@ -397,7 +404,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
       }
       
       // Use authenticated user ID to satisfy RLS policy
-      profileData.user_id = authenticatedUserId;
+      (profileData as any).user_id = authenticatedUserId;
 
       const specs = {
         ...(typeof profileData.specifications === 'object' && profileData.specifications ? profileData.specifications : {}),

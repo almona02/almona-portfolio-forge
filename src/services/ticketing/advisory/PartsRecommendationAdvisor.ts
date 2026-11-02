@@ -136,7 +136,7 @@ export class PartsRecommendationAdvisor {
         throw new Error(`Advisory hardening failed: ${hardened.violations.join(', ')}`);
       }
 
-      return hardened.hardenedAdvisory as PartsAdvisory;
+      return hardened.hardenedAdvisory as unknown as PartsAdvisory;
 
     } catch (_error) {
       const responseTime = performance.now() - startTime;

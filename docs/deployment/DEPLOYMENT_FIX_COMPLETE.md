@@ -160,7 +160,7 @@ manualChunks: (id: string) => {
 ```
 📄 FIX_SUMMARY.md - Detailed fix documentation
 📄 DEPLOYMENT_FIX_COMPLETE.md - This file
-📄 COMMIT_MESSAGE.txt - Commit message template
+📄 docs/archive/commit-messages/COMMIT_MESSAGE.txt - Commit message template
 ```
 
 ---
@@ -247,7 +247,7 @@ If you encounter any issues after deployment:
 
 **Ready to commit?** Use the command:
 ```bash
-git commit -F COMMIT_MESSAGE.txt
+git commit -F docs/archive/commit-messages/COMMIT_MESSAGE.txt
 ```
 
 Then push to trigger deployment:

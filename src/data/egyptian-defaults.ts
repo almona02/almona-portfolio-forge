@@ -228,7 +228,7 @@ export const EGYPTIAN_MARKET_SEGMENTATION = {
 /**
  * Get default profile color for region
  */
-export function getDefaultProfileColor(region?: string): typeof EGYPTIAN_PROFILE_COLORS.standard {
+export function getDefaultProfileColor(region?: string): typeof EGYPTIAN_PROFILE_COLORS[keyof typeof EGYPTIAN_PROFILE_COLORS] {
   if (!region) return EGYPTIAN_PROFILE_COLORS.modern; // Default to modern
   
   const regionLower = region.toLowerCase();
@@ -248,35 +248,35 @@ export function getDefaultProfileColor(region?: string): typeof EGYPTIAN_PROFILE
 /**
  * Get default glazing for external windows
  */
-export function getDefaultGlazing(region?: string, isExternal: boolean = true): typeof EGYPTIAN_GLAZING_DEFAULTS.standard {
+export function getDefaultGlazing(region?: string, isExternal: boolean = true): any {
   if (!isExternal) {
-    return EGYPTIAN_GLAZING_DEFAULTS.lowCost; // Internal partitions
+    return EGYPTIAN_GLAZING_DEFAULTS.lowCost as any; // Internal partitions
   }
   
   // External windows default to reflective glass
   if (region?.toLowerCase().includes('alexandria') || region?.toLowerCase().includes('north coast')) {
-    return EGYPTIAN_GLAZING_DEFAULTS.reflective.brown;
+    return EGYPTIAN_GLAZING_DEFAULTS.reflective.brown as any;
   }
   
   // Cairo and most regions default to blue reflective
-  return EGYPTIAN_GLAZING_DEFAULTS.reflective.blue;
+  return EGYPTIAN_GLAZING_DEFAULTS.reflective.blue as any;
 }
 
 /**
  * Get default wind load for region
  */
-export function getDefaultWindLoad(region?: string): typeof EGYPTIAN_WIND_LOAD_DEFAULTS.cairo {
+export function getDefaultWindLoad(region?: string): typeof EGYPTIAN_WIND_LOAD_DEFAULTS[keyof typeof EGYPTIAN_WIND_LOAD_DEFAULTS] {
   if (!region) return EGYPTIAN_WIND_LOAD_DEFAULTS.cairo;
   
   const regionLower = region.toLowerCase();
   if (regionLower.includes('alexandria')) {
-    return EGYPTIAN_WIND_LOAD_DEFAULTS.alexandria;
+    return EGYPTIAN_WIND_LOAD_DEFAULTS.alexandria as any;
   }
   if (regionLower.includes('north coast')) {
-    return EGYPTIAN_WIND_LOAD_DEFAULTS.northCoast;
+    return EGYPTIAN_WIND_LOAD_DEFAULTS.northCoast as any;
   }
   if (regionLower.includes('delta') || regionLower.includes('mansoura') || regionLower.includes('tanta')) {
-    return EGYPTIAN_WIND_LOAD_DEFAULTS.delta;
+    return EGYPTIAN_WIND_LOAD_DEFAULTS.delta as any;
   }
   
   return EGYPTIAN_WIND_LOAD_DEFAULTS.cairo; // Default
@@ -285,13 +285,13 @@ export function getDefaultWindLoad(region?: string): typeof EGYPTIAN_WIND_LOAD_D
 /**
  * Get default market tier
  */
-export function getDefaultMarketTier(projectType?: string, budget?: 'low' | 'medium' | 'high'): typeof EGYPTIAN_MARKET_SEGMENTATION.medium {
+export function getDefaultMarketTier(projectType?: string, budget?: 'low' | 'medium' | 'high'): typeof EGYPTIAN_MARKET_SEGMENTATION[keyof typeof EGYPTIAN_MARKET_SEGMENTATION] {
   if (budget) {
     return EGYPTIAN_MARKET_SEGMENTATION[budget];
   }
   
   if (projectType === 'hotel' || projectType === 'hospital' || projectType === 'luxury') {
-    return EGYPTIAN_MARKET_SEGMENTATION.high;
+    return EGYPTIAN_MARKET_SEGMENTATION.high as any;
   }
   
   if (projectType === 'budget' || projectType === 'low-end') {

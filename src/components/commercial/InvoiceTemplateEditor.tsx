@@ -175,7 +175,7 @@ export const InvoiceTemplateEditor: React.FC<InvoiceTemplateEditorProps> = ({
                 result = await updateInvoiceTemplate(templateId, request);
                 toast.success('Template updated successfully');
             } else {
-                result = await createInvoiceTemplate(request);
+                result = await createInvoiceTemplate(request as InvoiceTemplateCreateRequest);
                 toast.success('Template created successfully');
             }
 

@@ -237,10 +237,10 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
                 </div>
               )}
 
-              {component.metadata?.hardware_type && (
+              {(component.metadata as any)?.hardware_type && (
                 <div className="text-sm text-gray-600">
                   Hardware type:{" "}
-                  <span className="font-medium">{component.metadata.hardware_type}</span>
+                  <span className="font-medium">{(component.metadata as any).hardware_type}</span>
                 </div>
               )}
             </CardContent>
@@ -300,13 +300,13 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
             </Alert>
           )}
 
-          {validation_results?.issues?.length > 0 && (
+          {(validation_results?.issues?.length ?? 0) > 0 && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Validation Issues</AlertTitle>
               <AlertDescription>
                 <ul className="list-disc pl-5 mt-1 space-y-1">
-                  {validation_results.issues.map((issue: string, idx: number) => (
+                  {(validation_results.issues ?? []).map((issue: string, idx: number) => (
                     <li key={issue + idx}>{issue}</li>
                   ))}
                 </ul>
@@ -314,13 +314,13 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
             </Alert>
           )}
 
-          {validation_results?.warnings?.length > 0 && (
+          {(validation_results?.warnings?.length ?? 0) > 0 && (
             <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Warnings</AlertTitle>
               <AlertDescription>
                 <ul className="list-disc pl-5 mt-1 space-y-1">
-                  {validation_results.warnings.map((warning: string, idx: number) => (
+                  {(validation_results.warnings ?? []).map((warning: string, idx: number) => (
                     <li key={warning + idx}>{warning}</li>
                   ))}
                 </ul>

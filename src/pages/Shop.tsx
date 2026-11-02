@@ -226,7 +226,7 @@ const ProductGrid = ({
             <IndustrialProductCard
               title={product.name}
               description={product.description || ""}
-              imageUrl={'imageUrl' in product ? product.imageUrl : ''}
+              imageUrl={'imageUrl' in product ? (product.imageUrl ?? '') : ''}
               price={formatPrice(product.name)}
               features={isMachine(product) ? product.specifications.slice(0, 3).map(s => s.value ? `${s.key}: ${s.value}` : s.key) : []}
               badges={[
@@ -459,7 +459,7 @@ const Shop = () => {
 
     // Price range filter
     filtered = filtered.filter(p => {
-      const price = ('pricing' in p && p.pricing?.basePrice) || ('price' in p ? p.price : 0);
+      const price = (('pricing' in p && p.pricing?.basePrice) || ('price' in p ? p.price : 0)) ?? 0;
       return price >= filters.priceRange[0] && price <= filters.priceRange[1];
     });
 

@@ -167,7 +167,7 @@ export class MacroRecorder {
     };
 
     this.callbacks.onRecordingStart?.();
-    console.log('MacroRecorder: Started recording', this.recordingState.currentMacro.name);
+    console.log('MacroRecorder: Started recording', this.recordingState.currentMacro?.name);
 
     return true;
   }

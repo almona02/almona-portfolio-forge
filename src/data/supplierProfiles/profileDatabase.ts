@@ -67,7 +67,7 @@ const generateSupplierProfiles = (): SupplierProfile[] => {
         profiles.push({
           id: `profile_${supplierId}_${j + 1}`,
           name: `${profileType} ${material.toUpperCase()} ${width}mm ${color}`,
-          material,
+          material: material as "aluminum" | "upvc" | "wood",
           width,
           height,
           color,

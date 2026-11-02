@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/shared/ui/ui/sheet';
 import { Menu, X, Home, Package, Wrench, Phone, User, ShoppingCart } from 'lucide-react';

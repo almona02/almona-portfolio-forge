@@ -275,11 +275,11 @@ export class PatternMigrationService {
       if (config.frame_profiles?.main_frame && !profiles.frame) {
         const frame = config.frame_profiles.main_frame;
         profiles.frame = {
-          code: frame.profile_code,
-          name: `Frame - ${frame.profile_code}`,
+          code: frame.profile_code ?? '',
+          name: `Frame - ${frame.profile_code ?? ''}`,
           role: 'frame',
           dimensions: {
-            width: this.extractProfileWidth(frame.profile_code, systemPack),
+            width: this.extractProfileWidth(frame.profile_code ?? '', systemPack),
           },
           material: this.inferMaterial(systemPack),
           standardStockLength: spec.stockLengthMm || 6000,
@@ -292,11 +292,11 @@ export class PatternMigrationService {
       if (config.sash_profiles?.main_sash && !profiles.sash) {
         const sash = config.sash_profiles.main_sash;
         profiles.sash = {
-          code: sash.profile_code,
-          name: `Sash - ${sash.profile_code}`,
+          code: sash.profile_code ?? '',
+          name: `Sash - ${sash.profile_code ?? ''}`,
           role: 'sash',
           dimensions: {
-            width: this.extractProfileWidth(sash.profile_code, systemPack),
+            width: this.extractProfileWidth(sash.profile_code ?? '', systemPack),
           },
           material: this.inferMaterial(systemPack),
           standardStockLength: spec.stockLengthMm || 6000,
@@ -309,11 +309,11 @@ export class PatternMigrationService {
       if (config.glazing_beads?.bead_profile && !profiles.glazingBead) {
         const bead = config.glazing_beads.bead_profile;
         profiles.glazingBead = {
-          code: bead.profile_code,
-          name: `Glazing Bead - ${bead.profile_code}`,
+          code: bead.profile_code ?? '',
+          name: `Glazing Bead - ${bead.profile_code ?? ''}`,
           role: 'glazingBead',
           dimensions: {
-            width: this.extractProfileWidth(bead.profile_code, systemPack),
+            width: this.extractProfileWidth(bead.profile_code ?? '', systemPack),
           },
           material: this.inferMaterial(systemPack),
           standardStockLength: spec.stockLengthMm || 6000,
@@ -327,7 +327,7 @@ export class PatternMigrationService {
     if (systemPack.profiles && Array.isArray(systemPack.profiles)) {
       for (const profile of systemPack.profiles) {
         const role = profile.profileRole || this.inferRoleFromProfile(profile);
-        if (role && !profiles[role]) {
+        if (role && !(profiles as Record<string, unknown>)[role]) {
           (profiles as Record<string, unknown>)[role] = {
             code: profile.id || profile.name,
             name: profile.name,

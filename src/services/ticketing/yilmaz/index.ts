@@ -40,7 +40,7 @@ export type {
 } from './advisory/YilmazExpertAdvisor';
 
 // Tier 1 Presentation
-export { TechChecklist } from '../../components/ticketing/yilmaz/mobile/TechChecklist';
+export { TechChecklist } from '@/components/ticketing/yilmaz/mobile/TechChecklist';
 
 // Testing & Simulation (Tier 1 - Infrastructure)
 export {

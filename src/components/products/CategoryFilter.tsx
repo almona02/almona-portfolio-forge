@@ -62,10 +62,6 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
     setIsOpen(false);
   }, [onCategoryChange]);
 
-  const _clearFilter = useCallback(() => {
-    onCategoryChange('all');
-  }, [onCategoryChange]);
-
   if (compact) {
     return (
       <div className={`relative ${className}`}>

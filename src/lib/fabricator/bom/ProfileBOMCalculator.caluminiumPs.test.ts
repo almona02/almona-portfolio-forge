@@ -119,8 +119,8 @@ describe('caluminium-ps sliding BOM completeness', () => {
   });
 
   it('rejects contradictory saved frame/sash dimensions instead of inventing missing members', async () => {
-    const frame = CALUMINIUM_PS_PACK.profiles.find((p: Profile) => p.profileRole === 'frame');
-    const sash = CALUMINIUM_PS_PACK.profiles.find((p: Profile) =>
+    const frame = (CALUMINIUM_PS_PACK.profiles || []).find((p: Profile) => p.profileRole === 'frame');
+    const sash = (CALUMINIUM_PS_PACK.profiles || []).find((p: Profile) =>
       String(p.profileRole || '').includes('sash'),
     );
     expect(frame && sash).toBeTruthy();

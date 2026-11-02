@@ -264,6 +264,38 @@ export function buildBomDemandReport(
   };
 }
 
+/**
+ * @deprecated Estimate-only. floor(availableMetres / barLength) is NOT physical
+ * inventory. Production must use bindPhysicalBarsForDemand / barsByCatalogueLength.
+ * Kept for analytics display — never pass into resolveApprovedSolverInputs with
+ * requirePhysicalBars.
+ */
+export function barsByCatalogueProfileFromDemand(
+  report: BomDemandReport,
+  stockLengthMmByCatalogue: Readonly<Record<string, number>> = {},
+): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const row of report.rows) {
+    if (row.mappingStatus !== 'mapped' || row.availableMetres == null) continue;
+    const preferredMm = stockLengthMmByCatalogue[row.catalogueCode]
+      ?? stockLengthMmByCatalogue[row.bomRowId];
+    const barM = preferredMm && preferredMm > 0
+      ? preferredMm / 1000
+      : (row.eligibleBarLengthsM.find((m) => m > 0) ?? 0);
+    if (!(barM > 0)) continue;
+    const bars = Math.floor(row.availableMetres / barM);
+    if (!Number.isFinite(bars) || bars < 0) continue;
+    out[row.catalogueCode] = Math.min(out[row.catalogueCode] ?? Number.POSITIVE_INFINITY, bars);
+    if (row.bomRowId && row.bomRowId !== row.catalogueCode) {
+      out[row.bomRowId] = Math.min(out[row.bomRowId] ?? Number.POSITIVE_INFINITY, bars);
+    }
+  }
+  for (const [key, value] of Object.entries(out)) {
+    if (!Number.isFinite(value)) delete out[key];
+  }
+  return out;
+}
+
 /** Soft acknowledgement is stale when BOM identity or owned stock versions drift. */
 export function isStockAcknowledgementStale(options: {
   reservationBomFingerprint: string | null | undefined;

@@ -1,6 +1,33 @@
+import React from 'react';
+import { Globe, ArrowRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Prestige3DLoader } from './Prestige3DLoader';
 
-// ... (keep existing imports)
+interface PageLoadingProps {
+  className?: string;
+  message?: string;
+  showProgress?: boolean;
+  progress?: number;
+  variant?: 'default' | 'minimal' | 'fullscreen';
+}
+
+const variantStyles: Record<'default' | 'minimal' | 'fullscreen', { container: string; icon: string; text: string }> = {
+  default: {
+    container: 'bg-[#0f0f0f]/80 border border-amber-600/20 rounded-lg',
+    icon: 'text-amber-500',
+    text: 'text-zinc-300',
+  },
+  minimal: {
+    container: '',
+    icon: '',
+    text: '',
+  },
+  fullscreen: {
+    container: '',
+    icon: '',
+    text: '',
+  },
+};
 
 export const PageLoading: React.FC<PageLoadingProps> = ({
   className,

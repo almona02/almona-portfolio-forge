@@ -8,7 +8,6 @@
  */
 
 import { supabase } from '@/lib/supabase';
-import { SecurityGateway } from '@/lib/security/SecurityGateway';
 
 export interface WorkflowCheckpoint {
   id: string;
@@ -56,13 +55,11 @@ export interface CheckpointSyncStatus {
  */
 export class CheckpointManager {
   private static instance: CheckpointManager;
-  private securityGateway: SecurityGateway;
   private readonly localStoragePrefix = 'workflow_checkpoint_';
   private readonly cloudTable = 'workflow_checkpoints';
   private debounceTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
 
   private constructor() {
-    this.securityGateway = SecurityGateway.getInstance();
   }
 
   static getInstance(): CheckpointManager {

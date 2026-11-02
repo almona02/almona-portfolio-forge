@@ -9,6 +9,7 @@
  * 2. User adds sash-level mullions INSIDE sashes (e.g., glass top, panel bottom)
  */
 
+import { partRefKey } from '@/lib/fabricator/assembly/partRef';
 import { Profile, WindowUnit } from '@/types/fabricator';
 import { BoxGeometry, BufferGeometry } from 'three';
 import { ProfileCrossSection, generateProfileCrossSection } from './windowGeometry';
@@ -87,6 +88,7 @@ export function renderFrameLevelMullions(
       
       const bar = new BoxGeometry(mullionW, mullionHeight, mullionDepth);
       bar.translate(x, 0, 0);
+      bar.userData = { partRef: partRefKey({ kind: 'mullion', cellId: null, placement: null, index: `manual:${mullion.id}` }) };
       geometries.push(bar);
       
     } else if (mullion.type === 'horizontal') {
@@ -103,6 +105,7 @@ export function renderFrameLevelMullions(
       
       const bar = new BoxGeometry(mullionWidth, mullionH, mullionDepth);
       bar.translate(0, y, 0);
+      bar.userData = { partRef: partRefKey({ kind: 'transom', cellId: null, placement: null, index: `manual:${mullion.id}` }) };
       geometries.push(bar);
     }
   });
@@ -165,6 +168,7 @@ export function renderSashLevelMullions(
       
       const bar = new BoxGeometry(mullionW, mullionHeight, mullionDepth);
       bar.translate(x, cellY, 0);
+      bar.userData = { partRef: partRefKey({ kind: 'mullion', cellId, placement: null, index: `manual:${mullion.id}` }) };
       geometries.push(bar);
       
     } else if (mullion.type === 'horizontal') {
@@ -182,6 +186,7 @@ export function renderSashLevelMullions(
       
       const bar = new BoxGeometry(mullionWidth, mullionH, mullionDepth);
       bar.translate(cellX, y, 0);
+      bar.userData = { partRef: partRefKey({ kind: 'transom', cellId, placement: null, index: `manual:${mullion.id}` }) };
       geometries.push(bar);
     }
   });

@@ -72,7 +72,7 @@ export const WasteMetricsPanelComponent: React.FC<WasteMetricsPanelProps> = ({
       
       const systemPack = SYSTEM_PACKS.find(p => p.meta.id === systemPackId) || null;
       const result = generateComponentsFromGrid(
-        windowUnit as WindowUnit,
+        windowUnit as unknown as WindowUnit,
         grid,
         profiles,
         systemPackId,

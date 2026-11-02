@@ -36,7 +36,7 @@ function detectProfileRole(
   widthMm: number,
   heightMm: number,
   areaMm2: number,
-  index: number,
+  _index: number,
   totalProfiles: number,
   allProfiles: Array<{ width_mm: number; height_mm: number; area_mm2: number }>
 ): 'frame' | 'sash' | 'mullion' | 'transom' | 'bead' | 'interlock' | 'accessory' | 'adapter' {

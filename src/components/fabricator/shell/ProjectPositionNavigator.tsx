@@ -19,6 +19,7 @@ const STATUS_LABEL: Record<WindowUnitStatus, string> = {
   optimized: 'Optimized',
   production: 'Production',
   quality: 'QC',
+  completed: 'Completed',
   delivered: 'Delivered',
 };
 

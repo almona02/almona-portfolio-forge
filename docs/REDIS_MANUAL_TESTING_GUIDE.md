@@ -142,7 +142,7 @@ Check the browser console for:
 ### Issue: No performance improvement
 
 **Check**:
-1. Redis connection is active: `npx tsx env-check.ts`
+1. Redis connection is active: `npx tsx scripts/diagnostics/redis/env-check.ts`
 2. Dev server restarted after adding Redis env vars
 3. No errors in browser console
 4. Cache TTL hasn't expired (check TTL values in code)

@@ -127,7 +127,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
 
     try {
       const technicianInput: YilmazTechnicianInput = {
-        machineModel: values.machineModel,
+        machineModel: values.machineModel as any,
         machineSerial: values.machineSerial,
         installationYear: values.installationYear || new Date().getFullYear(),
         hydraulicPressureBar: values.hydraulicPressureBar,
@@ -142,7 +142,7 @@ export const TechChecklist: React.FC<TechChecklistProps> = ({
               .filter((s) => s)
           : [],
         currentMonth: new Date().getMonth(),
-        location: values.location || 'cairo',
+        location: (values.location || 'cairo') as any,
         lastMaintenanceDate: undefined,
         operatingHours: values.operatingHours,
       };

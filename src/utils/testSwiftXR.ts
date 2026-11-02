@@ -80,7 +80,7 @@ export const testSwiftXR = {
     try {
       // Test 1: Detection
       console.log('📋 Test 1: Detection');
-      results.detection = await this.testDetection();
+      results.detection = await this.testDetection() as any;
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Test 2: Launch

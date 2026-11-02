@@ -147,7 +147,7 @@ export class SmartRemnantSystem {
    * Get workshop-wide remnant visibility (multi-location view)
    */
   async getMultiLocationRemnantView(
-    userId: string,
+    _userId: string,
     _options: {
       profileId?: string;
       material?: string;

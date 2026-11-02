@@ -4,6 +4,7 @@ export type WindowUnitStatus =
   | 'optimized'
   | 'production'
   | 'quality'
+  | 'completed'
   | 'delivered';
 
 // --- FACADE TYPES (Phase 2) ---
@@ -66,11 +67,16 @@ export interface GlazingSpecFlat {
   type?: string;
   thickness?: number;
   spacer?: string;
+  spacerMaterial?: string;
   gasFill?: string;
   color?: string;
   uValue?: number;
   safetyRating?: 'annealed' | 'tempered' | 'laminated';
   glassCode?: string;
+  tinted?: boolean;
+  laminated?: boolean;
+  tempered?: boolean;
+  lowE?: boolean;
 }
 
 /** Per-cell glazing from drafting (frameId -> cellId -> spec) */
@@ -94,6 +100,9 @@ export interface HardwareItemMinimal {
   quantity?: number;
   supplierCode?: string;
   category?: string;
+  length?: number;
+  position?: string;
+  costPerUnit?: number;
 }
 
 export interface WindowUnit {
@@ -149,6 +158,14 @@ export interface WindowUnit {
     remarks?: string;
     posNumber?: string;
     customer?: string;
+    siteName?: string;
+    governorate?: string;
+    windZone?: string;
+    exposure?: string;
+    floorLevel?: string;
+    usageType?: string;
+    baseShape?: string;
+    openingType?: string;
   };
   /**
    * Optional metadata for mass‑production optimisation runs. This is
@@ -330,6 +347,8 @@ export interface CuttingCalibration {
 export interface Profile {
   id: string;
   name: string;
+  /** Optional profile code (e.g. "CAL-FR-001") for display/legacy data */
+  code?: string;
   material: 'aluminum' | 'upvc' | 'wood';
   width: number;
   height?: number;
@@ -350,6 +369,9 @@ export interface Profile {
   system?: string;
   systemBrand?: string; // 'Yilmaz', 'Local Brand', etc.
   weightPerMeter?: number;
+  default_k_factor_45?: number;
+  default_k_factor_90?: number;
+  transomMillingDepth?: number;
   unitWeight?: number; // Alternative naming for weightPerMeter
   barLength?: number; // Standard bar length for this profile
   grainDirection?: 'horizontal' | 'vertical' | null;
@@ -598,6 +620,8 @@ export interface SystemPackMeta {
   brands: string[];
   /** Regions where this pack is most relevant (egypt, turkey, mena, gulf, global, etc.) */
   regions: string[];
+  /** Optional category (e.g. "aluminum_windows", "upvc_doors") */
+  category?: string;
   /** Default stock bar length in mm for this system, if known */
   defaultStockLengthMm?: number;
 }
@@ -660,6 +684,10 @@ export interface OptimizationResult {
     glazingCost: number;
     totalCost: number;
   };
+  optimizedAt?: Date;
+  algorithm?: string;
+  score?: number;
+  improvements?: string[];
 }
 
 /**
@@ -1057,6 +1085,8 @@ export interface FabricationData {
     length: number;          // mm ±0.1mm
     quantity: number;
     cuttingLengths: number[]; // With kerf compensation
+    /** Original component occurrence IDs, aligned with cuttingLengths after grouping. */
+    cutIds?: string[];
     angles: number[];        // Miter angles
     rawStockLength: number;  // 5800mm, 6000mm, etc.
     wasteLength: number;     // For remnant marketplace

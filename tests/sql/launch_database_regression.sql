@@ -90,7 +90,7 @@ DO $$ BEGIN
 END $$;
 \echo 'PASS: profile edits, role/verification protection, isolation, server administration, repeatability'
 
-\ir ../../supabase/migrations/20260215_quotes_api_columns.sql
+\ir ../../supabase/migrations/20260215000000_quotes_api_columns.sql
 INSERT INTO public.quotes (user_id, contact_name, contact_info)
 VALUES ('00000000-0000-0000-0000-000000000001', 'Keep current name',
   '{"name":"Old name","email":"legacy@example.invalid"}');

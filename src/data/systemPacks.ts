@@ -11,6 +11,7 @@ import {
 import { KALE_70_SLIDING_PACK, KALE_COMMERCIAL_PACK } from '@/data/profileSystems/turkish/kale/kale70';
 import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
 import type { SystemPack } from '@/types/fabricator';
+export type { SystemPack };
 
 /**
  * A system pack bundles cutting rules, hardware kits and other

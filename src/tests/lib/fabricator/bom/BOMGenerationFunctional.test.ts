@@ -47,7 +47,7 @@ describe('BOM Generation Functional Tests', () => {
       components: [],
       hardware: [],
       systemPackId: 'rock60',
-    } as WindowUnit;
+    } as unknown as WindowUnit;
 
     // Create a test pattern that matches EgyptianPattern interface
     testPattern = {
@@ -76,11 +76,11 @@ describe('BOM Generation Functional Tests', () => {
       name: dataSystemPack.meta.name,
       category: 'aluminum_windows',
       brand: dataSystemPack.meta.brands[0] || 'Unknown',
-      compatibleProfiles: dataSystemPack.profiles?.map(p => p.id) || [],
+      compatibleProfiles: dataSystemPack.profiles?.map((p: any) => p.id) || [],
       compatibleAccessories: [],
       description: dataSystemPack.meta.name,
       technicalData: dataSystemPack.windowSystemSpec || {},
-    } as SystemPack;
+    } as unknown as SystemPack;
   });
 
   it('should generate complete BOM with all required components', async () => {

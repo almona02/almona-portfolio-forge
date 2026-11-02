@@ -108,7 +108,6 @@ export class RemnantManager {
    * Use fromManufacturingSettings() for reference system-parity (500 mm).
    */
   private minRemnantLength: number;
-  private defaultExpirationDays: number = 90; // Default expiration period
 
   constructor(
     minRemnantLengthMm: number = PLATFORM_MANUFACTURING_DEFAULTS.minimumReusableLengthMm
@@ -237,7 +236,7 @@ export class RemnantManager {
   async findRemnantMatches(
     cuts: Cut[],
     profile: Profile,
-    material: string,
+    _material: string,
     options: {
       useRemnantsFirst?: boolean;
       minUtilization?: number;
@@ -844,7 +843,7 @@ export class RemnantManager {
             minStockLevel: data.fabricator_profiles.min_stock_level || 0,
             supplier: data.fabricator_profiles.supplier,
             userId: data.fabricator_profiles.user_id,
-          }
+          } as Profile
         : undefined,
       locationId: data.location_id,
       locationName: data.inventory_locations?.name,

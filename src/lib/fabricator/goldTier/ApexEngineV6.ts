@@ -281,7 +281,8 @@ export class ApexEngineV6 {
     const profile: Profile = {
       id: frameSpec.code,
       name: frameSpec.name,
-      material: frameSpec.material,
+      // TODO-TYPE: ProfileSpec.material includes 'steel' (reinforcement) which Profile.material omits.
+      material: frameSpec.material as Profile['material'],
       width: frameSpec.dimensions?.width ?? 60,
       color: '',
       costPerMeter: frameSpec.costPerMeter,

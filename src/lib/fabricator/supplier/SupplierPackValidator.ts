@@ -232,7 +232,6 @@ export class SupplierPackValidator {
     referencedConstraints: string[];
     message?: string;
   } {
-    const _violations: string[] = [];
     const referencedConstraints: string[] = [];
 
     // Extract constraint references from profiles

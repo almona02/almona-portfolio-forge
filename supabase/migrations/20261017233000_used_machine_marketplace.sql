@@ -2,7 +2,13 @@
 -- Slogan: "Simple & Fast". Anyone can post a machine with photos and contact info;
 -- anyone can browse active listings and contact the seller directly (WhatsApp/phone).
 
-CREATE TABLE public.used_machine_listings (
+-- Replay must not restore old public policies or revoke newer admin grants.
+BEGIN;
+SET LOCAL lock_timeout = '5s';
+DO $marketplace_table$
+BEGIN
+  IF to_regclass('public.used_machine_listings') IS NULL THEN
+CREATE TABLE IF NOT EXISTS public.used_machine_listings (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   title text NOT NULL CHECK (length(trim(title)) BETWEEN 3 AND 160),
   price numeric NOT NULL CHECK (price >= 0),
@@ -22,12 +28,7 @@ CREATE TABLE public.used_machine_listings (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX used_machine_listings_status_created_idx ON public.used_machine_listings(status, created_at DESC);
-CREATE INDEX used_machine_listings_category_idx ON public.used_machine_listings(category);
-CREATE INDEX used_machine_listings_location_idx ON public.used_machine_listings(location);
-CREATE INDEX used_machine_listings_price_idx ON public.used_machine_listings(price);
 
-ALTER TABLE public.used_machine_listings ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.used_machine_listings FROM PUBLIC, anon, authenticated;
 
 -- Public read (browse) and write (post) — the marketplace is open.
@@ -52,23 +53,37 @@ CREATE POLICY used_machine_update_open ON public.used_machine_listings
   FOR UPDATE TO anon, authenticated
   USING (status = 'active')
   WITH CHECK (status IN ('active','sold','flagged'));
+  END IF;
+END;
+$marketplace_table$;
 
--- Images bucket: public read, public upload.
+CREATE INDEX IF NOT EXISTS used_machine_listings_status_created_idx ON public.used_machine_listings(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS used_machine_listings_category_idx ON public.used_machine_listings(category);
+CREATE INDEX IF NOT EXISTS used_machine_listings_location_idx ON public.used_machine_listings(location);
+CREATE INDEX IF NOT EXISTS used_machine_listings_price_idx ON public.used_machine_listings(price);
+ALTER TABLE public.used_machine_listings ENABLE ROW LEVEL SECURITY;
+
+DO $marketplace_images$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'used-machine-images') THEN
 INSERT INTO storage.buckets (id, name, public) VALUES ('used-machine-images', 'used-machine-images', true)
   ON CONFLICT (id) DO NOTHING;
 
-DROP POLICY IF EXISTS "used-machine-images-public-read" ON storage.objects;
 CREATE POLICY "used-machine-images-public-read" ON storage.objects
   FOR SELECT TO anon, authenticated
   USING (bucket_id = 'used-machine-images');
 
-DROP POLICY IF EXISTS "used-machine-images-open-upload" ON storage.objects;
 CREATE POLICY "used-machine-images-open-upload" ON storage.objects
   FOR INSERT TO anon, authenticated
   WITH CHECK (bucket_id = 'used-machine-images');
+  END IF;
+END;
+$marketplace_images$;
 
--- Atomic view counter (used by the frontend on listing detail open).
-CREATE OR REPLACE FUNCTION public.increment_used_machine_views(listing_id uuid)
+DO $marketplace_counter$
+BEGIN
+  IF to_regprocedure('public.increment_used_machine_views(uuid)') IS NULL THEN
+CREATE FUNCTION public.increment_used_machine_views(listing_id uuid)
 RETURNS void
 LANGUAGE sql
 SECURITY DEFINER
@@ -78,3 +93,7 @@ AS $$
 $$;
 REVOKE ALL ON FUNCTION public.increment_used_machine_views(uuid) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.increment_used_machine_views(uuid) TO anon, authenticated;
+  END IF;
+END;
+$marketplace_counter$;
+COMMIT;

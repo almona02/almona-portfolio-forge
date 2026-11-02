@@ -91,7 +91,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
   }, []);
 
   // Navigation configuration - Unified: 4 items max (Projects, Workflow, Studio, User)
-  const navItems = useMemo<NavItem[]>(() => {
+  const navItems: NavItem[] = useMemo(() => {
     if (unifiedEnabled && user) {
       // Unified 4-item navigation for authenticated users
       return [
@@ -215,7 +215,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
       { name: t('navigation.about', 'About'), path: "/about", type: "link" },
       { name: t('navigation.contact', 'Contact'), path: "/contact", type: "link" },
     ];
-  }, [t, user, unifiedEnabled]);
+  }, [t, user, unifiedEnabled]) as any;
 
   // Simple dropdown handlers
   const handleDropdownToggle = useCallback((name: string) => {

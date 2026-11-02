@@ -169,7 +169,7 @@ export class AIQualityPredictor {
    * Rule-based parameter suggestion
    */
   private ruleBasedSuggestParameters(
-    cut: Cut,
+    _cut: Cut,
     profile: Profile
   ): OptimalCuttingParameters {
     const baseSpeed = profile.material === 'aluminum' ? 3000 : 2500; // RPM
@@ -192,7 +192,7 @@ export class AIQualityPredictor {
    * Predict maintenance needs
    */
   async predictMaintenance(
-    machineId: string,
+    _machineId: string,
     usageHours: number,
     recentDefects: DefectHistory[]
   ): Promise<MaintenanceAlert[]> {
@@ -300,7 +300,7 @@ export class AIQualityPredictor {
    */
   private generateRecommendations(
     cut: Cut,
-    profile: Profile,
+    _profile: Profile,
     defectProbability: number,
     riskFactors: string[]
   ): string[] {
@@ -335,6 +335,30 @@ export class AIQualityPredictor {
   private calculateConfidence(dataPoints: number): number {
     // Confidence increases with more data
     return Math.min(0.95, 0.5 + dataPoints / 20);
+  }
+
+  private calculateRiskScore(
+    _cut: Cut,
+    _profile: Profile,
+    defectProbability: number,
+    riskFactors: string[]
+  ): number {
+    // Base risk from defect probability plus a penalty per identified risk factor
+    const baseRisk = Math.min(100, defectProbability * 10);
+    return Math.min(100, baseRisk + riskFactors.length * 5);
+  }
+
+  private generateWarnings(
+    _cut: Cut,
+    _profile: Profile,
+    defectProbability: number,
+    riskFactors: string[]
+  ): string[] {
+    const warnings: string[] = [...riskFactors];
+    if (defectProbability > 0.5) {
+      warnings.push('High defect probability detected');
+    }
+    return warnings;
   }
 
   /**

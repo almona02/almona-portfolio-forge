@@ -88,7 +88,6 @@ export const AgingReceivablesChart: React.FC<AgingReceivablesChartProps> = ({ cl
   };
 
   // pieColors computed for PieChart Cell components (used inline below)
-  const _pieColors = bucketArray.map(b => bucketColors[b.bucket] || '#94a3b8');
 
   if (loading) {
     return (

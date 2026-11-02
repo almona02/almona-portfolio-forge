@@ -9,7 +9,7 @@ import {
     X
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 interface NavbarProps {
   user?: {
@@ -26,7 +26,6 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
-  const _navigate = useNavigate();
   const navbarRef = useRef<HTMLElement>(null);
   const dropdownTimeoutRef = useRef<NodeJS.Timeout>();
 

@@ -13,8 +13,7 @@
  * @since January 2026 (Gold Tier Production)
  */
 
-import { WindowUnit } from '@/types/fabricator';
-import { Profile } from '@/types/profile';
+import { WindowUnit, Profile } from '@/types/fabricator';
 import {
   PLATFORM_MANUFACTURING_DEFAULTS,
   pieceSlotMm,

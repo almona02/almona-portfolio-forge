@@ -1,8 +1,17 @@
-﻿import { useState } from 'react';
-import { User } from '@/types';
+import { useState } from 'react';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  company: string;
+  phone: string;
+  machines: string[];
+}
 
 export const useAuth = () => {
-  const [user, setUser] = useState<User>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const login = (email: string, password: string) => {
     // This is a mock login. In a real application, you would make an API call

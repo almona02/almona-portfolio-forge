@@ -12,7 +12,6 @@ import type { Line, Point } from '../types/drafting';
 
 // Performance constants
 const HIT_TOLERANCE = 5; // pixels (5mm tolerance for clicking)
-const _HIT_TOLERANCE_SQ = HIT_TOLERANCE * HIT_TOLERANCE;
 
 /**
  * Find line at point (optimized for performance)

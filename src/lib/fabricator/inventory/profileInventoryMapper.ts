@@ -69,7 +69,7 @@ export function mapProfileRowFromDb(data: Record<string, unknown>): Profile {
     stockVersion,
     minStockLevel,
     maxStockLevel,
-    supplier: (data.supplier as string) || undefined,
+    supplier: (data.supplier as string) || '',
     systemBrand: (data.systemBrand as string) || (data.system_brand as string) || undefined,
     weightPerMeter: weight,
     profileRole: (data.profileRole ?? data.profile_role ?? specs.profileRole ?? specs.role) as Profile['profileRole'] | undefined,

@@ -97,7 +97,7 @@ export function validateEgyptianStandards(
   // Windows above 3rd floor require specific wind load ratings
   const floorLevel = (project.positionMeta as any)?.floor;
   if (floorLevel && parseInt(floorLevel) > 3) {
-    const windLoadRating = (project.specifications as any)?.windLoadRating;
+    const windLoadRating = (project as any).specifications?.windLoadRating;
     if (!windLoadRating) {
       errors.push({
         field: 'project.windLoadRating',

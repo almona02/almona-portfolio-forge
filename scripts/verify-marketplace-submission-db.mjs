@@ -3,7 +3,17 @@ import assert from 'node:assert/strict';
 const { PGlite } = await import(process.env.PGLITE_MODULE || '@electric-sql/pglite');
 const db = new PGlite();
 await db.exec('CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role;');
-const baseline = (await readFile('supabase/migrations/20261017233000_used_machine_marketplace.sql', 'utf8')).split('-- Images bucket:')[0];
+// Execute the whole migration against minimal Supabase Storage fixtures rather
+// than truncating executable SQL at a prose comment.
+await db.exec(`
+  CREATE SCHEMA storage;
+  CREATE TABLE storage.buckets (id text PRIMARY KEY, name text, public boolean);
+  CREATE TABLE storage.objects (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(), bucket_id text, name text
+  );
+  ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+`);
+const baseline = await readFile('supabase/migrations/20261017233000_used_machine_marketplace.sql', 'utf8');
 await db.exec(baseline);
 const migration = await readFile('supabase/migrations/20261020125539_marketplace_submission_identity.sql', 'utf8');
 await db.exec(migration);

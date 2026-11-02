@@ -8,7 +8,7 @@
  */
 
 import { HumanConversationEngine } from '@/lib/conversation/HumanConversationEngine';
-import { EgyptianWorkshopNLP, type UserType } from '@/lib/nlp/EgyptianWorkshopNLP';
+import type { UserType } from '@/lib/nlp/EgyptianWorkshopNLP';
 import { MaalemReasoningEngine } from '@/lib/reasoning/MaalemReasoningEngine';
 import { MaalemTeachingEngine } from '@/lib/teaching/MaalemTeachingEngine';
 import { DocumentationKnowledgeGraph } from './DocumentationKnowledgeGraph';
@@ -55,7 +55,6 @@ export interface HybridContext {
 export class HybridEgyptianMaalem {
   private quickStartYDT: QuickStartYDT;
   private knowledgeGraph: DocumentationKnowledgeGraph;
-  private workshopNLP: EgyptianWorkshopNLP;
   private reasoningEngine: MaalemReasoningEngine;
   private conversationEngine: HumanConversationEngine;
   private teachingEngine: MaalemTeachingEngine;
@@ -64,7 +63,6 @@ export class HybridEgyptianMaalem {
   constructor() {
     this.knowledgeGraph = new DocumentationKnowledgeGraph();
     this.quickStartYDT = new QuickStartYDT(this.knowledgeGraph);
-    this.workshopNLP = new EgyptianWorkshopNLP();
     this.reasoningEngine = new MaalemReasoningEngine();
     this.conversationEngine = new HumanConversationEngine();
     this.teachingEngine = new MaalemTeachingEngine();

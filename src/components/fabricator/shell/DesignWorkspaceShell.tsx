@@ -1,4 +1,5 @@
-import { isCadDesktopLayout, useStudioBreakpoint } from '@/hooks/useStudioBreakpoint';
+import { isCadDesktopLayout, useStudioBreakpoint, type StudioBreakpoint } from '@/hooks/useStudioBreakpoint';
+import { useContainerSize } from '@/hooks/useContainerSize';
 import { isRTL } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { Link, useParams } from 'react-router-dom';
@@ -11,12 +12,20 @@ import {
   SheetTitle,
 } from '@/shared/ui/ui/sheet';
 import { PanelLeft, PanelRight } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DesktopWorkspaceNotice } from './DesktopWorkspaceNotice';
 import { EngineeringInspector, type InspectorSelectionKind } from './EngineeringInspector';
 import { ProjectPositionNavigator } from './ProjectPositionNavigator';
 import type { WindowUnit } from '@/types/fabricator';
+
+/** Same bands as useStudioBreakpoint, but from measured shell width (not window). */
+function breakpointFromWidth(width: number): StudioBreakpoint {
+  if (width < 768) return 'mobile';
+  if (width < 1024) return 'tablet';
+  if (width < 1440) return 'laptop';
+  return 'desktop';
+}
 
 export interface DesignWorkspaceShellProps {
   positions: WindowUnit[];
@@ -38,13 +47,32 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
   children,
   hideOuterInspector = false,
 }) => {
-  const bp = useStudioBreakpoint();
+  const { ref, size } = useContainerSize<HTMLDivElement>();
+  const retainedWorkspaceRef = useRef<HTMLDivElement | null>(null);
+  const viewportBp = useStudioBreakpoint();
+  // Prefer measured shell width so nested rails do not compound with the viewport;
+  // fall back to viewport breakpoint only while ResizeObserver is unmeasured.
+  const bp = size.width != null && size.width > 0 ? breakpointFromWidth(size.width) : viewportBp;
   const { projectId, poseId } = useParams<{ projectId?: string; poseId?: string }>();
   const { t, i18n } = useTranslation('fabricator');
   const rtl = isRTL(i18n.language);
   const cadOk = isCadDesktopLayout(bp);
   const [navOpen, setNavOpen] = useState(false);
   const [inspectorOpen, setInspectorOpen] = useState(false);
+
+  // React 18: set inert via DOM so retained CAD workspace cannot receive keyboard focus.
+  useEffect(() => {
+    const el = retainedWorkspaceRef.current;
+    if (!el) return;
+    if (!cadOk) {
+      el.setAttribute('inert', '');
+      if (el.contains(document.activeElement)) {
+        (document.activeElement as HTMLElement).blur?.();
+      }
+    } else {
+      el.removeAttribute('inert');
+    }
+  }, [cadOk]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -81,9 +109,11 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
 
   return (
     <div
+      ref={ref}
       className="h-full w-full flex min-h-0 overflow-hidden"
       data-testid="design-workspace-shell"
       data-breakpoint={bp}
+      data-container-width={size.width ?? undefined}
     >
       {showInlineRails && (
         <div className="w-56 flex-shrink-0 border-e border-amber-600/20 min-h-0">
@@ -115,8 +145,19 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
         </button>
       )}
 
-      <div className={cn('flex-1 min-w-0 min-h-0', !cadOk && 'overflow-auto')}>
-        {cadOk ? children : (
+      <div className={cn('relative flex-1 min-w-0 min-h-0', !cadOk && 'overflow-auto')}>
+        {/* Keep workspace children mounted across CAD-threshold resizes so 3D state survives.
+            `inert` removes the subtree from sequential focus / input while retained. */}
+        <div
+          ref={retainedWorkspaceRef}
+          className={cn('h-full min-h-0', !cadOk && 'absolute inset-0 opacity-0')}
+          aria-hidden={!cadOk}
+          data-cad-workspace={cadOk ? 'active' : 'retained'}
+          data-inert={!cadOk ? 'true' : undefined}
+        >
+          {children}
+        </div>
+        {!cadOk ? (
           <div className="p-3 space-y-3">
             {project && (
               <section aria-label="Position design summary" className="rounded border border-amber-600/30 p-4 text-sm text-amber-100 break-words">
@@ -131,7 +172,7 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
             )}
             <DesktopWorkspaceNotice />
           </div>
-        )}
+        ) : null}
       </div>
 
       {!hideOuterInspector && showInlineRails && (

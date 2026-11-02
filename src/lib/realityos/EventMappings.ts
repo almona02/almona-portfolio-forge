@@ -110,7 +110,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'FabricationIntentCreated',
     realityOSEventType: 'ON',
-    entityId: (entity: WindowUnit) => `fabrication_intent_${entity.id}`,
+    entityId: ((entity: WindowUnit) => `fabrication_intent_${entity.id}`) as any,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,

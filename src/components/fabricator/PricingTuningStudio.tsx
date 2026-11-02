@@ -399,7 +399,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
       try {
         await priceHistoryService.savePriceHistory(
           selectedProfileId,
-          selectedSystemPackId,
+          selectedSystemPackId ?? '',
           userId,
           pricingState,
           'update',

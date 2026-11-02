@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   assessPatternPackFit,
   getCertifiedPatternsForPack,
@@ -6,7 +6,17 @@ import {
   isPatternCertifiedForPack,
 } from './patternPackCompatibility';
 
+const customPacks: { meta: { id: string }; windowSystemSpec: Record<string, unknown> }[] = [];
+
+vi.mock('@/lib/fabricator/customSystemStorage', () => ({
+  loadCustomSystems: () => customPacks,
+}));
+
 describe('patternPackCompatibility', () => {
+  beforeEach(() => {
+    customPacks.length = 0;
+  });
+
   it('separates certified patterns from donor layout templates for caluminium-ps', () => {
     const certified = getCertifiedPatternsForPack('caluminium-ps');
     const templates = getLayoutTemplatesForSystem('caluminium-ps');
@@ -14,6 +24,18 @@ describe('patternPackCompatibility', () => {
     expect(templates.length).toBeGreaterThan(0);
     expect(isPatternCertifiedForPack('sliding-2s', 'caluminium-ps')).toBe(false);
     expect(isPatternCertifiedForPack('sliding-2s', 'rock60')).toBe(true);
+  });
+
+  it('honours pack-owned certified_pattern_ids for owned workshop packs', () => {
+    customPacks.push({
+      meta: { id: 'custom-pack-ps' },
+      windowSystemSpec: {
+        certified_pattern_ids: ['sliding-2s'],
+        default_pattern_id: 'sliding-2s',
+      },
+    });
+    expect(isPatternCertifiedForPack('sliding-2s', 'custom-pack-ps')).toBe(true);
+    expect(getCertifiedPatternsForPack('custom-pack-ps').some((p) => p.id === 'sliding-2s')).toBe(true);
   });
 
   it('marks donor patterns as layout_template requiring confirmation', () => {

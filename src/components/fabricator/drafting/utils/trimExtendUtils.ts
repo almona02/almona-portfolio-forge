@@ -194,7 +194,6 @@ export function trimMultipleLines(
   
   for (let i = 0; i < lines.length; i++) {
     let currentLine = lines[i];
-    let _trimmed = false;
     
     // Check intersections with all other lines
     for (let j = 0; j < lines.length; j++) {
@@ -203,7 +202,6 @@ export function trimMultipleLines(
       const result = trimLineToLine(currentLine, lines[j]);
       if (result.trimmed && result.newGeometry) {
         currentLine = result.newGeometry as Line;
-        _trimmed = true;
         
         if (options.trimToFirst) {
           break;

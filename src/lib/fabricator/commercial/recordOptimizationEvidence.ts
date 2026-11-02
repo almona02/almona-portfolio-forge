@@ -5,6 +5,7 @@
  */
 
 import { resolveManufacturingAuthority } from '@/lib/fabricator/manufacturing/ManufacturingAuthorityResolver';
+import { poseQuantityOf } from '@/lib/fabricator/optimization/physicalCutContract';
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { supabase } from '@/lib/supabase';
 import type { OptimizationResult } from '@/types/fabricator';
@@ -24,6 +25,11 @@ export interface RecordOptimizationEvidenceInput {
   bom: CompleteBOM | null;
   optimizationResult: OptimizationResult;
   ruleVersion?: string | null;
+  /**
+   * Pose / order quantity. Design BOM is always one window; evidence requiredCuts
+   * is the multiset design × poseQuantity (shared cutId copies). Default 1.
+   */
+  poseQuantity?: number;
 }
 
 export type RecordOptimizationEvidenceResult =
@@ -41,19 +47,102 @@ function countCuts(result: OptimizationResult): number {
   return (result.cuttingPlan ?? []).reduce((sum, plan) => sum + (plan.cuts?.length ?? 0), 0);
 }
 
-/** BOM ? requiredCuts using physicalCutForOccurrence identity (`id:index`). */
-export function requiredCutsFromBom(bom: CompleteBOM | null): EvidenceCutSpec[] {
-  if (!bom?.profiles?.length) return [];
-  return bom.profiles.flatMap((profile) => {
+export const BOM_IDENTITY_REBUILD_HINT =
+  'Rebuild the BOM from the saved design for this revision (BOM Review → Generate), then retry optimization.';
+
+export type RequiredCutsFromBom =
+  | { ok: true; cuts: EvidenceCutSpec[] }
+  | { ok: false; error: string };
+
+/**
+ * BOM → requiredCuts using the preserved physicalCutForOccurrence identities
+ * (`componentId:index`) carried on each grouped row.
+ *
+ * AICS-001 quantity contract (multiset copies):
+ * - Design BOM is always one window (unique cutIds).
+ * - poseQuantity repeats each occurrence N times with the **same** cutId so
+ *   reconcileDesignLedger / derive_required_cuts_from_position stay aligned.
+ * - Quantity is applied exactly once here — never invent identities from placements.
+ *
+ * Fail-closed: a row without aligned `cutIds` cannot be turned into a ledger.
+ */
+export function requiredCutsFromBom(
+  bom: CompleteBOM | null,
+  poseQuantity: number = 1,
+): RequiredCutsFromBom {
+  let quantity: number;
+  try {
+    quantity = poseQuantityOf({ quantity: poseQuantity });
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : 'Pose quantity must be a positive integer.',
+    };
+  }
+
+  if (!bom?.profiles?.length) {
+    return { ok: false, error: 'Design ledger required: BOM cuttingLengths are missing.' };
+  }
+  const designCuts: EvidenceCutSpec[] = [];
+  const seen = new Set<string>();
+  for (const profile of bom.profiles) {
     const profileId = profile.profileCode ?? profile.id ?? '';
     const lengths = profile.cuttingLengths ?? [];
     const angles = profile.angles ?? [];
-    return lengths.map((length, index) => ({
-      cutId: `${profile.id ?? profileId}:${index}`,
-      profileId,
-      length: Number(length),
-      angle: Number.isFinite(angles[index]) ? Number(angles[index]) : 0,
-    }));
+    const rowLabel = profile.id ?? profileId;
+    if (!lengths.length) continue;
+    if (!Array.isArray(profile.cutIds) || profile.cutIds.length !== lengths.length) {
+      return {
+        ok: false,
+        error: `BOM row ${rowLabel} has no cut occurrence identities (${lengths.length} cuts, ${profile.cutIds?.length ?? 0} ids). ${BOM_IDENTITY_REBUILD_HINT}`,
+      };
+    }
+    for (let index = 0; index < lengths.length; index += 1) {
+      const cutId = String(profile.cutIds[index] ?? '').trim();
+      if (!cutId) {
+        return { ok: false, error: `BOM row ${rowLabel} cut ${index} has an empty occurrence identity. ${BOM_IDENTITY_REBUILD_HINT}` };
+      }
+      if (seen.has(cutId)) {
+        return { ok: false, error: `BOM lists cut occurrence ${cutId} more than once. ${BOM_IDENTITY_REBUILD_HINT}` };
+      }
+      seen.add(cutId);
+      designCuts.push({
+        cutId,
+        profileId,
+        length: Number(lengths[index]),
+        angle: Number.isFinite(angles[index]) ? Number(angles[index]) : 0,
+      });
+    }
+  }
+  if (designCuts.length === 0) {
+    return { ok: false, error: 'Design ledger required: BOM cuttingLengths are missing.' };
+  }
+
+  if (quantity === 1) return { ok: true, cuts: designCuts };
+
+  const cuts: EvidenceCutSpec[] = [];
+  for (let copy = 0; copy < quantity; copy += 1) {
+    for (const cut of designCuts) cuts.push({ ...cut });
+  }
+  return { ok: true, cuts };
+}
+
+/**
+ * The solver runs with the approved kerf/trim bound onto each profile's
+ * specifications (Batch 2). The evidence contract carries kerf/trim once, at the
+ * payload level, and rejects plan/profile overrides — so strip those keys here
+ * while keeping everything the reload path needs (waste, utilization, cut identity).
+ */
+export function cuttingPlanForEvidence(
+  plans: OptimizationResult['cuttingPlan'],
+): OptimizationEvidencePayload['cuttingPlan'] {
+  return plans.map((plan) => {
+    const { kerfMm: _planKerf, trimMm: _planTrim, ...rest } = plan as typeof plan & { kerfMm?: unknown; trimMm?: unknown };
+    const { sawKerf: _kerf, barEndTrim: _trim, ...specifications } = (plan.profile?.specifications ?? {}) as Record<string, unknown>;
+    return {
+      ...rest,
+      profile: { ...plan.profile, specifications },
+    } as OptimizationEvidencePayload['cuttingPlan'][number];
   });
 }
 
@@ -75,7 +164,7 @@ function buildEvidencePayload(
     kerfMm,
     trimMm,
     requiredCuts,
-    cuttingPlan: result.cuttingPlan as OptimizationEvidencePayload['cuttingPlan'],
+    cuttingPlan: cuttingPlanForEvidence(result.cuttingPlan),
   };
 }
 
@@ -101,10 +190,11 @@ export async function recordOptimizationEvidence(
     return { ok: false, error: 'Optimization produced no cuts to validate.' };
   }
 
-  const requiredCuts = requiredCutsFromBom(input.bom);
-  if (requiredCuts.length === 0) {
-    return { ok: false, error: 'Design ledger required: BOM cuttingLengths are missing.' };
+  const ledger = requiredCutsFromBom(input.bom, input.poseQuantity ?? 1);
+  if (!ledger.ok) {
+    return { ok: false, error: ledger.error };
   }
+  const requiredCuts = ledger.cuts;
 
   let systemPackRevision: number;
   let ruleVersion: string;
@@ -187,31 +277,45 @@ export async function recordOptimizationEvidence(
   );
   const structural = validateOptimizationEvidencePayload(evidencePayload, cutCount);
   if (!structural.ok) {
-    return { ok: false, error: structural.error };
+    return { ok: false, error: structural.error.startsWith('design ledger')
+      ? `BOM ${structural.error}. The optimized cuts do not match the reviewed BOM ledger. ${BOM_IDENTITY_REBUILD_HINT}`
+      : structural.error };
   }
 
-  // Prefer server-derived ledger fingerprint when RPC is available.
+  // Fail-closed: production acceptance requires a usable server-derived ledger.
+  // Never silently downgrade to the client BOM when derive errors or returns empty.
   const rpc = supabase as unknown as RpcClient;
-  let designFingerprint = await sha256Hex(structural.designCanonical);
-  try {
-    const derived = await rpc.rpc('derive_required_cuts_from_position', {
-      p_position_id: input.positionId,
-      p_expected_revision: input.expectedRevision,
-    });
-    if (!derived.error && Array.isArray(derived.data) && derived.data.length > 0) {
-      const serverLedger = derived.data as EvidenceCutSpec[];
-      const serverValidate = validateOptimizationEvidencePayload(
-        { ...evidencePayload, requiredCuts: serverLedger },
-        cutCount,
-      );
-      if (!serverValidate.ok) {
-        return { ok: false, error: serverValidate.error };
-      }
-      designFingerprint = await sha256Hex(serverValidate.designCanonical);
-    }
-  } catch {
-    // Local/unit tests without RPC: BOM ledger remains the client gate; server re-derives on write.
+  const derived = await rpc.rpc('derive_required_cuts_from_position', {
+    p_position_id: input.positionId,
+    p_expected_revision: input.expectedRevision,
+  });
+  if (derived.error) {
+    return {
+      ok: false,
+      error: `Server design ledger unavailable (${derived.error.message}). Production evidence cannot be recorded without derive_required_cuts_from_position.`,
+    };
   }
+  if (!Array.isArray(derived.data) || derived.data.length === 0) {
+    return {
+      ok: false,
+      error: 'Server design ledger is empty. Reload the saved position revision and confirm quantity and components before retrying.',
+    };
+  }
+  const serverLedger = derived.data as EvidenceCutSpec[];
+  const serverValidate = validateOptimizationEvidencePayload(
+    { ...evidencePayload, requiredCuts: serverLedger },
+    cutCount,
+  );
+  if (!serverValidate.ok) {
+    // The reviewed BOM agreed with the placement but the server's ledger for this
+    // saved revision does not. Say so explicitly — this is not a BOM rebuild case.
+    // Common cause: raw saved cuttingLengths vs allowance-calibrated BOM/solver lengths.
+    return {
+      ok: false,
+      error: `Server ${serverValidate.error}. The saved position revision ${input.expectedRevision} on the server disagrees with the optimized cuts; reload the position and confirm the saved design (raw lengths, quantity) and server ledger derivation before retrying.`,
+    };
+  }
+  const designFingerprint = await sha256Hex(serverValidate.designCanonical);
 
   const placementFingerprint = await sha256Hex(structural.placementCanonical);
   const ledgerFingerprint = `${designFingerprint}||${placementFingerprint}`;

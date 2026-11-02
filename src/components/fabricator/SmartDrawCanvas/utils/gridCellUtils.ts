@@ -74,7 +74,7 @@ export function mirrorGridHorizontally(grid: WindowGrid): WindowGrid {
 
   return {
     ...grid,
-    cells: mirroredCells,
+    cells: mirroredCells as GridCell[],
     colWidths: mirroredColWidths,
   };
 }
@@ -105,7 +105,7 @@ export function mirrorGridVertically(grid: WindowGrid): WindowGrid {
 
   return {
     ...grid,
-    cells: mirroredCells,
+    cells: mirroredCells as GridCell[],
     rowHeights: mirroredRowHeights,
   };
 }

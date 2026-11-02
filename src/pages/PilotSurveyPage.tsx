@@ -1,4 +1,3 @@
-import React from 'react';
 import { PilotSurvey } from '@/components/feedback/PilotSurvey';
 import { useSearchParams } from 'react-router-dom';
 

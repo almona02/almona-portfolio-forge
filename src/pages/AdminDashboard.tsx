@@ -19,9 +19,11 @@ import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
+import { fabricatorRoutes } from '@/lib/fabricator/routes'
 import {
   AlertCircle,
   Bell,
+  Factory,
   LogOut,
   Menu,
   Settings,
@@ -29,7 +31,7 @@ import {
   Zap,
 } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
-import { Navigate, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useSearchParams } from 'react-router-dom'
 // Dashboard components
 import { YDTPerformanceDashboard } from '@/components/admin/YDTPerformanceDashboard'
 import { GovernanceHealthMini } from '@/components/governance/GovernanceHealthMini'
@@ -62,6 +64,7 @@ const MachinesAdminPanel = lazyRetry(() => import('@/components/admin/panels/Mac
 const ServiceContractsAdminPanel = lazyRetry(() => import('@/components/admin/panels/ServiceContractsAdminPanel'), 'ServiceContractsAdminPanel')
 const AdminSettingsPanel = lazyRetry(() => import('@/components/admin/panels/AdminSettingsPanel'), 'AdminSettingsPanel')
 const ServicePackagesPanel = lazyRetry(() => import('@/components/admin/panels/ServicePackagesPanel'), 'ServicePackagesPanel')
+const ManufacturingConfigPanel = lazyRetry(() => import('@/components/admin/panels/ManufacturingConfigPanel'), 'ManufacturingConfigPanel')
 
 type Notification = { id: string; title: string; message: string; created_at: string }
 
@@ -192,6 +195,40 @@ const AdminDashboard: React.FC = () => {
         return (
           <div className="space-y-6">
             <DashboardStats stats={stats} />
+
+            <Card data-testid="admin-fabricator-hub">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <Factory className="h-5 w-5 text-amber-500" aria-hidden />
+                  <CardTitle className="text-lg">Fabricator Pro · manufacturing</CardTitle>
+                </div>
+                <CardDescription>
+                  Jump to catalogue approvals and workshop configuration. Cut-ledger identity vs saved
+                  design stays a hard production gate — edit engineering inputs (packs, kerf/trim via
+                  approvals, templates), never bypass occurrence reconciliation.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                <Button asChild variant="secondary" className="justify-start">
+                  <Link to={fabricatorRoutes.studioCommand()}>Open Fabricator Pro</Link>
+                </Button>
+                <Button asChild variant="secondary" className="justify-start">
+                  <Link to={fabricatorRoutes.studioApprovals()}>Manufacturing approvals</Link>
+                </Button>
+                <Button asChild variant="secondary" className="justify-start">
+                  <Link to={fabricatorRoutes.studioDataProfiles()}>System packs / profiles</Link>
+                </Button>
+                <Button asChild variant="secondary" className="justify-start">
+                  <Link to={fabricatorRoutes.studioData('tuning')}>Operation templates</Link>
+                </Button>
+                <Button asChild variant="secondary" className="justify-start">
+                  <Link to={fabricatorRoutes.studioDataAccessories()}>Accessories kits</Link>
+                </Button>
+                <Button asChild variant="secondary" className="justify-start">
+                  <Link to={fabricatorRoutes.studioDataStock()}>Stock / remnants</Link>
+                </Button>
+              </CardContent>
+            </Card>
 
             {/* Constitutional automation Governance Section */}
             <div className="space-y-4">
@@ -348,6 +385,12 @@ const AdminDashboard: React.FC = () => {
         return (
           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading configuration…</div>}>
             <AdminSettingsPanel />
+          </React.Suspense>
+        )
+      case 'manufacturing':
+        return (
+          <React.Suspense fallback={<div role="status" className="p-6 text-sm text-muted-foreground">Loading manufacturing configurators…</div>}>
+            <ManufacturingConfigPanel />
           </React.Suspense>
         )
       case 'analytics':

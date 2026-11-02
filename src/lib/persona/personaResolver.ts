@@ -118,7 +118,7 @@ export async function resolvePersona(userId: string): Promise<PersonaResolution>
   const hasWorkshopOwnership = workshopsResult.data && workshopsResult.data.length > 0;
 
   // 3. Detect persona
-  const persona = detectPersona(dbRole, hasWorkshopOwnership);
+  const persona = detectPersona(dbRole, hasWorkshopOwnership ?? undefined);
   const config = getPersonaConfig(persona);
 
   const resolution: PersonaResolution = {

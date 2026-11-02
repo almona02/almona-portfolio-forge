@@ -16,6 +16,7 @@ import type {
   DraftQuote,
   MeasurementData,
   Profile,
+  WindowGrid,
   WindowUnit,
 } from '@/types/fabricator';
 
@@ -176,7 +177,7 @@ const workspaceReducer = (
           ...state,
           currentProject: {
             ...state.currentProject,
-            optimization: action.payload,
+            optimization: action.payload as any,
           },
         }
         : state;
@@ -197,7 +198,7 @@ const workspaceReducer = (
           ...state,
           currentProject: {
             ...state.currentProject,
-            grid: action.payload,
+            grid: action.payload as unknown as WindowGrid,
             updatedAt: new Date(),
           },
         }

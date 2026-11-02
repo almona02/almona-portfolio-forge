@@ -93,11 +93,11 @@ describe('BOM Generation AICS-001 Constitutional Compliance', () => {
       name: dataSystemPack.meta.name,
       category: 'aluminum_windows',
       brand: dataSystemPack.meta.brands[0] || 'Unknown',
-      compatibleProfiles: dataSystemPack.profiles?.map(p => p.id) || [],
+      compatibleProfiles: dataSystemPack.profiles?.map((p: any) => p.id) || [],
       compatibleAccessories: [],
       description: dataSystemPack.meta.name,
       technicalData: dataSystemPack.windowSystemSpec || {},
-    } as SystemPack;
+    } as unknown as SystemPack;
   });
 
   it('should guarantee deterministic replay (AICS-001 Section 7.5)', async () => {

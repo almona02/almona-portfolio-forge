@@ -1,6 +1,6 @@
 // src/components/fabricator/drafting/components/MemoizedGeometryRenderer.tsx
 
-import React, { memo } from 'react';
+import { memo } from 'react';
 import type { Rectangle, Circle, Line } from '../types/drafting';
 
 interface MemoizedRectangleProps {

@@ -84,7 +84,6 @@ export class MachineValidator {
     const errors: ValidationError[] = [];
     const width = profile.width || 0;
     const height = profile.height || 50;
-    const _thickness = profile.thickness || 10;
 
     // Check width
     if (width > this.specs.maxWidth) {
@@ -130,7 +129,7 @@ export class MachineValidator {
   private validateCut(
     cut: Cut,
     plan: CuttingPlan,
-    planIndex: number,
+    _planIndex: number,
     cutIndex: number
   ): ValidationError[] {
     const errors: ValidationError[] = [];

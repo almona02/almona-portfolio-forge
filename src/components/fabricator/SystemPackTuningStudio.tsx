@@ -1,4 +1,5 @@
 import { WorkshopBOMRulesEditor } from './WorkshopBOMRulesEditor';
+import { PackPatternAdvancedEditor } from './PackPatternAdvancedEditor';
 import { Input } from '@/shared/ui/ui/input';
 import { loadCustomSystemsFromSupabase } from '@/lib/fabricator/systemPackSupabase';
 /**
@@ -734,6 +735,7 @@ export const SystemPackTuningStudio: React.FC = () => {
         >
           <Card className="bg-slate-800/50 border-slate-700 /50 card-dark">
             <CardContent className="pt-6">
+              {systemPackId && userId && <PackPatternAdvancedEditor packId={systemPackId} ownerId={userId} />}
               {systemPackId && userId && <WorkshopBOMRulesEditor packId={systemPackId} ownerId={userId} />}
               <div className="flex items-center justify-between mb-4">
                 <div>

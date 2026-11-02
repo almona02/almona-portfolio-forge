@@ -277,7 +277,7 @@ export function getMeasurementLabel(
  */
 export function detectMeasurementMode(
   start: Point,
-  end: Point,
+  _end: Point,
   geometry: Geometry2D
 ): MeasurementMode {
   // If clicking on a circle, suggest radius mode

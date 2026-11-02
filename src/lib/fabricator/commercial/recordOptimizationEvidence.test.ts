@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { approvedRuleContentFingerprint } from './validateOptimizationEvidencePayload';
-import { recordOptimizationEvidence } from './recordOptimizationEvidence';
+import { recordOptimizationEvidence, requiredCutsFromBom } from './recordOptimizationEvidence';
 
 const rpc = vi.fn();
 const resolveManufacturingAuthority = vi.fn();
@@ -30,9 +30,10 @@ const authorityRules = [
 const sampleBom = {
   profiles: [
     {
-      id: 'c1',
+      id: 'PS-FRAME:frame',
       profileCode: 'PS-FRAME',
       cuttingLengths: [1200, 1400],
+      cutIds: ['c1:0', 'c1:1'],
       angles: [45, 45],
       quantity: 1,
     },
@@ -95,6 +96,188 @@ describe('recordOptimizationEvidence (authoritative binding)', () => {
     });
   });
 
+  it('records grouped BOM rows using original design occurrence IDs', async () => {
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1', expectedRevision: 1, designRevision: 1,
+      bom: { profiles: [{ ...sampleBom.profiles[0], id: 'PS-FRAME:frame', cutIds: ['c1:0', 'c1:1'] }] } as never,
+      optimizationResult: sampleResult as never,
+    });
+    expect(result.ok).toBe(true);
+    expect(rpc).toHaveBeenCalledWith('record_fabricator_optimization_evidence', expect.anything());
+  });
+
+  it('rejects a BOM cached without occurrence identities instead of inventing row-based IDs', async () => {
+    const legacy = { profiles: [{ ...sampleBom.profiles[0], cutIds: undefined }] };
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1', expectedRevision: 1, designRevision: 1,
+      bom: legacy as never,
+      optimizationResult: sampleResult as never,
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toMatch(/no cut occurrence identities/i);
+    expect(result.error).toMatch(/Rebuild the BOM from the saved design/i);
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('rejects misaligned or duplicated BOM occurrence identities', async () => {
+    const misaligned = { profiles: [{ ...sampleBom.profiles[0], cutIds: ['c1:0'] }] };
+    const duplicated = { profiles: [{ ...sampleBom.profiles[0], cutIds: ['c1:0', 'c1:0'] }] };
+    for (const bom of [misaligned, duplicated]) {
+      const result = await recordOptimizationEvidence({
+        positionId: 'pos-1', expectedRevision: 1, designRevision: 1,
+        bom: bom as never,
+        optimizationResult: sampleResult as never,
+      });
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.error).toMatch(/occurrence identit|more than once/i);
+    }
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('strips solver-bound kerf/trim from plan profiles so the payload carries approved machining once', async () => {
+    const bound = {
+      ...sampleResult,
+      cuttingPlan: sampleResult.cuttingPlan.map((plan) => ({
+        ...plan,
+        totalWaste: 3400, utilization: 43.33,
+        profile: { id: 'PS-FRAME', name: 'Frame', specifications: { sawKerf: 4, barEndTrim: 0, stockLengthMm: 6000, supplierCode: 'PS-FRAME' } },
+      })),
+    };
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1', expectedRevision: 1, designRevision: 1,
+      bom: sampleBom as never, optimizationResult: bound as never,
+    });
+    expect(result.ok).toBe(true);
+    const call = rpc.mock.calls.find(([name]) => name === 'record_fabricator_optimization_evidence');
+    const payload = (call![1] as { p_evidence_payload: { kerfMm: number; cuttingPlan: Array<{ profile: { specifications: Record<string, unknown> }; totalWaste: number }> } }).p_evidence_payload;
+    expect(payload.kerfMm).toBe(4);
+    expect(payload.cuttingPlan[0].profile.specifications).toEqual({ stockLengthMm: 6000, supplierCode: 'PS-FRAME' });
+    expect(payload.cuttingPlan[0].totalWaste).toBe(3400);
+  });
+
+  it('requiredCutsFromBom carries identity, profile, length and angle per occurrence', () => {
+    const ledger = requiredCutsFromBom(sampleBom as never);
+    expect(ledger.ok).toBe(true);
+    if (!ledger.ok) return;
+    expect(ledger.cuts).toEqual([
+      { cutId: 'c1:0', profileId: 'PS-FRAME', length: 1200, angle: 45 },
+      { cutId: 'c1:1', profileId: 'PS-FRAME', length: 1400, angle: 45 },
+    ]);
+  });
+
+  it('requiredCutsFromBom expands pose quantity as a multiset of shared cutIds', () => {
+    const ledger = requiredCutsFromBom(sampleBom as never, 3);
+    expect(ledger.ok).toBe(true);
+    if (!ledger.ok) return;
+    expect(ledger.cuts).toHaveLength(6);
+    expect(ledger.cuts.filter((c) => c.cutId === 'c1:0')).toHaveLength(3);
+    expect(ledger.cuts.filter((c) => c.cutId === 'c1:1')).toHaveLength(3);
+  });
+
+  it('records evidence with poseQuantity-expanded requiredCuts matching placements', async () => {
+    const qty2Result = {
+      ...sampleResult,
+      cuttingPlan: [
+        {
+          stockLength: 6000,
+          totalWaste: 2192,
+          utilization: 63.46666666666667,
+          profile: { id: 'PS-FRAME' },
+          cuts: [
+            { cutId: 'c1:0', componentId: 'c1', length: 1200, angle: 45, occurrenceIndex: 0 },
+            { cutId: 'c1:1', componentId: 'c1', length: 1400, angle: 45, occurrenceIndex: 1 },
+            { cutId: 'c1:0', componentId: 'c1', length: 1200, angle: 45, occurrenceIndex: 0 },
+            { cutId: 'c1:1', componentId: 'c1', length: 1400, angle: 45, occurrenceIndex: 1 },
+          ],
+        },
+      ],
+    };
+    rpc.mockImplementation((name: string) => {
+      if (name === 'derive_required_cuts_from_position') {
+        return Promise.resolve({
+          data: [
+            { cutId: 'c1:0', profileId: 'PS-FRAME', length: 1200, angle: 45 },
+            { cutId: 'c1:1', profileId: 'PS-FRAME', length: 1400, angle: 45 },
+            { cutId: 'c1:0', profileId: 'PS-FRAME', length: 1200, angle: 45 },
+            { cutId: 'c1:1', profileId: 'PS-FRAME', length: 1400, angle: 45 },
+          ],
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: 'pos-1', error: null });
+    });
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: sampleBom as never,
+      optimizationResult: qty2Result as never,
+      poseQuantity: 2,
+    });
+    expect(result.ok).toBe(true);
+    const call = rpc.mock.calls.find(([name]) => name === 'record_fabricator_optimization_evidence');
+    const payload = (call![1] as { p_evidence_payload: { requiredCuts: unknown[]; cutCount: number } }).p_evidence_payload;
+    expect(payload.cutCount).toBe(4);
+    expect(payload.requiredCuts).toHaveLength(4);
+  });
+
+  it('rejects poseQuantity that undershoots placed cut multiplicity', async () => {
+    const qty2Placed = {
+      ...sampleResult,
+      cuttingPlan: [
+        {
+          stockLength: 6000,
+          totalWaste: 2192,
+          utilization: 63.46666666666667,
+          profile: { id: 'PS-FRAME' },
+          cuts: [
+            { cutId: 'c1:0', componentId: 'c1', length: 1200, angle: 45, occurrenceIndex: 0 },
+            { cutId: 'c1:1', componentId: 'c1', length: 1400, angle: 45, occurrenceIndex: 1 },
+            { cutId: 'c1:0', componentId: 'c1', length: 1200, angle: 45, occurrenceIndex: 0 },
+            { cutId: 'c1:1', componentId: 'c1', length: 1400, angle: 45, occurrenceIndex: 1 },
+          ],
+        },
+      ],
+    };
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: sampleBom as never,
+      optimizationResult: qty2Placed as never,
+      poseQuantity: 1,
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toMatch(/cut count mismatch|duplicate occurrence/i);
+  });
+
+  it('names the server ledger when the saved revision disagrees with a BOM-consistent placement', async () => {
+    rpc.mockImplementation((name: string) => {
+      if (name === 'derive_required_cuts_from_position') {
+        // Server returns raw design lengths (no cutting allowance) for the same identities.
+        return Promise.resolve({
+          data: [
+            { cutId: 'c1:0', profileId: 'PS-FRAME', length: 1197, angle: 45 },
+            { cutId: 'c1:1', profileId: 'PS-FRAME', length: 1397, angle: 45 },
+          ],
+          error: null,
+        });
+      }
+      return Promise.resolve({ data: 'pos-1', error: null });
+    });
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1', expectedRevision: 1, designRevision: 1,
+      bom: sampleBom as never,
+      optimizationResult: sampleResult as never,
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error).toMatch(/^Server design ledger wrongly sized cut c1:0 \(required 1197\.000 mm, placed 1200\.000 mm\)/);
+    expect(result.error).toMatch(/saved position revision 1/);
+    expect(rpc).not.toHaveBeenCalledWith('record_fabricator_optimization_evidence', expect.anything());
+  });
+
   it('rejects missing BOM design ledger without RPC write', async () => {
     const result = await recordOptimizationEvidence({
       positionId: 'pos-1',
@@ -133,6 +316,44 @@ describe('recordOptimizationEvidence (authoritative binding)', () => {
         }),
       }),
     );
+  });
+
+  it('fails closed when derive_required_cuts_from_position errors', async () => {
+    rpc.mockImplementation((name: string) => {
+      if (name === 'derive_required_cuts_from_position') {
+        return Promise.resolve({ data: null, error: { message: 'authentication required' } });
+      }
+      return Promise.resolve({ data: 'pos-1', error: null });
+    });
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: sampleBom as never,
+      optimizationResult: sampleResult as never,
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toMatch(/Server design ledger unavailable/i);
+    expect(rpc).not.toHaveBeenCalledWith('record_fabricator_optimization_evidence', expect.anything());
+  });
+
+  it('fails closed when derive_required_cuts_from_position returns an empty ledger', async () => {
+    rpc.mockImplementation((name: string) => {
+      if (name === 'derive_required_cuts_from_position') {
+        return Promise.resolve({ data: [], error: null });
+      }
+      return Promise.resolve({ data: 'pos-1', error: null });
+    });
+    const result = await recordOptimizationEvidence({
+      positionId: 'pos-1',
+      expectedRevision: 1,
+      designRevision: 1,
+      bom: sampleBom as never,
+      optimizationResult: sampleResult as never,
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toMatch(/empty/i);
+    expect(rpc).not.toHaveBeenCalledWith('record_fabricator_optimization_evidence', expect.anything());
   });
 
   it('rejects fabricated but internally consistent ledger/placement that disagrees with server pose', async () => {
@@ -184,9 +405,10 @@ describe('recordOptimizationEvidence (authoritative binding)', () => {
     const bom = {
       profiles: [
         {
-          id: 'c1',
+          id: 'PS-FRAME:frame',
           profileCode: 'PS-FRAME',
           cuttingLengths: [3000, 2996],
+          cutIds: ['c1:0', 'c1:1'],
           angles: [0, 0],
         },
       ],

@@ -437,7 +437,7 @@ export interface ExportTemplate {
 export interface TemplateApplicationResult {
   success: boolean;
   templateId: string;
-  appliedOptions: ExportOptions;
+  appliedOptions?: ExportOptions;
   error?: string;
 }
 

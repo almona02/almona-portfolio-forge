@@ -4,6 +4,7 @@
  */
 
 import { OptimizationResult, WindowUnit } from '@/types/fabricator';
+export type { OptimizationResult };
 
 export interface QuoteLineItem {
   id: string;

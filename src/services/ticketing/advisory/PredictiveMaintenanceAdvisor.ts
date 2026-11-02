@@ -96,7 +96,7 @@ export class PredictiveMaintenanceAdvisor {
         throw new Error(`Advisory hardening failed: ${hardened.violations.join(', ')}`);
       }
 
-      return hardened.hardenedAdvisory as MaintenanceAdvisory;
+      return hardened.hardenedAdvisory as unknown as MaintenanceAdvisory;
 
     } catch (_error) {
       const responseTime = performance.now() - startTime;

@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
@@ -280,7 +280,7 @@ const FabricationWorkflowDetail = () => {
     }
   };
 
-  const filteredSteps = workflowData[activeTab].steps.filter(step =>
+  const filteredSteps = workflowData[activeTab as keyof typeof workflowData].steps.filter((step: any) =>
     step.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     step.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -355,8 +355,8 @@ const FabricationWorkflowDetail = () => {
               variants={itemVariants}
             >
               <div>
-                <h2 className="typography-h2 text-white">{workflowData[activeTab].title}</h2>
-                <p className="text-gray-400">{workflowData[activeTab].description}</p>
+                <h2 className="typography-h2 text-white">{workflowData[activeTab as keyof typeof workflowData].title}</h2>
+                <p className="text-gray-400">{workflowData[activeTab as keyof typeof workflowData].description}</p>
               </div>
               <div className="w-full md:w-64">
                 <Input
@@ -369,7 +369,7 @@ const FabricationWorkflowDetail = () => {
             </motion.div>
 
             <motion.div className="space-y-4" variants={itemVariants}>
-              {filteredSteps.map((step, index) => (
+              {filteredSteps.map((step: any, index: number) => (
                 <Card 
                   key={index} 
                   className="bg-almona-dark/60 backdrop-blur-sm border border-almona-light/10 rounded-xl overflow-hidden"
@@ -408,7 +408,7 @@ const FabricationWorkflowDetail = () => {
                                   Professional Tips
                                 </h4>
                                 <ul className="space-y-2 text-sm text-gray-300">
-                                  {step.tips.map((tip, i) => (
+                                  {step.tips.map((tip: any, i: number) => (
                                     <li key={i} className="flex items-start"><span className="mr-2 text-almona-orange">•</span>{tip}</li>
                                   ))}
                                 </ul>
@@ -430,7 +430,7 @@ const FabricationWorkflowDetail = () => {
                                   Common Challenges
                                 </h4>
                                 <ul className="space-y-2 text-sm text-gray-300">
-                                  {step.commonIssues.map((issue, i) => (
+                                  {step.commonIssues.map((issue: any, i: number) => (
                                     <li key={i} className="flex items-start"><span className="mr-2 text-red-500">•</span>{issue}</li>
                                   ))}
                                 </ul>
@@ -442,7 +442,7 @@ const FabricationWorkflowDetail = () => {
                                   Recommended Solutions
                                 </h4>
                                 <ul className="space-y-2 text-sm text-gray-300">
-                                  {step.solutions.map((solution, i) => (
+                                  {step.solutions.map((solution: any, i: number) => (
                                     <li key={i} className="flex items-start"><span className="mr-2  status-valid">•</span>{solution}</li>
                                   ))}
                                 </ul>
@@ -472,7 +472,7 @@ const FabricationWorkflowDetail = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <LocalStandardsTable standards={workflowData[activeTab].standards} region="Egypt" />
+                  <LocalStandardsTable standards={workflowData[activeTab as keyof typeof workflowData].standards} region="Egypt" />
                   <p className="mt-4 text-sm text-gray-400 flex items-start">
                     <Icons.info className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-almona-light" />
                     Available at Egyptian Organization for Standardization (EOS) offices
@@ -533,7 +533,7 @@ const FabricationWorkflowDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3 text-gray-300">
-                    {workflowData[activeTab].challenges.map((challenge, i) => (
+                    {workflowData[activeTab as keyof typeof workflowData].challenges.map((challenge: any, i: number) => (
                       <li key={i} className="flex items-start">
                         <Icons.warning className="h-5 w-5 text-amber-500 mr-3 mt-0.5 flex-shrink-0" />
                         <span>{challenge}</span>

@@ -1,5 +1,5 @@
 import { usePublicCopy } from '@/hooks/usePublicCopy';
-import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 // PHASE 4: Use lazyRetry for better reliability and chunk loading
 import { lazyRetry } from '@/utils/lazyImport';
 // Lazy load heavy 3D components to reduce initial bundle size (~2.2MB saved)
@@ -21,11 +21,10 @@ import { smartCategoryMapping } from "@/constants/smartCategories";
 import type { Machine } from "@/constants/yilmazMachines";
 import { useAuth } from "@/context/AuthContext";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { useToast } from "@/hooks/useToast";
 import { useYilmazMachines } from '@/hooks/useYilmazMachines';
 import { useVirtualizedMachines } from "@/hooks/useVirtualizedMachines";
-import { loadComparisons, saveComparison } from "@/lib/comparisonStorage";
+import { loadComparisons } from "@/lib/comparisonStorage";
 
 import { debounce } from "@/lib/utils";
 import { Badge } from "@/shared/ui/ui/badge";
@@ -73,7 +72,6 @@ const mapToUiMachine = (m: SourceMachineLike): UiMachine => {
     safetyFeatures: (m.safetyFeatures || []).filter((s): s is 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop' =>
       ['TwoHandOperation','AutomaticGuards','EmergencyStop'].includes(s as 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop')
     ),
-    price: undefined,
   };
 };
 
@@ -170,11 +168,10 @@ const Products = function ProductsPage() {
   const [showConfigurator, setShowConfigurator] = useState(false);
   const [_showNewsletter, setShowNewsletter] = useState(false);
   const [isTourPlaying, setIsTourPlaying] = useState(false);
-  const _scrolled = useScrollThreshold(48);
 
   // Debounced URL sync for the search param only — filtering itself is instant.
   const debouncedSyncSearchUrl = useMemo(
-    () => debounce((value: string) => {
+    () => debounce(((value: string) => {
       const newParams = new URLSearchParams(searchParams);
       if (value.trim()) {
         newParams.set('search', value.trim());
@@ -182,7 +179,7 @@ const Products = function ProductsPage() {
         newParams.delete('search');
       }
       setSearchParams(newParams, { replace: true });
-    }, 500),
+    }) as any, 500),
     [searchParams, setSearchParams]
   );
 
@@ -326,14 +323,6 @@ const Products = function ProductsPage() {
     setSelectedMachines([]);
   }, []);
 
-  const _handleSaveComparison = useCallback(() => {
-    saveComparison(selectedMachines);
-    toast({
-      title: t('comparison.saved'),
-      description: t('comparison.savedDescription'),
-    });
-  }, [selectedMachines, toast, t]);
-
   useEffect(() => {
     document.title = t('page.title');
   }, [t]);
@@ -349,9 +338,6 @@ const Products = function ProductsPage() {
     setShow3DModel(true);
   }, []);
 
-  const _handleQuickPreview = useCallback((machine: Machine) => {
-    setQuickViewProduct(machine);
-  }, []);
 
   const handleClose3DModel = useCallback(() => {
     setShow3DModel(false);

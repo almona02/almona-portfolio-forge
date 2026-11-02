@@ -186,7 +186,7 @@ export const SalesPipelineChart: React.FC<SalesPipelineChartProps> = ({
                   borderRadius: '8px',
                   color: '#fbbf24',
                 }}
-                formatter={(value: unknown, name: string) => {
+                formatter={((value: unknown, name: string) => {
                   const num = Number(value ?? 0);
                   if (name === 'totalValue' || name === 'weightedValue' || name === 'averageValue') {
                     return [formatCurrency(num, 'en', 'USD'), name === 'totalValue' ? 'Total Value' : name === 'weightedValue' ? 'Weighted Value' : 'Avg Value'];
@@ -195,7 +195,7 @@ export const SalesPipelineChart: React.FC<SalesPipelineChartProps> = ({
                     return [`${num.toFixed(1)}%`, 'Win Probability'];
                   }
                   return [value, name === 'count' ? 'Deals' : name];
-                }}
+                }) as any}
               />
               <Legend
                 wrapperStyle={{ color: '#d97706' }}

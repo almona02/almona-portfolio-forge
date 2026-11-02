@@ -305,7 +305,7 @@ export class MultiMachineScheduler {
   /**
    * Calculate machine utilization
    */
-  private calculateUtilization(machine: Machine, jobs: Job[], duration: number): number {
+  private calculateUtilization(_machine: Machine, _jobs: Job[], duration: number): number {
     if (duration === 0) {
       return 0;
     }
@@ -338,7 +338,7 @@ export class MultiMachineScheduler {
   /**
    * Estimate waste for jobs on machine
    */
-  private estimateWaste(machine: Machine, jobs: Job[]): number {
+  private estimateWaste(_machine: Machine, jobs: Job[]): number {
     return jobs.reduce((sum, job) => {
       return sum + job.cuttingPlan.totalWaste;
     }, 0);

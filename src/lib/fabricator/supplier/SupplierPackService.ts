@@ -221,19 +221,19 @@ export class SupplierPackService {
    */
   private matchesConstraints(
     profile: SupplierPack['profiles'][0],
-    windowUnit: WindowUnit,
+    _windowUnit: WindowUnit,
     systemPack: SystemPack | null
   ): boolean {
     // Check material compatibility
     if (systemPack) {
-      const systemMaterial = systemPack.category.includes('upvc') ? 'upvc' : 'aluminum';
+      const systemMaterial = (systemPack.category ?? '').includes('upvc') ? 'upvc' : 'aluminum';
       if (profile.material !== systemMaterial) {
         return false;
       }
     }
 
     // Check system pack compatibility
-    if (systemPack && !profile.compatibleSystemPacks.includes(systemPack.id)) {
+    if (systemPack && !profile.compatibleSystemPacks.includes(systemPack.id ?? '')) {
       return false;
     }
 

@@ -25,15 +25,6 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
   currency = 'EGP'
 }) => {
   
-  const _formatPrice = (price: number): string => {
-    return new Intl.NumberFormat('en-EG', {
-      style: 'currency',
-      currency: 'EGP',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price).replace('EGP', currency);
-  };
-
   const formatCompactPrice = (price: number): string => {
     if (price >= 1000000) {
       return `${currency} ${(price / 1000000).toFixed(1)}M`;

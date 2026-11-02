@@ -21,6 +21,7 @@ import {
   IRREGULAR_PATTERNS,
   MULTI_SEGMENT_PATTERNS
 } from './ShapePatterns';
+export type { ShapePattern };
 
 export interface UserInput {
   description?: string;
@@ -659,7 +660,7 @@ export class ShapeInferenceEngine {
    * Find best match from workshop patterns
    */
   findBestMatch(
-    dimensions: NonNullable<UserInput['dimensions']>,
+    _dimensions: NonNullable<UserInput['dimensions']>,
     patterns: ShapePattern[]
   ): { pattern: ShapePattern; confidence: number } | null {
     if (patterns.length === 0) return null;

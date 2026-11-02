@@ -291,7 +291,6 @@ export function createRectangularArray(
   }
 
   // Calculate accuracy metrics
-  const _totalArrayElements = rows * cols;
   const expectedSpacing = Math.min(rowSpacing, colSpacing);
   const actualSpacing = expectedSpacing; // For rectangular, spacing is exact
   const spacingError = Math.abs(actualSpacing - expectedSpacing);
@@ -304,7 +303,7 @@ export function createRectangularArray(
       ? 'pass'
       : spacingErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
         ? 'warning'
-        : 'fail'),
+        : 'fail') as 'pass' | 'warning' | 'fail',
     issues: validation.issues
   };
 
@@ -360,8 +359,6 @@ export function createCircularArray(
   // Generate circular array
   for (let i = 0; i < config.count; i++) {
     const angle = startAngle + i * angleStep;
-    const _offsetX = Math.cos(angle) * config.radius;
-    const _offsetY = Math.sin(angle) * config.radius;
 
     // Clone and rotate/translate rectangles
     source.rectangles.forEach(rect => {
@@ -452,7 +449,6 @@ export function createCircularArray(
   }
 
   // Calculate accuracy metrics
-  const _expectedRadius = config.radius;
   const angleAccuracy = (360 / config.count) * (Math.PI / 180); // Expected angle step
   const actualAngleStep = angleStep;
   const angleError = Math.abs(actualAngleStep - angleAccuracy);
@@ -465,7 +461,7 @@ export function createCircularArray(
       ? 'pass'
       : angleErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
         ? 'warning'
-        : 'fail'),
+        : 'fail') as 'pass' | 'warning' | 'fail',
     issues: validation.issues
   };
 
@@ -588,7 +584,7 @@ export function createLinearArray(
       ? 'pass'
       : stepErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
         ? 'warning'
-        : 'fail'),
+        : 'fail') as 'pass' | 'warning' | 'fail',
     issues: validation.issues
   };
 
@@ -691,7 +687,7 @@ export function createOffsetPattern(
       ? 'pass'
       : distanceErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
         ? 'warning'
-        : 'fail'),
+        : 'fail') as 'pass' | 'warning' | 'fail',
     issues: validation.issues
   };
 

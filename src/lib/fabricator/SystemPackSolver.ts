@@ -9,7 +9,6 @@
 
 import type { SystemPack } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
-import { calculateWindLoad } from '@/lib/codex/FormulaRegistry';
 
 /**
  * Engineering constraints
@@ -92,12 +91,6 @@ export class SystemPackSolver {
     packs: SystemPack[],
     constraints: EngineeringConstraints
   ): SystemPack[] {
-    const _windLoad = calculateWindLoad(
-      constraints.windZone,
-      constraints.buildingHeight,
-      1.0 // Topography factor (can be enhanced)
-    );
-
     return packs.filter(pack => {
       const spec = pack.windowSystemSpec as any;
       const maxHeight = spec?.constraints?.maxHeightMm || 0;

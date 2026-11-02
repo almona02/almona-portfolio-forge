@@ -133,7 +133,7 @@ export function validateConstitutionalCompliance(
  * Generate constitutional metadata for production outputs
  */
 export function generateConstitutionalMetadata(
-  project: WindowUnit,
+  _project: WindowUnit,
   operationMode: OperationMode,
   workshopId?: string,
   auditTrailId?: string

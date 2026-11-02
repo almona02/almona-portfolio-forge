@@ -1053,7 +1053,7 @@ export class ReportingService {
       const pdfBytes = await pdfDoc.save();
       
       // Download
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

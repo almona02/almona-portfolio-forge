@@ -17,7 +17,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Coins,
   Cpu,
   Factory,
   FileText,
@@ -147,16 +146,6 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Workflow stages
-  const _workflowStages = [
-    { id: 'measuring', name: t('fabricator:workflow.steps.measuring.name', 'Smart Measuring'), icon: Ruler, status: 'active' },
-    { id: 'design', name: t('fabricator:workflow.steps.design.name', 'Technical Design'), icon: Settings, status: 'pending' },
-    { id: 'optimization', name: t('fabricator:workflow.steps.optimization.name', 'Stock Optimization'), icon: Sparkles, status: 'pending' },
-    { id: 'inventory', name: t('fabricator:workflow.steps.inventory.name', 'Inventory Check'), icon: Package, status: 'pending' },
-    { id: 'production', name: t('fabricator:workflow.steps.production.name', 'Production'), icon: Factory, status: 'pending' },
-    { id: 'quality', name: t('fabricator:workflow.steps.quality.name', 'Quality Control'), icon: Zap, status: 'pending' }
-  ];
-
   // Fabrication modules - Gold Tier Enhanced
   const fabricationModules = [
     {
@@ -200,20 +189,6 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       efficiency: "100%",
       description: t('fabricator:navbar.fabrication_modules.real_time_analytics.description', 'Live performance metrics')
     }
-  ];
-
-  // Business navigation (kept for potential future use)
-  const _businessNav = [
-    { name: t('fabricator:navbar.business_nav.customers', 'Customers'), path: "/fabricator/customers", icon: Users },
-    { name: t('fabricator:navbar.business_nav.projects', 'Projects'), path: "/fabricator/studio/projects", icon: Factory },
-    { name: t('fabricator:navbar.business_nav.inventory', 'Inventory'), path: "/fabricator/inventory", icon: Package },
-    { name: t('fabricator:navbar.business_nav.profiles', 'Profiles & Accessories'), path: "/fabricator-workflow#inventory", icon: Scissors },
-    { name: t('fabricator:navbar.business_nav.quick_reports', 'Quick Reports'), path: "/reports", icon: FileText },
-    { name: t('fabricator:navbar.business_nav.machines', 'Machines'), path: "/machines", icon: Cpu },
-    { name: t('fabricator:navbar.business_nav.settings_prices', 'Settings & Prices'), path: "/pricing-settings", icon: Settings },
-    { name: t('fabricator:navbar.business_nav.commercial_offers', 'Commercial Offers'), path: "/offers", icon: FileText },
-    { name: t('fabricator:navbar.business_nav.cost_reports', 'Cost Reports'), path: "/cost-reports", icon: Calculator },
-    { name: t('fabricator:navbar.business_nav.accounting', 'Accounting'), path: "/accounting", icon: Coins },
   ];
 
   // Quick actions
@@ -358,10 +333,6 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   );
 
   const operationsIds = useMemo(() => ['projects', 'inventory', 'commercial'], []);
-  const _operationsItems = useMemo(
-    () => navItemsWithoutWorkflow.filter((item) => operationsIds.includes(item.id)),
-    [navItemsWithoutWorkflow, operationsIds]
-  );
   const navRest = useMemo(
     () => navItemsWithoutWorkflow.filter((item) => !operationsIds.includes(item.id) && item.id !== 'customers'),
     [navItemsWithoutWorkflow, operationsIds]
