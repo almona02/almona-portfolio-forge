@@ -110,7 +110,7 @@ export const OptimizationSummary: React.FC<OptimizationSummaryProps> = ({
       }
     >
       {cells.map((c) => (
-        <div key={c.label} className="bg-[#0d0d0d] px-3 py-2">
+        <div key={c.label} className="bg-background px-3 py-2">
           <div className="text-[10px] uppercase tracking-wider text-amber-700">{c.label}</div>
           <div
             className="text-sm font-mono text-warning mt-0.5 tabular-nums"

@@ -1,3 +1,4 @@
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 /**
  * Studio Layout Architecture - Almona Fabricator Pro
  *
@@ -46,7 +47,7 @@ export const StudioLayout: React.FC<StudioLayoutProps> = ({ studioId }) => {
   return (
     <FabricatorContextProvider>
       <div
-        className="flex h-screen w-screen overflow-hidden bg-[#0a0a0a] text-amber-200 font-sans selection:bg-amber-900 selection:text-white"
+        className="flex h-screen w-screen overflow-hidden bg-background text-foreground font-sans selection:bg-amber-900 selection:text-white"
         dir={rtl ? 'rtl' : 'ltr'}
         data-testid="fabricator-studio-shell"
         data-shell-narrow={narrow ? 'true' : 'false'}
@@ -54,14 +55,14 @@ export const StudioLayout: React.FC<StudioLayoutProps> = ({ studioId }) => {
         <UniversalNavSidebar activeStudio={activeStudio} />
 
         <div className="flex-1 flex flex-col relative overflow-hidden min-w-0">
-          <header className="min-h-14 border-b border-amber-600/30 flex flex-col gap-1.5 px-3 sm:px-4 py-2 bg-[#0a0a0a] z-20">
+          <header className="min-h-14 border-b border-border flex flex-col gap-1.5 px-3 sm:px-4 py-2 bg-card surface-metal z-20">
             <div className="flex items-center justify-between gap-2 min-w-0">
               <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 min-w-0">
                 {narrow && (
                   <button
                     type="button"
                     onClick={() => togglePanel('navigation', 'left')}
-                    className="p-2 -ms-1 rounded-md border border-amber-600/30 text-amber-300 hover:bg-amber-500/10"
+                    className="p-2 -ms-1 rounded-md border border-border text-foreground hover:bg-amber-500/10"
                     aria-label={
                       navCollapsed
                         ? t('nav.open_navigation', 'Open navigation')
@@ -73,20 +74,21 @@ export const StudioLayout: React.FC<StudioLayoutProps> = ({ studioId }) => {
                     <Menu size={18} />
                   </button>
                 )}
-                <span className="text-sm font-semibold tracking-[0.2em] text-amber-300 uppercase">
+                <span className="text-sm font-semibold tracking-[0.2em] text-foreground uppercase">
                   ALMONA
                 </span>
-                <span className="text-[10px] font-mono text-amber-700 uppercase tracking-widest hidden sm:inline truncate">
+                <span className="text-[10px] font-mono text-foreground uppercase tracking-widest hidden sm:inline truncate">
                   {t('nav.studio_suffix', '{{name}} studio', { name: activeStudio })}
                 </span>
               </div>
-              <div className="flex items-center gap-2 sm:gap-3 text-[10px] font-medium text-amber-600/80 flex-shrink-0">
+              <div className="flex items-center gap-2 sm:gap-3 text-[10px] font-medium text-foreground/80 flex-shrink-0">
+                <ThemeToggle size="sm" />
                 <div className="flex items-center gap-1" title="Connectivity">
                   <Wifi className="w-3 h-3 text-emerald-500" aria-hidden />
                   <span className="hidden xs:inline sm:inline">YDT</span>
                 </div>
                 <div className="flex items-center gap-1" title="Constitutional guardrails">
-                  <Shield className="w-3 h-3 text-amber-500" aria-hidden />
+                  <Shield className="w-3 h-3 text-foreground" aria-hidden />
                   <span className="hidden sm:inline">Shield</span>
                 </div>
               </div>
@@ -118,10 +120,10 @@ export const StudioLayout: React.FC<StudioLayoutProps> = ({ studioId }) => {
 const StudioLoadingScreen = () => {
   const { t } = useTranslation('fabricator');
   return (
-    <div className="flex items-center justify-center h-full w-full bg-[#0a0a0a]">
+    <div className="flex items-center justify-center h-full w-full bg-background">
       <div className="flex flex-col items-center gap-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500" />
-        <div className="text-amber-500 font-mono text-sm">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-border" />
+        <div className="text-foreground font-mono text-sm">
           {t('nav.initializing', 'INITIALIZING STUDIO ENV...')}
         </div>
       </div>

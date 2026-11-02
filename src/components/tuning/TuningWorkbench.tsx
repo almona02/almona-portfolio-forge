@@ -283,7 +283,7 @@ export const TuningWorkbench: React.FC = () => {
         </aside>
 
         {/* Center Pane: Canvas (Digital Twin Visualization) */}
-        <main className="flex-1 bg-[#f0f2f5] p-8 flex items-center justify-center relative overflow-hidden">
+        <main className="flex-1 bg-muted p-8 flex items-center justify-center relative overflow-hidden">
           <div 
             className="absolute inset-0 opacity-5 pointer-events-none" 
             style={{ 

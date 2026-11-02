@@ -170,7 +170,7 @@ export const LanguageSwitcher: React.FC<{
               title={lang.name}
               className={`
                 h-9 w-9 rounded-full flex items-center justify-center text-base
-                ${isActive ? 'bg-amber-500 text-[#0a0a0a] shadow-lg shadow-amber-500/30 border border-amber-500/60' : 'bg-background text-amber-300 border border-amber-600/30 hover:border-amber-400 hover:text-amber-200'}
+                ${isActive ? 'bg-amber-500 text-foreground shadow-lg shadow-amber-500/30 border border-amber-500/60' : 'bg-background text-amber-300 border border-amber-600/30 hover:border-amber-400 hover:text-amber-200'}
                 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400/70
               `}
             >

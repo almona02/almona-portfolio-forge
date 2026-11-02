@@ -58,7 +58,7 @@ export const ManufacturingStatusBar: React.FC = () => {
   return (
     <footer
       className={cn(
-        'h-7 flex-shrink-0 border-t border-amber-600/20 bg-[#080808]',
+        'h-7 flex-shrink-0 border-t border-amber-600/20 bg-background',
         'flex items-center gap-3 sm:gap-4 px-2 sm:px-3 overflow-x-auto text-[10px] font-mono text-amber-700/90',
         'scrollbar-thin scrollbar-thumb-amber-900/40',
       )}

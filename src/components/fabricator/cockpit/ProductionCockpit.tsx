@@ -48,7 +48,7 @@ export const ProductionCockpit: React.FC<ProductionCockpitProps> = ({
       className="h-full min-h-0 grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)_240px] grid-rows-[auto_minmax(0,1fr)] gap-2 p-2"
       data-testid="production-cockpit"
     >
-      <aside className="border border-amber-600/20 bg-[#0d0d0d] overflow-auto lg:row-span-2">
+      <aside className="border border-amber-600/20 bg-background overflow-auto lg:row-span-2">
         <header className="px-3 py-2 text-[10px] uppercase tracking-widest text-warning border-b border-amber-600/20">
           {t('industrial.prod.batches', 'Batches / work orders')}
         </header>
@@ -67,7 +67,7 @@ export const ProductionCockpit: React.FC<ProductionCockpitProps> = ({
         )}
       </aside>
 
-      <section className="border border-amber-600/20 bg-[#0d0d0d] p-3">
+      <section className="border border-amber-600/20 bg-background p-3">
         <header className="text-[10px] uppercase tracking-widest text-warning mb-2">
           {t('industrial.prod.preview', 'Selected position')}
         </header>
@@ -89,7 +89,7 @@ export const ProductionCockpit: React.FC<ProductionCockpitProps> = ({
         )}
       </section>
 
-      <aside className="border border-amber-600/20 bg-[#0d0d0d] p-3 lg:row-span-2 overflow-auto space-y-3">
+      <aside className="border border-amber-600/20 bg-background p-3 lg:row-span-2 overflow-auto space-y-3">
         <header className="text-[10px] uppercase tracking-widest text-warning">
           {t('industrial.prod.readiness', 'Readiness')}
         </header>
@@ -136,7 +136,7 @@ export const ProductionCockpit: React.FC<ProductionCockpitProps> = ({
         </Button>
       </aside>
 
-      <section className="border border-amber-600/20 bg-[#0d0d0d] min-h-0 flex flex-col overflow-hidden">
+      <section className="border border-amber-600/20 bg-background min-h-0 flex flex-col overflow-hidden">
         <header className="px-3 py-2 text-[10px] uppercase tracking-widest text-warning border-b border-amber-600/20">
           {t('industrial.prod.cuts', 'Physical cuts')}
         </header>
@@ -147,7 +147,7 @@ export const ProductionCockpit: React.FC<ProductionCockpitProps> = ({
             </p>
           ) : (
             <table className="w-full text-xs">
-              <thead className="sticky top-0 bg-[#111] text-[10px] uppercase text-amber-700">
+              <thead className="sticky top-0 bg-background text-[10px] uppercase text-amber-700">
                 <tr>
                   <th className="text-start px-2 py-1">sourceCutId</th>
                   <th className="text-start px-2 py-1">Profile</th>

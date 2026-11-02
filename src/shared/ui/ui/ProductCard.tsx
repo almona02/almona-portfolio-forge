@@ -85,7 +85,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               />
               <button
                 type="button"
-                className="absolute top-3 right-3 inline-flex items-center justify-center h-9 w-9 rounded-full bg-foreground/90 text-foreground shadow-md shadow-black/20 ring-1 ring-white/70 hover:bg-card transition"
+                className="absolute top-3 right-3 inline-flex items-center justify-center h-9 w-9 rounded-full bg-card/95 text-card-foreground shadow-md shadow-black/20 ring-1 ring-white/70 hover:bg-card transition"
                 onClick={() => setShowVideo(false)}
                 aria-label="Close video"
               >
@@ -96,7 +96,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <OptimizedImage
               src={imageUrl}
               alt={title}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              className="w-full h-full object-contain bg-card transition-transform duration-300 group-hover:scale-105"
               lazy={true}
               quality={95}
               format="auto"
@@ -106,17 +106,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {youtubeUrl && !showVideo && isHover && (
             <button
               type="button"
-              className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px] text-white transition-colors hover:bg-black/30"
+              className="absolute inset-0 flex items-center justify-center bg-black/10 text-white transition-colors hover:bg-black/15 focus-visible:ring-2 focus-visible:ring-ring"
               onClick={() => setShowVideo(true)}
               aria-label={`Play video for ${title}`}
             >
-              <div className="flex items-center gap-2 bg-foreground/10 px-4 py-2 rounded-full border border-white/30">
+              <div className="flex items-center gap-2 bg-card/95 text-card-foreground px-4 py-2 rounded-full border border-border">
                 <span className="text-sm font-semibold">Play Video</span>
               </div>
             </button>
           )}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-almona-dark-default to-transparent opacity-50 pointer-events-none"></div>
+
       </div>
       
       <CardHeader className="pt-4 pb-2 px-4">

@@ -142,7 +142,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         animate="animate"
         whileHover="hover"
         whileTap="tap"
-        className={`group relative h-full flex flex-col bg-gradient-to-br from-background to-black rounded-xl border-2 transition-all duration-300 hover:shadow-xl ${
+        className={`group relative h-full flex flex-col surface-metal bg-card text-card-foreground rounded-xl border-2 transition-all duration-300 hover:shadow-xl ${
           isSelected
             ? 'border-amber-500 shadow-lg shadow-amber-500/20'
             : 'border-border hover:border-amber-400/50'
@@ -252,8 +252,8 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         )}
 
         {/* Quick Preview Overlay - CSS hover instead of Framer Motion for reliability */}
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-          <div className="flex gap-2 scale-90 group-hover:scale-100 transition-transform duration-200">
+        {(onQuickPreview || (machine.has3DModel && on3DView)) && <div className="absolute inset-0 bg-black/15 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+          <div className="flex gap-2 scale-90 group-hover:scale-100 group-focus-within:scale-100 transition-transform duration-200">
             {onQuickPreview && (
               <Button
                 size="sm"
@@ -272,7 +272,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 <Eye className="w-4 h-4 mr-1" />{copy("3D View")}</Button>
             )}
           </div>
-        </div>
+        </div>}
       </div>
 
       {/* Content */}

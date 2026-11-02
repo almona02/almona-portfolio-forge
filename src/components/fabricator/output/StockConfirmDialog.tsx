@@ -44,7 +44,7 @@ export const StockConfirmDialog: React.FC<StockConfirmDialogProps> = ({
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent
-        className="bg-[#111] border-amber-600/30 text-warning"
+        className="bg-background border-amber-600/30 text-warning"
         data-testid="stock-confirm-dialog"
       >
         <AlertDialogHeader>

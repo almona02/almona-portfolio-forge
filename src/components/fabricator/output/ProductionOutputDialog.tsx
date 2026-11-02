@@ -46,7 +46,7 @@ export const ProductionOutputDialog: React.FC<ProductionOutputDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="bg-[#111] border-amber-600/30 text-warning sm:max-w-lg"
+        className="bg-background border-amber-600/30 text-warning sm:max-w-lg"
         data-testid="production-output-dialog"
       >
         <DialogHeader>

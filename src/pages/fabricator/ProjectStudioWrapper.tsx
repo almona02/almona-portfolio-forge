@@ -46,7 +46,7 @@ export const ProjectStudioWrapper: React.FC = () => {
     return (
         <div className="flex flex-col h-full overflow-hidden">
             {/* View toggle */}
-            <div className="flex items-center justify-between px-6 py-3 border-b border-amber-600/20 bg-[#0c0c0c]">
+            <div className="flex items-center justify-between px-6 py-3 border-b border-amber-600/20 bg-background">
                 <div>
                     <h2 className="text-lg font-bold text-amber-200">
                         {projectMeta?.project_name || projectMeta?.project_code || projectId || 'Project'}

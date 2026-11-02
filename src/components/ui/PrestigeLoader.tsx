@@ -87,7 +87,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.6), 0 0 60px rgba(249, 115, 22, 0.4); }
           }
         `}</style>
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-background via-[#050505] to-background overflow-hidden" style={{ minHeight: '-webkit-fill-available' }}>
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-background via-background to-background overflow-hidden" style={{ minHeight: '-webkit-fill-available' }}>
           {/* Ancient Pattern Background - Hieroglyphic-inspired grid */}
           <div className="absolute inset-0 opacity-[0.03] sm:opacity-[0.05]">
             <div className="absolute inset-0" style={{
@@ -269,7 +269,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
                       <div className={cn(
                         "w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500",
                         active 
-                          ? "bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0a0a] shadow-lg shadow-amber-500/50" 
+                          ? "bg-gradient-to-r from-amber-400 to-amber-500 text-foreground shadow-lg shadow-amber-500/50"
                           : "bg-background border border-amber-600/20 text-amber-600/50"
                       )}>
                         <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />

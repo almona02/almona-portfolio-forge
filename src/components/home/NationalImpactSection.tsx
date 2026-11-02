@@ -20,7 +20,7 @@ export const NationalImpactSection = () => {
       <h2 className="typography-h2 text-foreground mb-8 text-center">{ar ? 'دعم احتياجات ورشتك' : 'Support for your workshop'}</h2>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">{items.map(([title, text, href]) =>
         <Link key={title} to={href} className="block rounded-2xl border border-amber-500/20 p-6 hover:border-amber-400">
-          <h3 className="text-xl text-amber-400 mb-3">{title}</h3><p className="text-foreground">{text}</p>
+          <h3 className="text-xl text-brand mb-3">{title}</h3><p className="text-foreground">{text}</p>
         </Link>)}</div>
     </div>
   </section>;

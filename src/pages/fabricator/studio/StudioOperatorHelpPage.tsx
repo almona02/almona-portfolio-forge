@@ -132,7 +132,7 @@ export const StudioOperatorHelpPage: React.FC = () => {
               principles.map((item, index) => (
                 <article
                   key={item.title}
-                  className="border border-amber-800/45 bg-[#0c0c0c] p-4 flex flex-col gap-2 print:border-border print:bg-card"
+                  className="border border-amber-800/45 bg-background p-4 flex flex-col gap-2 print:border-border print:bg-card"
                 >
                   <div className="flex items-baseline gap-2">
                     <span className="font-mono text-[10px] text-amber-600 tabular-nums">
@@ -165,7 +165,7 @@ export const StudioOperatorHelpPage: React.FC = () => {
                   key={`${step.label}-${index}`}
                   className={cn(
                     'flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 px-3 py-2.5',
-                    index % 2 === 0 ? 'bg-[#0c0c0c]' : 'bg-background',
+                    index % 2 === 0 ? 'bg-background' : 'bg-background',
                     'border-b border-amber-900/30 last:border-b-0 print:bg-card print:border-border',
                   )}
                 >
@@ -224,7 +224,7 @@ export const StudioOperatorHelpPage: React.FC = () => {
           <div className="space-y-3 text-sm text-amber-200/75 leading-relaxed print:text-foreground">
             <p>{t('roles.register')}</p>
             <p>{t('roles.privileged')}</p>
-            <div className="border border-amber-800/45 p-3 bg-[#0c0c0c] print:border-border print:bg-card">
+            <div className="border border-amber-800/45 p-3 bg-background print:border-border print:bg-card">
               <h3 className="text-xs font-semibold text-amber-300 mb-1 print:text-foreground">
                 {t('roles.shared_title')}
               </h3>

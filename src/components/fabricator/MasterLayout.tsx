@@ -1,3 +1,4 @@
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 /**
  * Master Layout Component - ALMONA Dark Gold Prestige Ultra
  * 
@@ -307,13 +308,13 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
         <UniversalNavSidebar />
 
       {/* Main Layout Content - Existing MasterLayout structure */}
-      <div className="flex flex-col flex-1 h-screen bg-background font-sans text-warning overflow-hidden relative">
+      <div className="flex flex-col flex-1 h-screen bg-background font-sans text-foreground overflow-hidden relative">
       {/* Classical Textured Background */}
       <div className="absolute inset-0 opacity-30" style={{
         backgroundImage: `
-          radial-gradient(circle at 2px 2px, rgba(245, 158, 11, 0.15) 1px, transparent 0),
-          linear-gradient(90deg, transparent 0%, rgba(245, 158, 11, 0.03) 50%, transparent 100%),
-          linear-gradient(0deg, transparent 0%, rgba(245, 158, 11, 0.03) 50%, transparent 100%)
+          radial-gradient(circle at 2px 2px, hsl(var(--border) / .3) 1px, transparent 0),
+          linear-gradient(90deg, transparent 0%, hsl(var(--border) / .08) 50%, transparent 100%),
+          linear-gradient(0deg, transparent 0%, hsl(var(--border) / .08) 50%, transparent 100%)
         `,
         backgroundSize: '40px 40px, 200px 200px, 200px 200px',
         backgroundPosition: '0 0, 0 0, 0 0'
@@ -322,26 +323,26 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
       {/* Ornate Border Frame */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Top Border with Pediment */}
-        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-amber-600/40 to-transparent" />
-        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-32 h-8 border-t border-x border-amber-600/50 rounded-t-lg" />
+        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-border/40 to-transparent" />
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-32 h-8 border-t border-x border-border rounded-t-lg" />
 
         {/* Side Pillars */}
-        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-600/30 via-amber-500/20 to-amber-600/30" />
-        <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-600/30 via-amber-500/20 to-amber-600/30" />
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-border/30 via-border/20 to-border/30" />
+        <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-border/30 via-border/20 to-border/30" />
 
         {/* Bottom Border */}
-        <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-amber-600/40 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-border/40 to-transparent" />
       </div>
 
       {/* ===== LUXURY TOP BAR (Compact 56px) ===== */}
-      <div className="h-14 border-b border-amber-600/40 flex items-center px-4 justify-between relative overflow-hidden z-10 card-glass-dark">
+      <div className="h-14 border-b border-border flex items-center px-4 justify-between relative overflow-hidden z-10 bg-card surface-metal">
         {/* Classical texture overlay */}
         <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
-          backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(245, 158, 11, 0.1) 2px, rgba(245, 158, 11, 0.1) 4px)'
+          backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, hsl(var(--border) / .15) 2px, hsl(var(--border) / .15) 4px)'
         }} />
 
         {/* Animated background gradient - minimized to thin line */}
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-amber-600/50 to-transparent animate-pulse pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-border/50 to-transparent animate-pulse pointer-events-none" />
 
         {/* Left Section: Logo + Title */}
         <div className="flex items-center gap-4 relative z-10 flex-1 min-w-0">
@@ -358,7 +359,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
             </div>
           </div>
 
-          <div className="h-6 w-px bg-gradient-to-b from-transparent via-amber-600/60 to-transparent flex-shrink-0" />
+          <div className="h-6 w-px bg-gradient-to-b from-transparent via-border/60 to-transparent flex-shrink-0" />
 
           <div className="flex flex-col min-w-0 flex-1 justify-center">
             <div className="text-xs text-warning font-medium truncate leading-tight">{pageTitle}</div>
@@ -369,6 +370,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
         {/* Right Section: Actions + Badge */}
         <div className="flex items-center gap-3 relative z-10 flex-shrink-0">
           {/* Notification Center - Gold Tier Feature */}
+          <ThemeToggle size="sm" />
           <NotificationCenterWrapper />
 
           <div className="flex items-center gap-1.5 px-2 py-1 card-dark rounded">
@@ -406,15 +408,15 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
           {/* Classical textured grid pattern */}
           <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
             backgroundImage: `
-              radial-gradient(circle at 2px 2px, rgba(245, 158, 11, 0.2) 1px, transparent 0),
-              repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(245, 158, 11, 0.05) 2px, rgba(245, 158, 11, 0.05) 4px)
+              radial-gradient(circle at 2px 2px, hsl(var(--border) / .25) 1px, transparent 0),
+              repeating-linear-gradient(45deg, transparent, transparent 2px, hsl(var(--border) / .1) 2px, hsl(var(--border) / .1) 4px)
             `,
             backgroundSize: '40px 40px, 100px 100px'
           }} />
 
           {/* Premium Toolbar - Only show in Design phase (not in Measuring) */}
           {shouldShowDesignToolbar && canvasToolbar && (
-            <div className="h-16 -xl border-b border-amber-600/30 flex items-center px-6 gap-4 relative z-10 card-glass-dark">
+            <div className="h-16 -xl border-b border-border flex items-center px-6 gap-4 relative z-10 bg-card surface-metal">
               {canvasToolbar}
             </div>
           )}
@@ -433,12 +435,12 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                 <div className="card-premium p-12 relative overflow-hidden">
                   {/* Classical corner accents with ornate design */}
                   <div className="absolute top-0 left-0 w-32 h-32">
-                    <div className="absolute top-0 left-0 w-24 h-24 border-t border-l border-amber-600/50 rounded-tl-lg" />
-                    <div className="absolute top-2 left-2 w-20 h-20 border-t border-l border-amber-500/30" />
+                    <div className="absolute top-0 left-0 w-24 h-24 border-t border-l border-border rounded-tl-lg" />
+                    <div className="absolute top-2 left-2 w-20 h-20 border-t border-l border-border" />
                   </div>
                   <div className="absolute bottom-0 right-0 w-32 h-32">
-                    <div className="absolute bottom-0 right-0 w-24 h-24 border-b border-r border-amber-600/50 rounded-br-lg" />
-                    <div className="absolute bottom-2 right-2 w-20 h-20 border-b border-r border-amber-500/30" />
+                    <div className="absolute bottom-0 right-0 w-24 h-24 border-b border-r border-border rounded-br-lg" />
+                    <div className="absolute bottom-2 right-2 w-20 h-20 border-b border-r border-border" />
                   </div>
 
                   {/* Grid Visualization */}
@@ -449,7 +451,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                         className="btn-secondary-dark"
                       >
                         {/* Classical shine effect */}
-                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-amber-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-border/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
 
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                           <div className="text-center">
@@ -486,11 +488,11 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
 
         {/* ===== RIGHT PANEL (400px) - Intelligence Dashboard ===== */}
         {shouldShowIntelligenceHub && (
-          <div className="hidden xl:flex w-80 2xl:w-96 border-l-2 flex-col relative z-10 card-glass-dark flex-shrink-0">
+          <div className="hidden xl:flex w-80 2xl:w-96 border-l-2 flex-col relative z-10 bg-card surface-metal flex-shrink-0">
             {/* Side pillar decoration */}
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-600/20 via-amber-500/10 to-amber-600/20" />
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-border/20 via-border/10 to-border/20" />
             {/* Panel Header */}
-            <div className="h-16 border-b border-amber-600/30 flex items-center px-6 justify-between">
+            <div className="h-16 border-b border-border flex items-center px-6 justify-between">
               <h3 className="typography-h3 text-sm text-warning tracking-[0.15em] flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-warning text-shadow-glow" />
                 Intelligence Hub
@@ -504,8 +506,8 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                       onClick={() => setActiveTab(tabId as any)}
                       className={`px-3 py-1 text-xs rounded border transition-all duration-300 ${
                         activeTab === tabId
-                          ? 'bg-background/80 text-warning border-amber-600/50 shadow-glow'
-                          : 'text-warning/60 hover:text-warning border-amber-600/20 hover:border-amber-500/40'
+                          ? 'bg-background/80 text-warning border-border shadow-glow'
+                          : 'text-warning/60 hover:text-warning border-border hover:border-border'
                       }`}
                     >
                       {tab}
@@ -517,12 +519,12 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
 
             {/* 3D Preview Window */}
             {activeTab === '3d' && (
-              <div className="h-64 border-b border-amber-600/30 bg-background relative overflow-hidden">
+              <div className="h-64 border-b border-border bg-background relative overflow-hidden">
                 {workspaceState.currentProject ? (
                   <React.Suspense fallback={
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b border-amber-500 mx-auto mb-2"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b border-border mx-auto mb-2"></div>
                         <div className="text-sm text-warning/70">Loading 3D Preview...</div>
                       </div>
                     </div>
@@ -546,13 +548,13 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                   </div>
                 )}
                 {/* Classical scan line effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-amber-600/10 to-transparent animate-pulse pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-b from-border/10 to-transparent animate-pulse pointer-events-none" />
               </div>
             )}
 
             {/* Validation Status */}
             {activeTab === 'properties' && (
-              <div className="p-6 border-b border-amber-600/20">
+              <div className="p-6 border-b border-border">
                 <div className="flex items-center gap-2 mb-4">
                   <Shield className="w-4 h-4 text-warning text-shadow-glow" />
                   <span className="text-xs font-bold text-warning uppercase tracking-[0.15em]">Validation Status</span>
@@ -601,7 +603,7 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
             )}
 
             {/* Export Actions */}
-            <div className="p-6 border-t border-amber-600/30 -sm card-glass-dark">
+            <div className="p-6 border-t border-border -sm card-glass-dark">
               <div className="grid grid-cols-2 gap-2">
                 <button className="btn-secondary-dark text-xs px-3 py-2">
                   Export DXF
@@ -622,9 +624,9 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
       </div>
 
       {/* ===== PRESTIGE STATUS BAR (Minimal 32px) ===== */}
-      <div className="h-8 border-t flex items-center px-4 text-[10px] justify-between -xl relative z-10 card-glass-dark">
+      <div className="h-8 border-t flex items-center px-4 text-[10px] justify-between -xl relative z-10 bg-card surface-metal">
         {/* Decorative horizontal bar */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-0.5 bg-gradient-to-r from-transparent via-amber-600/50 to-transparent" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-0.5 bg-gradient-to-r from-transparent via-border/50 to-transparent" />
 
         <div className="flex items-center gap-4 text-warning/80">
           <span className="flex items-center gap-1.5">
@@ -661,16 +663,16 @@ export const MasterLayout: React.FC<MasterLayoutProps> = ({
                 }, 2000);
               }}
             >
-              <div className="flex items-center gap-3 px-4 py-1.5 card-dark rounded border border-amber-600/30">
-                <div className="w-5 h-5 bg-gradient-to-br from-amber-600 to-amber-500 rounded border border-amber-400/50 flex items-center justify-center shadow-glow-premium flex-shrink-0">
-                  <Zap className="w-2.5 h-2.5 text-[#0a0a0a]" />
+              <div className="flex items-center gap-3 px-4 py-1.5 card-dark rounded border border-border">
+                <div className="w-5 h-5 bg-gradient-to-br from-border to-border rounded border border-border flex items-center justify-center shadow-glow-premium flex-shrink-0">
+                  <Zap className="w-2.5 h-2.5 text-foreground" />
                 </div>
                 <div className="flex-shrink-0">
                   <div className="text-[9px] text-warning uppercase tracking-[0.1em] font-bold leading-tight">Algorithm</div>
                   <div className="text-[10px] font-bold text-warning leading-tight">Greedy Heuristic</div>
                 </div>
                 {showAlgorithmPanel && (
-                  <div className="flex items-center gap-2 ml-2 pl-2 border-l border-amber-600/30">
+                  <div className="flex items-center gap-2 ml-2 pl-2 border-l border-border">
                     <div className="text-[9px] text-warning font-semibold">Waste: 15-20%</div>
                     <span className="text-warning/30">|</span>
                     <div className="text-[9px] text-warning font-semibold">&lt;100ms</div>

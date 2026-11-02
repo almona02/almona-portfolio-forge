@@ -47,7 +47,7 @@ export const ProjectPositionNavigator: React.FC<ProjectPositionNavigatorProps> =
 
   return (
     <div
-      className={cn('h-full flex flex-col min-h-0 bg-[#0d0d0d]', className)}
+      className={cn('h-full flex flex-col min-h-0 bg-background', className)}
       data-testid="project-position-navigator"
     >
       <div className="p-2 border-b border-amber-600/20 space-y-2">

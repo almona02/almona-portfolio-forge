@@ -35,7 +35,7 @@ export const OptimizationSolverInputsPanel: React.FC<OptimizationSolverInputsPan
 }) => {
   const profileIds = Object.keys(stockOptionsByProfile).sort();
   return (
-    <section data-testid="solver-inputs-panel" className="mx-4 mb-4 rounded border border-amber-600/20 bg-[#0d0d0d] p-3 text-xs text-primary-foreground space-y-3">
+    <section data-testid="solver-inputs-panel" className="mx-4 mb-4 rounded border border-amber-600/20 bg-background p-3 text-xs text-primary-foreground space-y-3">
       <header className="text-[10px] uppercase tracking-widest text-warning">Solver inputs (approved · revision-bound)</header>
 
       <div className="grid gap-3 sm:grid-cols-2">

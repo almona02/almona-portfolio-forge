@@ -11,7 +11,7 @@ import { AIAgentStatus } from "./AIAgentStatus";
 const HeroBackground = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
     <img src="/images/responsive/egyptian-industrial-hero-bg-v1-768w.webp" alt="" width={768} height={1360}
-      className="absolute inset-0 w-full h-full object-cover object-right opacity-40" decoding="async" />
+      className="absolute inset-0 w-full h-full object-cover object-right hero-photograph" decoding="async" />
   </div>
 );
 
@@ -153,19 +153,14 @@ const Hero = () => {
 
   // Gradient overlay style - theme-aware for dark mode
   // Uses CSS variables that adapt to theme
-  const gradientOverlayStyle = {
-    background: [
-      'radial-gradient(ellipse at 20% 50%, rgba(10, 10, 10, 0.98) 0%, rgba(10, 10, 10, 0.85) 40%, transparent 70%)',
-      'linear-gradient(to right, rgba(10, 10, 10, 0.97) 0%, rgba(26, 26, 26, 0.88) 25%, rgba(26, 26, 26, 0.75) 40%, rgba(26, 26, 26, 0.60) 55%, rgba(26, 26, 26, 0.45) 70%, rgba(10, 10, 10, 0.35) 100%)'
-    ].join(', ')
-  };
+  const gradientOverlayStyle = { background: 'var(--hero-overlay)' };
 
   // Render hero content immediately for LCP
   const heroContent = (
     <>
       {/* Enhanced gradient overlay - Egyptian desert gold + industrial dark - Theme-aware */}
       <div
-        className="absolute inset-0 z-[5] dark:opacity-100 opacity-90"
+        className="absolute inset-0 z-[5] opacity-100"
         style={gradientOverlayStyle}
       />
 
@@ -196,7 +191,7 @@ const Hero = () => {
                       variants={SLIDE_UP}
                       className={`inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4 backdrop-blur-sm ${slide.nationalFocus
                           ? "bg-green-500/20 border border-green-500/40 text-success"
-                          : "bg-amber-500/20 border border-amber-500/40 text-amber-400"
+                          : "bg-amber-500/20 border border-amber-500/40 text-brand"
                         }`}>
                       {slide.nationalFocus ? (
                         <>
@@ -215,11 +210,7 @@ const Hero = () => {
                   {/* Badge/Description - Optimized for mobile - Theme-aware colors */}
                   <motion.span
                     variants={SLIDE_UP}
-                    className="block mb-3 sm:mb-4 md:mb-5 text-xs sm:text-sm md:text-base lg:text-lg font-bold uppercase tracking-wider text-amber-400 dark:text-amber-400"
-                    style={{
-                      textShadow: '0 2px 8px rgba(0, 0, 0, 0.95), 0 0 20px rgba(251, 191, 36, 0.5), 0 1px 3px rgba(0, 0, 0, 1)',
-                      WebkitTextStroke: '0.5px rgba(0, 0, 0, 0.8)'
-                    }}
+                    className="block mb-3 sm:mb-4 md:mb-5 text-xs sm:text-sm md:text-base lg:text-lg font-bold uppercase tracking-wider text-brand dark:text-brand"
                     role="doc-subtitle"
                   >
                     {slide.description}
@@ -228,9 +219,9 @@ const Hero = () => {
                   {/* Main Title - Better mobile scaling - Theme-aware text colors */}
                   <motion.h1
                     variants={SLIDE_UP}
-                    className="typography-h1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl mb-3 sm:mb-4 md:mb-5 lg:mb-6 text-foreground dark:text-white leading-[1.1] sm:leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] dark:drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]"
+                    className="typography-h1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl mb-3 sm:mb-4 md:mb-5 lg:mb-6 text-foreground leading-[1.1] sm:leading-tight hero-copy-shadow"
                   >
-                    <span className="text-gradient-orange bg-gradient-to-r from-amber-400 to-amber-600 dark:from-amber-400 dark:to-amber-600 bg-clip-text text-transparent drop-shadow-[0_3px_8px_rgba(251,191,36,0.6)] dark:drop-shadow-[0_3px_8px_rgba(251,191,36,0.6)]">
+                    <span className="text-foreground">
                       {slide.title}
                     </span>
                   </motion.h1>
@@ -238,7 +229,7 @@ const Hero = () => {
                   {/* Subtitle - Better mobile scaling - Theme-aware text colors */}
                   <motion.h2
                     variants={SLIDE_UP}
-                    className="typography-h2 text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl text-foreground dark:text-white mb-4 sm:mb-5 md:mb-6 lg:mb-8 leading-[1.2] sm:leading-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)] dark:drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)]"
+                    className="typography-h2 text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl text-foreground mb-4 sm:mb-5 md:mb-6 lg:mb-8 leading-[1.2] sm:leading-tight hero-copy-shadow"
                   >
                     {slide.subtitle}
                   </motion.h2>
@@ -263,7 +254,7 @@ const Hero = () => {
                       <Button
                         variant="outline"
                         size="lg"
-                        className="w-full sm:w-auto px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-4 text-xs sm:text-sm md:text-base border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+                        className="w-full sm:w-auto px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-4 text-xs sm:text-sm md:text-base border-amber-500/30 text-brand hover:bg-amber-500/10"
                         leftIcon={<Phone className="h-4 w-4 sm:h-5 sm:w-5" />}
                       >
                         {t('hero.slides.fabricator_pro.cta_secondary')}

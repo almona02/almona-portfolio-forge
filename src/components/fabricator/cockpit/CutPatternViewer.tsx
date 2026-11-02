@@ -19,7 +19,7 @@ export const CutPatternViewer: React.FC<CutPatternViewerProps> = ({ plans }) => 
 
   return (
     <section
-      className="border border-amber-600/20 bg-[#0d0d0d]"
+      className="border border-amber-600/20 bg-background"
       data-testid="cut-pattern-viewer"
       aria-label={t('industrial.opt.visualizer', 'Cut pattern')}
     >

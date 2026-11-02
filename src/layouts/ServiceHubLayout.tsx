@@ -105,7 +105,7 @@ export default function ServiceHubLayout() {
             </div>
             {!isSidebarCollapsed && (
               <div className="flex flex-col">
-                 <span className="font-bold text-lg tracking-tight text-white">Service<span className="text-amber-500">Hub</span></span>
+                 <span className="font-bold text-lg tracking-tight text-white">Service<span className="text-foreground">Hub</span></span>
                  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">Gold Tier</span>
               </div>
             )}
@@ -124,7 +124,7 @@ export default function ServiceHubLayout() {
                             className={cn(
                                 "flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-all",
                                 activePersona === p 
-                                    ? "bg-amber-500/10 text-amber-500 font-medium" 
+                                    ? "bg-amber-500/10 text-foreground font-medium"
                                     : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
                             )}
                         >
@@ -151,7 +151,7 @@ export default function ServiceHubLayout() {
                   "relative flex items-center w-full rounded-lg transition-all duration-200 group",
                   isSidebarCollapsed ? "justify-center p-3" : "px-3 py-2.5",
                   isActive 
-                    ? "bg-gradient-to-r from-amber-500/20 to-transparent text-amber-500" 
+                    ? "bg-gradient-to-r from-amber-500/20 to-transparent text-foreground"
                     : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                 )}
                 title={isSidebarCollapsed ? item.label : undefined}
@@ -162,7 +162,7 @@ export default function ServiceHubLayout() {
                 <item.icon className={cn(
                     "flex-shrink-0 transition-colors", 
                     isSidebarCollapsed ? "w-6 h-6" : "w-5 h-5",
-                    isActive ? "text-amber-500" : "text-slate-500 group-hover:text-white"
+                    isActive ? "text-foreground" : "text-slate-500 group-hover:text-white"
                 )} />
                 
                 {!isSidebarCollapsed && (
@@ -227,7 +227,7 @@ export default function ServiceHubLayout() {
                 </button>
 
                 {/* User Generic Avatar */}
-                <div className="w-9 h-9 rounded-full bg-amber-500/20 text-amber-500 border border-amber-500/30 flex items-center justify-center font-bold">
+                <div className="w-9 h-9 rounded-full bg-amber-500/20 text-foreground border border-border flex items-center justify-center font-bold">
                     U
                 </div>
            </div>

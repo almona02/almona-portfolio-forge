@@ -1072,7 +1072,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 border-2 border-[#0a0a0a]"
+              className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 border-2 border-border"
             />
           )}
         </motion.button>
@@ -1095,7 +1095,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             className="btn-secondary w-full"
           >
             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-600 via-amber-500 to-amber-400 flex items-center justify-center flex-shrink-0 shadow-glow-strong ring-2 ring-amber-500/30">
-              <User className="w-3.5 h-3.5 text-[#0a0a0a] font-bold" />
+              <User className="w-3.5 h-3.5 text-foreground font-bold" />
             </div>
             {!isCollapsed && (
               <div className="flex-1 min-w-0 text-left">
@@ -1160,7 +1160,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-600 to-amber-500 flex items-center justify-center text-[#0a0a0a] font-bold shadow-lg shadow-amber-900/40 border border-amber-400/30">
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-600 to-amber-500 flex items-center justify-center text-foreground font-bold shadow-lg shadow-amber-900/40 border border-amber-400/30">
                     !
                   </div>
                   <div>
@@ -1213,7 +1213,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-600 via-amber-500 to-amber-400 flex items-center justify-center text-[#0a0a0a] font-bold shadow-lg shadow-amber-900/40">
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-600 via-amber-500 to-amber-400 flex items-center justify-center text-foreground font-bold shadow-lg shadow-amber-900/40">
                     ⓘ
                   </div>
                   <div>
@@ -1238,7 +1238,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       setIsMobileNavOpen(false);
                       void navigate('/');
                     }}
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-[#0a0a0a] shadow-lg shadow-amber-900/30 hover:from-amber-500 hover:to-amber-600 transition-colors border border-amber-400/30"
+                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-foreground shadow-lg shadow-amber-900/30 hover:from-amber-500 hover:to-amber-600 transition-colors border border-amber-400/30"
                   >
                     {t('confirmation.home.leave', 'Leave')}
                   </button>

@@ -33,7 +33,7 @@ export const RequiredCutsPanel: React.FC<RequiredCutsPanelProps> = ({ plans, pro
 
   return (
     <section
-      className="h-full min-h-0 flex flex-col border border-amber-600/20 bg-[#0d0d0d]"
+      className="h-full min-h-0 flex flex-col border border-amber-600/20 bg-background"
       data-testid="required-cuts-panel"
     >
       <header className="px-3 py-2 border-b border-amber-600/20 text-[10px] uppercase tracking-widest text-warning">
@@ -44,7 +44,7 @@ export const RequiredCutsPanel: React.FC<RequiredCutsPanelProps> = ({ plans, pro
           <p className="p-3 text-xs text-muted-foreground">{NOT_RECORDED}</p>
         ) : (
           <table className="w-full text-xs">
-            <thead className="sticky top-0 bg-[#111] text-[10px] uppercase text-amber-700">
+            <thead className="sticky top-0 bg-background text-[10px] uppercase text-amber-700">
               <tr>
                 <th className="text-start px-2 py-1 font-medium">Cut</th>
                 <th className="text-start px-2 py-1 font-medium">Profile</th>

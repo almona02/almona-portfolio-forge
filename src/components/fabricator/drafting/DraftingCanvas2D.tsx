@@ -878,7 +878,7 @@ export const DraftingCanvas2D: React.FC<DraftingCanvas2DProps> = ({
     >
       <div
         ref={containerRef}
-        className="relative w-full h-full bg-[#303030] overflow-hidden cursor-crosshair select-none"
+        className="relative w-full h-full bg-card overflow-hidden cursor-crosshair select-none"
         style={{ touchAction: 'none' }}
         onMouseDown={handleMouseDown}
         onMouseMove={(e) => mouseBatcher && mouseBatcher.schedule(e)}

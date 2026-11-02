@@ -37,7 +37,7 @@ for (const selector of [':root, :root.light', ':root.dark']) {
     const start = css.indexOf(selector + ' {');
     const block = css.slice(start, css.indexOf('}', start));
     const tokens = Object.fromEntries([...block.matchAll(/--([\w-]+): ([^;]+);/g)].map(m => [m[1], m[2]]));
-    for (const [fg, bg] of [['foreground','background'],['card-foreground','card'],['popover-foreground','popover'],['muted-foreground','background'],['muted-foreground','muted'],['primary-foreground','primary'],['accent-foreground','accent'],['brand-foreground','brand'],['destructive-foreground','destructive'],['warning','background'],['success','background'],['info','background']]) {
+    for (const [fg, bg] of [['foreground','background'],['card-foreground','card'],['popover-foreground','popover'],['muted-foreground','background'],['muted-foreground','muted'],['primary-foreground','primary'],['accent-foreground','accent'],['brand-foreground','brand'],['destructive-foreground','destructive'],['warning','background'],['success','background'],['info','background'],['metal-text','background'],['metal-text','card']]) {
       const a = luminance(tokens[fg]), b = luminance(tokens[bg]);
       const contrast = (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
       assert(contrast >= 4.5, `${fg} on ${bg}: ${contrast.toFixed(2)}:1`);
@@ -51,3 +51,10 @@ for (const selector of [':root, :root.light', ':root.dark']) {
     }
   });
 }
+
+test('active Studio layouts and product cards do not restore fixed black surfaces', () => {
+  for (const name of ['src/layouts/studio/StudioLayout.tsx', 'src/layouts/studio/ProductionStudioLayout.tsx', 'src/components/fabricator/shell/EngineeringInspector.tsx', 'src/components/fabricator/shell/ProjectPositionNavigator.tsx', 'src/shared/ui/ui/EnhancedProductCard.tsx']) {
+    const source = readFileSync(new URL('../' + name, import.meta.url), 'utf8');
+    assert.doesNotMatch(source, /(?:bg|from|via|to)-\[#(?:0a0a0a|080808|0d0d0d|0c0c0c)\]|to-black\b/, name);
+  }
+});

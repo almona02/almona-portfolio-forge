@@ -196,7 +196,7 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
       <Sheet open={navOpen} onOpenChange={setNavOpen}>
         <SheetContent
           side={rtl ? 'right' : 'left'}
-          className="w-72 p-0 bg-[#0d0d0d] border-amber-600/30"
+          className="w-72 p-0 bg-background border-amber-600/30"
         >
           <SheetHeader className="p-3 border-b border-amber-600/20">
             <SheetTitle className="text-warning text-sm">
@@ -214,7 +214,7 @@ export const DesignWorkspaceShell: React.FC<DesignWorkspaceShellProps> = ({
         <Sheet open={inspectorOpen} onOpenChange={setInspectorOpen}>
           <SheetContent
             side={rtl ? 'left' : 'right'}
-            className="w-80 p-0 bg-[#0d0d0d] border-amber-600/30"
+            className="w-80 p-0 bg-background border-amber-600/30"
           >
             <SheetHeader className="p-3 border-b border-amber-600/20">
               <SheetTitle className="text-warning text-sm">

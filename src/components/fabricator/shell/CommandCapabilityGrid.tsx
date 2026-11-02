@@ -176,22 +176,22 @@ function CapabilitySection({
             key={item.id}
             to={item.href}
             className={cn(
-              'group flex items-center justify-between gap-3 rounded-none border border-amber-600/25',
-              'bg-[#0c0c0c]/90 px-3.5 py-3 transition-colors',
+              'group flex items-center justify-between gap-3 rounded-none border border-border',
+              'bg-background/90 px-3.5 py-3 transition-colors',
               'hover:border-amber-500/50 hover:bg-amber-500/[0.04]',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
             )}
             data-testid={`command-capability-${item.id}`}
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center border border-amber-600/30 text-warning group-hover:text-warning">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center border border-amber-600/30 text-warning group-hover:text-brand">
                 {item.icon}
               </span>
               <div className="min-w-0">
-                <div className="text-sm font-medium text-warning truncate">
+                <div className="text-sm font-medium text-foreground truncate">
                   {item.title}
                 </div>
-                <div className="text-[10px] uppercase tracking-widest text-amber-700 font-mono truncate">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-mono truncate">
                   {item.engine}
                 </div>
               </div>

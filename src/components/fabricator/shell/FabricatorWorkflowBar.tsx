@@ -144,7 +144,7 @@ export const FabricatorWorkflowBar: React.FC = () => {
     <>
     <nav
       className={cn(
-        'flex items-center gap-0 px-3 py-1.5 bg-[#0c0c0c] border-b border-amber-600/20 overflow-x-auto',
+        'flex items-center gap-0 px-3 py-1.5 bg-card surface-metal border-b border-border overflow-x-auto',
         'scrollbar-thin scrollbar-thumb-amber-900/50',
       )}
       aria-label={t('industrial.workflow_nav', 'Manufacturing workflow')}
@@ -177,7 +177,7 @@ export const FabricatorWorkflowBar: React.FC = () => {
                 'flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-medium whitespace-nowrap',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
                 isActive &&
-                  'bg-amber-500/15 text-warning border border-amber-500/40',
+                  'bg-amber-500/15 text-warning border border-border',
                 !isActive && status === 'complete' && 'text-warning/80 hover:bg-amber-500/5',
                 !isActive && status === 'not_recorded' && 'text-muted-foreground hover:text-foreground',
                 !isActive &&
@@ -191,7 +191,7 @@ export const FabricatorWorkflowBar: React.FC = () => {
               <span
                 className={cn(
                   'w-4 h-4 rounded-full flex items-center justify-center border',
-                  isActive && 'border-amber-400 text-warning',
+                  isActive && 'border-border text-warning',
                   !isActive && status === 'complete' && 'border-emerald-500/70 text-success',
                   !isActive && status !== 'complete' && 'border-border text-muted-foreground',
                 )}
@@ -210,7 +210,7 @@ export const FabricatorWorkflowBar: React.FC = () => {
         );
       })}
     </nav>
-    {activeStage && blockedReason && <div role="status" className="border-b border-amber-600/20 bg-background px-4 py-2 text-xs text-warning break-words">{blockedReason} <Link className="ml-2 underline whitespace-nowrap" to={resolveStudioWorkflowHref(stageRecoveryStage(activeStage, evidence), ctx)}>Resolve prerequisites</Link></div>}
+    {activeStage && blockedReason && <div role="status" className="border-b border-border bg-background px-4 py-2 text-xs text-warning break-words">{blockedReason} <Link className="ml-2 underline whitespace-nowrap" to={resolveStudioWorkflowHref(stageRecoveryStage(activeStage, evidence), ctx)}>Resolve prerequisites</Link></div>}
     </>
   );
 };

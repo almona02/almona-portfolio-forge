@@ -1,21 +1,23 @@
 .profile-tuning-studio select,
 .profile-tuning-studio input,
 .profile-tuning-studio textarea {
-  background-color: #0d1320 !important; /* force solid background */
-  border-color: #374151 !important;
+  background-color: hsl(var(--card)) !important; /* force solid background */
+  border-color: hsl(var(--input)) !important;
 }
 
 .profile-tuning-studio [role="tab"] {
-  background-color: rgba(15, 23, 42, 0.9) !important;
-  border: 1px solid rgba(75, 85, 99, 0.7);
+  background-color: hsl(var(--card) / .95) !important;
+  border: 1px solid hsl(var(--border));
 }
 
 .profile-tuning-studio [role="tab"][data-state="active"] {
-  background-color: rgba(37, 99, 235, 0.18) !important;
+  background-color: hsl(var(--accent)) !important;
 }
 
 .profile-tuning-studio .tabs-list,
 .profile-tuning-studio .TabsList {
-  background-color: rgba(15, 23, 42, 0.9) !important;
+  background-color: hsl(var(--card) / .95) !important;
 }
 
+
+.profile-tuning-studio [role="tab"][data-state="active"] { color: hsl(var(--accent-foreground)); }

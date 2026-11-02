@@ -77,7 +77,7 @@ export const EngineeringInspector: React.FC<EngineeringInspectorProps> = ({
 
   return (
     <aside
-      className={cn('h-full overflow-y-auto bg-[#0d0d0d] p-3', className)}
+      className={cn('h-full overflow-y-auto bg-background p-3', className)}
       data-testid="engineering-inspector"
       data-selection={kind}
       data-occurrence-id={selectedOccurrence?.id || undefined}

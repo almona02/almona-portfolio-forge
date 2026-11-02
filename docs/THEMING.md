@@ -7,7 +7,7 @@ One `next-themes` provider wraps loading/error states and the router. Root `.lig
 | Light: RAL 1013 Oyster White | `#E3D9C6` | `#F5F0E6` | `#252526` |
 | Dark: RAL 9004 Signal Black | `#2B2B2C` | `#333334` | `#F5F1E8` |
 
-These are screen approximations, not paint color certification. References: [Oyster White](https://hues.page/ral-colors/1013), [Signal Black](https://hues.page/ral-colors/9004). HSL channels live in `src/styles/app-palettes.css`. Blue/gold brand accents remain separate from workspace and text colors.
+These are screen approximations, not paint color certification. References: [Oyster White](https://hues.page/ral-colors/1013), [Signal Black](https://hues.page/ral-colors/9004). HSL channels live in `src/styles/app-palettes.css`. ALMONA orange is a restrained action/link accent; aluminium gradients provide panel and toolbar depth. Brand accents remain separate from workspace and text colors.
 
 ## Component roles
 
@@ -28,3 +28,9 @@ Use `useTheme` from `next-themes` and `components/theme/ThemeToggle`. `theme` is
 ## Initial migration validation
 
 The RAL palette rollout replaces neutral utility colors across the existing UI rather than adding an override for each page. No manufacturing calculations, physical swatches, API permissions, or dependency versions are changed. Integration checks: 352 frontend test files passed (2,219 tests), five startup/contrast checks passed, and the type regression gate retained six existing errors with no new signatures or occurrence increases. Browser checks cover the real shared menu/dialog primitives, saved preference reload, cross-tab synchronization and a mobile RTL layout. The production marketplace route was visually reviewed in the light palette. Authenticated role dashboards still require normal signed-in preview review; token contrast checks are not a certification of every rendered page.
+
+## Surface refinement
+
+Studio layout wrappers, workflow bars, workshop engines, product card text panels and comparison dialogs share the palette, including older near-black utility backgrounds and Profile Tuning's input rules. `surface-metal` is reserved for panel/chrome depth; `text-metal` supplies readable aluminium-inspired text in both modes. The RAL base colors remain unchanged. Hero photography uses a mode-specific wash without changing image sources or restarting the carousel. Product images remain visible rather than receiving an unconditional dark overlay. Comparison controls stay opaque and keyboard reachable.
+
+The public-site smoke runs mobile and desktop checks with explicit light and dark preferences; do not disable axe color-contrast when extending it.

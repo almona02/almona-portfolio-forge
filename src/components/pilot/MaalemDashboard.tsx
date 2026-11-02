@@ -113,7 +113,7 @@ export const MaalemDashboard: React.FC = () => {
         </div>
 
         {/* CENTER: CANVAS */}
-        <div className="flex-1 bg-[#1a202c] relative flex flex-col items-center justify-center p-8">
+        <div className="flex-1 bg-background relative flex flex-col items-center justify-center p-8">
           <div className={`absolute top-4 px-6 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 z-20 max-w-md ${validation.status === 'success' ? 'bg-green-100 text-green-800' : validation.status === 'warning' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
             <div className={`w-3 h-3 rounded-full ${validation.status === 'success' ? 'bg-green-500' : validation.status === 'warning' ? 'bg-yellow-500' : 'bg-red-500'}`} />
             <div className="flex-1"><div>{validation.messageArabic}</div>{validation.maalemAdvice && <div className="text-xs mt-1 opacity-90">{validation.maalemAdvice}</div>}</div>
