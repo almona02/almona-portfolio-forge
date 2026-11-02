@@ -2,10 +2,11 @@ import { Suspense, memo } from 'react';
 import { lazyRetry } from '@/utils/lazyImport';
 import Hero from "@/components/home/Hero";
 import { DeferredSection } from "@/components/home/DeferredSection";
+import { NationalImpactSection } from "@/components/home/NationalImpactSection";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 
-// Lazy load non-critical sections to improve initial page load
-const NationalImpactSection = lazyRetry(() => import("@/components/home/NationalImpactSection").then(m => ({ default: m.NationalImpactSection })), 'NationalImpactSection');
+// Keep NationalImpactSection eager: a tiny homepage section must not die on stale Vite chunk hashes after deploy.
+// Lazy-load heavier below-the-fold sections with retry/reload recovery.
 const EgyptVision2030Section = lazyRetry(() => import("@/components/home/EgyptVision2030Section").then(m => ({ default: m.EgyptVision2030Section })), 'EgyptVision2030Section');
 const AboutSection = lazyRetry(() => import("@/components/home/AboutSection"), 'AboutSection');
 const ServicesSection = lazyRetry(() => import("@/components/home/ServicesSection"), 'ServicesSection');
@@ -24,11 +25,9 @@ const Index = memo(() => {
       {/* Critical: Hero loads immediately (above the fold) */}
       <Hero />
       
-      {/* Non-critical: Lazy load sections below the fold */}
+      {/* Eager: no separate hashed chunk that can 404 after a deploy race */}
       <DeferredSection label="Machinery, maintenance and training" href="/services">
-        <Suspense fallback={<SectionPlaceholder />}>
-          <NationalImpactSection />
-        </Suspense>
+        <NationalImpactSection />
       </DeferredSection>
       
       <DeferredSection label="Digital manufacturing proposal" href="/digital-egypt">
