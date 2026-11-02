@@ -15,7 +15,7 @@ References: AICS-001 Sections 1, 3, 4
 - Human validation required via explicit operator input for status and feedback (Section 4)
 
 ## Data Model
-Migration: `supabase/migrations/20260116_execution_workflow_tables.sql`
+Migration: `supabase/migrations/20260116000000_execution_workflow_tables.sql`
 
 Tables:
 - `execution_stages`: per-project production stages and status
