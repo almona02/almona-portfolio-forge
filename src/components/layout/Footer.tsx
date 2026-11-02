@@ -37,6 +37,9 @@ const Footer = () => {
                 <Link to="/services" className="text-muted-foreground hover:text-almona-orange transition-colors">{copy("Our Services")}</Link>
               </li>
               <li>
+                <a href="/dealer-verification-en" className="text-muted-foreground hover:text-almona-orange transition-colors">{copy("Official YILMAZ dealer certificate")}</a>
+              </li>
+              <li>
                 <Link to="/shop" className="text-muted-foreground hover:text-almona-orange transition-colors">{copy("Shop Online")}</Link>
               </li>
               <li>

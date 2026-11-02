@@ -120,7 +120,8 @@ const SEO = ({
             "postalCode": "12111",
             "addressCountry": "EG"
           },
-          "priceRange": "$$$",
+          "email": import.meta.env.VITE_CONTACT_EMAIL || "info@almona02.com",
+          "slogan": "Official Dealer Since 1991",
           "areaServed": {
             "@type": "Country",
             "name": "Egypt"
