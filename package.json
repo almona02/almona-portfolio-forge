@@ -82,6 +82,7 @@
     "dev": "vite",
     "build": "vite build --mode production && node scripts/render-public-catalogue.mjs && node scripts/retain-release-assets.mjs",
     "security:gate1": "node scripts/security/gate1-secret-scan.mjs",
+    "check:migrations": "node scripts/check-migration-version-format.mjs",
     "verify:shipability": "npm run security:gate1 && npm run type-check && npm run build",
     "build:analyze": "cross-env ANALYZE=true vite build --mode production",
     "build:optimized": "node scripts/optimize-build.js && vite build --mode production",
