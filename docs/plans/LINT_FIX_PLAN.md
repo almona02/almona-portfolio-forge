@@ -1,6 +1,6 @@
 # Deep Lint Fix Plan — Files from Lint Results
 
-**Source:** Consolidated from `lint_output.txt`, `lint_report.txt`, `lint_warnings_remaining.txt`, and `npm run lint`
+**Source:** Consolidated from [historical lint_output.txt](../archive/root-reports/lint_output.txt), [historical lint_report.txt](../archive/root-reports/lint_report.txt), `lint_warnings_remaining.txt`, and `npm run lint`
 
 **Status (2025-02-18):** P0/P1 completed. **Phase 2 ESLint**: `recommendedTypeChecked` + `projectService` enabled; type-aware rules set to `warn`; `allowJs` in tsconfig.app.json. **0 errors** (Products.tsx handleQuickPreview→_handleQuickPreview). ~19.4k warnings. **Fixes**: 3 unused-import errors (CommercialPage, Inventory); DraftingToolbar iconComponent `any`→`React.ComponentType`; App.tsx, smartDraw, fabricator.ts Gold Tier typing.
 

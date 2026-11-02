@@ -82,6 +82,10 @@ Arabic and English resources, right-to-left interfaces, Egyptian profile/system 
 - Bring workshop planning, spatial visualization and fabrication decisions closer together.
 - Deepen Arabic workshop workflows and governed YDT assistance while preserving deterministic engineering boundaries.
 
+## Repository organization
+
+See [Project layout](docs/PROJECT_LAYOUT.md) for source/tooling locations, retained historical artifacts and local output conventions. Regenerable reports and downloaded bundles belong in ignored `.artifacts/`, not the project root.
+
 ## Local development
 
 Use Node.js 22.22.2 (within the repository's Node 22 engine range), npm and Python 3.11 for backend work.
