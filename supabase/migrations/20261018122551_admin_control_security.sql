@@ -11,6 +11,26 @@ REVOKE INSERT, UPDATE, DELETE ON public.admin_audit_log FROM PUBLIC, anon, authe
 CREATE SCHEMA IF NOT EXISTS admin_private;
 REVOKE ALL ON SCHEMA admin_private FROM PUBLIC, anon, authenticated;
 
+-- The empty-database bootstrap intentionally starts with a minimal ticket table.
+-- Establish the production audit fields before attaching the column-specific trigger.
+-- Existing columns (including production enum types/defaults) are left untouched.
+DO $ticket_types$
+BEGIN
+  IF to_regtype('public.ticket_status') IS NULL THEN
+    CREATE TYPE public.ticket_status AS ENUM
+      ('open', 'assigned', 'in_progress', 'awaiting_parts', 'awaiting_customer',
+       'pending_approval', 'resolved', 'closed', 'cancelled');
+  END IF;
+  IF to_regtype('public.ticket_priority') IS NULL THEN
+    CREATE TYPE public.ticket_priority AS ENUM ('low', 'medium', 'high', 'critical', 'urgent');
+  END IF;
+END;
+$ticket_types$;
+ALTER TABLE public.service_tickets
+  ADD COLUMN IF NOT EXISTS assigned_to uuid REFERENCES public.profiles(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS status public.ticket_status NOT NULL DEFAULT 'open',
+  ADD COLUMN IF NOT EXISTS priority public.ticket_priority NOT NULL DEFAULT 'medium';
+
 -- Definer is needed only to append history while the caller has read-only grants.
 -- Kept outside exposed schemas; not callable by browser roles.
 CREATE OR REPLACE FUNCTION admin_private.record_entity_change()
