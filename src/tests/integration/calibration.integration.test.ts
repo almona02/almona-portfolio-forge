@@ -140,7 +140,7 @@ describe('Calibration System Integration Tests', () => {
       expect(mockComponents[0].profile.calibrations).toEqual([]);
     });
 
-    it('should use correct calibration for system pack', async () => {
+    it('should use correct calibration for system pack', () => {
       const rock60Calibration: CuttingCalibration = {
         ...calibration,
         systemPackId: 'rock60',
@@ -179,7 +179,7 @@ describe('Calibration System Integration Tests', () => {
       expect(activeCalibration2?.lengthModifier).toBe(1.5);
     });
 
-    it('should not apply inactive calibrations', async () => {
+    it('should not apply inactive calibrations', () => {
       const inactiveCalibration: CuttingCalibration = {
         ...calibration,
         isActive: false,
@@ -234,7 +234,7 @@ describe('Calibration System Integration Tests', () => {
       // (exact comparison depends on optimization algorithm)
     });
 
-    it('should handle multiple calibrations for different system packs', async () => {
+    it('should handle multiple calibrations for different system packs', () => {
       const calibrations: CuttingCalibration[] = [
         {
           id: 'cal-1',

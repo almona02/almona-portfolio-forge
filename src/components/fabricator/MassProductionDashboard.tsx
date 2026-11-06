@@ -110,10 +110,12 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
 
     try {
       const optimizer = new MassProductionOptimizer({
-        projectLoader: async (ids) =>
+        projectLoader: (ids) =>
+          Promise.resolve(
           ids
             .map((id) => optimizedProjectsById.get(id))
             .filter((p): p is WindowUnit => Boolean(p)),
+          ),
         userId,
       });
 

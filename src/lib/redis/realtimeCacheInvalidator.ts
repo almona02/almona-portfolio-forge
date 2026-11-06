@@ -162,7 +162,7 @@ export class RealtimeCacheInvalidator {
         {
           event: '*',
           schema: 'public',
-          table: 'system_packs',
+          table: 'fabricator_system_packs',
         },
         async (payload) => {
           console.log('[Cache Invalidation] System pack changed');

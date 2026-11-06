@@ -43,7 +43,7 @@ export interface AnalyticsDashboardData {
 class AnalyticsService {
   private events: AnalyticsEvent[] = [];
 
-  async trackEvent(event: AnalyticsEvent): Promise<void> {
+  trackEvent(event: AnalyticsEvent): Promise<void> {
     // In production, this would send to your analytics backend
     this.events.push(event);
     
@@ -60,9 +60,11 @@ class AnalyticsService {
     if (process.env.NODE_ENV === 'development') {
       console.log('Analytics Event:', event);
     }
+
+    return Promise.resolve();
   }
 
-  async getDashboardData(timeRange: '24h' | '7d' | '30d' = '7d'): Promise<AnalyticsDashboardData> {
+  getDashboardData(timeRange: '24h' | '7d' | '30d' = '7d'): AnalyticsDashboardData {
     // In production, this would fetch from your analytics database
     // For now, return mock data based on stored events
     

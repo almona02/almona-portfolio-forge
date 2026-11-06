@@ -2,8 +2,13 @@
 ALM 6510 MDB Export API
 =======================
 
-Generates MDB (Microsoft Access) files for Yılmaz ALM 6510 machines.
-The MDB file structure matches exactly the machine's software requirements.
+Produces an INTERMEDIATE JSON representation of the Table1 rows expected by
+Yilmaz ALM 6510 machine software. This is not a binary MDB file and must not
+be presented as controller-ready: it is a debug/interchange format until a
+real MDB encoder plus controller-import acceptance exist.
+
+All-or-nothing: any malformed or unconvertible cut rejects the entire export.
+A partial cut list must never reach the shop floor as if it were complete.
 """
 
 from fastapi import APIRouter, HTTPException, status
@@ -13,10 +18,13 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 import logging
 import json
-import io
+from pathlib import Path
 
 router = APIRouter(prefix="/alm6510", tags=["alm6510-export"])
 logger = logging.getLogger(__name__)
+
+#: Format marker for the intermediate (non-controller-ready) payload.
+INTERMEDIATE_FORMAT = "mdb-json-intermediate"
 
 
 # ============================================================================
@@ -85,7 +93,7 @@ def convert_cut_to_alm6510_record(
     cut_index: int = 1
 ) -> ALM6510CutRecord:
     """Convert a cut from optimization result to ALM 6510 MDB record"""
-    
+
     # Validate and extract length
     length_mm = cut.get("length", 0)
     if not isinstance(length_mm, (int, float)):
@@ -93,10 +101,10 @@ def convert_cut_to_alm6510_record(
             length_mm = float(length_mm)
         except (ValueError, TypeError):
             length_mm = 0
-    
+
     if length_mm <= 0:
         raise ValueError(f"Invalid cut length: {length_mm}. Length must be greater than 0.")
-    
+
     # Validate and extract angle
     angle_deg = cut.get("angle", 90)
     if not isinstance(angle_deg, (int, float)):
@@ -104,21 +112,21 @@ def convert_cut_to_alm6510_record(
             angle_deg = float(angle_deg)
         except (ValueError, TypeError):
             angle_deg = 90
-    
+
     # ALM 6510 format: length * 10, angle * 10
     length_formatted = str(int(round(length_mm * 10)))
     angle_formatted = int(round(angle_deg * 10))
-    
+
     # Get profile info with safe defaults
     profile = cut.get("profile", {})
     if not isinstance(profile, dict):
         profile = {}
-    
+
     profile_name = profile.get("name", "") or config.get("STOCK_NAME", "") or "UNKNOWN"
     profile_code = profile.get("code", "") or config.get("STOCK_CODE", "") or ""
     material = profile.get("material", "aluminum") or "aluminum"
     material_type = "A" if material.lower() in ("aluminum", "aluminium", "al") else "P"
-    
+
     # Safe extraction of numeric values
     def safe_int(value, default=0):
         if isinstance(value, (int, float)):
@@ -127,12 +135,12 @@ def convert_cut_to_alm6510_record(
             return int(float(value))
         except (ValueError, TypeError):
             return default
-    
+
     def safe_str(value, default=""):
         if value is None:
             return default
         return str(value) if value else default
-    
+
     return ALM6510CutRecord(
         PROGRAM_NO=config.get("PROGRAM_NO", 1),
         CUSTOMER_CODE=safe_str(config.get("CUSTOMER_CODE", "")),
@@ -175,8 +183,14 @@ def convert_cut_to_alm6510_record(
 
 
 def generate_mdb_json_structure(records: List[ALM6510CutRecord]) -> Dict[str, Any]:
-    """Generate JSON structure representing MDB table"""
+    """Generate JSON structure representing MDB table (intermediate format)."""
     return {
+        "format": INTERMEDIATE_FORMAT,
+        "controllerReady": False,
+        "warning": (
+            "Intermediate JSON, not a binary MDB file. Verify in the Yilmaz "
+            "controller software before production use."
+        ),
         "tableName": "Table1",
         "columns": [
             "PROGRAM_NO", "CUSTOMER_CODE", "CUSTOMER_NAME", "STOCK_CODE", "STOCK_NAME",
@@ -196,107 +210,147 @@ def generate_mdb_json_structure(records: List[ALM6510CutRecord]) -> Dict[str, An
 # API Endpoints
 # ============================================================================
 
+def build_alm6510_records(request: ALM6510ExportRequest) -> List[ALM6510CutRecord]:
+    """Validate a cutting plan and convert every cut, all-or-nothing.
+
+    Shared by the intermediate-JSON and binary-MDB endpoints so both formats
+    always carry identical records. Raises HTTPException on any failure.
+    """
+    # Validate request
+    if not request.cuttingPlan:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cutting plan is empty. Please generate optimization first."
+        )
+
+    if len(request.cuttingPlan) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No cuts found in cutting plan."
+        )
+
+    # Convert cutting plan to ALM 6510 records
+    records: List[ALM6510CutRecord] = []
+    bar_index = 1
+
+    # Group cuts by bar/stock. Malformed entries reject the export —
+    # they must never be silently dropped from a production file.
+    bars: Dict[int, List[Dict[str, Any]]] = {}
+    malformed_entries: List[str] = []
+    for position, cut in enumerate(request.cuttingPlan, 1):
+        if not isinstance(cut, dict):
+            malformed_entries.append(f"entry {position}: not a cut object")
+            continue
+
+        bar_no = cut.get("barIndex", bar_index)
+        if not isinstance(bar_no, int):
+            bar_no = bar_index
+
+        if bar_no not in bars:
+            bars[bar_no] = []
+        bars[bar_no].append(cut)
+
+    if malformed_entries:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "Export rejected: "
+                f"{len(malformed_entries)} malformed cutting-plan "
+                f"entr{'y' if len(malformed_entries) == 1 else 'ies'} "
+                "(all-or-nothing, no partial file was produced): "
+                + "; ".join(malformed_entries)
+            ),
+        )
+
+    if not bars:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No valid cuts found in cutting plan."
+        )
+
+    # Generate records for each bar. All-or-nothing: collect every
+    # conversion failure and reject the whole export when any cut fails.
+    failures: List[str] = []
+    for bar_no, cuts in sorted(bars.items()):
+        for cut_idx, cut in enumerate(cuts, 1):
+            try:
+                config = {
+                    "ORDER_NO": request.orderNumber or "",
+                    "CUSTOMER_CODE": request.customerCode or "",
+                    "CUSTOMER_NAME": request.customerName or "",
+                    "PROGRAM_NO": 1,
+                    "POSE_NO": request.project.get("positionNumber", 1) if request.project else 1,
+                }
+
+                record = convert_cut_to_alm6510_record(
+                    cut,
+                    config,
+                    bar_index=bar_no,
+                    cut_index=cut_idx
+                )
+                records.append(record)
+            except Exception as cut_error:
+                logger.error(f"Error converting cut {cut_idx} in bar {bar_no}: {cut_error}", exc_info=True)
+                component = cut.get("componentId", "?") if isinstance(cut, dict) else "?"
+                failures.append(f"bar {bar_no} cut {cut_idx} (component {component}): {cut_error}")
+
+    if failures:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "Export rejected: "
+                f"{len(failures)} of {len(request.cuttingPlan)} cuts failed "
+                "conversion (all-or-nothing, no partial file was produced): "
+                + "; ".join(failures)
+            ),
+        )
+
+    if not records:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to convert any cuts to ALM 6510 format. Please check your cutting plan data."
+        )
+
+    return records
+
+
 @router.post("/generate-mdb", response_class=Response)
 async def generate_alm6510_mdb(request: ALM6510ExportRequest):
     """
-    Generate ALM 6510 MDB file from cutting plan.
-    
-    Returns a downloadable MDB file (or JSON structure if MDB library unavailable).
+    Generate the ALM 6510 intermediate JSON payload from a cutting plan.
+
+    All-or-nothing: any malformed or unconvertible cut rejects the whole
+    export with HTTP 400. The response is intermediate JSON, not a binary
+    MDB file (see `format` / `controllerReady` fields and the
+    `X-Export-Format` header).
     """
     try:
         logger.info(f"Generating ALM 6510 MDB for order {request.orderNumber}")
-        
-        # Validate request
-        if not request.cuttingPlan:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Cutting plan is empty. Please generate optimization first."
-            )
-        
-        if len(request.cuttingPlan) == 0:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="No cuts found in cutting plan."
-            )
-        
-        # Convert cutting plan to ALM 6510 records
-        records: List[ALM6510CutRecord] = []
-        bar_index = 1
-        
-        # Group cuts by bar/stock
-        bars: Dict[int, List[Dict[str, Any]]] = {}
-        for cut in request.cuttingPlan:
-            if not isinstance(cut, dict):
-                logger.warning(f"Invalid cut format: {cut}")
-                continue
-                
-            bar_no = cut.get("barIndex", bar_index)
-            if not isinstance(bar_no, int):
-                bar_no = bar_index
-                
-            if bar_no not in bars:
-                bars[bar_no] = []
-            bars[bar_no].append(cut)
-        
-        if not bars:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="No valid cuts found in cutting plan."
-            )
-        
-        # Generate records for each bar
-        for bar_no, cuts in sorted(bars.items()):
-            for cut_idx, cut in enumerate(cuts, 1):
-                try:
-                    config = {
-                        "ORDER_NO": request.orderNumber or "",
-                        "CUSTOMER_CODE": request.customerCode or "",
-                        "CUSTOMER_NAME": request.customerName or "",
-                        "PROGRAM_NO": 1,
-                        "POSE_NO": request.project.get("positionNumber", 1) if request.project else 1,
-                    }
-                    
-                    record = convert_cut_to_alm6510_record(
-                        cut,
-                        config,
-                        bar_index=bar_no,
-                        cut_index=cut_idx
-                    )
-                    records.append(record)
-                except Exception as cut_error:
-                    logger.error(f"Error converting cut {cut_idx} in bar {bar_no}: {cut_error}", exc_info=True)
-                    # Continue with other cuts instead of failing completely
-                    continue
-        
-        if not records:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Failed to convert any cuts to ALM 6510 format. Please check your cutting plan data."
-            )
-        
-        # Generate MDB structure
+
+        records = build_alm6510_records(request)
+
+        # Generate the intermediate JSON structure. This is intentionally not
+        # a binary MDB file; see /generate-mdb-file for the Jet binary.
         mdb_structure = generate_mdb_json_structure(records)
-        
-        # For now, return JSON structure
-        # In production, use pyodbc or mdb-tools to create actual MDB file
         json_data = json.dumps(mdb_structure, indent=2, ensure_ascii=False)
-        
+
         # Create filename
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"ALM6510_{request.orderNumber}_{timestamp}.mdb.json"
-        
+
         logger.info(f"Generated {len(records)} records for ALM 6510 MDB")
-        
+
         return Response(
             content=json_data,
             media_type="application/json",
             headers={
                 "Content-Disposition": f"attachment; filename={filename}",
+                "X-Export-Format": INTERMEDIATE_FORMAT,
                 "X-MDB-Records": str(len(records)),
                 "X-MDB-Table": "Table1"
             }
         )
-        
+
     except HTTPException:
         # Re-raise HTTP exceptions as-is
         raise
@@ -311,8 +365,72 @@ async def generate_alm6510_mdb(request: ALM6510ExportRequest):
         )
 
 
+@router.post("/generate-mdb-file", response_class=Response)
+async def generate_alm6510_mdb_file(request: ALM6510ExportRequest):
+    """
+    Generate a real binary Jet (.mdb) file with the Table1 rows.
+
+    Same records and all-or-nothing contract as /generate-mdb. Requires the
+    workshop host setup (pyodbc + Access ODBC driver + template); when any
+    piece is missing the endpoint answers HTTP 501 with operator guidance
+    instead of a fake file. A produced file is read-back verified but still
+    needs the controller acceptance checklist before production use.
+    """
+    try:
+        logger.info(f"Generating binary ALM 6510 MDB for order {request.orderNumber}")
+
+        records = build_alm6510_records(request)
+
+        from services.alm6510_mdb_writer import MdbUnavailableError, write_mdb
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"ALM6510_{request.orderNumber}_{timestamp}.mdb"
+
+        import tempfile
+
+        with tempfile.TemporaryDirectory(prefix="alm6510_") as tmpdir:
+            dest = Path(tmpdir) / filename
+            try:
+                write_mdb(
+                    [record.dict() for record in records],
+                    dest,
+                )
+            except MdbUnavailableError as unavailable:
+                raise HTTPException(
+                    status_code=status.HTTP_501_NOT_IMPLEMENTED,
+                    detail=f"Binary MDB export unavailable: {unavailable.guidance}",
+                )
+            payload = dest.read_bytes()
+
+        logger.info(f"Generated binary MDB ({len(payload)} bytes, {len(records)} records)")
+
+        return Response(
+            content=payload,
+            media_type="application/x-msaccess",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}",
+                "X-Export-Format": "mdb-binary-jet",
+                "X-MDB-Records": str(len(records)),
+                "X-MDB-Table": "Table1",
+                "X-Controller-Acceptance": "required",
+            },
+        )
+
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
+    except Exception as e:
+        logger.error(f"Error generating binary ALM 6510 MDB: {e}", exc_info=True)
+        import traceback
+        error_trace = traceback.format_exc()
+        logger.error(f"Full traceback: {error_trace}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate binary MDB file: {str(e)}"
+        )
+
+
 @router.get("/health")
 async def health_check():
     """Health check endpoint"""
     return {"status": "ok", "service": "alm6510-export"}
-

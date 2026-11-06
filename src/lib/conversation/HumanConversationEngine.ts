@@ -333,7 +333,7 @@ export class HumanConversationEngine {
   /**
    * Generate personality-based response
    */
-  private async generatePersonalityResponse(
+  private generatePersonalityResponse(
     technicalAnswer: string,
     userMessage: string,
     memory: ConversationMemory,
@@ -362,7 +362,7 @@ export class HumanConversationEngine {
       response = this.addHumor(response, style);
     }
 
-    return response;
+    return Promise.resolve(response);
   }
 
   /**

@@ -56,10 +56,10 @@ export class TextureLibrary {
   /**
    * Get texture for material type
    */
-  async getTextureForMaterial(_config: TextureConfig): Promise<Texture | null> {
+  getTextureForMaterial(_config: TextureConfig): Promise<Texture | null> {
     // For now, return null (procedural textures will be used)
     // In production, this would load actual texture files
-    return null;
+    return Promise.resolve<Texture | null>(null);
   }
 
   /**

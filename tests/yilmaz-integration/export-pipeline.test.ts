@@ -348,7 +348,7 @@ describe('YilmazExportPipeline', () => {
       expect(result.files.mdb).not.toBeNull();
       expect(result.files.gcode).toBeNull();
       expect(result.files.csv).toBeNull();
-      expect(result.files.mdb!.filename.endsWith('.mdb')).toBe(true);
+      expect(result.files.mdb!.filename.endsWith('.mdb.json')).toBe(true);
       expect(() => JSON.parse(result.files.mdb!.content)).not.toThrow();
     });
 
@@ -361,7 +361,7 @@ describe('YilmazExportPipeline', () => {
       expect(result.files.mdb).not.toBeNull();
       expect(result.files.gcode!.filename.endsWith('.cnc')).toBe(true);
       expect(result.files.csv!.filename.endsWith('.csv')).toBe(true);
-      expect(result.files.mdb!.filename.endsWith('.mdb')).toBe(true);
+      expect(result.files.mdb!.filename.endsWith('.mdb.json')).toBe(true);
     });
   });
 
@@ -438,7 +438,7 @@ describe('YilmazFileFormats', () => {
       expect(bundle.gcode!.filename.endsWith('.cnc')).toBe(true);
       expect(bundle.csv!.filename).toContain('cutlist');
       expect(bundle.csv!.filename.endsWith('.csv')).toBe(true);
-      expect(bundle.mdb!.filename.endsWith('.mdb')).toBe(true);
+      expect(bundle.mdb!.filename.endsWith('.mdb.json')).toBe(true);
       expect(bundle.manifest!.filename).toContain('manifest');
       expect(bundle.manifest!.filename.endsWith('.json')).toBe(true);
     });

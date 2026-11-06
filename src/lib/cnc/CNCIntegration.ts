@@ -98,10 +98,10 @@ export class CNCIntegration {
   /**
    * Get real-time monitoring data for a machine
    */
-  async getMachineMonitoring(machineId: string): Promise<CNCMonitoringData | null> {
+  getMachineMonitoring(machineId: string): Promise<CNCMonitoringData | null> {
     const machine = this.machines.get(machineId);
     if (!machine) {
-      return null;
+      return Promise.resolve(null);
     }
 
     // TODO: Implement actual CNC controller integration
@@ -142,7 +142,7 @@ export class CNCIntegration {
       });
     }
 
-    return monitoringData;
+    return Promise.resolve(monitoringData);
   }
 
   /**
@@ -172,7 +172,7 @@ export class CNCIntegration {
   /**
    * Generate QR code cut list for mobile workshop use
    */
-  async generateQRCodeCutList(
+  generateQRCodeCutList(
     cuttingPlan: CuttingPlan,
     projectId: string,
     machineId: string
@@ -203,7 +203,7 @@ export class CNCIntegration {
     // TODO: Generate actual QR code (would use a QR code library)
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(JSON.stringify(cuts))}`;
 
-    return {
+    return Promise.resolve({
       qrCodeUrl,
       cutListId: `cutlist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       projectId,
@@ -211,13 +211,13 @@ export class CNCIntegration {
       cuts,
       instructions,
       generatedAt: new Date(),
-    };
+    });
   }
 
   /**
    * Get adaptive cutting parameters based on material batch
    */
-  async getAdaptiveParameters(
+  getAdaptiveParameters(
     cut: Cut,
     profile: Profile,
     materialBatchId?: string
@@ -240,13 +240,13 @@ export class CNCIntegration {
       adjustmentReason = `Adjusted for material batch ${materialBatchId}`;
     }
 
-    return {
+    return Promise.resolve({
       cutId: cut.cutId ?? cut.componentId ?? 'unknown',
       baseParameters,
       adjustedParameters,
       adjustmentReason,
       materialBatchId,
-    };
+    });
   }
 
   /**
@@ -276,7 +276,7 @@ export class CNCIntegration {
   /**
    * Send cutting plan to CNC machine
    */
-  async sendCuttingPlanToMachine(
+  sendCuttingPlanToMachine(
     machineId: string,
     _cuttingPlan: CuttingPlan,
     _projectId: string
@@ -287,10 +287,10 @@ export class CNCIntegration {
   }> {
     const machine = this.machines.get(machineId);
     if (!machine) {
-      return {
+      return Promise.resolve({
         success: false,
         error: 'Machine not found',
-      };
+      });
     }
 
     // TODO: Implement actual CNC controller communication
@@ -299,10 +299,10 @@ export class CNCIntegration {
 
     const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    return {
+    return Promise.resolve({
       success: true,
       jobId,
-    };
+    });
   }
 
   /**

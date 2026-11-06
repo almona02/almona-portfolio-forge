@@ -94,7 +94,7 @@ export class PDFExportService {
    * Embed SVG image from data URL
    * Converts SVG data URL to PNG for PDF embedding
    */
-  private async embedSVGFromDataUrl(dataUrl: string): Promise<any> {
+  private async embedSVGFromDataUrl(dataUrl: string): Promise<any> { await Promise.resolve();
     try {
       // Extract base64 data from data URL
       const base64Data = dataUrl.split(',')[1];
@@ -106,7 +106,7 @@ export class PDFExportService {
       // Create a temporary image element to convert SVG to PNG
       return new Promise((resolve, reject) => {
         const img = new Image();
-        img.onload = async () => {
+        img.onload = () => {
           try {
             // Create canvas to render SVG
             const canvas = document.createElement('canvas');
@@ -511,7 +511,7 @@ export class PDFExportService {
     return new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
   }
 
-  private async addHeader() {
+  private async addHeader() { await Promise.resolve();
     // Company Name
     const primaryColor = this.hexToRgb(this.branding.primaryColor || '#FF6B35');
     this.currentPage.drawText(this.branding.companyName, {
@@ -544,7 +544,7 @@ export class PDFExportService {
     this.currentY += 10;
   }
 
-  private async addFooter() {
+  private async addFooter() { await Promise.resolve();
     const footerY = 30;
     this.currentPage.drawText(
       `Generated on ${new Date().toLocaleDateString()}`,
@@ -565,7 +565,7 @@ export class PDFExportService {
     });
   }
 
-  private async addSectionTitle(title: string) {
+  private async addSectionTitle(title: string) { await Promise.resolve();
     if (this.currentY > this.pageHeight - 100) {
       this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
       this.currentY = this.margin;
@@ -593,7 +593,7 @@ export class PDFExportService {
     this.currentY += 15;
   }
 
-  private async addProjectInfo(project: WindowUnit, quote?: Quote) {
+  private async addProjectInfo(project: WindowUnit, quote?: Quote) { await Promise.resolve();
     const info: Array<[string, string]> = [
       ['Order Number:', project.orderNumber],
       ['Position Number:', project.posNumber],
@@ -635,7 +635,7 @@ export class PDFExportService {
     this.currentY += 10;
   }
 
-  private async addQuoteLineItems(quote: Quote) {
+  private async addQuoteLineItems(quote: Quote) { await Promise.resolve();
     const headers = ['Description', 'Qty', 'Unit Price', 'Total'];
     const colWidths = [300, 60, 80, 80];
     const startX = this.margin;
@@ -701,7 +701,7 @@ export class PDFExportService {
     this.currentY += 10;
   }
 
-  private async addQuoteSummary(quote: Quote) {
+  private async addQuoteSummary(quote: Quote) { await Promise.resolve();
     const summaryY = this.currentY;
 
     this.currentPage.drawText('Subtotal:', {
@@ -775,7 +775,7 @@ export class PDFExportService {
   /**
    * Scope of work & technical summary section
    */
-  private async addScopeAndTechnicalSections(_project: WindowUnit, quote: Quote) {
+  private async addScopeAndTechnicalSections(_project: WindowUnit, quote: Quote) { await Promise.resolve();
     const scope = quote.projectScope;
     const tech = quote.technicalSummary;
 
@@ -963,7 +963,7 @@ export class PDFExportService {
     });
   }
 
-  private async addSubSectionTitle(title: string) {
+  private async addSubSectionTitle(title: string) { await Promise.resolve();
     if (this.currentY > this.pageHeight - 60) {
       this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
       this.currentY = this.margin;
@@ -1058,7 +1058,7 @@ export class PDFExportService {
    * Add bar drawing visualization for a cutting plan
    * Creates a visual representation of the stock bar with cuts
    */
-  private async addBarDrawingVisualization(plan: CuttingPlan) {
+  private async addBarDrawingVisualization(plan: CuttingPlan) { await Promise.resolve();
     if (this.currentY > this.pageHeight - 200) {
       this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
       this.currentY = this.margin;
@@ -1212,7 +1212,7 @@ export class PDFExportService {
     });
   }
 
-  private async addHardwareList(hardware: import('@/types/fabricator').HardwareItemMinimal[]) {
+  private async addHardwareList(hardware: import('@/types/fabricator').HardwareItemMinimal[]) { await Promise.resolve();
     hardware.forEach((item) => {
       if (this.currentY > this.pageHeight - 50) {
         this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
@@ -1231,7 +1231,7 @@ export class PDFExportService {
     });
   }
 
-  private async addGlazingInfo(glazing: import('@/types/fabricator').GlazingSpecFlat) {
+  private async addGlazingInfo(glazing: import('@/types/fabricator').GlazingSpecFlat) { await Promise.resolve();
     const info: Array<[string, string]> = [['Type:', glazing.type ?? 'N/A']];
     if (glazing.thickness) info.push(['Thickness:', `${glazing.thickness}mm`]);
     if (glazing.spacer) info.push(['Spacer:', `${glazing.spacer}mm`]);
@@ -1256,7 +1256,7 @@ export class PDFExportService {
     });
   }
 
-  private async addAssemblyGuide(_project: WindowUnit) {
+  private async addAssemblyGuide(_project: WindowUnit) { await Promise.resolve();
     const steps = [
       '1. Prepare all components according to cutting list',
       '2. For ROCK 60 / 45° systems:',
@@ -1288,7 +1288,7 @@ export class PDFExportService {
     });
   }
 
-  private async addTableOfContents() {
+  private async addTableOfContents() { await Promise.resolve();
     this.currentPage.drawText('Table of Contents', {
       x: this.margin,
       y: this.pageHeight - this.currentY,

@@ -18,7 +18,7 @@ const pack = (id: string): Pack => ({ meta: { id }, profiles: [] });
 
 /** Resolve the most recent pending request. */
 function resolveLast(pending: Array<(packs: Pack[]) => void>, packs: Pack[]): Promise<void> {
-  return act(async () => { pending[pending.length - 1](packs); });
+  return act(() => { pending[pending.length - 1](packs); return Promise.resolve(); });
 }
 
 describe('engineering owner packs', () => {
@@ -38,7 +38,7 @@ describe('engineering owner packs', () => {
     await waitFor(() => expect(load).toHaveBeenCalledWith('owner-a'));
     act(() => auth.changed?.('SIGNED_IN', { user: { id: 'owner-b' } }));
     await waitFor(() => expect(result.current.some(pack => pack.meta.id === 'custom-b')).toBe(true));
-    await act(async () => resolveA([{ meta: { id: 'custom-a' }, profiles: [] }]));
+    await act(() => { resolveA([{ meta: { id: 'custom-a' }, profiles: [] }]); return Promise.resolve(); });
     expect(result.current.some(pack => pack.meta.id === 'custom-a')).toBe(false);
     act(() => auth.changed?.('SIGNED_OUT', null));
     expect(result.current.some(pack => pack.meta.id === 'custom-b')).toBe(false);
@@ -55,15 +55,15 @@ describe('engineering owner packs', () => {
 
     // The owner edits a profile while the first load is still in flight: a fresh
     // request must start rather than the invalidated promise being reused.
-    await act(async () => { window.dispatchEvent(new Event('customProfileAdded')); });
+    await act(() => { window.dispatchEvent(new Event('customProfileAdded')); return Promise.resolve(); });
     await waitFor(() => expect(load.mock.calls.length).toBeGreaterThan(callsAtMount));
 
     await resolveLast(pending, [pack('custom-fresh')]);
     await waitFor(() => expect(result.current.some(p => p.meta.id === 'custom-fresh')).toBe(true));
 
     // The superseded response arrives last and must not surface or repopulate the cache.
-    await act(async () => {
-      pending.slice(0, -1).forEach(resolve => resolve([pack('custom-stale')]));
+    await act(() => {
+      pending.slice(0, -1).forEach(resolve => resolve([pack('custom-stale')])); return Promise.resolve();
     });
     expect(result.current.some(p => p.meta.id === 'custom-stale')).toBe(false);
     expect(result.current.some(p => p.meta.id === 'custom-fresh')).toBe(true);
@@ -85,7 +85,7 @@ describe('engineering owner packs', () => {
     expect(result.current.some(p => p.meta.id === 'custom-late')).toBe(false);
 
     const callsBeforeNewSession = load.mock.calls.length;
-    await act(async () => { pending.forEach(resolve => resolve([pack('custom-late')])); });
+    await act(() => { pending.forEach(resolve => resolve([pack('custom-late')])); return Promise.resolve(); });
     expect(result.current.some(p => p.meta.id === 'custom-late')).toBe(false);
 
     // The next session must fetch again instead of reading a pre-logout cache entry.

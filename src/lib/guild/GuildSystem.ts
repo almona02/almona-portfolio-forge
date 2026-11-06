@@ -91,17 +91,17 @@ export class GuildSystem {
   /**
    * Get user's guild profile
    */
-  static async getUserGuildProfile(userId: string): Promise<GuildProfile | null> {
+  static getUserGuildProfile(userId: string): Promise<GuildProfile | null> {
     // TODO: Fetch from database
     // For now, return default APPRENTICE
-    return {
+    return Promise.resolve({
       userId,
       rank: 'APPRENTICE',
       title: GUILD_RANKS.APPRENTICE.title,
       joinedAt: new Date(),
       experiencePoints: 0,
       certifications: []
-    };
+    });
   }
 
   /**

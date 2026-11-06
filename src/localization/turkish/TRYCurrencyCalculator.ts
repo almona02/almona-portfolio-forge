@@ -353,10 +353,11 @@ export class TRYCurrencyCalculator {
   /**
    * Fetch latest exchange rates (would call API in real implementation)
    */
-  async fetchLatestRates(): Promise<void> {
+  fetchLatestRates(): Promise<void> {
     // In a real implementation, this would fetch from TCMB API or similar
     console.log('Fetching latest exchange rates...');
     // Placeholder - would make API call here
+    return Promise.resolve();
   }
 }
 

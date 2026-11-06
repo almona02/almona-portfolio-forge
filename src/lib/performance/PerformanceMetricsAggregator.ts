@@ -399,10 +399,10 @@ export class PerformanceMetricsAggregator {
   /**
    * Get database metrics (would be fetched from backend)
    */
-  private async getDatabaseMetrics(): Promise<DatabaseMetrics> {
+  private getDatabaseMetrics(): Promise<DatabaseMetrics> {
     // These would be fetched from backend API
     // For now, return placeholders
-    return {
+    return Promise.resolve<DatabaseMetrics>({
       avgQueryTime: {
         target: 50,
         current: null, // Fetched from backend
@@ -417,7 +417,7 @@ export class PerformanceMetricsAggregator {
         status: 'healthy',
         issues: [],
       },
-    };
+    });
   }
 
   /**

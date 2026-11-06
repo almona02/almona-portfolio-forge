@@ -139,8 +139,8 @@ export function solveMullionTransomLayout(input: MullionSolveInput): MullionSolv
 }
 
 /** Lazy entry for call sites that must not sync-import kiwi into light chunks. */
-export async function solveMullionTransomLayoutAsync(
+export function solveMullionTransomLayoutAsync(
   input: MullionSolveInput,
 ): Promise<MullionSolveResult> {
-  return solveMullionTransomLayout(input);
+  return Promise.resolve(solveMullionTransomLayout(input));
 }

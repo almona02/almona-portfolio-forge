@@ -36,14 +36,14 @@ const SparePartsWidget = ({ machineModel }: { machineModel: string }) => {
 
   useEffect(() => {
     // Simulate fetching spare parts for the machine model
-    const fetchSpareParts = async (model: string) => {
+    const fetchSpareParts = (model: string) => {
       // Placeholder data
       const allParts: SparePart[] = [
         { id: "1", name: "Blade Set", compatibleMachines: ["YILMAZ PRO-5000"], localStock: 5, price: 1200 },
         { id: "2", name: "Hydraulic Pump", compatibleMachines: ["YILMAZ PRO-5000"], localStock: 0, price: 3500 },
         { id: "3", name: "Motor Belt", compatibleMachines: ["YILMAZ PRO-5000"], localStock: 3, price: 800 },
       ];
-      return allParts.filter(part => part.compatibleMachines.includes(model));
+      return Promise.resolve(allParts.filter(part => part.compatibleMachines.includes(model)));
     };
 
     void fetchSpareParts(machineModel).then(setParts);

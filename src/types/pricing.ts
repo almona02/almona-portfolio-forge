@@ -151,6 +151,7 @@ export interface ProfilePriceResult {
   price: number;
   currency: string;
   source: 'system_pricing' | 'constants' | 'default';
+  provenance?: import('./catalogProvenance').PricingProvenance;
   profileCode: string;
   systemName?: string;
 }
@@ -162,6 +163,7 @@ export interface HardwarePriceResult {
   price: number;
   currency: string;
   source: 'system_pricing' | 'constants' | 'default';
+  provenance?: import('./catalogProvenance').PricingProvenance;
   hardwareCode: string;
 }
 
@@ -172,6 +174,7 @@ export interface GlazingPriceResult {
   pricePerSquareMeter: number;
   currency: string;
   source: 'system_pricing' | 'constants' | 'default';
+  provenance?: import('./catalogProvenance').PricingProvenance;
   glazingTypeId: string;
 }
 

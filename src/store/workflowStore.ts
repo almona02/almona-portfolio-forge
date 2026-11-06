@@ -190,7 +190,7 @@ export interface WorkflowState {
   canAccessStep: (step: string) => boolean;
   clearWorkflow: () => void;
   setCurrentProject: (project: WindowUnit | null) => void;
-  /** Soft align for shell header — does not wipe workflow when updating same pose. */
+  /** Soft align for shell header — same pose merges, a different pose invalidates downstream like setCurrentProject. */
   alignShellProject: (project: WindowUnit | null) => void;
   hydrateAuthoritativePosition: (identity: WorkflowIdentity, project: WindowUnit, review?: VerifiedReview) => void;
   markWorkflowDraftSaved: () => void;
@@ -397,7 +397,7 @@ export const useWorkflowStore = create<WorkflowState>()(
                   : state.designData,
             };
           }
-          return { currentProject: project };
+          return { currentProject: project, workflowDraftDirty: true, designData: null, bom: null, optimizationResult: null, quote: null, productionDocuments: null, stockReservation: null, positionRelease: null, deliveryAcknowledgement: null, completedSteps: downstreamFrom(state.completedSteps, 'design'), qualityApproval: null };
         });
       },
 

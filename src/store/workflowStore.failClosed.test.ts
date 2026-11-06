@@ -28,3 +28,52 @@ describe('workflow completion guards', () => {
     expect(canCompleteWorkflowStep({ ...state, measurementData: { width: '1200', height: '1400' } as MeasurementData }, 'measuring')).toBe(true);
   });
 });
+
+describe('alignShellProject pose switching (F03)', () => {
+  beforeEach(() => useWorkflowStore.getState().clearWorkflow());
+
+  const poseB = { ...project, id: 'position-2', orderNumber: 'ORDER-B' } as WindowUnit;
+
+  function seedPoseAArtifacts(): void {
+    useWorkflowStore.setState({
+      currentProject: project,
+      designData: project,
+      bom: { confidence: 1 } as never,
+      optimizationResult: result,
+      quote: { total: 10, currency: 'EGP' },
+      productionDocuments: { cutSheets: [], labels: [], generatedAt: 'now' },
+      qualityApproval: { approvalId: 'approval-1' } as never,
+      stockReservation: { reservedAt: 'now' } as never,
+      positionRelease: { releaseId: 'release-1' } as never,
+      deliveryAcknowledgement: { acknowledgementId: 'ack-1' } as never,
+    });
+  }
+
+  it('invalidates downstream artifacts when aligning to a different pose', () => {
+    seedPoseAArtifacts();
+    useWorkflowStore.getState().alignShellProject(poseB);
+    expect(useWorkflowStore.getState()).toMatchObject({
+      currentProject: { id: 'position-2' },
+      designData: null,
+      bom: null,
+      optimizationResult: null,
+      quote: null,
+      productionDocuments: null,
+      qualityApproval: null,
+      stockReservation: null,
+      positionRelease: null,
+      deliveryAcknowledgement: null,
+    });
+  });
+
+  it('preserves downstream artifacts when aligning the same pose', () => {
+    seedPoseAArtifacts();
+    useWorkflowStore.getState().alignShellProject({ ...project, status: 'delivered' } as WindowUnit);
+    expect(useWorkflowStore.getState()).toMatchObject({
+      currentProject: { id: 'position-1', status: 'delivered' },
+      optimizationResult: result,
+      quote: { total: 10, currency: 'EGP' },
+    });
+    expect(useWorkflowStore.getState().bom).not.toBeNull();
+  });
+});

@@ -50,21 +50,21 @@ export abstract class ConnectivityAdapter {
  * Uses JSON-RPC style communication (simulated for now)
  */
 export class OdooAdapter extends ConnectivityAdapter {
-    async connect(): Promise<boolean> {
+    connect(): Promise<boolean> {
         this.log('Connecting to Odoo instance...');
         // Simulate authentication
-        return true;
+        return Promise.resolve(true);
     }
 
-    async syncOrder(orderData: any): Promise<{ success: boolean; externalId?: string; error?: string }> {
+    syncOrder(orderData: any): Promise<{ success: boolean; externalId?: string; error?: string }> {
         this.log(`Syncing order ${orderData.id} to Odoo...`);
         // Mock API call
-        return { success: true, externalId: `ODOO-${Date.now()}` };
+        return Promise.resolve({ success: true, externalId: `ODOO-${Date.now()}` });
     }
 
-    async checkStock(sku: string): Promise<number> {
+    checkStock(sku: string): Promise<number> {
         this.log(`Checking stock for ${sku}...`);
-        return 100; // Mock stock
+        return Promise.resolve(100); // Mock stock
     }
 }
 
@@ -73,18 +73,18 @@ export class OdooAdapter extends ConnectivityAdapter {
  * Uses Service Layer (OData)
  */
 export class SAPAdapter extends ConnectivityAdapter {
-    async connect(): Promise<boolean> {
+    connect(): Promise<boolean> {
         this.log('Connecting to SAP Service Layer...');
-        return true;
+        return Promise.resolve(true);
     }
 
-    async syncOrder(_orderData: any): Promise<{ success: boolean; externalId?: string; error?: string }> {
+    syncOrder(_orderData: any): Promise<{ success: boolean; externalId?: string; error?: string }> {
         this.log(`Posting Sales Order to SAP...`);
-        return { success: true, externalId: `SAP-${Date.now()}` };
+        return Promise.resolve({ success: true, externalId: `SAP-${Date.now()}` });
     }
 
-    async checkStock(_sku: string): Promise<number> {
-        return 500; // Mock stock
+    checkStock(_sku: string): Promise<number> {
+        return Promise.resolve(500); // Mock stock
     }
 }
 

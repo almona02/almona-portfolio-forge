@@ -411,7 +411,7 @@ export const OptimizationPage: React.FC = () => {
                         <YilmazExportActionPanel positionId={poseId} />
                         <div className="flex flex-wrap justify-end gap-3">
                             <button type="button" disabled={isOptimizing || isExporting} className="px-4 py-2 border border-amber-600 text-amber-200 text-sm rounded disabled:opacity-50"
-                                onClick={async () => {
+                                onClick={() => void (async () => {
                                     if (!currentProject || !optimizationResult) return;
                                     setIsExporting(true);
                                     try {
@@ -427,7 +427,7 @@ export const OptimizationPage: React.FC = () => {
                                     } catch (error) {
                                         setOptimizationError(error instanceof Error ? error.message : 'Cut-list PDF export failed.');
                                     } finally { setIsExporting(false); }
-                                }}>
+                                })()}>
                                 {isExporting ? 'Generating PDF…' : 'Download cut-list PDF'}
                             </button>
                             <button

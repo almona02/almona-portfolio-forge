@@ -22,6 +22,7 @@ import {
   Receipt
 } from 'lucide-react';
 import { TicketCard } from '@/components/support/TicketCard';
+import { TicketStatus } from '@/types/tickets';
 import { useReducedMotionPref } from '@/hooks/useReducedMotionPref';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -464,7 +465,7 @@ const CustomerPortal = () => {
                         transition={{ delay: index * 0.1 }}
                       >
                         <TicketCard
-                          ticket={ticket}
+                          ticket={{ ...ticket, status: ticket.status as TicketStatus }}
                           onOpen={(id) => void navigate(`/support/tickets/${id}`)}
                           reducedMotion={reducedMotion}
                         />

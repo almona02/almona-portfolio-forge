@@ -12,11 +12,11 @@ function setup() {
   const context = { catalogueVersion: 'fresh-catalogue', ruleVersion: 'fresh-rule' };
   const steps = {
     isCurrent: () => state.current,
-    prepare: vi.fn(async () => ({ components: ['local-cut'] })),
+    prepare: vi.fn(() => Promise.resolve({ components: ['local-cut'] })),
     persist: vi.fn(async (_prepared: { components: string[] }) => {}),
-    read: vi.fn(async () => authoritative),
-    qualify: vi.fn(async (_saved: typeof authoritative) => context),
-    generate: vi.fn(async (saved: typeof authoritative, authority: typeof context) => ({ saved, authority })),
+    read: vi.fn(() => Promise.resolve(authoritative)),
+    qualify: vi.fn((_saved: typeof authoritative) => Promise.resolve(context)),
+    generate: vi.fn((saved: typeof authoritative, authority: typeof context) => Promise.resolve({ saved, authority })),
     publish: vi.fn(),
   };
   return { state, steps, authoritative, context };

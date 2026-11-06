@@ -27,7 +27,7 @@ export class SegmentReinforcementCalculator {
   /**
    * Calculate reinforcement for segment
    */
-  async calculateSegmentReinforcement(
+  calculateSegmentReinforcement(
     segmentHeight: number,
     isBottomSegment: boolean,
     isTopSegment: boolean,
@@ -44,7 +44,7 @@ export class SegmentReinforcementCalculator {
 
     // Determine reinforcement type
     if (segmentHeight > this.STEEL_REINFORCEMENT_THRESHOLD || totalLoad > 150) {
-      return {
+      return Promise.resolve({
         required: true,
         type: 'steel',
         dimensions: {
@@ -52,9 +52,9 @@ export class SegmentReinforcementCalculator {
           height: segmentHeight - 100 // Full height minus clearance
         },
         loadCapacity: 200 // kg
-      };
+      });
     } else if (segmentHeight > this.MAX_HEIGHT_ALUMINUM_REINFORCEMENT || totalLoad > 100) {
-      return {
+      return Promise.resolve({
         required: true,
         type: 'aluminum',
         dimensions: {
@@ -62,9 +62,9 @@ export class SegmentReinforcementCalculator {
           height: segmentHeight - 100
         },
         loadCapacity: 120 // kg
-      };
+      });
     } else if (segmentHeight > this.MAX_HEIGHT_WITHOUT_REINFORCEMENT) {
-      return {
+      return Promise.resolve({
         required: true,
         type: 'aluminum',
         dimensions: {
@@ -72,14 +72,14 @@ export class SegmentReinforcementCalculator {
           height: segmentHeight - 100
         },
         loadCapacity: 80 // kg
-      };
+      });
     }
 
-    return {
+    return Promise.resolve({
       required: false,
       type: 'none',
       loadCapacity: 50 // kg (no reinforcement)
-    };
+    });
   }
 }
 

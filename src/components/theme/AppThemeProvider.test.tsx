@@ -54,7 +54,7 @@ describe('application theme', () => {
   it('responds to another tab changing the saved preference', async () => {
     localStorage.setItem('theme', 'light');
     render(<AppThemeProvider><Controls /></AppThemeProvider>);
-    act(() => window.dispatchEvent(new StorageEvent('storage', { key: 'theme', newValue: 'dark' })));
+    act(() => { window.dispatchEvent(new StorageEvent('storage', { key: 'theme', newValue: 'dark' })); });
     await waitFor(() => expect(document.documentElement).toHaveClass('dark'));
   });
 });

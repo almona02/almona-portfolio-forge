@@ -34,7 +34,7 @@ export class YilmazAdapter extends BaseCNCAdapter {
   /**
    * Generate Yilmaz-specific G-code
    */
-  async generateGCode(
+  generateGCode(
     cuts: Cut[],
     _optimization: OptimizationResult,
     options?: Record<string, any>
@@ -90,13 +90,13 @@ export class YilmazAdapter extends BaseCNCAdapter {
     lines.push('M30'); // Program end and rewind
     lines.push('(END OF PROGRAM)');
 
-    return lines.join('\n');
+    return Promise.resolve(lines.join('\n'));
   }
 
   /**
    * Validate Yilmaz G-code
    */
-  async validateGCode(gcode: string): Promise<GCodeValidationResult> {
+  validateGCode(gcode: string): Promise<GCodeValidationResult> {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -147,20 +147,20 @@ export class YilmazAdapter extends BaseCNCAdapter {
     // Calculate checksum
     const checksum = this.calculateChecksum(gcode);
 
-    return {
+    return Promise.resolve({
       valid: errors.length === 0,
       errors,
       warnings,
       checksum,
       estimatedDuration,
       estimatedMaterialUsage,
-    };
+    });
   }
 
   /**
    * Simulate Yilmaz G-code execution
    */
-  async simulateGCode(gcode: string): Promise<GCodeSimulationResult> {
+  simulateGCode(gcode: string): Promise<GCodeSimulationResult> {
     const simulatedPath: Array<{ x: number; y: number; z: number; command: string }> = [];
     const collisions: Array<{ position: { x: number; y: number; z: number }; description: string }> = [];
     const outOfBounds: Array<{ position: { x: number; y: number; z: number }; limit: string }> = [];
@@ -216,13 +216,13 @@ export class YilmazAdapter extends BaseCNCAdapter {
       }
     }
 
-    return {
+    return Promise.resolve({
       success: collisions.length === 0 && outOfBounds.length === 0,
       simulatedPath,
       collisions,
       outOfBounds,
       warnings,
-    };
+    });
   }
 
   /**

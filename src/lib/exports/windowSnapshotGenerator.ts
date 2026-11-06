@@ -23,7 +23,7 @@ export interface WindowSnapshotOptions {
  * Generate a data URL snapshot of a 3D window model
  * This will be called from the browser to capture the actual 3D canvas
  */
-export async function generateWindowSnapshot(
+export function generateWindowSnapshot(
   _windowUnit: WindowUnit,
   options: WindowSnapshotOptions = {}
 ): Promise<string | null> {
@@ -44,10 +44,10 @@ export async function generateWindowSnapshot(
     
     // The actual implementation will be done in the component
     // that has access to the Three.js renderer
-    return null;
+    return Promise.resolve<string | null>(null);
   } catch (error) {
     console.error('Failed to generate window snapshot:', error);
-    return null;
+    return Promise.resolve<string | null>(null);
   }
 }
 
@@ -229,7 +229,7 @@ function generateFallbackPatternSVG(width: number, height: number): string {
  * Generate multiple window unit snapshots in a row layout
  * For PDF export with multiple units
  */
-export async function generateWindowUnitsRow(
+export function generateWindowUnitsRow(
   windowUnits: WindowUnit[],
   options: WindowSnapshotOptions = {}
 ): Promise<string | null> {
@@ -279,10 +279,10 @@ export async function generateWindowUnitsRow(
     
     combinedSvg += `</svg>`;
     
-    return `data:image/svg+xml;base64,${btoa(combinedSvg)}`;
+    return Promise.resolve<string | null>(`data:image/svg+xml;base64,${btoa(combinedSvg)}`);
   } catch (error) {
     console.error('Failed to generate window units row:', error);
-    return null;
+    return Promise.resolve<string | null>(null);
   }
 }
 

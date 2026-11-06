@@ -332,7 +332,7 @@ export class YilmazExportPipeline {
     let mdbContent = '';
 
     if (wantsMdb) {
-      this.emitProgress('generating-mdb', 70, 'Generating MDB cut list…', 'إنشاء قائمة القطع MDB…');
+      this.emitProgress('generating-mdb', 70, 'Generating MDB interchange file…', 'إنشاء ملف MDB الوسيط…');
       mdbContent = await this.generateCutListMDB(project, cuttingPlans);
     }
 
@@ -482,7 +482,7 @@ export class YilmazExportPipeline {
         gcodeLinesCount,
         generatedAt: new Date().toISOString(),
         locale: this.config.locale,
-        downloadableFormats: ['.cnc', '.csv', '.mdb', '.json'],
+        downloadableFormats: ['.cnc', '.csv', '.mdb.json', '.json'],
         mdbEncodingNote:
           'MDB payload is structured cut-list interchange JSON (not Jet binary). Human validation required before machine load.',
       },

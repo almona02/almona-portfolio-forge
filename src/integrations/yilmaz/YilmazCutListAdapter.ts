@@ -41,18 +41,18 @@ export class YilmazCutListAdapter {
   /**
    * Export cutting list to CSV format
    */
-  async exportToCSV(
+  exportToCSV(
     data: YilmazCutListData,
     options: YilmazExportOptions
   ): Promise<string> {
     const generator = this.selectGenerator(data, options);
-    return generator.generateCSV(data, options);
+    return Promise.resolve(generator.generateCSV(data, options));
   }
 
   /**
    * Export cutting list to MDB (Access) format
    */
-  async exportToMDB(
+  exportToMDB(
     data: YilmazCutListData,
     options: YilmazExportOptions
   ): Promise<Buffer> {
@@ -150,13 +150,13 @@ export class YilmazCutListAdapter {
   /**
    * Generate export with automatic format detection
    */
-  async export(
+  export(
     data: YilmazCutListData,
     options: YilmazExportOptions
   ): Promise<string | Buffer> {
     const validation = this.validateData(data);
     if (!validation.valid) {
-      throw new Error(`Validation failed: ${validation.errors.join(', ')}`);
+      return Promise.reject(new Error(`Validation failed: ${validation.errors.join(', ')}`));
     }
 
     if (options.format === 'csv') {

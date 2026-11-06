@@ -6,11 +6,11 @@ const mocks = vi.hoisted(() => ({ catalogue: vi.fn(), intake: vi.fn(), toast: vi
 vi.mock('@/lib/catalog/UnifiedProfileCatalog', () => ({ UnifiedProfileCatalog: { getAllSystems: mocks.catalogue } }));
 vi.mock('sonner', () => ({ toast: { success: mocks.toast, error: mocks.toast, message: mocks.toast } }));
 vi.mock('@/lib/supabase', () => ({ supabase: {
-  auth: { getUser: async () => ({ data: { user: { id: 'owner' } }, error: null }) },
-  from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { id: 'owner' }, error: null }) }) }) }),
+  auth: { getUser: () => Promise.resolve({ data: { user: { id: 'owner' } }, error: null }) },
+  from: () => ({ select: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve({ data: { id: 'owner' }, error: null }) }) }) }),
   rpc: mocks.rpc,
 } }));
-vi.mock('@/lib/fabricator/inventory/stockIntake', () => ({ hashIntakePayload: async () => 'hash', recordAtomicStockIntake: mocks.intake }));
+vi.mock('@/lib/fabricator/inventory/stockIntake', () => ({ hashIntakePayload: () => Promise.resolve('hash'), recordAtomicStockIntake: mocks.intake }));
 vi.mock('@/lib/fabricator/inventory/stockIntakeRequest', () => ({ resolveIntakeRequestId: () => 'request', clearPendingStockIntake: vi.fn() }));
 
 afterEach(cleanup);

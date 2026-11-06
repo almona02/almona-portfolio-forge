@@ -1,6 +1,6 @@
 /**
  * Compact operator entry point for Yilmaz CNC export inside the fabricator workflow.
- * Reuses useYilmazExport (WorkflowStore → pipeline → downloadable .cnc/.csv/.mdb).
+ * Reuses useYilmazExport (WorkflowStore → pipeline → downloadable .cnc/.csv/.mdb.json).
  */
 
 import { Button } from '@/shared/ui/ui/button';
@@ -19,10 +19,10 @@ export interface YilmazExportActionPanelProps {
 }
 
 const FORMAT_LABELS: Record<ExportFormat, string> = {
-  all: 'All (.cnc + .csv + .mdb)',
+  all: 'All (.cnc + .csv + .mdb.json)',
   gcode: 'CNC program (.cnc)',
   csv: 'Cut list (.csv)',
-  mdb: 'MDB cut list (.mdb)',
+  mdb: 'MDB interchange (.mdb.json)',
 };
 
 export const YilmazExportActionPanel: React.FC<YilmazExportActionPanelProps> = ({
@@ -53,7 +53,7 @@ export const YilmazExportActionPanel: React.FC<YilmazExportActionPanelProps> = (
       return;
     }
     downloadAll();
-    toast.success('Yilmaz export ready — downloading .cnc / .csv / .mdb');
+    toast.success('Yilmaz export ready — downloading .cnc / .csv / .mdb.json');
   }, [downloadAll, error, runExport]);
 
   return (

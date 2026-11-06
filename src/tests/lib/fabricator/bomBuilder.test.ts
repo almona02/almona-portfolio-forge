@@ -15,21 +15,21 @@ describe('ProductionBOMBuilder', () => {
   });
 
   describe('buildWindowBOM', () => {
-    it('should build BOM for valid window unit', async () => {
+    it('should build BOM for valid window unit', () => {
       // Note: This test would require mocking the PresetAwareBOMGenerator
       // For now, we'll test the structure and error handling
       expect(builder).toBeDefined();
       expect(typeof builder.buildWindowBOM).toBe('function');
     });
 
-    it('should handle invalid inputs gracefully', async () => {
+    it('should handle invalid inputs gracefully', () => {
       // Test with null/undefined inputs would require mocking
       expect(builder).toBeDefined();
     });
   });
 
   describe('buildBatchBOM', () => {
-    it('should handle batch BOM generation', async () => {
+    it('should handle batch BOM generation', () => {
       expect(typeof builder.buildBatchBOM).toBe('function');
     });
   });

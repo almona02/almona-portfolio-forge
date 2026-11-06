@@ -28,15 +28,15 @@ describe('authentication owner isolation', () => {
     mocks.getProfile.mockImplementation((id: string) => id === 'owner-a' ? new Promise(resolve => { finishA = resolve; }) : Promise.resolve({ id, role: 'customer' }));
     const queryClient = new QueryClient();
     render(<QueryClientProvider client={queryClient}><AuthProvider><Identity /></AuthProvider></QueryClientProvider>);
-    await act(async () => { mocks.listener!('SIGNED_IN', session('owner-a')); });
+    await act(() => { mocks.listener!('SIGNED_IN', session('owner-a')); return Promise.resolve(); });
     await waitFor(() => expect(mocks.getProfile).toHaveBeenCalledWith('owner-a'));
     queryClient.setQueryData(['private-records'], ['owner-a-record']);
     useWorkflowStore.setState({ workflowIdentity: { ownerUserId: 'owner-a', projectId: 'a', positionId: 'a', source: 'v2', revision: 1 } });
-    await act(async () => { mocks.listener!('SIGNED_IN', session('owner-b')); });
+    await act(() => { mocks.listener!('SIGNED_IN', session('owner-b')); return Promise.resolve(); });
     expect(screen.getByTestId('identity')).toHaveTextContent('anonymous');
     expect(queryClient.getQueryData(['private-records'])).toBeUndefined();
     expect(useWorkflowStore.getState().workflowIdentity).toBeNull();
-    await act(async () => { finishA({ id: 'owner-a', role: 'admin' }); });
+    await act(() => { finishA({ id: 'owner-a', role: 'admin' }); return Promise.resolve(); });
     await waitFor(() => expect(screen.getByTestId('identity')).toHaveTextContent('owner-b:customer'));
   });
 
@@ -45,8 +45,8 @@ describe('authentication owner isolation', () => {
     mocks.getSession.mockReturnValue(new Promise(resolve => { finishInitial = resolve; }));
     mocks.getProfile.mockImplementation((id: string) => Promise.resolve({ id, role: 'customer' }));
     render(<QueryClientProvider client={new QueryClient()}><AuthProvider><Identity /></AuthProvider></QueryClientProvider>);
-    await act(async () => { mocks.listener!('SIGNED_IN', session('owner-b')); });
-    await act(async () => { finishInitial({ data: { session: session('owner-a') }, error: null }); });
+    await act(() => { mocks.listener!('SIGNED_IN', session('owner-b')); return Promise.resolve(); });
+    await act(() => { finishInitial({ data: { session: session('owner-a') }, error: null }); return Promise.resolve(); });
     expect(screen.getByTestId('loading')).toHaveTextContent('true');
     await waitFor(() => expect(screen.getByTestId('identity')).toHaveTextContent('owner-b:customer'));
   });

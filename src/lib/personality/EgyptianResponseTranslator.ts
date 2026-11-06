@@ -28,17 +28,17 @@ export class EgyptianResponseTranslator {
   /**
    * Translate answer to user's dialect
    */
-  async translateAnswer(
+  translateAnswer(
     technicalAnswer: YDTAnswer,
     userType: UserType,
     location: string = 'cairo'
   ): Promise<TranslatedAnswer> {
-    return {
+    return Promise.resolve({
       technical: technicalAnswer.answer,
       maalem: this.translateToMaalem(technicalAnswer.answer, userType),
       simple: this.simplifyForUser(technicalAnswer.answer, userType),
       withMannerisms: this.addEgyptianMannerisms(technicalAnswer.answer, userType, location),
-    };
+    });
   }
 
   /**

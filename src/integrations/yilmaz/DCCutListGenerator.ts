@@ -84,7 +84,7 @@ export class DCCutListGenerator {
    * Note: In a browser environment, this would typically use a library
    * or be handled server-side. This is a placeholder structure.
    */
-  async generateMDB(
+  generateMDB(
     data: YilmazCutListData,
     _options: YilmazExportOptions
   ): Promise<Buffer> {
@@ -130,7 +130,7 @@ export class DCCutListGenerator {
     // In a real implementation, this would use a library like 'mdb-writer' or similar
     // For now, return a JSON representation that can be converted server-side
     const jsonData = JSON.stringify(mdbStructure);
-    return Buffer.from(jsonData, 'utf8');
+    return Promise.resolve(Buffer.from(jsonData, 'utf8'));
   }
 
   /**

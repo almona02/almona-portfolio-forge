@@ -42,7 +42,7 @@ export class StructuralAnalyzer {
   /**
    * Analyze structural impact of mullion placement
    */
-  async analyzeStructuralImpact(
+  analyzeStructuralImpact(
     windowUnit: WindowUnit,
     mullionPosition: number,
     mullionType: MullionType
@@ -113,14 +113,14 @@ export class StructuralAnalyzer {
       warnings.push('Large panel width may require additional support');
     }
 
-    return {
+    return Promise.resolve({
       isValid,
       maxDeflection,
       windLoadCapacity: windLoad,
       safetyFactor,
       load: totalLoad,
       warnings
-    };
+    });
   }
 
   /**

@@ -101,7 +101,7 @@ export class EgyptianOralTraditionMemory {
   /**
    * Create story from fact
    */
-  private async createStory(fact: ValidatedFact): Promise<string> {
+  private createStory(fact: ValidatedFact): Promise<string> {
     const templates = {
       trick: `في معلم في ${fact.region || 'القاهرة'}، كان بيواجه مشكلة. جرب ${fact.claim}، وقعد يلاقي نفسه الشغل بقي أسهل. دلوقتي كل الورش في المنطقة بتستخدم الطريقة دي.`,
       warning: `في ورشة في ${fact.region || 'القاهرة'}، جربت ${fact.claim}، وحصلت مشكلة كبيرة. المعلمين دلوقتي بيحذروا من الحاجة دي.`,
@@ -110,54 +110,54 @@ export class EgyptianOralTraditionMemory {
 
     // Determine fact type (simplified)
     if (fact.claim.includes('خطر') || fact.claim.includes('احذر')) {
-      return templates.warning;
+      return Promise.resolve(templates.warning);
     }
     if (fact.claim.includes('استخدم') || fact.claim.includes('جرب')) {
-      return templates.trick;
+      return Promise.resolve(templates.trick);
     }
-    return templates.advice;
+    return Promise.resolve(templates.advice);
   }
 
   /**
    * Create proverb from fact
    */
-  private async createProverb(fact: ValidatedFact): Promise<string> {
+  private createProverb(fact: ValidatedFact): Promise<string> {
 
     // Extract key words from claim
     const lowerClaim = fact.claim.toLowerCase();
 
     if (lowerClaim.includes('سولار') || lowerClaim.includes('ديزل')) {
-      return 'قطرة سولار على المنشار، والشغل بيتغير';
+      return Promise.resolve('قطرة سولار على المنشار، والشغل بيتغير');
     }
 
     if (lowerClaim.includes('مورد') || lowerClaim.includes('تاجر')) {
-      return 'خذ من المورد الموثوق، ومتاخدش من الغريب';
+      return Promise.resolve('خذ من المورد الموثوق، ومتاخدش من الغريب');
     }
 
     if (lowerClaim.includes('رمضان') || lowerClaim.includes('عيد')) {
-      return 'الشغل في رمضان نص السرعة، خلي الموعد بعد العيد';
+      return Promise.resolve('الشغل في رمضان نص السرعة، خلي الموعد بعد العيد');
     }
 
     // Default proverb
-    return `من الخبرة: ${fact.claim}`;
+    return Promise.resolve(`من الخبرة: ${fact.claim}`);
   }
 
   /**
    * Create warning from fact
    */
-  private async createWarning(fact: ValidatedFact): Promise<string> {
+  private createWarning(fact: ValidatedFact): Promise<string> {
     if (fact.claim.includes('خطر') || fact.claim.includes('احذر')) {
-      return `⚠️ تحذير: ${fact.claim}. المعلمين في ${fact.region || 'القاهرة'} بيحذروا من الحاجة دي.`;
+      return Promise.resolve(`⚠️ تحذير: ${fact.claim}. المعلمين في ${fact.region || 'القاهرة'} بيحذروا من الحاجة دي.`);
     }
 
-    return '';
+    return Promise.resolve('');
   }
 
   /**
    * Create advice from fact
    */
-  private async createAdvice(fact: ValidatedFact): Promise<string> {
-    return `نصيحة من المعلمين: ${fact.claim}. ده من الخبرة اللي جمعوها على السنين.`;
+  private createAdvice(fact: ValidatedFact): Promise<string> {
+    return Promise.resolve(`نصيحة من المعلمين: ${fact.claim}. ده من الخبرة اللي جمعوها على السنين.`);
   }
 
   /**

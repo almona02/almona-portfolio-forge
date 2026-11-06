@@ -38,7 +38,7 @@ export class ThermalBreakOptimizer {
   /**
    * Optimize thermal break for window
    */
-  async optimizeThermalBreak(
+  optimizeThermalBreak(
     windowUnit: WindowUnit
   ): Promise<ThermalBreakSpec> {
     const climate = this.climateAnalyzer.analyzeClimate(windowUnit);
@@ -106,7 +106,7 @@ export class ThermalBreakOptimizer {
       );
     }
 
-    return {
+    return Promise.resolve({
       type,
       width: 20, // mm (standard thermal break width)
       thermalResistance,
@@ -116,7 +116,7 @@ export class ThermalBreakOptimizer {
       totalCost,
       paybackPeriod,
       recommendations
-    };
+    });
   }
 
   /**
