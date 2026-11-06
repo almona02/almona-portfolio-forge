@@ -1,10 +1,10 @@
 /**
  * System Pricing Service
- * 
+ *
  * Unified service layer to bridge Rock60PricingSetup/PricingTuningStudio with PricingEngine.
  * Provides seamless integration between system_pricing (stored in profile specifications)
  * and BOM/quote calculations.
- * 
+ *
  * Features:
  * - Load system pricing from profile specifications
  * - Transform system_pricing format to PricingEngine format
@@ -13,7 +13,8 @@
  * - Support multi-currency conversion
  * - Cache pricing data for performance
  * - Support both workshop (constants) and enterprise (system_pricing) modes
- * 
+ * - Attach pricing provenance (version/source) to every system_pricing result
+ *
  * @since Pricing Tuning Studio - Gold Tier Enhancement
  */
 
@@ -24,6 +25,7 @@ import {
 } from '@/lib/fabricator/bom/egyptianPricingConstants';
 import { supabase } from '@/lib/supabase';
 import type { Profile } from '@/types/fabricator';
+import type { PricingProvenance } from '@/types/catalogProvenance';
 import type {
     GlazingPriceResult,
     HardwarePriceResult,
@@ -38,9 +40,18 @@ import type { Currency } from './PricingEngine';
  */
 interface PricingCacheEntry {
   data: SystemPricingState;
+  provenance: PricingProvenance | null;
   timestamp: number;
   profileId: string;
   systemName: string;
+}
+
+function readProvenanceSibling(specs: Record<string, unknown>): PricingProvenance | null {
+  const sibling = specs.system_pricing_provenance as PricingProvenance | undefined;
+  if (sibling && typeof sibling === 'object' && typeof sibling.version === 'number') {
+    return sibling;
+  }
+  return null;
 }
 
 /**
@@ -73,11 +84,29 @@ export class SystemPricingService {
     profileId: string,
     systemName?: string
   ): Promise<SystemPricingState | null> {
+    const entry = await this.getEntry(profileId, systemName);
+    return entry?.data ?? null;
+  }
+
+  /**
+   * Load system pricing with its provenance (version/source/who/when).
+   * Provenance is null for legacy rows that predate provenance stamping.
+   */
+  async getSystemPricingWithProvenance(
+    profileId: string,
+    systemName?: string
+  ): Promise<{ pricing: SystemPricingState; provenance: PricingProvenance | null } | null> {
+    const entry = await this.getEntry(profileId, systemName);
+    if (!entry) return null;
+    return { pricing: entry.data, provenance: entry.provenance };
+  }
+
+  private async getEntry(profileId: string, systemName?: string): Promise<PricingCacheEntry | null> {
     // Check cache first
     const cacheKey = `${profileId}_${systemName || 'default'}`;
     const cached = this.pricingCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
-      return cached.data;
+      return cached;
     }
 
     try {
@@ -92,8 +121,8 @@ export class SystemPricingService {
         return null;
       }
 
-      const specs = data.specifications || {};
-      
+      const specs = (data.specifications || {}) as Record<string, unknown>;
+
       // Try system_pricing first (new format), fallback to rock60_pricing (legacy)
       const pricing = (specs.system_pricing || specs.rock60_pricing) as
         | (SystemPricingState & { initialized?: boolean })
@@ -103,15 +132,18 @@ export class SystemPricingService {
         return null;
       }
 
-      // Cache the result
-      this.pricingCache.set(cacheKey, {
+      const entry: PricingCacheEntry = {
         data: pricing,
+        provenance: readProvenanceSibling(specs),
         timestamp: Date.now(),
         profileId,
         systemName: systemName || '',
-      });
+      };
 
-      return pricing;
+      // Cache the result
+      this.pricingCache.set(cacheKey, entry);
+
+      return entry;
     } catch (error) {
       console.error('Error loading system pricing:', error);
       return null;
@@ -129,7 +161,8 @@ export class SystemPricingService {
     profile: Profile,
     targetCurrency?: Currency
   ): Promise<ProfilePriceResult> {
-    const pricing = await this.getSystemPricing(profile.id, systemName);
+    const entry = await this.getEntry(profile.id, systemName);
+    const pricing = entry?.data;
 
     // If system_pricing exists and has price for this profile code
     if (pricing?.profilePrices?.[profileCode]) {
@@ -149,6 +182,7 @@ export class SystemPricingService {
         price: price * quantity,
         currency: (targetCurrency || pricing.currency) as Currency,
         source: 'system_pricing',
+        provenance: entry?.provenance ?? undefined,
         profileCode,
         systemName,
       };
@@ -194,7 +228,8 @@ export class SystemPricingService {
     profileId: string,
     targetCurrency?: Currency
   ): Promise<HardwarePriceResult> {
-    const pricing = await this.getSystemPricing(profileId, systemName);
+    const entry = await this.getEntry(profileId, systemName);
+    const pricing = entry?.data;
 
     // If system_pricing exists and has hardware price
     if (pricing?.hardware?.[hardwareCode]) {
@@ -214,6 +249,7 @@ export class SystemPricingService {
         price: price * quantity,
         currency: (targetCurrency || pricing.currency) as Currency,
         source: 'system_pricing',
+        provenance: entry?.provenance ?? undefined,
         hardwareCode,
       };
     }
@@ -252,7 +288,8 @@ export class SystemPricingService {
     profileId: string,
     targetCurrency?: Currency
   ): Promise<GlazingPriceResult> {
-    const pricing = await this.getSystemPricing(profileId, systemName);
+    const entry = await this.getEntry(profileId, systemName);
+    const pricing = entry?.data;
 
     // If system_pricing exists and has glazing type
     if (pricing?.glazingTypes) {
@@ -274,6 +311,7 @@ export class SystemPricingService {
           pricePerSquareMeter: pricePerM2,
           currency: (targetCurrency || pricing.currency) as Currency,
           source: 'system_pricing',
+          provenance: entry?.provenance ?? undefined,
           glazingTypeId,
         };
       }

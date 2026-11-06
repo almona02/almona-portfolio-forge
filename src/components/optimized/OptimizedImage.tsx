@@ -1,4 +1,4 @@
-﻿import { getBestImageFormat, getOptimizedImageUrl } from '@/lib/imageOptimization';
+import { getBestImageFormat, getOptimizedImageUrl } from '@/lib/imageOptimization';
 import { memo, useEffect, useRef, useState } from 'react';
 
 interface OptimizedImageProps {
@@ -163,47 +163,3 @@ export const OptimizedImage = memo<OptimizedImageProps>(({
 });
 
 OptimizedImage.displayName = 'OptimizedImage';
-
-// Responsive image component with multiple sources
-interface ResponsiveImageProps extends Omit<OptimizedImageProps, 'src'> {
-  src: string;
-  srcSet?: string;
-  sizes?: string;
-  breakpoints?: Array<{ width: number; media?: string }>;
-}
-
-export const ResponsiveImage = memo<ResponsiveImageProps>(({
-  src,
-  srcSet,
-  sizes,
-  breakpoints,
-  ...props
-}) => {
-  const [bestFormat, setBestFormat] = useState<'avif' | 'webp' | 'jpeg'>('jpeg');
-
-  useEffect(() => {
-    void getBestImageFormat().then(format => {
-      setBestFormat(format);
-    });
-  }, []);
-
-  // Generate responsive srcSet if breakpoints provided
-  const _responsiveSrcSet = breakpoints ? breakpoints
-    .map(({ width }) => `${getOptimizedImageUrl(src, { width, format: bestFormat === 'jpeg' ? 'auto' : bestFormat })} ${width}w`)
-    .join(', ') : srcSet;
-
-  const _responsiveSizes = breakpoints ? breakpoints
-    .map(({ media, width }) => media ? `${media} ${width}px` : `${width}px`)
-    .join(', ') : sizes;
-
-  return (
-    <OptimizedImage
-      src={src}
-      {...props}
-      // Note: srcSet and sizes would need to be handled differently in a real implementation
-      // as our current OptimizedImage component doesn't support them
-    />
-  );
-});
-
-ResponsiveImage.displayName = 'ResponsiveImage';

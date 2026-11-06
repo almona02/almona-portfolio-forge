@@ -575,7 +575,7 @@ const YilmazExportPage: React.FC = () => {
                         />
                         <FileCard
                           file={result.files.mdb}
-                          label="MDB Cut List"
+                          label="MDB Cut List (JSON interchange)"
                           icon={<FileText className="w-5 h-5 text-purple-600" />}
                           onDownload={handleDownloadFile}
                         />

@@ -462,7 +462,7 @@ export const FabricationWorkflowWizard: React.FC<FabricationWorkflowWizardProps>
           weight: totalWeight,
         },
         aggregatedByCategory,
-        systemPack: null, // Would need to load system pack
+
       };
 
       setBomData(bom);

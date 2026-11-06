@@ -1,12 +1,12 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ticketInteractiveClasses } from '@/lib/tickets/style';
-import { ServiceTicket } from '@/types/tickets';
+import { TicketStatus } from '@/types/tickets';
 import { TicketStatusBadge } from '@/components/support/TicketStatusBadge';
 import { Calendar, Clock } from 'lucide-react';
 
 interface TicketCardProps {
-  ticket: ServiceTicket & { message_count?: number };
+  ticket: { id: string; ticket_number?: string | null; title: string; description: string | null; status: TicketStatus; created_at: string; updated_at: string; message_count?: number };
   onOpen: (id: string) => void;
   selected?: boolean;
   reducedMotion?: boolean;
