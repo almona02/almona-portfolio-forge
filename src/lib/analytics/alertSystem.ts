@@ -299,9 +299,9 @@ class AlertSystem {
     return Date.now() - rule.lastTriggered.getTime() > cooldownMs;
   }
 
-  private async collectPerformanceData(): Promise<any> {
+  private collectPerformanceData(): Promise<any> {
     // Simulate performance data collection
-    return {
+    return Promise.resolve({
       first_contentful_paint: Math.random() * 3000,
       largest_contentful_paint: Math.random() * 4000,
       cumulative_layout_shift: Math.random() * 0.3,
@@ -310,29 +310,29 @@ class AlertSystem {
       bounce_rate: Math.random() * 100,
       conversion_rate: Math.random() * 10,
       error_rate: Math.random() * 10
-    };
+    });
   }
 
-  private async collectBusinessData(): Promise<any> {
+  private collectBusinessData(): Promise<any> {
     // Simulate business data collection
-    return {
+    return Promise.resolve({
       bounceRate: Math.random() * 100,
       conversionRate: Math.random() * 10,
       activeUsers: Math.floor(Math.random() * 5000),
       expectedUsers: 3000,
       revenue: Math.random() * 100000
-    };
+    });
   }
 
-  private async collectSystemData(): Promise<any> {
+  private collectSystemData(): Promise<any> {
     // Simulate system data collection
-    return {
+    return Promise.resolve({
       memoryUsage: Math.random() * 100,
       cpuUsage: Math.random() * 100,
       errorRate: Math.random() * 10,
       slowQueries: Math.floor(Math.random() * 20),
       apiResponseTime: Math.random() * 3000
-    };
+    });
   }
 
   private triggerAlert(alertData: Omit<Alert, 'id' | 'timestamp' | 'resolved'>): void {
@@ -380,9 +380,10 @@ class AlertSystem {
         id: 'notify-team',
         label: 'Notify Team',
         type: 'auto',
-        handler: async () => {
+        handler: () => {
           console.log('Notifying team about critical alert');
           // Implement team notification logic
+          return Promise.resolve();
         },
         executed: false
       });
@@ -393,9 +394,10 @@ class AlertSystem {
         id: 'clear-cache',
         label: 'Clear Cache',
         type: 'auto',
-        handler: async () => {
+        handler: () => {
           console.log('Clearing application cache');
           // Implement cache clearing logic
+          return Promise.resolve();
         },
         executed: false
       });
@@ -406,9 +408,10 @@ class AlertSystem {
         id: 'restart-service',
         label: 'Restart Service',
         type: 'manual',
-        handler: async () => {
+        handler: () => {
           console.log('Restarting service');
           // Implement service restart logic
+          return Promise.resolve();
         },
         executed: false
       });

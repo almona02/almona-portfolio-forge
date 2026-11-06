@@ -61,23 +61,23 @@ export class SupplierIntelligence {
   /**
    * Vet supplier
    */
-  async vetSupplier(supplierName: string): Promise<SupplierVerdict> {
+  vetSupplier(supplierName: string): Promise<SupplierVerdict> {
     const supplier = this.supplierDatabase[supplierName];
 
     if (!supplier) {
-      return {
+      return Promise.resolve({
         status: 'WARNING',
         message: 'Supplier not in database. Proceed with caution.',
         messageArabic: 'المورد مش موجود في قاعدة البيانات. تحرك بحذر.',
         maalemVoice: 'مش عارف الراجل ده. خد عينة صغيرة أول، متاخدش كمية كبيرة.',
         risks: ['unknown_supplier'],
         recommendations: ['Request sample first', 'Start with small order'],
-      };
+      });
     }
 
     // Check for critical risks
     if (supplier.risks.includes('mixes_weights')) {
-      return {
+      return Promise.resolve({
         status: 'WARNING',
         message: 'Technical: Inconsistent wall thickness detected in past batches.',
         messageArabic: 'تحذير: سماكة الجدار غير متسقة في دفعات سابقة.',
@@ -88,11 +88,11 @@ export class SupplierIntelligence {
           'Check wall thickness before accepting',
           'Consider alternative supplier for critical projects',
         ],
-      };
+      });
     }
 
     if (supplier.risks.includes('inconsistent_quality')) {
-      return {
+      return Promise.resolve({
         status: 'WARNING',
         message: 'Quality varies between batches. Inspect carefully.',
         messageArabic: 'الجودة تختلف بين الدفعات. افحص بعناية.',
@@ -103,34 +103,34 @@ export class SupplierIntelligence {
           'Test sample before full order',
           'Have backup supplier ready',
         ],
-      };
+      });
     }
 
     if (supplier.reputation === 'high' && supplier.trustLevel >= 8) {
-      return {
+      return Promise.resolve({
         status: 'OK',
         message: 'Trusted supplier with good reputation.',
         messageArabic: 'مورد موثوق بسمعة جيدة.',
         maalemVoice: 'الراجل ده معروف ونضيف. ممكن تاخد منه بدون قلق.',
         risks: [],
         recommendations: ['Continue relationship', 'Maintain good terms'],
-      };
+      });
     }
 
-    return {
+    return Promise.resolve({
       status: supplier.reputation === 'low' ? 'AVOID' : 'WARNING',
       message: `Supplier reputation: ${supplier.reputation}`,
       messageArabic: `سمعة المورد: ${supplier.reputation}`,
       maalemVoice: 'خلي بالك من المورد ده.',
       risks: supplier.risks,
       recommendations: ['Proceed with caution', 'Inspect all materials'],
-    };
+    });
   }
 
   /**
    * Get supplier recommendation
    */
-  async recommendSupplier(
+  recommendSupplier(
     location: string,
     priority: 'price' | 'quality' | 'balance' = 'balance'
   ): Promise<SupplierData | null> {
@@ -139,7 +139,7 @@ export class SupplierIntelligence {
     );
 
     if (suppliers.length === 0) {
-      return null;
+      return Promise.resolve(null);
     }
 
     // Sort by priority
@@ -159,7 +159,7 @@ export class SupplierIntelligence {
       });
     }
 
-    return suppliers[0] || null;
+    return Promise.resolve(suppliers[0] || null);
   }
 
   /**

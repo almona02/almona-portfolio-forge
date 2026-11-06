@@ -24,7 +24,7 @@ export class EquipmentRecommendationEngine {
   /**
    * Get equipment recommendations based on requirements
    */
-  async getRecommendations(
+  getRecommendations(
     requirements: EquipmentRequirement,
     availableProducts: Array<{
       id: string;
@@ -102,7 +102,7 @@ export class EquipmentRecommendationEngine {
     }
 
     // Sort by match score and return top 3
-    return recommendations.sort((a, b) => b.matchScore - a.matchScore).slice(0, 3);
+    return Promise.resolve(recommendations.sort((a, b) => b.matchScore - a.matchScore).slice(0, 3));
   }
 }
 

@@ -26,7 +26,7 @@ describe('invoice loading isolation', () => {
     mocks.order.mockResolvedValueOnce({ data: [], error: null });
     view.rerender(<ClientInvoiceViewer customerId="account-b" />);
     expect(await screen.findByText('No invoices found')).toBeInTheDocument();
-    await act(async () => resolve({ data: null, error: { message: 'late account-a error' } }));
+    await act(() => { resolve({ data: null, error: { message: 'late account-a error' } }); return Promise.resolve(); });
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.getByText('No invoices found')).toBeInTheDocument();
   });

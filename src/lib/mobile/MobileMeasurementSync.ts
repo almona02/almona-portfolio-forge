@@ -29,16 +29,16 @@ export class MobileBridge {
     /**
      * Receives a batch of measurements and converts them to positions
      */
-    static async processIncomingBatch(batch: MobileMeasurementBatch): Promise<{ projectId: string; count: number }> {
+    static processIncomingBatch(batch: MobileMeasurementBatch): Promise<{ projectId: string; count: number }> {
         console.log(`[MobileBridge] Processing batch from ${batch.surveyorId}`);
         
         // Logic to create/find project
         // Logic to map SiteMeasurement -> WindowUnit (Positions)
         
-        return { 
+        return Promise.resolve({ 
             projectId: batch.projectId || 'new-proj-123', 
             count: batch.measurements.length 
-        };
+        });
     }
 
     static validateBatch(batch: MobileMeasurementBatch): boolean {

@@ -129,7 +129,7 @@ export class MaalemDataCollector {
   /**
    * Record workshop conversation
    */
-  async recordConversation(conversation: WorkshopConversation): Promise<void> {
+  recordConversation(conversation: WorkshopConversation): Promise<void> {
     this.conversations.push(conversation);
 
     // Extract wisdom from conversation
@@ -141,17 +141,21 @@ export class MaalemDataCollector {
 
     // Extract stories
     this.extractStories(conversation);
+
+    return Promise.resolve();
   }
 
   /**
    * Record maalem interview
    */
-  async recordInterview(interview: MaalemInterview): Promise<void> {
+  recordInterview(interview: MaalemInterview): Promise<void> {
     this.interviews.push(interview);
 
     // Extract wisdom from interview
     const wisdom = this.extractWisdomFromInterview(interview);
     interview.wisdom = wisdom;
+
+    return Promise.resolve();
   }
 
   /**
@@ -326,15 +330,19 @@ export class MaalemDataCollector {
   /**
    * Add supplier to network
    */
-  async addSupplier(supplier: SupplierNetwork): Promise<void> {
+  addSupplier(supplier: SupplierNetwork): Promise<void> {
     this.suppliers.push(supplier);
+
+    return Promise.resolve();
   }
 
   /**
    * Add workshop trick
    */
-  async addTrick(trick: WorkshopTrick): Promise<void> {
+  addTrick(trick: WorkshopTrick): Promise<void> {
     this.tricks.push(trick);
+
+    return Promise.resolve();
   }
 
   /**
@@ -361,7 +369,7 @@ export class MaalemDataCollector {
   /**
    * Export data for YDT
    */
-  async exportForYDT(): Promise<{
+  exportForYDT(): Promise<{
     wisdom: ExtractedWisdom[];
     dialect: DialectEntry[];
     stories: ProblemSolvingStory[];
@@ -379,13 +387,13 @@ export class MaalemDataCollector {
       allWisdom.push(...interview.wisdom);
     }
 
-    return {
+    return Promise.resolve({
       wisdom: allWisdom,
       dialect: this.dialectDictionary,
       stories: this.stories,
       suppliers: this.suppliers,
       tricks: this.tricks,
-    };
+    });
   }
 }
 

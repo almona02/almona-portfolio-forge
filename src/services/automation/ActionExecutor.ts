@@ -132,7 +132,7 @@ export class ActionExecutor {
   /**
    * Handle email action
    */
-  private async handleEmailAction(
+  private handleEmailAction(
     config: ActionConfig,
     _context: ActionContext
   ): Promise<ActionExecutionResult> {
@@ -140,10 +140,10 @@ export class ActionExecutor {
       const { to, subject, body, template_id } = config.params;
 
       if (!to) {
-        return {
+        return Promise.resolve({
           success: false,
           error: 'Email "to" address is required',
-        };
+        });
       }
 
       // Import email service dynamically to avoid circular dependencies
@@ -154,27 +154,27 @@ export class ActionExecutor {
       // In production, this would call the email API service
       // await emailApi.sendEmail({ to, subject, body, template_id });
 
-      return {
+      return Promise.resolve({
         success: true,
         data: {
           sent_to: to,
           subject,
         },
-      };
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to send email';
-      return {
+      return Promise.resolve({
         success: false,
         error: errorMessage,
-      };
+      });
     }
   }
 
   /**
    * Handle update status action
    */
-  private async handleUpdateStatusAction(
+  private handleUpdateStatusAction(
     config: ActionConfig,
     _context: ActionContext
   ): Promise<ActionExecutionResult> {
@@ -182,36 +182,36 @@ export class ActionExecutor {
       const { entity_type, entity_id, status } = config.params;
 
       if (!entity_type || !entity_id || !status) {
-        return {
+        return Promise.resolve({
           success: false,
           error: 'entity_type, entity_id, and status are required',
-        };
+        });
       }
 
       // This would integrate with the appropriate API service
       // For now, return success (would need backend integration)
-      return {
+      return Promise.resolve({
         success: true,
         data: {
           entity_type,
           entity_id,
           status,
         },
-      };
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to update status';
-      return {
+      return Promise.resolve({
         success: false,
         error: errorMessage,
-      };
+      });
     }
   }
 
   /**
    * Handle create record action
    */
-  private async handleCreateRecordAction(
+  private handleCreateRecordAction(
     config: ActionConfig,
     _context: ActionContext
   ): Promise<ActionExecutionResult> {
@@ -219,28 +219,28 @@ export class ActionExecutor {
       const { record_type, record_data } = config.params;
 
       if (!record_type || !record_data) {
-        return {
+        return Promise.resolve({
           success: false,
           error: 'record_type and record_data are required',
-        };
+        });
       }
 
       // This would integrate with the appropriate API service
       // For now, return success (would need backend integration)
-      return {
+      return Promise.resolve({
         success: true,
         data: {
           record_type,
           record_id: `generated_${Date.now()}`,
         },
-      };
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to create record';
-      return {
+      return Promise.resolve({
         success: false,
         error: errorMessage,
-      };
+      });
     }
   }
 
@@ -389,7 +389,7 @@ export class ActionExecutor {
   /**
    * Handle script action (for custom JavaScript execution)
    */
-  private async handleScriptAction(
+  private handleScriptAction(
     config: ActionConfig,
     _context: ActionContext
   ): Promise<ActionExecutionResult> {
@@ -397,10 +397,10 @@ export class ActionExecutor {
       const { script } = config.params;
 
       if (!script) {
-        return {
+        return Promise.resolve({
           success: false,
           error: 'Script code is required',
-        };
+        });
       }
 
       // Note: In a real implementation, this would run in a sandboxed environment
@@ -410,17 +410,17 @@ export class ActionExecutor {
         'Script action execution is not fully implemented for security reasons'
       );
 
-      return {
+      return Promise.resolve({
         success: false,
         error: 'Script execution is not enabled for security reasons',
-      };
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to execute script';
-      return {
+      return Promise.resolve({
         success: false,
         error: errorMessage,
-      };
+      });
     }
   }
 }

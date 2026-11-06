@@ -118,7 +118,7 @@ export class CNCCutListGenerator {
   /**
    * Generate MDB (Access) file for CNC series machines
    */
-  async generateMDB(
+  generateMDB(
     data: YilmazCutListData,
     options: YilmazExportOptions
   ): Promise<Buffer> {
@@ -178,7 +178,7 @@ export class CNCCutListGenerator {
     };
 
     const jsonData = JSON.stringify(mdbStructure);
-    return Buffer.from(jsonData, 'utf8');
+    return Promise.resolve(Buffer.from(jsonData, 'utf8'));
   }
 
   /**

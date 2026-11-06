@@ -50,25 +50,25 @@ export class BiesseCNC extends CNCController {
     }
   }
 
-  async disconnect(): Promise<boolean> {
+  disconnect(): Promise<boolean> {
     try {
       this.stopStatusPolling();
       this.connectionStatus = 'disconnected';
       this.currentStatus.status = 'idle';
-      return true;
+      return Promise.resolve(true);
     } catch (error) {
       console.error('Biesse CNC disconnection error:', error);
-      return false;
+      return Promise.resolve(false);
     }
   }
 
-  async getStatus(): Promise<MachineStatus> {
+  getStatus(): Promise<MachineStatus> {
     // In real implementation, this would query the machine
     // For now, return current cached status
-    return { ...this.currentStatus };
+    return Promise.resolve({ ...this.currentStatus });
   }
 
-  async generateGCode(
+  generateGCode(
     cuttingPlan: CuttingPlan[],
     _options?: OptimizationOptions
   ): Promise<GCodeCommand[]> {
@@ -145,10 +145,10 @@ export class BiesseCNC extends CNCController {
       lineNumber: lineNumber++,
     });
 
-    return commands;
+    return Promise.resolve(commands);
   }
 
-  async optimizeToolPath(
+  optimizeToolPath(
     cuts: Cut[],
     profile: Profile,
     options?: OptimizationOptions
@@ -182,10 +182,10 @@ export class BiesseCNC extends CNCController {
       currentZ = 0; // Retract after cut
     }
 
-    return toolPaths;
+    return Promise.resolve(toolPaths);
   }
 
-  async sendGCode(commands: GCodeCommand[]): Promise<boolean> {
+  sendGCode(commands: GCodeCommand[]): Promise<boolean> {
     try {
       if (this.connectionStatus !== 'connected') {
         throw new Error('Machine not connected');
@@ -205,62 +205,62 @@ export class BiesseCNC extends CNCController {
       console.log('Sending G-code to Biesse machine:', gcodeString);
       // Actual implementation would send via serial/Ethernet
 
-      return true;
+      return Promise.resolve(true);
     } catch (error) {
       console.error('Error sending G-code:', error);
-      return false;
+      return Promise.resolve(false);
     }
   }
 
-  async startOperation(operationId: string): Promise<boolean> {
+  startOperation(operationId: string): Promise<boolean> {
     try {
       this.currentStatus.status = 'running';
       this.currentStatus.currentOperation = operationId;
       this.currentStatus.progress = 0;
       this.currentStatus.lastUpdate = new Date();
       this.notifyStatusSubscribers();
-      return true;
+      return Promise.resolve(true);
     } catch (error) {
       console.error('Error starting operation:', error);
-      return false;
+      return Promise.resolve(false);
     }
   }
 
-  async pauseOperation(): Promise<boolean> {
+  pauseOperation(): Promise<boolean> {
     try {
       this.currentStatus.status = 'paused';
       this.currentStatus.lastUpdate = new Date();
       this.notifyStatusSubscribers();
-      return true;
+      return Promise.resolve(true);
     } catch (error) {
       console.error('Error pausing operation:', error);
-      return false;
+      return Promise.resolve(false);
     }
   }
 
-  async resumeOperation(): Promise<boolean> {
+  resumeOperation(): Promise<boolean> {
     try {
       this.currentStatus.status = 'running';
       this.currentStatus.lastUpdate = new Date();
       this.notifyStatusSubscribers();
-      return true;
+      return Promise.resolve(true);
     } catch (error) {
       console.error('Error resuming operation:', error);
-      return false;
+      return Promise.resolve(false);
     }
   }
 
-  async stopOperation(): Promise<boolean> {
+  stopOperation(): Promise<boolean> {
     try {
       this.currentStatus.status = 'idle';
       this.currentStatus.currentOperation = undefined;
       this.currentStatus.progress = 0;
       this.currentStatus.lastUpdate = new Date();
       this.notifyStatusSubscribers();
-      return true;
+      return Promise.resolve(true);
     } catch (error) {
       console.error('Error stopping operation:', error);
-      return false;
+      return Promise.resolve(false);
     }
   }
 

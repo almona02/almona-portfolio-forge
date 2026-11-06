@@ -114,7 +114,7 @@ export const ReplayVerificationPanel: React.FC<ReplayVerificationPanelProps> = (
 
       const result = await DeterministicReplayEngine.replayComputation(
         request,
-        async () => {
+        () => {
           // This would normally be the actual computation function
           // For verification, we're just checking if the computation exists
           throw new Error('Computation function not provided for verification');

@@ -360,12 +360,12 @@ export const FlyScreenDesigner: React.FC<FlyScreenDesignerProps> = ({
                     Save as Preset
                   </Button>
                   <Button
-                    onClick={async () => {
+                    onClick={() => void (async () => {
                       // Export BOM
                       const bom = await engine.generateFlyScreenBOM(windowUnit, screenType);
                       console.log('Exporting BOM:', bom);
                       // TODO: Implement actual export functionality
-                    }}
+                    })()}
                     className="btn-primary"
                   >
                     <FileText className="h-4 w-4 mr-2" />

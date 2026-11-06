@@ -62,7 +62,7 @@ export const HardenerSelectionPanel: React.FC<HardenerSelectionPanelProps> = ({
   /**
    * Select hardener code with caching and performance optimization
    */
-  const selectHardener = useCallback(async () => {
+  const selectHardener = useCallback(() => {
     // Guard: Ensure windowUnit and systemPack are available
     if (!windowUnit || !systemPack) {
       setError('Window unit or system pack is missing');

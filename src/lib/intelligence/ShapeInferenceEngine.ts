@@ -179,35 +179,35 @@ export class ShapeInferenceEngine {
   /**
    * Generate pattern from shape type and input
    */
-  private async generatePattern(
+  private generatePattern(
     shapeType: ShapeType,
     userInput: UserInput
   ): Promise<ShapePattern | null> {
     const { dimensions } = userInput;
     
     if (!dimensions || !dimensions.width || !dimensions.height) {
-      return null;
+      return Promise.resolve(null);
     }
     
     switch (shapeType) {
       case 'l_shape':
-        return this.generateLShapePattern(dimensions, userInput);
+        return Promise.resolve(this.generateLShapePattern(dimensions, userInput));
       
       case 'u_shape':
-        return this.generateUShapePattern(dimensions, userInput);
+        return Promise.resolve(this.generateUShapePattern(dimensions, userInput));
       
       case 'irregular':
       case 'arched':
       case 'geometric_grid':
-        return this.generateIrregularPattern(shapeType, dimensions, userInput);
+        return Promise.resolve(this.generateIrregularPattern(shapeType, dimensions, userInput));
       
       case 'multi_segment':
       case 'curtain_wall':
       case 'room_divider':
-        return this.generateMultiSegmentPattern(shapeType, dimensions, userInput);
+        return Promise.resolve(this.generateMultiSegmentPattern(shapeType, dimensions, userInput));
       
       default:
-        return null;
+        return Promise.resolve(null);
     }
   }
   
@@ -650,10 +650,10 @@ export class ShapeInferenceEngine {
   /**
    * Get Egyptian workshop patterns (for pattern matching)
    */
-  async getEgyptianWorkshopPatterns(_workshopId?: string): Promise<ShapePattern[]> {
+  getEgyptianWorkshopPatterns(_workshopId?: string): Promise<ShapePattern[]> {
     // TODO: Load from database when workshop history is available
     // For now, return common patterns
-    return [];
+    return Promise.resolve([]);
   }
   
   /**

@@ -109,21 +109,21 @@ export class ProfileDataSheetParser {
    * Extract basic dimensions from image (v2 future - placeholder)
    * This would use ML/OCR to extract dimensions from data sheet images
    */
-  async parseImage(_imageFile: File): Promise<Partial<ParsedProfileData>> {
+  parseImage(_imageFile: File): Promise<Partial<ParsedProfileData>> {
     // v1: Return empty - manual input only
     // v2: Implement ML-based extraction
     console.warn('Image parsing not yet implemented. Use manual input.');
-    return {};
+    return Promise.resolve<Partial<ParsedProfileData>>({});
   }
 
   /**
    * Extract data from PDF (v2 future - placeholder)
    */
-  async parsePDF(_pdfFile: File): Promise<Partial<ParsedProfileData>> {
+  parsePDF(_pdfFile: File): Promise<Partial<ParsedProfileData>> {
     // v1: Return empty - manual input only
     // v2: Implement PDF text extraction and parsing
     console.warn('PDF parsing not yet implemented. Use manual input.');
-    return {};
+    return Promise.resolve<Partial<ParsedProfileData>>({});
   }
 }
 

@@ -71,7 +71,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
     }
   }, [project, optimization, generatingReport]);
 
-  const handleGenerateGlassReport = useCallback(async () => {
+  const handleGenerateGlassReport = useCallback(() => {
     if (!project || generatingReport) return;
 
     setGeneratingReport('glass');
@@ -92,7 +92,7 @@ const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
     }
   }, [project, generatingReport]);
 
-  const handleGenerateAccessoriesList = useCallback(async () => {
+  const handleGenerateAccessoriesList = useCallback(() => {
     if (!project || generatingReport) return;
 
     setGeneratingReport('accessories');

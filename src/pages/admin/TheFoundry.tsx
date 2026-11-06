@@ -120,7 +120,7 @@ export const TheFoundry: React.FC = () => {
     void checkAccess();
   }, []);
 
-  const handleDxfUpload = useCallback(async (file: File) => {
+  const handleDxfUpload = useCallback((file: File) => {
     setDxfFile(file);
     setUploadStatus('uploading');
 

@@ -30,7 +30,7 @@ describe('authoritative design completion', () => {
     expect(mocks.save).toHaveBeenCalledTimes(1);
     expect(mocks.save).toHaveBeenCalledWith(expect.objectContaining({ selectedPreset: 'sliding-2s', grid: { rows: 1 } }));
     expect(mocks.navigate).not.toHaveBeenCalled();
-    await act(async () => resolve());
+    await act(() => { resolve(); return Promise.resolve(); });
     expect(mocks.complete).toHaveBeenCalledWith('design');
     expect(mocks.navigate).toHaveBeenCalledWith(expect.stringContaining('/bom'));
   });

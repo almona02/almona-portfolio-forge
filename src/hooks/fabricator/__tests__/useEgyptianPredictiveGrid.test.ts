@@ -78,7 +78,7 @@ describe('useEgyptianPredictiveGrid', () => {
     }, { timeout: 1000 });
   });
 
-  it('should debounce rapid changes', async () => {
+  it('should debounce rapid changes', () => {
     vi.useFakeTimers();
     
     const { result, rerender } = renderHook(

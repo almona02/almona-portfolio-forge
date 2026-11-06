@@ -16,10 +16,10 @@ export class LocationService {
    * Geocode address to coordinates
    * In production, would use Google Maps Geocoding API or similar
    */
-  async geocodeAddress(_address: string): Promise<Location | null> {
+  geocodeAddress(_address: string): Promise<Location | null> {
     // Placeholder - in production would call geocoding API
     // For now, return null and let user manually enter coordinates
-    return null;
+    return Promise.resolve<Location | null>(null);
   }
 
   /**
@@ -59,12 +59,12 @@ export class LocationService {
    * Get city and governorate from coordinates
    * In production, would use reverse geocoding API
    */
-  async reverseGeocode(_latitude: number, _longitude: number): Promise<{
+  reverseGeocode(_latitude: number, _longitude: number): Promise<{
     city?: string;
     governorate?: string;
   }> {
     // Placeholder - in production would call reverse geocoding API
-    return {};
+    return Promise.resolve<{ city?: string; governorate?: string; }>({});
   }
 }
 

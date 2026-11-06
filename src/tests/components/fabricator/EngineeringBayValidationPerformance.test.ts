@@ -39,7 +39,7 @@ describe('EngineeringBay Validation Performance', () => {
     }
   });
 
-  it('should complete single validation in <200ms (average)', async () => {
+  it('should complete single validation in <200ms (average)', () => {
     const iterations = 10;
     const times: number[] = [];
 
@@ -139,7 +139,7 @@ describe('EngineeringBay Validation Performance', () => {
     }
   });
 
-  it('should maintain performance with different grid sizes', async () => {
+  it('should maintain performance with different grid sizes', () => {
     const gridSizes = [
       { rows: 1, cols: 1, cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }] },
       { rows: 2, cols: 2, cells: testWindowGrid.cells },
@@ -171,7 +171,7 @@ describe('EngineeringBay Validation Performance', () => {
     }
   });
 
-  it('should return stable validation results for identical inputs', async () => {
+  it('should return stable validation results for identical inputs', () => {
     // Warm-up: single-shot wall times on CI runners are too noisy for
     // first/second relative comparisons (sub-ms floors vs GC spikes).
     validateDesignWithEnvelope(1200, 1500, testWindowGrid, 'rock60', true);

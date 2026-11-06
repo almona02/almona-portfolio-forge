@@ -89,7 +89,7 @@ export class EgyptianTrustScoring {
   /**
    * Calculate Egyptian-style trust score
    */
-  async calculateEgyptianTrust(userProfile: UserProfile): Promise<TrustScore> {
+  calculateEgyptianTrust(userProfile: UserProfile): Promise<TrustScore> {
     // 1. Lineage score (النسب)
     const lineageScore = this.calculateLineageScore(userProfile);
 
@@ -119,12 +119,12 @@ export class EgyptianTrustScoring {
     // Egyptian factors
     const egyptianFactors = this.calculateEgyptianFactors(userProfile);
 
-    return {
+    return Promise.resolve({
       numerical: Math.min(1.0, Math.max(0.0, numerical)),
       label,
       treatment,
       egyptianFactors,
-    };
+    });
   }
 
   /**

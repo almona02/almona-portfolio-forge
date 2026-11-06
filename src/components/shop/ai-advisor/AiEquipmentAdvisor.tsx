@@ -246,7 +246,7 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
                     Back
                   </Button>
                   <Button
-                    onClick={async () => {
+                    onClick={() => void (async () => {
                       setIsLoading(true);
                       try {
                         // Get recommendations (would fetch from actual products in production)
@@ -297,7 +297,7 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
                       } finally {
                         setIsLoading(false);
                       }
-                    }}
+                    })()}
                     disabled={!monthlyVolume || !budget || isLoading}
                     className="flex-1"
                   >

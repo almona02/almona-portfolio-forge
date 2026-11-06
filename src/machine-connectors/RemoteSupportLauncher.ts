@@ -73,7 +73,7 @@ export class RemoteSupportLauncher {
   /**
    * Check if TeamViewer is installed
    */
-  private async checkTeamViewerInstalled(): Promise<boolean> {
+  private checkTeamViewerInstalled(): Promise<boolean> {
     // In browser: Check for TeamViewer protocol handler
     // In Node.js: Check for TeamViewer executable
     
@@ -86,16 +86,16 @@ export class RemoteSupportLauncher {
       
       // If protocol handler exists, TeamViewer is likely installed
       // This is a heuristic check
-      return true;
+      return Promise.resolve(true);
     } catch {
-      return false;
+      return Promise.resolve(false);
     }
   }
 
   /**
    * Connect to TeamViewer with ID and password
    */
-  private async connectToTeamViewer(id: string, password?: string): Promise<void> {
+  private connectToTeamViewer(id: string, password?: string): Promise<void> {
     // TeamViewer protocol: teamviewer10://connect?id=ID&password=PASSWORD
     const protocol = password
       ? `teamviewer10://connect?id=${id}&password=${password}`
@@ -107,12 +107,14 @@ export class RemoteSupportLauncher {
       // Fallback: Open TeamViewer website with connection info
       this.openTeamViewerWebsite(id, password);
     }
+
+    return Promise.resolve();
   }
 
   /**
    * Show connection information for manual connection
    */
-  private async showConnectionInfo(sessionId: string): Promise<void> {
+  private showConnectionInfo(sessionId: string): Promise<void> {
     // Generate temporary TeamViewer ID (this would come from server)
     const tempId = this.generateTeamViewerId();
     const tempPassword = this.generatePassword();
@@ -128,6 +130,8 @@ export class RemoteSupportLauncher {
 
     // Show to user
     this.displayConnectionDialog(tempId, tempPassword);
+
+    return Promise.resolve();
   }
 
   /**
@@ -172,7 +176,7 @@ export class RemoteSupportLauncher {
   /**
    * End support session
    */
-  async endSession(sessionId: string, resolution?: string): Promise<boolean> {
+  endSession(sessionId: string, resolution?: string): boolean {
     const session = this.activeSessions.get(sessionId);
     if (!session) {
       return false;
@@ -191,7 +195,7 @@ export class RemoteSupportLauncher {
   /**
    * Cancel support session
    */
-  async cancelSession(sessionId: string): Promise<boolean> {
+  cancelSession(sessionId: string): boolean {
     const session = this.activeSessions.get(sessionId);
     if (!session) {
       return false;
@@ -222,7 +226,7 @@ export class RemoteSupportLauncher {
   /**
    * Request support via email
    */
-  async requestEmailSupport(issue: string, machineInfo?: any): Promise<boolean> {
+  requestEmailSupport(issue: string, machineInfo?: any): boolean {
     const subject = encodeURIComponent(`Yilmaz Machine Support Request - ${new Date().toLocaleDateString()}`);
     const body = encodeURIComponent(`
 Issue Description:

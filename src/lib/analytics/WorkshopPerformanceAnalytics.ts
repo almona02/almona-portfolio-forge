@@ -87,7 +87,7 @@ export class WorkshopPerformanceAnalytics {
   /**
    * Get operator performance metrics
    */
-  async getOperatorPerformance(
+  getOperatorPerformance(
     operatorId: string,
     period: 'day' | 'week' | 'month' = 'week'
   ): Promise<OperatorPerformance> {
@@ -110,18 +110,18 @@ export class WorkshopPerformanceAnalytics {
       efficiencyTrend: 'improving' as const,
     };
 
-    return {
+    return Promise.resolve({
       operatorId,
       period,
       metrics,
       trends,
-    };
+    });
   }
 
   /**
    * Benchmark against industry standards
    */
-  async benchmarkMetrics(
+  benchmarkMetrics(
     yourMetrics: {
       averageWaste: number;
       averageOEE: number;
@@ -175,7 +175,7 @@ export class WorkshopPerformanceAnalytics {
       true // Lower is better
     ));
 
-    return benchmarks;
+    return Promise.resolve(benchmarks);
   }
 
   /**
@@ -237,7 +237,7 @@ export class WorkshopPerformanceAnalytics {
   /**
    * Predict capacity needs
    */
-  async predictCapacity(
+  predictCapacity(
     historicalData: {
       jobsPerDay: number[];
       averageJobTime: number; // hours
@@ -284,14 +284,14 @@ export class WorkshopPerformanceAnalytics {
       estimatedIncrease = 20; // Simplified - would calculate based on recommendations
     }
 
-    return {
+    return Promise.resolve({
       currentCapacity,
       projectedDemand: demand,
       capacityUtilization,
       recommendedActions: recommendations,
       bottlenecks,
       estimatedCapacityIncrease: estimatedIncrease,
-    };
+    });
   }
 
   /**

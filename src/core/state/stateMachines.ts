@@ -1,6 +1,6 @@
 ﻿/**
  * Predefined State Machines
- * 
+ *
  * Enterprise-grade state machine definitions for common workflows.
  * These machines enforce explicit state transitions with validation.
  */
@@ -9,7 +9,7 @@ import { StateMachineEngine, type StateMachine } from './StateMachine';
 
 /**
  * Commercial Quote/Invoice State Machine
- * 
+ *
  * Enforces explicit lifecycle: draft ? submitted ? approved ? locked ? executed
  * Also supports cancellation from draft/submitted states.
  */
@@ -23,62 +23,64 @@ export const COMMERCIAL_STATE_MACHINE: StateMachine<CommercialState> = {
     {
       from: 'draft',
       to: 'submitted',
-      condition: async (_context) => {
+      condition: (_context) => {
         // Can submit if entity has required data
-        return true; // Add validation logic as needed
+        return Promise.resolve(true); // Add validation logic as needed
       }
     },
     // Submitted ? Approved (manager approval)
     {
       from: 'submitted',
       to: 'approved',
-      guard: async (_context) => {
+      guard: (_context) => {
         // Only managers can approve
         // Add role check: return context.metadata?.userRole === 'manager';
-        return true;
+        return Promise.resolve(true);
       }
     },
     // Approved ? Locked (ready for execution, no more changes)
     {
       from: 'approved',
       to: 'locked',
-      condition: async (_context) => {
+      condition: (_context) => {
         // Can lock if all requirements met
-        return true;
+        return Promise.resolve(true);
       }
     },
     // Locked ? Executed (payment received, order placed, etc.)
     {
       from: 'locked',
       to: 'executed',
-      condition: async (context) => {
+      condition: (context) => {
         // Can execute if payment confirmed or order placed
-        return context.metadata?.paymentConfirmed === true || 
-               context.metadata?.orderPlaced === true;
+        return Promise.resolve(context.metadata?.paymentConfirmed === true ||
+               context.metadata?.orderPlaced === true);
       }
     },
     // Draft/Submitted ? Cancelled
     {
       from: ['draft', 'submitted'],
       to: 'cancelled',
-      condition: async (_context) => {
+      condition: (_context) => {
         // Can cancel if not yet approved
-        return true;
+        return Promise.resolve(true);
       }
     }
   ],
-  onTransition: async (from, to, context) => {
+  onTransition: (from, to, context) => {
     // Machine-level callback for all transitions
     console.log(`Commercial state transition: ${from} ? ${to}`, context);
+    return Promise.resolve();
   },
-  onInvalidTransition: async (from, to, context) => {
+  onInvalidTransition: (from, to, context) => {
     console.warn(`Invalid commercial transition attempted: ${from} ? ${to}`, context);
+    return Promise.resolve();
   }
 };
 
 /**
  * Workflow Step State Machine
- * 
+ *
  * Manages workflow step progression: pending ? in_progress ? completed
  * Supports blocking and unblocking.
  */
@@ -97,27 +99,27 @@ export const WORKFLOW_STATE_MACHINE: StateMachine<WorkflowState> = {
     {
       from: 'in_progress',
       to: 'blocked',
-      condition: async (context) => {
+      condition: (context) => {
         // Can block if dependency exists
-        return context.metadata?.hasDependency === true;
+        return Promise.resolve(context.metadata?.hasDependency === true);
       }
     },
     // In Progress ? Completed
     {
       from: 'in_progress',
       to: 'completed',
-      condition: async (context) => {
+      condition: (context) => {
         // Can complete if all requirements met
-        return context.metadata?.requirementsMet === true;
+        return Promise.resolve(context.metadata?.requirementsMet === true);
       }
     },
     // Blocked ? In Progress (dependency resolved)
     {
       from: 'blocked',
       to: 'in_progress',
-      condition: async (context) => {
+      condition: (context) => {
         // Can resume if dependency resolved
-        return context.metadata?.dependencyResolved === true;
+        return Promise.resolve(context.metadata?.dependencyResolved === true);
       }
     },
     // Any state ? Cancelled (except completed)
@@ -130,7 +132,7 @@ export const WORKFLOW_STATE_MACHINE: StateMachine<WorkflowState> = {
 
 /**
  * Production Order State Machine
- * 
+ *
  * Manages production lifecycle: planned ? scheduled ? in_production ? completed
  */
 export type ProductionState = 'planned' | 'scheduled' | 'in_production' | 'paused' | 'completed' | 'cancelled';
@@ -143,9 +145,9 @@ export const PRODUCTION_STATE_MACHINE: StateMachine<ProductionState> = {
     {
       from: 'planned',
       to: 'scheduled',
-      condition: async (context) => {
+      condition: (context) => {
         // Can schedule if resources available
-        return context.metadata?.resourcesAvailable === true;
+        return Promise.resolve(context.metadata?.resourcesAvailable === true);
       }
     },
     // Scheduled ? In Production
@@ -157,9 +159,9 @@ export const PRODUCTION_STATE_MACHINE: StateMachine<ProductionState> = {
     {
       from: 'in_production',
       to: 'paused',
-      condition: async (context) => {
+      condition: (context) => {
         // Can pause if reason provided
-        return !!context.reason;
+        return Promise.resolve(!!context.reason);
       }
     },
     // Paused ? In Production
@@ -171,9 +173,9 @@ export const PRODUCTION_STATE_MACHINE: StateMachine<ProductionState> = {
     {
       from: 'in_production',
       to: 'completed',
-      condition: async (context) => {
+      condition: (context) => {
         // Can complete if QC passed
-        return context.metadata?.qcPassed === true;
+        return Promise.resolve(context.metadata?.qcPassed === true);
       }
     },
     // Planned/Scheduled ? Cancelled
@@ -186,7 +188,7 @@ export const PRODUCTION_STATE_MACHINE: StateMachine<ProductionState> = {
 
 /**
  * Payment State Machine
- * 
+ *
  * Manages payment lifecycle: pending ? processing ? completed/failed
  */
 export type PaymentState = 'pending' | 'processing' | 'completed' | 'failed' | 'refunded' | 'cancelled';
@@ -204,27 +206,27 @@ export const PAYMENT_STATE_MACHINE: StateMachine<PaymentState> = {
     {
       from: 'processing',
       to: 'completed',
-      condition: async (context) => {
+      condition: (context) => {
         // Payment confirmed by processor
-        return context.metadata?.paymentConfirmed === true;
+        return Promise.resolve(context.metadata?.paymentConfirmed === true);
       }
     },
     // Processing ? Failed
     {
       from: 'processing',
       to: 'failed',
-      condition: async (context) => {
+      condition: (context) => {
         // Payment failed
-        return context.metadata?.paymentFailed === true;
+        return Promise.resolve(context.metadata?.paymentFailed === true);
       }
     },
     // Completed ? Refunded
     {
       from: 'completed',
       to: 'refunded',
-      condition: async (context) => {
+      condition: (context) => {
         // Refund processed
-        return context.metadata?.refundProcessed === true;
+        return Promise.resolve(context.metadata?.refundProcessed === true);
       }
     },
     // Pending/Processing ? Cancelled
@@ -262,4 +264,3 @@ export function getStateMachine(type: 'commercial' | 'workflow' | 'production' |
       throw new Error(`Unknown state machine type: ${type as string}`);
   }
 }
-

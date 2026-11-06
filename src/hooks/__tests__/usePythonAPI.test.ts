@@ -31,7 +31,7 @@ describe('usePythonAPI', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => mockResponse,
+        json: () => Promise.resolve(mockResponse),
       } as Response)
 
       const { result } = renderHook(() => usePythonAPI())
@@ -66,7 +66,7 @@ describe('usePythonAPI', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 400,
-        text: async () => 'Bad request',
+        text: () => Promise.resolve('Bad request'),
       } as Response)
 
       const { result } = renderHook(() => usePythonAPI())
@@ -96,7 +96,7 @@ describe('usePythonAPI', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => mockResponse,
+        json: () => Promise.resolve(mockResponse),
       } as Response)
 
       const { result } = renderHook(() => usePythonAPI())
