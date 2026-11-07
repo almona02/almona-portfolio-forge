@@ -310,7 +310,7 @@
     "@gltf-transform/cli": "^3.10.0",
     "@gltf-transform/extensions": "^3.10.0",
     "@gltf-transform/functions": "^3.10.0",
-    "@playwright/test": "^1.58.0",
+    "@playwright/test": "^1.65.0",
     "@storybook/addon-a11y": "10.6.3",
     "@storybook/addon-docs": "10.6.3",
     "@storybook/addon-onboarding": "10.6.3",
@@ -321,6 +321,7 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^30.0.0",
+    "@types/jsdom": "21.1.7",
     "@types/node": "^22.5.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -343,7 +344,8 @@
     "eslint-plugin-storybook": "10.6.3",
     "globals": "^15.9.0",
     "jsdom": "^26.1.0",
-    "playwright": "^1.54.1",
+    "lighthouse": "13.5.0",
+    "playwright": "^1.65.0",
     "postcss": "^8.5.28",
     "rollup-plugin-visualizer": "^6.0.5",
     "sharp": "^0.35.5",
@@ -359,8 +361,6 @@
     "vite-plugin-gltf": "^4.0.0",
     "vite-plugin-pwa": "^1.2.0",
     "vitest": "4.1.12",
-    "ws": "^8.21.3",
-    "@types/jsdom": "21.1.7",
-    "lighthouse": "13.5.0"
+    "ws": "^8.21.3"
   }
 }
