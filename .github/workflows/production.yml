@@ -42,12 +42,9 @@ jobs:
         run: npm run test:react
 
       # Backend Lint & Test
-      - name: Setup Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
-
+      # Free disk BEFORE setup-python: wiping $AGENT_TOOLSDIRECTORY after setup
+      # removes the pinned interpreter and falls back to system Python (3.14 on
+      # ubuntu-latest), which cannot build scikit-image from requirements-prod.
       - name: Free Disk Space (Ubuntu)
         run: |
           echo "Freeing up disk space..."
@@ -61,6 +58,12 @@ jobs:
           yarn cache clean || true
           # Show disk usage
           df -h
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
 
       - name: Install backend dependencies
         working-directory: python_backend
