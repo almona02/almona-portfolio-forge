@@ -64,8 +64,8 @@ class FabricatorAuditLogger {
    * This method is non-blocking and will queue entries for async processing.
    * Operations never fail due to audit logging issues.
    */
-  async log(entry: AuditLogEntry): Promise<void> {
-    if (!this.enabled) return;
+  log(entry: AuditLogEntry): Promise<void> {
+    if (!this.enabled) return Promise.resolve();
 
     // Prevent queue overflow
     if (this.queue.length >= this.MAX_QUEUE_SIZE) {
@@ -85,6 +85,7 @@ class FabricatorAuditLogger {
       console.error('[FabricatorAudit] Failed to process audit queue:', error);
       // Don't throw - audit failure shouldn't break operations
     });
+    return Promise.resolve();
   }
 
   /**
@@ -202,10 +203,10 @@ class FabricatorAuditLogger {
    * Note: In browser environment, IP is not directly available for security reasons.
    * This would be populated server-side from request headers.
    */
-  private async getClientIP(): Promise<string | null> {
+  private getClientIP(): Promise<string | null> {
     // In browser, IP is not directly available
     // In server-side, would come from request headers
-    return null;
+    return Promise.resolve(null);
   }
 
   /**

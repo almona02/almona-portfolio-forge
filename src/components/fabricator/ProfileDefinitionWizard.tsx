@@ -101,14 +101,14 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
   const totalSteps = 3;
 
   // Handle file upload
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = (file: File): Promise<void> => {
     if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
       toast({
         title: 'Invalid file type',
         description: 'Please upload an image (PNG, JPG) or PDF file.',
         variant: 'destructive',
       });
-      return;
+      return Promise.resolve();
     }
 
     setIsUploading(true);
@@ -136,6 +136,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
     } finally {
       setIsUploading(false);
     }
+    return Promise.resolve();
   };
 
   // Upload image to Supabase Storage

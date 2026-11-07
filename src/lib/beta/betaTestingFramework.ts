@@ -92,7 +92,7 @@ export class BetaTestingFramework {
     }
   }
   
-  async collectUsageMetrics(): Promise<BetaMetrics[]> {
+  collectUsageMetrics(): Promise<BetaMetrics[]> {
     const features = ['dual-output-preview', 'pattern-suggestions', 'enhanced-3d'];
     const metrics: BetaMetrics[] = [];
     
@@ -117,7 +117,7 @@ export class BetaTestingFramework {
       });
     }
     
-    return metrics;
+    return Promise.resolve(metrics);
   }
   
   async generateBetaReport(): Promise<void> {
@@ -209,9 +209,9 @@ export class BetaTestingFramework {
     }
   }
   
-  private async getWorkshopDetails(workshopId: string): Promise<{ name: string }> {
+  private getWorkshopDetails(workshopId: string): Promise<{ name: string }> {
     // This would typically fetch from your database
-    return { name: `Workshop ${workshopId}` };
+    return Promise.resolve({ name: `Workshop ${workshopId}` });
   }
   
   private async enableFeaturesForWorkshop(workshopId: string, _features: string[]): Promise<void> {
@@ -225,16 +225,18 @@ export class BetaTestingFramework {
     }
   }
   
-  private async notifyTeam(feedback: BetaFeedback): Promise<void> {
+  private notifyTeam(feedback: BetaFeedback): Promise<void> {
     // Send notification to Slack, email, etc.
     console.log(`New feedback received: ${feedback.feature} (${feedback.rating}/5)`);
+    return Promise.resolve();
   }
   
-  private async escalateCriticalFeedback(feedback: BetaFeedback): Promise<void> {
+  private escalateCriticalFeedback(feedback: BetaFeedback): Promise<void> {
     console.log(`🚨 CRITICAL FEEDBACK: ${feedback.feature} (${feedback.rating}/5)`);
     console.log(`Tester: ${feedback.testerId}`);
     console.log(`Issues: ${feedback.issues.join(', ')}`);
     // Escalate to development team lead
+    return Promise.resolve();
   }
   
   private loadTesters(): void {

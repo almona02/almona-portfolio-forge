@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 const database = vi.hoisted(() => ({ insert: vi.fn(), row: {} as Record<string, unknown> }));
 vi.mock('@/lib/supabase', () => ({ supabase: { from: () => ({ insert: (row: Record<string, unknown>) => {
   database.insert(row);
-  return { select: () => ({ single: async () => ({ data: { id: 'divider', ...row, ...database.row }, error: null }) }) };
+  return { select: () => ({ single: () => Promise.resolve({ data: { id: 'divider', ...row, ...database.row }, error: null }) }) };
 } }) } }));
 import { ProfileDefinitionManager } from './ProfileDefinitionManager';
 describe('profile definition persistence', () => {

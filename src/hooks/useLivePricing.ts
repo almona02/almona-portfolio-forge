@@ -47,7 +47,7 @@ export function useLivePricing({
     error: null,
   });
 
-  const calculatePricing = useCallback(async () => {
+  const calculatePricing = useCallback((): Promise<void> => {
     if (!enabled || components.length === 0) {
       setPricingData((prev) => ({
         ...prev,
@@ -60,7 +60,7 @@ export function useLivePricing({
         },
         loading: false,
       }));
-      return;
+      return Promise.resolve();
     }
 
     setPricingData((prev) => ({ ...prev, loading: true, error: null }));
@@ -124,6 +124,7 @@ export function useLivePricing({
         error: error instanceof Error ? error.message : 'Failed to calculate pricing',
       }));
     }
+    return Promise.resolve();
   }, [components, profiles, currency, region, enabled]);
 
   useEffect(() => {

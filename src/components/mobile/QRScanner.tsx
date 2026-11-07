@@ -199,7 +199,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
   }, [state.torchSupported, state.torchEnabled]);
 
   // Switch camera (front/back)
-  const switchCamera = useCallback(async () => {
+  const switchCamera = useCallback((): Promise<void> => {
     const newFacingMode = state.facingMode === 'user' ? 'environment' : 'user';
 
     setState(prev => ({
@@ -212,6 +212,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
     setTimeout(() => {
       void initializeCamera();
     }, 100);
+    return Promise.resolve();
   }, [state.facingMode, stopCamera, initializeCamera]);
 
   // Get current location

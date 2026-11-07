@@ -104,31 +104,35 @@ export class YilmazCNC extends CNCController {
   /**
    * Generate G-code from cutting plan
    */
-  async generateGCode(
+  generateGCode(
     cuttingPlan: CuttingPlan[],
     options?: OptimizationOptions
   ): Promise<GCodeCommand[]> {
-    // Validate cutting plan first
-    const validation = this.validator.validateCuttingPlan(cuttingPlan);
-    
-    if (!validation.valid) {
-      const errorMessages = validation.errors.map(e => e.message).join('; ');
-      throw new Error(`Cutting plan validation failed: ${errorMessages}`);
+    try {
+      // Validate cutting plan first
+      const validation = this.validator.validateCuttingPlan(cuttingPlan);
+
+      if (!validation.valid) {
+        const errorMessages = validation.errors.map(e => e.message).join('; ');
+        throw new Error(`Cutting plan validation failed: ${errorMessages}`);
+      }
+
+      // Apply optimization options to G-code generator
+      const gCodeOptions = {
+        optimizeToolChanges: options?.minimizeTime ?? true,
+        minimizeWaste: options?.minimizeWaste ?? true,
+        safetyZones: true,
+        includeComments: true,
+        coordinateSystem: 'absolute' as const,
+        units: 'mm' as const
+      };
+
+      this.gCodeGenerator = new YilmazGCodeGenerator(this.machineModel, gCodeOptions);
+
+      return Promise.resolve(this.gCodeGenerator.generateGCode(cuttingPlan));
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
-
-    // Apply optimization options to G-code generator
-    const gCodeOptions = {
-      optimizeToolChanges: options?.minimizeTime ?? true,
-      minimizeWaste: options?.minimizeWaste ?? true,
-      safetyZones: true,
-      includeComments: true,
-      coordinateSystem: 'absolute' as const,
-      units: 'mm' as const
-    };
-
-    this.gCodeGenerator = new YilmazGCodeGenerator(this.machineModel, gCodeOptions);
-    
-    return this.gCodeGenerator.generateGCode(cuttingPlan);
   }
 
   /**
@@ -238,7 +242,7 @@ export class YilmazCNC extends CNCController {
   /**
    * Handle machine errors
    */
-  async handleError(errorCode: string, errorMessage: string): Promise<boolean> {
+  handleError(errorCode: string, errorMessage: string): Promise<boolean> {
     console.error(`Machine error ${errorCode}: ${errorMessage}`);
     
     // Update status
@@ -256,13 +260,13 @@ export class YilmazCNC extends CNCController {
     // Attempt recovery based on error code
     if (errorCode.startsWith('E_')) {
       // Emergency stop - requires manual intervention
-      return false;
+      return Promise.resolve(false);
     } else if (errorCode.startsWith('W_')) {
       // Warning - can attempt auto-recovery
-      return true;
+      return Promise.resolve(true);
     }
 
-    return false;
+    return Promise.resolve(false);
   }
 
   /**

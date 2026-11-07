@@ -146,10 +146,10 @@ export const AnalyticsQueryBuilder: React.FC<AnalyticsQueryBuilderProps> = ({
      * Handle export
      */
     const handleExport = useCallback(
-        async (_format: 'csv' | 'excel' | 'pdf') => {
+        (_format: 'csv' | 'excel' | 'pdf'): Promise<void> => {
             if (!queryResponse) {
                 toast.error('No query results to export');
-                return;
+                return Promise.resolve();
             }
 
             setIsExporting(true);
@@ -167,6 +167,7 @@ export const AnalyticsQueryBuilder: React.FC<AnalyticsQueryBuilderProps> = ({
             } finally {
                 setIsExporting(false);
             }
+            return Promise.resolve();
         },
         [queryResponse]
     );

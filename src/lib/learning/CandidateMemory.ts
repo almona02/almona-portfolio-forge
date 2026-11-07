@@ -126,9 +126,9 @@ export class CandidateMemory {
   /**
    * Verify a candidate fact
    */
-  async verifyFact(factId: string, verified: boolean, _verifierId: string): Promise<void> {
+  verifyFact(factId: string, verified: boolean, _verifierId: string): Promise<void> {
     const fact = this.memory.get(factId);
-    if (!fact) return;
+    if (!fact) return Promise.resolve();
 
     if (verified) {
       fact.verifications += 1;
@@ -150,6 +150,7 @@ export class CandidateMemory {
     }
 
     this.memory.set(factId, fact);
+    return Promise.resolve();
   }
 
   /**

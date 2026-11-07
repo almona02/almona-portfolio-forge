@@ -88,7 +88,7 @@ class OfflineSyncService {
   }
 
   // Store ticket offline
-  public async storeOfflineTicket(ticket: Omit<OfflineTicket, 'id' | 'offline_timestamp'>): Promise<string> {
+  public storeOfflineTicket(ticket: Omit<OfflineTicket, 'id' | 'offline_timestamp'>): Promise<string> {
     const offlineTicket: OfflineTicket = {
       ...ticket,
       id: `offline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -109,10 +109,10 @@ class OfflineSyncService {
         }
       });
 
-      return offlineTicket.id;
+      return Promise.resolve(offlineTicket.id);
     } catch (error) {
       console.error('Failed to store offline ticket:', error);
-      throw new Error('فشل في حفظ الطلب محلياً');
+      return Promise.reject(new Error('فشل في حفظ الطلب محلياً'));
     }
   }
 
@@ -199,10 +199,11 @@ class OfflineSyncService {
   }
 
   // Upload ticket files (placeholder implementation)
-  private async uploadTicketFiles(ticketId: string, files: File[], type: 'images' | 'audio'): Promise<void> {
+  private uploadTicketFiles(ticketId: string, files: File[], type: 'images' | 'audio'): Promise<void> {
     // In a real implementation, this would upload files to Supabase Storage
     // For now, we'll just log the action
     console.log(`Uploading ${files.length} ${type} files for ticket ${ticketId}`);
+    return Promise.resolve();
   }
 
   // Handle connection restored

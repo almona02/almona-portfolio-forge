@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Workspace Synchronizer
  * Supabase real-time subscriptions for workspace synchronization
  */
@@ -138,7 +138,7 @@ export class WorkspaceSynchronizer {
   /**
    * Broadcast workspace update
    */
-  async broadcastUpdate(projectId: string, update: Partial<FabricatorWorkspaceState>): Promise<void> {
+  broadcastUpdate(projectId: string, update: Partial<FabricatorWorkspaceState>): Promise<void> {
     const channelName = `workspace-project-${projectId}`;
     const channel = this.channels.get(channelName);
 
@@ -152,6 +152,7 @@ export class WorkspaceSynchronizer {
         },
       });
     }
+    return Promise.resolve();
   }
 
   /**
@@ -184,4 +185,3 @@ export class WorkspaceSynchronizer {
 
 // Export singleton instance
 export const workspaceSynchronizer = new WorkspaceSynchronizer();
-

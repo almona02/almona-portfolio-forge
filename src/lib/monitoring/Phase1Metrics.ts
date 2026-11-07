@@ -335,19 +335,19 @@ export class Phase1MetricsTracker {
   /**
    * Get validation metrics (Egyptian standards)
    */
-  private async getValidationMetrics(
+  private getValidationMetrics(
     _startDate: Date,
     _endDate: Date,
     _userId?: string
   ): Promise<ValidationMetrics> {
     // Note: Validation metrics would need to be tracked separately
     // For now, return placeholder
-    return {
+    return Promise.resolve({
       totalValidations: 0,
       egyptianStandardsWarnings: 0,
       egyptianStandardsErrors: 0,
       validationSuccessRate: 100,
-    };
+    });
   }
 }
 

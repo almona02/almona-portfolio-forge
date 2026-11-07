@@ -4,8 +4,8 @@ import type { SystemPack } from '@/types/fabricator';
 const db = vi.hoisted(() => {
   const query: any = {};
   for (const key of ['select', 'eq', 'is']) query[key] = vi.fn(() => query);
-  query.maybeSingle = vi.fn(async () => ({ data: null, error: null }));
-  query.insert = vi.fn(async () => ({ error: null }));
+  query.maybeSingle = vi.fn(() => Promise.resolve({ data: null, error: null }));
+  query.insert = vi.fn(() => Promise.resolve({ error: null }));
   query.then = (resolve: any) => resolve({ data: [], error: null });
   return { query, from: vi.fn(() => query) };
 });

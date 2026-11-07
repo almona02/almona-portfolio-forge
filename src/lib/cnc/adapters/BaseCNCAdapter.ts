@@ -94,7 +94,7 @@ export abstract class BaseCNCAdapter {
   /**
    * Pre-export validation
    */
-  async preExportValidation(
+  preExportValidation(
     cuts: Cut[],
     optimization: OptimizationResult
   ): Promise<{ valid: boolean; errors: string[]; warnings: string[] }> {
@@ -132,11 +132,11 @@ export abstract class BaseCNCAdapter {
       warnings.push(`Low nesting efficiency: ${optimization.nestingEfficiency.toFixed(1)}%`);
     }
 
-    return {
+    return Promise.resolve({
       valid: errors.length === 0,
       errors,
       warnings,
-    };
+    });
   }
 
   /**

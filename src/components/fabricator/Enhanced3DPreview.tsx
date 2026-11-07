@@ -1061,11 +1061,11 @@ const ValidationDashboard: React.FC<ValidationDashboardProps> = ({
 };
 
 // Helper functions
-async function validateAgainstExisting(
+function validateAgainstExisting(
   fabrication: FabricationData | null,
   existingCutList: any
 ): Promise<any[]> {
-  if (!fabrication || !existingCutList) return [];
+  if (!fabrication || !existingCutList) return Promise.resolve([]);
 
   const discrepancies: any[] = [];
 
@@ -1090,7 +1090,7 @@ async function validateAgainstExisting(
     }
   });
 
-  return discrepancies;
+  return Promise.resolve(discrepancies);
 }
 
 function convertCutListToFabrication(cutList: any): FabricationData {

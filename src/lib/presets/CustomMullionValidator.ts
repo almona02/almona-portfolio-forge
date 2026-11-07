@@ -203,7 +203,7 @@ export class CustomMullionValidator {
   /**
    * Assess manufacturing feasibility
    */
-  private async assessManufacturability(
+  private assessManufacturability(
     windowUnit: WindowUnit,
     mullionPosition: number,
     mullionType: MullionType
@@ -235,12 +235,12 @@ export class CustomMullionValidator {
       difficulty = difficulty === 'easy' ? 'medium' : difficulty;
     }
 
-    return {
+    return Promise.resolve({
       isManufacturable: warnings.length === 0 || difficulty !== 'hard',
       difficulty,
       estimatedTime,
       warnings
-    };
+    });
   }
 
   /**

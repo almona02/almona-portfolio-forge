@@ -97,7 +97,7 @@ export class ProductionReportsGenerator {
   /**
    * Generate execution plan report
    */
-  async generateExecutionPlan(
+  generateExecutionPlan(
     _projectId: string,
     windowUnits: WindowUnit[],
     boms: ProductionBOM[]
@@ -173,7 +173,7 @@ export class ProductionReportsGenerator {
 
     const estimatedProductionTime = steps.reduce((sum, step) => sum + step.estimatedTime, 0) / 60; // Convert to hours
 
-    return {
+    return Promise.resolve({
       summary: {
         totalWindows,
         totalBOMItems,
@@ -182,13 +182,13 @@ export class ProductionReportsGenerator {
       },
       steps,
       bomSummary: boms
-    };
+    });
   }
 
   /**
    * Generate cutting list report
    */
-  async generateCuttingList(
+  generateCuttingList(
     _projectId: string,
     boms: ProductionBOM[]
   ): Promise<CuttingListData> {
@@ -236,7 +236,7 @@ export class ProductionReportsGenerator {
     const totalWaste = cuttingGroups.reduce((sum, group) => sum + group.totalWaste, 0);
     const avgUtilization = cuttingGroups.reduce((sum, group) => sum + group.utilization, 0) / cuttingGroups.length;
 
-    return {
+    return Promise.resolve({
       summary: {
         totalCuts,
         totalWaste,
@@ -247,13 +247,13 @@ export class ProductionReportsGenerator {
         wasteReduction: 15, // Assume 15% waste reduction vs manual
         materialSavings: totalWaste * 0.5 // Rough estimate
       }
-    };
+    });
   }
 
   /**
    * Generate purchase order report
    */
-  async generatePurchaseOrder(
+  generatePurchaseOrder(
     _projectId: string,
     boms: ProductionBOM[]
   ): Promise<PurchaseOrderData> {
@@ -287,7 +287,7 @@ export class ProductionReportsGenerator {
     const totalValue = items.reduce((sum, item) => sum + item.totalPrice, 0);
     const suppliers = Object.keys(supplierGroups);
 
-    return {
+    return Promise.resolve({
       summary: {
         totalItems,
         totalValue,
@@ -295,7 +295,7 @@ export class ProductionReportsGenerator {
       },
       items,
       supplierGroups
-    };
+    });
   }
 
   /**

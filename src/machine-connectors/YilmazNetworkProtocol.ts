@@ -97,7 +97,7 @@ export class YilmazNetworkProtocol {
   /**
    * Disconnect from machine
    */
-  async disconnect(): Promise<boolean> {
+  disconnect(): Promise<boolean> {
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
     }
@@ -108,7 +108,7 @@ export class YilmazNetworkProtocol {
     }
 
     this.isConnected = false;
-    return true;
+    return Promise.resolve(true);
   }
 
   /**

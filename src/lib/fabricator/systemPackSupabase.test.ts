@@ -39,11 +39,11 @@ describe('saveSystemPackToSupabase', () => {
   });
 
   it('writes a new pack as version 1 with a history snapshot', async () => {
-    const historyInsert = vi.fn(async () => ({ error: null }));
-    const liveInsert = vi.fn(async () => ({ error: null }));
+    const historyInsert = vi.fn(() => Promise.resolve({ error: null }));
+    const liveInsert = vi.fn(() => Promise.resolve({ error: null }));
     mocks.chains['fabricator_system_pack_history'] = chainable({ insert: historyInsert });
     mocks.chains['fabricator_system_packs'] = chainable({
-      maybeSingle: async () => ({ data: null }),
+      maybeSingle: () => Promise.resolve({ data: null }),
       insert: liveInsert,
     });
 
@@ -59,10 +59,10 @@ describe('saveSystemPackToSupabase', () => {
 
   it('snapshots the current spec then writes version + 1 on update', async () => {
     const currentSpec = { meta: { id: 'pack-1', name: 'Old' } };
-    const historyInsert = vi.fn(async () => ({ error: null }));
+    const historyInsert = vi.fn(() => Promise.resolve({ error: null }));
     mocks.chains['fabricator_system_pack_history'] = chainable({ insert: historyInsert });
     const packsChain = chainable({
-      maybeSingle: async () => ({
+      maybeSingle: () => Promise.resolve({
         data: { id: 'pack-1', version: 2, spec: currentSpec, scope: 'tenant', owner_user_id: 'user-1' },
       }),
     });
@@ -82,12 +82,12 @@ describe('saveSystemPackToSupabase', () => {
 
   it('falls back to the legacy unversioned write when the migration is missing', async () => {
     const ddlError = { code: 'PGRST204', message: "Could not find the 'version' column in the schema cache" };
-    const liveInsert = vi.fn(async () => ({ error: null }));
+    const liveInsert = vi.fn(() => Promise.resolve({ error: null }));
     mocks.chains['fabricator_system_pack_history'] = chainable({
-      insert: vi.fn(async () => ({ error: ddlError })),
+      insert: vi.fn(() => Promise.resolve({ error: ddlError })),
     });
     mocks.chains['fabricator_system_packs'] = chainable({
-      maybeSingle: async () => ({ data: null }),
+      maybeSingle: () => Promise.resolve({ data: null }),
       insert: liveInsert,
     });
 
@@ -132,13 +132,13 @@ describe('rollbackSystemPackInSupabase', () => {
   it('re-saves an old snapshot as a new rollback version', async () => {
     const snapshot = { meta: { id: 'pack-1', name: 'Pack One v1' }, profiles: [] };
     mocks.chains['fabricator_system_pack_history'] = chainable({
-      maybeSingle: async () => ({
+      maybeSingle: () => Promise.resolve({
         data: { id: 'h1', pack_id: 'pack-1', version: 1, spec: snapshot, change_note: null, source: 'initial_setup', created_by: 'u', created_at: '' },
       }),
-      insert: vi.fn(async () => ({ error: null })),
+      insert: vi.fn(() => Promise.resolve({ error: null })),
     });
     const packsChain = chainable({
-      maybeSingle: async () => ({
+      maybeSingle: () => Promise.resolve({
         data: { id: 'pack-1', version: 3, spec: {}, scope: 'tenant', owner_user_id: 'user-1' },
       }),
     });
@@ -150,10 +150,10 @@ describe('rollbackSystemPackInSupabase', () => {
 
   it('fails closed when the requested version does not exist', async () => {
     mocks.chains['fabricator_system_pack_history'] = chainable({
-      maybeSingle: async () => ({ data: null, error: null }),
+      maybeSingle: () => Promise.resolve({ data: null, error: null }),
     });
     mocks.chains['fabricator_system_packs'] = chainable({
-      maybeSingle: async () => ({ data: null }),
+      maybeSingle: () => Promise.resolve({ data: null }),
     });
     await expect(rollbackSystemPackInSupabase('pack-1', 9, 'user-1')).resolves.toBe(false);
   });

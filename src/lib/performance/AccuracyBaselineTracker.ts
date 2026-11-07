@@ -116,14 +116,14 @@ export class AccuracyBaselineTracker {
   /**
    * Verify a single operation against its Golden Master
    */
-  async verifyAgainstGoldenMaster(
+  verifyAgainstGoldenMaster(
     goldenMasterId: string,
     actualOutput: any
   ): Promise<AccuracyTestResult> {
     const master = this.goldenMasters.get(goldenMasterId);
 
     if (!master) {
-      throw new Error(`Golden Master not found: ${goldenMasterId}`);
+      return Promise.reject(new Error(`Golden Master not found: ${goldenMasterId}`));
     }
 
     const startTime = performance.now();
@@ -147,7 +147,7 @@ export class AccuracyBaselineTracker {
 
     this.testResults.push(result);
 
-    return result;
+    return Promise.resolve(result);
   }
 
   /**

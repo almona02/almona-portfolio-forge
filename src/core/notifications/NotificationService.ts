@@ -55,7 +55,7 @@ export class NotificationService {
     priority: NotificationPriority = 'medium'
   ): Promise<void> {
     try {
-      const template = await this.getTemplate(type);
+      const template = this.getTemplate(type);
       const title = this.renderTemplate(template.title, data);
       const message = this.renderTemplate(template.message, data);
 
@@ -214,7 +214,7 @@ export class NotificationService {
   /**
    * Get notification template by type
    */
-  private static async getTemplate(type: string): Promise<NotificationTemplate> {
+  private static getTemplate(type: string): NotificationTemplate {
     // Default templates
     const templates: Record<string, NotificationTemplate> = {
       payment_received: {

@@ -79,7 +79,7 @@ describe('ML Predictor Integration Tests', () => {
       // Create a simple mock model
       const mockModel = {
         predict: vi.fn().mockReturnValue({
-          data: async () => new Float32Array([0.75]), // 75% likelihood
+          data: () => Promise.resolve(new Float32Array([0.75])), // 75% likelihood
           dispose: vi.fn(),
         }),
       } as any;
@@ -101,7 +101,7 @@ describe('ML Predictor Integration Tests', () => {
       // Mock model that returns low confidence scenario
       const mockModel = {
         predict: vi.fn().mockReturnValue({
-          data: async () => new Float32Array([0.5]),
+          data: () => Promise.resolve(new Float32Array([0.5])),
           dispose: vi.fn(),
         }),
       } as any;

@@ -113,7 +113,7 @@ export const FabricatorCollaborationProvider: React.FC<FabricatorCollaborationPr
   /**
    * Broadcast edit to collaborators
    */
-  const broadcastEdit = useCallback(async (projectId: string, edit: any) => {
+  const broadcastEdit = useCallback((projectId: string, edit: any): Promise<void> => {
     if (channelRef.current) {
       channelRef.current.send({
         type: 'edit',
@@ -125,12 +125,13 @@ export const FabricatorCollaborationProvider: React.FC<FabricatorCollaborationPr
         },
       });
     }
+    return Promise.resolve();
   }, [userId]);
 
   /**
    * Resolve conflict using operational transform
    */
-  const resolveConflict = useCallback(async (conflict: any) => {
+  const resolveConflict = useCallback((conflict: any): Promise<any> => {
     // Simple last-write-wins for now
     // In production, implement proper operational transform
     console.log('Resolving conflict:', conflict);
@@ -142,8 +143,9 @@ export const FabricatorCollaborationProvider: React.FC<FabricatorCollaborationPr
       )[0];
 
       // Apply edit (would integrate with workspace context)
-      return latestEdit;
+      return Promise.resolve(latestEdit);
     }
+    return Promise.resolve(undefined);
   }, []);
 
   // Setup real-time subscription

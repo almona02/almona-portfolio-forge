@@ -84,7 +84,7 @@ export function KioskModeDashboard({
   ]);
 
   // Auto-save function (called on every state change)
-  const autoSave = useCallback(async (event: { type: string; data: any }) => {
+  const autoSave = useCallback((event: { type: string; data: any }) => {
     const timestamp = Date.now();
     const logEntry = {
       machineId,
@@ -102,7 +102,7 @@ export function KioskModeDashboard({
     // TODO: Send to server (background sync)
     console.log('[AUTO-SAVE]', logEntry);
 
-    return logEntry;
+    return Promise.resolve(logEntry);
   }, [machineId, operatorName]);
 
   // Handle barcode scan

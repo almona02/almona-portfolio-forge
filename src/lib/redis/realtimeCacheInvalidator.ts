@@ -18,10 +18,10 @@ export class RealtimeCacheInvalidator {
   /**
    * Initialize all Realtime subscriptions
    */
-  async initialize() {
+  initialize(): Promise<void> {
     if (this.isInitialized) {
       console.warn('[RealtimeCacheInvalidator] Already initialized');
-      return;
+      return Promise.resolve();
     }
 
     console.log('[RealtimeCacheInvalidator] Initializing Realtime subscriptions...');
@@ -40,6 +40,7 @@ export class RealtimeCacheInvalidator {
 
     this.isInitialized = true;
     console.log('[RealtimeCacheInvalidator] ✅ All subscriptions active');
+    return Promise.resolve();
   }
 
   // ============================================================================

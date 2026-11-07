@@ -154,7 +154,7 @@ function detectProfileRole(
  * Now uses backend's all_profiles array to extract ALL polygons separately.
  * Handles: multiple frames, multiple sashes, adapters, etc.
  */
-export async function extractMultipleProfilesFromDXF(
+export function extractMultipleProfilesFromDXF(
   dxfFileName: string,
   apiResponse: any,
   windowType: 'sliding' | 'casement' | 'tilt_turn' | 'fixed' | 'sliding_door' = 'sliding',
@@ -311,7 +311,7 @@ export async function extractMultipleProfilesFromDXF(
     });
   }
   
-  return {
+  return Promise.resolve({
     profiles: profilesWithRoles,
     systemPack: systemPack ? {
       id: systemPack.meta.id,
@@ -333,7 +333,7 @@ export async function extractMultipleProfilesFromDXF(
       })),
     } : undefined,
     detectedRoles: profilesWithRoles.map((p) => p.metadata?.detectedRole || 'frame'),
-  };
+  });
 }
 
 /**
@@ -345,4 +345,3 @@ export interface MultiProfileDXFRequest {
   detectRoles?: boolean; // Auto-detect roles from layers/blocks
   systemPackName?: string; // Known system pack name for better detection
 }
-

@@ -500,7 +500,7 @@ export const SystemPacksPage: React.FC = () => {
         open={showUnifiedWizard}
         onOpenChange={setShowUnifiedWizard}
         studioType={unifiedWizardType}
-        onComplete={async (_data) => {
+        onComplete={(_data) => {
           // Refresh system packs list
           if (userId) {
             const updated = loadCustomSystems();

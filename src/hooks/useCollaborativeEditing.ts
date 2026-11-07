@@ -106,10 +106,10 @@ export function useCollaborativeEditing(projectId: string) {
   /**
    * Manually resolve conflict
    */
-  const manualResolveConflict = useCallback(async (
+  const manualResolveConflict = useCallback((
     conflict: Conflict,
     resolution: 'local' | 'remote' | 'merge'
-  ) => {
+  ): Promise<void> => {
     if (resolution === 'local') {
       // Keep local edit
       lastAppliedEditRef.current = conflict.localEdit.timestamp;
@@ -125,6 +125,7 @@ export function useCollaborativeEditing(projectId: string) {
     }
 
     setConflicts(prev => prev.filter(c => c !== conflict));
+    return Promise.resolve();
   }, []);
 
   return {

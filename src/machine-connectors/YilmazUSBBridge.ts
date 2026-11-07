@@ -219,22 +219,22 @@ export class YilmazUSBBridge {
   /**
    * List files on USB device
    */
-  async listFiles(_deviceId: string, _path: string = '/'): Promise<USBFileInfo[]> {
+  listFiles(_deviceId: string, _path: string = '/'): Promise<USBFileInfo[]> {
     // This would require file system access
     // In browser, limited by security restrictions
     // In Node.js, would use fs.readdir
     
     console.warn('File listing not fully supported in browser environment');
-    return [];
+    return Promise.resolve([]);
   }
 
   /**
    * Delete file from USB device
    */
-  async deleteFile(_deviceId: string, _filename: string): Promise<boolean> {
+  deleteFile(_deviceId: string, _filename: string): Promise<boolean> {
     // This would require file system access
     console.warn('File deletion not fully supported in browser environment');
-    return false;
+    return Promise.resolve(false);
   }
 
   /**
@@ -270,20 +270,20 @@ export class YilmazUSBBridge {
   /**
    * Eject USB device
    */
-  async ejectDevice(deviceId: string): Promise<boolean> {
+  ejectDevice(deviceId: string): Promise<boolean> {
     const device = this.devices.get(deviceId);
     if (!device) {
-      return false;
+      return Promise.resolve(false);
     }
 
     try {
       // In browser: Close device connection
       // In Node.js: Unmount device
       this.devices.delete(deviceId);
-      return true;
+      return Promise.resolve(true);
     } catch (error) {
       console.error('Error ejecting device:', error);
-      return false;
+      return Promise.resolve(false);
     }
   }
 

@@ -136,7 +136,7 @@ describe('ExecutionService', () => {
   });
 
   describe('getExecutionSummary', () => {
-    it('should calculate execution summary metrics', async () => {
+    it('should calculate execution summary metrics', () => {
       // Mock implementation would calculate metrics
       // For now, test that method exists and returns expected structure
       expect(typeof service.getExecutionSummary).toBe('function');

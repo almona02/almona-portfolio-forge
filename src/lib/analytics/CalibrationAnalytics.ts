@@ -395,7 +395,7 @@ export class CalibrationAnalytics {
    * Get pattern data for ML training
    * Returns aggregated data for similar profiles/joints
    */
-  async getPatternData(_filters: {
+  getPatternData(_filters: {
     profileType?: string;
     systemPackId?: string;
     jointType?: string;
@@ -404,10 +404,10 @@ export class CalibrationAnalytics {
     try {
       // This will be used by CalibrationLearner to find patterns
       // For now, return empty array - will be implemented when ML system is built
-      return [];
+      return Promise.resolve([]);
     } catch (error) {
       console.error('Error getting pattern data:', error);
-      return [];
+      return Promise.resolve([]);
     }
   }
 }

@@ -41,7 +41,7 @@ export class ScreenHardwareCalculator {
   /**
    * Calculate all hardware for a fly screen assembly
    */
-  async calculateHardware(
+  calculateHardware(
     windowUnit: WindowUnit,
     screenType: FlyScreenType
   ): Promise<ScreenHardwareItem[]> {
@@ -73,7 +73,7 @@ export class ScreenHardwareCalculator {
     hardware.push(...this.calculateCornerBrackets(location));
     hardware.push(...this.calculateSpline(perimeter, location));
 
-    return hardware;
+    return Promise.resolve(hardware);
   }
 
   /**
