@@ -120,7 +120,7 @@ export class RegionalLocalizationEngine {
   /**
    * Get currency exchange rate
    */
-  async getCurrencyRate(from: string, to: string): Promise<number | null> {
+  getCurrencyRate(from: string, to: string): Promise<number | null> {
     // TODO: Implement currency API integration
     // For now, return mock rates
     const rates: Record<string, number> = {
@@ -129,7 +129,7 @@ export class RegionalLocalizationEngine {
       'GBP_EGP': 38.0,
     };
 
-    return rates[`${from}_${to}`] || null;
+    return Promise.resolve(rates[`${from}_${to}`] || null);
   }
 
   /**
@@ -316,15 +316,15 @@ export class RegionalLocalizationEngine {
   /**
    * Sync with local supplier API
    */
-  async syncWithSupplier(supplierId: string): Promise<void> {
+  syncWithSupplier(supplierId: string): Promise<void> {
     const supplier = this.suppliers.get(supplierId);
     if (!supplier || !supplier.apiEndpoint) {
-      throw new Error('Supplier not found or API not configured');
+      return Promise.reject(new Error('Supplier not found or API not configured'));
     }
 
     // TODO: Implement actual supplier API integration
     // This would fetch pricing, availability, etc. from supplier's API
-    console.log(`Syncing with supplier: ${supplier.name}`);
+    console.log(`Syncing with supplier: ${supplier.name}`); return Promise.resolve();
   }
 }
 

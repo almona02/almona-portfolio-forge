@@ -1,6 +1,6 @@
 # LINTS — project-wide cleanup
 
-Status: open, incremental. Branch: `codex/lints`. Started 2026-10-18.
+Status: open, incremental. Started 2026-10-18 on `codex/lints`. Working baseline refreshed 2026-11-06 on `fix/live-schema-credibility` (see the inventory section below). Lint batches stay in their own commits, separate from the live-schema feature work.
 
 ## Scope and gates
 
@@ -38,6 +38,8 @@ The type check is baseline-delta, not type-clean. Capture results without modify
 
 ## Next batches
 
+Immediate work is Wave 1 in the 2026-11-06 inventory section. The list below remains the later domain order.
+
 1. API boundaries: service contracts, ticket messaging, admin user/ticket APIs and used-machine service. Derive types from authoritative schema and narrow unknown external values.
 2. Fabricator configuration: schema alignment first. `createProfile`, `createAccessory`, `createRule` and `saveTuning` omit ownership fields required by the reviewed migrations. Resolve ownership behavior with focused tests; do not invent optional Insert fields just to satisfy lint.
 3. Remaining session screens: login, services and fabricator admin. Separate event/promise cleanup from domain changes.
@@ -67,4 +69,297 @@ Final integration checks: both accessibility suites passed all 14 tests; the sec
 
 Five API modules reduced from **108 warnings to zero**, with zero errors and no weakened lint rules. Two new boundary test files are also warning-free. The combined API, ticket governance and accessibility regression run passed 52 tests. See the [before/after comparison and remaining contract issues](../audits/LINTS_API_BATCH_2026-10-19.md). Counts from the earlier snapshot are historical, not a same-checkout project-wide comparison.
 
-Latest full snapshot (2026-10-19): **2,356 files, 0 ESLint errors, 16,076 warnings**. Type regression gate passed with 1,665 existing app errors; no baseline changes.
+Latest full snapshot before this refresh (2026-10-19): **2,356 files, 0 ESLint errors, 16,076 warnings**. Type regression gate passed with 1,665 existing app errors; no baseline changes.
+
+## Inventory baseline — 2026-11-06
+
+Checkout: `fix/live-schema-credibility`. Commands: `npm run lint:report`, then `npm run lint:inventory`. The JSON report `.eslint-report.json` stays untracked.
+
+**2,464 files, 0 errors, 13,388 warnings.** Thirty-nine messages are auto-fixable. This is the baseline for the next batches. The earlier spoken figure of 13,377 is 11 below this run; use 13,388. The October snapshot above is a different checkout, so the drop from 16,076 is directional.
+
+| Rule | Warnings |
+| --- | ---: |
+| `@typescript-eslint/no-unsafe-member-access` | 4,758 |
+| `@typescript-eslint/no-unsafe-assignment` | 3,092 |
+| `@typescript-eslint/no-explicit-any` | 2,289 |
+| `@typescript-eslint/no-unsafe-call` | 1,413 |
+| `@typescript-eslint/no-unsafe-argument` | 841 |
+| `@typescript-eslint/no-unsafe-return` | 455 |
+| `@typescript-eslint/require-await` | 438 |
+| `@typescript-eslint/no-unnecessary-type-assertion` | 39 |
+| `@typescript-eslint/no-misused-promises` | 34 |
+| `@typescript-eslint/no-floating-promises` | 10 |
+| `@typescript-eslint/unbound-method` | 9 |
+| `@typescript-eslint/no-base-to-string` | 6 |
+| `react-hooks/exhaustive-deps` | 3 |
+| `@typescript-eslint/restrict-template-expressions` | 1 |
+
+Highest concentrations:
+
+| File | Warnings |
+| --- | ---: |
+| `src/components/fabricator/ProfileManagement.tsx` | 242 |
+| `src/lib/tax/TaxExemptionHandler.ts` | 164 |
+| `src/services/productionService.ts` | 156 |
+| `src/components/fabricator/InventoryDashboard.tsx` | 153 |
+| `src/services/invoices/InvoiceReminderService.ts` | 139 |
+| `src/services/customersApi.ts` | 135 |
+| `src/components/fabricator/SystemPackTuningStudio.tsx` | 130 |
+| `src/lib/fabricator/DualOutputGenerator.ts` | 128 |
+| `src/lib/pricing/PricingEngine.ts` | 124 |
+| `src/lib/pricing/PriceHistoryService.ts` | 119 |
+
+`src/lib/fabricator/AlgorithmSelector.ts` and `src/components/fabricator/drafting/utils/inputValidator.ts` are clean. `src/lib/ydt/IntelligenceGate.ts` has 20 warnings, `src/tests/constitutional/GuaranteeVerification.test.ts` has 35, and `src/components/fabricator/drafting/DraftingWorkbench.tsx` has 2.
+
+Coordinator: **muse-wonder-1.0 (1M context)**, non-Contributor. Editors for Wave 1: **muse-spark-1.3 (1M context)**, non-Contributor. Reserved domain files wait for **muse-wonder-full-1.0**.
+
+### Reserved — do not assign to Spark
+
+Pricing, tax, stock, production, schema ownership, and constitutional surfaces. Spark chats must not open these paths.
+
+- `src/lib/tax/TaxExemptionHandler.ts` (164)
+- `src/services/productionService.ts` (156)
+- `src/components/fabricator/InventoryDashboard.tsx` (153)
+- `src/components/fabricator/ProfileManagement.tsx` (242)
+- `src/components/fabricator/SystemPackTuningStudio.tsx` (130)
+- `src/components/fabricator/Rock60PricingSetup.tsx` (113)
+- `src/lib/pricing/PricingEngine.ts` (124)
+- `src/lib/pricing/PriceHistoryService.ts` (119)
+- `src/lib/inventory/RemnantMarketplace.ts` (105)
+- `src/lib/ydt/IntelligenceGate.ts` (20)
+- `src/tests/constitutional/GuaranteeVerification.test.ts` (35)
+- `src/components/fabricator/drafting/DraftingWorkbench.tsx` (2)
+- `src/lib/constitutional/**` (about 111 source warnings and 113 test warnings)
+- `src/lib/fabricator/QualityVerificationEngine.ts` (2, release/QC)
+
+### Wave 1 — four disjoint Spark chats
+
+These may run in parallel. Each chat edits only its files and only the named promise rules. Leave every other warning. Do not disable rules, add `any`, edit the typecheck baseline, or reformat unrelated lines. Preserve behavior: a function that callers await keeps a thenable return (`return Promise.resolve(...)`) when dropping `async` would change the type.
+
+After each chat, run `npx eslint` on that chat's files. S1–S3 must pass `--max-warnings 0`. S4 may keep its single `no-explicit-any`. Then run the tests that cover the touched files, and `npm run type-check` without updating the baseline. Integrate one verified batch at a time.
+
+#### S1 — single-warning promise handlers (5)
+
+Each file has exactly one warning.
+
+| File | Rule |
+| --- | --- |
+| `src/components/fabricator/special/FlyScreenDesigner.tsx` | `no-misused-promises` |
+| `src/components/shop/ai-advisor/AiEquipmentAdvisor.tsx` | `no-misused-promises` |
+| `src/components/theme/AppThemeProvider.test.tsx` | `no-floating-promises` |
+| `src/hooks/useImagePreloading.ts` | `no-misused-promises` |
+| `src/pages/fabricator/workflow/OptimizationPage.tsx` | `no-misused-promises` |
+
+#### S2 — CNC connectors, `require-await` only (38)
+
+Each file contains only this rule.
+
+- `src/integrations/cnc/BiesseCNC.ts` (9)
+- `src/integrations/cnc/ElumatecCNC.ts` (10)
+- `src/integrations/cnc/HomagCNC.ts` (10)
+- `src/integrations/cnc/TrumpfCNC.ts` (9)
+
+#### S3 — fabricator tests that contain only `require-await` (25)
+
+- `src/lib/fabricator/inventory/loadOwnedPhysicalBarLots.test.ts` (21)
+- `src/lib/fabricator/bom/generateAcknowledgedBOM.test.ts` (4)
+
+#### S4 — `src/core/state/stateMachines.ts` (16)
+
+Fix the 16 `require-await` warnings. Leave the one `no-explicit-any` untouched.
+
+Wave 1 covers 84 warnings. The remaining mass is the unsafe-`any` family (12,848 warnings on the 2026-11-06 report). Reserved domain files stay with muse-wonder-full-1.0. Do not fan that work out across Spark.
+
+### Wave 1 review — accepted
+
+Reviewed on this checkout. The other dirty files belong to the live-schema work and were not part of the review. A full recount and `npm run type-check` wait until the lint edits are separated from that work, because either gate would mix the two.
+
+ESLint on the twelve Wave 1 files: S1–S3 are clean at `--max-warnings 0`. `stateMachines.ts` keeps the one `no-explicit-any` at line 253. Vitest passed 33 tests across `AppThemeProvider.test.tsx`, `generateAcknowledgedBOM.test.ts`, `loadOwnedPhysicalBarLots.test.ts`, and `OptimizationPage.failClosed.test.tsx`.
+
+S1 wraps each async handler in `() => void (async () => { ... })()` so the handler still runs when the click or timeout fires. S2 and S4 drop `async` and return `Promise.resolve(...)`, including the catch paths. S3 does the same in the test doubles. `stateMachines.ts` also drops trailing spaces on five JSDoc lines and the final blank line. The `?` glyphs in its comments were already question marks at HEAD.
+
+### Wave 2 — three disjoint Spark chats
+
+Same rules as Wave 1. Files below contain only `require-await`, are absent from the current dirty tree, and are outside the reserved list. Payments, economics, `Tier3Validator.ts`, advisory code, and constitutional paths stay out.
+
+#### S5 — tests only (22)
+
+- `src/hooks/fabricator/useEngineeringSystemPacks.test.ts` (5)
+- `src/hooks/__tests__/usePythonAPI.test.ts` (3)
+- `src/tests/integration/calibration.integration.test.ts` (3)
+- `src/tests/lib/fabricator/bomBuilder.test.ts` (3)
+- `src/utils/lazyImport.test.ts` (2)
+- `src/components/commercial/client-portal/ClientInvoiceViewer.test.tsx` (1)
+- `src/components/fabricator/EngineeringBayWrapper.save.test.tsx` (1)
+- `src/components/fabricator/SavePoseActions.test.tsx` (1)
+- `src/hooks/fabricator/__tests__/useEgyptianPredictiveGrid.test.ts` (1)
+- `src/lib/catalog/UnifiedProfileCatalog.purchase.test.ts` (1)
+- `src/pages/fabricator/studio/ManufacturingApprovalsPage.scroll.test.tsx` (1)
+
+#### S6 — single-purpose UI files (8)
+
+- `src/components/fabricator/QuickReportsPanel.tsx` (2)
+- `src/components/fabricator/hardener/HardenerSelectionPanel.tsx` (1)
+- `src/components/fabricator/MassProductionDashboard.tsx` (1)
+- `src/components/fabricator/ReplayVerificationPanel.tsx` (1)
+- `src/components/fabricator/supplier/ProfileSuggestionsPanel.tsx` (1)
+- `src/components/services/ServiceCard.tsx` (1)
+- `src/pages/admin/TheFoundry.tsx` (1)
+
+#### S7 — Yilmaz cut-list adapters (3)
+
+- `src/integrations/yilmaz/CNCCutListGenerator.ts` (1)
+- `src/integrations/yilmaz/DCCutListGenerator.ts` (1)
+- `src/integrations/yilmaz/YilmazCutListAdapter.ts` (1)
+
+### Wave 2 review — accepted
+
+All 21 files stayed inside S5–S7. ESLint on those files passed `--max-warnings 0` (exit 0, no output). The 11 S5 test files passed 51 tests.
+
+S5 keeps `act` thenable by returning `Promise.resolve()` from the callback, and test doubles that callers await still return promises. S6 drops `async` on handlers whose callers use `void`, and keeps a thenable where `MassProductionOptimizer` awaits `projectLoader` and where `ServiceCard` uses `.then`. The replay stub throws synchronously; `replayComputation` accepts `Promise<T> | T` and does not call the stub. S7 keeps promise returns. Failed Yilmaz validation uses `Promise.reject`, which matches the old `async` function: the caller gets a rejection rather than a synchronous throw.
+
+### Wave 3 — three disjoint Spark chats
+
+Same `require-await` rule. These files were unmodified at review time and contained only that rule on the 2026-11-06 report. Still held: payments, economics, `Tier3Validator.ts`, advisory code, constitutional paths, and the Maalem teaching, reasoning, cognition, and workshop-NLP engines.
+
+#### S8 — small libraries (12)
+
+- `src/lib/exports/windowSnapshotGenerator.ts` (2)
+- `src/lib/geolocation/LocationService.ts` (2)
+- `src/lib/profile/ProfileDataSheetParser.ts` (2)
+- `src/lib/3d/materials/TextureLibrary.ts` (1)
+- `src/lib/3d/mullionConstraintSolver.ts` (1)
+- `src/lib/mobile/MobileMeasurementSync.ts` (1)
+- `src/lib/performance/PerformanceMetricsAggregator.ts` (1)
+- `src/lib/yilmazScraper.ts` (1)
+- `src/lib/nlp/EgyptianDialectDetector.ts` (1)
+
+#### S9 — presets, trust, guild (7)
+
+- `src/lib/presets/SandDustProtectionEngine.ts` (1)
+- `src/lib/presets/SegmentReinforcementCalculator.ts` (1)
+- `src/lib/presets/StructuralAnalyzer.ts` (1)
+- `src/lib/presets/ThermalBreakOptimizer.ts` (1)
+- `src/lib/trust/TrustMetricsService.ts` (2)
+- `src/lib/trust/EgyptianTrustScoring.ts` (1)
+- `src/lib/guild/GuildSystem.ts` (1)
+
+#### S10 — memory, ledger, analytics, learning (22)
+
+- `src/lib/data/collect-maalem-data.ts` (5)
+- `src/lib/memory/EgyptianOralTraditionMemory.ts` (4)
+- `src/lib/realityos/EventLedger.ts` (4)
+- `src/lib/analytics/WorkshopPerformanceAnalytics.ts` (3)
+- `src/lib/learning/KnowledgeValidator.ts` (3)
+- `src/lib/verification/EgyptianVerificationDialog.ts` (3)
+
+### Wave 3 review — accepted
+
+All 22 files stayed inside S8–S10. ESLint on those files passed `--max-warnings 0` (exit 0, no output). Pattern matches Wave 1–2: drop `async`, keep `Promise<T>`, wrap returns (and void methods) in `Promise.resolve(...)`. Catch paths in `windowSnapshotGenerator.ts` also return thenables. `encodeAsEgyptianMemory` correctly stayed `async` because it still awaits the creators. Keeping Promise signatures on currently uncalled stubs is intentional; do not convert those to sync.
+
+Wave 1–3 together cleared the pure `require-await` pile that was clean of other rules, except the seven files below. Remaining `require-await` mostly sits in mixed files next to `no-unsafe-*` / `no-explicit-any`; those batches must fix only `require-await` and leave the other warnings.
+
+### Wave 4 — three disjoint Spark chats
+
+#### S11 — last pure `require-await` files (11)
+
+- `src/lib/supplychain/SupplyChainIntelligence.ts` (3)
+- `src/lib/intelligence/ShapeInferenceEngine.ts` (2)
+- `src/lib/intelligence/SupplierIntelligence.ts` (2)
+- `src/lib/ai/EquipmentRecommendationEngine.ts` (1)
+- `src/lib/conversation/HumanConversationEngine.ts` (1)
+- `src/lib/personality/EgyptianResponseTranslator.ts` (1)
+- `src/localization/turkish/TRYCurrencyCalculator.ts` (1)
+
+#### S12 — `require-await` only; leave the one `no-explicit-any` (13)
+
+- `src/machine-connectors/RemoteSupportLauncher.ts` (6 require-await, 1 any)
+- `src/modules/commercial/ERPBridge.ts` (6 require-await, 1 any)
+- `src/lib/api/analytics.ts` (2 require-await, 1 any)
+
+After lint, these three files may still show their `no-explicit-any` warnings. Do not touch those lines.
+
+#### S13 — `require-await` only in CNC adapters (10)
+
+Leave every non-`require-await` warning.
+
+- `src/lib/cnc/CNCIntegration.ts` (4 require-await among 7 total)
+- `src/lib/cnc/adapters/ElumatecAdapter.ts` (3 among 6)
+- `src/lib/cnc/adapters/YilmazAdapter.ts` (3 among 6)
+
+### Wave 4 review — accepted
+
+All 13 files stayed inside S11–S13. S11 is clean at `--max-warnings 0`. S12 leaves exactly the three `no-explicit-any` warnings. S13 leaves nine out-of-scope warnings (`any` / `no-unsafe-*` / one pre-existing `no-misused-promises` on a real-await `setInterval` callback).
+
+S11 keeps thenable returns, including `Promise.reject` for the missing-supplier path. S13 keeps Promise signatures because `BaseCNCAdapter` awaits them. S12 is the one intentional sync narrowing: `endSession` / `cancelSession` / `requestEmailSupport`, the six ERPBridge sync methods, and `getDashboardData` became sync because no in-repo caller awaits them (ERPBridge `await` only appears in a doc comment; `jobsStore` awaits a ConnectivityFactory adapter, not ERPBridge). Future work should prefer `Promise.resolve` when unsure.
+
+### Progress note
+
+Waves 1–4 cleared the easy `require-await` work. Remaining `require-await` mostly lives in mixed files beside `no-unsafe-*`.
+
+### Inventory baseline — 2026-11-06 (post Wave 1–4 recount)
+
+Same checkout. Commands: `npm run lint:report`, then `node scripts/lint-inventory.mjs .eslint-report.json`.
+
+**2,464 files, 0 errors, 13,194 warnings** (was 13,388). Cleared **194** warnings.
+
+| Rule | Now | Was |
+| --- | ---: | ---: |
+| `@typescript-eslint/require-await` | 249 | 438 |
+| `@typescript-eslint/no-misused-promises` | 30 | 34 |
+| `@typescript-eslint/no-floating-promises` | 9 | 10 |
+| `@typescript-eslint/no-unsafe-member-access` | 4,758 | 4,758 |
+| `@typescript-eslint/no-unsafe-assignment` | 3,092 | 3,092 |
+| `@typescript-eslint/no-explicit-any` | 2,289 | 2,289 |
+
+Pure `require-await` files outside reserved/dirty trees: **0**. About 130 `require-await` remain in unmodified mixed files; the rest of the 249 sit in reserved or already-dirty live-schema paths.
+
+### Inventory baseline — 2026-11-07 (post Wave 5, pre-PR)
+
+Commands: `npm run lint:report`, then `node scripts/lint-inventory.mjs .eslint-report.json`.
+
+**2,464 files, 0 errors, 13,148 warnings** (was 13,194 after Wave 4; was 13,388 at first Wave baseline). Cleared **240** from the first baseline.
+
+| Rule | Now | After Wave 4 | First baseline |
+| --- | ---: | ---: | ---: |
+| `@typescript-eslint/require-await` | 203 | 249 | 438 |
+| `@typescript-eslint/no-misused-promises` | 30 | 30 | 34 |
+| `@typescript-eslint/no-floating-promises` | 9 | 9 | 10 |
+
+Unsafe-`any` family unchanged (4,758 / 3,092 / 2,289). Pre-PR gates: frontend Vitest **361 files / 2262 tests passed** (2 files skipped, 4 expected fail, 14 skipped); backend pytest **266 passed, 17 skipped**.
+
+### Wave 5 — three disjoint Spark chats
+
+Fix **only** `@typescript-eslint/require-await`. Leave every other warning. Prefer `Promise.resolve(...)` / `Promise.reject(...)` over sync API narrowing. Do not edit reserved domain files.
+
+#### S14 — tests and near-pure helpers (16)
+
+Leave every non-`require-await` warning.
+
+- `src/context/AuthContext.ownerIsolation.test.tsx` (5)
+- `src/components/fabricator/PurchaseWizard.test.tsx` (3)
+- `src/tests/components/fabricator/EngineeringBayValidationPerformance.test.ts` (3)
+- `src/lib/exports/ExportService.ts` (3)
+- `src/lib/regional/RegionalLocalizationEngine.ts` (2)
+
+#### S15 — PDF export `require-await` only (14)
+
+Leave `any` / `no-unsafe-*` / `no-misused-promises` in this file alone.
+
+- `src/modules/reporting/PDFExportService.ts` (14 of 31)
+
+#### S16 — connectivity / alerts / automation (16)
+
+Leave every non-`require-await` warning.
+
+- `src/lib/connectivity/ConnectivityGateway.ts` (6)
+- `src/lib/analytics/alertSystem.ts` (6)
+- `src/services/automation/ActionExecutor.ts` (4)
+
+### Wave 5 review — accepted (S15 amended)
+
+S14 and S16 used the preferred `Promise.resolve` / `Promise.reject` pattern. `ExportService.processQueue` / `processQueueItem` correctly went sync because callers already use `void`. Vitest on the three S14 suites: 11 passed.
+
+S15 kept the methods `async` and inserted `await Promise.resolve();` at the top (CRLF edit constraint). Call sites already `await` those privates, so the extra microtask is safe. Out-of-scope warnings left alone. Coordinator follow-up: dropped `async` from the `img.onload` arrow that still had `require-await` (was not in the original 14-method list). `PDFExportService.ts` now has **0** `require-await` and 17 remaining out-of-scope warnings (including one `no-misused-promises` on `toBlob`).
+
+Do not treat `await Promise.resolve()` as the default pattern for later waves; prefer drop-`async` + `Promise.resolve(...)` when the editor can rewrite the returns.

@@ -101,7 +101,7 @@ export class KnowledgeValidator {
   /**
    * Check against physics (immutable truth)
    */
-  private async checkPhysics(claim: string): Promise<PhysicsCheck> {
+  private checkPhysics(claim: string): Promise<PhysicsCheck> {
     // Physics violations
     const violations = [
       {
@@ -129,35 +129,35 @@ export class KnowledgeValidator {
     for (const violation of violations) {
       const match = claim.match(violation.pattern);
       if (match && !violation.check(match)) {
-        return {
+        return Promise.resolve({
           pass: false,
           reason: violation.reason,
           reasonArabic: violation.reasonArabic,
-        };
+        });
       }
     }
 
     // Safety violations
     if (/استخدام\s*([^،]+)\s*بدون\s*حماية/i.test(claim) && 
         /نار|كهرباء|سائل\s*قابل\s*للاشتعال/i.test(claim)) {
-      return {
+      return Promise.resolve({
         pass: false,
         reason: 'Safety violation detected',
         reasonArabic: 'تحذير أمان: العملية دي خطيرة',
-      };
+      });
     }
 
-    return {
+    return Promise.resolve({
       pass: true,
       reason: 'No physics violations detected',
       reasonArabic: 'لا توجد مخالفات فيزيائية',
-    };
+    });
   }
 
   /**
    * Check against system documentation
    */
-  private async checkDocumentation(claim: string): Promise<SystemCheck> {
+  private checkDocumentation(claim: string): Promise<SystemCheck> {
     // Check for direct contradictions
     const contradictions = [
       {
@@ -179,27 +179,27 @@ export class KnowledgeValidator {
       if (match) {
         // Would check against actual documentation
         // For now, return neutral
-        return {
+        return Promise.resolve({
           pass: true,
           contradicts: false,
           reason: 'No documented contradiction found',
           reasonArabic: 'لا يوجد تناقض مع الوثائق',
-        };
+        });
       }
     }
 
-    return {
+    return Promise.resolve({
       pass: true,
       contradicts: false,
       reason: 'No system contradictions',
       reasonArabic: 'لا يوجد تناقض مع النظام',
-    };
+    });
   }
 
   /**
    * Deep reasoning about subjective claims
    */
-  private async reasonAboutSubjectiveClaim(
+  private reasonAboutSubjectiveClaim(
     claim: string,
     _context: ClaimContext
   ): Promise<SubjectiveCheck> {
@@ -277,13 +277,13 @@ export class KnowledgeValidator {
       reasoningArabic = 'المعلومة العامة محتاجة تأكيد';
     }
 
-    return {
+    return Promise.resolve({
       plausible,
       confidence,
       type: classification,
       reasoning,
       reasoningArabic,
-    };
+    });
   }
 }
 

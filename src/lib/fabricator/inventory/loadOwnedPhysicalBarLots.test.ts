@@ -27,16 +27,16 @@ describe('loadOwnedPhysicalBarLotsWithDeps', () => {
       [row({ profile_id: 'p1', bar_count: 2, created_at: '2026-01-01T00:00:00Z' })],
       [row({ profile_id: 'p1', movement_type: 'consume', bar_count: 1, created_at: '2026-01-02T00:00:00Z' })],
     ];
-    const fetchPage = vi.fn(async ({ offset, limit }: { offset: number; limit: number }) => {
+    const fetchPage = vi.fn(({ offset, limit }: { offset: number; limit: number }) => {
       const idx = offset / limit;
-      return { rows: pages[idx] ?? [], error: null };
+      return Promise.resolve({ rows: pages[idx] ?? [], error: null });
     });
     const result = await loadOwnedPhysicalBarLotsWithDeps(
       { userId: 'u1', pageSize: 1 },
       {
         fetchPage,
-        fetchCount: async () => ({ count: 2, error: null }),
-        fetchStockVersions: async () => ({ versions: stableVersions, error: null }),
+        fetchCount: () => Promise.resolve({ count: 2, error: null }),
+        fetchStockVersions: () => Promise.resolve({ versions: stableVersions, error: null }),
       },
     );
     expect(result.ok).toBe(true);
@@ -52,17 +52,17 @@ describe('loadOwnedPhysicalBarLotsWithDeps', () => {
     const result = await loadOwnedPhysicalBarLotsWithDeps(
       { userId: 'u1', pageSize: 1 },
       {
-        fetchPage: async ({ offset }) => {
+        fetchPage: ({ offset }) => {
           if (offset === 0) {
-            return {
+            return Promise.resolve({
               rows: [row({ profile_id: 'p1', bar_count: 10, created_at: '2026-01-01T00:00:00Z' })],
               error: null,
-            };
+            });
           }
-          return { rows: [], error: null };
+          return Promise.resolve({ rows: [], error: null });
         },
-        fetchCount: async () => ({ count: 2, error: null }),
-        fetchStockVersions: async () => ({ versions: stableVersions, error: null }),
+        fetchCount: () => Promise.resolve({ count: 2, error: null }),
+        fetchStockVersions: () => Promise.resolve({ versions: stableVersions, error: null }),
       },
     );
     expect(result.ok).toBe(false);
@@ -76,17 +76,17 @@ describe('loadOwnedPhysicalBarLotsWithDeps', () => {
     const result = await loadOwnedPhysicalBarLotsWithDeps(
       { userId: 'u1', pageSize: 10 },
       {
-        fetchPage: async () => ({
+        fetchPage: () => Promise.resolve({
           rows: [row({ profile_id: 'p1', bar_count: 2 })],
           error: null,
         }),
-        fetchCount: async () => ({ count: 1, error: null }),
-        fetchStockVersions: async () => {
+        fetchCount: () => Promise.resolve({ count: 1, error: null }),
+        fetchStockVersions: () => {
           calls += 1;
-          return {
+          return Promise.resolve({
             versions: calls === 1 ? { p1: 1 } : { p1: 2 },
             error: null,
-          };
+          });
         },
       },
     );
@@ -100,15 +100,15 @@ describe('loadOwnedPhysicalBarLotsWithDeps', () => {
     const result = await loadOwnedPhysicalBarLotsWithDeps(
       { userId: 'u1', pageSize: 10 },
       {
-        fetchPage: async () => ({
+        fetchPage: () => Promise.resolve({
           rows: [row({ profile_id: 'p1', bar_count: 2 })],
           error: null,
         }),
-        fetchCount: async () => {
+        fetchCount: () => {
           countCalls += 1;
-          return { count: countCalls === 1 ? 1 : 2, error: null };
+          return Promise.resolve({ count: countCalls === 1 ? 1 : 2, error: null });
         },
-        fetchStockVersions: async () => ({ versions: stableVersions, error: null }),
+        fetchStockVersions: () => Promise.resolve({ versions: stableVersions, error: null }),
       },
     );
     expect(result.ok).toBe(false);
@@ -120,12 +120,12 @@ describe('loadOwnedPhysicalBarLotsWithDeps', () => {
     const result = await loadOwnedPhysicalBarLotsWithDeps(
       { userId: 'u1', pageSize: 10 },
       {
-        fetchPage: async () => ({
+        fetchPage: () => Promise.resolve({
           rows: [row({ profile_id: 'p1', bar_count: 3 })],
           error: null,
         }),
-        fetchCount: async () => ({ count: 1, error: null }),
-        fetchStockVersions: async () => ({ versions: { p1: 9 }, error: null }),
+        fetchCount: () => Promise.resolve({ count: 1, error: null }),
+        fetchStockVersions: () => Promise.resolve({ versions: { p1: 9 }, error: null }),
       },
     );
     expect(result.ok).toBe(true);
@@ -138,9 +138,9 @@ describe('loadOwnedPhysicalBarLotsWithDeps', () => {
     const result = await loadOwnedPhysicalBarLotsWithDeps(
       { userId: 'u1' },
       {
-        fetchPage: async () => ({ rows: [], error: 'boom' }),
-        fetchCount: async () => ({ count: 0, error: null }),
-        fetchStockVersions: async () => ({ versions: {}, error: null }),
+        fetchPage: () => Promise.resolve({ rows: [], error: 'boom' }),
+        fetchCount: () => Promise.resolve({ count: 0, error: null }),
+        fetchStockVersions: () => Promise.resolve({ versions: {}, error: null }),
       },
     );
     expect(result.ok).toBe(false);
@@ -152,9 +152,9 @@ describe('loadOwnedPhysicalBarLotsWithDeps', () => {
     const result = await loadOwnedPhysicalBarLotsWithDeps(
       { userId: 'u1' },
       {
-        fetchPage: async () => ({ rows: [], error: null }),
-        fetchCount: async () => ({ count: null, error: 'count failed' }),
-        fetchStockVersions: async () => ({ versions: {}, error: null }),
+        fetchPage: () => Promise.resolve({ rows: [], error: null }),
+        fetchCount: () => Promise.resolve({ count: null, error: 'count failed' }),
+        fetchStockVersions: () => Promise.resolve({ versions: {}, error: null }),
       },
     );
     expect(result.ok).toBe(false);

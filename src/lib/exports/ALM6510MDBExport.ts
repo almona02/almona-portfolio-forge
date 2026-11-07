@@ -1,9 +1,11 @@
 /**
  * ALM 6510 MDB Export Service
  * ============================
- * 
- * Generates MDB files for Yılmaz ALM 6510 machines.
- * The MDB file structure matches exactly the machine's software requirements.
+ *
+ * Downloads the ALM 6510 INTERMEDIATE JSON payload (.mdb.json) produced by
+ * the backend. This is not a binary MDB file and must not be presented as
+ * controller-ready: verify it in the Yilmaz controller software before any
+ * production use.
  */
 
 import { CuttingPlan, OptimizationResult, WindowUnit } from '@/types/fabricator';
@@ -44,7 +46,7 @@ export class ALM6510MDBExportService {
 
     // Prepare cutting plan data
     const cuttingPlanData = this.prepareCuttingPlanData(optimization.cuttingPlan);
-    
+
     if (cuttingPlanData.length === 0) {
       throw new Error('No cuts found in cutting plan. Please check your design.');
     }
@@ -110,7 +112,7 @@ export class ALM6510MDBExportService {
 
       const jsonString = JSON.stringify(jsonData, null, 2);
       const blob = new Blob([jsonString], { type: 'application/json' });
-      
+
       return blob;
     } catch (error) {
       console.error('ALM 6510 MDB generation error:', error);
@@ -119,6 +121,72 @@ export class ALM6510MDBExportService {
       }
       throw new Error('Failed to generate MDB file: ' + String(error));
     }
+  }
+
+  /**
+   * Download the binary Jet (.mdb) file from the workshop host writer.
+   * Fails with the server's guidance message when the workshop setup
+   * (pyodbc + Access driver + template) is missing — never a fake file.
+   */
+  async downloadBinaryMDB(
+    project: WindowUnit,
+    optimization: OptimizationResult,
+    options: ALM6510ExportOptions
+  ): Promise<void> {
+    if (!project || !optimization) {
+      throw new Error('Project and optimization data are required');
+    }
+    if (!optimization.cuttingPlan || optimization.cuttingPlan.length === 0) {
+      throw new Error('No cutting plan data available. Please generate optimization first.');
+    }
+    const cuttingPlanData = this.prepareCuttingPlanData(optimization.cuttingPlan);
+    if (cuttingPlanData.length === 0) {
+      throw new Error('No cuts found in cutting plan. Please check your design.');
+    }
+    const profilesData = project.components.map(comp => ({
+      id: comp.profile?.id || '',
+      name: comp.profile?.name || '',
+      code: comp.profile?.id || '',
+      material: comp.profile?.material || 'aluminum',
+    }));
+
+    const response = await fetch(`${this.apiBaseUrl}/alm6510/generate-mdb-file`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderNumber: options.orderNumber || project.orderNumber || `ORDER-${Date.now()}`,
+        customerCode: options.customerCode || project.customer || '',
+        customerName: options.customerName || project.customer || '',
+        cuttingPlan: cuttingPlanData,
+        profiles: profilesData,
+        project: options.project || { positionNumber: parseInt(project.posNumber || '1') },
+      }),
+    });
+
+    if (!response.ok) {
+      let errorMessage = 'Failed to generate binary MDB file';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.detail || errorData.message || errorMessage;
+      } catch {
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const timestamp = new Date().toISOString().split('T')[0].replace(/-/g, '');
+    const orderNum = options.orderNumber || project.orderNumber || 'ORDER';
+    link.download = `ALM6510_${orderNum}_${timestamp}.mdb`;
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(() => {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 100);
   }
 
   /**
@@ -131,20 +199,20 @@ export class ALM6510MDBExportService {
   ): Promise<void> {
     try {
       const blob = await this.generateMDB(project, optimization, options);
-      
+
       // Create download link
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      
+
       // Generate filename with timestamp
       const timestamp = new Date().toISOString().split('T')[0].replace(/-/g, '');
       const orderNum = options.orderNumber || project.orderNumber || 'ORDER';
       link.download = `ALM6510_${orderNum}_${timestamp}.mdb.json`;
-      
+
       document.body.appendChild(link);
       link.click();
-      
+
       // Clean up after a short delay
       setTimeout(() => {
         document.body.removeChild(link);
@@ -161,7 +229,7 @@ export class ALM6510MDBExportService {
    */
   private prepareCuttingPlanData(cuttingPlans: CuttingPlan[]): any[] {
     const cuts: any[] = [];
-    
+
     cuttingPlans.forEach((plan, planIndex) => {
       const profile = plan.profile;
       plan.cuts.forEach((cut, cutIndex) => {
@@ -194,4 +262,3 @@ export class ALM6510MDBExportService {
 
 // Export singleton instance
 export const alm6510MDBExport = new ALM6510MDBExportService();
-

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Almona Fabricator Pro: ProductionCommand (v2.0)
  *
  * This component is the definitive command center for reviewing, visualizing,
@@ -13,7 +13,8 @@
  * - Interactive G-Code Preview: G-code is not just a text block; it's a syntax-
  *   highlighted, professional code editor view.
  * - Streamlined Export Workflow: A unified "Dispatch to Production" section clarifies
- *   the final steps, from PDF reports to direct CNC machine communication.
+ *   the final steps, from PDF reports to machine-file downloads for controller import.
+ *   Direct machine send is not connected: files are downloaded for manual transfer.
  * - Polished UI/UX: The layout, terminology, and visual language are refined to
  *   instill a sense of confidence, precision, and command.
  */
@@ -39,6 +40,8 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { BarcodeLabelGenerator, type BarcodeLabel, type BarcodeLabelOptions } from '@/integrations/yilmaz/BarcodeLabelGenerator';
 import { generateCutSheets } from '@/lib/fabricator/production/CutSheetGenerator';
+import { evaluateProductionExportGate } from '@/lib/fabricator/production/machineExportPreflight';
+import { assertMachineSendAvailable, MACHINE_SEND_STATUS } from '@/lib/fabricator/production/machineSendAvailability';
 import type { CompleteBOM } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import { OptimizationResult, Profile, WindowUnit, type Cut } from '@/types/fabricator';
 import {
@@ -144,7 +147,7 @@ const CNCSimulationView: React.FC<{ gcode: string; machine: string }> = ({ gcode
             // Simulate Tool Head
             if (commands.length > 0) {
                 // Scale X coordinate to canvas width (assuming 6000mm max length)
-                const scaleX = (canvas.width - 40) / 6000; 
+                const scaleX = (canvas.width - 40) / 6000;
 
                 // Animate through commands
                 if (isPlaying) {
@@ -229,11 +232,12 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
     const [gCodePreview, setGCodePreview] = useState<string | null>(null);
     const [wasteComparison, setWasteComparison] = useState<WasteComparison | null>(null);
     const [showProductionPreview, setShowProductionPreview] = useState(false);
-    const [pendingAction, setPendingAction] = useState<'gcode' | 'report' | 'send' | 'alm6510' | 'splitpo' | null>(null);
+    const [pendingAction, setPendingAction] = useState<'gcode' | 'report' | 'send' | 'alm6510' | 'alm6510bin' | 'splitpo' | null>(null);
     const [lastActionResult, setLastActionResult] = useState<{ success: boolean; message: string } | null>(null);
     const [isGeneratingALM6510, setIsGeneratingALM6510] = useState(false);
     const [alm6510ExportError, setAlm6510ExportError] = useState<string | null>(null);
     const [alm6510ExportSuccess, setAlm6510ExportSuccess] = useState(false);
+    const [alm6510BinarySuccess, setAlm6510BinarySuccess] = useState(false);
     const { branding } = useCompanyBranding();
 
     // Installation variables state
@@ -308,6 +312,13 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
         if (!optimization || !project) return;
 
         try {
+            // F04: conservation gate — refuse to generate when the cut list does
+            // not reconcile to the saved design ledger.
+            const gate = evaluateProductionExportGate(project, optimization, 'gcode');
+            if (!gate.allowed) {
+                throw new Error(gate.blockingReasons.join('; '));
+            }
+
             // Validate cutting plan
             const validator = new MachineValidator(selectedMachine);
             const validation = validator.validateCuttingPlan(optimization.cuttingPlan);
@@ -359,28 +370,12 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
         }
     }, [project, optimization, branding]);
 
+    // F01: no machine transport exists — this action is fail-closed. The Send
+    // control stays disabled; this throw is defense in depth so no caller can
+    // ever report a sent/transmitted state without a controller acknowledgement.
     const handleSendToMachine = useCallback(async () => {
-        if (!gCodePreview || !project) return;
-
-        try {
-            // In a real implementation, this would connect to the actual machine
-            // For now, we'll simulate the connection
-            // const networkConfig = {
-            //     host: '192.168.1.100',
-            //     port: 8080,
-            //     timeout: 30000,
-            //     retryAttempts: 3,
-            //     retryDelay: 1000
-            // };
-
-            // Simulate success
-            await new Promise(resolve => setTimeout(resolve, 2000));
-        } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
-            trackError('ProductionCommand', 'machine_send', err.message);
-            throw error;
-        }
-    }, [gCodePreview, project]);
+        assertMachineSendAvailable();
+    }, []);
 
     const handleDownloadALM6510MDB = useCallback(async () => {
         if (!project || !optimization) return;
@@ -390,6 +385,13 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
         setAlm6510ExportSuccess(false);
 
         try {
+            // F04: conservation gate — refuse to export when the cut list does
+            // not reconcile to the saved design ledger.
+            const gate = evaluateProductionExportGate(project, optimization, 'mdb');
+            if (!gate.allowed) {
+                throw new Error(gate.blockingReasons.join('; '));
+            }
+
             const options: ALM6510ExportOptions = {
                 orderNumber: project.orderNumber || `ORDER-${Date.now()}`,
                 customerCode: project.customer || '',
@@ -410,7 +412,48 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
         }
     }, [project, optimization]);
 
-    const confirmAndExecute = useCallback((action: 'gcode' | 'report' | 'send' | 'alm6510' | 'splitpo') => {
+    const handleDownloadALM6510Binary = useCallback(async () => {
+        if (!project || !optimization) return;
+
+        setIsGeneratingALM6510(true);
+        setAlm6510ExportError(null);
+        setAlm6510ExportSuccess(false);
+        setAlm6510BinarySuccess(false);
+
+        try {
+            // F04: same conservation gate as every other machine-file export.
+            const gate = evaluateProductionExportGate(project, optimization, 'mdb');
+            if (!gate.allowed) {
+                throw new Error(gate.blockingReasons.join('; '));
+            }
+
+            const options: ALM6510ExportOptions = {
+                orderNumber: project.orderNumber || `ORDER-${Date.now()}`,
+                customerCode: project.customer || '',
+                customerName: project.customer || '',
+                project: {
+                    positionNumber: parseInt(project.posNumber || '1'),
+                },
+            };
+
+            await alm6510MDBExport.downloadBinaryMDB(project, optimization, options);
+            setAlm6510BinarySuccess(true);
+        } catch (error) {
+            const err = error instanceof Error ? error : new Error(String(error));
+            trackError('ProductionCommand', 'alm6510_binary_export', err.message);
+            setAlm6510ExportError(err.message);
+        } finally {
+            setIsGeneratingALM6510(false);
+        }
+    }, [project, optimization]);
+
+    const confirmAndExecute = useCallback((action: 'gcode' | 'report' | 'send' | 'alm6510' | 'alm6510bin' | 'splitpo') => {
+        // F01: the send action is fail-closed — the control stays disabled and
+        // handleSendToMachine throws. Keep the preview dialog from opening.
+        if (action === 'send') {
+            setLastActionResult({ success: false, message: MACHINE_SEND_STATUS.reason });
+            return;
+        }
         setPendingAction(action);
         setShowProductionPreview(true);
     }, []);
@@ -431,13 +474,20 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                     resultMessage = t('production_command.pdf_downloaded', 'PDF Cutting Report downloaded.');
                     break;
                 case 'send':
+                    // Unreachable via UI (confirmAndExecute blocks it) and
+                    // handleSendToMachine always throws. Never report sent.
                     await handleSendToMachine();
-                    resultMessage = t('production_command.job_sent', 'Job sent to Yilmaz {machine}.', { machine: selectedMachine });
+                    resultMessage = t('production_command.job_sent', 'Direct machine send is not available.');
                     break;
                 case 'alm6510':
                     await handleDownloadALM6510MDB();
-                    resultMessage = t('production_command.alm6510_downloaded', 'ALM 6510 MDB file downloaded successfully.');
+                    resultMessage = t('production_command.alm6510_downloaded', 'ALM 6510 intermediate file downloaded.');
                     // Close the preview dialog after successful download
+                    setShowProductionPreview(false);
+                    break;
+                case 'alm6510bin':
+                    await handleDownloadALM6510Binary();
+                    resultMessage = t('production_command.alm6510_binary_downloaded', 'ALM 6510 binary file downloaded.');
                     setShowProductionPreview(false);
                     break;
                 case 'splitpo':
@@ -459,7 +509,7 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
             setIsProcessing(false);
             setPendingAction(null);
         }
-    }, [pendingAction, handleGenerateGCode, handleExportCuttingReport, handleSendToMachine, handleDownloadALM6510MDB, project, optimization, installationBreakdown, selectedMachine, t]);
+    }, [pendingAction, handleGenerateGCode, handleExportCuttingReport, handleSendToMachine, handleDownloadALM6510MDB, handleDownloadALM6510Binary, project, optimization, installationBreakdown, t]);
 
     // ✅ HARDENING: Memoize inline export handlers for performance
     const handleQuickExportPDF = useCallback(async () => {
@@ -952,35 +1002,67 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
                                 {isGeneratingALM6510 ? (
                                     <>
                                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                        {t('production_command.generating_mdb', 'Generating MDB...')}
+                                        {t('production_command.generating_mdb', 'Generating ALM 6510 file...')}
                                     </>
                                 ) : (
                                     <>
                                         <Download className="h-4 w-4 mr-2" />
-                                        {t('production_command.download_alm6510_mdb', 'Download ALM 6510 MDB')}
+                                        {t('production_command.download_alm6510_mdb', 'Download ALM 6510 File (Intermediate JSON)')}
                                     </>
                                 )}
                             </Button>
                         )}
 
-                         <Button onClick={() => confirmAndExecute('send')} disabled={isProcessing || !gCodePreview} size="lg" className="btn-primary">
-                            <Send className="h-4 w-4 mr-2"/> {t('production_command.send_to_machine', 'Send Job to Machine')}
+                        {/* ALM 6510 binary MDB — real Jet file when the workshop
+                            host is set up; needs controller acceptance first. */}
+                        {selectedMachine === 'ALM-6510' && (
+                            <Button
+                                onClick={() => confirmAndExecute('alm6510bin')}
+                                disabled={isProcessing || isGeneratingALM6510}
+                                size="lg"
+                                variant="outline"
+                                title={t('production_command.binary_unverified_hint', 'Requires workshop setup (Access driver + template). Verify at the controller before production use.')}
+                            >
+                                <Download className="h-4 w-4 mr-2" />
+                                {t('production_command.download_alm6510_binary', 'Download ALM 6510 Binary (.mdb)')}
+                            </Button>
+                        )}
+
+                        {/* F01: direct machine send is not connected — the control
+                            stays disabled until a real transport supplies a
+                            controller acknowledgement. */}
+                        <Button
+                            disabled
+                            size="lg"
+                            className="btn-primary"
+                            title={t('production_command.send_unavailable_hint', MACHINE_SEND_STATUS.reason)}
+                        >
+                            <Send className="h-4 w-4 mr-2"/> {t('production_command.send_to_machine', 'Machine Send Unavailable')}
                         </Button>
 
                         {/* ALM 6510 Export Status Messages */}
                         {alm6510ExportSuccess && !alm6510ExportError && (
                             <Alert className="bg-green-900/20 border-green-500">
                                 <CheckCircle className="h-4 w-4" />
-                                <AlertTitle>Success</AlertTitle>
+                                <AlertTitle>{t('production_command.success', 'Success')}</AlertTitle>
                                 <AlertDescription>
-                                    ALM 6510 MDB file downloaded successfully. Ready for machine import.
+                                    {t('production_command.alm6510_intermediate_note', 'Intermediate file downloaded — verify in the controller software before production use.')}
+                                </AlertDescription>
+                            </Alert>
+                        )}
+                        {alm6510BinarySuccess && !alm6510ExportError && (
+                            <Alert className="bg-amber-900/20 border-amber-500">
+                                <CheckCircle className="h-4 w-4" />
+                                <AlertTitle>{t('production_command.success', 'Success')}</AlertTitle>
+                                <AlertDescription>
+                                    {t('production_command.alm6510_binary_note', 'Binary file downloaded — controller acceptance still required before production use.')}
                                 </AlertDescription>
                             </Alert>
                         )}
                         {alm6510ExportError && (
                             <Alert variant="destructive" className="bg-red-900/20 border-red-500">
                                 <AlertCircle className="h-4 w-4" />
-                                <AlertTitle>Export Error</AlertTitle>
+                                <AlertTitle>{t('production_command.error', 'Error')}</AlertTitle>
                                 <AlertDescription>{alm6510ExportError}</AlertDescription>
                             </Alert>
                         )}

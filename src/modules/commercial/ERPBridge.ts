@@ -91,7 +91,7 @@ export class ERPBridge {
   /**
    * Sync quote to ERP system
    */
-  async syncQuote(quote: ERPQuote): Promise<ERPSyncResult> {
+  syncQuote(quote: ERPQuote): ERPSyncResult {
     if (this.config.system === 'mock') {
       // Mock implementation
       const erpQuoteId = `ERP-Q-${Date.now()}`;
@@ -114,7 +114,7 @@ export class ERPBridge {
   /**
    * Sync order to ERP system
    */
-  async syncOrder(order: ERPOrder): Promise<ERPSyncResult> {
+  syncOrder(order: ERPOrder): ERPSyncResult {
     if (this.config.system === 'mock') {
       const erpOrderId = `ERP-O-${Date.now()}`;
       order.erpOrderId = erpOrderId;
@@ -135,7 +135,7 @@ export class ERPBridge {
   /**
    * Sync invoice to ERP system
    */
-  async syncInvoice(invoice: ERPInvoice): Promise<ERPSyncResult> {
+  syncInvoice(invoice: ERPInvoice): ERPSyncResult {
     if (this.config.system === 'mock') {
       const erpInvoiceId = `ERP-I-${Date.now()}`;
       invoice.erpInvoiceId = erpInvoiceId;
@@ -156,7 +156,7 @@ export class ERPBridge {
   /**
    * Sync stock move to ERP inventory
    */
-  async syncStockMove(stockMove: StockMove): Promise<ERPSyncResult> {
+  syncStockMove(stockMove: StockMove): ERPSyncResult {
     if (this.config.system === 'mock') {
       const erpStockMoveId = `ERP-SM-${Date.now()}`;
       stockMove.erpStockMoveId = erpStockMoveId;
@@ -176,7 +176,7 @@ export class ERPBridge {
   /**
    * Get quote from ERP (pull update)
    */
-  async getQuote(fabricatorProjectId: string): Promise<ERPQuote | null> {
+  getQuote(fabricatorProjectId: string): ERPQuote | null {
     if (this.config.system === 'mock') {
       return this.quotes.get(fabricatorProjectId) || null;
     }
@@ -203,7 +203,7 @@ export class ERPBridge {
    * Webhook handler (for incoming ERP updates)
    * TODO: Implement in ERP Phase 2
    */
-  async handleWebhook(payload: any): Promise<void> {
+  handleWebhook(payload: any): void {
     console.log('[ERP Bridge] Webhook received:', payload);
     throw new Error('Webhook handling not implemented. See ERP Phase 2 roadmap.');
   }

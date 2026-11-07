@@ -44,7 +44,7 @@ export const ProfileSuggestionsPanel: React.FC<ProfileSuggestionsPanelProps> = (
   const [error, setError] = useState<string | null>(null);
   const [validations, setValidations] = useState<Map<string, Tier3ValidationResult>>(new Map());
 
-  const loadSuggestions = useCallback(async () => {
+  const loadSuggestions = useCallback(() => {
     if (!windowUnit || !systemPack) {
       return;
     }

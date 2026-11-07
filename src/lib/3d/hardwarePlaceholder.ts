@@ -64,86 +64,6 @@ export const HARDWARE_COLORS = {
 };
 
 /**
- * Calculate absolute position from expression
- * 
- * @param expr Expression like 'sash_right_edge-0.03' or 'sash_height/2'
- * @param context Context object with values like sashWidth, sashHeight, etc.
- */
-/**
- * Safely evaluate a simple arithmetic expression (digits, + - * /, parentheses)
- * without the Function constructor (avoids no-implied-eval).
- */
-function _safeEvalArithmetic(expr: string): number {
-  let pos = 0;
-  const peek = () => expr[pos] ?? '';
-  const skipWs = () => { while (peek() === ' ') pos++; };
-  const parseNumber = (): number => {
-    skipWs();
-    const start = pos;
-    while (/[0-9.]/.test(peek())) pos++;
-    return parseFloat(expr.slice(start, pos));
-  };
-  const parseExpr = (): number => {
-    let v = parseTerm();
-    skipWs();
-    while (peek() === '+' || peek() === '-') {
-      const op = peek();
-      pos++;
-      const rhs = parseTerm();
-      v = op === '+' ? v + rhs : v - rhs;
-      skipWs();
-    }
-    return v;
-  };
-  const parseTerm = (): number => {
-    let v = parseFactor();
-    skipWs();
-    while (peek() === '*' || peek() === '/') {
-      const op = peek();
-      pos++;
-      const rhs = parseFactor();
-      v = op === '*' ? v * rhs : v / rhs;
-      skipWs();
-    }
-    return v;
-  };
-  const parseFactor = (): number => {
-    skipWs();
-    if (peek() === '(') {
-      pos++;
-      const v = parseExpr();
-      skipWs();
-      if (peek() === ')') pos++;
-      return v;
-    }
-    return parseNumber();
-  };
-  return parseExpr();
-}
-
-function _evaluatePosition(expr: string | number, context: Record<string, number>): number {
-  if (typeof expr === 'number') return expr;
-  
-  // Replace context variables
-  let result = expr;
-  for (const [key, value] of Object.entries(context)) {
-    result = result.replace(new RegExp(key, 'g'), value.toString());
-  }
-  
-  // Evaluate simple arithmetic (safe eval)
-  try {
-    // Only allow basic arithmetic operations
-    if (/^[0-9+\-*/().\s]+$/.test(result)) {
-      return _safeEvalArithmetic(result);
-    }
-  } catch (e) {
-    console.warn(`Failed to evaluate position expression: ${expr}`, e);
-  }
-  
-  return 0;
-}
-
-/**
  * Generate hardware placeholders for a window unit
  * 
  * @param windowUnit The window unit to generate hardware for
@@ -286,7 +206,7 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
       // Get opening direction from cell (each sash has its own opening direction)
       const openingDirection = (cell as any)?.openingDirection || 'right';
       
-      // Hinge positions: top and bottom (150mm from edges, standard Egyptian)
+      // Hinge positions: top and bottom (150mm from top)
       const hingeZ = 0.01;
       
       // CRITICAL: Hinges on the side where sash is attached (this is the pivot reference)
@@ -373,4 +293,3 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
 export function getHardwareColor(type: HardwarePlaceholder['type']): number {
   return HARDWARE_COLORS[type] || 0x444444;
 }
-

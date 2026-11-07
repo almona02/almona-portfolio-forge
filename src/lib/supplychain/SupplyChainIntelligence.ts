@@ -85,7 +85,7 @@ export class SupplyChainIntelligence {
   /**
    * Predict optimal order timing for materials
    */
-  async predictOptimalOrderTiming(
+  predictOptimalOrderTiming(
     profile: Profile,
     options: {
       leadTimeDays?: number;
@@ -118,7 +118,7 @@ export class SupplyChainIntelligence {
     reasoning += `Predicted stockout: ${predictedStockoutDate.toLocaleDateString()}. `;
     reasoning += `Recommended order: ${recommendedOrderDate.toLocaleDateString()} (${leadTime} days lead time).`;
 
-    return {
+    return Promise.resolve({
       material: profile.material,
       profileId: profile.id,
       recommendedOrderDate,
@@ -127,19 +127,19 @@ export class SupplyChainIntelligence {
       optimalQuantity,
       reasoning,
       confidence,
-    };
+    });
   }
 
   /**
    * Track supplier performance
    */
-  async trackSupplierPerformance(
+  trackSupplierPerformance(
     supplierId: string,
     period: 'week' | 'month' | 'quarter' | 'year' = 'month'
   ): Promise<SupplierPerformance> {
     const supplier = this.suppliers.get(supplierId);
     if (!supplier) {
-      throw new Error('Supplier not found');
+      return Promise.reject(new Error('Supplier not found'));
     }
 
     // TODO: Query actual order history from database
@@ -160,18 +160,18 @@ export class SupplyChainIntelligence {
       pricing: 'stable' as const,
     };
 
-    return {
+    return Promise.resolve({
       supplierId,
       period,
       metrics,
       trends,
-    };
+    });
   }
 
   /**
    * Analyze price trends and forecast
    */
-  async analyzePriceTrend(
+  analyzePriceTrend(
     profile: Profile,
     forecastDays: number = 30
   ): Promise<PriceTrend> {
@@ -212,7 +212,7 @@ export class SupplyChainIntelligence {
       });
     }
 
-    return {
+    return Promise.resolve({
       material: profile.material,
       profileId: profile.id,
       currentPrice,
@@ -220,7 +220,7 @@ export class SupplyChainIntelligence {
       trend,
       forecast,
       confidence: 0.7,
-    };
+    });
   }
 
   /**

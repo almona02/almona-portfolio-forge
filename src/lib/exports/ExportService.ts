@@ -144,7 +144,7 @@ export class ExportService {
   /**
    * Export multiple projects in batch (basic version)
    */
-  async exportBatch(config: BatchExportConfig): Promise<BatchExportResult> {
+  exportBatch(config: BatchExportConfig): Promise<BatchExportResult> {
     return this.exportBatchAdvanced({
       ...config,
       priority: 'standard',
@@ -521,7 +521,7 @@ export class ExportService {
   /**
    * Process export queue with priority
    */
-  private async processQueue(): Promise<void> {
+  private processQueue(): void {
     const pendingItems = Array.from(this.exportQueue.values())
       .filter(item => item.status === 'pending')
       .sort((a, b) => {
@@ -546,7 +546,7 @@ export class ExportService {
   /**
    * Process a single queue item
    */
-  private async processQueueItem(item: ExportQueueItem): Promise<void> {
+  private processQueueItem(item: ExportQueueItem): void {
     item.status = 'processing';
     
     const exportPromise = this.exportProject(
@@ -815,13 +815,13 @@ export class ExportService {
   /**
    * Apply template to export options
    */
-  private async applyTemplate(templateId: string, baseOptions: ExportOptions): Promise<ExportOptions> {
+  private applyTemplate(templateId: string, baseOptions: ExportOptions): Promise<ExportOptions> {
     const result = templateManager.applyTemplate(templateId, baseOptions);
     if (result.success) {
-      return result.appliedOptions as ExportOptions;
+      return Promise.resolve(result.appliedOptions as ExportOptions);
     }
     // Fallback to base options if template application fails
-    return baseOptions;
+    return Promise.resolve(baseOptions);
   }
 
   /**

@@ -4,7 +4,7 @@
  * Creates browser-downloadable Blob files for:
  *   - CNC program (.cnc) — G-code with Yilmaz-compatible naming
  *   - CSV Cut List (.csv)
- *   - MDB cut-list interchange (.mdb) — JSON table structure used by existing ALM paths
+ *   - MDB cut-list interchange (.mdb.json) — JSON table structure used by existing ALM paths
  *   - JSON Manifest (.json)
  *
  * Includes checksum computation and file naming conventions.
@@ -107,7 +107,7 @@ export class YilmazFileFormats {
   }
 
   /**
-   * Create an MDB cut-list interchange file.
+   * Create an MDB cut-list interchange file (.mdb.json).
    * Payload is the structured table JSON already produced by CNC/DC generators
    * (same interchange shape used by ALM 6510 export). Not a Jet binary engine file.
    */
@@ -117,13 +117,13 @@ export class YilmazFileFormats {
     machineModel: YilmazMachineModel,
     timestamp: string
   ): ExportFile {
-    const filename = `${prefix}_${machineModel}_${timestamp}.mdb`;
-    const blob = new Blob([content], { type: 'application/x-msaccess' });
+    const filename = `${prefix}_${machineModel}_${timestamp}.mdb.json`;
+    const blob = new Blob([content], { type: 'application/json' });
 
     return {
       filename,
       content,
-      mimeType: 'application/x-msaccess',
+      mimeType: 'application/json',
       size: blob.size,
       blob,
     };

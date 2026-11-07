@@ -52,7 +52,7 @@ export class TrustMetricsService {
   /**
    * Calculate governance health metrics
    */
-  private async calculateGovernanceHealth(timePeriod: string): Promise<GovernanceHealth> {
+  private calculateGovernanceHealth(timePeriod: string): Promise<GovernanceHealth> {
     // In production, this would query the database for actual metrics
     // For now, we'll use mock data that demonstrates the structure
 
@@ -72,20 +72,20 @@ export class TrustMetricsService {
     const replayAuditAvailability = (outputsWithReplay / totalOperations) * 100;
     const certifiedOutputsPercentage = (certifiedOutputs / totalOperations) * 100;
 
-    return {
+    return Promise.resolve({
       determinismScore: Math.round(determinismScore * 100) / 100,
       validationFailureCount: validationFailures,
       replayAuditAvailability: Math.round(replayAuditAvailability * 100) / 100,
       certifiedOutputsPercentage: Math.round(certifiedOutputsPercentage * 100) / 100,
       totalOperations,
       deterministicOperations,
-    };
+    });
   }
 
   /**
    * Calculate constitutional compliance metrics
    */
-  private async calculateConstitutionalCompliance(timePeriod: string): Promise<ConstitutionalCompliance> {
+  private calculateConstitutionalCompliance(timePeriod: string): Promise<ConstitutionalCompliance> {
     const periodDays = this.parseTimePeriod(timePeriod);
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - periodDays);
@@ -101,7 +101,7 @@ export class TrustMetricsService {
     const humanValidationRate = (humanValidatedOutputs / totalOutputs) * 100;
     const auditTrailCompleteness = (auditedOperations / totalOutputs) * 100;
 
-    return {
+    return Promise.resolve({
       tier3Purity: Math.round(tier3Purity * 100) / 100,
       humanValidationRate: Math.round(humanValidationRate * 100) / 100,
       systemStopCount: systemStops,
@@ -109,7 +109,7 @@ export class TrustMetricsService {
       totalOutputs,
       humanValidatedOutputs,
       auditedOperations,
-    };
+    });
   }
 
   /**

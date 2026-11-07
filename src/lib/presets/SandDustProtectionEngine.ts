@@ -59,7 +59,7 @@ export class SandDustProtectionEngine {
   /**
    * Generate sand/dust protection system
    */
-  async generateSandDustProtection(
+  generateSandDustProtection(
     windowUnit: WindowUnit
   ): Promise<SandDustProtectionSpec> {
     const width = windowUnit.overallWidth;
@@ -140,13 +140,13 @@ export class SandDustProtectionEngine {
         screenMesh.cost +
         hardware.reduce((sum, h) => sum + h.cost, 0);
 
-      return {
+      return Promise.resolve({
         seals,
         gaskets,
         screenMesh,
         hardware,
         totalCost
-      };
+      });
     }
 
     // Corrosion-resistant hardware for coastal areas
@@ -178,12 +178,12 @@ export class SandDustProtectionEngine {
       gaskets.reduce((sum, g) => sum + g.cost, 0) +
       hardware.reduce((sum, h) => sum + h.cost, 0);
 
-    return {
+    return Promise.resolve({
       seals,
       gaskets,
       hardware,
       totalCost
-    };
+    });
   }
 
   /**

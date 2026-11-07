@@ -29,7 +29,7 @@ describe('lazy route recovery', () => {
 
   it('loads successfully even when storage is blocked', async () => {
     vi.stubGlobal('window', { get sessionStorage() { throw new Error('SecurityError'); } });
-    await expect(loadLazyModule(async () => 'page', 'UsedMachines')).resolves.toBe('page');
+    await expect(loadLazyModule(() => Promise.resolve('page'), 'UsedMachines')).resolves.toBe('page');
   });
 
   it('recovers a transient failure without reloading', async () => {
@@ -46,7 +46,7 @@ describe('lazy route recovery', () => {
     void loadLazyModule(importer, 'UsedMachines');
     await vi.runAllTimersAsync();
     expect(reload).toHaveBeenCalledTimes(1);
-    await loadLazyModule(async () => 'page', 'UsedMachines');
+    await loadLazyModule(() => Promise.resolve('page'), 'UsedMachines');
     const second = expect(loadLazyModule(importer, 'UsedMachines')).rejects.toBe(failure);
     await vi.runAllTimersAsync();
     await second;

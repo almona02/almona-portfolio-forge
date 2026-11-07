@@ -172,8 +172,8 @@ export class YilmazMachineDriver implements MachineInterface {
       // CSV string
       return new Blob([result], { type: 'text/csv;charset=utf-8' });
     } else {
-      // MDB Buffer
-      return new Blob([result as BlobPart], { type: 'application/x-msaccess' });
+      // MDB interchange payload (JSON, not a Jet binary — see the ALM6510 binary endpoint)
+      return new Blob([result as BlobPart], { type: 'application/json' });
     }
   }
 

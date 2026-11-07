@@ -95,29 +95,29 @@ export class EventLedger {
   /**
    * Get event by hash
    */
-  async getEventByHash(eventHash: string): Promise<EventRecord | undefined> {
-    return this.events.find((e) => e.eventHash === eventHash);
+  getEventByHash(eventHash: string): Promise<EventRecord | undefined> {
+    return Promise.resolve(this.events.find((e) => e.eventHash === eventHash));
   }
 
   /**
    * Get events by entity ID
    */
-  async getEventsByEntityId(entityId: string): Promise<EventRecord[]> {
-    return this.events.filter((e) => e.entityId === entityId);
+  getEventsByEntityId(entityId: string): Promise<EventRecord[]> {
+    return Promise.resolve(this.events.filter((e) => e.entityId === entityId));
   }
 
   /**
    * Get events by vertical ID
    */
-  async getEventsByVerticalId(verticalId: string): Promise<EventRecord[]> {
-    return this.events.filter((e) => e.verticalId === verticalId);
+  getEventsByVerticalId(verticalId: string): Promise<EventRecord[]> {
+    return Promise.resolve(this.events.filter((e) => e.verticalId === verticalId));
   }
 
   /**
    * Get latest events
    */
-  async getLatestEvents(limit: number = 100): Promise<EventRecord[]> {
-    return this.events.slice(-limit).reverse();
+  getLatestEvents(limit: number = 100): Promise<EventRecord[]> {
+    return Promise.resolve(this.events.slice(-limit).reverse());
   }
 
   /**

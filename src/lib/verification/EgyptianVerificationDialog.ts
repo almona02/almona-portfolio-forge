@@ -60,7 +60,7 @@ export class EgyptianVerificationDialog {
   /**
    * Create verification question
    */
-  async createVerificationQuestion(
+  createVerificationQuestion(
     fact: CandidateFact,
     verifier: UserProfile
   ): Promise<VerificationQuestion> {
@@ -87,13 +87,13 @@ export class EgyptianVerificationDialog {
     // Follow-up questions
     const followUps = this.prepareFollowUpQuestions(fact, verifier);
 
-    return {
+    return Promise.resolve({
       question,
       questionArabic,
       flow,
       expectedResponses,
       followUps,
-    };
+    });
   }
 
   /**
@@ -123,17 +123,17 @@ export class EgyptianVerificationDialog {
       },
       {
         step: 'التعمق',
-        ydt: async (response: string) => {
+        ydt: (response: string) => {
           if (response.includes('بس') || response.includes('لكن')) {
-            return 'قولي البس ده إيه؟';
+            return Promise.resolve('قولي البس ده إيه؟');
           }
           if (response.includes('مش دايماً') || response.includes('أحياناً')) {
-            return 'متى بيحصل ومتى مش بيحصل؟';
+            return Promise.resolve('متى بيحصل ومتى مش بيحصل؟');
           }
           if (response.includes('يعتمد') || response.includes('على حسب')) {
-            return 'يعتمد على إيه بالظبط؟';
+            return Promise.resolve('يعتمد على إيه بالظبط؟');
           }
-          return 'فهمتك، ربنا يباركلك';
+          return Promise.resolve('فهمتك، ربنا يباركلك');
         },
       },
     ];
@@ -194,7 +194,7 @@ export class EgyptianVerificationDialog {
   /**
    * Process verification response
    */
-  async processResponse(
+  processResponse(
     response: string,
     _factId: string,
     expectedResponses: VerificationQuestion['expectedResponses']
@@ -203,16 +203,16 @@ export class EgyptianVerificationDialog {
 
     // Check for confirmation
     if (expectedResponses.confirmation.some(pattern => lowerResponse.includes(pattern))) {
-      return 'confirmation';
+      return Promise.resolve('confirmation');
     }
 
     // Check for denial
     if (expectedResponses.denial.some(pattern => lowerResponse.includes(pattern))) {
-      return 'denial';
+      return Promise.resolve('denial');
     }
 
     // Default to unsure
-    return 'unsure';
+    return Promise.resolve('unsure');
   }
 }
 

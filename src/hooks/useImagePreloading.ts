@@ -139,7 +139,7 @@ export function useHoverImagePreloading() {
     setHoveredImages(prev => new Set([...prev, src]));
     
     // Debounce preloading
-    const timeoutId = setTimeout(async () => {
+    const timeoutId = setTimeout(() => void (async () => {
       try {
         const imageUrl = options 
           ? getOptimizedImageUrl(src, options)
@@ -149,7 +149,7 @@ export function useHoverImagePreloading() {
       } catch (error) {
         console.warn(`Failed to preload image on hover: ${src}`, error);
       }
-    }, 200);
+    })(), 200);
 
     return () => clearTimeout(timeoutId);
   }, [hoveredImages]);

@@ -1,4 +1,4 @@
-import { BarChart3, Boxes, ClipboardCheck, Cog, DollarSign, Factory, FileText, HardHat, HelpCircle, Package, Ruler, Settings, ShieldCheck, ShoppingCart, SlidersHorizontal, Tag, UserCog, Users, Wrench, Zap } from 'lucide-react'
+import { BarChart3, Boxes, ClipboardCheck, Cog, DollarSign, Factory, FileText, HardHat, HelpCircle, Package, Ruler, Settings, ShieldCheck, ShoppingCart, SlidersHorizontal, Tag, Tags, UserCog, Users, Wrench, Zap } from 'lucide-react'
 
 /** Sections implemented by the /admin dashboard. Shared with the global menu. */
 export const adminNavigationItems = [
@@ -23,6 +23,8 @@ export const adminNavigationItems = [
   { id: 'configuration', label: 'Configuration', icon: SlidersHorizontal },
   /** Fabricator / manufacturing configurators (system packs, rules, approvals). */
   { id: 'manufacturing', label: 'Manufacturing Config', icon: Ruler },
+  /** Workshop pricing provenance + versioned supplier packs. */
+  { id: 'catalog', label: 'Catalog & Pricing', icon: Tags },
   { id: 'settings', label: 'Settings', icon: Settings },
 ] as const
 

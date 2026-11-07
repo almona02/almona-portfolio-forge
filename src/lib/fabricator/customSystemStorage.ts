@@ -1,4 +1,5 @@
 import type { SystemPack } from '@/types/fabricator';
+import type { PackProvenance } from '@/types/catalogProvenance';
 import {
     archiveSystemPackInSupabase,
     deleteSystemPackFromSupabase,
@@ -14,6 +15,8 @@ export type StoredSystemPack = SystemPack & {
   updatedAt?: string;
   version?: number;
   isArchived?: boolean;
+  /** Live-row provenance, refreshed from Supabase after every save. */
+  provenance?: PackProvenance;
 };
 
 const migrate = (systems: unknown[]): StoredSystemPack[] => {
@@ -127,7 +130,7 @@ export const addCustomSystemAsync = async (
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  const updated = [...existing.filter((s) => s.meta.id !== newSystem.meta.id), newSystem];
+  let updated = [...existing.filter((s) => s.meta.id !== newSystem.meta.id), newSystem];
 
   // Save to localStorage (with UUID ids when materialize succeeded)
   saveCustomSystems(updated);
@@ -136,6 +139,27 @@ export const addCustomSystemAsync = async (
   if (USE_SUPABASE && userId) {
     const saved = await saveSystemPackToSupabase(newSystem, userId);
     if (!saved) throw new Error('System pack could not be saved to the workshop database. Retry saving before using it in a project.');
+    // Refresh the local mirror from the versioned source of truth so the
+    // stored version/provenance never goes stale behind the live row.
+    try {
+      const fresh = await loadCustomSystemsFromSupabase(userId);
+      const match = fresh.find((pack) => pack.meta.id === newSystem.meta.id);
+      if (match) {
+        const stamped: StoredSystemPack = {
+          ...newSystem,
+          version: match.version ?? newSystem.version,
+          updatedAt: match.updatedAt ?? newSystem.updatedAt,
+          provenance: match.provenance ?? newSystem.provenance,
+        };
+        updated = updated.map((pack) => (pack.meta.id === newSystem.meta.id ? stamped : pack));
+        saveCustomSystems(updated);
+        newSystem.provenance = stamped.provenance;
+        newSystem.version = stamped.version;
+        newSystem.updatedAt = stamped.updatedAt;
+      }
+    } catch (refreshError) {
+      console.warn('[customSystemStorage] provenance refresh deferred:', refreshError);
+    }
   }
 
   if (materializeNote) {
@@ -166,14 +190,14 @@ export const deleteCustomSystemAsync = async (
   const existing = loadCustomSystems();
   const updated = existing.filter((s) => s.meta.id !== id);
   saveCustomSystems(updated);
-  
+
   // Delete from Supabase if enabled (fire and forget)
   if (USE_SUPABASE && userId) {
     deleteSystemPackFromSupabase(id, userId).catch((e) => {
       console.warn('Failed to delete from Supabase:', e);
     });
   }
-  
+
   return updated;
 };
 
@@ -198,14 +222,14 @@ export const archiveCustomSystemAsync = async (
     s.meta.id === id ? { ...s, isArchived: true, updatedAt: new Date().toISOString() } : s,
   );
   saveCustomSystems(updated);
-  
+
   // Archive in Supabase if enabled (fire and forget)
   if (USE_SUPABASE && userId) {
     archiveSystemPackInSupabase(id, userId).catch((e) => {
       console.warn('Failed to archive in Supabase:', e);
     });
   }
-  
+
   return updated;
 };
 
@@ -250,14 +274,13 @@ export const duplicateCustomSystemAsync = async (
   };
   const updated = [...existing, copy];
   saveCustomSystems(updated);
-  
+
   // Sync to Supabase if enabled (fire and forget)
   if (USE_SUPABASE && userId) {
     saveSystemPackToSupabase(copy, userId).catch((e) => {
       console.warn('Failed to sync duplicate to Supabase:', e);
     });
   }
-  
+
   return updated;
 };
-

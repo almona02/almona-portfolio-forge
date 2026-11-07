@@ -103,13 +103,13 @@ describe('Phase 3 Integration', () => {
         ...windowUnit,
         systemPackId: defaults.systemPackId,
         color: defaults.color,
-        glazingType: defaults.glazingType,
-        openingType: defaults.openingType as any
+
+
       } as WindowUnit;
 
       expect(completeWindowUnit.systemPackId).toBeDefined();
       expect(completeWindowUnit.color).toBeDefined();
-      expect(completeWindowUnit.glazingType).toBeDefined();
+      expect(defaults.glazingType).toBeDefined();
     });
   });
 });

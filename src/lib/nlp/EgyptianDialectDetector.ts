@@ -93,17 +93,17 @@ export class EgyptianDialectDetector {
   /**
    * Detect user type from question
    */
-  async detectUserType(question: string): Promise<UserType> {
+  detectUserType(question: string): Promise<UserType> {
     const lowerQuestion = question.toLowerCase();
 
     // Check each pattern
     for (const [type, regexes] of Object.entries(this.patterns)) {
       if (regexes.some(regex => regex.test(lowerQuestion))) {
-        return type as UserType;
+        return Promise.resolve(type as UserType);
       }
     }
 
-    return 'general';
+    return Promise.resolve<UserType>('general');
   }
 
   /**
