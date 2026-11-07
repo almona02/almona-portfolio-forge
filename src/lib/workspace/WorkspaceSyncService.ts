@@ -123,11 +123,11 @@ export class WorkspaceSyncService {
   /**
    * Save to localStorage as fallback (with compression support)
    */
-  private async saveToLocalStorageFallback(
+  private saveToLocalStorageFallback(
     workspaceState: FabricatorWorkspaceState
   ): Promise<{ success: boolean; usedFallback: boolean; timestamp: string | null }> {
     if (!this.hasWindow()) {
-      return { success: false, usedFallback: false, timestamp: null };
+      return Promise.resolve({ success: false, usedFallback: false, timestamp: null });
     }
     
     try {
@@ -138,14 +138,14 @@ export class WorkspaceSyncService {
       const timestamp = new Date().toISOString();
       this.lastSaveTimestamp = timestamp;
       
-      return {
+      return Promise.resolve({
         success: true,
         usedFallback: true,
         timestamp
-      };
+      });
     } catch (error) {
       console.error('[WorkspaceSync] LocalStorage fallback save failed:', error);
-      return { success: false, usedFallback: true, timestamp: null };
+      return Promise.resolve({ success: false, usedFallback: true, timestamp: null });
     }
   }
 
@@ -153,7 +153,7 @@ export class WorkspaceSyncService {
    * Conflict resolution - merges server and local state
    * Strategy: Prefer local changes for currentProject, merge snapshots
    */
-  async resolveConflict(
+  resolveConflict(
     serverState: FabricatorWorkspaceState,
     localState: FabricatorWorkspaceState
   ): Promise<FabricatorWorkspaceState> {
@@ -176,7 +176,7 @@ export class WorkspaceSyncService {
       }
     };
 
-    return resolved;
+    return Promise.resolve(resolved);
   }
 
   async saveWorkspaceSnapshot(

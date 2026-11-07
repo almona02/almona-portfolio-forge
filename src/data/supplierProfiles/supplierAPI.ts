@@ -181,23 +181,23 @@ export class SupplierAPI {
   /**
    * Check minimum order quantity
    */
-  static async validateMinimumOrder(
+  static validateMinimumOrder(
     supplierId: string,
     totalQuantity: number
   ): Promise<{ valid: boolean; message?: string }> {
     const supplier = getSupplierById(supplierId);
     if (!supplier) {
-      return { valid: false, message: 'Supplier not found' };
+      return Promise.resolve({ valid: false, message: 'Supplier not found' });
     }
     
     if (totalQuantity < supplier.minOrderQuantity) {
-      return {
+      return Promise.resolve({
         valid: false,
         message: `Minimum order quantity is ${supplier.minOrderQuantity} units. Current order: ${totalQuantity} units.`,
-      };
+      });
     }
     
-    return { valid: true };
+    return Promise.resolve({ valid: true });
   }
   
   /**
@@ -315,13 +315,13 @@ export class SupplierAPI {
   /**
    * Auto-import supplier catalogs
    */
-  static async importCatalog(
+  static importCatalog(
     supplierId: string,
     catalogData: any
   ): Promise<{ imported: number; errors: string[] }> {
     const supplier = getSupplierById(supplierId);
     if (!supplier) {
-      throw new Error(`Supplier ${supplierId} not found`);
+      return Promise.reject(new Error(`Supplier ${supplierId} not found`));
     }
     
     const errors: string[] = [];
@@ -346,7 +346,7 @@ export class SupplierAPI {
       }
     }
     
-    return { imported, errors };
+    return Promise.resolve({ imported, errors });
   }
 }
 

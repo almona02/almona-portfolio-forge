@@ -108,7 +108,7 @@ export class TemplateExtractionEngine {
   /**
    * Extract templates from multiple WindowUnits (pattern recognition)
    */
-  async extractFromHistory(
+  extractFromHistory(
     windowUnits: WindowUnit[],
     options: TemplateExtractionOptions = {}
   ): Promise<ExtractedTemplate[]> {
@@ -126,7 +126,7 @@ export class TemplateExtractionEngine {
       : windowUnits;
 
     if (filteredUnits.length === 0) {
-      return [];
+      return Promise.resolve([]);
     }
 
     // Group by grid pattern (normalized)
@@ -251,10 +251,10 @@ export class TemplateExtractionEngine {
     }
 
     // Sort by confidence and frequency
-    return extractedTemplates.sort((a, b) => {
+    return Promise.resolve(extractedTemplates.sort((a, b) => {
       if (b.confidence !== a.confidence) return b.confidence - a.confidence;
       return b.frequency - a.frequency;
-    });
+    }));
   }
 
   /**

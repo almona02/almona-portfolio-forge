@@ -57,7 +57,7 @@ export const FacebookLoginButton: React.FC<FacebookLoginButtonProps> = ({
       }
 
       (window as unknown as Window & { FB: any }).FB.login(
-        async (response: { authResponse?: { accessToken: string } }) => {
+        (response: { authResponse?: { accessToken: string } }) => {
           if (response.authResponse) {
             try {
               // Get user info from Facebook

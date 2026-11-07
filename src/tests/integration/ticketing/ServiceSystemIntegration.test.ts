@@ -26,7 +26,7 @@ describe('Service System Integration', () => {
   });
   
   describe('Full Ticket Flow', () => {
-    it('creates ticket → gets advisory → human validates → executes assignment', async () => {
+    it('creates ticket → gets advisory → human validates → executes assignment', () => {
       // 1. Create ticket (Tier 3)
       // Simulate ticket with critical priority to match RULE-ASSIGN-001 logic in AssignmentExecutor
       const ticket = {

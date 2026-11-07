@@ -69,33 +69,34 @@ export class FabricatorTemplates {
   /**
    * Load all templates
    */
-  async loadAllTemplates(): Promise<FabricatorTemplate[]> {
+  loadAllTemplates(): Promise<FabricatorTemplate[]> {
     try {
       const stored = localStorage.getItem(this.storageKey);
-      if (!stored) return [];
+      if (!stored) return Promise.resolve([]);
 
       const templates = JSON.parse(stored);
       // Convert date strings back to Date objects
-      return templates.map((t: any) => ({
+      return Promise.resolve(templates.map((t: any) => ({
         ...t,
         createdAt: new Date(t.createdAt),
         updatedAt: new Date(t.updatedAt)
-      }));
+      })));
     } catch (error) {
       console.error('Failed to load templates:', error);
-      return [];
+      return Promise.resolve([]);
     }
   }
 
   /**
    * Save all templates
    */
-  private async saveAllTemplates(templates: FabricatorTemplate[]): Promise<void> {
+  private saveAllTemplates(templates: FabricatorTemplate[]): Promise<void> {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(templates));
+      return Promise.resolve();
     } catch (error) {
       console.error('Failed to save templates:', error);
-      throw error;
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
   }
 

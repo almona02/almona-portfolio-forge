@@ -11,12 +11,12 @@ import { ExportFormat, PDFExportOptions } from '../types';
 // Mock heavy PDF generator to avoid timeouts in CI
 vi.mock('../PDFExportGenerator', () => ({
   PDFExportGenerator: class {
-    async generate(project: any, _optimization: any, _options: any) {
+    generate(project: any, _optimization: any, _options: any) {
       // Simulate error for invalid projects (missing required fields)
       if (!project || !project.id || !project.orderNumber) {
-        throw new Error('Invalid project: missing required fields');
+        return Promise.reject(new Error('Invalid project: missing required fields'));
       }
-      return new Blob(['mock-pdf-content'], { type: 'application/pdf' });
+      return Promise.resolve(new Blob(['mock-pdf-content'], { type: 'application/pdf' }));
     }
   },
 }));

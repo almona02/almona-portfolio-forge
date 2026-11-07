@@ -31,7 +31,7 @@ const isAcceptableResult = (error: { code?: string; message?: string } | null) =
 describe('Supabase Integration - Quality Control', () => {
   let testWindowUnitId: string;
 
-  beforeAll(async () => {
+  beforeAll(() => {
     // Setup test data
     testWindowUnitId = 'test-unit-' + Date.now();
   });
@@ -125,7 +125,7 @@ describe('Supabase Integration - Delivery Tracking', () => {
 describe('Supabase Integration - Remnant Management', () => {
   let testRemnantId: string;
 
-  beforeAll(async () => {
+  beforeAll(() => {
     testRemnantId = 'test-remnant-' + Date.now();
   });
 

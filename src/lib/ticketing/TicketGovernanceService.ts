@@ -307,7 +307,7 @@ export async function recordTransitionEvent(
   });
 }
 
-export async function checkAndApplyEscalation(ticket: {
+export function checkAndApplyEscalation(ticket: {
   id: string;
   status: string;
   sla_resolution_due: string | null;
@@ -320,10 +320,10 @@ export async function checkAndApplyEscalation(ticket: {
     escalated: ticket.escalated,
   });
 
-  if (!shouldEscalate) return { escalated: false };
+  if (!shouldEscalate) return Promise.resolve({ escalated: false });
 
   const result = escalationEngine.escalate(ticket.id);
-  return {
+  return Promise.resolve({
     escalated: true,
     patch: {
       escalated: true,
@@ -331,7 +331,7 @@ export async function checkAndApplyEscalation(ticket: {
       sla_breached: true,
       updated_at: result.timestamp,
     },
-  };
+  });
 }
 
 export {

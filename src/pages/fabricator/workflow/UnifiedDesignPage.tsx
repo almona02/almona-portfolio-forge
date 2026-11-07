@@ -141,7 +141,7 @@ export const UnifiedDesignPage: React.FC = () => {
     }, [setCurrentProject, completeStep, navigate]);
 
     // Handle mode switch with data preservation
-    const handleModeSwitch = useCallback(async (newMode: DesignMode) => {
+    const handleModeSwitch = useCallback((newMode: DesignMode) => {
         if (newMode === designMode || isConverting) return;
 
         setIsConverting(true);

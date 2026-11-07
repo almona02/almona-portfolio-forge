@@ -37,23 +37,23 @@ vi.mock('@/lib/supabase', () => ({
 }))
 
 vi.mock('@/lib/fabricator/customSystemStorage', () => ({
-  loadCustomSystemsAsync: vi.fn(async () => mocks.packs),
+  loadCustomSystemsAsync: vi.fn(() => Promise.resolve(mocks.packs)),
 }))
 
 vi.mock('@/lib/fabricator/systemPackSupabase', () => ({
-  listPackVersionsFromSupabase: vi.fn(async () => mocks.versions),
-  rollbackSystemPackInSupabase: vi.fn(async () => true),
+  listPackVersionsFromSupabase: vi.fn(() => Promise.resolve(mocks.versions)),
+  rollbackSystemPackInSupabase: vi.fn(() => Promise.resolve(true)),
 }))
 
 vi.mock('@/lib/pricing/PricingProvenanceService', () => ({
   pricingProvenanceService: {
-    resolvePricingProvenance: vi.fn(async () => mocks.provenance),
+    resolvePricingProvenance: vi.fn(() => Promise.resolve(mocks.provenance)),
     savePricingWithProvenance: vi.fn(),
   },
 }))
 
 vi.mock('@/lib/pricing/PriceHistoryService', () => ({
-  priceHistoryService: { getPriceHistory: vi.fn(async () => mocks.history) },
+  priceHistoryService: { getPriceHistory: vi.fn(() => Promise.resolve(mocks.history)) },
 }))
 
 vi.mock('@/components/fabricator/PricingTuningStudio', () => ({

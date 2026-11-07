@@ -85,7 +85,7 @@ export class ComplexShapeGenerator {
   /**
    * Generate optimal design for non-symmetric shape
    */
-  async generateOptimalDesign(
+  generateOptimalDesign(
     shape: InferredShape,
     workshopContext?: {
       machineCapabilities?: string[];
@@ -111,7 +111,7 @@ export class ComplexShapeGenerator {
     // 6. Maalem advice
     const maalemAdvice = this.generateMaalemAdviceForShape(shape, workshopContext);
     
-    return {
+    return Promise.resolve({
       shape,
       material: {
         type: material.recommendedMaterial as "aluminum" | "upvc",
@@ -122,7 +122,7 @@ export class ComplexShapeGenerator {
       glazing,
       production,
       maalemAdvice
-    };
+    });
   }
   
   /**

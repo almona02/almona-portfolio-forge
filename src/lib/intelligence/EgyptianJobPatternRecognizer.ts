@@ -157,10 +157,10 @@ export class EgyptianJobPatternRecognizer {
   /**
    * Get workshop history (placeholder - will be replaced with database query)
    */
-  private async getWorkshopHistory(_workshopId: string): Promise<WindowUnit[]> {
+  private getWorkshopHistory(_workshopId: string): Promise<WindowUnit[]> {
     // TODO: Query database for workshop projects
     // SELECT * FROM window_units WHERE workshop_id = ? ORDER BY created_at DESC LIMIT 100
-    return [];
+    return Promise.resolve([]);
   }
   
   /**

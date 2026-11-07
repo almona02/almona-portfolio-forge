@@ -363,3 +363,54 @@ S14 and S16 used the preferred `Promise.resolve` / `Promise.reject` pattern. `Ex
 S15 kept the methods `async` and inserted `await Promise.resolve();` at the top (CRLF edit constraint). Call sites already `await` those privates, so the extra microtask is safe. Out-of-scope warnings left alone. Coordinator follow-up: dropped `async` from the `img.onload` arrow that still had `require-await` (was not in the original 14-method list). `PDFExportService.ts` now has **0** `require-await` and 17 remaining out-of-scope warnings (including one `no-misused-promises` on `toBlob`).
 
 Do not treat `await Promise.resolve()` as the default pattern for later waves; prefer drop-`async` + `Promise.resolve(...)` when the editor can rewrite the returns.
+
+### Merge — PR #136 (2026-11-07)
+
+Merged to `main` as `c74d0f76`. Waves 6–7 landed uncommitted on `chore/lint-require-await-wave6`. Post-Wave-7 inventory: **2,459 files, 0 errors, 13,039 warnings**, `require-await` **120**.
+
+### Wave 8 — three disjoint Spark chats (S23–S25)
+
+About **99** remaining `require-await` sit in reserved / wonder-full holds (pricing, tax, stock remnants, YDT, Maalem/NLP/cognition, economics, payments, constitutional, advisory, `QualityVerificationEngine`). Spark gets the remaining **~15** across **14** files.
+
+Fix **only** `@typescript-eslint/require-await`. Leave every other warning. Prefer `Promise.resolve(...)` / `Promise.reject(...)`. Do not use `await Promise.resolve()` unless a multi-line rewrite is blocked. Do not edit reserved paths. Do not commit.
+
+#### S23 — tests + invoice parser (5)
+
+- `src/pages/fabricator/studio/ManufacturingApprovalsPage.settings.test.tsx` (1)
+- `src/tests/integration/ticketing/ServiceSystemIntegration.test.ts` (1)
+- `src/tests/lib/fabricator/executionService.test.ts` (1)
+- `src/lib/inventory/InvoiceParser.ts` (2, pure)
+
+#### S24 — fabricator UI pages (4)
+
+Leave every non-`require-await` warning (these files are heavily mixed).
+
+- `src/components/fabricator/Enhanced3DPreview.tsx` (1 among 78)
+- `src/components/fabricator/ProfileImportTool.tsx` (1 among 92)
+- `src/pages/fabricator/workflow/UnifiedDesignPage.tsx` (1 among 5)
+- `src/pages/SystemPacksPage.tsx` (1 among 25)
+
+#### S25 — libs / services / connector (6)
+
+Leave every non-`require-await` warning.
+
+- `src/core/notifications/NotificationService.ts` (1 among 58)
+- `src/lib/fabricator/multiProfileDXFExtractor.ts` (1 among 72)
+- `src/lib/redis/realtimeCacheInvalidator.ts` (1 among 101)
+- `src/lib/sync/WorkspaceSynchronizer.ts` (1 among 26)
+- `src/lib/ticketing/TicketGovernanceService.ts` (1 among 6)
+- `src/machine-connectors/YilmazNetworkProtocol.ts` (1 among 44)
+
+#### Wave 8 holds (not Spark)
+
+`QualityVerificationEngine`, `SmartRemnantSystem`, `AutoRemnantGenerator`, `EngineeringBayConstitutionalCompliance.test.ts`, plus pricing/tax/YDT/Maalem/payments/economics/constitutional/advisory — wonder-full or later reserved waves.
+
+### Wave 8 review — accepted (S23–S25)
+
+All 14 assigned files on `chore/lint-require-await-wave6`, uncommitted. Coordinator ESLint: **0** `require-await`, **0** errors on those paths (515 other-rule warnings left alone). S23 vitest: **12 passed**. Preferred `Promise.resolve` / `Promise.reject` pattern; `InvoiceParser` / several libs normalized to LF during edit (content-only intent).
+
+**Branch note:** Spark edits briefly landed on `fix/prod-ci-python-magic`; moved onto `chore/lint-require-await-wave6`. Waves 6–7 were lost on an earlier branch switch and **re-applied 2026-11-07** (S17–S22) alongside Wave 8.
+
+### Waves 6–8 redo — accepted (2026-11-07)
+
+All S17–S25 paths on `chore/lint-require-await-wave6`, uncommitted (**62** files including `LINTS.md`). Coordinator ESLint on the **61** source paths: **0** `require-await`, **0** errors, **0** parse errors. Vitest smoke (S17 + S19 ProductionCommand + S20 + S23): **15 files / 102 tests passed**. Full inventory: **2,459 files, 0 errors, 13,024 warnings**, `require-await` **105** (remainder is reserved / wonder-full). Preferred `Promise.resolve` / `Promise.reject` throughout; no `await Promise.resolve()` no-ops in the redo. `FabricatorTemplates.ts` parses clean. Do not commit until the user asks.

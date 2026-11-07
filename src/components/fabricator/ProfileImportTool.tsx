@@ -625,10 +625,10 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
   // K-Factor Learning
   // ============================================================================
 
-  const generateKFactorSuggestion = async (
+  const generateKFactorSuggestion = (
     profile: ExtractedProfileData,
     existingProfiles: Profile[]
-  ): Promise<KFactorSuggestion> => {
+  ): KFactorSuggestion => {
     // Find similar profiles based on dimensions and geometry
     const similarProfiles = findSimilarProfiles(profile, existingProfiles);
 
@@ -787,7 +787,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
         if (extractedData) {
           // Apply K-factor learning if enabled
           if (kFactorLearningEnabled) {
-            extractedData.kFactorSuggestion = await generateKFactorSuggestion(
+            extractedData.kFactorSuggestion = generateKFactorSuggestion(
               extractedData,
               existingProfiles
             );

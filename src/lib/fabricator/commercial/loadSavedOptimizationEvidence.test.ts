@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadSavedOptimizationEvidence } from './loadSavedOptimizationEvidence';
 import { approvedRuleContentFingerprint } from './validateOptimizationEvidencePayload';
 const mocks = vi.hoisted(() => ({ row: null as any, resolve: vi.fn(), eq: vi.fn() }));
-vi.mock('@/lib/supabase', () => ({ supabase: { from: () => { const query = { select: () => query, eq: (...args: unknown[]) => { mocks.eq(...args); return query; }, is: () => query, maybeSingle: async () => ({ data: mocks.row, error: null }) }; return query; } } }));
+vi.mock('@/lib/supabase', () => ({ supabase: { from: () => { const query = { select: () => query, eq: (...args: unknown[]) => { mocks.eq(...args); return query; }, is: () => query, maybeSingle: () => Promise.resolve({ data: mocks.row, error: null }) }; return query; } } }));
 vi.mock('../manufacturing/ManufacturingAuthorityResolver', () => ({ resolveManufacturingAuthority: (...args: unknown[]) => mocks.resolve(...args) }));
 const identity = { ownerUserId: 'owner', projectId: 'project', positionId: 'pose', source: 'v2' as const, revision: 4 };
 const rules = [{ approvalId: 'approval', ruleId: 'cut', revision: 1, evidenceStatus: 'approved' as const }];

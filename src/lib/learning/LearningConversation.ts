@@ -181,9 +181,9 @@ export class LearningConversation {
   /**
    * Get user profile (placeholder - would fetch from database)
    */
-  private async getUserProfile(userId: string): Promise<UserProfile> {
+  private getUserProfile(userId: string): Promise<UserProfile> {
     // Placeholder - would fetch from database
-    return {
+    return Promise.resolve({
       id: userId,
       name: 'User',
       experience: 5,
@@ -200,7 +200,7 @@ export class LearningConversation {
         valuable: 0,
         consistency: 0.5,
       },
-    };
+    });
   }
 }
 

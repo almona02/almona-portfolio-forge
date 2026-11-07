@@ -29,14 +29,14 @@ export class InvoiceParser {
   /**
    * Parse CSV invoice
    */
-  async parseCSV(csvContent: string, options?: {
+  parseCSV(csvContent: string, options?: {
     supplier?: string;
     invoiceNumber?: string;
     columnMapping?: Record<string, string>;
   }): Promise<ParsedInvoice> {
     const lines = csvContent.split('\n').filter((line) => line.trim());
     if (lines.length < 2) {
-      throw new Error('Invalid CSV: insufficient data');
+      return Promise.reject(new Error('Invalid CSV: insufficient data'));
     }
 
     // Parse header
@@ -86,21 +86,23 @@ export class InvoiceParser {
       }
     }
 
-    return {
+    return Promise.resolve({
       supplier: options?.supplier || 'Unknown',
       invoiceNumber: options?.invoiceNumber || `INV-${Date.now()}`,
       items,
-    };
+    });
   }
 
   /**
    * Parse PDF invoice (simplified - would use pdf-parse library in production)
    */
-  async parsePDF(_pdfFile: File): Promise<ParsedInvoice> {
+  parsePDF(_pdfFile: File): Promise<ParsedInvoice> {
     // This is a placeholder - in production would use pdf-parse or similar
     // For now, return error suggesting CSV upload
-    throw new Error(
-      'PDF parsing not yet implemented. Please upload a CSV file or contact support for PDF parsing.'
+    return Promise.reject(
+      new Error(
+        'PDF parsing not yet implemented. Please upload a CSV file or contact support for PDF parsing.'
+      )
     );
   }
 
@@ -162,4 +164,3 @@ export class InvoiceParser {
 }
 
 export const invoiceParser = new InvoiceParser();
-

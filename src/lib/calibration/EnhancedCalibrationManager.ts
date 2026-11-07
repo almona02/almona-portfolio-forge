@@ -352,13 +352,13 @@ export class EnhancedCalibrationManager {
   /**
    * Detect patterns across workshops for global optimizations
    */
-  async detectPatternsAcrossWorkshops(
+  detectPatternsAcrossWorkshops(
     _profileType: string,
     _systemPackId: string
   ): Promise<CalibrationCorrectionFactor[]> {
     // This would aggregate data across all workshops (requires proper permissions)
     // For now, return empty array - can be enhanced with federated learning later
-    return [];
+    return Promise.resolve([]);
   }
 }
 

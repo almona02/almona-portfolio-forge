@@ -146,7 +146,7 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
   }, [wizardState]);
 
   // Auto-save function
-  const autoSave = useCallback(async (step: number, data: Partial<WizardState>) => {
+  const autoSave = useCallback((step: number, data: Partial<WizardState>): Promise<void> => {
     console.log('[WIZARD AUTO-SAVE]', { step, data });
     // Save to localStorage
     localStorage.setItem(
@@ -155,6 +155,7 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
     );
     // TODO: Sync to server
     toast.success(locale === 'ar' ? 'تم الحفظ تلقائياً ✓' : 'Auto-saved ✓', { duration: 2000 });
+    return Promise.resolve();
   }, [wizardState, projectId, locale]);
 
   // Handle next step

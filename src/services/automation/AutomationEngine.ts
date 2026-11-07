@@ -321,7 +321,7 @@ export class AutomationEngine {
   /**
    * Execute task node
    */
-  private async executeTaskNode(
+  private executeTaskNode(
     node: WorkflowNode,
     workflowDefinition: WorkflowDefinition,
     _context: WorkflowExecutionContext
@@ -329,18 +329,18 @@ export class AutomationEngine {
     // Task nodes are manual and require user interaction
     // For automation, we skip them or mark as pending
     const nextNodes = this.getNextNodes(node.id, workflowDefinition);
-    return {
+    return Promise.resolve({
       nodeId: node.id,
       success: true,
       data: { status: 'pending', requires_manual_action: true },
       nextNodes,
-    };
+    });
   }
 
   /**
    * Execute decision node
    */
-  private async executeDecisionNode(
+  private executeDecisionNode(
     node: WorkflowNode,
     workflowDefinition: WorkflowDefinition,
     context: WorkflowExecutionContext
@@ -349,11 +349,11 @@ export class AutomationEngine {
     const condition = config.condition as Condition | ConditionGroup | undefined;
 
     if (!condition) {
-      return {
+      return Promise.resolve({
         nodeId: node.id,
         success: false,
         error: 'Decision node requires a condition',
-      };
+      });
     }
 
     // Evaluate condition
@@ -368,11 +368,11 @@ export class AutomationEngine {
     const evaluationResult = this.conditionEvaluator.evaluate(condition, evaluationContext);
 
     if (evaluationResult.error) {
-      return {
+      return Promise.resolve({
         nodeId: node.id,
         success: false,
         error: evaluationResult.error,
-      };
+      });
     }
 
     // Get edges from this node
@@ -392,12 +392,12 @@ export class AutomationEngine {
       }
     }
 
-    return {
+    return Promise.resolve({
       nodeId: node.id,
       success: true,
       data: { condition_result: evaluationResult.result },
       nextNodes,
-    };
+    });
   }
 
   /**
@@ -446,7 +446,7 @@ export class AutomationEngine {
   /**
    * Execute approval node
    */
-  private async executeApprovalNode(
+  private executeApprovalNode(
     node: WorkflowNode,
     workflowDefinition: WorkflowDefinition,
     _context: WorkflowExecutionContext
@@ -454,12 +454,12 @@ export class AutomationEngine {
     // Approval nodes require manual approval
     // For automation, we mark as pending
     const nextNodes = this.getNextNodes(node.id, workflowDefinition);
-    return {
+    return Promise.resolve({
       nodeId: node.id,
       success: true,
       data: { status: 'pending', requires_approval: true },
       nextNodes,
-    };
+    });
   }
 
   /**

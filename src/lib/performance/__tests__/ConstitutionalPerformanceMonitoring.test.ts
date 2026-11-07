@@ -181,7 +181,7 @@ describe('Constitutional Performance Monitoring - Phase 0', () => {
       accuracyTracker.clearTestResults();
     });
 
-    test('should register and verify Golden Masters', async () => {
+    test('should register and verify Golden Masters', () => {
       const goldenMaster = {
         id: 'GM_001',
         name: 'Casement 2x2 BOM',

@@ -308,8 +308,8 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
     // --- Internal Handlers ---
     // ✅ HARDENING: Memoize all handlers to prevent unnecessary re-renders
 
-    const handleGenerateGCode = useCallback(async () => {
-        if (!optimization || !project) return;
+    const handleGenerateGCode = useCallback((): Promise<void> => {
+        if (!optimization || !project) return Promise.resolve();
 
         try {
             // F04: conservation gate — refuse to generate when the cut list does
@@ -339,10 +339,11 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
             const gCodeString = YilmazGCodeGenerator.commandsToString(gCodeCommands);
 
             setGCodePreview(gCodeString);
+            return Promise.resolve();
         } catch (error) {
             const err = error instanceof Error ? error : new Error(String(error));
             trackError('ProductionCommand', 'gcode_generation', err.message);
-            throw error;
+            return Promise.reject(err);
         }
     }, [optimization, project, selectedMachine]);
 
@@ -373,8 +374,13 @@ const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
     // F01: no machine transport exists — this action is fail-closed. The Send
     // control stays disabled; this throw is defense in depth so no caller can
     // ever report a sent/transmitted state without a controller acknowledgement.
-    const handleSendToMachine = useCallback(async () => {
-        assertMachineSendAvailable();
+    const handleSendToMachine = useCallback((): Promise<void> => {
+        try {
+            assertMachineSendAvailable();
+            return Promise.resolve();
+        } catch (error) {
+            return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+        }
     }, []);
 
     const handleDownloadALM6510MDB = useCallback(async () => {

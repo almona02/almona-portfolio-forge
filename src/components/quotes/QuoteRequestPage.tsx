@@ -57,7 +57,7 @@ export const QuoteRequestPage: React.FC = () => {
     }
   }, [location]);
 
-  const handleSubmit = async (quoteData: any) => {
+  const handleSubmit = (quoteData: any): Promise<void> => {
     try {
       // Simulate API call
       console.log('Quote submitted:', quoteData);
@@ -75,6 +75,7 @@ export const QuoteRequestPage: React.FC = () => {
         variant: "destructive",
       });
     }
+    return Promise.resolve();
   };
 
   return (

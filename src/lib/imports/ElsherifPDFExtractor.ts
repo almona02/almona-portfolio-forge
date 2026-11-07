@@ -25,8 +25,8 @@ export class ElsherifPDFExtractor {
    * 99% accuracy for weight-per-meter and basic dimensions for the key
    * ROCK60 series profiles used in 45° cutting.
    */
-  static async extractProfilesFromPDF(_pdfFile: File): Promise<ExtractedProfile[]> {
-    return this.getManualExtraction();
+  static extractProfilesFromPDF(_pdfFile: File): Promise<ExtractedProfile[]> {
+    return Promise.resolve(this.getManualExtraction());
   }
 
   /**

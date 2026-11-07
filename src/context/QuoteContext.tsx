@@ -167,9 +167,9 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   };
 
   // Catalogue enquiries neither reserve stock nor create database quote records.
-  const addCatalogueToQuote = useCallback(async (product: { id: string; name: string; imageUrl?: string }, quantity = 1) => {
+  const addCatalogueToQuote = useCallback((product: { id: string; name: string; imageUrl?: string }, quantity = 1): Promise<void> => {
     if (!product.id || !product.name || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 9999) {
-      throw new Error('Choose a product and a whole-number quantity between 1 and 9999.');
+      return Promise.reject(new Error('Choose a product and a whole-number quantity between 1 and 9999.'));
     }
     setQuoteItems(items => {
       const existing = items.find(item => item.enquiry_only && item.product_id === product.id);
@@ -182,6 +182,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
         enquiry_only: true, catalogue_image: product.imageUrl,
       }];
     });
+    return Promise.resolve();
   }, []);
 
   const isDbProduct = (p: unknown): p is Database['public']['Tables']['products']['Row'] => {

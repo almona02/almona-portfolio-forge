@@ -21,13 +21,13 @@ export class CSVExportGenerator {
   /**
    * Generate CSV export
    */
-  async generate(
+  generate(
     project: WindowUnit,
     optimization: OptimizationResult | null,
     options: CSVExportOptions
   ): Promise<Blob> {
     if (!optimization) {
-      throw new Error('Optimization data required for CSV export');
+      return Promise.reject(new Error('Optimization data required for CSV export'));
     }
 
     const locale = (options.language || 'en') as Locale;
@@ -142,7 +142,7 @@ export class CSVExportGenerator {
     const encoder = new TextEncoder();
     const encoded = encoder.encode(finalContent);
     
-    return new Blob([encoded], { type: 'text/csv;charset=utf-8;' });
+    return Promise.resolve(new Blob([encoded], { type: 'text/csv;charset=utf-8;' }));
   }
 
   /**
