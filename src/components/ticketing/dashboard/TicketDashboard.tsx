@@ -18,20 +18,41 @@ const useTicketEngine = () => {
     };
 };
 
+interface StatCardProps {
+    title: string;
+    value: string;
+    trend: string;
+}
+interface FilterPillProps {
+    label: string;
+    count?: number;
+    active?: boolean;
+}
+interface DashboardTicket {
+    id: string;
+    type: string;
+    priority: string;
+    status: string;
+    sla: string;
+}
+interface TicketRowProps {
+    ticket: DashboardTicket;
+}
+
 // Mock components for compilation
-const StatCard = ({ title, value, trend }: any) => (
+const StatCard = ({ title, value, trend }: StatCardProps) => (
     <div className="stat-card" style={{ padding: '1rem', border: '1px solid #ccc' }}>
         <h3>{title}</h3>
         <p>{value}</p>
         <small>{trend}</small>
     </div>
 );
-const FilterPill = ({ label, count, active }: any) => (
+const FilterPill = ({ label, count, active }: FilterPillProps) => (
     <button style={{ marginRight: '0.5rem', fontWeight: active ? 'bold' : 'normal' }}>
         {label} {count && `(${count})`}
     </button>
 );
-const TicketRow = ({ ticket }: any) => (
+const TicketRow = ({ ticket }: TicketRowProps) => (
     <tr>
         <td>{ticket.id}</td>
         <td>{ticket.type}</td>

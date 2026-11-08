@@ -92,8 +92,8 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
     window.open(whatsappUrl, '_blank');
     
     // Track the interaction
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'whatsapp_contact', {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'whatsapp_contact', {
         event_category: 'engagement',
         event_label: 'whatsapp_message_sent',
         value: 1

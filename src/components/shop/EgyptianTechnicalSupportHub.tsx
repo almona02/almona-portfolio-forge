@@ -458,7 +458,7 @@ const EgyptianTechnicalSupportHub = () => {
                     <label className="typography-label block text-sm font-medium mb-2">Urgency Level *</label>
                     <select
                       value={supportRequest.urgency}
-                      onChange={(e) => setSupportRequest(prev => ({ ...prev, urgency: e.target.value as any }))}
+                      onChange={(e) => setSupportRequest(prev => ({ ...prev, urgency: e.target.value as SupportRequest['urgency'] }))}
                       className="w-full p-2 bg-muted border border-border rounded-md text-foreground"
                       required
                     >
@@ -472,7 +472,7 @@ const EgyptianTechnicalSupportHub = () => {
                     <label className="typography-label block text-sm font-medium mb-2">Preferred Contact Method *</label>
                     <select
                       value={supportRequest.preferredContact}
-                      onChange={(e) => setSupportRequest(prev => ({ ...prev, preferredContact: e.target.value as any }))}
+                      onChange={(e) => setSupportRequest(prev => ({ ...prev, preferredContact: e.target.value as SupportRequest['preferredContact'] }))}
                       className="w-full p-2 bg-muted border border-border rounded-md text-foreground"
                       required
                     >
@@ -633,7 +633,7 @@ const EgyptianTechnicalSupportHub = () => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="bg-card rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
-            onClick={(e: any) => e.stopPropagation()}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between mb-4">
               <div>

@@ -6,13 +6,27 @@
 
 import { supabase } from '@/lib/supabase';
 
+/** Local payload shapes for calibration analytics rows (not a shared schema). */
+interface CalibrationEventData {
+  new_k_factor?: number;
+  previous_k_factor?: number;
+  profile_id?: string;
+  difference?: number;
+}
+
+interface CalibrationTestResult {
+  expected: number;
+  actual: number;
+  difference: number;
+}
+
 // Type definitions for Supabase queries (tables not in main Database type)
 interface CalibrationAnalyticsRow {
   id: string;
   user_id: string;
   profile_id: string | null;
   event_type: string;
-  event_data: any;
+  event_data: CalibrationEventData;
   k_factor: number | null;
   accuracy_mm: number | null;
   success: boolean | null;
@@ -27,7 +41,7 @@ interface FabricatorProfileRow {
 
 interface ProfileCalibrationRow {
   profile_id: string;
-  test_results: any;
+  test_results: CalibrationTestResult[] | null;
   updated_at: string;
   confidence_score: number | null;
 }
@@ -93,7 +107,8 @@ export class PersonalAnalytics {
       const adjustments = data
         .map((row) => {
           const eventData = row.event_data;
-          return eventData.new_k_factor - eventData.previous_k_factor;
+          // Unchecked arithmetic preserved from prior `any` access (NaN filtered below).
+          return (eventData.new_k_factor as number) - (eventData.previous_k_factor as number);
         })
         .filter((adj) => !isNaN(adj));
 
@@ -252,11 +267,7 @@ export class PersonalAnalytics {
         }
 
         // Aggregate test results
-        const allTests = calibrations.flatMap((cal) => cal.test_results || []) as Array<{
-          expected: number;
-          actual: number;
-          difference: number;
-        }>;
+        const allTests = calibrations.flatMap((cal) => cal.test_results || []);
 
         const totalTests = allTests.length;
         const averageAccuracy =

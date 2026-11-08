@@ -3,7 +3,7 @@ import MachineTwinDisplay from '@/components/fabricator/production/MachineTwinDi
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button-gold-tier';
 import { CardContent, CardHeader, CardTitle, GoldTierCard } from '@/components/ui/card-gold-tier';
-import { useYDT } from '@/context/YDT_Context';
+import { useYDT, type MachineKnowledge, type PartInfo } from '@/context/YDT_Context';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs'; // Using shared UI tabs for consistency? Or standard? Checking imports.
 import { Activity, CheckCircle2, FileText, HardHat, MessageSquare, Wrench } from 'lucide-react';
@@ -35,7 +35,7 @@ export default function ProductLocker({ machineId, machineModel = 'Unknown Model
   const { getMachineKnowledge } = useYDT();
   const [activeTab, setActiveTab] = useState('overview');
   const [showSupportWizard, setShowSupportWizard] = useState(false);
-  const [knowledge, setKnowledge] = useState<any>(null);
+  const [knowledge, setKnowledge] = useState<MachineKnowledge | null>(null);
 
   // Derived Type
   const machineType = guessMachineType(machineModel);
@@ -150,7 +150,7 @@ export default function ProductLocker({ machineId, machineModel = 'Unknown Model
                      <h3 className="text-lg font-bold text-foreground">Recommended Spares</h3>
                      {knowledge?.parts ? (
                          <div className="space-y-3">
-                             {knowledge.parts.map((part: any) => (
+                             {knowledge.parts.map((part: PartInfo) => (
                                  <GoldTierCard key={part.id} variant="outlined" className="bg-background/50 border-border flex flex-row items-center p-3">
                                      <div className="bg-card w-12 h-12 rounded flex items-center justify-center mr-4">
                                         <Wrench className="w-6 h-6 text-amber-500" />

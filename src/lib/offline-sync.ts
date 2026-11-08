@@ -31,7 +31,7 @@ export interface PushNotificationPayload {
   icon?: string;
   badge?: string;
   tag?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 }
 
 class OfflineSyncService {
@@ -282,7 +282,11 @@ class OfflineSyncService {
     try {
       if (this.registration) {
         // Use service worker for better notification management
-        await this.registration.showNotification(payload.title, {
+        // SW showNotification accepts `actions` at runtime; DOM NotificationOptions omits it here.
+        type SwNotificationOptions = NotificationOptions & {
+          actions?: ReadonlyArray<{ action: string; title: string; icon?: string }>;
+        };
+        const notificationOptions: SwNotificationOptions = {
           body: payload.body,
           icon: payload.icon || '/icons/pwa-192x192.png',
           badge: payload.badge || '/icons/pwa-192x192.png',
@@ -301,7 +305,11 @@ class OfflineSyncService {
               icon: '/icons/dismiss-icon.png'
             }
           ]
-        } as any);
+        };
+        await this.registration.showNotification(
+          payload.title,
+          notificationOptions as NotificationOptions
+        );
       } else {
         // Fallback to basic notification
         new Notification(payload.title, {

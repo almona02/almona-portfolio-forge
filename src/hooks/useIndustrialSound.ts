@@ -1,5 +1,9 @@
 import { useCallback } from 'react';
 
+type WindowWithWebkitAudio = typeof window & {
+  webkitAudioContext?: typeof AudioContext;
+};
+
 /**
  * Custom hook for industrial sound effects
  * Provides mechanical "thunk" sounds for UI interactions
@@ -9,7 +13,9 @@ export const useIndustrialSound = () => {
     // Create a simple mechanical "thunk" sound using Web Audio API
     if (typeof window !== 'undefined' && window.AudioContext) {
       try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        // Outer gate requires window.AudioContext; || webkit preserves prior expression order.
+        const win = window as WindowWithWebkitAudio;
+        const audioContext = new (win.AudioContext || win.webkitAudioContext)();
         
         // Create a short, mechanical sound
         const oscillator = audioContext.createOscillator();
@@ -38,7 +44,8 @@ export const useIndustrialSound = () => {
     // Create a subtle hover sound
     if (typeof window !== 'undefined' && window.AudioContext) {
       try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const win = window as WindowWithWebkitAudio;
+        const audioContext = new (win.AudioContext || win.webkitAudioContext)();
         
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
