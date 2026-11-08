@@ -14,7 +14,6 @@
  * - Append-only evidence (no updates/deletes)
  */
 import { InputHashingService } from '@/core/authority/certification/InputHashingService';
-import type { Database } from '@/types/database';
 import { createClient } from '@supabase/supabase-js';
 
 export interface ConsistencyMonitorConfig {
@@ -24,6 +23,24 @@ export interface ConsistencyMonitorConfig {
   driftThreshold?: number; // default 0.001 (0.1%)
   maxSampleSize?: number; // default 500
 }
+
+/** Minimal client surface used by this monitor (avoids incomplete Database generics). */
+type ConsistencyQuery = PromiseLike<{ data: unknown; error: unknown }> & {
+  limit: (count: number) => ConsistencyQuery;
+  eq: (column: string, value: unknown) => ConsistencyQuery;
+  maybeSingle: () => PromiseLike<{ data: unknown; error: unknown }>;
+};
+
+type ConsistencyMonitorClient = {
+  from: (table: string) => {
+    select: (columns: string) => ConsistencyQuery;
+    insert: (values: Record<string, unknown>) => PromiseLike<{ data: unknown; error: unknown }>;
+  };
+  rpc: (
+    fn: string,
+    args: Record<string, unknown>,
+  ) => PromiseLike<{ data: unknown; error: unknown }>;
+};
 
 export interface ConsistencyMismatch {
   entityType: 'project' | 'position';
@@ -62,7 +79,7 @@ async function stableSha256Hex(input: unknown): Promise<string> {
 }
 
 export class DualWriteConsistencyMonitor {
-  private client: ReturnType<typeof createClient<Database>>;
+  private client: ConsistencyMonitorClient;
   private cfg: Required<ConsistencyMonitorConfig>;
 
   constructor(config: ConsistencyMonitorConfig) {
@@ -74,10 +91,10 @@ export class DualWriteConsistencyMonitor {
       serviceRoleKey: config.serviceRoleKey,
     };
 
-    this.client = createClient<Database>(this.cfg.supabaseUrl, this.cfg.serviceRoleKey, {
+    this.client = createClient(this.cfg.supabaseUrl, this.cfg.serviceRoleKey, {
       auth: { persistSession: false, autoRefreshToken: false },
       db: { schema: 'public' },
-    });
+    }) as unknown as ConsistencyMonitorClient;
   }
 
   /**
