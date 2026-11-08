@@ -634,3 +634,15 @@ Proposed title: `chore: reduce explicit any across lint batches T4–T12`
 **Review notes for CEO:** no rule disables, no baseline/config edits, no `as any` in source scope. ~61 `as unknown as` bridges remain (mostly 3D/chart ref and API bridges replacing prior `as any`). Intentional stricter UI paths: DesignTemplatesLibrary requires grid before save; FabricationReportGenerator skips comparison panel when KM-212/`yilmaz` absent. `ManualCuttingPacketGenerator` gray fill uses equal RGB. Invalid material/userType strings now narrow to `undefined` instead of flowing unchecked.
 
 Do not commit or open a PR until the CEO authorizes.
+
+### Merge — PR #145 (2026-11-08)
+
+Merged T4–T12 (+ DualWrite CI fingerprint fix) to `main` as `00a7ae12`.
+
+### Wave T13–T15 — prepared, not dispatched (2026-11-08)
+
+Post-merge inventory on `main` @ `00a7ae12`: **2,459** files, **0** errors, **12,304** warnings; `no-explicit-any` **2,026** (matches prior reference). Spark-safe singles after holds/exclusions: **16** (only). Commercial evidence clients and DB `supabase as any` sites remain deferred.
+
+**Still held:** `smartCategories.ts`, `emailTemplates.ts`, DraftingWorkbench, CNC/machine converters, production dashboards/commands, stock/QC/release, pricing/tax, YDT/advisory/constitutional, `clientCore`/`performanceMonitoring`/`PurchaseWizard`/`deliveryAcknowledgement` (typed-client gaps), `YilmazEgyptRules`, commercial `loadSavedOptimizationEvidence*` / `poseQuotesClient`.
+
+Batches sized to available low-risk singles (≤10 each); no edits dispatched.
