@@ -160,7 +160,9 @@ function installPassiveEventListenerDefaults() {
   ]);
   const WHEEL_ALWAYS_NON_PASSIVE = new Set(['wheel', 'mousewheel']);
 
-  const originalAddEventListener = EventTarget.prototype.addEventListener;
+  // Read via Reflect.get so the unbound method reference is explicit; it is always
+  // invoked with `.call(this, ...)` below, so `this` stays correct.
+  const originalAddEventListener = Reflect.get(EventTarget.prototype, 'addEventListener');
 
   EventTarget.prototype.addEventListener = function (
     this: EventTarget,

@@ -56,7 +56,7 @@ const KERF_MM = 3;
 const TRIM_MM = 0;
 
 function packProfile(id: string): Profile {
-  const found = ((CALUMINIUM_PS_PACK.profiles ?? []) as Profile[]).find((p) => p.id === id);
+  const found = (CALUMINIUM_PS_PACK.profiles ?? []).find((p) => p.id === id);
   if (!found) throw new Error(`CALUMINIUM PS profile ${id} missing`);
   return found;
 }

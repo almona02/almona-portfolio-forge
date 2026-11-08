@@ -212,8 +212,8 @@ describe('BOM Generation AICS-001 Constitutional Compliance', () => {
     if (result.replayMetadata) {
       // The service should accept BOM generation context
       // Note: This test verifies the interface, not the actual recording
-      expect(integrationService.recordBOMGenerationAudit).toBeDefined();
-      expect(typeof integrationService.recordBOMGenerationAudit).toBe('function');
+      expect(integrationService).toHaveProperty('recordBOMGenerationAudit');
+      expect(typeof Reflect.get(integrationService, 'recordBOMGenerationAudit')).toBe('function');
     }
   }, 30000);
 

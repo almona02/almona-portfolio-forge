@@ -32,7 +32,7 @@ describe('IntelligenceGate - Tier 1: Strategic Decisions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     IntelligenceGate.resetMetrics();
-    vi.mocked(TierMetrics.reset).mockClear();
+    vi.mocked(TierMetrics).reset.mockClear();
   });
 
   test('Tier 1: Succeeds with proper reasoning', async () => {

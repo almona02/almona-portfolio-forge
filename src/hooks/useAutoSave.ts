@@ -83,7 +83,8 @@ export function useAutoSave<T>(
     setError(null);
 
     // Set new timer
-    debounceTimerRef.current = setTimeout(async () => {
+    debounceTimerRef.current = setTimeout(() => {
+      void (async () => {
       try {
         const result = await saveFunction(data);
         
@@ -102,6 +103,7 @@ export function useAutoSave<T>(
         setIsSaving(false);
         debounceTimerRef.current = null;
       }
+      })();
     }, delay);
 
     // Cleanup

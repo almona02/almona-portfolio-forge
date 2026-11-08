@@ -86,10 +86,10 @@ function setup() {
 describe('ManufacturingApprovalsPage approval settings', () => {
   it('pre-fills kerf and trim from the workshop tuning and stock from platform default', async () => {
     setup();
-    const kerf = (await screen.findByTestId('approval-req-1-sawKerfMm-input')) as HTMLInputElement;
+    const kerf = await screen.findByTestId<HTMLInputElement>('approval-req-1-sawKerfMm-input');
     await waitFor(() => expect(kerf.value).toBe('3.2'));
-    expect((screen.getByTestId('approval-req-1-trimCutMm-input') as HTMLInputElement).value).toBe('12');
-    expect((screen.getByTestId('approval-req-1-stockLengthMm-input') as HTMLInputElement).value).toBe('6000');
+    expect(screen.getByTestId<HTMLInputElement>('approval-req-1-trimCutMm-input').value).toBe('12');
+    expect(screen.getByTestId<HTMLInputElement>('approval-req-1-stockLengthMm-input').value).toBe('6000');
     expect(mocks.listTuningForOwner).toHaveBeenCalledWith('owner-7');
     expect(screen.getByTestId('approval-settings-req-1')).toHaveTextContent(/workshop default/);
     expect(screen.getByTestId('approval-settings-req-1')).toHaveTextContent(/platform default/);
@@ -97,7 +97,7 @@ describe('ManufacturingApprovalsPage approval settings', () => {
 
   it('blocks approval while a setting is out of range and shows the field error', async () => {
     setup();
-    const kerf = (await screen.findByTestId('approval-req-1-sawKerfMm-input')) as HTMLInputElement;
+    const kerf = await screen.findByTestId<HTMLInputElement>('approval-req-1-sawKerfMm-input');
     await waitFor(() => expect(kerf.value).toBe('3.2'));
     fireEvent.change(kerf, { target: { value: '99' } });
     expect(screen.getByText(/Saw kerf must be between 0 and 20 mm/)).toBeInTheDocument();
@@ -107,7 +107,7 @@ describe('ManufacturingApprovalsPage approval settings', () => {
 
   it('submits the admin-confirmed settings inside the authority payload', async () => {
     setup();
-    const kerf = (await screen.findByTestId('approval-req-1-sawKerfMm-input')) as HTMLInputElement;
+    const kerf = await screen.findByTestId<HTMLInputElement>('approval-req-1-sawKerfMm-input');
     await waitFor(() => expect(kerf.value).toBe('3.2'));
     fireEvent.change(screen.getByTestId('approval-req-1-stockLengthMm-input'), { target: { value: '6500' } });
     fireEvent.click(screen.getByTestId('approve-request-req-1'));

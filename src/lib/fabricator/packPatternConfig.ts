@@ -17,7 +17,7 @@ export type PackPatternConfig = {
 };
 
 function asSpec(pack: SystemPack | null | undefined): Record<string, unknown> {
-  return (pack?.windowSystemSpec ?? {}) as Record<string, unknown>;
+  return pack?.windowSystemSpec ?? {};
 }
 
 function knownPatternIds(): Set<string> {

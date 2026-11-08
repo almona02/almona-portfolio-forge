@@ -344,13 +344,11 @@ export class YilmazCNC extends CNCController {
   private startStatusPolling(): void {
     this.stopStatusPolling();
     
-    this.statusUpdateInterval = setInterval(async () => {
+    this.statusUpdateInterval = setInterval(() => {
       if (this.connectionStatus === 'connected') {
-        try {
-          await this.getStatus();
-        } catch (error) {
+        this.getStatus().catch((error: unknown) => {
           console.error('Status polling error:', error);
-        }
+        });
       }
     }, 5000); // Poll every 5 seconds
   }

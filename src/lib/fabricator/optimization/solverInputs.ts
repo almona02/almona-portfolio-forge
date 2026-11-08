@@ -142,12 +142,12 @@ export function resolveApprovedSolverInputs(
     );
     // Legacy profile-only count (no length in key) — never sufficient when requirePhysicalBars.
     const legacyProfileOnly = availableBarsByProfileOrLength[profile.id];
-    const legacyOk = Number.isInteger(legacyProfileOnly) && (legacyProfileOnly as number) >= 0;
+    const legacyOk = Number.isInteger(legacyProfileOnly) && legacyProfileOnly >= 0;
     let availableBars: number | undefined;
     if (lengthBound != null) {
       availableBars = lengthBound;
     } else if (!requirePhysicalBars && legacyOk) {
-      availableBars = legacyProfileOnly as number;
+      availableBars = legacyProfileOnly;
     }
 
     if (requirePhysicalBars && availableBars === undefined) {

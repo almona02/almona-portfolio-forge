@@ -17,7 +17,7 @@ const POSITION_ID = '3ecb65c7-8897-4cce-8392-23c78441ff08';
 const PACK = CALUMINIUM_PS_PACK as unknown as SystemPack;
 
 function packProfile(id: string): Profile {
-  const found = ((CALUMINIUM_PS_PACK.profiles ?? []) as Profile[]).find((p) => p.id === id);
+  const found = (CALUMINIUM_PS_PACK.profiles ?? []).find((p) => p.id === id);
   if (!found) throw new Error(`CALUMINIUM PS profile ${id} missing`);
   return found;
 }

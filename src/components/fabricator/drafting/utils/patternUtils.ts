@@ -296,14 +296,16 @@ export function createRectangularArray(
   const spacingError = Math.abs(actualSpacing - expectedSpacing);
   const spacingErrorPercent = (spacingError / expectedSpacing) * 100;
 
+  const validationStatus: 'pass' | 'warning' | 'fail' = spacingErrorPercent <= ACCURACY_STANDARDS.TOLERANCE
+    ? 'pass'
+    : spacingErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
+      ? 'warning'
+      : 'fail';
+
   const accuracy = {
     precision: ACCURACY_STANDARDS.PRECISION,
     tolerance: spacingErrorPercent,
-    validation: (spacingErrorPercent <= ACCURACY_STANDARDS.TOLERANCE
-      ? 'pass'
-      : spacingErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
-        ? 'warning'
-        : 'fail') as 'pass' | 'warning' | 'fail',
+    validation: validationStatus,
     issues: validation.issues
   };
 
@@ -454,14 +456,16 @@ export function createCircularArray(
   const angleError = Math.abs(actualAngleStep - angleAccuracy);
   const angleErrorPercent = (angleError / angleAccuracy) * 100;
 
+  const validationStatus: 'pass' | 'warning' | 'fail' = angleErrorPercent <= ACCURACY_STANDARDS.TOLERANCE
+    ? 'pass'
+    : angleErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
+      ? 'warning'
+      : 'fail';
+
   const accuracy = {
     precision: ACCURACY_STANDARDS.PRECISION,
     tolerance: angleErrorPercent,
-    validation: (angleErrorPercent <= ACCURACY_STANDARDS.TOLERANCE
-      ? 'pass'
-      : angleErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
-        ? 'warning'
-        : 'fail') as 'pass' | 'warning' | 'fail',
+    validation: validationStatus,
     issues: validation.issues
   };
 
@@ -577,14 +581,16 @@ export function createLinearArray(
   const stepError = Math.abs(actualStep - expectedStep);
   const stepErrorPercent = (stepError / expectedStep) * 100;
 
+  const validationStatus: 'pass' | 'warning' | 'fail' = stepErrorPercent <= ACCURACY_STANDARDS.TOLERANCE
+    ? 'pass'
+    : stepErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
+      ? 'warning'
+      : 'fail';
+
   const accuracy = {
     precision: ACCURACY_STANDARDS.PRECISION,
     tolerance: stepErrorPercent,
-    validation: (stepErrorPercent <= ACCURACY_STANDARDS.TOLERANCE
-      ? 'pass'
-      : stepErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
-        ? 'warning'
-        : 'fail') as 'pass' | 'warning' | 'fail',
+    validation: validationStatus,
     issues: validation.issues
   };
 
@@ -680,14 +686,16 @@ export function createOffsetPattern(
   const distanceError = Math.abs(actualDistance - expectedDistance);
   const distanceErrorPercent = (distanceError / expectedDistance) * 100;
 
+  const validationStatus: 'pass' | 'warning' | 'fail' = distanceErrorPercent <= ACCURACY_STANDARDS.TOLERANCE
+    ? 'pass'
+    : distanceErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
+      ? 'warning'
+      : 'fail';
+
   const accuracy = {
     precision: ACCURACY_STANDARDS.PRECISION,
     tolerance: distanceErrorPercent,
-    validation: (distanceErrorPercent <= ACCURACY_STANDARDS.TOLERANCE
-      ? 'pass'
-      : distanceErrorPercent <= ACCURACY_STANDARDS.TOLERANCE * 2
-        ? 'warning'
-        : 'fail') as 'pass' | 'warning' | 'fail',
+    validation: validationStatus,
     issues: validation.issues
   };
 

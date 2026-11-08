@@ -1162,8 +1162,8 @@ export const SystemPackTuningStudio: React.FC = () => {
                       return;
                     }
 
-                    if (profilesByName && (profilesByName as any[]).length > 0 && (profilesByName as any[])[0] && (profilesByName as any[])[0].id) {
-                      updatedProfileData = (profilesByName as any[])[0];
+                    if (profilesByName && profilesByName.length > 0 && profilesByName[0] && profilesByName[0].id) {
+                      updatedProfileData = profilesByName[0];
                       console.log('✅ Found profile by name:', (updatedProfileData as any).id);
                     } else {
                       console.error('❌ Profile not found by name either');

@@ -165,8 +165,15 @@ export async function waitForOptimizationJobRealtime(
   timeoutMs: number = 120000 // 2 minutes default
 ): Promise<HeavyOptimizationResponse> {
   return new Promise((resolve, reject) => {
+    // unsubscribe() returns a promise; fire-and-forget with error logging
+    const releaseSubscription = (): void => {
+      void subscription.unsubscribe().catch((error: unknown) => {
+        console.warn(`Failed to unsubscribe from job-${jobId} channel:`, error);
+      });
+    };
+
     const timeout = setTimeout(() => {
-      subscription.unsubscribe();
+      releaseSubscription();
       reject(new Error(`Job ${jobId} timed out after ${timeoutMs}ms`));
     }, timeoutMs);
 
@@ -186,11 +193,11 @@ export async function waitForOptimizationJobRealtime(
 
           if (job.status === 'completed' && job.result_data) {
             clearTimeout(timeout);
-            subscription.unsubscribe();
+            releaseSubscription();
             resolve(job.result_data);
           } else if (job.status === 'failed') {
             clearTimeout(timeout);
-            subscription.unsubscribe();
+            releaseSubscription();
             reject(new Error(job.error_message || 'Optimization job failed'));
           }
         }
@@ -201,16 +208,16 @@ export async function waitForOptimizationJobRealtime(
     getOptimizationJobStatus(jobId).then(status => {
       if (status.status === 'completed' && status.result) {
         clearTimeout(timeout);
-        subscription.unsubscribe();
+        releaseSubscription();
         resolve(status.result);
       } else if (status.status === 'failed') {
         clearTimeout(timeout);
-        subscription.unsubscribe();
+        releaseSubscription();
         reject(new Error(status.error || 'Optimization job failed'));
       }
     }).catch(err => {
       clearTimeout(timeout);
-      subscription.unsubscribe();
+      releaseSubscription();
       reject(new Error(String(err)));
     });
   });

@@ -126,7 +126,7 @@ export const SystemPacksPage: React.FC = () => {
   };
 
   const getCardGradient = (system: any, isHovered: boolean) => {
-    const isUPVC = !!(system as any).upvcSpec;
+    const isUPVC = !!system.upvcSpec;
     const tuningStatus = getSystemPackTuningStatus(system);
     
     if (tuningStatus.isTuned) {
@@ -481,17 +481,19 @@ export const SystemPacksPage: React.FC = () => {
         open={showSystemWizard}
         onClose={() => setShowSystemWizard(false)}
         allowStarterPack
-        onSave={async (customPack) => {
-          try {
-            if (!userId) throw new Error('Sign in before creating a workshop system pack.');
-            const updated = await addCustomSystemAsync(customPack, userId);
-            setCustomSystems(updated);
-            setShowSystemWizard(false);
-          // Navigate to the new system pack
-          void navigate(`/fabricator/studio/data/tuning?systemPackId=${customPack.meta.id}`);
-          } catch (error) {
-            toast.error(error instanceof Error ? error.message : 'System pack save failed.');
-          }
+        onSave={(customPack) => {
+          void (async () => {
+            try {
+              if (!userId) throw new Error('Sign in before creating a workshop system pack.');
+              const updated = await addCustomSystemAsync(customPack, userId);
+              setCustomSystems(updated);
+              setShowSystemWizard(false);
+              // Navigate to the new system pack
+              void navigate(`/fabricator/studio/data/tuning?systemPackId=${customPack.meta.id}`);
+            } catch (error) {
+              toast.error(error instanceof Error ? error.message : 'System pack save failed.');
+            }
+          })();
         }}
       />
       

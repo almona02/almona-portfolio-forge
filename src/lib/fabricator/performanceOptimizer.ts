@@ -162,14 +162,16 @@ export class PerformanceOptimizer {
     }
     
     // Load enhancements in background (non-blocking)
-    setTimeout(async () => {
-      try {
-        const enhancementData = await enhancementLoader();
-        onEnhancementLoaded(enhancementData);
-      } catch (error) {
-        console.warn('Enhancement loading failed:', error);
-        // Continue without enhancements - not critical
-      }
+    setTimeout(() => {
+      void (async () => {
+        try {
+          const enhancementData = await enhancementLoader();
+          onEnhancementLoaded(enhancementData);
+        } catch (error) {
+          console.warn('Enhancement loading failed:', error);
+          // Continue without enhancements - not critical
+        }
+      })();
     }, PROGRESSIVE_LOADING.ENHANCEMENT_DELAY_MS);
   }
   

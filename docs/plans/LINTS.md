@@ -482,3 +482,62 @@ All S26–S30 paths on `chore/lint-require-await-wave9`, uncommitted. Coordinato
 Coordinator follow-ups applied: YDT `Promise.reject(error)` sites wrapped for `prefer-promise-reject-errors`; pricing/economics `new Promise(resolve => resolve(sync()))` simplified to `Promise.resolve(sync())`. Formulas / gate / advisory logic unchanged beyond async drops.
 
 Vitest in this environment fails suite load with `TypeError: ... reading 'config'` (vitest/`@vitest/*` version skew) — not attributed to these edits. S27 agent had previously reported `src/lib/ydt` 16 tests green before the skew manifested. Do not commit until the user asks.
+
+### Merge — PR #142 (2026-11-08)
+
+Merged Waves 9–10 to `main` as `709acd90`. **`require-await` is 0 project-wide.** Next rule family: `@typescript-eslint/no-misused-promises` (30) and `@typescript-eslint/no-floating-promises` (9). Branch: `chore/lint-promise-misuse-wave1`.
+
+### Wave P1 — promise misuse / floating (39)
+
+Fix **only** `no-misused-promises` and `no-floating-promises`. Leave every other warning. Preferred patterns:
+- Event / callback expecting `void`: wrap with `void fn()` or `(...args) => { void fn(...args); }` — do not leave floating promises.
+- Fire-and-forget: prefix with `void` and ensure `.catch` / logged rejection where failures matter.
+- Do not disable rules. Do not commit.
+
+#### P1a — redis + python client + scheduler (20)
+
+- `src/lib/redis/realtimeCacheInvalidator.ts` (11 misused)
+- `src/lib/api/pythonHeavyClient.ts` (6 floating)
+- `src/services/automation/AutomationScheduler.ts` (3 misused)
+
+#### P1b — UI / hooks / pages (9)
+
+- `src/core/activity/ActivityTimeline.tsx` (1 misused, 1 floating)
+- `src/components/admin/panels/CatalogAdminPanel.tsx` (1 floating)
+- `src/components/services/YilmazMachineRegistration.tsx` (1 misused)
+- `src/components/support/TicketWizardDialog.tsx` (1 misused)
+- `src/components/ui/ProjectTemplates.tsx` (1 misused)
+- `src/hooks/useAutoSave.ts` (1 misused)
+- `src/hooks/useJobStatus.ts` (1 floating)
+- `src/pages/SystemPacksPage.tsx` (1 misused)
+
+#### P1c — libs / connectors (8)
+
+- `src/integrations/yilmaz/YilmazCNC.ts` (1)
+- `src/lib/cnc/CNCIntegration.ts` (1)
+- `src/lib/collaboration/3dCollaborationService.ts` (1)
+- `src/lib/fabricator/performanceOptimizer.ts` (1)
+- `src/lib/fabricator/ProductionWorkflow.ts` (1)
+- `src/lib/import/ProfileImporter.ts` (1)
+- `src/lib/workspace/WorkspaceSyncService.ts` (1)
+- `src/modules/reporting/PDFExportService.ts` (1)
+
+#### P1d — reserved (2)
+
+- `src/components/ticketing/advisory/dashboard/AdvisoryDashboard.tsx` (1 misused)
+- `src/lib/constitutional/PositionStateSyncService.ts` (1 misused)
+
+### Wave P1 review — accepted (2026-11-08)
+
+All P1a–P1d paths on `chore/lint-promise-misuse-wave1`, uncommitted (**22** files including plan). Coordinator ESLint (`--no-cache`) on the **21** source paths: **0** `no-misused-promises`, **0** `no-floating-promises`, **0** errors. Full inventory: **2,459 files, 0 errors, 12,881 warnings** — both promise rules are **gone project-wide**. Fixes used `void` wrappers / sync callbacks around async work; no rule disables. Do not commit until the user asks.
+
+### Wave P2 — small leftover rules (58)
+
+Fix **only** these rules (leave `no-unsafe-*` / `no-explicit-any` alone):
+- `@typescript-eslint/no-unnecessary-type-assertion` (39)
+- `@typescript-eslint/unbound-method` (9)
+- `@typescript-eslint/no-base-to-string` (6)
+- `react-hooks/exhaustive-deps` (3)
+- `@typescript-eslint/restrict-template-expressions` (1)
+
+Patterns: drop redundant `as` casts; for unbound-method in tests use `vi.mocked` / bind / extract; for base-to-string / restrict-template coerce safely (`String(x)` / narrow); for exhaustive-deps fix deps without changing intentional behavior. Do not disable rules. Do not commit until coordinator says so.

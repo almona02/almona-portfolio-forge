@@ -41,19 +41,33 @@ interface ProfileRow {
   provenance: PricingProvenance | null
 }
 
+/** First truthy string/number candidate rendered as text; non-scalar values are skipped. */
+function firstScalarText(candidates: unknown[], fallback: string): string {
+  for (const c of candidates) {
+    if (typeof c === 'string' && c) return c
+    if (typeof c === 'number' && c) return String(c)
+  }
+  return fallback
+}
+
 function packIdOf(profile: Profile): string {
   const specs = (profile.specifications as Record<string, unknown> | undefined) || {}
-  return String(specs.window_system || profile.systemBrand || specs.systemPackId || 'unknown')
+  return firstScalarText(
+    [specs.window_system, profile.systemBrand, specs.systemPackId],
+    'unknown'
+  )
 }
 
 function profileNameOf(profile: Profile): string {
   const specs = (profile.specifications as Record<string, unknown> | undefined) || {}
-  return String(
-    (profile as unknown as Record<string, unknown>).name ||
-      specs.profileName ||
-      specs.code ||
-      profile.id ||
-      'profile'
+  return firstScalarText(
+    [
+      (profile as unknown as Record<string, unknown>).name,
+      specs.profileName,
+      specs.code,
+      profile.id,
+    ],
+    'profile'
   )
 }
 
@@ -376,7 +390,7 @@ const PacksSection: React.FC<{ userId: string | null }> = ({ userId }) => {
       return
     }
     setHistoryLoading(true)
-    listPackVersionsFromSupabase(selectedId, userId)
+    void listPackVersionsFromSupabase(selectedId, userId)
       .then(setHistory)
       .finally(() => setHistoryLoading(false))
   }, [selectedId, userId])

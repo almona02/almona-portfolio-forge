@@ -31,7 +31,6 @@ export function useLivePricing({
   components,
   profiles,
   currency = 'EGP',
-  region = 'egypt',
   enabled = true,
 }: UseLivePricingOptions): LivePricingData {
   const [pricingData, setPricingData] = useState<LivePricingData>({
@@ -125,7 +124,7 @@ export function useLivePricing({
       }));
     }
     return Promise.resolve();
-  }, [components, profiles, currency, region, enabled]);
+  }, [components, profiles, currency, enabled]);
 
   useEffect(() => {
     // Debounce calculation to avoid excessive recalculations

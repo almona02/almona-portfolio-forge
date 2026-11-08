@@ -79,7 +79,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   }, [entityType, entityId, limit, setLoading, setError, setActivities]);
 
   useEffect(() => {
-    loadActivities();
+    void loadActivities();
   }, [entityType, entityId, limit, loadActivities]);
 
   const renderIcon = (eventType: string) => {
@@ -131,7 +131,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
             <Icons.AlertCircle className="w-12 h-12 text-red-500/70 mb-4" />
             <p className="text-sm text-red-400/70 mb-2">{error}</p>
             <button
-              onClick={loadActivities}
+              onClick={() => { void loadActivities(); }}
               className="text-xs text-amber-500 hover:text-amber-400 underline"
             >
               Try again

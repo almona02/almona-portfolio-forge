@@ -305,7 +305,7 @@ export class NotificationService {
 
       if (!rules || rules.length === 0) return;
 
-      for (const rule of rules as any[]) {
+      for (const rule of rules) {
         if (this.matchesTrigger(rule, event)) {
           await this.notify(
             rule.user_id,
@@ -357,7 +357,7 @@ export class NotificationService {
         return [];
       }
 
-      return ((data || []) as any[]).map((n: any) => ({
+      return (data || []).map((n: any) => ({
         id: n.id,
         userId: n.user_id,
         channel: n.channel,
