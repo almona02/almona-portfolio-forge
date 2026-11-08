@@ -10,7 +10,7 @@ export const useViewTransition = () => {
     if ('startViewTransition' in document) {
       // View Transition API is not yet in TypeScript lib.dom definitions
       // Use ts-expect-error so we'll notice if this becomes typed in the future
-      (document as any).startViewTransition(callback);
+      (document as unknown as { startViewTransition: (callback: () => void) => void }).startViewTransition(callback);
     } else {
       // Fallback for browsers without support
       callback();

@@ -11,7 +11,7 @@ async function legacyPose() {
       cells: [{ id: 'a', row: 0, col: 0, type: 'sash' }, { id: 'b', row: 0, col: 1, type: 'sash' }],
       colWidths: [1, 1], rowHeights: [1] } } as unknown as WindowUnit;
   const complete = await new ProfileBOMCalculator().resolveCanonicalDesignLedger(unit, patternForLedgerCount(unit), CALUMINIUM_PS_PACK);
-  unit.components = complete.filter(c => (c.profile as any).bomRole !== 'track' && c.type !== 'track');
+  unit.components = complete.filter(c => (c.profile as unknown as { bomRole?: unknown }).bomRole !== 'track' && c.type !== 'track');
   expect(unit.components.reduce((n, c) => n + c.cuttingLengths.length, 0)).toBe(21);
   return unit;
 }

@@ -57,7 +57,7 @@ export const WorkshopARView = ({ machine }: { machine: MachineRequirements }) =>
   };
 
   return React.createElement(
-    XR as any,
+    XR as unknown as React.ComponentType<{ onSessionStart: () => Promise<void> }>,
     { onSessionStart: analyzeSpace },
     warnings.length > 0 && (
       <div className="ar-warnings">

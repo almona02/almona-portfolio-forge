@@ -559,3 +559,78 @@ Spark batches on `chore/lint-type-safety-wave1` (rebased onto PR #143). Fix **on
 **48** files uncommitted on `chore/lint-type-safety-wave1`. Coordinator ESLint (`--no-cache`) on all T1–T3 paths: **0** `no-explicit-any`, **0** errors, **0** warnings. `npm run type-check` **PASS** (node clean; app no baseline regression).
 
 Coordinator follow-up: T1’s `hingeUtils` `[key: string]: unknown` clashed with `lib/3d` `HardwarePlaceholder` (`Window3DGenerator` TS2345). Replaced with a structural `HingePlaceholderLike` + generic `findSashHinges<T>` so Vector3 positions stay compatible. No `as any`, no rule disables, no baseline edits. Do not commit until the user asks.
+
+Committed as `6ef8008b` on `chore/lint-type-safety-wave1`. Post-T1–T3 inventory: **12,713** warnings, `no-explicit-any` **2,192**. Pure any-only open set is nearly exhausted (~18). Next Spark wave (T4–T6) finishes those, then starts mixed files with **fix only `no-explicit-any`** and leave `no-unsafe-*` alone.
+
+### Merge — PR #144 (2026-11-08)
+
+Merged T1–T3 to `main` as `71a1f3ce`.
+
+### Wave T4–T6 review — accepted (2026-11-08)
+
+**39** fixed files uncommitted on `chore/lint-type-safety-wave1` (fast-forwarded onto PR #144). Coordinator ESLint: **0** `no-explicit-any`, **0** errors, **0** warnings on those paths. `npm run type-check` **PASS**. Correct skip: `TicketWizardWithYDT.tsx` (YDT reserved; still 1 `any`). Paired `no-unsafe-*` clears on the same expressions are expected side effects, not scope creep. Do not commit until the user asks.
+
+### Wave T7–T9 — mixed singles / small multi (`any` only)
+
+Post-T4–T6 working-tree inventory: ~**1,798** open `any` outside reserved. Spark gets low-coupling mixed files: fix **only** `no-explicit-any`; leave `no-unsafe-*`. Skip constitutional tests, YDT/advisory/pricing/tax.
+
+### Wave T7–T9 review — accepted (2026-11-08)
+
+**64** fixed files uncommitted on `chore/lint-type-safety-wave1` (T7: 18, T8: 28, T9: 18; stacked on uncommitted T4–T6). Coordinator ESLint (`--no-cache`):
+
+| Wave | `no-explicit-any` | remaining `no-unsafe-*` (left alone) | errors |
+|------|-------------------|--------------------------------------|--------|
+| T7   | **0**             | 3 (ReportGenerator JSON.parse; button-gold-tier children.props) | 0 |
+| T8   | **0**             | 4 (VisualCustomizer, cacheHelper, PDF cutlist test ×2) | 0 |
+| T9   | **0**             | **0** (paired clears only) | 0 |
+
+`npm run type-check` **PASS** (0 new signatures). Spot-check: no `as any`, no `eslint-disable` for `no-explicit-any` on the 64 paths. Notable flags (not blockers): `regionalConfig` currency `.locale` always undefined at runtime (preserved); DesignTemplatesLibrary / FabricationReportGenerator tighten crash paths. Do not commit until the user asks.
+
+Post-T7–T9 inventory (working tree, includes uncommitted T4–T6): **2,459** files, **0** errors, **12,464** warnings; `no-explicit-any` **2,060** (~**1,757** Spark-safe); buckets: singles **61**, multi 2–3 **126**, multi 4–6 **109**, multi 7+ **76**.
+
+### Wave T10–T12 — corrected scope (supervisor 2026-11-08)
+
+Stay on `chore/lint-type-safety-wave1`. Preserve uncommitted T4–T9. No commit/merge/deploy.
+
+**Pre-dispatch** (`71a1f3ce`, dirty **106**, ahead **1**): assigned **26** files all still have `no-explicit-any`; total **36** `any` / **224** `no-unsafe-*` on those paths; assigned files otherwise clean of prior-wave edits. Provenance: `.lint-wave-provenance/t10t12-before.json`.
+
+**Holds (deferred, not approved):** DraftingWorkbench; CNC/network; production workflows; stock mutations; QC/release (`qualityApproval`, `positionRelease`, …); pricing/tax; YDT; advisory; `FreightCalculator`; Ambiguous commercial/evidence clients until classified.
+
+**T10** — 10 UI/presentation singles (verified 1 `any` each).
+**T11** — 11 util/geometry/data singles (verified 1 `any` each).
+**T12** — 5 bounded UI multi (verified 3 `any` each). Notes: `MacroRecorderPanel` L93 executor = type as `RecordedAction` only or skip (no replay/semantic edits; do not edit `MacroRecorder.ts`). `FabricatorCustomersPanel` already uses `Database` Insert/Update — remove `as any` only if existing typed client accepts it; else skip (no invented DB contracts).
+
+Common Spark rules: target rule only; no double-assert/baseline/disable/behavior change; paired unsafe clears OK; new unsafe not OK; skip sites needing validation/ownership/manufacturing/shared-contract changes. Distinguish “target rule cleared” from “file warning-free”.
+
+### Wave T10–T12 review — accepted (2026-11-08)
+
+Coordinator ESLint (`--no-cache` JSON) + `npm run type-check` **PASS** (0 new signatures). No `as any` / disables on completed paths. Diff: **24** files (+88/−45) for completed work; `smartCategories.ts` / `emailTemplates.ts` unchanged (held).
+
+| Wave | Status | `any` | Notes |
+|------|--------|-------|-------|
+| T10 | **complete** 10/10 | **0** | Remaining unsafe on MobileTicketCreator (3), MachineRegistration (4), NodeEditor (13), Products (3) — pre-existing, not warning-free |
+| T11 | **partial 9/11 completed** | completed files **0**; held files still **1 each** | **Held (explicit):** `src/constants/smartCategories.ts`, `src/services/email/emailTemplates.ts` — shared index contracts; not in commit scope. Geometry/export tests reported green by Spark |
+| T12 | **complete** 5/5 | **0** | CustomersPanel: removed redundant casts atop `createClient<any>` (no invented DB types). MacroRecorder: `RecordedAction` on executor only; `MacroRecorder.ts` untouched |
+
+**Still held:** DraftingWorkbench, CNC/network, production/stock/QC/release, pricing/tax, YDT, advisory, `smartCategories`, `emailTemplates`, and deferred classification list from supervisor.
+
+Post-T10–T12 inventory (working tree): **2,459** files, **0** errors, **12,304** warnings; `no-explicit-any` **2,026** (~**1,709** Spark-safe under corrected holds); singles **38**, multi 2–3 **119**, multi 4–6 **108**, multi 7+ **76**.
+
+### Checkpoint prep — T4–T12 (2026-11-08, awaiting CEO auth)
+
+Proposed title: `chore: reduce explicit any across lint batches T4–T12`
+
+**Manifest reconciled:** **127** completed source files + `docs/plans/LINTS.md` = **128** paths. Exact list: `.lint-wave-provenance/t4t12-commit-manifest.txt`.
+**Excluded from staging:** `output/pdf/optimization-cutlist-diagnostic.pdf` (test artifact), `.lint-wave-provenance/`, `shield-hackathon/`.
+**Not in scope / held:** `TicketWizardWithYDT.tsx` (never edited), `smartCategories.ts`, `emailTemplates.ts`.
+
+**Targeted eslint** on 127 sources: **0** errors, **0** `no-explicit-any`, **53** residual `no-unsafe-*` across **13** files — do **not** describe the batch as warning-free. **114/127** files happen to be warning-free after paired clears; that is not the acceptance claim.
+**Type-check:** PASS (0 new signatures).
+**git diff --check:** PASS after stripping trailing whitespace on 5 touched lines.
+**Diffstat:** 128 files, +427/−224.
+
+**Behavior-test verification (coordinator re-run):** **BLOCKED** in this environment — Vitest fails suite load with `TypeError: ... reading 'config'` (known `@vitest/*` skew; not attributed to these edits). Spark-session reports previously claimed green subsets (T8/T10/T11/T12); those are not re-confirmed here. Treat as disclosed verification gap, not a test pass.
+
+**Review notes for CEO:** no rule disables, no baseline/config edits, no `as any` in source scope. ~61 `as unknown as` bridges remain (mostly 3D/chart ref and API bridges replacing prior `as any`). Intentional stricter UI paths: DesignTemplatesLibrary requires grid before save; FabricationReportGenerator skips comparison panel when KM-212/`yilmaz` absent. `ManualCuttingPacketGenerator` gray fill uses equal RGB. Invalid material/userType strings now narrow to `undefined` instead of flowing unchecked.
+
+Do not commit or open a PR until the CEO authorizes.

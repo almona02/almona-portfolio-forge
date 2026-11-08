@@ -204,9 +204,10 @@ describe('FP-024 DoWin external golden', () => {
 
   it('Cut.length stays saw-oriented when sawCutLengthMm is omitted', () => {
     const cut: Cut = { length: 1003, angle: 45, componentId: 'c', waste: 0 };
+    const cutWithSaw: Cut = { ...cut, sawCutLengthMm: 1003, reportedWeldedLengthMm: 1000 };
     expect(physicalSawCutLengthMm(cut)).toBe(1003);
     expect(
-      physicalSawCutLengthMm({ ...cut, sawCutLengthMm: 1003, reportedWeldedLengthMm: 1000 } as any)
+      physicalSawCutLengthMm(cutWithSaw)
     ).toBe(1003);
   });
 

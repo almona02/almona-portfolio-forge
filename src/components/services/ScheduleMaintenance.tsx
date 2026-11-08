@@ -1,5 +1,6 @@
 ﻿import { supabase } from "@/lib/supabase";
 import { createTicket } from "@/lib/ticketApi";
+import type { CreateTicketData } from "@/types/tickets";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/ui/card";
@@ -393,7 +394,7 @@ ${data.notes}
         site_location: `${data.governorate}, ${data.industrialZone}`,
         machine_serial_number: data.machineId, // Assuming machineId is serial
         machine_model: data.machineModel,
-        maintenance_type: data.serviceType as any
+        maintenance_type: data.serviceType as unknown as CreateTicketData['maintenance_type']
       }, userId);
 
       toast({

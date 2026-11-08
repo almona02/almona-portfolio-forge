@@ -111,9 +111,9 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
         // Fallback to copy
         void handleCopyLink();
       }
-    } catch (error: any) {
+    } catch (error) {
       // User cancelled or error occurred
-      if (error.name !== 'AbortError') {
+      if ((error as { name: unknown }).name !== 'AbortError') {
         void handleCopyLink();
       }
     }

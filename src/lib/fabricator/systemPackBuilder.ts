@@ -19,7 +19,7 @@ interface BuildPackInput {
     isThermalBreak?: boolean;
     svgPreview?: string;
   }>;
-  hardware?: any[];
+  hardware?: unknown[];
   machiningZones?: MachiningZone[];
   windowType?: 'sliding' | 'casement' | 'tilt_turn' | 'fixed' | 'sliding_door';
 }
@@ -103,7 +103,7 @@ export function buildCustomSystemPack(input: BuildPackInput) {
       };
 
       const autoConfigOptions: AutoConfigOptions = {
-        role: (p.role as any) || 'frame',
+        role: (p.role as AutoConfigOptions['role']) || 'frame',
         windowType,
         systemPack: packId,
         materialThickness: p.thickness,

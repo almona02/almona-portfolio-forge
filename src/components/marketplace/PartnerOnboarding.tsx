@@ -153,11 +153,15 @@ export const PartnerOnboarding: React.FC = () => {
     });
   }, [application.id, application.status]);
 
-  const handleApplicationChange = (field: keyof PartnerApplication, value: any) => {
-    setApplication(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const handleApplicationChange = <K extends keyof PartnerApplication>(
+    field: K,
+    value: PartnerApplication[K],
+  ) => {
+    setApplication((prev) => {
+      const next = { ...prev };
+      next[field] = value;
+      return next;
+    });
   };
 
   const addReference = () => {
@@ -311,7 +315,7 @@ export const PartnerOnboarding: React.FC = () => {
                 <Label>Partner Type *</Label>
                 <Select
                   value={application.partnerType}
-                  onValueChange={(value) => handleApplicationChange('partnerType', value as any)}
+                  onValueChange={(value) => handleApplicationChange('partnerType', value as PartnerApplication['partnerType'])}
                 >
                   <SelectTrigger>
                     <SelectValue />

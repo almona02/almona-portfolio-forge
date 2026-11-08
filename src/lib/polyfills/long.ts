@@ -10,6 +10,6 @@ export default Long;
 
 // Also make it available globally if needed
 if (typeof window !== 'undefined') {
-  (window as any).Long = Long;
+  (window as unknown as { Long: typeof Long }).Long = Long;
 }
 

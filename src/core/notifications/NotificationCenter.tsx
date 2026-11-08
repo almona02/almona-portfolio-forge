@@ -178,7 +178,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
   const renderIcon = (type: string) => {
     const iconName = getNotificationIcon(type);
-    const IconComponent = (Icons as any)[iconName] || Icons.Bell;
+    const IconComponent = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[iconName] || Icons.Bell;
     const colorClass = getNotificationColor(type, filteredNotifications.find(n => n.type === type)?.priority);
     
     return <IconComponent className={cn('w-4 h-4', colorClass)} />;

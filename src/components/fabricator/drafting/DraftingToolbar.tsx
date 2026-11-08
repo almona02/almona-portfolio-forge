@@ -40,7 +40,7 @@ interface ToolGroup {
   label?: string; // Optional label for future use
   tools: {
     id: DraftingTool;
-    iconComponent: React.ComponentType<{ className?: string }>;
+    iconComponent: React.ComponentType<{ className?: string; size?: number | string }>;
     iconProps?: string;
     label: string;
   }[];
@@ -140,7 +140,7 @@ export const DraftingToolbar: React.FC<DraftingToolbarProps> = ({
           <div className="flex flex-col gap-0.5">
             {group.tools.map((tool) => {
               const isActive = validatedSelectedTool === tool.id;
-              const IconComponent = tool.iconComponent as any;
+              const IconComponent = tool.iconComponent;
               const iconColorClass = isActive ? 'text-warning' : 'text-muted-foreground';
               const iconClassName = tool.iconProps 
                 ? `${iconColorClass} ${tool.iconProps}` 

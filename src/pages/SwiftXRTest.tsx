@@ -10,7 +10,7 @@ import { SwiftXRIframe } from '@/components/swiftxr/SwiftXRIframe';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { detectSwiftXR, launchSwiftXR } from '@/utils/swiftXRIntegration';
+import { detectSwiftXR, launchSwiftXR, type SwiftXRDetectionResult } from '@/utils/swiftXRIntegration';
 import {
     CheckCircle,
     Loader2,
@@ -31,7 +31,7 @@ interface TestResult {
 export default function SwiftXRTestPage() {
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
-  const [detectionResult, setDetectionResult] = useState<any>(null);
+  const [detectionResult, setDetectionResult] = useState<SwiftXRDetectionResult | null>(null);
 
   const testModelPath = '/models/demo-machine.glb';
   const testModelName = 'Test Model';

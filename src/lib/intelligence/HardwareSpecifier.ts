@@ -19,14 +19,14 @@ export interface HardwareSpecification {
     category: string;
     quantity: number;
     position: string;
-    specifications: Record<string, any>;
+    specifications: Record<string, unknown>;
     egyptianCodeCompliant: boolean;
   }>;
   reinforcements: Array<{
     type: string;
     position: string;
     required: boolean;
-    specifications: Record<string, any>;
+    specifications: Record<string, unknown>;
   }>;
 }
 

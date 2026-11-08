@@ -79,7 +79,7 @@ export const ProjectStudioWrapper: React.FC = () => {
                 ) : (
                     <ProjectStudio
                         projectId={projectId}
-                        profiles={allProfiles as any}
+                        profiles={allProfiles}
                     />
                 )}
             </div>

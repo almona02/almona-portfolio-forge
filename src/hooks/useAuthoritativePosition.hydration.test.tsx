@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useWorkflowStore } from '@/store/workflowStore';
 import { useAuthoritativePosition } from './useFabricatorQueries';
-const fixture = vi.hoisted(() => ({ data: null as any, userId: 'owner' }));
+const fixture = vi.hoisted((): { data: unknown; userId: string } => ({ data: null, userId: 'owner' }));
 vi.mock('@/context/AuthContext', () => ({ useAuth: () => ({ user: { id: fixture.userId } }) }));
 vi.mock('@tanstack/react-query', () => ({ useQuery: () => ({ data: fixture.data, isLoading: false, error: null }), useMutation: vi.fn(), useQueryClient: vi.fn() }));
 vi.mock('@/lib/supabase', () => ({ supabase: {} }));

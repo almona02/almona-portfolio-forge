@@ -3,6 +3,8 @@
  * Run this in browser console to test SwiftXR integration
  */
 
+import type { SwiftXRDetectionResult } from './swiftXRIntegration';
+
 export const testSwiftXR = {
   /**
    * Test SwiftXR detection
@@ -71,7 +73,7 @@ export const testSwiftXR = {
   async testAll() {
     console.log('🧪 Running Full SwiftXR Test Suite...\n');
     
-    const results = {
+    const results: { detection: SwiftXRDetectionResult | boolean; launch: boolean; fallback: boolean } = {
       detection: false,
       launch: false,
       fallback: false
@@ -80,7 +82,7 @@ export const testSwiftXR = {
     try {
       // Test 1: Detection
       console.log('📋 Test 1: Detection');
-      results.detection = await this.testDetection() as any;
+      results.detection = await this.testDetection();
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Test 2: Launch

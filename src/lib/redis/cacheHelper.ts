@@ -25,7 +25,7 @@ export class CacheHelper {
    */
   static async set(
     key: string,
-    value: any,
+    value: unknown,
     options: CacheOptions = {}
   ): Promise<boolean> {
     try {

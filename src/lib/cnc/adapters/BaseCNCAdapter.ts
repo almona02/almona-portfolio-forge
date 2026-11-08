@@ -68,7 +68,7 @@ export abstract class BaseCNCAdapter {
   abstract generateGCode(
     cuts: Cut[],
     optimization: OptimizationResult,
-    options?: Record<string, any>
+    options?: Record<string, unknown>
   ): Promise<string>;
 
   /**
@@ -145,7 +145,7 @@ export abstract class BaseCNCAdapter {
   async export(
     cuts: Cut[],
     optimization: OptimizationResult,
-    options?: Record<string, any>
+    options?: Record<string, unknown>
   ): Promise<CNCExportResult> {
     // Pre-export validation
     const preValidation = await this.preExportValidation(cuts, optimization);

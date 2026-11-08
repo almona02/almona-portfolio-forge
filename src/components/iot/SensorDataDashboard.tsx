@@ -272,7 +272,7 @@ export const SensorDataDashboard: React.FC<{
 
   // Group sensor data by type for display
   const sensorsByType = React.useMemo(() => {
-    const grouped: Record<SensorType, SensorReading[]> = {} as any;
+    const grouped: Record<SensorType, SensorReading[]> = {} as Record<SensorType, SensorReading[]>;
     
     sensorData.forEach(reading => {
       // In a real implementation, you'd need to map sensor_id to sensor type

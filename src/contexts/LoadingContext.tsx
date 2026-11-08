@@ -11,7 +11,7 @@ interface LoadingContextType {
   loadingState: LoadingState;
   setLoading: (loading: Partial<LoadingState>) => void;
   clearLoading: () => void;
-  withLoading: <T extends any[], R>(
+  withLoading: <T extends unknown[], R>(
     fn: (...args: T) => Promise<R>,
     options?: Partial<LoadingState>
   ) => (...args: T) => Promise<R>;
@@ -47,7 +47,7 @@ export const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) =>
     });
   }, []);
 
-  const withLoading = useCallback(<T extends any[], R>(
+  const withLoading = useCallback(<T extends unknown[], R>(
     fn: (...args: T) => Promise<R>,
     options: Partial<LoadingState> = {}
   ) => {

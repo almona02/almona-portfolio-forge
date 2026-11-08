@@ -1,31 +1,31 @@
 import { motion } from 'framer-motion';
 import React, { useState } from 'react';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
-import { ShortcutDefinition, ShortcutUtils, shortcutCategories } from '../../lib/keyboard/shortcuts';
+import { ShortcutAction, ShortcutDefinition, ShortcutUtils, shortcutCategories } from '../../lib/keyboard/shortcuts';
 import { ShortcutConflictDialog } from '../ui/ShortcutConflictDialog';
 
 export const KeyboardShortcutsPanel: React.FC = () => {
   const { shortcuts, updateShortcut, manager } = useKeyboardShortcuts();
   const [activeCategory, setActiveCategory] = useState<string>('tools');
-  const [editingAction, setEditingAction] = useState<string | null>(null);
+  const [editingAction, setEditingAction] = useState<ShortcutAction | null>(null);
   
   // Conflict state
   const [conflictState, setConflictState] = useState<{
     isOpen: boolean;
     key: string;
     existing: ShortcutDefinition | null;
-    pendingAction: string | null;
+    pendingAction: ShortcutAction | null;
   }>({ isOpen: false, key: '', existing: null, pendingAction: null });
 
   const filteredShortcuts = shortcuts.filter(
     (s) => s.category === activeCategory
   );
 
-  const startEditing = (action: string) => {
+  const startEditing = (action: ShortcutAction) => {
     setEditingAction(action);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent, action: string) => {
+  const handleKeyDown = (e: React.KeyboardEvent, action: ShortcutAction) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -48,7 +48,7 @@ export const KeyboardShortcutsPanel: React.FC = () => {
       return;
     }
 
-    updateShortcut(action as any, newKey);
+    updateShortcut(action, newKey);
     setEditingAction(null);
   };
 
@@ -56,7 +56,7 @@ export const KeyboardShortcutsPanel: React.FC = () => {
     if (conflictState.pendingAction && conflictState.key) {
       // In a real implementation we would unset the old one first
       // but for now updateShortcut handles the logic
-      updateShortcut(conflictState.pendingAction as any, conflictState.key);
+      updateShortcut(conflictState.pendingAction, conflictState.key);
     }
     setConflictState({ isOpen: false, key: '', existing: null, pendingAction: null });
   };

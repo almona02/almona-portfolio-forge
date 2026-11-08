@@ -69,8 +69,7 @@ function createBiFoldTracks(
 ): BufferGeometry[] {
   const tracks: BufferGeometry[] = [];
   
-  const patternAny = pattern as any;
-  const trackType = patternAny.openingMechanism?.trackType || 'both';
+  const trackType = pattern.openingMechanism?.trackType || 'both';
   
   // Track dimensions
   const trackWidth = width - 0.1; // Full width minus clearance

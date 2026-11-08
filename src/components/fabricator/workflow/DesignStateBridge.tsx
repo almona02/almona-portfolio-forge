@@ -62,7 +62,7 @@ const convertGridToDrafting = (grid: WindowGrid, _overallWidth: number, _overall
       y: cellY,
       width: cellWidth,
       height: cellHeight,
-      type: (rectType as any) || 'fixed',
+      type: rectType || 'fixed',
       id: cell.id || `cell-${index}`,
       layerId: 'default'
     });
@@ -144,7 +144,7 @@ const convertDraftingToGrid = (
       // Map specialized sash types back to 'sash' for grid
       type: (['fixed', 'sash', 'panel', 'empty', 'sliding'].includes(rect.type || '')
         ? rect.type
-        : (['casement', 'tilt-turn', 'pivot'].includes(rect.type || '') ? 'sash' : 'fixed')) as any
+        : (['casement', 'tilt-turn', 'pivot'].includes(rect.type || '') ? 'sash' : 'fixed')) as GridCell['type']
     });
   });
 

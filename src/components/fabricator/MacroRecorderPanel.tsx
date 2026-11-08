@@ -6,7 +6,7 @@
  */
 
 import { CardContent, CardHeader, CardTitle, GoldTierCard } from '@/components/ui/card-gold-tier';
-import { MacroRecorder, type Macro } from '@/lib/keyboard/MacroRecorder';
+import { MacroRecorder, type Macro, type RecordedAction } from '@/lib/keyboard/MacroRecorder';
 import { Button } from '@/shared/ui/ui/button';
 import { Circle, Clock, Play, Save, Square, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -14,8 +14,8 @@ import { useTranslation } from 'react-i18next';
 
 export interface MacroRecorderPanelProps {
   recorder: MacroRecorder;
-  onActionRecord?: (actionType: string, data?: Record<string, any>) => void;
-  onActionExecute?: (actionType: string, data?: Record<string, any>) => Promise<void>;
+  onActionRecord?: (actionType: string, data?: Record<string, unknown>) => void;
+  onActionExecute?: (actionType: string, data?: Record<string, unknown>) => Promise<void>;
   className?: string;
 }
 
@@ -90,7 +90,7 @@ export const MacroRecorderPanel: React.FC<MacroRecorderPanelProps> = ({
     const macroToPlay = macro || currentMacro;
     if (macroToPlay) {
       // Create action executor that maps macro actions to actual UI actions
-      const actionExecutor = async (action: any) => {
+      const actionExecutor = async (action: RecordedAction) => {
         // Execute the action through the parent component
         if (onActionExecute) {
           await onActionExecute(action.type, action.data);

@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { consumptionForecaster } from '@/lib/analytics/ConsumptionForecaster';
+import { consumptionForecaster, type ConsumptionForecast } from '@/lib/analytics/ConsumptionForecaster';
 import type { Profile } from '@/types/fabricator';
 import { TrendingUp, TrendingDown, Minus, AlertCircle } from 'lucide-react';
 
@@ -19,7 +19,7 @@ export const MaterialEfficiencyDashboard: React.FC<MaterialEfficiencyDashboardPr
   profiles,
   userId,
 }) => {
-  const [forecasts, setForecasts] = useState<any[]>([]);
+  const [forecasts, setForecasts] = useState<ConsumptionForecast[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

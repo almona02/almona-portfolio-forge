@@ -1,7 +1,7 @@
 import { Environment, Float, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
-import { MathUtils, MeshStandardMaterial } from 'three';
+import { type Group, MathUtils, MeshStandardMaterial } from 'three';
 
 // Materials
 const frameMaterial = new MeshStandardMaterial({
@@ -29,7 +29,7 @@ const hardwareMaterial = new MeshStandardMaterial({
 // Self-Assembling Window
 const WindowFrame3D = ({ progress }: { progress: number }) => {
     // Animation Refs
-    const groupRef = useRef<any>(null);
+    const groupRef = useRef<Group | null>(null);
     // We use a ref for the smoothed progress to decouple render loop from state updates
     const smoothedProgress = useRef(0);
 

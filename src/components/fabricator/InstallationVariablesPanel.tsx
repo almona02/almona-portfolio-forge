@@ -50,8 +50,8 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
     }
   }, [calculator, variables, projectArea, openingCount, onCostCalculated]);
 
-  const handleVariableChange = (key: keyof InstallationVariables, value: any) => {
-    const updated = { ...variables, [key]: value };
+  const handleVariableChange = (key: keyof InstallationVariables, value: unknown) => {
+    const updated = { ...variables, [key]: value } as InstallationVariables;
     setVariables(updated);
     onVariablesChange?.(updated);
   };

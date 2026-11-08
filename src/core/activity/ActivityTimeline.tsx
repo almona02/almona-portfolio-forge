@@ -84,7 +84,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
 
   const renderIcon = (eventType: string) => {
     const iconName = getActivityIcon(eventType);
-    const IconComponent = (Icons as any)[iconName] || Icons.Activity;
+    const IconComponent = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[iconName] || Icons.Activity;
     const colorClass = getActivityColor(eventType);
     
     return (

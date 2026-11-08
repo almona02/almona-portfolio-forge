@@ -56,6 +56,20 @@ export interface GlassAllowanceSpec {
 }
 
 // ----------------------------------------------------------------------------
+export interface Rock60WindowSystemTemplate {
+  window_system: string;
+  [key: string]: unknown;
+}
+
+export interface Jumbo100WindowSystemSpec {
+  window_system: string;
+  catalog_metadata: {
+    company: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
+
 // ROCK 60 System Pack
 // ----------------------------------------------------------------------------
 
@@ -63,7 +77,7 @@ export interface GlassAllowanceSpec {
 // Updated with full 45° miter configuration and 2D cutting list
 // NOTE: This object is consumed by multiple parts of the app (profile seeding,
 // Rock60CuttingSummary, optimization helpers). Treat as canonical spec.
-export const ROCK60_WINDOW_SYSTEM_TEMPLATE: Record<string, any> = {
+export const ROCK60_WINDOW_SYSTEM_TEMPLATE: Rock60WindowSystemTemplate = {
   window_system: 'ROCK 60',
   drawing_reference: 'Page 24 - Draft Shop Drawing',
   // Optional default stock length for bars in mm (used as a hint; capped globally at 8000mm)
@@ -405,7 +419,7 @@ export const ROCK60_SYSTEM_PACK: SystemPack = {
 // ELSHERIF JUMBO 100 System Pack (Catalog extract)
 // ----------------------------------------------------------------------------
 
-export const JUMBO100_WINDOW_SYSTEM_SPEC: Record<string, any> = {
+export const JUMBO100_WINDOW_SYSTEM_SPEC: Jumbo100WindowSystemSpec = {
   window_system: 'JUMBO100',
   // Recommended structural limits for JUMBO100 PS sliding systems (large openings)
   constraints: {

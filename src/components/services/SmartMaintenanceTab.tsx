@@ -115,7 +115,7 @@ export function SmartMaintenanceTab({ machineType, modelName }: SmartMaintenance
             <Card key={freq} className="border-border bg-background/50">
               <div
                 className="p-4 flex items-center justify-between cursor-pointer hover:bg-card/50 transition-colors"
-                onClick={() => setExpandedFreq(isExpanded ? 'daily' : freq as any)}
+                onClick={() => setExpandedFreq(isExpanded ? 'daily' : freq as typeof expandedFreq)}
               >
                 <div className="flex items-center gap-3">
                   {isExpanded ? <ChevronDown className="w-5 h-5 text-muted-foreground" /> : <ChevronRight className="w-5 h-5 text-muted-foreground" />}

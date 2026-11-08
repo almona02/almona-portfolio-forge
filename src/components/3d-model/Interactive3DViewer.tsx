@@ -748,7 +748,7 @@ export function Interactive3DViewer({
           
           {!isXRSession && (
             <OrbitControls 
-              ref={controlsRef as any} 
+              ref={controlsRef as unknown as React.ComponentProps<typeof OrbitControls>['ref']}
               makeDefault 
               enableDamping 
               dampingFactor={0.08} 

@@ -8,7 +8,6 @@
  * @since Phase 3: Precision Upgrade Plan (January 2026)
  */
 
-import type { WindowUnit } from '@/types/fabricator';
 import type { AlmonaRealityOSEventMapping } from './types';
 
 /**
@@ -110,7 +109,7 @@ export const EVENT_MAPPINGS: AlmonaRealityOSEventMapping[] = [
   {
     almonaEvent: 'FabricationIntentCreated',
     realityOSEventType: 'ON',
-    entityId: ((entity: WindowUnit) => `fabrication_intent_${entity.id}`) as any,
+    entityId: (entity: Record<string, unknown>) => `fabrication_intent_${entity.id as string}`,
     humanVerificationRequired: true,
     proofRequirements: {
       timestamp: true,

@@ -12,6 +12,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 
+type ParameterValue = number | string;
+
 interface Parameter {
   name: string;
   type: 'number' | 'select' | 'slider';
@@ -19,14 +21,14 @@ interface Parameter {
   min?: number;
   max?: number;
   step?: number;
-  default?: any;
+  default?: ParameterValue;
   options?: Array<{ value: string; label: string }>;
 }
 
 interface ParameterControlProps {
   parameter: Parameter;
-  value: any;
-  onChange: (value: any) => void;
+  value: ParameterValue;
+  onChange: (value: ParameterValue) => void;
 }
 
 export const ParameterControl: React.FC<ParameterControlProps> = ({
@@ -55,18 +57,20 @@ export const ParameterControl: React.FC<ParameterControlProps> = ({
   }
 
   if (parameter.type === 'slider') {
+    const rawSliderValue = value || parameter.default || parameter.min || 0;
+    const sliderValue = typeof rawSliderValue === 'number' ? rawSliderValue : (parameter.min ?? 0);
     return (
       <div className="space-y-2">
         <Label>{parameter.label}</Label>
         <Slider
-          value={[value || parameter.default || parameter.min || 0]}
+          value={[sliderValue]}
           onValueChange={(vals) => onChange(vals[0])}
           min={parameter.min}
           max={parameter.max}
           step={parameter.step}
           className="w-full"
         />
-        <div className="text-sm text-muted-foreground">{value || parameter.default || parameter.min || 0}</div>
+        <div className="text-sm text-muted-foreground">{sliderValue}</div>
       </div>
     );
   }

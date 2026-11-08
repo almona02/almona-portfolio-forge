@@ -1,4 +1,5 @@
 
+import type { Profile } from '@/types/fabricator';
 import { createGoldTierMiteredFrame, createGoldTierProfileShape, generateProfileCrossSection } from './windowGeometry';
 
 describe('Gold Tier Geometry', () => {
@@ -17,7 +18,7 @@ describe('Gold Tier Geometry', () => {
             thickness: 1.5,
             material: 'aluminum',
             profileRole: 'frame'
-        } as any);
+        } as unknown as Profile);
         
         const frame = createGoldTierMiteredFrame(1.2, 1.5, mockProfile, true);
         

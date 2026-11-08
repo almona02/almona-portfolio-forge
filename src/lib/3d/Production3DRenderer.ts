@@ -283,7 +283,7 @@ export class Production3DRenderer {
   /**
    * Force cleanup of Three.js objects
    */
-  cleanupObjects(objects: any[]): void {
+  cleanupObjects(objects: Array<NonNullable<Parameters<MemoryMonitor['disposeObject']>[0]>>): void {
     objects.forEach((obj) => {
       this.memoryMonitor.disposeObject(obj);
     });

@@ -24,7 +24,7 @@ describe('Phase 1: Material Awareness', () => {
             fillStyle: '',
             strokeStyle: '',
             lineWidth: 1,
-        }) as any;
+        }) as unknown as typeof HTMLCanvasElement.prototype.getContext;
 
         // Mock requestAnimationFrame
         const rafMock = vi.fn((cb: (time: number) => void) => {

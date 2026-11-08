@@ -477,7 +477,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                   <Label className="typography-label text-xs text-foreground">Type</Label>
                   <Select
                     value={editingZone.zoneType}
-                    onValueChange={(value) => setEditingZone({ ...editingZone, zoneType: value as any })}
+                    onValueChange={(value) => setEditingZone({ ...editingZone, zoneType: value })}
                   >
                     <SelectTrigger className="mt-1 h-8 text-xs bg-card border-border text-foreground">
                       <SelectValue />
@@ -551,7 +551,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                   <Select
                     value={editingZone.referenceCorner}
                     onValueChange={(value) =>
-                      setEditingZone({ ...editingZone, referenceCorner: value as any })
+                      setEditingZone({ ...editingZone, referenceCorner: value as MachiningZone['referenceCorner'] })
                     }
                   >
                     <SelectTrigger className="mt-1 h-8 text-xs bg-card border-border text-foreground">

@@ -16,6 +16,7 @@ import { ChevronDown, Filter, Lightbulb, Search, TrendingUp } from 'lucide-react
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ShareFilteredResults } from './ShareFilteredResults';
 import { searchPublicMachines } from '@/lib/publicMachineSearch';
+import type { Machine as YilmazMachine } from '@/constants/yilmazMachines';
 
 interface SmartCategoryNavigationProps {
   machines: Machine[];
@@ -177,7 +178,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
 
     // Debounce search
     const timeoutId = setTimeout(() => {
-      const results = searchPublicMachines(query, machines as any, copy);
+      const results = searchPublicMachines(query, machines as YilmazMachine[], copy);
       setSearchResults(results);
       setIsSearching(false);
       onSearchResults?.(results);

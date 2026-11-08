@@ -201,7 +201,7 @@ export const WorkshopPortal: React.FC = () => {
               </p>
               {selectedSystem.windowSystemSpec && (
                 <p style={{ margin: '5px 0 0 0', fontSize: '12px' }}>
-                  Stock Length: {(selectedSystem.windowSystemSpec as any).stockLengthMm || 6000}mm
+                  Stock Length: {(selectedSystem.windowSystemSpec as { stockLengthMm?: number }).stockLengthMm || 6000}mm
                 </p>
               )}
             </div>

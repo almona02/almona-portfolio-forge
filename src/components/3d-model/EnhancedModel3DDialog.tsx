@@ -358,7 +358,7 @@ export function EnhancedModel3DDialog({
                   />
                 ) : viewMode !== 'compare' ? (
                   <LazyEnhancedGLBViewer
-                    ref={viewerRef as any}
+                    ref={viewerRef as unknown as React.ComponentProps<typeof LazyEnhancedGLBViewer>['ref']}
                     modelPath={modelPath}
                     enableAR={true}
                     enableWebXR={true}

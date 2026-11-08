@@ -539,7 +539,7 @@ export const Enhanced3DViewer = forwardRef<{ resetCamera: () => void; startWindo
           
           {!isXRSession && (
             <OrbitControls 
-              ref={controlsRef as any} 
+              ref={controlsRef as unknown as React.ComponentProps<typeof OrbitControls>['ref']}
               makeDefault 
               enableDamping 
               dampingFactor={0.08} 

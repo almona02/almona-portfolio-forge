@@ -166,6 +166,21 @@ export const EGYPTIAN_HARDWARE_DB: EgyptianHardware[] = [
  * All prices in EGP (Egyptian Pounds) as of Dec 2024.
  */
 
+export interface ShishSlatOption {
+  name: string;
+  description: string;
+  use: string;
+}
+
+export type HardwareSpecificationValue =
+  | string
+  | number
+  | boolean
+  | string[]
+  | number[]
+  | Record<string, number>
+  | ShishSlatOption[];
+
 export interface EgyptianHardwareItem {
   id: string;
   name: string;
@@ -174,7 +189,7 @@ export interface EgyptianHardwareItem {
   type: string;
   material?: string;
   specifications: {
-    [key: string]: any;
+    [key: string]: HardwareSpecificationValue;
   };
   quantity: string | number; // Can be "per sash", "per window", or exact number
   priceInEGP: number;

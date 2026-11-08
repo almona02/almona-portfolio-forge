@@ -183,7 +183,7 @@ class KeyboardManager {
           // For now, pass cached event? No, pass undefined or check handler signature?
           // Let's passed a partial event or null. 
           // However, most handlers just `preventDefault`.
-          matches[0].action({ key: matches[0].keys } as any); 
+          matches[0].action({ key: matches[0].keys } as unknown as KeyboardEvent);
           
           if (this.debug) console.log(`[KeyboardManager] Executed delayed: ${matches[0].keys}`);
       }

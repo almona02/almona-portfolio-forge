@@ -62,7 +62,7 @@ export function createDrainageSlot(width: number = 0.005, length: number = 0.02)
  * Follows Egyptian Building Code drainage requirements
  */
 export function generateDrainageForWindow(
-    windowUnit: any,
+    windowUnit: import('@/types/fabricator').WindowUnit & { floorLevel?: string },
     quality: 'standard' | 'premium' | 'ultra' = 'premium'
 ): DrainagePlacement[] {
     const placements: DrainagePlacement[] = [];

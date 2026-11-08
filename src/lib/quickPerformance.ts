@@ -130,7 +130,7 @@ export const quickPerformanceWins = {
    * localStorage.setItem('workspace', compressed);
    * ```
    */
-  compressWorkspaceData: (data: any): string => {
+  compressWorkspaceData: (data: unknown): string => {
     if (typeof window === 'undefined') {
       // Server-side: return JSON string (no compression available)
       return JSON.stringify(data);
@@ -167,13 +167,13 @@ export const quickPerformanceWins = {
    * }
    * ```
    */
-  decompressWorkspaceData: (compressed: string): any => {
+  decompressWorkspaceData: <T = unknown>(compressed: string): T | null => {
     if (!compressed) return null;
     
     if (typeof window === 'undefined') {
       // Server-side: assume JSON
       try {
-        return JSON.parse(compressed);
+        return JSON.parse(compressed) as T;
       } catch {
         return null;
       }
@@ -184,15 +184,15 @@ export const quickPerformanceWins = {
       const decompressed = LZString.decompressFromUTF16(compressed);
       
       if (decompressed) {
-        return JSON.parse(decompressed);
+        return JSON.parse(decompressed) as T;
       } else {
         // If decompression returns null/empty, try parsing as JSON (might be uncompressed legacy data)
-        return JSON.parse(compressed);
+        return JSON.parse(compressed) as T;
       }
     } catch (error) {
       // If decompression fails, try parsing as plain JSON (backward compatibility)
       try {
-        return JSON.parse(compressed);
+        return JSON.parse(compressed) as T;
       } catch (parseError) {
         console.error('[quickPerformance] Decompression and JSON parsing failed:', error, parseError);
         return null;

@@ -59,7 +59,16 @@ interface DeliveryTrackingPageProps {
     customerName?: string;
     deliveryAddress?: string;
     operatorId?: string;
-    onDeliveryComplete?: (deliveryData: any) => void;
+    onDeliveryComplete?: (deliveryData: DeliveryCompletionData) => void;
+}
+
+export interface DeliveryCompletionData {
+    gpsLocation: GPSLocation;
+    deliveryPhotoHash: string;
+    productQR: string;
+    customerSignatureHash: string;
+    deliveryNotes: string;
+    customerFeedback: string;
 }
 
 interface GPSLocation {
