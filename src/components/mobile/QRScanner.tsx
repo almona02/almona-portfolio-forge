@@ -40,6 +40,11 @@ export interface QRScannerProps {
 }
 
 // Scanner state
+// torch is a valid MediaTrackConstraintSet member in Chromium but missing from lib.dom
+interface TorchConstraintSet extends MediaTrackConstraintSet {
+  torch?: boolean;
+}
+
 interface ScannerState {
   isActive: boolean;
   hasPermission: boolean;
@@ -186,7 +191,7 @@ const QRScanner: React.FC<QRScannerProps> = ({
       const newTorchState = !state.torchEnabled;
 
       await track.applyConstraints({
-        advanced: [{ torch: newTorchState } as any],
+        advanced: [{ torch: newTorchState } as TorchConstraintSet],
       });
 
       setState(prev => ({

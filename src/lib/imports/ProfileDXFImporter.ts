@@ -1,5 +1,16 @@
 import { Profile } from '@/types/fabricator';
 
+export interface DXFProfileSpecifications {
+  dxfImported?: boolean;
+  dxfFileName?: string;
+  dxfFileSize?: number;
+  dxfPreviewSnippet?: string;
+  dxfImportedAt?: string;
+  area_mm2?: number;
+  perimeter_mm?: number;
+  [key: string]: unknown;
+}
+
 export interface ParsedProfileFromDXF {
   name: string;
   material?: Profile['material'];
@@ -7,7 +18,7 @@ export interface ParsedProfileFromDXF {
   height?: number;
   thickness?: number;
   notes?: string;
-  specifications?: Record<string, any>;
+  specifications?: DXFProfileSpecifications;
 }
 
 /**

@@ -6,7 +6,7 @@
 
 import { CandidateMemory } from './CandidateMemory';
 import { EgyptianTrustScoring, type UserProfile } from '@/lib/trust/EgyptianTrustScoring';
-import { EgyptianVerificationDialog } from '@/lib/verification/EgyptianVerificationDialog';
+import { EgyptianVerificationDialog, type ConversationFlow } from '@/lib/verification/EgyptianVerificationDialog';
 
 export interface ConversationContext {
   userId: string;
@@ -105,7 +105,7 @@ export class LearningConversation {
   ): Promise<{
     question: string;
     questionArabic: string;
-    flow: any[];
+    flow: ConversationFlow[];
   } | null> {
     const facts = this.memory.getFactsNeedingVerification(1);
     const fact = facts.find(f => f.id === factId);

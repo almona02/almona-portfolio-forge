@@ -17,7 +17,7 @@ interface NavbarProps {
     email: string;
     role: string;
   };
-  quoteItems?: any[];
+  quoteItems?: unknown[];
   onLogout?: () => void;
 }
 

@@ -4,9 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+export interface CustomerInfo {
+  name: string;
+  company?: string;
+  taxNumber?: string;
+}
+
 interface ComplianceDocumentGeneratorProps {
   machineId: string;
-  customerInfo: any;
+  customerInfo: CustomerInfo;
 }
 
 export const ComplianceDocumentGenerator: React.FC<ComplianceDocumentGeneratorProps> = ({

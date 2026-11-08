@@ -21,7 +21,7 @@ interface ProjectQuoteProps {
         units: WindowUnit[];
     };
     results: {
-        projectSummary: any;
+        projectSummary: unknown;
         unitResults: Map<string, { financials: { totalCost: number } }>;
     } | null;
 }

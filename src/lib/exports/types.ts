@@ -96,7 +96,7 @@ export interface MachineExportProfile {
   /**
    * Machine-specific configuration
    */
-  configuration?: Record<string, any>;
+  configuration?: Record<string, unknown>;
   /**
    * For CSV exports, defines the column order and labels expected
    * by the machine software.
@@ -123,7 +123,7 @@ export interface MachineExportProfile {
   mdbLayout?: {
     tableName: string;
     columns: string[];
-    defaultValues?: Record<string, any>;
+    defaultValues?: Record<string, unknown>;
   };
 }
 
@@ -395,7 +395,7 @@ export interface BatchCheckpoint {
   failedItems: number;
   results: ExportResult[];
   timestamp: Date;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 }
 
 /**

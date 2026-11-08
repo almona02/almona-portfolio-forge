@@ -64,7 +64,7 @@ export interface FlyScreenAssembly {
     unitPrice: number; // EGP
     totalCost: number; // EGP
     supplier: string;
-    specifications?: Record<string, any>;
+    specifications?: Record<string, unknown>;
   }>;
   assemblySequence: Array<{
     step: number;

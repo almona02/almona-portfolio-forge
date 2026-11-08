@@ -30,7 +30,7 @@ export interface ExportOptions {
   locale?: 'en' | 'ar';
   enableSimulation?: boolean;
   enableValidation?: boolean;
-  customOptions?: Record<string, any>;
+  customOptions?: Record<string, unknown>;
 }
 
 export interface ExportConfirmation {

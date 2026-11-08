@@ -18,8 +18,14 @@ import { Slider } from "@/components/ui/slider";
  * All filter changes are immediately communicated to parent components.
  */
 
+export interface AdvancedFilterUpdate {
+  power?: number[];
+  price?: number[];
+  tags?: Record<string, boolean>;
+}
+
 interface AdvancedFiltersProps {
-  onFilterChange: (filters: any) => void;
+  onFilterChange: (filters: AdvancedFilterUpdate) => void;
 }
 
 export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ onFilterChange }) => {

@@ -52,7 +52,7 @@ export function withLazyLoading<T extends object>(
 /**
  * Preload function for critical components
  */
-export function preloadComponent(importFunc: () => Promise<{ default: ComponentType<any> }>) {
+export function preloadComponent<T extends object>(importFunc: () => Promise<{ default: ComponentType<T> }>) {
   // Preload on idle
   if ('requestIdleCallback' in window) {
     requestIdleCallback(() => {

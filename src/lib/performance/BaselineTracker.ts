@@ -13,7 +13,7 @@ export interface Baseline {
   metric: string;
   value: number;
   timestamp: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface BaselineComparison {
@@ -30,7 +30,7 @@ export interface PerformanceBaseline {
   accuracyRate: number; // percentage (0-100)
   errorRate: number; // percentage (0-100)
   timestamp: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -44,7 +44,7 @@ export class BaselineTracker {
   /**
    * Record a baseline value
    */
-  recordBaseline(metric: string, value: number, name?: string, metadata?: Record<string, any>): void {
+  recordBaseline(metric: string, value: number, name?: string, metadata?: Record<string, unknown>): void {
     const baseline: Baseline = {
       id: `${metric}-${Date.now()}`,
       name: name || metric,
@@ -74,7 +74,7 @@ export class BaselineTracker {
     workflowDuration: number,
     accuracyRate: number,
     errorRate: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): void {
     const baseline: PerformanceBaseline = {
       workflowDuration,
@@ -369,7 +369,7 @@ export function recordPerformanceBaseline(
   workflowDuration: number,
   accuracyRate: number,
   errorRate: number,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ): void {
   getBaselineTracker().recordPerformanceBaseline(workflowDuration, accuracyRate, errorRate, metadata);
 }
@@ -385,8 +385,8 @@ export function detectRegression(
   }
 ): {
   hasRegression: boolean;
-  regressions: any[];
-  improvements: any[];
+  regressions: BaselineComparison[];
+  improvements: BaselineComparison[];
 } {
   return getBaselineTracker().detectRegression(workflowDuration, accuracyRate, errorRate, thresholds);
 }

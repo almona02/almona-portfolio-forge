@@ -108,12 +108,12 @@ export class MemoryMonitor {
 /**
  * Throttle function calls to limit execution frequency
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: never[]) => unknown>(
   func: T,
   limit: number
 ): (...args: Parameters<T>) => void {
   let inThrottle: boolean;
-  return function (this: any, ...args: Parameters<T>) {
+  return function (this: unknown, ...args: Parameters<T>) {
     if (!inThrottle) {
       func.apply(this, args);
       inThrottle = true;
@@ -125,7 +125,7 @@ export function throttle<T extends (...args: any[]) => any>(
 /**
  * Debounce function calls with max wait
  */
-export function debounceWithMaxWait<T extends (...args: any[]) => any>(
+export function debounceWithMaxWait<T extends (...args: never[]) => unknown>(
   func: T,
   wait: number,
   maxWait: number
@@ -134,7 +134,7 @@ export function debounceWithMaxWait<T extends (...args: any[]) => any>(
   let maxTimeout: NodeJS.Timeout | null = null;
   let lastCallTime = 0;
 
-  return function (this: any, ...args: Parameters<T>) {
+  return function (this: unknown, ...args: Parameters<T>) {
     const now = Date.now();
     const timeSinceLastCall = now - lastCallTime;
 

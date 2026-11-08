@@ -100,7 +100,7 @@ export const AnalyticsQueryBuilder: React.FC<AnalyticsQueryBuilderProps> = ({
     onQueryComplete,
 }) => {
     const [queryType, setQueryType] = useState<QueryType>('revenue');
-    const [filters, setFilters] = useState<Record<string, any>>({});
+    const [filters, setFilters] = useState<Record<string, unknown>>({});
     const [groupBy, setGroupBy] = useState<string[]>([]);
     const [dateRangeStart, setDateRangeStart] = useState('');
     const [dateRangeEnd, setDateRangeEnd] = useState('');

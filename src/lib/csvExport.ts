@@ -7,7 +7,7 @@
 /**
  * Converts an array of objects to CSV format
  */
-export function arrayToCSV<T extends Record<string, any>>(
+export function arrayToCSV<T extends Record<string, unknown>>(
   data: T[],
   headers: { key: keyof T; label: string }[]
 ): string {

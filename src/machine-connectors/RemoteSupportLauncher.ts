@@ -226,7 +226,7 @@ export class RemoteSupportLauncher {
   /**
    * Request support via email
    */
-  requestEmailSupport(issue: string, machineInfo?: any): boolean {
+  requestEmailSupport(issue: string, machineInfo?: unknown): boolean {
     const subject = encodeURIComponent(`Yilmaz Machine Support Request - ${new Date().toLocaleDateString()}`);
     const body = encodeURIComponent(`
 Issue Description:

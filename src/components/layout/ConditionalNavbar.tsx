@@ -37,7 +37,10 @@ const ConditionalNavbar: React.FC<ConditionalNavbarProps> = (props) => {
   }
 
   // For non-fabricator, non-marketplace routes, use StandardNavbar
-  return <StandardNavbar {...(props as any)} />;
+  const navbarUser = props.user
+    ? { ...props.user, role: props.user.role as 'user' | 'admin' }
+    : undefined;
+  return <StandardNavbar user={navbarUser} quoteItems={props.quoteItems} onLogout={props.onLogout} />;
 };
 
 export default ConditionalNavbar;

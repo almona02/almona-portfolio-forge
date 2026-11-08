@@ -13,7 +13,7 @@ export interface WorkflowStage {
   startTime: number;
   endTime?: number;
   duration?: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface WorkflowMetrics {
@@ -30,7 +30,7 @@ export interface PerformanceCheckpoint {
   stage: string;
   timestamp: number;
   duration: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -55,7 +55,7 @@ export class WorkflowProfiler {
   /**
    * Start timing a workflow stage
    */
-  startTiming(stageId: string, stageName: string, metadata?: Record<string, any>): void {
+  startTiming(stageId: string, stageName: string, metadata?: Record<string, unknown>): void {
     const stage: WorkflowStage = {
       id: stageId,
       name: stageName,
@@ -68,7 +68,7 @@ export class WorkflowProfiler {
   /**
    * End timing a workflow stage
    */
-  endTiming(stageId: string, metadata?: Record<string, any>): WorkflowStage | null {
+  endTiming(stageId: string, metadata?: Record<string, unknown>): WorkflowStage | null {
     const stage = this.stages.get(stageId);
     if (!stage) {
       console.warn(`Stage ${stageId} not found`);
@@ -299,11 +299,11 @@ export function startWorkflow(): void {
   getWorkflowProfiler().startWorkflow();
 }
 
-export function startTiming(stageId: string, stageName: string, metadata?: Record<string, any>): void {
+export function startTiming(stageId: string, stageName: string, metadata?: Record<string, unknown>): void {
   getWorkflowProfiler().startTiming(stageId, stageName, metadata);
 }
 
-export function endTiming(stageId: string, metadata?: Record<string, any>): WorkflowStage | null {
+export function endTiming(stageId: string, metadata?: Record<string, unknown>): WorkflowStage | null {
   return getWorkflowProfiler().endTiming(stageId, metadata);
 }
 

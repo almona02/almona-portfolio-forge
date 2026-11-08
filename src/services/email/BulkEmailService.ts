@@ -23,6 +23,7 @@
 import { ActivityLogger } from '@/core/activity/ActivityLogger';
 import { ActivityEventTypes } from '@/core/activity/activityTypes';
 import { EmailService } from './EmailService';
+import type { EmailTemplateData } from './emailTemplates';
 
 /**
  * Bulk email options
@@ -32,7 +33,7 @@ export interface BulkEmailOptions {
   recipients: Array<{
     email: string;
     name?: string;
-    data: Record<string, any>;
+    data: EmailTemplateData;
   }>;
   /** Email template type */
   template: 'quote' | 'invoice' | 'payment_reminder' | 'payment_confirmation';
@@ -186,7 +187,7 @@ export class BulkEmailService {
    * Send bulk quotes
    */
   static async sendBulkQuotes(
-    quotes: Array<{ id: string; email: string; data: Record<string, any> }>,
+    quotes: Array<{ id: string; email: string; data: EmailTemplateData }>,
     options?: Omit<BulkEmailOptions, 'recipients' | 'template'>
   ): Promise<BulkEmailResult> {
     return this.sendBulkEmails({
@@ -203,7 +204,7 @@ export class BulkEmailService {
    * Send bulk invoices
    */
   static async sendBulkInvoices(
-    invoices: Array<{ id: string; email: string; data: Record<string, any> }>,
+    invoices: Array<{ id: string; email: string; data: EmailTemplateData }>,
     options?: Omit<BulkEmailOptions, 'recipients' | 'template'>
   ): Promise<BulkEmailResult> {
     return this.sendBulkEmails({

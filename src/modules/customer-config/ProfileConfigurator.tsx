@@ -19,7 +19,7 @@ export interface CustomProfile extends Profile {
   region?: string;
   brand?: string;
   finish?: string;
-  customFields?: Record<string, any>;
+  customFields?: Record<string, unknown>;
 }
 
 interface ProfileConfiguratorProps {

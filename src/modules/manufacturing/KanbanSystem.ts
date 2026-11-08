@@ -15,7 +15,7 @@ export interface KanbanCard {
   assignee?: string;
   dueDate?: Date;
   tags: string[];
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 }
 
 export interface KanbanColumn {

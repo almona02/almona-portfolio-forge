@@ -6,6 +6,8 @@ import { QuoteRequestStepper } from './QuoteRequestStepper';
 
 import { Machine } from '../../types/index';
 
+type QuoteRequestSubmitData = Parameters<React.ComponentProps<typeof QuoteRequestStepper>['onSubmit']>[0];
+
 interface Service {
   name: string;
   price: number;
@@ -57,7 +59,7 @@ export const QuoteRequestPage: React.FC = () => {
     }
   }, [location]);
 
-  const handleSubmit = (quoteData: any): Promise<void> => {
+  const handleSubmit = (quoteData: QuoteRequestSubmitData): Promise<void> => {
     try {
       // Simulate API call
       console.log('Quote submitted:', quoteData);

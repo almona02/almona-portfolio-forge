@@ -248,9 +248,18 @@ export function createStateMachine<TState extends string>(
 }
 
 /**
+ * Union of all predefined state machine definitions
+ */
+export type AnyStateMachine =
+  | StateMachine<CommercialState>
+  | StateMachine<WorkflowState>
+  | StateMachine<ProductionState>
+  | StateMachine<PaymentState>;
+
+/**
  * Helper function to get state machine by type
  */
-export function getStateMachine(type: 'commercial' | 'workflow' | 'production' | 'payment'): StateMachine<any> {
+export function getStateMachine(type: 'commercial' | 'workflow' | 'production' | 'payment'): AnyStateMachine {
   switch (type) {
     case 'commercial':
       return COMMERCIAL_STATE_MACHINE;

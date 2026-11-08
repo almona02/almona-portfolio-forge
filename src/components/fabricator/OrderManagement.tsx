@@ -1,9 +1,12 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { FileText } from 'lucide-react';
+import type { Database } from '@/types/database';
+
+type Order = Database['public']['Tables']['orders']['Row'];
 
 interface OrderManagementProps {
-  orders?: any[];
+  orders?: Order[];
 }
 
 export const OrderManagement: React.FC<OrderManagementProps> = ({ orders: _orders = [] }) => {

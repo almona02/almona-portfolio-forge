@@ -31,7 +31,7 @@ export interface MullionValidation {
   connectorSpec: {
     type: 'corner_key' | 'welding' | 'mechanical' | 'thermal_break_connector';
     quantity: number;
-    specifications: Record<string, any>;
+    specifications: Record<string, unknown>;
   };
   structural: {
     isValid: boolean;

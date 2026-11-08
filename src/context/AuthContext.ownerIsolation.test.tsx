@@ -3,7 +3,27 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useWorkflowStore } from '@/store/workflowStore';
 
-const mocks = vi.hoisted(() => ({ listener: null as null | ((event: string, session: any) => void), getSession: vi.fn(), getProfile: vi.fn() }));
+interface MockSessionUser {
+  id: string;
+  email: string;
+  user_metadata: Record<string, unknown>;
+}
+
+interface MockSession {
+  user: MockSessionUser;
+}
+
+interface MockProfile {
+  id: string;
+  role: string;
+}
+
+interface MockSessionResult {
+  data: { session: MockSession };
+  error: null;
+}
+
+const mocks = vi.hoisted(() => ({ listener: null as null | ((event: string, session: MockSession) => void), getSession: vi.fn(), getProfile: vi.fn() }));
 vi.mock('@/lib/supabase', () => ({ handleAuthError: vi.fn(), supabase: { auth: {
   getSession: mocks.getSession,
   onAuthStateChange: (callback: typeof mocks.listener) => { mocks.listener = callback; return { data: { subscription: { unsubscribe: vi.fn() } } }; },
@@ -12,7 +32,7 @@ vi.mock('@/lib/data/profilesClient', () => ({ getProfileById: mocks.getProfile, 
 import { AuthProvider, useAuth } from './AuthContext';
 
 function Identity() { const { user, loading } = useAuth(); return <><span data-testid="identity">{user ? `${user.id}:${user.role}` : 'anonymous'}</span><span data-testid="loading">{String(loading)}</span></>; }
-const session = (id: string) => ({ user: { id, email: `${id}@fixture.local`, user_metadata: {} } });
+const session = (id: string): MockSession => ({ user: { id, email: `${id}@fixture.local`, user_metadata: {} } });
 describe('authentication owner isolation', () => {
   beforeEach(() => {
     vi.stubEnv('VITE_SUPABASE_URL', 'https://fixture.supabase.co');
@@ -24,7 +44,7 @@ describe('authentication owner isolation', () => {
   afterEach(() => vi.unstubAllEnvs());
 
   it('clears the old owner immediately and ignores a late privileged profile', async () => {
-    let finishA!: (profile: any) => void;
+    let finishA!: (profile: MockProfile) => void;
     mocks.getProfile.mockImplementation((id: string) => id === 'owner-a' ? new Promise(resolve => { finishA = resolve; }) : Promise.resolve({ id, role: 'customer' }));
     const queryClient = new QueryClient();
     render(<QueryClientProvider client={queryClient}><AuthProvider><Identity /></AuthProvider></QueryClientProvider>);
@@ -41,7 +61,7 @@ describe('authentication owner isolation', () => {
   });
 
   it('ignores a stale initial session after a newer sign-in event', async () => {
-    let finishInitial!: (value: any) => void;
+    let finishInitial!: (value: MockSessionResult) => void;
     mocks.getSession.mockReturnValue(new Promise(resolve => { finishInitial = resolve; }));
     mocks.getProfile.mockImplementation((id: string) => Promise.resolve({ id, role: 'customer' }));
     render(<QueryClientProvider client={new QueryClient()}><AuthProvider><Identity /></AuthProvider></QueryClientProvider>);

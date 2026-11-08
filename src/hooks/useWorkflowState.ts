@@ -11,6 +11,8 @@ import type { ProjectHeaderMeta } from '@/components/fabricator/NewProjectWizard
 import type { WindowComponent } from '@/types/fabricator';
 import { useCallback, useMemo, useState } from 'react';
 
+export type WorkflowProjectMeta = ProjectHeaderMeta & Record<string, unknown>;
+
 export interface WorkflowState {
   // UI State
   activeTab: string;
@@ -19,7 +21,7 @@ export interface WorkflowState {
   showMobilePanel: boolean;
   
   // Business State (UI-specific, not in workspace context)
-  projectMeta: (ProjectHeaderMeta & Record<string, any>) | null;
+  projectMeta: WorkflowProjectMeta | null;
   useEgyptWizard: boolean;
   systemTunedMessage: string | null;
   
@@ -47,7 +49,7 @@ export interface WorkflowActions {
   
   // Project Wizard
   setShowProjectWizard: (show: boolean) => void;
-  setProjectMeta: (meta: (ProjectHeaderMeta & Record<string, any>) | null) => void;
+  setProjectMeta: (meta: WorkflowProjectMeta | null) => void;
   setUseEgyptWizard: (use: boolean) => void;
   
   // UI Panels
@@ -122,7 +124,7 @@ export function useWorkflowState(initialTab?: string): {
     setState((prev) => ({ ...prev, showProjectWizard: show }));
   }, []);
 
-  const setProjectMeta = useCallback((meta: (ProjectHeaderMeta & Record<string, any>) | null) => {
+  const setProjectMeta = useCallback((meta: WorkflowProjectMeta | null) => {
     setState((prev) => ({ ...prev, projectMeta: meta }));
   }, []);
 

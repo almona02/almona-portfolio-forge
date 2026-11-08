@@ -79,7 +79,7 @@ export interface ProjectTemplate {
   category: TemplateCategory;
   tags?: string[];
   thumbnail?: string;
-  projectData: any;  // Template project structure (WindowUnit-like)
+  projectData: Record<string, unknown>;  // Template project structure (WindowUnit-like)
   authorId: string;
   createdAt: string;
   updatedAt: string;

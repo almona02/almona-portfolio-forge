@@ -54,7 +54,7 @@ export interface PaymentGateway {
   type: 'fawry' | 'vodafone_cash' | 'bank_transfer' | 'cash';
   region: string[];
   enabled: boolean;
-  config?: Record<string, any>;
+  config?: Record<string, unknown>;
 }
 
 export class RegionalLocalizationEngine {

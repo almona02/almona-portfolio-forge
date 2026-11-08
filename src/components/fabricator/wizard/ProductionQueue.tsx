@@ -4,10 +4,11 @@ import { Card, CardContent } from '@/shared/ui/ui/card';
 import { CalendarClock, CheckCircle, Factory, ShoppingCart, Truck } from 'lucide-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import type { WizardState } from './WizardModeWrapper';
 
 // Local interface until we export the main one
 interface WizardData {
-  windowType: any;
+  windowType: WizardState['windowType'];
   systemPackId: string | null;
   dimensions: { width: number; height: number } | null;
   quantity: number;

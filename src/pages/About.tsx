@@ -1,5 +1,5 @@
 import { usePublicCopy } from '@/hooks/usePublicCopy';
-import { useMemo } from "react";
+import { useMemo, type HTMLAttributes } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { CompanyTimeline } from "@/components/about/CompanyTimeline";
 import { TeamProfiles } from "@/components/about/TeamProfiles";
@@ -249,7 +249,7 @@ const About = () => {
           whileInView: { opacity: 1 },
           viewport: { once: true },
           transition: { duration: 0.7 }
-        } as any)}
+        } as unknown as HTMLAttributes<HTMLDivElement>)}
       >
         <TeamProfiles />
       </div>
