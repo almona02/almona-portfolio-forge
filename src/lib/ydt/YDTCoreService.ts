@@ -61,9 +61,9 @@ export class YDTCoreService {
   /**
    * Ensure knowledge base is loaded (with retry logic)
    */
-  private async ensureKnowledgeBaseLoaded(): Promise<void> {
+  private ensureKnowledgeBaseLoaded(): Promise<void> {
     if (this.knowledgeBaseLoaded) {
-      return;
+      return Promise.resolve();
     }
 
     try {
@@ -76,6 +76,7 @@ export class YDTCoreService {
     } catch (error) {
       console.warn('⚠️ Knowledge base not yet loaded, will retry:', error);
     }
+    return Promise.resolve();
   }
 
   /**
@@ -184,87 +185,91 @@ export class YDTCoreService {
   /**
    * Get optimization strategy based on YDT knowledge
    */
-  async getOptimizationStrategy(
+  getOptimizationStrategy(
     context: OptimizationContext
   ): Promise<YDTIntelligenceResponse<YDTOptimization>> {
-    // 1. Get Egyptian market context
-    const season = this.getCurrentSeason();
+    try {
+      // 1. Get Egyptian market context
+      const season = this.getCurrentSeason();
 
-    // 3. Determine strategy based on context
-    let strategy = 'remnant-first';
-    let why = 'Standard optimization strategy';
+      // 3. Determine strategy based on context
+      let strategy = 'remnant-first';
+      let why = 'Standard optimization strategy';
 
-    // Market-aware strategy selection
-    if (context.material?.toLowerCase().includes('aluminum')) {
-      strategy = 'remnant-first';
-      why = 'Aluminum prices rising 15% - maximize remnant usage';
-    } else if (context.material?.toLowerCase().includes('upvc')) {
-      strategy = 'speed-first';
-      why = 'UPVC material readily available - prioritize speed';
-    }
+      // Market-aware strategy selection
+      if (context.material?.toLowerCase().includes('aluminum')) {
+        strategy = 'remnant-first';
+        why = 'Aluminum prices rising 15% - maximize remnant usage';
+      } else if (context.material?.toLowerCase().includes('upvc')) {
+        strategy = 'speed-first';
+        why = 'UPVC material readily available - prioritize speed';
+      }
 
-    // Seasonal adjustments
-    if (season === 'ramadan') {
-      strategy = 'speed-first';
-      why = 'Ramadan season - prioritize speed due to reduced productivity';
-    }
+      // Seasonal adjustments
+      if (season === 'ramadan') {
+        strategy = 'speed-first';
+        why = 'Ramadan season - prioritize speed due to reduced productivity';
+      }
 
-    // Generate reasoning for optimization strategy
-    const reasoning = `Optimization strategy set to "${strategy}" because ` +
-      `${why}. Market context: ${context.location} (${season} season). ` +
-      `Material: ${context.material || 'not specified'}. ` +
-      `This strategy prioritizes ${strategy === 'remnant-first' ? 'material waste reduction' : 'production speed'} ` +
-      `based on current market conditions. ` +
-      `This strategy would change if: material prices shift >15%, season changes, ` +
-      `or market demand in ${context.location} changes significantly.`;
+      // Generate reasoning for optimization strategy
+      const reasoning = `Optimization strategy set to "${strategy}" because ` +
+        `${why}. Market context: ${context.location} (${season} season). ` +
+        `Material: ${context.material || 'not specified'}. ` +
+        `This strategy prioritizes ${strategy === 'remnant-first' ? 'material waste reduction' : 'production speed'} ` +
+        `based on current market conditions. ` +
+        `This strategy would change if: material prices shift >15%, season changes, ` +
+        `or market demand in ${context.location} changes significantly.`;
 
-    return {
-      data: {
-        strategy,
-        constraints: {
-          minUtilization: 0.95,
-          maxTime: 30, // seconds
+      return Promise.resolve({
+        data: {
+          strategy,
+          constraints: {
+            minUtilization: 0.95,
+            maxTime: 30, // seconds
+          },
+          priorities: ['waste_reduction', 'speed', 'accuracy'],
+          confidence: 0.92,
+          why,
+          marketContext: `Egyptian market: ${context.location}, Season: ${season}`,
         },
-        priorities: ['waste_reduction', 'speed', 'accuracy'],
         confidence: 0.92,
-        why,
-        marketContext: `Egyptian market: ${context.location}, Season: ${season}`,
-      },
-      confidence: 0.92,
-      source: 'YDT Optimization Intelligence',
-      reasoning, // Required for Tier 1 decisions
-          metadata: {
-            reasoning: {
-              primaryFactor: strategy === 'remnant-first' 
-                ? 'Material cost optimization (prices rising)' 
-                : 'Production speed optimization (material available)',
-              secondaryFactors: [
-                `Location: ${context.location}`,
-                `Season: ${season}`,
-                `Material: ${context.material || 'not specified'}`,
-                `Project type: ${context.projectType || 'not specified'}`
-              ],
-              changeTriggers: [
-                'Material prices shift >15%',
-                'Season changes',
-                'Market demand changes',
-                'Material availability changes'
-              ],
-              assumptions: [
-                'Market conditions remain stable',
-                'Material prices follow current trends',
-                'Seasonal patterns hold'
-              ],
-              confidence: 0.92
+        source: 'YDT Optimization Intelligence',
+        reasoning, // Required for Tier 1 decisions
+            metadata: {
+              reasoning: {
+                primaryFactor: strategy === 'remnant-first' 
+                  ? 'Material cost optimization (prices rising)' 
+                  : 'Production speed optimization (material available)',
+                secondaryFactors: [
+                  `Location: ${context.location}`,
+                  `Season: ${season}`,
+                  `Material: ${context.material || 'not specified'}`,
+                  `Project type: ${context.projectType || 'not specified'}`
+                ],
+                changeTriggers: [
+                  'Material prices shift >15%',
+                  'Season changes',
+                  'Market demand changes',
+                  'Material availability changes'
+                ],
+                assumptions: [
+                  'Market conditions remain stable',
+                  'Material prices follow current trends',
+                  'Seasonal patterns hold'
+                ],
+                confidence: 0.92
+              }
             }
-          }
-    };
+      });
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    }
   }
 
   /**
    * Generate dynamic presets powered by YDT
    */
-  async generateDynamicPresets(location: string): Promise<YDTIntelligenceResponse<YDTPreset[]>> {
+  generateDynamicPresets(location: string): Promise<YDTIntelligenceResponse<YDTPreset[]>> {
     // Get trending styles from knowledge base (would come from market data)
     const presets: YDTPreset[] = [
       {
@@ -305,102 +310,106 @@ export class YDTCoreService {
       },
     ];
 
-    return {
+    return Promise.resolve({
       data: presets,
       confidence: 0.90,
       source: 'YDT Market Intelligence',
-    };
+    });
   }
 
   /**
    * Business viability check (THIS IS GOLD)
    */
-  async checkProjectViability(
+  checkProjectViability(
     project: Project
   ): Promise<YDTIntelligenceResponse<YDTViability>> {
-    // 1. Get optimal margin for this project type/location
-    const optimalMargin = EgyptianFabricationIntelligence.getOptimalMargin(
-      project.type as any,
-      project.location
-    );
+    try {
+      // 1. Get optimal margin for this project type/location
+      const optimalMargin = EgyptianFabricationIntelligence.getOptimalMargin(
+        project.type as any,
+        project.location
+      );
 
-    // 2. Estimate profit margin
-    const estimatedCost = project.estimatedCost || 1000;
-    const estimatedPrice = project.estimatedPrice || estimatedCost * (1 + optimalMargin);
-    const profitMargin = (estimatedPrice - estimatedCost) / estimatedPrice;
+      // 2. Estimate profit margin
+      const estimatedCost = project.estimatedCost || 1000;
+      const estimatedPrice = project.estimatedPrice || estimatedCost * (1 + optimalMargin);
+      const profitMargin = (estimatedPrice - estimatedCost) / estimatedPrice;
 
-    // 3. Check if profitable
-    const profitable = profitMargin > 0.15; // Minimum 15% margin
+      // 3. Check if profitable
+      const profitable = profitMargin > 0.15; // Minimum 15% margin
 
-    // 4. Get recommendations
-    const recommendations: string[] = [];
-    if (!profitable) {
-      recommendations.push('Consider upselling to premium materials');
-      recommendations.push('Review pricing strategy for this location');
-    }
+      // 4. Get recommendations
+      const recommendations: string[] = [];
+      if (!profitable) {
+        recommendations.push('Consider upselling to premium materials');
+        recommendations.push('Review pricing strategy for this location');
+      }
 
-    // 5. Get risks
-    const risks: string[] = [];
-    const shortages = EgyptianFabricationIntelligence.getShortageAlerts();
-    if (shortages.length > 0) {
-      risks.push('Material shortages detected - check alternatives');
-    }
+      // 5. Get risks
+      const risks: string[] = [];
+      const shortages = EgyptianFabricationIntelligence.getShortageAlerts();
+      if (shortages.length > 0) {
+        risks.push('Material shortages detected - check alternatives');
+      }
 
-    // 6. Get competitive advice
-    const competitors = EgyptianFabricationIntelligence.getCompetitorAnalysis(project.location);
-    let competitiveAdvice = '';
-    if (competitors.length > 0) {
-      competitiveAdvice = `Competitors in ${project.location} are using ${competitors[0].counterStrategy} strategy`;
-    }
+      // 6. Get competitive advice
+      const competitors = EgyptianFabricationIntelligence.getCompetitorAnalysis(project.location);
+      let competitiveAdvice = '';
+      if (competitors.length > 0) {
+        competitiveAdvice = `Competitors in ${project.location} are using ${competitors[0].counterStrategy} strategy`;
+      }
 
-    // Generate reasoning for viability decision
-    const reasoning = `Project viability assessment: ${profitable ? 'APPROVED' : 'REJECTED'} because ` +
-      `profit margin is ${(profitMargin * 100).toFixed(1)}% (minimum required: 15%). ` +
-      `Market position: ${profitable ? 'competitive' : 'below_market'} for ${project.type} projects in ${project.location}. ` +
-      `${recommendations.length > 0 ? `Recommendations: ${recommendations.join('; ')}. ` : ''}` +
-      `${risks.length > 0 ? `Risks detected: ${risks.join('; ')}. ` : ''}` +
-      `This assessment would change if: material costs shift >10%, competitor pricing changes, ` +
-      `or market demand in ${project.location} changes significantly.`;
+      // Generate reasoning for viability decision
+      const reasoning = `Project viability assessment: ${profitable ? 'APPROVED' : 'REJECTED'} because ` +
+        `profit margin is ${(profitMargin * 100).toFixed(1)}% (minimum required: 15%). ` +
+        `Market position: ${profitable ? 'competitive' : 'below_market'} for ${project.type} projects in ${project.location}. ` +
+        `${recommendations.length > 0 ? `Recommendations: ${recommendations.join('; ')}. ` : ''}` +
+        `${risks.length > 0 ? `Risks detected: ${risks.join('; ')}. ` : ''}` +
+        `This assessment would change if: material costs shift >10%, competitor pricing changes, ` +
+        `or market demand in ${project.location} changes significantly.`;
 
-    return {
-      data: {
-        profitable,
-        profitMargin,
+      return Promise.resolve({
+        data: {
+          profitable,
+          profitMargin,
+          confidence: 0.88,
+          recommendations,
+          risks,
+          marketPosition: profitable ? 'competitive' : 'below_market',
+          competitiveAdvice,
+        },
         confidence: 0.88,
-        recommendations,
-        risks,
-        marketPosition: profitable ? 'competitive' : 'below_market',
-        competitiveAdvice,
-      },
-      confidence: 0.88,
-      source: 'YDT Business Intelligence',
-      reasoning, // Required for Tier 1 decisions
-          metadata: {
-            reasoning: {
-              primaryFactor: profitable 
-                ? `Profit margin ${(profitMargin * 100).toFixed(1)}% meets minimum threshold`
-                : `Profit margin ${(profitMargin * 100).toFixed(1)}% below minimum 15% threshold`,
-              secondaryFactors: [
-                `Project type: ${project.type}`,
-                `Location: ${project.location}`,
-                `Estimated cost: EGP ${estimatedCost.toLocaleString()}`,
-                `Estimated price: EGP ${estimatedPrice.toLocaleString()}`
-              ],
-              changeTriggers: [
-                'Material costs shift >10%',
-                'Competitor pricing changes',
-                'Market demand changes',
-                'Shortage alerts change'
-              ],
-              assumptions: [
-                'Estimated costs are accurate',
-                'Market conditions remain stable',
-                'No major competitor disruptions'
-              ],
-              confidence: 0.88
+        source: 'YDT Business Intelligence',
+        reasoning, // Required for Tier 1 decisions
+            metadata: {
+              reasoning: {
+                primaryFactor: profitable 
+                  ? `Profit margin ${(profitMargin * 100).toFixed(1)}% meets minimum threshold`
+                  : `Profit margin ${(profitMargin * 100).toFixed(1)}% below minimum 15% threshold`,
+                secondaryFactors: [
+                  `Project type: ${project.type}`,
+                  `Location: ${project.location}`,
+                  `Estimated cost: EGP ${estimatedCost.toLocaleString()}`,
+                  `Estimated price: EGP ${estimatedPrice.toLocaleString()}`
+                ],
+                changeTriggers: [
+                  'Material costs shift >10%',
+                  'Competitor pricing changes',
+                  'Market demand changes',
+                  'Shortage alerts change'
+                ],
+                assumptions: [
+                  'Estimated costs are accurate',
+                  'Market conditions remain stable',
+                  'No major competitor disruptions'
+                ],
+                confidence: 0.88
+              }
             }
-          }
-    };
+      });
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    }
   }
 
   /**
@@ -420,14 +429,14 @@ export class YDTCoreService {
   /**
    * Get trending styles for location
    */
-  async getTrendingStyles(_location: string): Promise<Array<{
+  getTrendingStyles(_location: string): Promise<Array<{
     name: string;
     popularityScore: number;
     projectCount: number;
     averageMargin: number;
   }>> {
     // Would come from market data analysis
-    return [
+    return Promise.resolve([
       {
         name: 'Large Sliding Windows',
         popularityScore: 0.85,
@@ -440,19 +449,19 @@ export class YDTCoreService {
         projectCount: 189,
         averageMargin: 0.28,
       },
-    ];
+    ]);
   }
 
   /**
    * Get common errors for location
    */
-  async getCommonErrors(_location: string): Promise<Array<{
+  getCommonErrors(_location: string): Promise<Array<{
     error: string;
     frequency: number;
     solution: string;
   }>> {
     // Would come from workshop feedback analysis
-    return [
+    return Promise.resolve([
       {
         error: 'Incorrect mullion spacing',
         frequency: 0.15,
@@ -463,13 +472,13 @@ export class YDTCoreService {
         frequency: 0.12,
         solution: 'Increase pocket depth by 5mm',
       },
-    ];
+    ]);
   }
 
   /**
    * Analyze competition for location and project type
    */
-  async analyzeCompetition(
+  analyzeCompetition(
     location: string,
     _projectType: string
   ): Promise<{
@@ -480,24 +489,28 @@ export class YDTCoreService {
     }>;
     recommendations: string[];
   }> {
-    const competitors = EgyptianFabricationIntelligence.getCompetitorAnalysis(location);
+    try {
+      const competitors = EgyptianFabricationIntelligence.getCompetitorAnalysis(location);
 
-    return {
-      competitors: competitors.map(c => ({
-        name: 'Competitor',
-        strategy: c.counterStrategy,
-        priceDifference: c.undercutPercentage ? -c.undercutPercentage * 100 : 
-                        c.premiumPercentage ? c.premiumPercentage * 100 : 0,
-      })),
-      recommendations: competitors.map(c => c.counterStrategy),
-    };
+      return Promise.resolve({
+        competitors: competitors.map(c => ({
+          name: 'Competitor',
+          strategy: c.counterStrategy,
+          priceDifference: c.undercutPercentage ? -c.undercutPercentage * 100 : 
+                          c.premiumPercentage ? c.premiumPercentage * 100 : 0,
+        })),
+        recommendations: competitors.map(c => c.counterStrategy),
+      });
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    }
   }
 
   // Private helper methods
 
-  private async getMarketIntelligence(location: string): Promise<MarketIntelligence> {
+  private getMarketIntelligence(location: string): Promise<MarketIntelligence> {
     // Would fetch from backend API or database
-    return {
+    return Promise.resolve({
       location,
       materialCost: 400,
       laborCost: 120,
@@ -510,7 +523,7 @@ export class YDTCoreService {
         undercuttingDetected: false,
       },
       shortages: [],
-    };
+    });
   }
 
   private getCurrentSeason(): string {

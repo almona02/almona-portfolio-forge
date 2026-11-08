@@ -341,7 +341,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
   };
 
   // Rollback price
-  const handleRollbackPrice = async (entry: PriceHistoryEntry) => {
+  const handleRollbackPrice = (entry: PriceHistoryEntry) => {
     try {
       // This would update the price back to oldPrice
       toast.success(`Rolled back ${entry.entityName} to ${formatCurrency(entry.oldPrice, entry.currency)}`);
@@ -660,7 +660,7 @@ export const EnhancedPricingConfigDialog: React.FC<EnhancedPricingConfigDialogPr
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => void handleRollbackPrice(entry)}
+                            onClick={() => handleRollbackPrice(entry)}
                             className="ml-4 border-amber-500/30 text-warning hover:bg-amber-500/10"
                           >
                             <ArrowLeft className="h-3 w-3 mr-1" />

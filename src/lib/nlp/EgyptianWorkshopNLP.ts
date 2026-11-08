@@ -133,60 +133,60 @@ export class EgyptianWorkshopNLP {
 
   // Private helper methods
 
-  private async detectDialect(query: string): Promise<EgyptianDialect> {
+  private detectDialect(query: string): Promise<EgyptianDialect> {
     const lowerQuery = query.toLowerCase();
 
     // Technical office patterns
     if (/الكود المصري|المواصفات القياسية|حسب المواصفات|الهندسية/.test(lowerQuery)) {
-      return 'technical_office';
+      return Promise.resolve('technical_office');
     }
 
     // Small workshop patterns
     if (/البتاعة|الشغلانة|المكنة/.test(lowerQuery)) {
-      return 'small_workshop';
+      return Promise.resolve('small_workshop');
     }
 
     // Alexandria patterns
     if (/باشا|طيب/.test(lowerQuery)) {
-      return 'alexandria';
+      return Promise.resolve('alexandria');
     }
 
     // Upper Egypt patterns
     if (/يا ريس|ربنا يوفقك|الله يكرمك/.test(lowerQuery)) {
-      return 'upper_egypt';
+      return Promise.resolve('upper_egypt');
     }
 
     // Default to Cairo Shobra
-    return 'cairo_shobra';
+    return Promise.resolve('cairo_shobra');
   }
 
-  private async detectUserType(query: string): Promise<UserType> {
+  private detectUserType(query: string): Promise<UserType> {
     const lowerQuery = query.toLowerCase();
 
     // Technical office engineer
     if (/الكود المصري|المواصفات القياسية|حسب المواصفات|الهندسية/.test(lowerQuery)) {
-      return 'technical_office';
+      return Promise.resolve('technical_office');
     }
 
     // Workshop owner
     if (/كام السعر|هو ده السعر النهائي|في خصم|ربنا يبارك/.test(lowerQuery)) {
-      return 'workshop_owner';
+      return Promise.resolve('workshop_owner');
     }
 
     // Operator
     if (/ليه بيعمل كده|هو ده الصح|المكنة مش شغالة|عايز أعمل إيه/.test(lowerQuery)) {
-      return 'operator';
+      return Promise.resolve('operator');
     }
 
     // Beginner
     if (/ازاي|ممكن تساعدني|مش فاهم|خطوة خطوة/.test(lowerQuery)) {
-      return 'beginner';
+      return Promise.resolve('beginner');
     }
 
-    return 'general';
+    return Promise.resolve('general');
   }
 
-  private async normalizeWorkshopSlang(
+  private normalizeWorkshopSlang(
     query: string,
     _dialect: EgyptianDialect
   ): Promise<string> {
@@ -200,35 +200,35 @@ export class EgyptianWorkshopNLP {
       }
     }
 
-    return normalized;
+    return Promise.resolve(normalized);
   }
 
-  private async detectWorkshopIntent(
+  private detectWorkshopIntent(
     normalized: string,
     _userType: UserType
   ): Promise<ParsedQuery['intent']> {
     const lower = normalized.toLowerCase();
 
     if (/كام|سعر|تكلفة|ثمن/.test(lower)) {
-      return 'pricing';
+      return Promise.resolve('pricing');
     }
 
     if (/مشكلة|غلط|خطأ|مش شغال/.test(lower)) {
-      return 'problem';
+      return Promise.resolve('problem');
     }
 
     if (/ازاي|كيف|طريقة|خطوة/.test(lower)) {
-      return 'learning';
+      return Promise.resolve('learning');
     }
 
     if (/مشروع|عمل|شغل|طلب/.test(lower)) {
-      return 'business';
+      return Promise.resolve('business');
     }
 
-    return 'technical';
+    return Promise.resolve('technical');
   }
 
-  private async extractWorkshopEntities(
+  private extractWorkshopEntities(
     normalized: string,
     _userType: UserType
   ): Promise<ParsedQuery['entities']> {
@@ -264,76 +264,76 @@ export class EgyptianWorkshopNLP {
       normalized.toLowerCase().includes(keyword.toLowerCase())
     );
 
-    return entities;
+    return Promise.resolve(entities);
   }
 
-  private async detectFrustration(query: string): Promise<EmotionLevel> {
+  private detectFrustration(query: string): Promise<EmotionLevel> {
     const lower = query.toLowerCase();
 
     if (/مش فاهم|مش عارف|مش شغال|غلط/.test(lower)) {
-      return 'frustrated';
+      return Promise.resolve('frustrated');
     }
 
     if (/عاجل|ضروري|فوراً|الآن/.test(lower)) {
-      return 'urgent';
+      return Promise.resolve('urgent');
     }
 
     if (/ممتاز|شكراً|تمام/.test(lower)) {
-      return 'excited';
+      return Promise.resolve('excited');
     }
 
     if (/ازاي|كيف|ممكن/.test(lower)) {
-      return 'confused';
+      return Promise.resolve('confused');
     }
 
-    return 'calm';
+    return Promise.resolve('calm');
   }
 
-  private async detectUrgency(
+  private detectUrgency(
     query: string,
     _userType: UserType
   ): Promise<'low' | 'medium' | 'high'> {
     const lower = query.toLowerCase();
 
     if (/عاجل|ضروري|فوراً|الآن|مستعجل/.test(lower)) {
-      return 'high';
+      return Promise.resolve('high');
     }
 
     if (/بسرعة|عايز|محتاج/.test(lower)) {
-      return 'medium';
+      return Promise.resolve('medium');
     }
 
-    return 'low';
+    return Promise.resolve('low');
   }
 
-  private async translateToWorkshop(
+  private translateToWorkshop(
     answer: string,
     dialect: EgyptianDialect
   ): Promise<string> {
     // Add dialect-specific phrases
     if (dialect === 'cairo_shobra') {
-      return `يعني ${answer}. تمام يا معلم؟`;
+      return Promise.resolve(`يعني ${answer}. تمام يا معلم؟`);
     } else if (dialect === 'alexandria') {
-      return `${answer}. كده تمام باشا.`;
+      return Promise.resolve(`${answer}. كده تمام باشا.`);
     } else if (dialect === 'upper_egypt') {
-      return `${answer}. ربنا يوفقك يا ريس.`;
+      return Promise.resolve(`${answer}. ربنا يوفقك يا ريس.`);
     }
 
-    return answer;
+    return Promise.resolve(answer);
   }
 
-  private async simplifyForUser(
+  private simplifyForUser(
     answer: string,
     _userType: UserType
   ): Promise<string> {
     if (_userType === 'beginner') {
-      return `ببساطة: ${answer}`;
+      return Promise.resolve(`ببساطة: ${answer}`);
     }
 
-    return answer;
+    return Promise.resolve(answer);
   }
 
-  private async addEgyptianMannerisms(
+  private addEgyptianMannerisms(
     answer: string,
     dialect: EgyptianDialect,
     _userType: UserType
@@ -349,10 +349,10 @@ export class EgyptianWorkshopNLP {
     const dialectMannerisms = mannerisms[dialect];
     const randomMannerism = dialectMannerisms[Math.floor(Math.random() * dialectMannerisms.length)];
 
-    return `${randomMannerism}، ${answer}`;
+    return Promise.resolve(`${randomMannerism}، ${answer}`);
   }
 
-  private async suggestNextStepsInWorkshop(
+  private suggestNextStepsInWorkshop(
     answer: string,
     _dialect: EgyptianDialect
   ): Promise<string[]> {
@@ -368,7 +368,7 @@ export class EgyptianWorkshopNLP {
       steps.push('اتصل بالدعم الفني');
     }
 
-    return steps;
+    return Promise.resolve(steps);
   }
 }
 

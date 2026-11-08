@@ -82,7 +82,7 @@ describe('Audit Log Rotation', () => {
     );
   });
 
-  it('should prune old archives', async () => {
+  it('should prune old archives', () => {
     // Seed 6 archives
     const dates = [
         '2025-01-01', '2025-01-02', '2025-01-03', 

@@ -222,7 +222,7 @@ export class RemnantUsagePredictor {
   /**
    * Extract features from remnant for ML prediction
    */
-  async extractFeatures(remnant: Remnant): Promise<RemnantFeatures> {
+  extractFeatures(remnant: Remnant): Promise<RemnantFeatures> {
     const now = new Date();
     const ageDays = Math.floor(
       (now.getTime() - remnant.createdAt.getTime()) / (1000 * 60 * 60 * 24)
@@ -248,7 +248,7 @@ export class RemnantUsagePredictor {
     };
     const qualityScore = qualityMap[remnant.quality] || 0.5;
 
-    return {
+    return Promise.resolve({
       remnantLength: remnant.length,
       ageDays,
       profileTypeFrequency,
@@ -257,7 +257,7 @@ export class RemnantUsagePredictor {
       qualityScore,
       usageCount: remnant.usageCount || 0,
       estimatedValue: remnant.estimatedValue || 0,
-    };
+    });
   }
 
   /**

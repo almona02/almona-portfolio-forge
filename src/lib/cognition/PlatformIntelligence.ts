@@ -28,7 +28,7 @@ export class PlatformIntelligence {
   /**
    * Analyze market context
    */
-  async analyzeMarketContext(
+  analyzeMarketContext(
     windowUnit: Partial<WindowUnit>,
     _pattern?: EgyptianPattern | null
   ): Promise<PlatformAnalysis> {
@@ -43,12 +43,12 @@ export class PlatformIntelligence {
     // Opening type recommendation (market demand)
     const openingType = this.recommendOpeningType(windowUnit);
 
-    return {
+    return Promise.resolve({
       material,
       color,
       openingType,
       warnings
-    };
+    });
   }
 
   /**

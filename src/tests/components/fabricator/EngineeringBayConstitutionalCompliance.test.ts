@@ -147,7 +147,7 @@ describe('EngineeringBay AICS-001 Constitutional Compliance', () => {
     }
   });
 
-  it('should integrate with AICS Integration Service', async () => {
+  it('should integrate with AICS Integration Service', () => {
     const integrationService = getAICSIntegrationService();
     expect(integrationService).toBeDefined();
 

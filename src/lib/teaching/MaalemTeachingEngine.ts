@@ -104,7 +104,7 @@ export class MaalemTeachingEngine {
   /**
    * Assess student level
    */
-  async assessStudentLevel(userId: string, answers: Record<string, string>): Promise<StudentLevel> {
+  assessStudentLevel(userId: string, answers: Record<string, string>): Promise<StudentLevel> {
     const profile = this.getStudentProfile(userId);
     let score = 0;
     const total = Object.keys(answers).length;
@@ -130,7 +130,7 @@ export class MaalemTeachingEngine {
 
     profile.progress.score = percentage;
 
-    return profile.level;
+    return Promise.resolve(profile.level);
   }
 
   /**
@@ -181,7 +181,7 @@ export class MaalemTeachingEngine {
   /**
    * Get theory for topic
    */
-  private async getTheoryForTopic(topic: string): Promise<{
+  private getTheoryForTopic(topic: string): Promise<{
     university: string;
     universityArabic: string;
   }> {
@@ -192,22 +192,22 @@ export class MaalemTeachingEngine {
     });
 
     if (result.matches.length > 0) {
-      return {
+      return Promise.resolve({
         university: result.matches[0].content,
         universityArabic: `النظرية: ${result.matches[0].content}`,
-      };
+      });
     }
 
-    return {
+    return Promise.resolve({
       university: `University theory for ${topic}`,
       universityArabic: `النظرية الجامعية لـ ${topic}`,
-    };
+    });
   }
 
   /**
    * Get maalem knowledge for topic
    */
-  private async getMaalemKnowledgeForTopic(topic: string): Promise<{
+  private getMaalemKnowledgeForTopic(topic: string): Promise<{
     maalem: string;
     maalemArabic: string;
   }> {
@@ -236,13 +236,13 @@ export class MaalemTeachingEngine {
       maalemArabic: `حكمة المعلم لـ ${topic}`,
     };
 
-    return wisdom;
+    return Promise.resolve(wisdom);
   }
 
   /**
    * Generate exercises
    */
-  private async generateExercises(
+  private generateExercises(
     topic: string,
     level: StudentLevel,
     _preferences?: StudentProfile['preferences']
@@ -292,13 +292,13 @@ export class MaalemTeachingEngine {
       });
     }
 
-    return exercises;
+    return Promise.resolve(exercises);
   }
 
   /**
    * Get common mistakes
    */
-  private async getCommonMistakes(topic: string, _level: StudentLevel): Promise<string[]> {
+  private getCommonMistakes(topic: string, _level: StudentLevel): Promise<string[]> {
     const mistakes: Record<string, string[]> = {
       optimization: [
         'Not checking remnants before buying new material',
@@ -317,13 +317,13 @@ export class MaalemTeachingEngine {
       ],
     };
 
-    return mistakes[topic.toLowerCase()] || [`Common mistake in ${topic}`];
+    return Promise.resolve(mistakes[topic.toLowerCase()] || [`Common mistake in ${topic}`]);
   }
 
   /**
    * Get maalem tips
    */
-  private async getMaalemTips(topic: string, _level: StudentLevel): Promise<string[]> {
+  private getMaalemTips(topic: string, _level: StudentLevel): Promise<string[]> {
     const tips: Record<string, string[]> = {
       optimization: [
         'Always check remnants first',
@@ -342,7 +342,7 @@ export class MaalemTeachingEngine {
       ],
     };
 
-    return tips[topic.toLowerCase()] || [`Tip for ${topic}`];
+    return Promise.resolve(tips[topic.toLowerCase()] || [`Tip for ${topic}`]);
   }
 
   /**
@@ -389,7 +389,7 @@ export class MaalemTeachingEngine {
   /**
    * Complete lesson
    */
-  async completeLesson(userId: string, lessonId: string, score: number): Promise<void> {
+  completeLesson(userId: string, lessonId: string, score: number): Promise<void> {
     const profile = this.getStudentProfile(userId);
 
     if (!profile.progress.completedLessons.includes(lessonId)) {
@@ -405,6 +405,8 @@ export class MaalemTeachingEngine {
     if (profile.progress.score >= 90 && profile.level !== 'maalem') {
       this.promoteToNextLevel(profile);
     }
+
+    return Promise.resolve();
   }
 
   /**

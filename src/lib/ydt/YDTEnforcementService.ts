@@ -156,33 +156,37 @@ export class YDTEnforcementService {
   /**
    * Analyze ticket with YDT
    */
-  private async analyzeTicketWithYDT(inputs: any): Promise<any> {
-    
-    // Use YDT's market intelligence for ticket routing
-    // This is a simplified version - in production would use full YDT capabilities
-    const context = inputs.context || inputs;
-    
-    // Simulate YDT analysis (Week 1 - will be enhanced)
-    return {
-      data: {
-        suggested_agent: this.inferAgent(context),
-        suggested_priority: context.priority_hint || 'medium',
-        category: context.problem_keywords?.[0] || 'general',
-        reason: `YDT analysis based on ${context.problem_keywords?.length || 0} problem indicators`
-      },
-      confidence: 0.75,
-      source: 'ydt_live'
-    };
+  private analyzeTicketWithYDT(inputs: any): Promise<any> {
+    try {
+      
+      // Use YDT's market intelligence for ticket routing
+      // This is a simplified version - in production would use full YDT capabilities
+      const context = inputs.context || inputs;
+      
+      // Simulate YDT analysis (Week 1 - will be enhanced)
+      return Promise.resolve({
+        data: {
+          suggested_agent: this.inferAgent(context),
+          suggested_priority: context.priority_hint || 'medium',
+          category: context.problem_keywords?.[0] || 'general',
+          reason: `YDT analysis based on ${context.problem_keywords?.length || 0} problem indicators`
+        },
+        confidence: 0.75,
+        source: 'ydt_live'
+      });
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    }
   }
 
   /**
    * Predict resolution with YDT
    */
-  private async predictResolutionWithYDT(_inputs: any): Promise<any> {
+  private predictResolutionWithYDT(_inputs: any): Promise<any> {
     // Use YDT knowledge base (164 chapters, 878 components)
     
     // Simulate YDT resolution prediction (Week 1)
-    return {
+    return Promise.resolve({
       data: {
         likely_cause: 'Requires diagnostic inspection',
         suggested_steps: [
@@ -195,37 +199,37 @@ export class YDTEnforcementService {
       },
       confidence: 0.70,
       source: 'ydt_live'
-    };
+    });
   }
 
   /**
    * Suggest spare parts with YDT
    */
-  private async suggestSparePartsWithYDT(_inputs: any): Promise<any> {
+  private suggestSparePartsWithYDT(_inputs: any): Promise<any> {
     
     // Use YDT's 281 parts catalog + market intelligence
     
     // Simulate spare parts suggestion (Week 1)
-    return {
+    return Promise.resolve({
       data: {
         suggested_parts: []
       },
       confidence: 0.75,
       source: 'ydt_live'
-    };
+    });
   }
 
   /**
    * Generic YDT query
    */
-  private async genericYDTQuery(_operation: string, _inputs: any): Promise<any> {
+  private genericYDTQuery(_operation: string, _inputs: any): Promise<any> {
     
     // Generic fallback - use YDT core service
-    return {
+    return Promise.resolve({
       data: {},
       confidence: 0.65,
       source: 'ydt_live'
-    };
+    });
   }
 
   /**

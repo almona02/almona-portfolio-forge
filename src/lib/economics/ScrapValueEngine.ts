@@ -36,9 +36,13 @@ export class ScrapValueEngine {
   /**
    * Calculate hidden profit from scrap
    */
-  async calculateHiddenProfit(
+  calculateHiddenProfit(
     optimizationResult: OptimizationResult
   ): Promise<ScrapAnalysis> {
+    return Promise.resolve(this.calculateHiddenProfitSync(optimizationResult));
+  }
+
+  private calculateHiddenProfitSync(optimizationResult: OptimizationResult): ScrapAnalysis {
     const scrapWeight = optimizationResult.wasteWeight;
     const materialType = optimizationResult.materialType;
     

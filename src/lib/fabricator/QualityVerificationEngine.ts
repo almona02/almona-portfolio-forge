@@ -105,7 +105,7 @@ export class QualityVerificationEngine {
   /**
    * Verify window unit quality against BOM specifications
    */
-  async verifyWindowUnit(
+  verifyWindowUnit(
     windowUnit: WindowUnit,
     measuredDimensions: {
       width: number;
@@ -178,7 +178,7 @@ export class QualityVerificationEngine {
       criticalFailures
     );
 
-    return {
+    return Promise.resolve({
       overallStatus,
       passCount,
       failCount,
@@ -196,7 +196,7 @@ export class QualityVerificationEngine {
         'This quality verification is deterministic and rule-based (Tier 3 Protected Determinism). ' +
         'No AI/ML is used. All outputs require human validation by qualified professionals. ' +
         'No engineering judgment, structural analysis, or design authority is claimed (AICS-001 §5.6).',
-    };
+    });
   }
 
   /**
@@ -567,7 +567,7 @@ export class QualityVerificationEngine {
    * FP-017: measurements are keyed by physical cut identity (`cut.cutId`), not componentId alone.
    * Fallback to componentId only when cutId is absent (legacy single-key callers).
    */
-  async verifyProfileCuts(
+  verifyProfileCuts(
     cuts: Cut[],
     measuredLengths: Record<string, number>
   ): Promise<QualityCheckItem[]> {
@@ -616,7 +616,7 @@ export class QualityVerificationEngine {
       });
     }
 
-    return checks;
+    return Promise.resolve(checks);
   }
 }
 

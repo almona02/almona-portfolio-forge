@@ -97,7 +97,7 @@ export class MaalemReasoningEngine {
   /**
    * Get technical answer from knowledge base
    */
-  private async getTechnicalAnswer(question: string): Promise<string> {
+  private getTechnicalAnswer(question: string): Promise<string> {
     // Query knowledge graph
     const result = this.knowledgeGraph.query({
       type: 'egyptian',
@@ -106,16 +106,16 @@ export class MaalemReasoningEngine {
     });
 
     if (result.matches.length > 0) {
-      return result.matches[0].content;
+      return Promise.resolve(result.matches[0].content);
     }
 
-    return 'Technical answer not found in knowledge base.';
+    return Promise.resolve('Technical answer not found in knowledge base.');
   }
 
   /**
    * Apply maalem reasoning to technical answer
    */
-  private async applyMaalemReasoning(
+  private applyMaalemReasoning(
     technicalAnswer: string,
     question: string,
     userType: UserType,
@@ -149,13 +149,13 @@ export class MaalemReasoningEngine {
       maalemAnswer = `يا معلم، ${maalemAnswer}. ده من الخبرة`;
     }
 
-    return maalemAnswer;
+    return Promise.resolve(maalemAnswer);
   }
 
   /**
    * Check Egyptian reality
    */
-  private async checkEgyptianReality(
+  private checkEgyptianReality(
     technicalAnswer: string,
     location: string,
     workshopContext?: ReasoningContext['workshopContext']
@@ -186,16 +186,16 @@ export class MaalemReasoningEngine {
       advice.push('استخدم البرنامج عشان يوفرلك الوقت والغلطات');
     }
 
-    return {
+    return Promise.resolve({
       warning: warnings.length > 0 ? warnings.join('. ') : undefined,
       advice: advice.length > 0 ? advice.join('. ') : 'استخدم البرنامج عشان توفر وقت وفلوس',
-    };
+    });
   }
 
   /**
    * Reveal hidden costs only maalem knows
    */
-  private async revealHiddenCosts(
+  private revealHiddenCosts(
     question: string,
     location: string,
     _workshopContext?: ReasoningContext['workshopContext']
@@ -220,13 +220,13 @@ export class MaalemReasoningEngine {
       hiddenCosts.push('مصاريف النقل للصعيد: 200-500 جنيه إضافية');
     }
 
-    return hiddenCosts;
+    return Promise.resolve(hiddenCosts);
   }
 
   /**
    * Generate practical advice
    */
-  private async generatePracticalAdvice(
+  private generatePracticalAdvice(
     question: string,
     userType: UserType,
     _location: string,
@@ -249,13 +249,13 @@ export class MaalemReasoningEngine {
       advice.push('استخدم Smart Wizard عشان يسهل عليك');
     }
 
-    return advice.join('. ');
+    return Promise.resolve(advice.join('. '));
   }
 
   /**
    * Find relevant story
    */
-  private async findRelevantStory(question: string, location: string): Promise<string | undefined> {
+  private findRelevantStory(question: string, location: string): Promise<string | undefined> {
     // Would query story database
     const stories: Record<string, string> = {
       optimization: `في معلم في ${location}، كان بيخسر خشب كتير. جرب البرنامج، وقعد يلاقي نفسه وفر 18% من الخشب. في 6 أسابيع، اللي كان بيخسره بقى ربح صافي`,
@@ -265,11 +265,11 @@ export class MaalemReasoningEngine {
 
     for (const [key, story] of Object.entries(stories)) {
       if (question.toLowerCase().includes(key)) {
-        return story;
+        return Promise.resolve(story);
       }
     }
 
-    return undefined;
+    return Promise.resolve(undefined);
   }
 
   /**

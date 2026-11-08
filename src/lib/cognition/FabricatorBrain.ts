@@ -28,7 +28,7 @@ export class FabricatorBrain {
   /**
    * Analyze workshop context
    */
-  async analyzeWorkshopContext(
+  analyzeWorkshopContext(
     windowUnit: Partial<WindowUnit>,
     pattern?: EgyptianPattern | null
   ): Promise<FabricatorAnalysis> {
@@ -43,12 +43,12 @@ export class FabricatorBrain {
     // Opening type recommendation (workshop expertise)
     const openingType = this.recommendOpeningType(windowUnit, pattern);
 
-    return {
+    return Promise.resolve({
       material,
       profile,
       openingType,
       warnings
-    };
+    });
   }
 
   /**

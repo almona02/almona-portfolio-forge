@@ -4,23 +4,23 @@ const UNAVAILABLE = 'Online payment links are not configured. Contact the worksh
 
 /** Payment links require server-issued provider sessions and verified settlement. */
 export class PaymentLinkGenerator {
-  static async generateLink(_config: PaymentLinkConfig): Promise<PaymentLinkResult> {
-    throw new Error(UNAVAILABLE);
+  static generateLink(_config: PaymentLinkConfig): Promise<PaymentLinkResult> {
+    return Promise.reject(new Error(UNAVAILABLE));
   }
 
-  static async validateLink(_linkId: string): Promise<{
+  static validateLink(_linkId: string): Promise<{
     valid: boolean; expired: boolean; linkData?: unknown; error?: string;
   }> {
-    return { valid: false, expired: false, error: UNAVAILABLE };
+    return Promise.resolve({ valid: false, expired: false, error: UNAVAILABLE });
   }
 
-  static async revokeLink(_linkId: string): Promise<void> {
-    throw new Error(UNAVAILABLE);
+  static revokeLink(_linkId: string): Promise<void> {
+    return Promise.reject(new Error(UNAVAILABLE));
   }
 
-  static async getLinkAnalytics(_linkId: string): Promise<{
+  static getLinkAnalytics(_linkId: string): Promise<{
     views: number; clicks: number; payments: number; conversionRate: number;
   }> {
-    throw new Error(UNAVAILABLE);
+    return Promise.reject(new Error(UNAVAILABLE));
   }
 }

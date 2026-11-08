@@ -104,70 +104,79 @@ export class YDTCompetitiveTracker {
   /**
    * Get competitive landscape for location
    */
-  async getCompetitiveLandscape(location: string): Promise<CompetitiveLandscape> {
-    // Get from YDT or local cache
-    const competitors = this.competitorData.get(location) || [];
+  getCompetitiveLandscape(location: string): Promise<CompetitiveLandscape> {
+    try {
+      // Get from YDT or local cache
+      const competitors = this.competitorData.get(location) || [];
 
-    const prices = competitors.map(c => c.averagePrice);
-    const averagePrice = prices.length > 0
-      ? prices.reduce((sum, p) => sum + p, 0) / prices.length
-      : 0;
+      const prices = competitors.map(c => c.averagePrice);
+      const averagePrice = prices.length > 0
+        ? prices.reduce((sum, p) => sum + p, 0) / prices.length
+        : 0;
 
-    return {
-      location,
-      competitors,
-      averageMarketPrice: averagePrice,
-      priceRange: {
-        min: prices.length > 0 ? Math.min(...prices) : 0,
-        max: prices.length > 0 ? Math.max(...prices) : 0,
-      },
-      commonFeatures: this.extractCommonFeatures(competitors),
-      newEntrants: competitors.filter(c => {
-        const detectedDate = new Date(c.detectedAt);
-        const daysSince = (Date.now() - detectedDate.getTime()) / (1000 * 60 * 60 * 24);
-        return daysSince < 90; // New in last 90 days
-      }),
-      lastUpdated: new Date().toISOString(),
-    };
+      return Promise.resolve({
+        location,
+        competitors,
+        averageMarketPrice: averagePrice,
+        priceRange: {
+          min: prices.length > 0 ? Math.min(...prices) : 0,
+          max: prices.length > 0 ? Math.max(...prices) : 0,
+        },
+        commonFeatures: this.extractCommonFeatures(competitors),
+        newEntrants: competitors.filter(c => {
+          const detectedDate = new Date(c.detectedAt);
+          const daysSince = (Date.now() - detectedDate.getTime()) / (1000 * 60 * 60 * 24);
+          return daysSince < 90; // New in last 90 days
+        }),
+        lastUpdated: new Date().toISOString(),
+      });
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    }
   }
 
   // Private helper methods
 
-  private async collectLocalPrices(_location: string): Promise<number[]> {
+  private collectLocalPrices(_location: string): Promise<number[]> {
     // Would collect from market data, customer feedback, etc.
-    return [1500, 1600, 1400, 1700, 1550]; // Sample prices
+    return Promise.resolve([1500, 1600, 1400, 1700, 1550]); // Sample prices
   }
 
-  private async analyzeCompetitorFeatures(_location: string): Promise<string[]> {
+  private analyzeCompetitorFeatures(_location: string): Promise<string[]> {
     // Would analyze competitor offerings
-    return ['fast_delivery', 'cheap_prices', 'good_marketing'];
+    return Promise.resolve(['fast_delivery', 'cheap_prices', 'good_marketing']);
   }
 
-  private async monitorSocialMedia(_location: string): Promise<string[]> {
+  private monitorSocialMedia(_location: string): Promise<string[]> {
     // Would monitor social media for complaints
-    return ['poor_quality', 'slow_delivery'];
+    return Promise.resolve(['poor_quality', 'slow_delivery']);
   }
 
-  private async detectNewCompetitors(location: string): Promise<CompetitorData[]> {
-    // Would detect new market entrants
-    return [
-      {
-        name: 'New Competitor',
-        location,
-        averagePrice: 1450,
-        commonFeatures: ['online_ordering'],
-        strengths: ['modern_ui'],
-        weaknesses: ['limited_features'],
-        customerComplaints: [],
-        detectedAt: new Date().toISOString(),
-      },
-    ];
+  private detectNewCompetitors(location: string): Promise<CompetitorData[]> {
+    try {
+      // Would detect new market entrants
+      return Promise.resolve([
+        {
+          name: 'New Competitor',
+          location,
+          averagePrice: 1450,
+          commonFeatures: ['online_ordering'],
+          strengths: ['modern_ui'],
+          weaknesses: ['limited_features'],
+          customerComplaints: [],
+          detectedAt: new Date().toISOString(),
+        },
+      ]);
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    }
   }
 
-  private async feedToYDT(location: string, data: any): Promise<void> {
+  private feedToYDT(location: string, data: any): Promise<void> {
     // Feed competitive data back to YDT for learning
     // Would call YDT API to update knowledge base
     console.log('Feeding competitive data to YDT:', { location, data });
+    return Promise.resolve();
   }
 
   private extractCommonFeatures(competitors: CompetitorData[]): string[] {

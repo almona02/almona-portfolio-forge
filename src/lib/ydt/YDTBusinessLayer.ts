@@ -223,19 +223,19 @@ export class YDTBusinessLayer {
 
   // Private helper methods
 
-  private async validateTechnical(_project: Project): Promise<{
+  private validateTechnical(_project: Project): Promise<{
     valid: boolean;
     issues: string[];
     recommendations: string[];
     confidence: number;
   }> {
     // Would use existing technical validation
-    return {
+    return Promise.resolve({
       valid: true,
       issues: [],
       recommendations: [],
       confidence: 0.95,
-    };
+    });
   }
 
 }

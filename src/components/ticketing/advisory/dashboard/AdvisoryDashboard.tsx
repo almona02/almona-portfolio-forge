@@ -62,7 +62,7 @@ export const AdvisoryDashboard: React.FC = () => {
     // WebSocket for real-time updates
     const ws = useAdvisoryWebSocket();
 
-    const loadAdvisories = React.useCallback(async () => {
+    const loadAdvisories = React.useCallback((): Promise<void> => {
         setIsRefreshing(true);
         try {
             // In production, this would fetch from API
@@ -111,11 +111,13 @@ export const AdvisoryDashboard: React.FC = () => {
         } finally {
             setIsRefreshing(false);
         }
+        return Promise.resolve();
     }, []);
 
-    const loadMetrics = React.useCallback(async () => {
+    const loadMetrics = React.useCallback((): Promise<void> => {
         const insights = metricsCollector.getInsights();
         setMetrics(insights);
+        return Promise.resolve();
     }, [metricsCollector]);
 
     // Load initial data

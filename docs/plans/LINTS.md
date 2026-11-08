@@ -414,3 +414,71 @@ All 14 assigned files on `chore/lint-require-await-wave6`, uncommitted. Coordina
 ### Waves 6–8 redo — accepted (2026-11-07)
 
 All S17–S25 paths on `chore/lint-require-await-wave6`, uncommitted (**62** files including `LINTS.md`). Coordinator ESLint on the **61** source paths: **0** `require-await`, **0** errors, **0** parse errors. Vitest smoke (S17 + S19 ProductionCommand + S20 + S23): **15 files / 102 tests passed**. Full inventory: **2,459 files, 0 errors, 13,024 warnings**, `require-await` **105** (remainder is reserved / wonder-full). Preferred `Promise.resolve` / `Promise.reject` throughout; no `await Promise.resolve()` no-ops in the redo. `FabricatorTemplates.ts` parses clean. Do not commit until the user asks.
+
+### Merge — PR #140 (2026-11-08)
+
+Merged Waves 6–8 to `main`. Post-merge inventory unchanged for remaining work: **`require-await` 105**, all in reserved / wonder-full domains. Spark-safe open set: **0**. Next waves use careful reserved-domain editors on `chore/lint-require-await-wave9` (from `origin/main`).
+
+### Waves 9–10 — reserved / wonder-full `require-await` only
+
+Fix **only** `@typescript-eslint/require-await`. Leave every other warning. Prefer `Promise.resolve(...)` / `Promise.reject(new Error(...))`. Do not change AICS-001 control flow, IntelligenceGate decisions, pricing formulas, tax logic, or advisory recommendations beyond dropping unused `async` while keeping thenable returns. Do not commit.
+
+#### S26 — Maalem / NLP / cognition (~27)
+
+- `src/lib/nlp/EgyptianWorkshopNLP.ts` (11, pure)
+- `src/lib/teaching/MaalemTeachingEngine.ts` (7, pure)
+- `src/lib/reasoning/MaalemReasoningEngine.ts` (6, pure)
+- `src/lib/cognition/EngineeringMind.ts` (1)
+- `src/lib/cognition/FabricatorBrain.ts` (1)
+- `src/lib/cognition/PlatformIntelligence.ts` (1)
+
+#### S27 — YDT (~29)
+
+- `src/lib/ydt/YDTCoreService.ts` (8)
+- `src/lib/ydt/QuickStartYDT.ts` (7, pure)
+- `src/lib/ydt/YDTCompetitiveTracker.ts` (6)
+- `src/lib/ydt/YDTEnforcementService.ts` (4)
+- `src/lib/ydt/HybridEgyptianMaalem.ts` (3)
+- `src/lib/ydt/YDTBusinessLayer.ts` (1)
+
+#### S28 — constitutional / Tier3 / QC (~14)
+
+- `src/lib/constitutional/WiringValidator.ts` (4)
+- `src/tests/constitutional/GuaranteeVerification.test.ts` (3)
+- `src/lib/constitutional/PositionStateSyncService.ts` (2)
+- `src/lib/fabricator/QualityVerificationEngine.ts` (2, pure)
+- `src/lib/constitutional/__tests__/AuditLogRotation.test.ts` (1)
+- `src/lib/import/Tier3Validator.ts` (1, pure)
+- `src/tests/components/fabricator/EngineeringBayConstitutionalCompliance.test.ts` (1)
+
+#### S29 — pricing / payments / economics (~23)
+
+- `src/lib/pricing/PricingProvenanceService.test.ts` (8)
+- `src/services/payments/PaymentLinkGenerator.ts` (4, pure)
+- `src/lib/pricing/SystemPricingService.provenance.test.ts` (2)
+- `src/services/payments/PaymentService.ts` (2)
+- `src/components/fabricator/EnhancedPricingConfigDialog.tsx` (1)
+- `src/components/fabricator/PricingTuningStudio.tsx` (1)
+- `src/lib/economics/CashFlowOptimizer.ts` (1)
+- `src/lib/economics/InflationProtector.ts` (1)
+- `src/lib/economics/ScrapValueEngine.ts` (1)
+- `src/lib/pricing/PricingEngine.ts` (1 among 124)
+- `src/lib/pricing/RealTimeQuoteCalculator.ts` (1)
+
+#### S30 — advisory / remnants (~10)
+
+- `src/tests/integration/ticketing/Wave2AdvisoryIntegration.test.ts` (3)
+- `src/components/ticketing/advisory/dashboard/AdvisoryDashboard.tsx` (2)
+- `src/future/advisory/AIQualityPredictor.ts` (2, pure)
+- `src/lib/inventory/SmartRemnantSystem.ts` (2)
+- `src/future/advisory/RemnantUsagePredictor.ts` (1)
+- `src/lib/inventory/AutoRemnantGenerator.ts` (1)
+- `src/tests/performance/ticketing/AdvisoryPerformanceBenchmark.test.ts` (1)
+
+### Waves 9–10 review — accepted (2026-11-08)
+
+All S26–S30 paths on `chore/lint-require-await-wave9`, uncommitted. Coordinator ESLint (`--no-cache`) on the **37** reserved paths: **0** `require-await`, **0** errors, **0** parse errors. Full inventory after Waves 9–10: **2,459 files, 0 errors, ~12,933 warnings**, and **`@typescript-eslint/require-await` is gone from the project** (0).
+
+Coordinator follow-ups applied: YDT `Promise.reject(error)` sites wrapped for `prefer-promise-reject-errors`; pricing/economics `new Promise(resolve => resolve(sync()))` simplified to `Promise.resolve(sync())`. Formulas / gate / advisory logic unchanged beyond async drops.
+
+Vitest in this environment fails suite load with `TypeError: ... reading 'config'` (vitest/`@vitest/*` version skew) — not attributed to these edits. S27 agent had previously reported `src/lib/ydt` 16 tests green before the skew manifested. Do not commit until the user asks.

@@ -1025,7 +1025,7 @@ export class PositionStateSyncService {
   /**
    * P2: Rotate audit log to prevent storage exhaustion
    */
-  private async rotateAuditLog(currentLog: any[]): Promise<void> {
+  private rotateAuditLog(currentLog: any[]): Promise<void> {
     try {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const archiveKey = `constitutional-audit-log-archive-${timestamp}`;
@@ -1041,6 +1041,7 @@ export class PositionStateSyncService {
     } catch (error) {
       console.error('[Constitutional] Failed to rotate audit log:', error);
     }
+    return Promise.resolve();
   }
 
   /**
@@ -1165,12 +1166,12 @@ export class PositionStateSyncService {
    * Get constitutional audit log for a pose
    * P2: Merges persistent storage with in-memory batch queue for consistency
    */
-  async getAuditLog(poseId: string): Promise<any[]> {
+  getAuditLog(poseId: string): Promise<any[]> {
     // Get in-memory logs first
     const inMemoryLogs = this.auditBatchQueue.filter((entry: any) => entry.entityId === poseId);
 
     if (typeof window === 'undefined' || !window.localStorage) {
-      return inMemoryLogs;
+      return Promise.resolve(inMemoryLogs);
     }
     
     try {
@@ -1181,10 +1182,10 @@ export class PositionStateSyncService {
       // Combine persisted + in-memory
       const allLogs = [...persistedLog, ...inMemoryLogs];
       
-      return allLogs;
+      return Promise.resolve(allLogs);
     } catch (error) {
       console.error('[Constitutional] Failed to retrieve audit log:', error);
-      return inMemoryLogs;
+      return Promise.resolve(inMemoryLogs);
     }
   }
 }

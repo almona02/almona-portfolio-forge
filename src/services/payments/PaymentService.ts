@@ -44,22 +44,22 @@ export class PaymentService {
    * Create a payment intent — not available in the browser bundle.
    * Call a backend/edge function that holds the Stripe secret key.
    */
-  static async createPaymentIntent(
+  static createPaymentIntent(
     _invoiceId: string | null,
     _amount: number,
     _currency: string = 'usd',
   ): Promise<PaymentIntentResult> {
-    throw new Error(STRIPE_SERVER_ONLY);
+    return Promise.reject(new Error(STRIPE_SERVER_ONLY));
   }
 
   /**
    * Stripe webhook verification — server-only (signature + webhook secret).
    */
-  static async handleStripeWebhook(
+  static handleStripeWebhook(
     _payload: string | Buffer,
     _signature: string,
   ): Promise<void> {
-    throw new Error(STRIPE_SERVER_ONLY);
+    return Promise.reject(new Error(STRIPE_SERVER_ONLY));
   }
 
   static async getPaymentsByPeriod(

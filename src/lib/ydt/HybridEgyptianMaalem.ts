@@ -141,50 +141,58 @@ export class HybridEgyptianMaalem {
   /**
    * KNOWLEDGE LAYER: Query proprietary knowledge
    */
-  private async queryKnowledgeBase(question: string): Promise<YDTAnswer> {
-    const result = this.knowledgeGraph.query({
-      type: 'system',
-      keyword: this.extractKeywords(question),
-      context: question,
-    });
+  private queryKnowledgeBase(question: string): Promise<YDTAnswer> {
+    try {
+      const result = this.knowledgeGraph.query({
+        type: 'system',
+        keyword: this.extractKeywords(question),
+        context: question,
+      });
 
-    if (result.matches.length > 0) {
-      return {
-        answer: result.matches[0].content,
-        confidence: result.matches[0].confidence,
-        source: result.matches[0].source,
-        related: result.related,
+      if (result.matches.length > 0) {
+        return Promise.resolve({
+          answer: result.matches[0].content,
+          confidence: result.matches[0].confidence,
+          source: result.matches[0].source,
+          related: result.related,
+          nextSteps: [],
+          expertTip: undefined,
+        });
+      }
+
+      return Promise.resolve({
+        answer: 'Knowledge not found',
+        confidence: 0.5,
+        source: 'Knowledge Base',
+        related: [],
         nextSteps: [],
-        expertTip: undefined,
-      };
+      });
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
-
-    return {
-      answer: 'Knowledge not found',
-      confidence: 0.5,
-      source: 'Knowledge Base',
-      related: [],
-      nextSteps: [],
-    };
   }
 
   /**
    * HUMAN LAYER: Get oral wisdom
    */
-  private async getOralWisdom(question: string, _location: string): Promise<{
+  private getOralWisdom(question: string, _location: string): Promise<{
     story?: string;
     trick?: string;
     warning?: string;
   }> {
-    // Query oral tradition memory
-    const keywords = this.extractKeywords(question);
-    const wisdom = this.oralMemory.get(keywords) || {};
+    try {
+      // Query oral tradition memory
+      const keywords = this.extractKeywords(question);
+      const wisdom = this.oralMemory.get(keywords) || {};
 
-    return {
-      story: wisdom.story,
-      trick: wisdom.trick,
-      warning: wisdom.warning,
-    };
+      return Promise.resolve({
+        story: wisdom.story,
+        trick: wisdom.trick,
+        warning: wisdom.warning,
+      });
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    }
   }
 
   /**
@@ -273,7 +281,7 @@ export class HybridEgyptianMaalem {
   /**
    * Learn from user (captures maalem wisdom)
    */
-  async learnFromUser(
+  learnFromUser(
     _userId: string,
     _statement: string,
     _context: HybridContext
@@ -284,11 +292,11 @@ export class HybridEgyptianMaalem {
   }> {
     // Would use LearningConversation to capture wisdom
     // For now, placeholder
-    return {
+    return Promise.resolve({
       accepted: true,
       message: 'Thank you for sharing your knowledge',
       messageArabic: 'شكراً لمشاركة معرفتك',
-    };
+    });
   }
 }
 
