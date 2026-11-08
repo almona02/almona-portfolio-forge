@@ -89,7 +89,11 @@ export class RealTimeQuoteCalculator {
   /**
    * Calculate Egyptian quote
    */
-  async calculate(input: QuoteInput): Promise<RealTimeQuote> {
+  calculate(input: QuoteInput): Promise<RealTimeQuote> {
+    return Promise.resolve(this.calculateSync(input));
+  }
+
+  private calculateSync(input: QuoteInput): RealTimeQuote {
     const dimensions = input.dimensions || { width: 0, height: 0 };
     const area = dimensions.area || (dimensions.width * dimensions.height) / 1000000; // m²
     

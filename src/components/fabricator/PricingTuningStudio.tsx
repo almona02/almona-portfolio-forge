@@ -660,7 +660,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
     setShowBulkConfirmDialog(true);
   }, [bulkPercentage, pricingState, selectedSystemPackId, selectedProfileId]);
 
-  const handleConfirmBulkPercentage = useCallback(async () => {
+  const handleConfirmBulkPercentage = useCallback(() => {
     if (!pricingState || !selectedSystemPackId || !selectedProfileId) {
       return;
     }
@@ -3640,7 +3640,7 @@ const PricingTuningStudioComponent: React.FC<PricingTuningStudioProps> = ({
                               size="sm"
                               onClick={() => {
                                 if (bulkOperationType === 'percentage') {
-                                  void handleConfirmBulkPercentage();
+                                  handleConfirmBulkPercentage();
                                 } else if (bulkOperationType === 'copy') {
                                   void handleConfirmCopyPricing();
                                 }

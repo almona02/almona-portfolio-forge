@@ -46,7 +46,11 @@ export class InflationProtector {
   /**
    * Protect quote from inflation
    */
-  async protectQuote(quote: { price: number; materials: string[] }): Promise<ProtectedQuote> {
+  protectQuote(quote: { price: number; materials: string[] }): Promise<ProtectedQuote> {
+    return Promise.resolve(this.protectQuoteSync(quote));
+  }
+
+  private protectQuoteSync(quote: { price: number; materials: string[] }): ProtectedQuote {
     // 1. Check quote validity based on volatility
     const validityPeriod = this.calculateValidity(this.currentMarket.volatility_index);
 

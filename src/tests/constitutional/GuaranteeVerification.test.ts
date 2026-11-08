@@ -60,9 +60,9 @@ import { generateCuttingListFromSystemPack } from '@/lib/fabricator/CuttingListG
 
 // --- HELPERS ---
 
-async function loadGoldenMaster(_projectId: string) {
+function loadGoldenMaster(_projectId: string) {
   // Use simple mock data for the test instead of relying on file system
-  return {
+  return Promise.resolve({
     input: {
       id: 'test-unit-1',
       systemPackId: 'caluminium-ps',
@@ -86,7 +86,7 @@ async function loadGoldenMaster(_projectId: string) {
     expectedBOM: { tier: 'Tier 3', deterministic: true },
     expectedCutList: { tier: 'Tier 3', deterministic: true },
     expectedAccuracy: 0.998
-  };
+  });
 }
 
 async function loadGoldenMasterSuite() {
@@ -116,9 +116,9 @@ async function generateBOM(project: WindowUnit) {
   };
 }
 
-async function generateCutList(project: WindowUnit, _bom: any, systemPackId: string) {
+function generateCutList(project: WindowUnit, _bom: any, systemPackId: string) {
   const cuts = generateCuttingListFromSystemPack(systemPackId, project.overallWidth, project.overallHeight);
-  return {
+  return Promise.resolve({
     projectId: project.id,
     systemPackId,
     tier: 'Tier 3',
@@ -127,7 +127,7 @@ async function generateCutList(project: WindowUnit, _bom: any, systemPackId: str
     cuts,
     // Ensure no forbidden terms in keys
     computationMethod: 'deterministic-rule-v1' 
-  };
+  });
 }
 
 async function runFullPipeline(input: WindowUnit, _profiles: Profile[], systemPackId: string) {
@@ -218,7 +218,7 @@ describe('ALMONA CONSTITUTIONAL GUARANTEES', () => {
         expect(0.999).toBeGreaterThanOrEqual(0.998); 
     });
 
-    test('Individual test cases achieve >= 99.5% accuracy', async () => {
+    test('Individual test cases achieve >= 99.5% accuracy', () => {
         expect(0.999).toBeGreaterThanOrEqual(0.995);
     });
   });

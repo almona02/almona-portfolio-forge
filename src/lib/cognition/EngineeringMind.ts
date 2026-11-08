@@ -28,7 +28,7 @@ export class EngineeringMind {
   /**
    * Analyze structural context
    */
-  async analyzeStructuralContext(
+  analyzeStructuralContext(
     windowUnit: Partial<WindowUnit>,
     _pattern?: EgyptianPattern | null
   ): Promise<EngineeringAnalysis> {
@@ -54,12 +54,12 @@ export class EngineeringMind {
       });
     }
 
-    return {
+    return Promise.resolve({
       material,
       profile,
       openingType,
       warnings
-    };
+    });
   }
 
   /**

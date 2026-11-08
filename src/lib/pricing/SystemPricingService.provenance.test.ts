@@ -10,13 +10,13 @@ vi.mock('@/lib/supabase', () => ({
     from: () => ({
       select: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
-      single: vi.fn(async () => ({ data: mocks.row, error: mocks.row ? null : { code: 'PGRST116' } })),
+      single: vi.fn(() => Promise.resolve({ data: mocks.row, error: mocks.row ? null : { code: 'PGRST116' } })),
     }),
   },
 }));
 
 vi.mock('@/lib/currencyExchange', () => ({
-  convertCurrency: vi.fn(async (amount: number) => ({ amount })),
+  convertCurrency: vi.fn((amount: number) => Promise.resolve({ amount })),
 }));
 
 import { systemPricingService } from './SystemPricingService';

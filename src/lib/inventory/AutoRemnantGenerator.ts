@@ -128,11 +128,13 @@ export class AutoRemnantGenerator {
   /**
    * Generate QR code for remnant (placeholder - would use qrcode library)
    */
-  async generateQRCode(barcode: string): Promise<string> {
+  generateQRCode(barcode: string): Promise<string> {
     // In production, would use qrcode library to generate image
     // and upload to Supabase Storage
     // For now, return placeholder URL
-    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(barcode)}`;
+    return Promise.resolve(
+      `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(barcode)}`
+    );
   }
 }
 

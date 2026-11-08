@@ -121,7 +121,7 @@ export class AIQualityPredictor {
   /**
    * Suggest optimal cutting parameters
    */
-  async suggestOptimalParameters(
+  suggestOptimalParameters(
     cut: Cut,
     profile: Profile
   ): Promise<OptimalCuttingParameters> {
@@ -131,11 +131,11 @@ export class AIQualityPredictor {
 
     // If we have historical data, use ML-based suggestion
     if (historicalParams.length > 5) {
-      return this.mlSuggestParameters(cut, profile, historicalParams);
+      return Promise.resolve(this.mlSuggestParameters(cut, profile, historicalParams));
     }
 
     // Otherwise, use rule-based defaults
-    return this.ruleBasedSuggestParameters(cut, profile);
+    return Promise.resolve(this.ruleBasedSuggestParameters(cut, profile));
   }
 
   /**
@@ -191,7 +191,7 @@ export class AIQualityPredictor {
   /**
    * Predict maintenance needs
    */
-  async predictMaintenance(
+  predictMaintenance(
     _machineId: string,
     usageHours: number,
     recentDefects: DefectHistory[]
@@ -216,7 +216,7 @@ export class AIQualityPredictor {
       alerts.push(coolantAlert);
     }
 
-    return alerts;
+    return Promise.resolve(alerts);
   }
 
   /**

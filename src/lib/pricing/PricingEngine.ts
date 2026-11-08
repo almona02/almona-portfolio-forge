@@ -491,7 +491,11 @@ export class PricingEngine {
   /**
    * Validate price and return alerts
    */
-  async validatePrice(calculatedPrice: CalculatedPrice): Promise<PriceValidationAlert[]> {
+  validatePrice(calculatedPrice: CalculatedPrice): Promise<PriceValidationAlert[]> {
+    return Promise.resolve(this.validatePriceSync(calculatedPrice));
+  }
+
+  private validatePriceSync(calculatedPrice: CalculatedPrice): PriceValidationAlert[] {
     const alerts: PriceValidationAlert[] = [];
 
     // Check for negative price

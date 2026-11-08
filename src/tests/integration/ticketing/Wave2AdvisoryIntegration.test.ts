@@ -234,8 +234,8 @@ describe('Wave 2 Advisory Integration Tests', () => {
       // Simulate failures
       for (let i = 0; i < 5; i++) {
         try {
-          await circuitBreaker.execute('routing', async () => {
-            throw new Error('Service failure');
+          await circuitBreaker.execute('routing', () => {
+            return Promise.reject(new Error('Service failure'));
           });
         } catch (_error) {
           // Expected
@@ -250,8 +250,8 @@ describe('Wave 2 Advisory Integration Tests', () => {
       circuitBreaker['state'] = 'OPEN'; // Access private by index/string or any cast
       (circuitBreaker as any).lastFailureTime = Date.now();
       
-      const result = await circuitBreaker.execute('routing', async () => {
-        return { suggestion: 'Should not reach here' };
+      const result = await circuitBreaker.execute('routing', () => {
+        return Promise.resolve({ suggestion: 'Should not reach here' });
       });
       
       expect(result.usedFallback).toBe(true);
@@ -272,8 +272,8 @@ describe('Wave 2 Advisory Integration Tests', () => {
       // Let's rely on logic: lastFailureTime is manually set to past.
       // Date.now() will return current time, so diff > timeout.
       
-      const result = await circuitBreaker.execute('routing', async () => {
-        return { suggestion: 'Successful call' };
+      const result = await circuitBreaker.execute('routing', () => {
+        return Promise.resolve({ suggestion: 'Successful call' });
       });
       
       expect(result.usedFallback).toBe(false);

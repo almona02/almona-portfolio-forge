@@ -146,7 +146,7 @@ export class SmartRemnantSystem {
   /**
    * Get workshop-wide remnant visibility (multi-location view)
    */
-  async getMultiLocationRemnantView(
+  getMultiLocationRemnantView(
     _userId: string,
     _options: {
       profileId?: string;
@@ -171,13 +171,13 @@ export class SmartRemnantSystem {
     //   ...
     // }
 
-    return views;
+    return Promise.resolve(views);
   }
 
   /**
    * List remnant on marketplace
    */
-  async listRemnantOnMarketplace(
+  listRemnantOnMarketplace(
     remnantId: string,
     sellerWorkshopId: string,
     price: number,
@@ -199,7 +199,7 @@ export class SmartRemnantSystem {
       expiresAt: new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000),
     };
 
-    return listing;
+    return Promise.resolve(listing);
   }
 
   /**

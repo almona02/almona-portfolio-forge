@@ -150,8 +150,8 @@ describe.skip('Advisory Performance Benchmarks', () => {
       (circuitBreaker as any).lastFailureTime = Date.now();
       
       const startTime = performance.now();
-      await circuitBreaker.execute('routing', async () => {
-        throw new Error('Should not execute');
+      await circuitBreaker.execute('routing', () => {
+        return Promise.reject(new Error('Should not execute'));
       });
       
       const fallbackTime = performance.now() - startTime;

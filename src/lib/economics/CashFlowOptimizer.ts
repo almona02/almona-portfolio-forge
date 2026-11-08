@@ -39,7 +39,11 @@ export class CashFlowOptimizer {
   /**
    * Recommend payment terms based on context
    */
-  async recommendPaymentTerms(context: CashFlowContext): Promise<PaymentTerms> {
+  recommendPaymentTerms(context: CashFlowContext): Promise<PaymentTerms> {
+    return Promise.resolve(this.recommendPaymentTermsSync(context));
+  }
+
+  private recommendPaymentTermsSync(context: CashFlowContext): PaymentTerms {
     if (context.customerType === 'contractor') {
       return this.getContractorTerms(context);
     } else if (context.customerType === 'homeowner') {

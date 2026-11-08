@@ -95,10 +95,10 @@ export class WiringValidator {
   /**
    * RULE 1: Single Source of Truth (AICS-001 §6.2)
    */
-  private async validateSingleSourceOfTruth(): Promise<void> {
+  private validateSingleSourceOfTruth(): Promise<void> {
     // Check for duplicate component declarations in manifest
     const manifestPath = path.join(process.cwd(), 'src/components/fabricator/wiring-manifest.yaml');
-    if (!fs.existsSync(manifestPath)) return;
+    if (!fs.existsSync(manifestPath)) return Promise.resolve();
 
     const content = fs.readFileSync(manifestPath, 'utf-8');
     const componentPaths = content.match(/src\/[^\s:]+\.tsx/g) || [];
@@ -120,12 +120,13 @@ export class WiringValidator {
         });
       }
     }
+    return Promise.resolve();
   }
 
   /**
    * RULE 2: Tier Boundary Enforcement (AICS-001 §5.10.2)
    */
-  private async validateTierBoundaries(): Promise<void> {
+  private validateTierBoundaries(): Promise<void> {
     // Check Tier 3 components for automation patterns
     const tier3Components = [
       'src/components/fabricator/EngineeringBay.tsx',
@@ -156,12 +157,13 @@ export class WiringValidator {
         }
       }
     }
+    return Promise.resolve();
   }
 
   /**
    * RULE 3: Future Containment (AICS-001 §8.5)
    */
-  private async validateFutureContainment(): Promise<void> {
+  private validateFutureContainment(): Promise<void> {
     const srcDir = path.join(process.cwd(), 'src');
     const files = this.scanFiles(srcDir);
 
@@ -199,14 +201,15 @@ export class WiringValidator {
         }
       }
     }
+    return Promise.resolve();
   }
 
   /**
    * RULE 4: Callback Constraints (Guardrail A)
    */
-  private async validateCallbackConstraints(): Promise<void> {
+  private validateCallbackConstraints(): Promise<void> {
     const advisoryDir = path.join(process.cwd(), 'src/future/advisory-panels');
-    if (!fs.existsSync(advisoryDir)) return;
+    if (!fs.existsSync(advisoryDir)) return Promise.resolve();
 
     const files = this.scanFiles(advisoryDir);
 
@@ -228,6 +231,7 @@ export class WiringValidator {
         }
       }
     }
+    return Promise.resolve();
   }
 
   private scanFiles(dir: string): string[] {

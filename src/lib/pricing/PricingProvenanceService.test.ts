@@ -55,14 +55,14 @@ describe('savePricingWithProvenance', () => {
     let singleCalls = 0;
     mocks.chains['system_pricing_history'] = chainable({
       // First single(): max-version lookup → v4 exists. Second: insert return → v5 row.
-      single: vi.fn(async () => {
+      single: vi.fn(() => {
         singleCalls += 1;
-        if (singleCalls === 1) return { data: { version_number: 4 }, error: null };
-        return { data: historyRow(5), error: null };
+        if (singleCalls === 1) return Promise.resolve({ data: { version_number: 4 }, error: null });
+        return Promise.resolve({ data: historyRow(5), error: null });
       }),
     });
     const profilesChain = chainable({
-      single: vi.fn(async () => ({ data: { specifications: {} }, error: null })),
+      single: vi.fn(() => Promise.resolve({ data: { specifications: {} }, error: null })),
     });
     mocks.chains['fabricator_profiles'] = profilesChain;
 
@@ -101,9 +101,9 @@ describe('resolvePricingProvenance', () => {
 
   it('prefers the stamped sibling without touching history', async () => {
     const stamped = { version: 7, updatedBy: 'user-1', updatedAt: '2026-11-06T00:00:00Z', source: 'admin_catalog', note: null, currency: 'EGP' };
-    const historySingle = vi.fn(async () => ({ data: null, error: { code: 'PGRST116' } }));
+    const historySingle = vi.fn(() => Promise.resolve({ data: null, error: { code: 'PGRST116' } }));
     mocks.chains['fabricator_profiles'] = chainable({
-      single: vi.fn(async () => ({
+      single: vi.fn(() => Promise.resolve({
         data: { specifications: { system_pricing: { initialized: true }, system_pricing_provenance: stamped } },
         error: null,
       })),
@@ -116,10 +116,10 @@ describe('resolvePricingProvenance', () => {
 
   it('falls back to the latest history snapshot for older writers', async () => {
     mocks.chains['fabricator_profiles'] = chainable({
-      single: vi.fn(async () => ({ data: { specifications: { system_pricing: { initialized: true } } }, error: null })),
+      single: vi.fn(() => Promise.resolve({ data: { specifications: { system_pricing: { initialized: true } } }, error: null })),
     });
     mocks.chains['system_pricing_history'] = chainable({
-      single: vi.fn(async () => ({ data: historyRow(3), error: null })),
+      single: vi.fn(() => Promise.resolve({ data: historyRow(3), error: null })),
     });
 
     const provenance = await pricingProvenanceService.resolvePricingProvenance('profile-1', 'pack-1');
@@ -128,10 +128,10 @@ describe('resolvePricingProvenance', () => {
 
   it('returns null when no pricing exists', async () => {
     mocks.chains['fabricator_profiles'] = chainable({
-      single: vi.fn(async () => ({ data: { specifications: {} }, error: null })),
+      single: vi.fn(() => Promise.resolve({ data: { specifications: {} }, error: null })),
     });
     mocks.chains['system_pricing_history'] = chainable({
-      single: vi.fn(async () => ({ data: null, error: { code: 'PGRST116' } })),
+      single: vi.fn(() => Promise.resolve({ data: null, error: { code: 'PGRST116' } })),
     });
     await expect(pricingProvenanceService.resolvePricingProvenance('profile-1', 'pack-1')).resolves.toBeNull();
   });

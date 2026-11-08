@@ -23,7 +23,7 @@ export class Tier3Validator {
    * 
    * Performs deterministic validation against Tier 3 constraints.
    */
-  async validate(windowUnit: WindowUnit): Promise<ImportValidationResult> {
+  validate(windowUnit: WindowUnit): Promise<ImportValidationResult> {
     const errors: string[] = [];
     const warnings: string[] = [];
     const missing: string[] = [];
@@ -91,13 +91,13 @@ export class Tier3Validator {
       }
     }
 
-    return {
+    return Promise.resolve({
       isValid: errors.length === 0,
       errors,
       warnings,
       missing,
       mismatched,
-    };
+    });
   }
 }
 

@@ -97,126 +97,142 @@ export class QuickStartYDT {
   /**
    * Explain any UI element in Fabricator Pro
    */
-  async explainFabricatorUI(elementId: string): Promise<UIExplanation> {
-    const component = this.knowledgeGraph.getComponent(elementId);
+  explainFabricatorUI(elementId: string): Promise<UIExplanation> {
+    try {
+      const component = this.knowledgeGraph.getComponent(elementId);
 
-    // Build explanation
-    const purpose = component?.purpose || 'UI element in Fabricator Pro';
-    const usage = this.extractUsageFromWorkflow(elementId);
-    const commonMistakes = this.findCommonMistakes(elementId);
-    const expertTips = this.extractExpertTips(elementId);
-    const related = component?.relationships || [];
+      // Build explanation
+      const purpose = component?.purpose || 'UI element in Fabricator Pro';
+      const usage = this.extractUsageFromWorkflow(elementId);
+      const commonMistakes = this.findCommonMistakes(elementId);
+      const expertTips = this.extractExpertTips(elementId);
+      const related = component?.relationships || [];
 
-    return {
-      purpose,
-      usage,
-      commonMistakes,
-      expertTips,
-      related,
-    };
+      return Promise.resolve({
+        purpose,
+        usage,
+        commonMistakes,
+        expertTips,
+        related,
+      });
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    }
   }
 
   /**
    * Guide through any workflow step-by-step
    */
-  async guideThroughWorkflow(workflowName: string): Promise<WorkflowGuide> {
-    const workflow = this.knowledgeGraph.getWorkflow(workflowName);
+  guideThroughWorkflow(workflowName: string): Promise<WorkflowGuide> {
+    try {
+      const workflow = this.knowledgeGraph.getWorkflow(workflowName);
 
-    if (!workflow) {
-      // Return default guide if workflow not found
-      return {
-        steps: [],
-        totalTime: 'Unknown',
-        expectedAccuracy: '99.8%',
-        pitfalls: [],
-        optimizations: [],
-      };
+      if (!workflow) {
+        // Return default guide if workflow not found
+        return Promise.resolve({
+          steps: [],
+          totalTime: 'Unknown',
+          expectedAccuracy: '99.8%',
+          pitfalls: [],
+          optimizations: [],
+        });
+      }
+
+      // Enhance steps with explanations
+      const enhancedSteps = workflow.steps.map(step => ({
+        ...step,
+        explanation: step.explanation || this.findStepExplanation(step, workflowName),
+        expectedTime: step.expectedTime || this.getStepTimeEstimate(step),
+        warnings: step.warnings || this.findStepWarnings(step, workflowName),
+        shortcuts: step.shortcuts || this.findStepShortcuts(step, workflowName),
+      }));
+
+      return Promise.resolve({
+        steps: enhancedSteps,
+        totalTime: workflow.timeEstimate,
+        expectedAccuracy: workflow.accuracy,
+        pitfalls: workflow.commonMistakes || [],
+        optimizations: workflow.optimizations || [],
+      });
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
-
-    // Enhance steps with explanations
-    const enhancedSteps = workflow.steps.map(step => ({
-      ...step,
-      explanation: step.explanation || this.findStepExplanation(step, workflowName),
-      expectedTime: step.expectedTime || this.getStepTimeEstimate(step),
-      warnings: step.warnings || this.findStepWarnings(step, workflowName),
-      shortcuts: step.shortcuts || this.findStepShortcuts(step, workflowName),
-    }));
-
-    return {
-      steps: enhancedSteps,
-      totalTime: workflow.timeEstimate,
-      expectedAccuracy: workflow.accuracy,
-      pitfalls: workflow.commonMistakes || [],
-      optimizations: workflow.optimizations || [],
-    };
   }
 
   /**
    * Explain how an algorithm works
    */
-  async explainAlgorithm(algorithmName: string): Promise<string> {
-    const algorithm = this.knowledgeGraph.getAlgorithm(algorithmName);
+  explainAlgorithm(algorithmName: string): Promise<string> {
+    try {
+      const algorithm = this.knowledgeGraph.getAlgorithm(algorithmName);
 
-    if (!algorithm) {
-      return `Algorithm ${algorithmName} not found in knowledge base.`;
+      if (!algorithm) {
+        return Promise.resolve(`Algorithm ${algorithmName} not found in knowledge base.`);
+      }
+
+      let explanation = `Algorithm: ${algorithm.name}\n\n`;
+      explanation += `Purpose: ${algorithm.purpose}\n\n`;
+      explanation += `Strategy: ${algorithm.strategy}\n\n`;
+      explanation += `Accuracy: ${algorithm.accuracy}\n\n`;
+
+      if (algorithm.performance) {
+        explanation += `Performance: ${algorithm.performance}\n\n`;
+      }
+
+      if (algorithm.keyMethods.length > 0) {
+        explanation += `Key Methods: ${algorithm.keyMethods.join(', ')}\n\n`;
+      }
+
+      // Add context from README
+      if (algorithmName === 'ProductionOptimizer') {
+        explanation += 'This algorithm uses a genetic algorithm with remnant-first strategy to reduce material waste by 15-20% and planning time by 93% with 99.8% accuracy.';
+      } else if (algorithmName === 'DualOutputGenerator') {
+        explanation += 'This is the core engine that generates both visual geometry (85% accuracy) and production data (99.8% accuracy) from the same intelligent core.';
+      }
+
+      return Promise.resolve(explanation);
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
-
-    let explanation = `Algorithm: ${algorithm.name}\n\n`;
-    explanation += `Purpose: ${algorithm.purpose}\n\n`;
-    explanation += `Strategy: ${algorithm.strategy}\n\n`;
-    explanation += `Accuracy: ${algorithm.accuracy}\n\n`;
-
-    if (algorithm.performance) {
-      explanation += `Performance: ${algorithm.performance}\n\n`;
-    }
-
-    if (algorithm.keyMethods.length > 0) {
-      explanation += `Key Methods: ${algorithm.keyMethods.join(', ')}\n\n`;
-    }
-
-    // Add context from README
-    if (algorithmName === 'ProductionOptimizer') {
-      explanation += 'This algorithm uses a genetic algorithm with remnant-first strategy to reduce material waste by 15-20% and planning time by 93% with 99.8% accuracy.';
-    } else if (algorithmName === 'DualOutputGenerator') {
-      explanation += 'This is the core engine that generates both visual geometry (85% accuracy) and production data (99.8% accuracy) from the same intelligent core.';
-    }
-
-    return explanation;
   }
 
   /**
    * Get Egyptian-specific advice
    */
-  async getEgyptianAdvice(context: string): Promise<string> {
-    const egyptianData = this.knowledgeGraph.getEgyptianData();
+  getEgyptianAdvice(context: string): Promise<string> {
+    try {
+      const egyptianData = this.knowledgeGraph.getEgyptianData();
 
-    if (!egyptianData) {
-      return 'Egyptian market data not available.';
+      if (!egyptianData) {
+        return Promise.resolve('Egyptian market data not available.');
+      }
+
+      let advice = 'Egyptian Market Intelligence:\n\n';
+
+      // Add ROI proofs
+      advice += `Time Reduction: ${egyptianData.roiProofs.timeReduction}\n`;
+      advice += `Material Savings: ${egyptianData.roiProofs.materialSavings}\n`;
+      advice += `Accuracy: ${egyptianData.roiProofs.accuracy}\n\n`;
+
+      // Add context-specific advice
+      if (context.toLowerCase().includes('cairo')) {
+        advice += 'For Cairo workshops: Material preferences vary by area (New Cairo, Maadi, Heliopolis).';
+      } else if (context.toLowerCase().includes('alexandria')) {
+        advice += 'For Alexandria workshops: Coastal conditions require corrosion-resistant hardware.';
+      } else if (context.toLowerCase().includes('upper egypt')) {
+        advice += 'For Upper Egypt workshops: Transport costs are higher, consider local suppliers.';
+      }
+
+      return Promise.resolve(advice);
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
-
-    let advice = 'Egyptian Market Intelligence:\n\n';
-
-    // Add ROI proofs
-    advice += `Time Reduction: ${egyptianData.roiProofs.timeReduction}\n`;
-    advice += `Material Savings: ${egyptianData.roiProofs.materialSavings}\n`;
-    advice += `Accuracy: ${egyptianData.roiProofs.accuracy}\n\n`;
-
-    // Add context-specific advice
-    if (context.toLowerCase().includes('cairo')) {
-      advice += 'For Cairo workshops: Material preferences vary by area (New Cairo, Maadi, Heliopolis).';
-    } else if (context.toLowerCase().includes('alexandria')) {
-      advice += 'For Alexandria workshops: Coastal conditions require corrosion-resistant hardware.';
-    } else if (context.toLowerCase().includes('upper egypt')) {
-      advice += 'For Upper Egypt workshops: Transport costs are higher, consider local suppliers.';
-    }
-
-    return advice;
   }
 
   /**
    * Proactively guide users based on their actions
    */
-  async proactiveGuidance(userAction: string): Promise<{
+  proactiveGuidance(userAction: string): Promise<{
     currentStep: string;
     nextRecommended: string;
     why: string;
@@ -224,46 +240,50 @@ export class QuickStartYDT {
     commonMistake?: string;
     optimizationTip?: string;
   }> {
-    // Find workflow for this action
-    const workflows = this.knowledgeGraph.getAllWorkflows();
-    const relevantWorkflow = workflows.find(w => 
-      w.steps.some(step => step.action.toLowerCase().includes(userAction.toLowerCase()))
-    );
+    try {
+      // Find workflow for this action
+      const workflows = this.knowledgeGraph.getAllWorkflows();
+      const relevantWorkflow = workflows.find(w => 
+        w.steps.some(step => step.action.toLowerCase().includes(userAction.toLowerCase()))
+      );
 
-    if (!relevantWorkflow) {
-      return {
-        currentStep: userAction,
-        nextRecommended: 'Continue with workflow',
-        why: 'Based on standard Fabricator Pro workflow',
-        timeEstimate: 'Unknown',
-      };
-    }
+      if (!relevantWorkflow) {
+        return Promise.resolve({
+          currentStep: userAction,
+          nextRecommended: 'Continue with workflow',
+          why: 'Based on standard Fabricator Pro workflow',
+          timeEstimate: 'Unknown',
+        });
+      }
 
-    // Find current step
-    const currentStepIndex = relevantWorkflow.steps.findIndex(step =>
-      step.action.toLowerCase().includes(userAction.toLowerCase())
-    );
+      // Find current step
+      const currentStepIndex = relevantWorkflow.steps.findIndex(step =>
+        step.action.toLowerCase().includes(userAction.toLowerCase())
+      );
 
-    if (currentStepIndex === -1 || currentStepIndex >= relevantWorkflow.steps.length - 1) {
-      return {
-        currentStep: userAction,
-        nextRecommended: 'Review and export',
+      if (currentStepIndex === -1 || currentStepIndex >= relevantWorkflow.steps.length - 1) {
+        return Promise.resolve({
+          currentStep: userAction,
+          nextRecommended: 'Review and export',
+          why: `According to ${relevantWorkflow.name} workflow`,
+          timeEstimate: '5 minutes',
+        });
+      }
+
+      const nextStep = relevantWorkflow.steps[currentStepIndex + 1];
+      const commonMistake = relevantWorkflow.commonMistakes[currentStepIndex] || undefined;
+
+      return Promise.resolve({
+        currentStep: relevantWorkflow.steps[currentStepIndex].action,
+        nextRecommended: nextStep.action,
         why: `According to ${relevantWorkflow.name} workflow`,
-        timeEstimate: '5 minutes',
-      };
+        timeEstimate: nextStep.expectedTime || '2 minutes',
+        commonMistake,
+        optimizationTip: relevantWorkflow.optimizations?.[currentStepIndex],
+      });
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
-
-    const nextStep = relevantWorkflow.steps[currentStepIndex + 1];
-    const commonMistake = relevantWorkflow.commonMistakes[currentStepIndex] || undefined;
-
-    return {
-      currentStep: relevantWorkflow.steps[currentStepIndex].action,
-      nextRecommended: nextStep.action,
-      why: `According to ${relevantWorkflow.name} workflow`,
-      timeEstimate: nextStep.expectedTime || '2 minutes',
-      commonMistake,
-      optimizationTip: relevantWorkflow.optimizations?.[currentStepIndex],
-    };
   }
 
   // Private helper methods
@@ -321,33 +341,37 @@ export class QuickStartYDT {
     return 'I can help you with questions about Fabricator Pro workflows, algorithms, components, and Egyptian market intelligence. Please ask a specific question.';
   }
 
-  private async suggestNextSteps(_question: string, category: KnowledgeQuery['type']): Promise<string[]> {
-    const nextSteps: string[] = [];
+  private suggestNextSteps(_question: string, category: KnowledgeQuery['type']): Promise<string[]> {
+    try {
+      const nextSteps: string[] = [];
 
-    if (category === 'workflow') {
-      nextSteps.push('Try the workflow in Fabricator Pro');
-      nextSteps.push('Check the workflow documentation');
-    } else if (category === 'algorithm') {
-      nextSteps.push('Review algorithm documentation');
-      nextSteps.push('Test the algorithm with sample data');
-    } else if (category === 'component') {
-      nextSteps.push('Use the component in Fabricator Pro');
-      nextSteps.push('Check related components');
+      if (category === 'workflow') {
+        nextSteps.push('Try the workflow in Fabricator Pro');
+        nextSteps.push('Check the workflow documentation');
+      } else if (category === 'algorithm') {
+        nextSteps.push('Review algorithm documentation');
+        nextSteps.push('Test the algorithm with sample data');
+      } else if (category === 'component') {
+        nextSteps.push('Use the component in Fabricator Pro');
+        nextSteps.push('Check related components');
+      }
+
+      return Promise.resolve(nextSteps);
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
-
-    return nextSteps;
   }
 
-  private async getExpertTip(_question: string, category: KnowledgeQuery['type']): Promise<string | undefined> {
+  private getExpertTip(_question: string, category: KnowledgeQuery['type']): Promise<string | undefined> {
     if (category === 'workflow') {
-      return 'Pro tip: Use Quick Order Mode for faster workflow if you\'re an expert fabricator.';
+      return Promise.resolve('Pro tip: Use Quick Order Mode for faster workflow if you\'re an expert fabricator.');
     }
 
     if (category === 'algorithm') {
-      return 'Pro tip: The optimization algorithm works best with remnant-first strategy for Egyptian workshops.';
+      return Promise.resolve('Pro tip: The optimization algorithm works best with remnant-first strategy for Egyptian workshops.');
     }
 
-    return undefined;
+    return Promise.resolve(undefined);
   }
 
   private extractUsageFromWorkflow(elementId: string): string {
