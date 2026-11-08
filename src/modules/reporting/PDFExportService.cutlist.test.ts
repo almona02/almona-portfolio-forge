@@ -16,7 +16,7 @@ describe('solver to cut-list PDF', () => {
       const result = await new AdaptiveSolver({ maxSolvingTime: 30, complexityThresholds: { simple: 100, medium: 500 } }).solve({ components: project.components, profiles: [profile], defaultStockLength: 6000 }, [profile]);
       const branding = { companyName: 'ALMONA - DIAGNOSTIC TEST ONLY' };
       const service = new PDFExportService(branding);
-      vi.spyOn(service as any, 'resolveProfileThumbnail').mockResolvedValue(null);
+      vi.spyOn(service as unknown as { resolveProfileThumbnail: (project: WindowUnit) => Promise<string | null> }, 'resolveProfileThumbnail').mockResolvedValue(null);
       const blob = await service.generateCuttingListPDF(project, result, { branding, includePatternVisualization: false });
       const bytes = new Uint8Array(await blob.arrayBuffer());
       expect((await PDFDocument.load(bytes)).getPageCount()).toBeGreaterThan(1);

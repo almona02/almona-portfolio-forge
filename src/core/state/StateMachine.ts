@@ -21,6 +21,7 @@
  */
 
 import { ActivityLogger } from '@/core/activity/ActivityLogger';
+import type { ActivityEntityType } from '@/core/activity/activityTypes';
 
 /**
  * State transition definition
@@ -53,7 +54,7 @@ export interface TransitionContext {
   /** Reason for transition */
   reason?: string;
   /** Additional metadata */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   /** Previous state */
   fromState?: string;
   /** New state */
@@ -186,9 +187,9 @@ export class StateMachineEngine<TState extends string> {
 
     // Log transition activity
     await ActivityLogger.log({
-      entityType: context.entityType as any,
+      entityType: context.entityType as ActivityEntityType,
       entityId: context.entityId,
-      eventType: `${context.entityType}.status_changed` as any,
+      eventType: `${context.entityType}.status_changed`,
       userId: context.userId,
       metadata: {
         description: `State changed from "${this.currentState}" to "${to}"`,

@@ -76,7 +76,7 @@ export interface ImportBridgeConfig {
   /** Validation constraints */
   constraints: ImportConstraint[];
   /** Default values */
-  defaults: Record<string, any>;
+  defaults: Record<string, unknown>;
 }
 
 /**
@@ -88,7 +88,7 @@ export interface ImportConstraint {
   /** Constraint type */
   type: 'min' | 'max' | 'range' | 'enum' | 'regex' | 'required';
   /** Constraint value */
-  value: any;
+  value: unknown;
   /** Error message */
   errorMessage: string;
 }

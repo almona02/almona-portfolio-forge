@@ -198,7 +198,7 @@ export const ExportProgressDashboard: React.FC<ExportProgressDashboardProps> = (
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={selectedTab} onValueChange={(v) => setSelectedTab(v as any)}>
+          <Tabs value={selectedTab} onValueChange={(v) => setSelectedTab(v as typeof selectedTab)}>
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="active">Active</TabsTrigger>
               <TabsTrigger value="queue">Queue</TabsTrigger>

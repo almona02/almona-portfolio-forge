@@ -422,7 +422,7 @@ export const Collaborative3DViewer: React.FC<Collaborative3DViewerProps> = ({
         ))}
 
         <OrbitControls
-          ref={controlsRef as any}
+          ref={controlsRef as unknown as React.ComponentProps<typeof OrbitControls>['ref']}
           onChange={handleCameraChange}
           enablePan={true}
           enableZoom={true}

@@ -108,7 +108,7 @@ export function measureErrorBoundaryMethod(target: unknown, propertyName: string
   const method = descriptor.value;
 
   descriptor.value = function (...args: unknown[]) {
-    const markName = `${(target as any).constructor.name}:${propertyName}`;
+    const markName = `${(target as { constructor: { name: string } }).constructor.name}:${propertyName}`;
     errorBoundaryTracker.startMark(markName);
     
     try {

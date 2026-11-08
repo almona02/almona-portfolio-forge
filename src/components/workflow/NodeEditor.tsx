@@ -47,7 +47,7 @@ export const NodeEditor: React.FC<NodeEditorProps> = ({
     className,
 }) => {
     const [label, setLabel] = useState('');
-    const [config, setConfig] = useState<Record<string, any>>({});
+    const [config, setConfig] = useState<NonNullable<WorkflowNode['data']['config']>>({});
     const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {

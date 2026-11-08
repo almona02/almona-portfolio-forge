@@ -71,7 +71,7 @@ export const CivilizationGallery: React.FC = () => {
               <select 
                 className="px-4 py-2 border rounded-lg bg-background text-sm font-bold text-foreground"
                 value={filter.category}
-                onChange={e => setFilter({...filter, category: e.target.value as any})}
+                onChange={e => setFilter({...filter, category: e.target.value as GalleryFilterState['category']})}
               >
                 <option value="all">كل الأنظمة</option>
                 <option value="aluminum">ألومنيوم</option>
@@ -81,7 +81,7 @@ export const CivilizationGallery: React.FC = () => {
               <select 
                 className="px-4 py-2 border rounded-lg bg-background text-sm font-bold text-foreground"
                 value={filter.sortBy}
-                onChange={e => setFilter({...filter, sortBy: e.target.value as any})}
+                onChange={e => setFilter({...filter, sortBy: e.target.value as GalleryFilterState['sortBy']})}
               >
                 <option value="marketShare">الأكثر انتشاراً</option>
                 <option value="price">الأقل سعراً</option>

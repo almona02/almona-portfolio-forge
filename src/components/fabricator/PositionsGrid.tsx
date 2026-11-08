@@ -74,7 +74,7 @@ const PositionsGridComponent: React.FC<PositionsGridProps> = ({ currentProject }
   const navigate = useNavigate();
 
   const jobs = useMemo(() => {
-    return positionsRaw.map((row: any) => mapPositionRowToWindowUnit(row)).filter((u): u is WindowUnit => u != null);
+    return positionsRaw.map((row: Parameters<typeof mapPositionRowToWindowUnit>[0]) => mapPositionRowToWindowUnit(row)).filter((u): u is WindowUnit => u != null);
   }, [positionsRaw]);
   const [searchTerm, setSearchTerm] = useState('');
   const deferredSearchTerm = useDeferredValue(searchTerm);

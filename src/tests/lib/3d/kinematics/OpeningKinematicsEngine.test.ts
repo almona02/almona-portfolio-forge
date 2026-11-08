@@ -13,7 +13,7 @@ describe('OpeningKinematicsEngine', () => {
   beforeEach(() => {
     engine = new OpeningKinematicsEngine();
     // Bypass collision detector's strict bounding box logic for these unit tests
-    (engine as any).collisionDetector = {
+    (engine as unknown as { collisionDetector: unknown }).collisionDetector = {
       checkCollisions: () => false,
       getCollisionDetails: () => ({ hasCollision: false })
     };

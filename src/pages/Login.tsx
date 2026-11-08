@@ -18,6 +18,25 @@ import { toast } from 'sonner';
 
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
+const LOGIN_FALLBACK_ERROR = 'We were unable to complete your login request. Please verify your credentials and try again.';
+
+const getLoginErrorMessage = (error: unknown): string => {
+  if (typeof error === 'object' && error !== null) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === 'string' && message) {
+      return message;
+    }
+    const nested = (error as { error?: unknown }).error;
+    if (typeof nested === 'object' && nested !== null) {
+      const nestedMessage = (nested as { message?: unknown }).message;
+      if (typeof nestedMessage === 'string' && nestedMessage) {
+        return nestedMessage;
+      }
+    }
+  }
+  return LOGIN_FALLBACK_ERROR;
+};
+
 const Login = () => {
   const { t } = useTranslation('translation');
   const [email, setEmail] = useState('');
@@ -70,8 +89,8 @@ const Login = () => {
         // ignore storage issues
       }
       void navigate(postLoginPath, { replace: true });
-    } catch (error: any) {
-      const errorMessage = error?.message || error?.error?.message || 'We were unable to complete your login request. Please verify your credentials and try again.';
+    } catch (error) {
+      const errorMessage = getLoginErrorMessage(error);
       setError(errorMessage);
 
       toast.error(errorMessage, {

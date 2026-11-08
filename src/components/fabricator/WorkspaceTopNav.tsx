@@ -1,4 +1,5 @@
 ﻿import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+import type { FabricatorWorkspaceState } from '@/context/FabricatorWorkspaceContext';
 import { fabricatorRoutes } from '@/lib/fabricator/routes';
 import { isRTL } from '@/lib/i18n';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -51,7 +52,7 @@ export const WorkspaceTopNav: React.FC = () => {
   const handleTabChange = (tabId: string) => {
     const tab = workspaceTabs.find((t) => t.id === tabId);
     if (!tab) return;
-    dispatch({ type: 'SET_ACTIVE_TAB', payload: tabId as any });
+    dispatch({ type: 'SET_ACTIVE_TAB', payload: tabId as FabricatorWorkspaceState['activeWorkspaceTab'] });
     void navigate(tab.path());
   };
 

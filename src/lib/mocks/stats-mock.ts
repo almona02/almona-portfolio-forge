@@ -47,6 +47,6 @@ if (typeof module !== 'undefined' && module.exports) {
 
 // For global usage
 if (typeof window !== 'undefined') {
-  (window as any).Stats = Stats;
+  (window as Window & { Stats?: typeof Stats }).Stats = Stats;
 }
 

@@ -6,7 +6,8 @@ import { compareMachines, generateFabricationReport } from '@/lib/reports/genera
 import { useCallback, useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 // Lazy import file-saver to avoid adding to initial bundle
-let saveAsFn: ((data: Blob | File, filename?: string, opts?: unknown) => void) | null = null;
+type SaveAsFn = typeof import('file-saver').saveAs;
+let saveAsFn: SaveAsFn | null = null;
 
 export default function FabricationReportGenerator() {
   const [materialType, setMaterialType] = useState<'aluminum' | 'upvc'>('aluminum');
@@ -56,12 +57,15 @@ export default function FabricationReportGenerator() {
     const blob = new Blob([report.pdfBytes as BlobPart], { type: 'application/pdf' });
     if (!saveAsFn) {
       const mod = await import('file-saver');
-      saveAsFn = mod.saveAs as any;
+      saveAsFn = mod.saveAs;
     }
-    saveAsFn!(blob, `fabrication-report-${new Date().toISOString().slice(0,10)}.pdf`);
+    saveAsFn(blob, `fabrication-report-${new Date().toISOString().slice(0,10)}.pdf`);
 
     // Set comparison data
-    setComparisonData(compareMachines(report.comparisons) as any);
+    const comparisonResult = compareMachines(report.comparisons);
+    if (comparisonResult.yilmaz) {
+      setComparisonData({ ...comparisonResult, yilmaz: comparisonResult.yilmaz });
+    }
   }, [materialType, machineModel, profileLength, customPrices, isArabic]);
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -25,7 +25,7 @@ interface PerformanceBenchmarkChartProps {
 
 export const PerformanceBenchmarkChart: React.FC<PerformanceBenchmarkChartProps> = ({ userId }) => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<string>('adaptive');
-  const [trends, setTrends] = useState<any[]>([]);
+  const [trends, setTrends] = useState<Awaited<ReturnType<typeof performanceBenchmarker.getPerformanceTrends>>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

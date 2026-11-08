@@ -109,7 +109,7 @@ export const MachineHealthTrends: React.FC<MachineHealthTrendsProps> = ({ machin
           </div>
         </CardHeader>
         <CardContent>
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
             <TabsList className="grid grid-cols-3">
               <TabsTrigger value="vibration">Vibration</TabsTrigger>
               <TabsTrigger value="temperature">Temperature</TabsTrigger>

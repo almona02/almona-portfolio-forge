@@ -2,11 +2,11 @@ import React, { lazy, Suspense } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 // Lazy load chart components to reduce bundle size
-const LazyAreaChart: any = lazy(() => import('recharts').then(module => ({
+const LazyAreaChart = lazy(() => import('recharts').then(module => ({
   default: module.AreaChart
 })));
-const LazyArea: any = lazy(() => import('recharts').then(module => ({
-  default: module.Area as any
+const LazyArea = lazy(() => import('recharts').then(module => ({
+  default: module.Area as unknown as React.FunctionComponent<Record<string, unknown>>
 })));
 const LazyCartesianGrid = lazy(() => import('recharts').then(module => ({
   default: module.CartesianGrid

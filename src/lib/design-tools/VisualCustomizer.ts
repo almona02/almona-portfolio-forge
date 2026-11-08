@@ -26,7 +26,7 @@ export interface WindowStyle {
   frameFinish: Finish;
   sashFinish: Finish;
   hardwareFinish: Finish;
-  customProperties?: Record<string, any>;
+  customProperties?: Record<string, unknown>;
 }
 
 /**

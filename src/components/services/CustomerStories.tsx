@@ -49,7 +49,7 @@ interface CustomerStory {
   featured: boolean;
 }
 
-const getCustomerStories = (t: any): CustomerStory[] => [
+const getCustomerStories = (t: (key: string) => string): CustomerStory[] => [
   {
     id: 'hassan-sons',
     name: t('services.ahmed_hassan'),

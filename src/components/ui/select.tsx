@@ -29,10 +29,10 @@ export const Select = ({ children, value, onValueChange }: SelectProps) => {
     <div className="select">
       {React.Children.map(children, child => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child, { 
+          return React.cloneElement(child as React.ReactElement<React.ComponentProps<typeof SelectItem>>, {
             selectedValue: value,
             onValueChange 
-          } as any);
+          });
         }
         return child;
       })}

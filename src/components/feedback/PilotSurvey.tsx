@@ -27,7 +27,7 @@ export type SurveyType = 'week1' | 'week2' | 'week4' | 'week8' | 'week12';
 export interface PilotSurveyData {
   surveyType: SurveyType;
   workshopId: string;
-  responses: Record<string, any>;
+  responses: Record<string, string | number>;
   submittedAt: Date;
 }
 
@@ -87,7 +87,7 @@ export const PilotSurvey: React.FC<PilotSurveyProps> = ({
   workshopId,
   onSubmit
 }) => {
-  const [responses, setResponses] = useState<Record<string, any>>({});
+  const [responses, setResponses] = useState<Record<string, string | number>>({});
   const [submitted, setSubmitted] = useState(false);
 
   const questions = SURVEY_QUESTIONS[surveyType];
@@ -110,7 +110,7 @@ export const PilotSurvey: React.FC<PilotSurveyProps> = ({
     setSubmitted(true);
   };
 
-  const updateResponse = (id: string, value: any) => {
+  const updateResponse = (id: string, value: string | number) => {
     setResponses(prev => ({ ...prev, [id]: value }));
   };
 
@@ -168,7 +168,7 @@ export const PilotSurvey: React.FC<PilotSurveyProps> = ({
                 )}
                 {question.type === 'select' && (
                   <Select
-                    value={responses[question.id] || ''}
+                    value={String(responses[question.id] || '')}
                     onValueChange={(v) => updateResponse(question.id, v)}
                   >
                     <SelectTrigger className="bg-card border-border">

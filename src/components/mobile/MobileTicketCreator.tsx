@@ -25,7 +25,7 @@ import {
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { offlineSyncService } from '@/lib/offline-sync';
+import { offlineSyncService, type OfflineTicket } from '@/lib/offline-sync';
 
 // Mobile-optimized ticket creation with offline support
 interface MobileTicketData {
@@ -277,7 +277,7 @@ export const MobileTicketCreator: React.FC<{
         onTicketCreated?.(data.id);
       } else {
         // Offline - use enhanced offline sync service
-        const offlineId = await offlineSyncService.storeOfflineTicket(submission as any);
+        const offlineId = await offlineSyncService.storeOfflineTicket(submission as Omit<OfflineTicket, 'id' | 'offline_timestamp'>);
         onTicketCreated?.(offlineId);
       }
 

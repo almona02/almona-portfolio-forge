@@ -210,9 +210,9 @@ export const FabricatorCustomersPanel: React.FC = () => {
 
       const { data, error: insertError } = await supabase
         .from('fabricator_customers')
-        .insert(payload as any)
+        .insert(payload)
         .select('*')
-        .single() as any;
+        .single();
 
       if (insertError) throw insertError;
 
@@ -253,7 +253,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
         updated_at: new Date().toISOString(),
       };
 
-      const db = supabase as any;
+      const db = supabase;
       const { data, error: updateError } = await db
         .from('fabricator_customers')
         .update(payload)

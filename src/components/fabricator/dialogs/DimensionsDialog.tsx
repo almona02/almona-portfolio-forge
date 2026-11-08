@@ -28,7 +28,7 @@ import { cn } from '@/lib/utils';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Button } from '@/shared/ui/ui/button';
 import { Label } from '@/shared/ui/ui/label';
-import type { WindowUnit } from '@/types/fabricator';
+import type { MeasurementData, WindowUnit } from '@/types/fabricator';
 import { AlertCircle, Ruler } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -140,7 +140,7 @@ export const DimensionsDialog: React.FC<DimensionsDialogProps> = ({
         width: String(dimensions.width),
         height: String(dimensions.height),
         systemPackId: systemPackId || project?.systemPackId,
-      } as any,
+      } as MeasurementData,
       constraints
     );
 

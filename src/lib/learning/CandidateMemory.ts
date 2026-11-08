@@ -4,7 +4,17 @@
  * Stores plausible but unverified knowledge until consensus is reached
  */
 
-import { KnowledgeValidator, type ValidationResult } from './KnowledgeValidator';
+import { KnowledgeValidator, type ClaimContext, type ValidationResult } from './KnowledgeValidator';
+
+type ClaimUserType = NonNullable<ClaimContext['userType']>;
+
+function isClaimUserType(value: string | undefined): value is ClaimUserType {
+  return value === 'technical_office'
+    || value === 'workshop_owner'
+    || value === 'operator'
+    || value === 'beginner'
+    || value === 'maalem';
+}
 
 export interface CandidateFact {
   id: string;
@@ -61,10 +71,11 @@ export class CandidateMemory {
     messageArabic: string;
   }> {
     // 1. Validate claim
+    const rawUserType = context?.userType;
     const validation = await this.validator.evaluateClaim({
       claim,
       userId,
-      userType: context?.userType as any,
+      userType: isClaimUserType(rawUserType) ? rawUserType : undefined,
       location: context?.location,
       category: context?.category,
     });

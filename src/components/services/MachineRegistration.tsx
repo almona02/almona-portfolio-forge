@@ -131,9 +131,9 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
           rawFiles.map(f => api.uploadMachinePhoto(f, user.id, machine.serialNumber || 'unassigned'))
         );
         uploadedUrls = uploads
-          .filter(r => r.status === 'fulfilled')
+          .filter((r): r is PromiseFulfilledResult<string> => r.status === 'fulfilled')
            
-          .map(r => (r as any).value as string);
+          .map(r => r.value);
         const failed = uploads.filter(r => r.status === 'rejected').length;
         if (failed) {
           toast.warning('Some photos failed to upload', { description: `${failed} photo(s) could not be saved.` });

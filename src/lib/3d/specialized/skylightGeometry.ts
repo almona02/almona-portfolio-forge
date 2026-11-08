@@ -56,8 +56,11 @@ export function generateSkylightGeometry(
  * Skylights require minimum 5° slope for proper drainage.
  */
 function getSlopeAngle(pattern: EgyptianPattern): number {
-  const patternAny = pattern as any;
-  const slopeAngle = patternAny.skylight?.slopeAngle || patternAny.slopeAngle;
+  const patternWithSlope = pattern as EgyptianPattern & {
+    skylight?: { slopeAngle?: number };
+    slopeAngle?: number;
+  };
+  const slopeAngle = patternWithSlope.skylight?.slopeAngle || patternWithSlope.slopeAngle;
   
   // Minimum 5° for drainage (building code requirement)
   return Math.max(5, slopeAngle || 5);

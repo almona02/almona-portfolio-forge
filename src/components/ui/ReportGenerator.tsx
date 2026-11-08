@@ -152,7 +152,7 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
             return;
         }
 
-        let data: Record<string, any>;
+        let data: Record<string, unknown>;
         try {
             data = JSON.parse(reportData);
         } catch {

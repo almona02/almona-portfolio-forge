@@ -96,7 +96,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     // If asChild is true, we merge props safely without casting to any
     if (asChild && React.isValidElement(children)) {
-      return React.cloneElement(children as React.ReactElement<any>, {
+      return React.cloneElement(children as React.ReactElement, {
         className: cn(buttonVariants({ variant, size, loading, className }), fullWidth ? "w-full" : "", children.props.className),
         ref,
         disabled: isDisabled,

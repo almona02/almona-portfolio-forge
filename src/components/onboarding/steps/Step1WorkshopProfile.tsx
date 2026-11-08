@@ -53,7 +53,7 @@ export const Step1WorkshopProfile: React.FC<Step1WorkshopProfileProps> = ({
           <Label>Location</Label>
           <Select
             value={data.workshopProfile.location}
-            onValueChange={(v) => updateWorkshopProfile({ location: v as any })}
+            onValueChange={(v) => updateWorkshopProfile({ location: v as OnboardingData['workshopProfile']['location'] })}
           >
             <SelectTrigger className="bg-card border-border">
               <SelectValue />
@@ -71,7 +71,7 @@ export const Step1WorkshopProfile: React.FC<Step1WorkshopProfileProps> = ({
           <Label>Workshop Size</Label>
           <Select
             value={data.workshopProfile.size}
-            onValueChange={(v) => updateWorkshopProfile({ size: v as any })}
+            onValueChange={(v) => updateWorkshopProfile({ size: v as OnboardingData['workshopProfile']['size'] })}
           >
             <SelectTrigger className="bg-card border-border">
               <SelectValue />
@@ -88,7 +88,7 @@ export const Step1WorkshopProfile: React.FC<Step1WorkshopProfileProps> = ({
           <Label>Primary Material</Label>
           <Select
             value={data.workshopProfile.primaryMaterial}
-            onValueChange={(v) => updateWorkshopProfile({ primaryMaterial: v as any })}
+            onValueChange={(v) => updateWorkshopProfile({ primaryMaterial: v as OnboardingData['workshopProfile']['primaryMaterial'] })}
           >
             <SelectTrigger className="bg-card border-border">
               <SelectValue />

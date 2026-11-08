@@ -22,6 +22,8 @@ import { RadioGroup, RadioGroupItem } from '@/shared/ui/ui/radio-group';
 import { CheckCircle2, Star } from 'lucide-react';
 import React, { useState } from 'react';
 
+export type FeedbackIssueSeverity = 'low' | 'medium' | 'high' | 'critical';
+
 export interface EarlyAccessFeedbackData {
   workshopId: string;
   projectId: string;
@@ -37,7 +39,7 @@ export interface EarlyAccessFeedbackData {
     satisfaction: number; // 1-5
   };
   issues: Array<{
-    severity: 'low' | 'medium' | 'high' | 'critical';
+    severity: FeedbackIssueSeverity;
     description: string;
     feature: string;
   }>;
@@ -63,7 +65,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
   const [easeOfUse, setEaseOfUse] = useState<number>(5);
   const [timeSavings, setTimeSavings] = useState<number>(0);
   const [satisfaction, setSatisfaction] = useState<number>(5);
-  const [issues, setIssues] = useState<Array<{ severity: string; description: string; feature: string }>>([]);
+  const [issues, setIssues] = useState<EarlyAccessFeedbackData['issues']>([]);
   const [suggestions, setSuggestions] = useState<string>('');
   const [wouldRecommend, setWouldRecommend] = useState<boolean>(true);
   const [submitted, setSubmitted] = useState(false);
@@ -83,7 +85,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
         timeSavings,
         satisfaction
       },
-      issues: issues as any,
+      issues,
       suggestions,
       wouldRecommend
     };
@@ -119,7 +121,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <Label>Which feature are you testing?</Label>
-              <Select value={feature} onValueChange={(v) => setFeature(v as any)}>
+              <Select value={feature} onValueChange={(v) => setFeature(v as EarlyAccessFeedbackData['feature'])}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -244,7 +246,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
                       value={issue.severity}
                       onValueChange={(v) => {
                         const newIssues = [...issues];
-                        newIssues[index].severity = v;
+                        newIssues[index].severity = v as FeedbackIssueSeverity;
                         setIssues(newIssues);
                       }}
                     >

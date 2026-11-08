@@ -8,6 +8,7 @@
  * Designed for Ahmed persona: Workshop owners with minimal technical knowledge.
  */
 
+import type { Profile } from '@/types/fabricator';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
@@ -54,7 +55,7 @@ interface WizardModeWrapperProps {
   projectId?: string;
   onComplete?: (wizardData: WizardState) => void;
   onExit?: () => void;
-  profiles?: any[]; // Using any[] temporarily to avoid import cycles, or better import Profile
+  profiles?: Profile[];
 }
 
 export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: WizardModeWrapperProps) {
@@ -358,10 +359,10 @@ export function WizardModeWrapper({ projectId, onComplete, profiles = [] }: Wiza
             {/* Step 1: Window Type Selection */}
             {wizardState.currentStep === 1 && (
               <div className="grid grid-cols-2 gap-6">
-                {['fixed', 'sliding', 'turn', 'door'].map((type) => (
+                {(['fixed', 'sliding', 'turn', 'door'] as const).map((type) => (
                   <button
                     key={type}
-                    onClick={() => handleWindowTypeSelect(type as any)}
+                    onClick={() => handleWindowTypeSelect(type)}
                     className={`p-8 border-2 rounded-xl text-center transition-all ${
                       wizardState.windowType === type
                         ? 'border-primary bg-primary/5 shadow-lg'

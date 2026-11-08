@@ -92,12 +92,13 @@ export class ZeroDecisionGenerator {
     );
     
     // 2. Material choice (based on shape complexity)
+    const preferredMaterial = workshopContext.preferredMaterials?.[0];
     const materialRecommendation = this.materialStrategyCalculator.chooseMaterialForShape(
       shape.shapeType,
       shape.materialStrategy.complexityLevel,
       this.mapMachineCapabilities(workshopContext.machineCapabilities),
       {
-        preferredMaterial: workshopContext.preferredMaterials?.[0] as any,
+        preferredMaterial: preferredMaterial === 'aluminum' || preferredMaterial === 'upvc' ? preferredMaterial : undefined,
         preferredSystem: undefined
       }
     );

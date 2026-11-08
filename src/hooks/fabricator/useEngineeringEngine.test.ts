@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
-import type { SystemPack, WindowGrid, WindowUnit } from '@/types/fabricator';
+import type { Profile, SystemPack, WindowGrid, WindowUnit } from '@/types/fabricator';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useEngineeringEngine } from './useEngineeringEngine';
 
@@ -67,7 +67,7 @@ describe('useEngineeringEngine system selection', () => {
         ],
       },
     } as WindowUnit;
-    const { result } = renderHook(() => useEngineeringEngine({ project: fixed, profiles: [{ ...frame, id: 'external' } as any], systemPacks: [custom], onDesignComplete: vi.fn() }));
+    const { result } = renderHook(() => useEngineeringEngine({ project: fixed, profiles: [{ ...frame, id: 'external' } as unknown as Profile], systemPacks: [custom], onDesignComplete: vi.fn() }));
     const components = result.current.liveProject!.components;
     expect(components.reduce((sum, component) => sum + component.cuttingLengths.length, 0)).toBe(5);
     expect(components.some(component => component.profile.id === 'owned-divider')).toBe(true);

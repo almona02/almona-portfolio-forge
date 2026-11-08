@@ -7,6 +7,7 @@
 
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { useJobsStore } from '@/store/jobsStore';
+import type { WindowComponent } from '@/types/fabricator';
 import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { EngineeringBayWrapper } from '../EngineeringBayWrapper';
@@ -63,7 +64,7 @@ export const DesignWorkflowWrapper: React.FC = () => {
     : undefined;
 
   // Handle design completion (drafting / legacy path — preserve existing grid/system when present)
-  const handleDesignComplete = (components: any[]) => {
+  const handleDesignComplete = (components: WindowComponent[]) => {
     if (!currentProject) return;
 
     const updatedProject = {
@@ -113,7 +114,7 @@ export const DesignWorkflowWrapper: React.FC = () => {
           <DraftingWorkbench
             onDesignValidated={(output) => {
               // Convert drafting output to components
-              handleDesignComplete(output.components || []);
+              handleDesignComplete((output.components || []) as WindowComponent[]);
             }}
           />
         </div>

@@ -176,7 +176,7 @@ export const AIRecommendationDemo: React.FC = () => {
         <CardContent>
           <EquipmentRecommender
             customerProfile={mockCustomerProfile}
-            machines={mockMachines as any}
+            machines={mockMachines as unknown as React.ComponentProps<typeof EquipmentRecommender>['machines']}
           />
         </CardContent>
       </Card>

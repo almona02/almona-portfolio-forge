@@ -260,7 +260,7 @@ export const ProjectProfitabilityChart: React.FC<ProjectProfitabilityChartProps>
                   return [`${Number(value ?? 0).toFixed(1)}%`, 'Margin'];
                 }
                 return [value, name];
-              }) as any}
+              }) as unknown as React.ComponentProps<typeof Tooltip>['formatter']}
               labelFormatter={(label) => `Project: ${label}`}
             />
             <Legend

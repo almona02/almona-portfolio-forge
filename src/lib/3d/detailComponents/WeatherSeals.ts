@@ -138,7 +138,7 @@ export function createSealGeometry(
  * Generate weather seals for an Egyptian window unit
  */
 export function generateWeatherSealsForWindow(
-    windowUnit: any,
+    windowUnit: import('@/types/fabricator').WindowUnit,
     _quality: 'standard' | 'premium' | 'ultra' = 'premium'
 ): SealPlacement[] {
     const placements: SealPlacement[] = [];

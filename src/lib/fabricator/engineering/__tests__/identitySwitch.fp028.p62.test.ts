@@ -4,7 +4,7 @@
  * Covers the automated portion of live gate G3 without inventing manufacturing data.
  */
 import { buildBomRequestKey } from '@/hooks/fabricator/useEngineeringEngine';
-import type { WindowGrid, WindowUnit } from '@/types/fabricator';
+import type { GridCell, WindowGrid, WindowUnit } from '@/types/fabricator';
 import { describe, expect, it } from 'vitest';
 import {
   buildPreviewRequestKey,
@@ -26,7 +26,7 @@ const GRID_B: WindowGrid = {
   rows: 1,
   cols: 2,
   cells: [
-    { id: 'cell-case', row: 0, col: 0, type: 'casement' as any, openingDirection: 'left' },
+    { id: 'cell-case', row: 0, col: 0, type: 'casement' as unknown as GridCell['type'], openingDirection: 'left' },
     { id: 'cell-fixed', row: 0, col: 1, type: 'fixed' },
   ],
   colWidths: [900, 600],

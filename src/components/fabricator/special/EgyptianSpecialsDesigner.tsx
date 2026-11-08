@@ -167,7 +167,7 @@ export const EgyptianSpecialsDesigner: React.FC<EgyptianSpecialsDesignerProps> =
         </Card>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
           <TabsList className="bg-background/50 border-border card-dark">
             <TabsTrigger value="sand_dust" className="btn-primary">
               <Shield className="h-4 w-4 mr-2" />

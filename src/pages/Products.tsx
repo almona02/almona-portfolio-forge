@@ -179,7 +179,7 @@ const Products = function ProductsPage() {
         newParams.delete('search');
       }
       setSearchParams(newParams, { replace: true });
-    }) as any, 500),
+    }) as (value: unknown) => void, 500),
     [searchParams, setSearchParams]
   );
 

@@ -70,7 +70,7 @@ export interface Notification {
   type: string;
   title: string;
   message: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   read: boolean;
   readAt?: Date;
   createdAt: Date;
@@ -96,7 +96,7 @@ export interface NotificationRule {
   id: string;
   userId: string;
   triggerEvent: string;
-  conditions?: Record<string, any>;
+  conditions?: Record<string, unknown>;
   channels: NotificationChannel[];
   active: boolean;
   createdAt: Date;

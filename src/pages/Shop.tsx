@@ -559,7 +559,7 @@ const Shop = () => {
                 machines={enhancedProducts.map(m => ({
                   ...m,
                   specifications: m.specifications.map(s => s.value ? `${s.key}: ${s.value}` : s.key)
-                })) as any}
+                }))}
                 selectedCategory={filters.category}
                 onCategorySelect={(categoryId) => handleFilterChange('category', categoryId)}
                 className="sticky top-24"

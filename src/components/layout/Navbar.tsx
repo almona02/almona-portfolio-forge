@@ -33,7 +33,7 @@ interface NavItem {
   path: string;
   type: "link" | "dropdown";
   items?: { name: string; path: string; description?: string; icon?: string; featured?: boolean }[];
-  badge?: "NEW" | "AI" | "PRO" | "BETA" | "SOON";
+  badge?: "NEW" | "AI" | "PRO" | "BETA" | "SOON" | "UNIFIED";
   icon?: string;
 }
 
@@ -92,7 +92,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
   }, []);
 
   // Navigation configuration - Unified: 4 items max (Projects, Workflow, Studio, User)
-  const navItems: NavItem[] = useMemo(() => {
+  const navItems: NavItem[] = useMemo<NavItem[]>(() => {
     if (unifiedEnabled && user) {
       // Unified 4-item navigation for authenticated users
       return [
@@ -216,7 +216,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
       { name: t('navigation.about', 'About'), path: "/about", type: "link" },
       { name: t('navigation.contact', 'Contact'), path: "/contact", type: "link" },
     ];
-  }, [t, user, unifiedEnabled]) as any;
+  }, [t, user, unifiedEnabled]);
 
   // Simple dropdown handlers
   const handleDropdownToggle = useCallback((name: string) => {

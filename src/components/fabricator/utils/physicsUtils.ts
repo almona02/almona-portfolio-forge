@@ -30,7 +30,7 @@ export function usePhysicsStatus(): PhysicsStatus {
         };
       }
       
-      if (!(window as any).Ammo) {
+      if (!(window as unknown as { Ammo?: unknown }).Ammo) {
         return {
           enabled: false,
           error: 'Ammo.js not loaded - using manual animation',

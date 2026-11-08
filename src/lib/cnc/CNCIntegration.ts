@@ -111,7 +111,7 @@ export class CNCIntegration {
     const monitoringData: CNCMonitoringData = {
       machineId,
       timestamp: new Date(),
-      status: machine.status as any,
+      status: machine.status as unknown as CNCMonitoringData['status'],
       metrics: {
         vibration: 0.2, // mm/s
         temperature: 45, // °C

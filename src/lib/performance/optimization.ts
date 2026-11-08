@@ -68,6 +68,13 @@ export interface CacheStrategy {
   enabled: boolean;
 }
 
+export interface CacheStatsEntry {
+  enabled: boolean;
+  ttl: number;
+  maxSize: number;
+  type: CacheStrategy['type'];
+}
+
 class PerformanceOptimizer {
   private bundleAnalysis: BundleAnalysis | null = null;
   private coreWebVitals: CoreWebVitals | null = null;
@@ -510,8 +517,8 @@ class PerformanceOptimizer {
     return false;
   }
 
-  public getCacheStats(): Record<string, any> {
-    const stats: Record<string, any> = {};
+  public getCacheStats(): Record<string, CacheStatsEntry> {
+    const stats: Record<string, CacheStatsEntry> = {};
     
     this.cacheStrategies.forEach((strategy, type) => {
       stats[type] = {

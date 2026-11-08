@@ -37,7 +37,7 @@ export class YilmazAdapter extends BaseCNCAdapter {
   generateGCode(
     cuts: Cut[],
     _optimization: OptimizationResult,
-    options?: Record<string, any>
+    options?: Record<string, unknown>
   ): Promise<string> {
     const lines: string[] = [];
 
@@ -67,8 +67,8 @@ export class YilmazAdapter extends BaseCNCAdapter {
 
       // Cut operation
       const cutLength = cut.length;
-        const feedRate = options?.feedRate || 1000; // mm/min
-        const spindleSpeed = options?.spindleSpeed || 10000; // RPM
+        const feedRate = (options?.feedRate as number | undefined) || 1000; // mm/min
+        const spindleSpeed = (options?.spindleSpeed as number | undefined) || 10000; // RPM
 
         lines.push(`M3 S${spindleSpeed}`); // Set spindle speed
         // Cut along Y axis (Length)

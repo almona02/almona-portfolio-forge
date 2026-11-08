@@ -71,7 +71,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
   const [saveFormData, setSaveFormData] = useState({
     name: '',
     description: '',
-    category: 'residential' as const,
+    category: 'residential' as DesignTemplate['category'],
     tags: ''
   });
 
@@ -96,7 +96,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
   };
 
   const handleSaveTemplate = async () => {
-    if (!currentDesign || !saveFormData.name.trim()) {
+    if (!currentDesign || !currentDesign.grid || !saveFormData.name.trim()) {
       alert('Please enter a template name');
       return;
     }
@@ -108,7 +108,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
       const template = await manager.saveAsTemplate(
         saveFormData.name,
         saveFormData.description,
-        currentDesign.grid as any,
+        currentDesign.grid,
         currentDesign.systemPackId || 'generic',
         saveFormData.category,
         thumbnail,
@@ -234,7 +234,7 @@ export const DesignTemplatesLibrary: React.FC<DesignTemplatesLibraryProps> = ({
                   </div>
                   <div>
                     <Label className="typography-label text-sm text-foreground">Category</Label>
-                    <Select value={saveFormData.category} onValueChange={(value: any) => setSaveFormData({ ...saveFormData, category: value })}>
+                    <Select value={saveFormData.category} onValueChange={(value: string) => setSaveFormData({ ...saveFormData, category: value as DesignTemplate['category'] })}>
                       <SelectTrigger className="border-border/50 text-foreground mt-1 focus:border-amber- 500/30 card-premium">
                         <SelectValue />
                       </SelectTrigger>

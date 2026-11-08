@@ -211,7 +211,7 @@ export const CustomerLTVChart: React.FC<CustomerLTVChartProps> = ({ dateRange, c
                   return [formatCurrency(Number(value ?? 0), currency), 'Avg Order'];
                 }
                 return [value, name];
-              }) as any}
+              }) as unknown as React.ComponentProps<typeof Tooltip>['formatter']}
               labelFormatter={(label) => `Customer: ${label}`}
             />
             <Legend

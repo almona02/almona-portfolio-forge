@@ -9,7 +9,7 @@
  * Blackbox Visual Polish: Prestige dark theme with amber/gold accents, smooth animations, hover effects
  */
 
-import type { ValidationEnvelopeResult } from '@/core/authority/validation_envelopes';
+import type { ConstraintValidationResult, ValidationEnvelopeResult } from '@/core/authority/validation_envelopes';
 import { ConstraintCategory, getConstraintRegistry, getValidationEnvelope } from '@/core/authority/validation_envelopes';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/ui/tooltip';
@@ -60,7 +60,7 @@ function extractAICS001Section(ruleId: string | null): string | null {
  * Constraint Error Item Component
  */
 const ConstraintErrorItem: React.FC<{
-  constraint: any;
+  constraint: ConstraintValidationResult;
   idx: number;
 }> = ({ constraint }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -169,7 +169,7 @@ export const ValidationEnvelopeErrorDisplay: React.FC<ValidationEnvelopeErrorDis
           const categoryResult = envelopeResult.categoryResults.get(category);
           if (!categoryResult) return null;
 
-          const failedConstraints = categoryResult.constraintResults.filter((r: any) => !r.passed);
+          const failedConstraints = categoryResult.constraintResults.filter((r) => !r.passed);
 
           return (
             <Card 
@@ -184,7 +184,7 @@ export const ValidationEnvelopeErrorDisplay: React.FC<ValidationEnvelopeErrorDis
               </CardHeader>
               <CardContent className="px-4 pb-3">
                 <div className="space-y-1.5">
-                  {failedConstraints.map((constraint: any, idx: number) => (
+                  {failedConstraints.map((constraint, idx: number) => (
                     <ConstraintErrorItem key={idx} constraint={constraint} idx={idx} />
                   ))}
                 </div>

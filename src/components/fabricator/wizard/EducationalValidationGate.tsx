@@ -10,7 +10,7 @@
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { AlertCircle, AlertTriangle, Info, Split, Wrench } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Info, Split, Wrench, type LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export interface ValidationViolation {
@@ -37,7 +37,7 @@ const EDUCATIONAL_MESSAGES: Record<string, {
   solutionAr: string;
   solutionEn: string;
   emoji: string;
-  fixes?: Array<{ type: string; labelAr: string; labelEn: string; icon?: any }>;
+  fixes?: Array<{ type: string; labelAr: string; labelEn: string; icon?: LucideIcon }>;
 }> = {
   WIDTH_LIMIT: {
     titleAr: 'الشباك عريض جداً',

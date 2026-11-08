@@ -57,12 +57,19 @@ vi.mock('three', async () => {
 });
 
 describe('Apex Engine V6: Grid Integration', () => {
-    const baseWindow: any = {
+    const baseWindow: WindowUnit = {
         id: 'test-window',
+        orderNumber: 'TEST-001',
+        posNumber: '1',
         overallWidth: 1000,
         overallHeight: 1000,
         components: [],
         type: 'fixed_window',
+        color: 'white',
+        glazing: { type: 'double' },
+        hardware: [],
+        status: 'design',
+        optimization: null,
         grid: {
             rows: 1,
             cols: 1,

@@ -222,7 +222,7 @@ export function useProjectPositions(projectId: string | undefined) {
 
   return useMemo(
     () => rows
-      .map((row: any) => mapPositionRowToWindowUnit(row))
+      .map((row) => mapPositionRowToWindowUnit(row))
       .filter((wu): wu is WindowUnit => wu !== null)
       .sort((a, b) => String(a.posNumber).localeCompare(String(b.posNumber), undefined, { numeric: true })),
     [rows],

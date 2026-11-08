@@ -6,9 +6,17 @@
  * simplified interface for production workflows.
  */
 
+import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import { CompleteBOM, PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
 import type { SystemPack, WindowUnit } from '@/types/fabricator';
 import type { EgyptianTemplate } from '../types/drafting';
+
+export interface BOMItemSpecifications {
+  [key: string]: unknown;
+  material?: string;
+  length?: number;
+  supplier?: string;
+}
 
 export interface BOMItem {
   id: string;
@@ -19,7 +27,7 @@ export interface BOMItem {
   unit: string;
   unitCost: number;
   totalCost: number;
-  specifications?: Record<string, any>;
+  specifications?: BOMItemSpecifications;
 }
 
 export interface ProductionBOM {
@@ -54,7 +62,7 @@ export class ProductionBOMBuilder {
     // Generate complete BOM using existing generator
     const completeBOM = await this.bomGenerator.generateCompleteBOM(
       windowUnit,
-      template as any,
+      template as unknown as EgyptianPattern,
       systemPack,
       true // Use cache for performance
     );

@@ -37,7 +37,7 @@ export class ElumatecAdapter extends BaseCNCAdapter {
   generateGCode(
     cuts: Cut[],
     _optimization: OptimizationResult,
-    options?: Record<string, any>
+    options?: Record<string, unknown>
   ): Promise<string> {
     const lines: string[] = [];
 
@@ -69,8 +69,8 @@ export class ElumatecAdapter extends BaseCNCAdapter {
 
       // Cut operation
       const cutLength = cut.length;
-        const feedRate = options?.feedRate || 1200; // mm/min (Elumatec default)
-        const spindleSpeed = options?.spindleSpeed || 12000; // RPM
+        const feedRate = (options?.feedRate as number | undefined) || 1200; // mm/min (Elumatec default)
+        const spindleSpeed = (options?.spindleSpeed as number | undefined) || 12000; // RPM
 
         lines.push(`M3 S${spindleSpeed}`); // Set spindle speed
         lines.push(`G1 X${(currentX + cutLength).toFixed(this.config.precision)} Y${currentY.toFixed(this.config.precision)} F${feedRate}`); // Linear cut

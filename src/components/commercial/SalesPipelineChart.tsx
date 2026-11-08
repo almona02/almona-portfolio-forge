@@ -195,7 +195,7 @@ export const SalesPipelineChart: React.FC<SalesPipelineChartProps> = ({
                     return [`${num.toFixed(1)}%`, 'Win Probability'];
                   }
                   return [value, name === 'count' ? 'Deals' : name];
-                }) as any}
+                }) as unknown as React.ComponentProps<typeof Tooltip>['formatter']}
               />
               <Legend
                 wrapperStyle={{ color: '#d97706' }}
