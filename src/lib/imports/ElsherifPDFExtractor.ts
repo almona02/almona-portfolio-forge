@@ -15,7 +15,7 @@ export interface ExtractedProfile {
     height?: number; // mm - section height / depth
     thickness?: number; // mm - wall thickness (approx)
   };
-  specifications: Record<string, any>;
+  specifications: Record<string, unknown>;
 }
 
 export class ElsherifPDFExtractor {

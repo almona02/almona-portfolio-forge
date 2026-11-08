@@ -9,7 +9,7 @@ import { useCallback, useRef, useState } from 'react';
 export interface EditOperation {
   type: 'add' | 'update' | 'delete';
   path: string; // JSON path to edited field
-  value: any;
+  value: unknown;
   timestamp: number;
   userId: string;
 }

@@ -203,7 +203,7 @@ export class ERPBridge {
    * Webhook handler (for incoming ERP updates)
    * TODO: Implement in ERP Phase 2
    */
-  handleWebhook(payload: any): void {
+  handleWebhook(payload: unknown): void {
     console.log('[ERP Bridge] Webhook received:', payload);
     throw new Error('Webhook handling not implemented. See ERP Phase 2 roadmap.');
   }

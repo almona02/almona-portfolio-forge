@@ -545,3 +545,17 @@ Patterns: drop redundant `as` casts; for unbound-method in tests use `vi.mocked`
 ### Wave P2 review — accepted (2026-11-08)
 
 P2a–P2c completed on `chore/lint-promise-misuse-wave1` (P2c agent hit a model-limit error after edits landed; coordinator confirmed `unbound-method` 0). Committed with P1 as `3d8c76e6`. Full inventory: **2,459 files, 0 errors, 12,804 warnings**. Cleared project-wide (all **0**): `no-misused-promises`, `no-floating-promises`, `no-unnecessary-type-assertion`, `unbound-method`, `no-base-to-string`, `exhaustive-deps`, `restrict-template-expressions`. Remaining mass is the `no-unsafe-*` / `no-explicit-any` family.
+
+### Merge — PR #143 (2026-11-08)
+
+Merged P1–P2 to `main` as `ca4ed82f`.
+
+### Wave T1–T3 — `no-explicit-any` only (any-only files)
+
+Spark batches on `chore/lint-type-safety-wave1` (rebased onto PR #143). Fix **only** `@typescript-eslint/no-explicit-any` on files that had no other type-safety rules.
+
+### Wave T1–T3 review — accepted (2026-11-08)
+
+**48** files uncommitted on `chore/lint-type-safety-wave1`. Coordinator ESLint (`--no-cache`) on all T1–T3 paths: **0** `no-explicit-any`, **0** errors, **0** warnings. `npm run type-check` **PASS** (node clean; app no baseline regression).
+
+Coordinator follow-up: T1’s `hingeUtils` `[key: string]: unknown` clashed with `lib/3d` `HardwarePlaceholder` (`Window3DGenerator` TS2345). Replaced with a structural `HingePlaceholderLike` + generic `findSashHinges<T>` so Vector3 positions stay compatible. No `as any`, no rule disables, no baseline edits. Do not commit until the user asks.

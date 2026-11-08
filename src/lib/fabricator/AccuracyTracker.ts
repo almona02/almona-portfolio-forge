@@ -22,7 +22,7 @@ export interface AccuracyCheckpoint {
   outputHash: string;
   accuracy: number; // percentage (0-100)
   validated: boolean;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface AccuracyMetrics {
@@ -55,10 +55,10 @@ export class AccuracyTracker {
    */
   trackCheckpoint(
     stage: WorkflowStage,
-    input: any,
-    output: any,
+    input: unknown,
+    output: unknown,
     accuracy: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): void {
     const checkpoint: AccuracyCheckpoint = {
       stage,
@@ -172,7 +172,7 @@ export class AccuracyTracker {
   /**
    * Hash input for tracking
    */
-  private hashInput(input: any): string {
+  private hashInput(input: unknown): string {
     try {
       const str = JSON.stringify(input);
       // Simple hash function (for production, use a proper hash library)
@@ -191,7 +191,7 @@ export class AccuracyTracker {
   /**
    * Hash output for tracking
    */
-  private hashOutput(output: any): string {
+  private hashOutput(output: unknown): string {
     try {
       const str = JSON.stringify(output);
       // Simple hash function
@@ -264,10 +264,10 @@ export function getAccuracyTracker(): AccuracyTracker {
  */
 export function trackAccuracyCheckpoint(
   stage: WorkflowStage,
-  input: any,
-  output: any,
+  input: unknown,
+  output: unknown,
   accuracy: number,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ): void {
   getAccuracyTracker().trackCheckpoint(stage, input, output, accuracy, metadata);
 }

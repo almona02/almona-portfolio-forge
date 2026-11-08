@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Card, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import type { DesignCompleteHandler } from '@/lib/fabricator/engineering/designCompletion';
-import { WindowUnit, Profile, WindowComponent } from '@/types/fabricator';
+import { WindowUnit, Profile, WindowComponent, HardwareItemMinimal } from '@/types/fabricator';
 import { EngineeringBay } from './EngineeringBay';
 import { Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +23,7 @@ interface DesignInterfaceProps {
    * can drive multi‑pose flows (e.g. "add another pose or optimise").
    */
   onSmartDrawApply?: (components: WindowComponent[]) => void;
-  onHardwareUpdate?: (hardware: any[]) => void;
+  onHardwareUpdate?: (hardware: HardwareItemMinimal[]) => void;
   onBackToMeasuring?: () => void;
   onAddNewPose?: () => void;
 }

@@ -69,7 +69,7 @@ export interface Alert {
   timestamp: number;
   source: string;
   resolved: boolean;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface PerformanceTrend {

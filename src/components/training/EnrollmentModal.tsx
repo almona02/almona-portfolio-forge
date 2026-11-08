@@ -64,7 +64,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
         cohort_id: values.cohortId || null,
         notes: values.notes,
       };
-      const { error } = await supabase.from('training_enrollments').insert(payload as any);
+      const { error } = await supabase.from('training_enrollments').insert(payload);
       if (error) throw error;
       toast.success(t('trainingPage.form.success'));
       onOpenChange(false);

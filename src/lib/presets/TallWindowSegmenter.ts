@@ -50,7 +50,7 @@ export interface SegmentedWindowDesign {
     fromSegment: number;
     toSegment: number;
     type: 'mechanical' | 'welded' | 'thermal_break';
-    specifications: Record<string, any>;
+    specifications: Record<string, unknown>;
   }>;
   assemblySequence: Array<{
     step: number;

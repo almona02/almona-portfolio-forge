@@ -13,7 +13,7 @@
 
 import path from 'path';
 import { exportBaselineMetrics, runCompleteBaselineMeasurement } from '../BaselineMeasurement';
-import { BOMGoldenMasterGenerator, exportGoldenMastersToFile, generateInitialGoldenMasterSuite, validateGoldenMasterSuite } from '../GoldenMasterGenerator';
+import { BOMGoldenMasterGenerator, exportGoldenMastersToFile, generateInitialGoldenMasterSuite, validateGoldenMasterSuite, type BOMInput } from '../GoldenMasterGenerator';
 import { exportTierAuditReport, runTierClassificationAudit } from '../TierAuditScript';
 
 const projectRoot = process.cwd();
@@ -36,7 +36,7 @@ async function generateGoldenMasters() {
   const generator = new BOMGoldenMasterGenerator();
   
   // Mock execution function (replace with actual BOM calculator)
-  const mockBOMCalculator = (_input: any) => ({
+  const mockBOMCalculator = (_input: BOMInput) => ({
     profiles: 10,
     hardware: 5,
     cost: 1500,

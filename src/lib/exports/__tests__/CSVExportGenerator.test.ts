@@ -35,7 +35,7 @@ describe('CSVExportGenerator', () => {
       overallWidth: 1000,
       overallHeight: 1500,
       status: 'active',
-    } as any as WindowUnit;
+    } as unknown as WindowUnit;
 
     mockOptimization = {
       materialUsage: 5000,

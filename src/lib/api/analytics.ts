@@ -14,7 +14,7 @@ export interface AnalyticsEvent {
   };
   sessionId: string;
   userId?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface AnalyticsDashboardData {

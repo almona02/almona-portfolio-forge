@@ -7,7 +7,7 @@ const terminal = vi.hoisted(() => ({
 }));
 
 vi.mock('@/lib/supabase', () => {
-  const builder: Record<string, any> = {};
+  const builder: Record<string, unknown> = {};
   builder.select = vi.fn(() => builder);
   builder.insert = vi.fn((row: Record<string, unknown>) => {
     terminal.insertedRow = row;

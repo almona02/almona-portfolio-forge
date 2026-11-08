@@ -25,7 +25,7 @@ interface BaseSystemPack {
     profileRole?: string;
     specifications?: {
       partNumber?: string;
-      [key: string]: any;
+      [key: string]: unknown;
     };
   }>;
 }

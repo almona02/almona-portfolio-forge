@@ -26,7 +26,7 @@ export interface ScreenHardwareItem {
   unitPrice: number; // EGP
   totalCost: number; // EGP
   supplier: string;
-  specifications?: Record<string, any>;
+  specifications?: Record<string, unknown>;
 }
 
 /**

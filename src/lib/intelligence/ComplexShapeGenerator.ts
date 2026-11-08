@@ -32,7 +32,7 @@ export interface ComplexShapeDesign {
     category: string;
     quantity: number;
     position: string; // e.g., "per segment", "per corner"
-    specifications: Record<string, any>;
+    specifications: Record<string, unknown>;
   }>;
   glazing: {
     type: 'float' | 'tempered' | 'laminated' | 'double' | 'triple';
