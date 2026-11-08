@@ -71,17 +71,18 @@ export function useMobileOptimization(): MobileOptimizationResult {
       
       // Detect low-end devices based on hardware capabilities
       const hardwareConcurrency = navigator.hardwareConcurrency || 4;
-      const deviceMemory = (navigator as any).deviceMemory || 4;
+      const deviceMemory =
+        (navigator as Navigator & { deviceMemory?: number }).deviceMemory || 4;
       
       // Consider device low-end if:
       // - Less than 4 CPU cores, OR
       // - Less than 4GB RAM, OR
       // - Connection is slow (if available)
-      const connection = (navigator as any).connection;
-      const isSlowConnection = connection && (
-        connection.effectiveType === 'slow-2g' || 
-        connection.effectiveType === '2g'
-      );
+      const connection = navigator.connection;
+      const isSlowConnection =
+        connection != null &&
+        (connection.effectiveType === 'slow-2g' ||
+          connection.effectiveType === '2g');
       
       const isLowEnd = 
         hardwareConcurrency < 4 || 

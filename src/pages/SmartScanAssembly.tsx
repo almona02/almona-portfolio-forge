@@ -50,8 +50,8 @@ const SmartScanAssembly: React.FC = () => {
       const result = await scanAssembly(file);
       setAssemblyData(result);
       toast.success("Assembly scan completed successfully");
-    } catch (err: any) {
-      const errorMessage = err?.message || t('smart_scan_assembly.scan_failed', 'Assembly scan failed');
+    } catch (err: unknown) {
+      const errorMessage = (err as { message?: string })?.message || t('smart_scan_assembly.scan_failed', 'Assembly scan failed');
       setError(errorMessage);
       console.error("Assembly scan error:", err);
       toast.error(`Scan failed: ${errorMessage}`);
@@ -68,8 +68,8 @@ const SmartScanAssembly: React.FC = () => {
       setAssemblyData(null);
       setFile(null);
       toast.success("Assembly confirmed successfully");
-    } catch (err: any) {
-      const errorMessage = err?.message || t('smart_scan_assembly.failed_to_confirm', 'Failed to confirm assembly');
+    } catch (err: unknown) {
+      const errorMessage = (err as { message?: string })?.message || t('smart_scan_assembly.failed_to_confirm', 'Failed to confirm assembly');
       setError(errorMessage);
       console.error("Assembly confirmation error:", err);
       toast.error(`Confirmation failed: ${errorMessage}`);

@@ -79,12 +79,12 @@ export const MaalemDashboard: React.FC = () => {
         <div className="w-1/4 min-w-[340px] bg-card border-l shadow-xl z-20 overflow-y-auto p-6">
           <div className="flex mb-4 bg-muted p-1 rounded">
             {SYSTEM_CATEGORIES.map(cat => (
-              <button key={cat.id} onClick={() => setActiveCategory(cat.id as any)} className={`flex-1 py-2 text-sm font-bold rounded ${activeCategory === cat.id ? 'bg-card shadow text-[#003366]' : 'text-muted-foreground'}`}>{cat.nameArabic}</button>
+              <button key={cat.id} onClick={() => setActiveCategory(cat.id as 'all' | 'aluminum' | 'upvc')} className={`flex-1 py-2 text-sm font-bold rounded ${activeCategory === cat.id ? 'bg-card shadow text-[#003366]' : 'text-muted-foreground'}`}>{cat.nameArabic}</button>
             ))}
           </div>
           <div className="mb-6 space-y-2">
             {filteredSystems.map(sys => (
-              <div key={sys.id} onClick={() => setInputs({...inputs, system: sys.id as any})} className={`p-3 rounded border-2 cursor-pointer transition-all ${inputs.system === sys.id ? 'border-[#003366] bg-blue-50' : 'border-border'}`}>
+              <div key={sys.id} onClick={() => setInputs({...inputs, system: sys.id})} className={`p-3 rounded border-2 cursor-pointer transition-all ${inputs.system === sys.id ? 'border-[#003366] bg-blue-50' : 'border-border'}`}>
                 <div className="flex justify-between font-bold text-[#003366]"><span>{sys.nameArabic}</span>{inputs.system === sys.id && <span>✓</span>}</div>
                 <p className="text-xs text-muted-foreground mt-1">{sys.description}</p>
               </div>

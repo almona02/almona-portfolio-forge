@@ -25,7 +25,7 @@ export interface QuickOrderParams {
   color?: string;
   glazingType?: string;
   quantity?: number;
-  customizations?: Record<string, any>;
+  customizations?: Record<string, unknown>;
 }
 
 export interface QuickOrderResult {
@@ -68,7 +68,7 @@ export class QuickOrderEngine {
       overallHeight: params.dimensions.height,
       color: params.color || baseUnit.color || 'Silver',
       glazing: {
-        type: params.glazingType || (baseUnit.glazing as any)?.type || 'double',
+        type: params.glazingType || (baseUnit.glazing as { type?: string } | undefined)?.type || 'double',
         thickness: 24
       },
       hardware: baseUnit.hardware || [],

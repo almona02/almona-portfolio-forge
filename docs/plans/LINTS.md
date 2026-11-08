@@ -664,3 +664,41 @@ Branch `docs/lint-t13t15-prep` @ docs tip `eca1fde6`; source edits uncommitted.
 **Gates:** targeted eslint `any` 0 / errors 0 / residual unsafe remain; `npm run type-check` PASS; `git diff --check` PASS.
 
 **Vitest diagnosis:** project `vitest@4.1.12` fails suite collect (`getRunner()` undefined → `runner.config` in `@vitest/runner` `initSuite`); reproduced on one-line smoke. Final-state suites **20/20 PASS** under local provenance harness `vitest@3.2.4` (`.lint-wave-provenance/vitest3-runner/`, no package.json change). Package vitest pin repair is a separate track.
+
+### Merge — PR #146 (2026-11-08)
+
+Merged T13–T15 to `main` as `41a0affb`.
+
+### Post-PR #146 inventory — confirmed (2026-11-08)
+
+On `main` @ `41a0affb`: **2,459** files, **0** errors, **12,219** warnings, `no-explicit-any` **2,013**, `no-unsafe-*` **10,206**. Matches last verified reference. Spark-safe singles after holds: **0** (exhausted). Spark-safe multi 2–3: **109** files (68×2 + 41×3).
+
+### Wave T16–T18 — prepared for supervisor review (not dispatched)
+
+Candidate pool = small multi-`any` only; batch sizes not forced. Holds retained: UnifiedDesignPage, ProjectSummaryDashboard, EnhancedCalibrationManager, smartCategories, emailTemplates, supabase-as-any cluster, pricing/cost, CNC/machine, production/QC/stock, YDT/advisory/constitutional, commercial evidence clients, cognition-adjacent SmartWizard (proposed hold), CostOptimizationInsights, AITechnicalChatbot, data `*Client.ts` supabase casts, Profiles `supabase as any`, CustomerPortal PDF cast, AuditTrailIntegrityChecker.
+
+Vitest 4 collect failure: see `.lint-wave-provenance/FOLLOWUP-vitest4-collect-failure.md` (separate chore).
+
+### Wave T16–T18 — Wave3 checkpoint (`chore/lint-type-safety-wave3`)
+
+Base `41a0affb`. Site limits and before/after JSON under `.lint-wave-provenance/` (local; not committed).
+
+**Authorization record (corrected):**
+- **Originally approved:** **15** files — T16=7, T17=4, T18=4.
+- **Subsequently reviewed and accepted (retrospective hold resolution):** `ProductLocker`, `MaalemDashboard`, `personaAudit` (type-only; not in the original 15 authorization).
+- **Reviewed candidates total:** **18**. **Completed:** **14**. **Held:** **4** (ServiceHistory — ticket contract gap; TechChecklist — machine/location; TuningWorkbench — arbitrary URL `systemId`; useCompanyBranding — `UserPreferences` has no `branding`).
+
+**Completed sources (14):** WhatsAppContact, useIndustrialSound, useMobileOptimization, SmartScanAssembly, TicketDashboard, EgyptianTechnicalSupportHub, ProductLocker, EquipmentRecommender, MaalemDashboard, personaAudit, HardwarePlacementEngine, PersonalAnalytics, QuickOrderEngine, offline-sync.
+
+**Measurements (record separately; do not collapse into one “−71 cleanup” claim):**
+
+| Measure | Result |
+|---------|--------|
+| Wave-attributable reduction | **92** warnings: **30** `any`, **62** unsafe |
+| Completed files’ residual warnings | **14** unsafe (still visible) |
+| Fresh inventory | **2,464** files, **12,148** warnings, **1,983** `any`, **0** errors |
+| Coverage difference vs prior inventory | **5** additional files, **21** existing unsafe warnings (password-validation / trigger-deploy `.js` included by the same lint command but absent from the post-#146 snapshot) |
+
+**Next baseline:** **12,148** warnings across **2,464** files. Track why the same lint command’s file set differs across runs; the overall inventory Δ (−71 vs post-#146) is **not** a directly comparable cleanup measurement.
+
+**Gates:** `npm run type-check` PASS; `git diff --check` PASS; QuickOrder **12/12** on standard `vitest@4.1.12` (valid evidence). Broader Vitest collect follow-up remains open until previously failing suites are checked. Merge subject to final diff review.

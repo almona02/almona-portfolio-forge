@@ -10,7 +10,7 @@
  */
 
 import type { WindowUnit } from '@/types/fabricator';
-import { HardwareModelLibrary } from './HardwareModelLibrary';
+import { HardwareModelLibrary, type HardwareModel } from './HardwareModelLibrary';
 type HardwarePlacement = ReturnType<InstanceType<typeof HardwareModelLibrary>['generateHardwareModels']>;
 
 export interface PlacementValidation {
@@ -141,8 +141,8 @@ export class HardwarePlacementEngine {
     if (!placement.validation.structural) return false;
 
     // Additional checks
-    const hinges = placement.hardware.filter((h: any) => h.type === 'hinge');
-    const handles = placement.hardware.filter((h: any) => h.type === 'handle');
+    const hinges = placement.hardware.filter((h: HardwareModel) => h.type === 'hinge');
+    const handles = placement.hardware.filter((h: HardwareModel) => h.type === 'handle');
 
     // Tall windows must have middle hinge
     if (windowHeight > 2.4 && hinges.length < 3) {

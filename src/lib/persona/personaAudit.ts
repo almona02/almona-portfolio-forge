@@ -13,7 +13,7 @@ export interface PersonaAuditLog {
   operationMode: OperationMode;
   action: string;
   allowed: boolean;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   timestamp: number;
 }
 
@@ -29,7 +29,7 @@ export function logPersonaAction(
   operationMode: OperationMode,
   action: string,
   allowed: boolean,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ): void {
   const log: PersonaAuditLog = {
     userId,

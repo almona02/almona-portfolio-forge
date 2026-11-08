@@ -18,12 +18,23 @@ interface Recommendation {
   recommendation: string;
 }
 
+interface CustomerProductionCapacity {
+  power_kw: number;
+  weight_kg: number;
+  size_mm: number;
+}
+
+interface CustomerLocation {
+  country: string;
+  region: string;
+}
+
 interface EquipmentRecommenderProps {
   customerProfile: {
-    production_capacity: any;
+    production_capacity: CustomerProductionCapacity;
     budget: number;
     expected_roi: number;
-    location: any;
+    location: CustomerLocation;
   };
   machines: Machine[];
 }
