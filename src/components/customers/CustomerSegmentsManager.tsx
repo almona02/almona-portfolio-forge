@@ -54,6 +54,7 @@ import {
     updateSegment,
     deleteSegment,
     getSegmentCustomers,
+    type CustomerResponse,
     type CustomerSegmentResponse,
     type CustomerSegmentCreateRequest,
     type CustomerSegmentUpdateRequest,
@@ -163,9 +164,9 @@ export const CustomerSegmentsManager: React.FC<CustomerSegmentsManagerProps> = (
             return;
         }
 
-        let criteriaObj: Record<string, any>;
+        let criteriaObj: CustomerSegmentCreateRequest['criteria'];
         try {
-            criteriaObj = JSON.parse(criteria);
+            criteriaObj = JSON.parse(criteria) as CustomerSegmentCreateRequest['criteria'];
         } catch {
             toast.error('Invalid criteria JSON');
             return;
@@ -469,7 +470,7 @@ export const CustomerSegmentsManager: React.FC<CustomerSegmentsManagerProps> = (
  * Segment Customers List Component (internal)
  */
 const SegmentCustomersList: React.FC<{ segmentId?: string }> = ({ segmentId }) => {
-    const [customers, setCustomers] = useState<any[]>([]);
+    const [customers, setCustomers] = useState<CustomerResponse[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {

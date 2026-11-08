@@ -11,7 +11,7 @@ import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Upload, FileText, CheckCircle2, AlertCircle, Loader2, X } from 'lucide-react';
-import { ProfileImporter as ProfileImporterUtil } from '@/lib/import/ProfileImporter';
+import { ProfileImporter as ProfileImporterUtil, type ParsedRow } from '@/lib/import/ProfileImporter';
 import type { Profile } from '@/types/fabricator';
 
 interface ProfileImporterProps {
@@ -23,7 +23,7 @@ export const ProfileImporter: React.FC<ProfileImporterProps> = ({ onImport, user
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [preview, setPreview] = useState<any[]>([]);
+  const [preview, setPreview] = useState<ParsedRow[]>([]);
   const [columnMapping, setColumnMapping] = useState<Record<string, string>>({});
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
@@ -251,7 +251,7 @@ export const ProfileImporter: React.FC<ProfileImporterProps> = ({ onImport, user
                 <tbody>
                   {preview.map((row, idx) => (
                     <tr key={idx} className="border-b border-border">
-                      {Object.values(row).map((value: any, colIdx) => (
+                      {Object.values(row).map((value, colIdx) => (
                         <td key={colIdx} className="p-2 text-foreground">
                           {String(value || '')}
                         </td>

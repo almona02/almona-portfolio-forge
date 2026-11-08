@@ -10,6 +10,7 @@ import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { useJobsStore } from '@/store/jobsStore';
 import { useMemo } from 'react';
 import type { DesignMode } from '@/components/fabricator/panels/DesignModeSelector';
+import type { WindowUnit } from '@/types/fabricator';
 
 interface Recommendation {
   mode: DesignMode;
@@ -44,7 +45,7 @@ const calculateComplexity = (dimensions: ProjectDimensions): number => {
 /**
  * Analyze project history to determine user's typical complexity
  */
-const analyzeProjectHistory = (projects: any[]): number => {
+const analyzeProjectHistory = (projects: WindowUnit[]): number => {
   if (projects.length === 0) return 0;
   
   // Calculate average complexity from project dimensions
@@ -114,7 +115,8 @@ export const useDesignModeRecommendation = () => {
       // Rule 5: Current project has custom components
       if (state.currentProject?.components && state.currentProject.components.length > 0) {
         const hasCustomGeometry = state.currentProject.components.some(
-          (c: any) => c.type === 'custom' || c.geometry?.type === 'arc'
+          (c: { type?: string; geometry?: { type?: string } }) =>
+            c.type === 'custom' || c.geometry?.type === 'arc'
         );
         
         if (hasCustomGeometry) {

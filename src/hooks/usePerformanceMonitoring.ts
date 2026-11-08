@@ -91,9 +91,10 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       
-      entries.forEach((entry: any) => {
-        if (!entry.hadRecentInput) {
-          clsValue += entry.value;
+      entries.forEach((entry) => {
+        const clsEntry = entry as LayoutShift;
+        if (!clsEntry.hadRecentInput) {
+          clsValue += clsEntry.value;
         }
       });
       
@@ -144,9 +145,10 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       
-      entries.forEach((entry: any) => {
-        if (entry.responseStart > 0) {
-          const ttfb = entry.responseStart - entry.requestStart;
+      entries.forEach((entry) => {
+        const navEntry = entry as PerformanceNavigationTiming;
+        if (navEntry.responseStart > 0) {
+          const ttfb = navEntry.responseStart - navEntry.requestStart;
           const metrics = { ttfb };
           
           onMetricsUpdate?.(metrics);

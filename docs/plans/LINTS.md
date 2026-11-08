@@ -702,3 +702,26 @@ Base `41a0affb`. Site limits and before/after JSON under `.lint-wave-provenance/
 **Next baseline:** **12,148** warnings across **2,464** files. Track why the same lint command’s file set differs across runs; the overall inventory Δ (−71 vs post-#146) is **not** a directly comparable cleanup measurement.
 
 **Gates:** `npm run type-check` PASS; `git diff --check` PASS; QuickOrder **12/12** on standard `vitest@4.1.12` (valid evidence). Broader Vitest collect follow-up remains open until previously failing suites are checked. Merge subject to final diff review.
+### Merge — PR #148 (2026-11-08)
+
+Merged Wave3 T16–T18 to `main` as `d8e6a27c`.
+
+### Wave T19–T21 — prepared for supervisor review (not dispatched)
+
+Post-merge coverage lock @ `d8e6a27c`: lint `eslint src` → **2,464** files, **0** errors, **12,148** warnings, `no-explicit-any` **1,983**. Scanned-set SHA-256 `305a5b75…`; artifacts under `.lint-wave-provenance/post-pr148-*`. Candidate manifests: `.lint-wave-provenance/t19t21-candidates.md`. Prior Vitest-failing suites **20/20 PASS** on standard `vitest@4.1.12`. No Spark / no source edits.
+
+### Wave T19–T21 — checkpoint on `chore/lint-type-safety-wave4`
+
+Base `d8e6a27c`. Disposition after supervisor reconciliation:
+
+| Outcome | Count | Notes |
+|---------|------:|-------|
+| Completed | **7** | MachineTestExporter, NationalManufacturingDashboard, usePerformanceMonitoring, BaselineMeasurement, ProfileImporter, CustomerSegmentsManager, useDesignModeRecommendation |
+| Partial | **3** | HardwareLinker (category only; thickness held), MemoryLeakDetection (WS mock held), gold-tier-components (onSwipe held) |
+| Held | **2** | Phase2Integration mocks; **mechanismDetection** — no exported authoritative `aluminum_profiles` element type with `role` + `system_type` (local `MechanismAluminumProfile` reverted) |
+
+**Hold resolved during supervisor review (not originally approved dispatch):** `useDesignModeRecommendation` — local SmartDraw/Drafting UI guidance; `jobsStore` declares `WindowUnit[]`; rules/confidence unchanged.
+
+**Measurements (accepted 10 files; mechanismDetection excluded):** wave-attributable **−55** warnings (**−17** any, **−38** unsafe); no new non-any/unsafe diagnostics. Fresh inventory after hold: **2,464** files, **12,093** warnings, **1,966** any, **0** errors. Scanned path set (normalized `src/…`) identical to lock. Shared `ParsedRow` / customer `criteria` still contain `any` at the API boundary.
+
+Gates previously reported PASS; mechanismDetection revert is non-executable (restore of prior `any`). Merge subject to final diff review.
