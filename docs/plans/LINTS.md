@@ -541,3 +541,7 @@ Fix **only** these rules (leave `no-unsafe-*` / `no-explicit-any` alone):
 - `@typescript-eslint/restrict-template-expressions` (1)
 
 Patterns: drop redundant `as` casts; for unbound-method in tests use `vi.mocked` / bind / extract; for base-to-string / restrict-template coerce safely (`String(x)` / narrow); for exhaustive-deps fix deps without changing intentional behavior. Do not disable rules. Do not commit until coordinator says so.
+
+### Wave P2 review — accepted (2026-11-08)
+
+P2a–P2c completed on `chore/lint-promise-misuse-wave1` (P2c agent hit a model-limit error after edits landed; coordinator confirmed `unbound-method` 0). Committed with P1 as `3d8c76e6`. Full inventory: **2,459 files, 0 errors, 12,804 warnings**. Cleared project-wide (all **0**): `no-misused-promises`, `no-floating-promises`, `no-unnecessary-type-assertion`, `unbound-method`, `no-base-to-string`, `exhaustive-deps`, `restrict-template-expressions`. Remaining mass is the `no-unsafe-*` / `no-explicit-any` family.
