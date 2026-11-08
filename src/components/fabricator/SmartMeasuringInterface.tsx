@@ -518,7 +518,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
   const availableSystemPacks = useMemo(() => {
     // SYSTEM_PACKS already includes EGYPTIAN_UPVC_SYSTEMS, so deduplicate
-    const systemsMap = new Map<string, any>();
+    const systemsMap = new Map<string, SystemPack>();
     SYSTEM_PACKS.forEach(system => {
       systemsMap.set(system.meta.id, system);
     });

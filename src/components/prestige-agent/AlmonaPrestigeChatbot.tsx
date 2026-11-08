@@ -270,7 +270,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
         setMessages(prev => [...prev, errorMessage]);
         toast.error(copy('Failed to get response. Please try again.'));
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Send message error:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),

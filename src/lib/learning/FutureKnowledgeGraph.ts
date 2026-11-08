@@ -10,7 +10,7 @@ import type { FutureIntelligence, IndustryArticle, MarketAlert, TrendData, Trend
 
 export class FutureKnowledgeGraph {
   private apiBaseUrl: string;
-  private cache: Map<string, { data: any; timestamp: number }> = new Map();
+  private cache: Map<string, { data: unknown; timestamp: number }> = new Map();
   private cacheTTL = 5 * 60 * 1000; // 5 minutes
 
   constructor(apiBaseUrl?: string) {

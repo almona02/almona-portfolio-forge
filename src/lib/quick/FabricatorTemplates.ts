@@ -26,6 +26,12 @@ export interface FabricatorTemplate {
 /**
  * FabricatorTemplates - Template management system
  */
+/** Shape of a template as stored in localStorage (dates serialized to strings). */
+type StoredFabricatorTemplate = Omit<FabricatorTemplate, 'createdAt' | 'updatedAt'> & {
+  createdAt: string | Date;
+  updatedAt: string | Date;
+};
+
 export class FabricatorTemplates {
   private storageKey = 'fabricator_templates';
 
@@ -74,9 +80,9 @@ export class FabricatorTemplates {
       const stored = localStorage.getItem(this.storageKey);
       if (!stored) return Promise.resolve([]);
 
-      const templates = JSON.parse(stored);
+      const templates = JSON.parse(stored) as StoredFabricatorTemplate[];
       // Convert date strings back to Date objects
-      return Promise.resolve(templates.map((t: any) => ({
+      return Promise.resolve(templates.map((t: StoredFabricatorTemplate): FabricatorTemplate => ({
         ...t,
         createdAt: new Date(t.createdAt),
         updatedAt: new Date(t.updatedAt)

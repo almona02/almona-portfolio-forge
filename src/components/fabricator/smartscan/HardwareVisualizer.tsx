@@ -5,8 +5,18 @@ import type { ImportedProfile } from './DXFProfileImporter';
 interface HardwareVisualizerProps {
   profile: ImportedProfile;
   hardware: EgyptianHardware[];
-  validationResults: Record<string, any>;
+  validationResults: Record<string, unknown>;
 }
+
+interface HardwareValidationResult {
+  isValid?: boolean;
+}
+
+const getValidationIsValid = (value: unknown): boolean => {
+  if (typeof value !== 'object' || value === null) return false;
+  if (!('isValid' in value)) return false;
+  return Boolean((value as HardwareValidationResult).isValid);
+};
 
 export const HardwareVisualizer: React.FC<HardwareVisualizerProps> = ({
   profile,
@@ -38,14 +48,14 @@ export const HardwareVisualizer: React.FC<HardwareVisualizerProps> = ({
               <div
                 key={hw.id}
                 className={`absolute w-6 h-6 rounded-full border-2 flex items-center justify-center text-[11px] font-bold ${
-                  vr?.isValid ? 'border-green-500 bg-green-100' : 'border-red-500 bg-red-100'
+                  getValidationIsValid(vr) ? 'border-green-500 bg-green-100' : 'border-red-500 bg-red-100'
                 }`}
                 style={{
                   left: `${pos.x}%`,
                   top: `${pos.y}%`,
                   transform: 'translate(-50%, -50%)',
                 }}
-                title={`${hw.name} • ${vr?.isValid ? 'Compatible' : 'Check'}`}
+                title={`${hw.name} • ${getValidationIsValid(vr) ? 'Compatible' : 'Check'}`}
               >
                 {idx + 1}
               </div>
@@ -62,7 +72,7 @@ export const HardwareVisualizer: React.FC<HardwareVisualizerProps> = ({
               <div key={hw.id} className="flex items-center gap-2 p-2 border rounded">
                 <div
                   className={`w-4 h-4 rounded-full border ${
-                    vr?.isValid ? 'border-green-500 bg-green-100' : 'border-red-500 bg-red-100'
+                    getValidationIsValid(vr) ? 'border-green-500 bg-green-100' : 'border-red-500 bg-red-100'
                   }`}
                 />
                 <div>

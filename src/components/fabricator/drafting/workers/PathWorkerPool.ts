@@ -78,7 +78,7 @@ export class PathWorkerPool {
     width: number, 
     height: number, 
     quality: 'low' | 'medium' | 'high',
-    params: Record<string, any> = {}
+    params: Record<string, unknown> = {}
   ): Promise<EgyptianPathResponse> {
     
     return new Promise((resolve, reject) => {
