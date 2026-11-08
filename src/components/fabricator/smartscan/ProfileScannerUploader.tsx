@@ -313,10 +313,11 @@ export function ProfileScannerUploader({
       setResult(scanResult);
       onScanSuccess?.(scanResult);
       setTimeout(() => setProgress(0), 500);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const message = (err as { message: string }).message;
+      setError(message);
       toast.error(t('profile_scanner_uploader.errors.scan_failed', 'Scan Failed'), {
-        description: err.message,
+        description: message,
       });
     } finally {
       setUploading(false);

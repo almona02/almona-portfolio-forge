@@ -110,7 +110,7 @@ function resolveRock60CatalogProfiles(pack: SystemPack): Profile[] {
 export function resolveSystemPackProfiles(pack: SystemPack | null): Profile[] {
   if (!pack) return [];
   if (pack.profiles && pack.profiles.length > 0) {
-    return pack.profiles.map((p: any) => ({
+    return pack.profiles.map((p: Profile) => ({
       ...p,
       systemPackIds: p.systemPackIds?.length ? p.systemPackIds : [pack.meta.id],
     }));

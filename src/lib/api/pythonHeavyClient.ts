@@ -86,6 +86,17 @@ export interface JobStatusResponse {
 }
 
 /**
+ * Realtime payload for `jobs` UPDATE events (postgres_changes always includes `new`).
+ */
+export interface JobStatusRealtimePayload {
+  new: {
+    status?: string;
+    result_data?: HeavyOptimizationResponse;
+    error_message?: string;
+  };
+}
+
+/**
  * Enqueue heavy cutting optimization job for async processing.
  * Returns immediately with job_id for status tracking.
  */
@@ -188,7 +199,7 @@ export async function waitForOptimizationJobRealtime(
           table: 'jobs',
           filter: `job_id=eq.${jobId}`,
         },
-        (payload: any) => {
+        (payload: JobStatusRealtimePayload) => {
           const job = payload.new;
 
           if (job.status === 'completed' && job.result_data) {

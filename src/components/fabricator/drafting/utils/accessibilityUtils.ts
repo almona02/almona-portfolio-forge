@@ -8,22 +8,84 @@
 /**
  * Generate ARIA label for geometry element
  */
+export interface DraftingPoint {
+  x: number;
+  y: number;
+}
+
+export interface RectangleGeometry {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface CircleGeometry {
+  cx: number;
+  cy: number;
+  r: number;
+}
+
+export interface LineGeometry {
+  start: DraftingPoint;
+  end: DraftingPoint;
+}
+
+export interface ArcGeometry {
+  cx: number;
+  cy: number;
+  r: number;
+}
+
+export interface PolygonGeometry {
+  points: readonly DraftingPoint[];
+}
+
+export type GeometryType = 'rectangle' | 'circle' | 'line' | 'arc' | 'polygon';
+
+/**
+ * Union of structural geometry shapes.
+ *
+ * Contract (call-site responsibility): `type` is a discriminant that the caller
+ * must keep consistent with `element`'s fields. TypeScript does not correlate the
+ * two parameters (no overloads / tagged union), and there are currently no in-repo
+ * call sites to enforce pairing. Each `case` asserts the matching shape for label
+ * field access; a mismatched pair is a caller bug and may throw at runtime when
+ * reading missing fields — same risk as the previous `element: any` implementation.
+ */
+export type GeometryElement =
+  | RectangleGeometry
+  | CircleGeometry
+  | LineGeometry
+  | ArcGeometry
+  | PolygonGeometry;
+
 export function getGeometryAriaLabel(
-  type: 'rectangle' | 'circle' | 'line' | 'arc' | 'polygon',
+  type: GeometryType,
   index: number,
-  element: any
+  element: GeometryElement
 ): string {
   switch (type) {
-    case 'rectangle':
-      return `Rectangle ${index + 1}, ${Math.round(element.width)}mm by ${Math.round(element.height)}mm at position ${Math.round(element.x)}, ${Math.round(element.y)}`;
-    case 'circle':
-      return `Circle ${index + 1}, radius ${Math.round(element.r)}mm at center ${Math.round(element.cx)}, ${Math.round(element.cy)}`;
-    case 'line':
-      return `Line ${index + 1} from ${Math.round(element.start.x)}, ${Math.round(element.start.y)} to ${Math.round(element.end.x)}, ${Math.round(element.end.y)}`;
-    case 'arc':
-      return `Arc ${index + 1}, radius ${Math.round(element.r)}mm at center ${Math.round(element.cx)}, ${Math.round(element.cy)}`;
-    case 'polygon':
-      return `Polygon ${index + 1} with ${element.points.length} points`;
+    case 'rectangle': {
+      const rect = element as RectangleGeometry;
+      return `Rectangle ${index + 1}, ${Math.round(rect.width)}mm by ${Math.round(rect.height)}mm at position ${Math.round(rect.x)}, ${Math.round(rect.y)}`;
+    }
+    case 'circle': {
+      const circle = element as CircleGeometry;
+      return `Circle ${index + 1}, radius ${Math.round(circle.r)}mm at center ${Math.round(circle.cx)}, ${Math.round(circle.cy)}`;
+    }
+    case 'line': {
+      const line = element as LineGeometry;
+      return `Line ${index + 1} from ${Math.round(line.start.x)}, ${Math.round(line.start.y)} to ${Math.round(line.end.x)}, ${Math.round(line.end.y)}`;
+    }
+    case 'arc': {
+      const arc = element as ArcGeometry;
+      return `Arc ${index + 1}, radius ${Math.round(arc.r)}mm at center ${Math.round(arc.cx)}, ${Math.round(arc.cy)}`;
+    }
+    case 'polygon': {
+      const polygon = element as PolygonGeometry;
+      return `Polygon ${index + 1} with ${polygon.points.length} points`;
+    }
     default:
       return `${type as string} ${index + 1}`;
   }

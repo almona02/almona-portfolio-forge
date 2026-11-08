@@ -4,7 +4,7 @@
  */
 
 import { supabase } from '../supabase';
-import type { Profile } from '@/types/fabricator';
+import type { Cut, Profile } from '@/types/fabricator';
 
 export interface ConsumptionForecast {
   profileId: string;
@@ -101,7 +101,7 @@ export class ConsumptionForecaster {
         const periodKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 
         const totalLength = plan.cuts?.reduce(
-          (sum: number, cut: any) => sum + (cut.length || 0),
+          (sum: number, cut: Cut) => sum + (cut.length || 0),
           0
         ) || 0;
 

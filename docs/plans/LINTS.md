@@ -646,3 +646,21 @@ Post-merge inventory on `main` @ `00a7ae12`: **2,459** files, **0** errors, **12
 **Still held:** `smartCategories.ts`, `emailTemplates.ts`, DraftingWorkbench, CNC/machine converters, production dashboards/commands, stock/QC/release, pricing/tax, YDT/advisory/constitutional, `clientCore`/`performanceMonitoring`/`PurchaseWizard`/`deliveryAcknowledgement` (typed-client gaps), `YilmazEgyptRules`, commercial `loadSavedOptimizationEvidence*` / `poseQuotesClient`.
 
 Batches sized to available low-risk singles (≤10 each); no edits dispatched.
+
+### Wave T13–T15 review — pending commit (2026-11-08)
+
+Branch `docs/lint-t13t15-prep` @ docs tip `eca1fde6`; source edits uncommitted.
+
+**Attribution:** T13 = six-file report; T14 = t1; T15 = t2. `t1-before.json` reconstructed via HEAD swap (baseline `eca1fde6`).
+
+**Accepted (13):** T13 all 6 (ProfileScannerUploader catch restored to `.message` access via `{ message: string }` assert); T14 all 5; T15 `SmartMeasuringInterface`, `resolveSystemPackProfiles`.
+
+**Held (3):** `UnifiedDesignPage` + `GlazingSpecFlat.spacer`; `ProjectSummaryDashboard`; `EnhancedCalibrationManager`. Plus earlier holds.
+
+**Paired clears:** on the 13 accepted files, inventory delta vs post-PR145 = **−13 any** and **−72 no-unsafe-***; **0 rises**; **0** changes outside those files (confirmed in `.lint-wave-provenance/t13t15-paired-clears.json`).
+
+**Geometry contract:** `getGeometryAriaLabel(type, element)` — TS does not correlate params; no in-repo callers; case casts assume caller keeps discriminant consistent (same runtime risk as prior `any`).
+
+**Gates:** targeted eslint `any` 0 / errors 0 / residual unsafe remain; `npm run type-check` PASS; `git diff --check` PASS.
+
+**Vitest diagnosis:** project `vitest@4.1.12` fails suite collect (`getRunner()` undefined → `runner.config` in `@vitest/runner` `initSuite`); reproduced on one-line smoke. Final-state suites **20/20 PASS** under local provenance harness `vitest@3.2.4` (`.lint-wave-provenance/vitest3-runner/`, no package.json change). Package vitest pin repair is a separate track.

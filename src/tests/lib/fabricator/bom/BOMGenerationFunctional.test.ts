@@ -13,7 +13,7 @@
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS, type SystemPack as DataSystemPack } from '@/data/systemPacks';
 import { PresetAwareBOMGenerator } from '@/lib/fabricator/PresetAwareBOMGenerator';
-import type { SystemPack, WindowUnit } from '@/types/fabricator';
+import type { Profile, SystemPack, WindowUnit } from '@/types/fabricator';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('BOM Generation Functional Tests', () => {
@@ -76,7 +76,7 @@ describe('BOM Generation Functional Tests', () => {
       name: dataSystemPack.meta.name,
       category: 'aluminum_windows',
       brand: dataSystemPack.meta.brands[0] || 'Unknown',
-      compatibleProfiles: dataSystemPack.profiles?.map((p: any) => p.id) || [],
+      compatibleProfiles: dataSystemPack.profiles?.map((p: Profile) => p.id) || [],
       compatibleAccessories: [],
       description: dataSystemPack.meta.name,
       technicalData: dataSystemPack.windowSystemSpec || {},

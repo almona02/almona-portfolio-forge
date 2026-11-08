@@ -1,7 +1,13 @@
 ﻿import { supabase } from '@/lib/supabase';
 import 'dotenv/config'; // Load .env file
 import { AfterSalesCache } from '../caches/afterSalesCache';
+import type { Database } from '@/types/database';
 import redis from '../client';
+
+type ServiceTicketIdRow = Pick<
+  Database['public']['Tables']['service_tickets']['Row'],
+  'id'
+>;
 
 /**
  * Test After Sales caching with real Supabase data
@@ -48,7 +54,7 @@ async function testAfterSalesCaching() {
       .limit(1);
 
     if (sampleTickets && sampleTickets.length > 0) {
-      const ticketId = (sampleTickets[0] as any).id;
+      const ticketId = (sampleTickets[0] as ServiceTicketIdRow).id;
       console.log(`  Testing ticket: ${ticketId}`);
       
       const start1Time = Date.now();
