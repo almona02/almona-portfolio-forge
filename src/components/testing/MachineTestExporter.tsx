@@ -95,7 +95,7 @@ export const MachineTestExporter: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="typography-label text-sm text-muted-foreground">Machine Type</label>
-                <Select value={machineType} onValueChange={(v) => setMachineType(v as any)}>
+                <Select value={machineType} onValueChange={(v) => setMachineType(v as typeof machineType)}>
                   <SelectTrigger className="bg-card border-border">
                     <SelectValue />
                   </SelectTrigger>
@@ -108,7 +108,7 @@ export const MachineTestExporter: React.FC = () => {
               </div>
               <div className="space-y-2">
                 <label className="typography-label text-sm text-muted-foreground">Test Window Type</label>
-                <Select value={testType} onValueChange={(v) => setTestType(v as any)}>
+                <Select value={testType} onValueChange={(v) => setTestType(v as typeof testType)}>
                   <SelectTrigger className="bg-card border-border">
                     <SelectValue />
                   </SelectTrigger>

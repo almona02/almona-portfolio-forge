@@ -91,7 +91,9 @@ export async function measureDraftingPipelineBaseline(): Promise<{
   );
 
   // Memory usage (if available)
-  const memoryUsage = (performance as any).memory?.usedJSHeapSize || 0;
+  const memoryUsage =
+    (performance as { memory?: { usedJSHeapSize?: number } }).memory?.usedJSHeapSize ||
+    0;
 
   return {
     frameRate,
@@ -215,7 +217,9 @@ export async function measure3DModelGenerationBaseline(): Promise<{
   );
 
   const renderFrameRate = 1000 / renderMeasurement.avgDuration;
-  const memoryUsage = (performance as any).memory?.usedJSHeapSize || 0;
+  const memoryUsage =
+    (performance as { memory?: { usedJSHeapSize?: number } }).memory?.usedJSHeapSize ||
+    0;
 
   return {
     renderFrameRate,

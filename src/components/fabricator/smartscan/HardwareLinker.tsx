@@ -158,7 +158,7 @@ export const HardwareLinker: React.FC<HardwareLinkerProps> = ({
             <CardDescription>Select hardware compatible with your profile.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as any)}>
+            <Tabs value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as HardwareCategory | 'all')}>
               <TabsList className="grid grid-cols-4">
                 {categories.map((cat) => (
                   <TabsTrigger key={cat} value={cat} className="capitalize">

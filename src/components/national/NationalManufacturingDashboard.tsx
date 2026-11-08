@@ -11,12 +11,18 @@ const weeklyData = [
   { name: 'Week 6', jobs: 24, waste: 1200, workshops: 15 },
 ];
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface DashboardTooltipProps {
+  active?: boolean;
+  payload?: Array<{ name?: string; value?: number; color?: string }>;
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: DashboardTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-card border border-border rounded-lg p-3 shadow-xl card-dark">
         <p className="text-muted-foreground text-xs mb-1">{label}</p>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index) => (
           <p key={index} className="text-sm" style={{ color: entry.color }}>
             {entry.name}: <span className="font-bold">{entry.value}</span>
           </p>

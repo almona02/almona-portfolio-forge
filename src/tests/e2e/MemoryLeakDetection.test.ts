@@ -49,9 +49,9 @@ describe('Memory Leak Detection - 8-Hour Simulated Workshop Session', () => {
     detector.start(100); // Checkpoint every 100ms for faster testing
     
     // Simulate memory growth (create objects that should be cleaned up)
-    const objects: any[] = [];
+    const objects: number[][] = [];
     for (let i = 0; i < 10; i++) {
-      objects.push(new Array(10000).fill(0)); // ~40KB each
+      objects.push(new Array<number>(10000).fill(0)); // ~40KB each
       await new Promise(resolve => setTimeout(resolve, 50));
     }
     

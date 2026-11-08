@@ -32,7 +32,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
     observe() {}
     unobserve() {}
     disconnect() {}
-  } as any;
+  } as typeof ResizeObserver;
 }
 
 // Mock scrollIntoView for JSDOM
