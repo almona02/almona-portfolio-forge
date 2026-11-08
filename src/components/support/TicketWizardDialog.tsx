@@ -670,10 +670,12 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                         size="sm" 
                         variant="outline" 
                         className="flex items-center gap-1" 
-                        onClick={async () => {
+                        onClick={() => {
                           if (createdTicketTwin) {
-                            await navigator.clipboard.writeText(createdTicketTwin);
-                            toast({ title: 'Copied!', description: 'Digital twin code copied to clipboard.' });
+                            void (async () => {
+                              await navigator.clipboard.writeText(createdTicketTwin);
+                              toast({ title: 'Copied!', description: 'Digital twin code copied to clipboard.' });
+                            })();
                           }
                         }}
                       >

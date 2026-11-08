@@ -88,7 +88,7 @@ function mapRow(
   testIds: Set<string>,
 ): PhysicalBarMovement {
   const profileId = String(row.profile_id);
-  const lotMeta = (row.lot_metadata || {}) as Record<string, unknown>;
+  const lotMeta = row.lot_metadata || {};
   const lotId = typeof lotMeta.lot_id === 'string'
     ? lotMeta.lot_id
     : typeof lotMeta.lotId === 'string'

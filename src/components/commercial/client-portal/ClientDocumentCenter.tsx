@@ -128,7 +128,7 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
           .single();
 
         if (quote) {
-          const pdfBlob = await CommercialPDFService.generateQuotePDF(quote as any);
+          const pdfBlob = await CommercialPDFService.generateQuotePDF(quote);
           const url = URL.createObjectURL(pdfBlob);
           const a = document.createElement('a');
           a.href = url;
@@ -145,7 +145,7 @@ export const ClientDocumentCenter: React.FC<ClientDocumentCenterProps> = ({ cust
           .single();
 
         if (invoice) {
-          const pdfBlob = await CommercialPDFService.generateInvoicePDF(invoice as any);
+          const pdfBlob = await CommercialPDFService.generateInvoicePDF(invoice);
           const url = URL.createObjectURL(pdfBlob);
           const a = document.createElement('a');
           a.href = url;

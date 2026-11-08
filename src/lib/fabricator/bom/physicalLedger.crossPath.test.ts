@@ -144,7 +144,7 @@ function tuplesFromComponents(unit: WindowUnit): CutTuple[] {
 }
 
 function packProfile(roleOrId: string): Profile {
-  const profiles = (CALUMINIUM_PS_PACK.profiles ?? []) as Profile[];
+  const profiles = CALUMINIUM_PS_PACK.profiles ?? [];
   const found =
     profiles.find((p: Profile) => p.id === roleOrId) ||
     profiles.find((p: Profile) => p.profileRole === roleOrId) ||

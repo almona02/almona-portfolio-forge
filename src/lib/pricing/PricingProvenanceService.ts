@@ -129,7 +129,7 @@ export class PricingProvenanceService {
     const specs = (data.specifications as Record<string, unknown>) || {};
     const stamped = specs.system_pricing_provenance as PricingProvenance | undefined;
     if (stamped && typeof stamped.version === 'number') return stamped;
-    if (!specs.system_pricing && !(specs as Record<string, unknown>).rock60_pricing) return null;
+    if (!specs.system_pricing && !specs.rock60_pricing) return null;
 
     const latest = await priceHistoryService.getLatestVersion(profileId, systemPackId);
     if (!latest) return null;

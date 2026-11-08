@@ -828,7 +828,11 @@ const Window3DModelComponent = (props: {
 
     // A fresh controller per generated model: assembled transforms are captured from the
     // newly mounted meshes, so regenerating while exploded never inherits stale bases.
-    const applyExplodedTransforms = useMemo(() => createExplodedTransformController(), [modelData]);
+    const applyExplodedTransforms = useMemo(() => {
+        // modelData is the intentional reset key: a new model must get a new controller.
+        void modelData;
+        return createExplodedTransformController();
+    }, [modelData]);
 
     // frameloop="demand": toggling explode changes no R3F props, so request a frame explicitly
     // or the restore pass inside useFrame would wait for the next camera move.

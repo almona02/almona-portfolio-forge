@@ -60,7 +60,7 @@ export const ProfileDetailCard: React.FC<ProfileDetailCardProps> = ({
               />
             ) : profile.specifications?.previewImageUrl ? (
               <img
-                src={profile.specifications.previewImageUrl as string}
+                src={profile.specifications.previewImageUrl}
                 alt={profile.name}
                 className="w-full h-32 object-contain border border-border rounded"
               />

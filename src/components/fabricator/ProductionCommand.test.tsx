@@ -61,10 +61,16 @@ vi.mock('@/lib/exports/ALM6510MDBExport', () => ({
 import { ProductionCommand } from './ProductionCommand';
 
 // jsdom lacks these browser APIs; Radix Select calls them when the list opens.
-window.HTMLElement.prototype.scrollIntoView ??= () => undefined;
-window.HTMLElement.prototype.hasPointerCapture ??= () => false;
-window.HTMLElement.prototype.setPointerCapture ??= () => undefined;
-window.HTMLElement.prototype.releasePointerCapture ??= () => undefined;
+const elementProto = window.HTMLElement.prototype as unknown as Record<string, unknown>;
+const jsdomStubs: Record<string, () => unknown> = {
+  scrollIntoView: () => undefined,
+  hasPointerCapture: () => false,
+  setPointerCapture: () => undefined,
+  releasePointerCapture: () => undefined,
+};
+for (const [name, stub] of Object.entries(jsdomStubs)) {
+  if (elementProto[name] == null) elementProto[name] = stub;
+}
 
 const profile = {
   id: 'PS-6601-FRAME',

@@ -346,8 +346,8 @@ export async function rollbackSystemPackInSupabase(
       return false;
     }
     const entry = mapHistoryRow(data as Record<string, any>);
-    const spec = entry.spec as unknown as SystemPack;
-    if (!spec || typeof spec !== 'object' || !(spec as SystemPack).meta) {
+    const spec = entry.spec as SystemPack;
+    if (!spec || typeof spec !== 'object' || !spec.meta) {
       console.error(`Corrupt pack history snapshot for ${packId} v${version}`);
       return false;
     }

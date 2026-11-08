@@ -216,7 +216,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
         .limit(50);
 
       if (error) throw error;
-      const typedData = (data || []) as any[];
+      const typedData = data || [];
       setAlerts(typedData as PriceValidationAlert[]);
       setUnresolvedAlerts(typedData.filter((a: any) => !a.is_resolved) || []);
     } catch (error) {

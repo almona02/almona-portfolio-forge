@@ -228,7 +228,7 @@ export class RemnantMarketplace {
         throw new Error('Listing not found or not available');
       }
 
-      const listingData = listing as any;
+      const listingData = listing;
 
       // Check if expired
       if (listingData.expires_at && new Date(listingData.expires_at) < new Date()) {
@@ -341,7 +341,7 @@ export class RemnantMarketplace {
         throw new Error('Listing not found');
       }
 
-      const listingData = listing as any;
+      const listingData = listing;
 
       if (listingData.seller_id !== sellerId) {
         throw new Error('Not authorized to cancel this listing');

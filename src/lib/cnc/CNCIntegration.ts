@@ -155,11 +155,13 @@ export class CNCIntegration {
     this.monitoringSubscriptions.set(machineId, callback);
 
     // Start polling (in production, this would be WebSocket or similar)
-    const interval = setInterval(async () => {
-      const data = await this.getMachineMonitoring(machineId);
-      if (data) {
-        callback(data);
-      }
+    const interval = setInterval(() => {
+      void (async () => {
+        const data = await this.getMachineMonitoring(machineId);
+        if (data) {
+          callback(data);
+        }
+      })();
     }, 5000); // Poll every 5 seconds
 
     // Return unsubscribe function

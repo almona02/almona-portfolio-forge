@@ -170,8 +170,8 @@ export class AutomationScheduler {
       return;
     }
 
-    const interval = setInterval(async () => {
-      await this.executeTask(task);
+    const interval = setInterval(() => {
+      void this.executeTask(task);
     }, intervalMs);
 
     this.intervals.set(task.id, interval);
@@ -200,9 +200,11 @@ export class AutomationScheduler {
       return;
     }
 
-    const timeout = setTimeout(async () => {
-      await this.executeTask(task);
-      this.unschedule(task.id);
+    const timeout = setTimeout(() => {
+      void (async () => {
+        await this.executeTask(task);
+        this.unschedule(task.id);
+      })();
     }, delayMs);
 
     this.timeouts.set(task.id, timeout);
@@ -229,8 +231,8 @@ export class AutomationScheduler {
         task.errorCount < this.options.maxRetries
       ) {
         // Retry after delay
-        setTimeout(async () => {
-          await this.executeTask(task);
+        setTimeout(() => {
+          void this.executeTask(task);
         }, this.options.retryDelay);
       }
     }

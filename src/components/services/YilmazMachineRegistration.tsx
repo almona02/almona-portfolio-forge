@@ -93,9 +93,9 @@ export const YilmazMachineRegistration: React.FC<Props> = ({ onSubmit }) => {
         />
         <button
           type="button"
-          onClick={async () => {
+          onClick={() => {
             const val = (document.querySelector('input[name="serialNumber"]') as HTMLInputElement)?.value;
-            if (val) await validateSerial(val);
+            if (val) void validateSerial(val);
           }}
           className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-400 rounded text-black"
         >

@@ -111,7 +111,7 @@ export function useJobStatus(jobId: string | null) {
     // Cleanup subscription on unmount
     return () => {
       isMounted = false;
-      supabase.removeChannel(subscription);
+      void supabase.removeChannel(subscription);
     };
   }, [jobId]);
 

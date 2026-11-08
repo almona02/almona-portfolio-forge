@@ -116,7 +116,7 @@ export function persistenceErrorMessage(err: unknown): string {
     try {
       return JSON.stringify(err);
     } catch {
-      return String(err);
+      return Object.prototype.toString.call(err);
     }
   }
   return String(err);

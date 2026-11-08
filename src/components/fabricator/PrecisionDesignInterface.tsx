@@ -200,7 +200,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
 
 
     onGridChange(newGrid);
-  }, [onGridChange, project]);
+  }, [onGridChange]);
 
   // Get glass info
   const glassInfo = useMemo(() => {

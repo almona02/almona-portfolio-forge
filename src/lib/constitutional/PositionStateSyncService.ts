@@ -947,7 +947,7 @@ export class PositionStateSyncService {
     } else if (!this.auditFlushTimer) {
       // Schedule flush
       this.auditFlushTimer = setTimeout(
-        () => this.flushAuditBatch(),
+        () => { void this.flushAuditBatch(); },
         this.AUDIT_FLUSH_DELAY
       );
     }

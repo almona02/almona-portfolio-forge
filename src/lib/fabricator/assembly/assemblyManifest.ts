@@ -21,7 +21,7 @@ import type { FabricationData, GridCell, SystemPack, WindowComponent, WindowUnit
 import { isGlazingSpecFlat } from '@/types/fabricator';
 import { normalizeOpeningType } from '@/lib/fabricator/openingType';
 import { resolveLedgerRole } from '@/lib/fabricator/bom/ledgerRole';
-import { listKitsFromPackSpec, type PackHardwareKitLike } from '@/lib/fabricator/manufacturing/hardwareKitOverrides';
+import { listKitsFromPackSpec } from '@/lib/fabricator/manufacturing/hardwareKitOverrides';
 import { buildOccurrenceId } from './occurrenceIdentity';
 import {
   BORDER_ORDER,
@@ -512,7 +512,7 @@ function hardwareSeeds(unit: WindowUnit, options: AssemblyManifestOptions): { se
   }
   const pack = options.systemPack;
   if (pack) {
-    const kits = listKitsFromPackSpec(pack.windowSystemSpec as Record<string, unknown> | undefined) as PackHardwareKitLike[];
+    const kits = listKitsFromPackSpec(pack.windowSystemSpec as Record<string, unknown> | undefined);
     const opening = normalizeOpeningType(unit.type, unit.grid);
     const relevant = kits.filter((kit) => {
       const type = String(kit.type ?? '').toLowerCase();
@@ -529,8 +529,8 @@ function hardwareSeeds(unit: WindowUnit, options: AssemblyManifestOptions): { se
         type: String(kit.type ?? 'accessory'),
         quantity: null,
         source: 'system_pack',
-        role: typeof kit.specifications?.role === 'string' ? (kit.specifications.role as string) : null,
-        material: typeof kit.specifications?.material === 'string' ? (kit.specifications.material as string) : null,
+        role: typeof kit.specifications?.role === 'string' ? kit.specifications.role : null,
+        material: typeof kit.specifications?.material === 'string' ? kit.specifications.material : null,
       })),
       note: 'Specified by the system pack; quantity is set when the BOM is generated.',
     };

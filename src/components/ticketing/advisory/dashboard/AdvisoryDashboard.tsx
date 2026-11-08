@@ -368,9 +368,9 @@ export const AdvisoryDashboard: React.FC = () => {
                                         constitutionalDisclaimer: 'ADVISORY ONLY - Requires human validation before any action',
                                         requiresHumanValidation: true
                                     }}
-                                    onValidate={(decision, rationale) =>
-                                        handleValidation(filteredAdvisories[0].id, decision, rationale)
-                                    }
+                                    onValidate={(decision, rationale) => {
+                                        void handleValidation(filteredAdvisories[0].id, decision, rationale);
+                                    }}
                                     validationType={filteredAdvisories[0].type as any}
                                 />
 

@@ -52,10 +52,9 @@ export class WorkspaceSyncService {
       }
 
       // Set new timer
-      this.debounceTimer = setTimeout(async () => {
+      this.debounceTimer = setTimeout(() => {
         this.debounceTimer = null;
-        const result = await this.saveWithRecovery(workspaceState);
-        resolve(result);
+        void this.saveWithRecovery(workspaceState).then(resolve);
       }, delay);
     });
   }

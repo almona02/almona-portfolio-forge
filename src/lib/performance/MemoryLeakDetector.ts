@@ -241,10 +241,10 @@ export class MemoryLeakDetector {
    * Track object URLs globally (monkey-patch URL.createObjectURL)
    */
   private trackObjectUrls(): void {
-    const originalCreateObjectURL = URL.createObjectURL;
+    const originalCreateObjectURL = URL.createObjectURL.bind(URL);
     
     URL.createObjectURL = (blob: Blob | MediaSource): string => {
-      const url = originalCreateObjectURL.call(URL, blob);
+      const url = originalCreateObjectURL(blob);
       this.trackObjectUrl(url);
       return url;
     };

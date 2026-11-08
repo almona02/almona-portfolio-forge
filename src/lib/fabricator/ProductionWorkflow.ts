@@ -326,9 +326,9 @@ export class ProductionWorkflow {
       return;
     }
 
-    this.checkpointIntervalTimer = setInterval(async () => {
+    this.checkpointIntervalTimer = setInterval(() => {
       if (this.state.currentStage && this.state.status === 'running') {
-        await this.createCheckpoint(this.state.currentStage);
+        void this.createCheckpoint(this.state.currentStage);
       }
     }, this.config.checkpointInterval);
   }

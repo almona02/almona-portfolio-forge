@@ -1,9 +1,27 @@
-﻿import { supabase } from '@/lib/supabase';
+﻿import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 import 'dotenv/config'; // Load .env file
 import { AfterSalesCache } from './caches/afterSalesCache';
 import { EcommerceCache } from './caches/ecommerceCache';
 import { FabricatorProCache } from './caches/fabricatorProCache';
 import { RealityOSCache } from './caches/realityOSCache';
+
+type ChangePayload = RealtimePostgresChangesPayload<Record<string, any>>;
+
+/**
+ * Wrap an async postgres_changes handler so the Realtime callback receives a
+ * void-returning function; rejections are logged instead of left unhandled.
+ */
+function handleChange(
+  label: string,
+  handler: (payload: ChangePayload) => Promise<void>
+): (payload: ChangePayload) => void {
+  return (payload) => {
+    void handler(payload).catch((error) => {
+      console.error(`[Cache Invalidation] Handler failed for ${label}:`, error);
+    });
+  };
+}
 
 /**
  * Supabase Realtime Cache Invalidation
@@ -58,7 +76,7 @@ export class RealtimeCacheInvalidator {
           schema: 'public',
           table: 'service_tickets',
         },
-        async (payload) => {
+        handleChange('tickets', async (payload) => {
           console.log('[Cache Invalidation] Service ticket changed:', payload.eventType);
           
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
@@ -70,7 +88,7 @@ export class RealtimeCacheInvalidator {
             await AfterSalesCache.invalidateTicket(ticket.id);
             await (AfterSalesCache as any).invalidateTicketsByStatus(ticket.status);
           }
-        }
+        })
       )
       .subscribe();
 
@@ -86,10 +104,10 @@ export class RealtimeCacheInvalidator {
           schema: 'public',
           table: 'yilmaz_machines',
         },
-        async () => {
+        handleChange('machines', async () => {
           console.log('[Cache Invalidation] Machine catalog changed');
           await (AfterSalesCache as any).invalidateMachineCatalog();
-        }
+        })
       )
       .subscribe();
 
@@ -111,7 +129,7 @@ export class RealtimeCacheInvalidator {
           schema: 'public',
           table: 'fabricator_profiles',
         },
-        async (payload) => {
+        handleChange('profiles', async (payload) => {
           console.log('[Cache Invalidation] Fabricator profile changed:', payload.eventType);
           
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
@@ -123,7 +141,7 @@ export class RealtimeCacheInvalidator {
             await FabricatorProCache.invalidateProfile(profile.id);
             await FabricatorProCache.invalidateUserProfiles(profile.user_id);
           }
-        }
+        })
       )
       .subscribe();
 
@@ -139,7 +157,7 @@ export class RealtimeCacheInvalidator {
           schema: 'public',
           table: 'remnant_inventory',
         },
-        async (payload) => {
+        handleChange('remnants', async (payload) => {
           console.log('[Cache Invalidation] Remnant inventory changed');
           
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
@@ -149,7 +167,7 @@ export class RealtimeCacheInvalidator {
             const remnant = payload.old as any;
             await FabricatorProCache.invalidateRemnants(remnant.warehouse_id);
           }
-        }
+        })
       )
       .subscribe();
 
@@ -165,7 +183,7 @@ export class RealtimeCacheInvalidator {
           schema: 'public',
           table: 'fabricator_system_packs',
         },
-        async (payload) => {
+        handleChange('systempacks', async (payload) => {
           console.log('[Cache Invalidation] System pack changed');
           
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
@@ -175,7 +193,7 @@ export class RealtimeCacheInvalidator {
             const pack = payload.old as any;
             await FabricatorProCache.invalidateSystemPack(pack.id);
           }
-        }
+        })
       )
       .subscribe();
 
@@ -197,7 +215,7 @@ export class RealtimeCacheInvalidator {
           schema: 'public',
           table: 'reality_events',
         },
-        async (payload) => {
+        handleChange('events', async (payload) => {
           console.log('[Cache Invalidation] Reality event changed');
           
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
@@ -207,7 +225,7 @@ export class RealtimeCacheInvalidator {
             const event = payload.old as any;
             await RealityOSCache.invalidateEvents(event.entity_id);
           }
-        }
+        })
       )
       .subscribe();
 
@@ -223,7 +241,7 @@ export class RealtimeCacheInvalidator {
           schema: 'public',
           table: 'qr_codes',
         },
-        async (payload) => {
+        handleChange('qrcodes', async (payload) => {
           console.log('[Cache Invalidation] QR code changed');
           
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
@@ -233,7 +251,7 @@ export class RealtimeCacheInvalidator {
             const qr = payload.old as any;
             await RealityOSCache.invalidateQRCode(qr.code);
           }
-        }
+        })
       )
       .subscribe();
 
@@ -249,7 +267,7 @@ export class RealtimeCacheInvalidator {
           schema: 'public',
           table: 'entities',
         },
-        async (payload) => {
+        handleChange('entities', async (payload) => {
           console.log('[Cache Invalidation] Entity changed');
           
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
@@ -259,7 +277,7 @@ export class RealtimeCacheInvalidator {
             const entity = payload.old as any;
             await RealityOSCache.invalidateEntity(entity.id);
           }
-        }
+        })
       )
       .subscribe();
 
@@ -281,7 +299,7 @@ export class RealtimeCacheInvalidator {
           schema: 'public',
           table: 'products',
         },
-        async (payload) => {
+        handleChange('products', async (payload) => {
           console.log('[Cache Invalidation] Product changed');
           
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
@@ -293,7 +311,7 @@ export class RealtimeCacheInvalidator {
             await EcommerceCache.invalidateProduct(product.id);
             await EcommerceCache.invalidateSearch();
           }
-        }
+        })
       )
       .subscribe();
 
@@ -309,7 +327,7 @@ export class RealtimeCacheInvalidator {
           schema: 'public',
           table: 'pricing_tiers',
         },
-        async (payload) => {
+        handleChange('pricing', async (payload) => {
           console.log('[Cache Invalidation] Pricing changed');
           
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
@@ -319,7 +337,7 @@ export class RealtimeCacheInvalidator {
             const pricing = payload.old as any;
             await EcommerceCache.invalidatePricing(pricing.product_id);
           }
-        }
+        })
       )
       .subscribe();
 
@@ -335,10 +353,10 @@ export class RealtimeCacheInvalidator {
           schema: 'public',
           table: 'product_categories',
         },
-        async () => {
+        handleChange('categories', async () => {
           console.log('[Cache Invalidation] Category changed');
           await EcommerceCache.invalidateCategories();
-        }
+        })
       )
       .subscribe();
 

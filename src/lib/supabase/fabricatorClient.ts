@@ -802,7 +802,12 @@ export class FabricatorClient {
   private mapProfileFromDB(data: Record<string, unknown>): Profile {
     const specs = (data.specifications as Record<string, unknown>) || {};
     const num = (v: unknown): number => Number(v ?? 0);
-    const str = (v: unknown): string => String(v ?? '');
+    const str = (v: unknown): string =>
+      typeof v === 'string'
+        ? v
+        : typeof v === 'number' || typeof v === 'boolean' || typeof v === 'bigint'
+          ? String(v)
+          : '';
 
     return {
       id: str(data.id),
@@ -855,7 +860,12 @@ export class FabricatorClient {
 
   private mapAccessoryFromDB(data: Record<string, unknown>): FabricatorAccessory {
     const num = (v: unknown): number => Number(v ?? 0);
-    const str = (v: unknown): string => String(v ?? '');
+    const str = (v: unknown): string =>
+      typeof v === 'string'
+        ? v
+        : typeof v === 'number' || typeof v === 'boolean' || typeof v === 'bigint'
+          ? String(v)
+          : '';
 
     return {
       id: str(data.id),

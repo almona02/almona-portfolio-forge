@@ -75,7 +75,7 @@ export const ZoomControls: React.FC<ZoomControlsProps> = ({
       </EnhancedTooltip>
       
       <div className="px-3 py-1 bg-card/50 rounded text-xs font-mono min-w-[60px] text-center text-warning border border-amber-600/20">
-        {formatZoomLevel(viewport as Viewport)}
+        {formatZoomLevel(viewport)}
       </div>
       
       <EnhancedTooltip toolKey="zoom-in" placement="bottom" delay={300}>

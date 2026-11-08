@@ -120,18 +120,20 @@ export class PDFExportService {
             ctx.drawImage(img, 0, 0);
             
             // Convert canvas to blob, then to array buffer
-            canvas.toBlob(async (blob) => {
+            canvas.toBlob((blob) => {
               if (!blob) {
                 reject(new Error('Failed to convert canvas to blob'));
                 return;
               }
-              const arrayBuffer = await blob.arrayBuffer();
-              try {
-                const pngImage = await this.pdfDoc.embedPng(arrayBuffer);
-                resolve(pngImage);
-              } catch {
-                reject(new Error('Failed to embed PNG'));
-              }
+              void (async () => {
+                const arrayBuffer = await blob.arrayBuffer();
+                try {
+                  const pngImage = await this.pdfDoc.embedPng(arrayBuffer);
+                  resolve(pngImage);
+                } catch {
+                  reject(new Error('Failed to embed PNG'));
+                }
+              })();
             }, 'image/png');
           } catch (error) {
             reject(new Error(String(error)));

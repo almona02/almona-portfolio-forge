@@ -66,7 +66,7 @@ describe('FabricatorAuditLogger', () => {
       // Wait for async processing
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      expect(supabase.from).toHaveBeenCalledWith('fabricator_audit_logs');
+      expect(Reflect.get(supabase, 'from')).toHaveBeenCalledWith('fabricator_audit_logs');
     });
 
     it('should handle missing user gracefully', async () => {

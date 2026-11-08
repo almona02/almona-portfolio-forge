@@ -118,9 +118,10 @@ export class DesignAISuggestor {
       }
     }
 
-    if (analysis.spanLength && profile.specifications?.maxSpanMm) {
-      if (analysis.spanLength <= (profile.specifications.maxSpanMm as number)) {
-        reasons.push(`Supports span up to ${profile.specifications.maxSpanMm}mm`);
+    const maxSpanMm = profile.specifications?.maxSpanMm;
+    if (analysis.spanLength && typeof maxSpanMm === 'number' && maxSpanMm) {
+      if (analysis.spanLength <= maxSpanMm) {
+        reasons.push(`Supports span up to ${maxSpanMm}mm`);
       }
     }
 

@@ -22,71 +22,73 @@ export class ProfileImporter {
    * Parse Excel or CSV file
    */
   async parseFile(file: File): Promise<ParseResult> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        if (file.name.endsWith('.csv')) {
-          // Parse CSV
-          const text = await file.text();
-          const lines = text.split('\n').filter((line) => line.trim());
-          if (lines.length < 2) {
-            reject(new Error('File must contain at least a header row and one data row'));
-            return;
-          }
+    return new Promise((resolve, reject) => {
+      void (async () => {
+        try {
+          if (file.name.endsWith('.csv')) {
+            // Parse CSV
+            const text = await file.text();
+            const lines = text.split('\n').filter((line) => line.trim());
+            if (lines.length < 2) {
+              reject(new Error('File must contain at least a header row and one data row'));
+              return;
+            }
 
-          const headers = lines[0].split(',').map((h) => h.trim());
-          const rows = lines.slice(1).map((line) => {
-            const values = line.split(',').map((v) => v.trim());
-            const obj: ParsedRow = {};
-            headers.forEach((header: string, idx: number) => {
-              obj[header] = values[idx] || '';
+            const headers = lines[0].split(',').map((h) => h.trim());
+            const rows = lines.slice(1).map((line) => {
+              const values = line.split(',').map((v) => v.trim());
+              const obj: ParsedRow = {};
+              headers.forEach((header: string, idx: number) => {
+                obj[header] = values[idx] || '';
+              });
+              return obj;
             });
-            return obj;
-          });
 
-          resolve({ headers, rows });
-        } else {
-          // Parse Excel using ExcelJS (lazy loaded)
-          if (!ExcelJS) {
-            ExcelJS = await import('exceljs');
-          }
-          const arrayBuffer = await file.arrayBuffer();
-          const workbook = new ExcelJS.Workbook();
-          await workbook.xlsx.load(arrayBuffer);
+            resolve({ headers, rows });
+          } else {
+            // Parse Excel using ExcelJS (lazy loaded)
+            if (!ExcelJS) {
+              ExcelJS = await import('exceljs');
+            }
+            const arrayBuffer = await file.arrayBuffer();
+            const workbook = new ExcelJS.Workbook();
+            await workbook.xlsx.load(arrayBuffer);
 
-          const worksheet = workbook.worksheets[0];
-          if (!worksheet) {
-            reject(new Error('No worksheets found in file'));
-            return;
-          }
+            const worksheet = workbook.worksheets[0];
+            if (!worksheet) {
+              reject(new Error('No worksheets found in file'));
+              return;
+            }
 
-          const headerRow = worksheet.getRow(1);
-          const headers = ((headerRow as any)?.values || [])
-            .slice(1)
-            .map((v: any) => String(v || '').trim())
-            .filter((h: string) => h);
+            const headerRow = worksheet.getRow(1);
+            const headers = ((headerRow as any)?.values || [])
+              .slice(1)
+              .map((v: any) => String(v || '').trim())
+              .filter((h: string) => h);
 
-          if (headers.length === 0) {
-            reject(new Error('No headers found in file'));
-            return;
-          }
+            if (headers.length === 0) {
+              reject(new Error('No headers found in file'));
+              return;
+            }
 
-          const rows: ParsedRow[] = [];
-          worksheet.eachRow((row, rowNumber) => {
-            if (rowNumber === 1) return; // Skip header
+            const rows: ParsedRow[] = [];
+            worksheet.eachRow((row, rowNumber) => {
+              if (rowNumber === 1) return; // Skip header
 
-            const obj: ParsedRow = {};
-            headers.forEach((header: string, idx: number) => {
-              const cell = row.getCell(idx + 2); // +2 because ExcelJS is 1-indexed and first column is empty
-              obj[header] = cell.value !== null && cell.value !== undefined ? (cell.value as string) : '';
+              const obj: ParsedRow = {};
+              headers.forEach((header: string, idx: number) => {
+                const cell = row.getCell(idx + 2); // +2 because ExcelJS is 1-indexed and first column is empty
+                obj[header] = cell.value !== null && cell.value !== undefined ? (cell.value as string) : '';
+              });
+              rows.push(obj);
             });
-            rows.push(obj);
-          });
 
-          resolve({ headers, rows });
+            resolve({ headers, rows });
+          }
+        } catch (error) {
+          reject(new Error(String(error)));
         }
-      } catch (error) {
-        reject(new Error(String(error)));
-      }
+      })();
     });
   }
 

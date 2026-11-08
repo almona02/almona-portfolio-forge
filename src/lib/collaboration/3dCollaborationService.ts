@@ -145,10 +145,10 @@ class Collaboration3DService {
       .on('broadcast', { event: 'annotation_remove' }, ({ payload }) => {
         callbacks.onAnnotationRemove?.(payload.annotation_id)
       })
-      .subscribe(async (status) => {
+      .subscribe((status) => {
         if ((status as string) === 'SUBSCRIBED') {
           // Track user presence
-          await this.channel?.track({
+          void this.channel?.track({
             user_id: userId,
             joined_at: new Date().toISOString(),
             cursor_position: null,

@@ -800,9 +800,11 @@ export const ProjectTemplates: React.FC<ProjectTemplatesProps> = ({
             </Button>
             {previewTemplate && (
               <Button
-                onClick={async () => {
-                  await handleClone(previewTemplate);
-                  setShowPreview(false);
+                onClick={() => {
+                  void (async () => {
+                    await handleClone(previewTemplate);
+                    setShowPreview(false);
+                  })();
                 }}
                 disabled={isCloning === previewTemplate.id}
                 className="bg-amber-600 text-white hover:bg-amber-700"
