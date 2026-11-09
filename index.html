@@ -42,11 +42,11 @@
     <!-- Helmet owns this fallback so route updates replace it instead of duplicating it. -->
     <link rel="canonical" href="https://www.almona02.com/" data-rh="true" />
 
-    <!-- Hreflang alternates (client-side i18n via ?lng=) -->
-    <link rel="alternate" hreflang="ar" href="https://www.almona02.com/?lng=ar" />
-    <link rel="alternate" hreflang="en" href="https://www.almona02.com/?lng=en" />
-    <link rel="alternate" hreflang="tr" href="https://www.almona02.com/?lng=tr" />
-    <link rel="alternate" hreflang="x-default" href="https://www.almona02.com/" />
+    <!-- Hreflang alternates (client-side i18n via ?lng=). data-rh lets Helmet replace these per route. -->
+    <link rel="alternate" hreflang="ar" href="https://www.almona02.com/?lng=ar" data-rh="true" />
+    <link rel="alternate" hreflang="en" href="https://www.almona02.com/?lng=en" data-rh="true" />
+    <link rel="alternate" hreflang="tr" href="https://www.almona02.com/?lng=tr" data-rh="true" />
+    <link rel="alternate" hreflang="x-default" href="https://www.almona02.com/" data-rh="true" />
 
     <!-- Local SEO geo tags (authorized dealer, Giza Egypt) -->
     <meta name="geo.region" content="EG-GZ" />

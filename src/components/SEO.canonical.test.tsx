@@ -20,6 +20,7 @@ describe('canonical ownership', () => {
     const source = readFileSync('index.html', 'utf8');
     const fallback = source.match(/<link[^>]*rel="canonical"[^>]*>/)?.[0];
     expect(fallback).toContain('data-rh="true"');
+    expect(source).toMatch(/rel="alternate"[^>]*hreflang="ar"[^>]*data-rh="true"/);
     document.head.insertAdjacentHTML('beforeend', fallback!);
     const view = render(<HelmetProvider><SEO url="https://www.almona02.com/" /></HelmetProvider>);
     await waitFor(() => expect(document.head.querySelectorAll('link[rel="canonical"]')).toHaveLength(1));

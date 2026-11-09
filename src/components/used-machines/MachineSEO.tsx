@@ -192,12 +192,11 @@ const MachineSEO: React.FC<MachineSEOProps> = ({
       {/* Additional SEO */}
       <meta name="robots" content="index, follow" />
       <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-      
-      {/* Hreflang for multi-language support */}
-      <link rel="alternate" hrefLang="en" href="https://www.almona02.com/used-machines" />
-      <link rel="alternate" hrefLang="ar" href="https://www.almona02.com/ar/used-machines" />
-      <link rel="alternate" hrefLang="fr" href="https://www.almona02.com/fr/used-machines" />
-      <link rel="alternate" hrefLang="de" href="https://www.almona02.com/de/used-machines" />
+
+      {/* Hreflang matches the visibility contract (?lng=); replaces index.html home alternates via data-rh. */}
+      <link rel="alternate" hrefLang="ar" href="https://www.almona02.com/used-machines?lng=ar" />
+      <link rel="alternate" hrefLang="en" href="https://www.almona02.com/used-machines?lng=en" />
+      <link rel="alternate" hrefLang="x-default" href="https://www.almona02.com/used-machines" />
     </Helmet>
   );
 };
