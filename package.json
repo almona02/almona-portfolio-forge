@@ -329,6 +329,7 @@
     "baseline-browser-mapping": "^2.8.32",
     "cross-env": "^10.1.0",
     "cssnano": "^7.1.1",
+    "esbuild": "^0.25.12",
     "eslint": "^9.9.0",
     "eslint-plugin-react": "^7.37.1",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
@@ -351,6 +352,7 @@
     "vite-plugin-gltf": "^4.0.0",
     "vite-plugin-pwa": "^1.2.0",
     "vitest": "4.1.12",
+    "workbox-build": "^7.4.0",
     "ws": "^8.21.3"
   }
 }
