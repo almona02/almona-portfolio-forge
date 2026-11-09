@@ -204,8 +204,13 @@ export default defineConfig(({ mode }) => {
           globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
           globIgnores: [
             '**/hero01*.png',
+            '**/hero01*.webp',
             '**/egyptian-industrial-hero-bg.png',
+            '**/egyptian-industrial-hero-bg.webp',
             '**/about-page-image.png',
+            '**/about-page-image.webp',
+            '**/factory *.png',
+            '**/factory *.webp',
             '**/*-large.png',
             '**/*-hero*.png'
           ],

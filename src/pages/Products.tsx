@@ -688,7 +688,7 @@ const Products = function ProductsPage() {
               {!isTourPlaying ? (
                 <>
                   <img
-                    src="/images/factory .png"
+                    src="/images/factory .webp"
                     alt={copy("YILMAZ Factory")}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
