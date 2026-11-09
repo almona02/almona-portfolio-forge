@@ -436,6 +436,13 @@ const renderApp = () => {
     return;
   }
 
+  // Public catalogue/model documents are complete HTML. Mounting React would
+  // blank #root before the lazy Products route paints, leaving homepage SEO and
+  // empty main content for crawlers and the visibility audit.
+  if (rootElement.hasAttribute('data-public-catalogue')) {
+    return;
+  }
+
   // Persona integrity check - must run before React render
   try {
     assertPersonaIntegrity();

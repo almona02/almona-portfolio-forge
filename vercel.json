@@ -42,6 +42,8 @@
     { "source": "/fabricator/projects", "destination": "/index" },
     { "source": "/fabricator/(.*)", "destination": "/index" },
     { "source": "/egyptian-project-wizard", "destination": "/index" },
+    { "source": "/used-machines/00000000-0000-0000-0000-000000000000", "destination": "/api/listing-not-found" },
+    { "source": "/used-machines/00000000-0000-0000-0000-000000000000/", "destination": "/api/listing-not-found" },
     { "source": "/used-machines", "destination": "/index" },
     { "source": "/used-machines/:path*", "destination": "/index" },
     { "source": "/((?!api(?:/|$)|\\.well-known(?:/|$)|assets(?:/|$)|models(?:/|$)|images(?:/|$)|documents(?:/|$)|textures(?:/|$)|draco(?:/|$)|.*\\.(?:txt|xml|json|webmanifest|html|avif|js|css|glb|gltf|jpg|jpeg|png|svg|webp|gif|ico|woff2?|pdf|bin|wasm|map)$).*)", "destination": "/index" }

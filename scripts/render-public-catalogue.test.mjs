@@ -14,7 +14,7 @@ test('catalogue HTML contains all public models and a matching bootstrap before 
   assert.equal(doc.querySelectorAll('main article a').length, machines.length);
   assert.equal(doc.querySelector('link[rel="canonical"]').href, 'https://www.almona02.com/products/machines');
   assert.equal(JSON.parse(doc.getElementById('almona-catalog-data').textContent).length, machines.length);
-  assert.ok(doc.querySelector('script[src="/assets/app.js"]'), 'Interactive application remains available');
+  assert.equal(doc.querySelector('script[src="/assets/app.js"]'), null, 'SPA bundle must not wipe public catalogue HTML');
   assert.equal(doc.querySelector('noscript'), null);
   dom.window.close();
 });

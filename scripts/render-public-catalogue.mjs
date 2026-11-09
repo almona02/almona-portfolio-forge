@@ -40,6 +40,9 @@ export function renderCatalogueDocument(template, machines, route, machine) {
   // The app's query-string language hints do not describe these English HTML documents.
   document.querySelectorAll('link[hreflang]').forEach(node => node.remove());
   document.body.querySelectorAll('noscript').forEach(node => node.remove());
+  // Keep the document static: loading the SPA bundle would replace #root and can
+  // leave crawlers with homepage metadata before Products paints.
+  document.querySelectorAll('script[type="module"], script[src]').forEach(node => node.remove());
   root.setAttribute('data-public-catalogue', 'true');
 
   let content;
@@ -50,7 +53,7 @@ export function renderCatalogueDocument(template, machines, route, machine) {
     content = `<h1>${escape(machine.name)}</h1><p>${escape(machine.description)}</p>${image ? `<img src="${escape(image)}" alt="${escape(machine.name)}" loading="eager" decoding="async">` : ''}<h2>Specifications</h2><ul>${machine.specifications.map(item => `<li>${escape(item)}</li>`).join('')}</ul>${spec ? `<p><a href="${escape(spec)}">Download ${escape(machine.name)} specifications (PDF)</a></p>` : ''}${terms}`;
     schema = { '@context': 'https://schema.org', '@type': 'Product', name: machine.name, description: machine.description, sku: machine.id, brand: { '@type': 'Brand', name: 'YILMAZ' }, url: origin + route, ...(image ? { image: new URL(image, origin).href } : {}) };
   } else {
-    content = `<h1>YILMAZ machinery for aluminium and UPVC workshops</h1>${terms}<p>${machines.length} machine models. Interactive filters become available when the application loads.</p>${machines.map(item => `<article><h2><a href="${productPath(item)}">${escape(item.name)}</a></h2><p>${escape(item.description)}</p></article>`).join('')}`;
+    content = `<h1>YILMAZ machinery for aluminium and UPVC workshops</h1>${terms}<p>${machines.length} machine models. Open a model page for specifications and documentation.</p>${machines.map(item => `<article><h2><a href="${productPath(item)}">${escape(item.name)}</a></h2><p>${escape(item.description)}</p></article>`).join('')}`;
     schema = { '@context': 'https://schema.org', '@type': 'ItemList', numberOfItems: machines.length, itemListElement: machines.map((item, index) => ({ '@type': 'ListItem', position: index + 1, name: item.name, url: origin + productPath(item) })) };
     const bootstrap = document.createElement('script'); bootstrap.id = 'almona-catalog-data'; bootstrap.type = 'application/json'; bootstrap.textContent = json(machines); document.head.append(bootstrap);
   }
