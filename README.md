@@ -1,113 +1,63 @@
-# ALMONA · Vertical Reality OS
+# ALMONA Portfolio Forge
 
-**A connected workspace for aluminium and UPVC fabrication, machinery and workshop care.**
+Industrial software for aluminium and UPVC fabrication: workshop planning, profile calibration, bills of materials, cutting optimization, production review, and equipment service.
 
-ALMONA brings equipment selection, workshop planning, engineering, production and after-sales service into one platform. Built around the needs of workshops in Egypt and the wider Arabic-speaking region, it combines Fabricator Pro with machinery discovery, technical assistance and machine-linked service records.
+React 18, TypeScript and Vite power the web application. Python/FastAPI provides technical services. Arabic and English workflows support regional workshop operations.
 
-[Explore ALMONA](https://www.almona02.com/) · [Engineering principles](docs/INSTITUTIONAL_OVERVIEW.md) · [AICS-001 specification](docs/AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md)
+## Architecture and authority
 
-## For workshops
+- **Workshop application:** `src/`, `public/`, `locales/`.
+- **Engineering:** profile rules, deterministic calculations, validation and machine exports in `src/`.
+- **Services:** `python_backend/`, `api/`, and `ai_agents/`.
+- **Domain infrastructure:** `realityos_core/`, `sdk/`, and vertical integrations.
+- **Verification and delivery:** `tests/`, `scripts/`, `.github/workflows/`, and deployment descriptors.
 
-Compare equipment, plan the workshop layout, prepare aluminium and UPVC jobs, calibrate profiles, optimize cutting and prepare machine-specific output. Continue the equipment lifecycle through the machine passport, service tickets and spare-parts records—in Arabic and English.
+[AICS-001](docs/AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md) defines the project's engineering authority and validation boundaries. AI guidance must remain separate from approved manufacturing rules and deterministic calculations. These are project requirements; production acceptance requires evidence for the deployed revision and target equipment.
 
-## The vision: Vertical Reality OS
+[Engineering overview](docs/INSTITUTIONAL_OVERVIEW.md) · [Repository policy](docs/PROJECT_LAYOUT.md) · [Security](docs/security/SECURITY.md)
 
-Vertical Reality OS is the direction of the platform: connect the digital definition of a workshop to its physical work. A profile, opening, cutting plan, machine and service event should belong to a traceable operational story.
+## Development
 
-The goal is a continuous loop—from choosing equipment and arranging the workshop, through calibrated fabrication and reviewed production, to maintenance that informs the next job. The codebase implements these connected workspaces; deeper machine connectivity and lifecycle automation continue to develop around them.
+Use Node.js 22.22.2 and Python 3.11. From the repository root:
 
-## What the platform brings together
-
-| Workspace | Purpose |
-|---|---|
-| **Machinery discovery and comparison** | Browse machine specifications and documentation, compare equipment, and review options against workshop needs. The public catalogue and model documents are readable before JavaScript runs. [Comparison tools](src/components/shop/EquipmentComparisonTool.tsx) |
-| **Workshop planner** | Arrange machines, workbenches, storage, assembly areas, utilities and access points in a dimensioned layout, then export a workshop plan to PDF. [Layout planner](src/components/products/FactoryLayoutPlanner.tsx) |
-| **Fabricator Pro** | Carry projects and positions through measurement, design, drafting, bills of materials, stock and cutting optimization, commercial documents, and production/QC workflows. [Workflow model](src/store/workflowStore.ts) |
-| **Profile tuning and calibration** | Refine profile and system data, cutting calibration and K-factors, machining zones and workshop rules before using them in manufacturing calculations. [Profile Tuning Studio](src/components/fabricator/tuning/ProfileTuningStudio.tsx) |
-| **Machine integration** | Prepare machine-specific production output through CNC exporters, controller adapters, validation and YILMAZ network/USB bridge components. Direct connectivity requires the matching machine, protocol and configured bridge. [Machine connectors](src/machine-connectors/) |
-| **Maintenance cycle and machine passport** | Connect registered equipment to support tickets, technician work, service contracts and preventive visits. The passport view brings serial-linked tickets, service history, documentation and recorded spare parts together. [Machine passport workspace](src/pages/machines/DigitalTwinDashboard.tsx) |
-| **YDT technical assistance** | Provide contextual technical guidance, knowledge retrieval and service-ticket assistance, with governance separating recommendations from manufacturing authority. [YDT services](src/lib/ydt/) |
-| **3D and AR machine visualizer** | Explore equipment spatially and assess workshop placement through 3D/AR interfaces. Available experiences depend on the model assets and device/browser capabilities. [AR viewer](src/components/shop/3d-configurator/ARViewer.tsx) |
-
-## Engineered as connected layers
-
-The application separates workshop interaction, manufacturing calculations, operational records and machine interfaces. Project and position identity connect the workflow; browser workers handle BOM/DXF workloads; service APIs and role-aware workspaces support customer, administrator and technician responsibilities.
-
-The engineering depth is in these contracts: a position keeps its identity across revisions; approved profile data informs BOM and cutting calculations; commercial and production steps retain their workflow context. Machine service history is associated with registered equipment and serial-linked tickets. This provides the foundation for a connected lifecycle as integration coverage grows.
-
-```mermaid
-flowchart TD
-    Workshop[Arabic / English workshop experience] --> Planning[Compare equipment and plan the workshop]
-    Workshop --> Fabricator[Measure · Design · Tune profiles]
-    Fabricator --> Engineering[Validated BOM and cutting optimization]
-    Engineering --> Operations[Quote · Production · QC · Delivery]
-    Operations --> Machines[Machine-specific exports and connectors]
-    Planning --> Care[Machine passport and maintenance cycle]
-    Machines --> Care
-    Care --> Tickets[Tickets · Technicians · Parts · Service history]
-    YDT[YDT guidance and knowledge] -. bounded assistance .-> Fabricator
-    YDT -. technical assistance .-> Tickets
-    AICS[AICS-001 authority and validation] --> Engineering
-    AICS --> Operations
-```
-
-| Layer | Foundation |
-|---|---|
-| Workshop application | React, TypeScript, Vite, query caching and workflow state |
-| Engineering | Profile/system packs, calibration, deterministic BOM and optimization, browser workers |
-| Operational data | Supabase identity, PostgreSQL records and access policies; application service APIs |
-| Technical services | Python/FastAPI, with Redis and Celery infrastructure for background workloads |
-| Spatial and physical interfaces | Three.js-based views, AR interfaces, CNC adapters and machine bridges |
-
-### AICS constitutional engineering
-
-**AICS-001—the Almona Industrial Computing Specification—is the project's engineering governance specification.** It defines authority, validation and separation of responsibilities around geometry, material, machine, process and certification truth.
-
-The architecture distinguishes strategic guidance, bounded execution assistance and protected deterministic calculations. YDT can provide context and recommendations; it must not silently replace approved profile rules, dimensions or manufacturing formulas. Revision-aware state, validation envelopes, audit evidence and operator approval connect engineering decisions to production release.
-
-See the [authority layer](src/core/authority/constitution/) and [intelligence gate](src/lib/ydt/IntelligenceGate.ts).
-
-## Egypt and Arabic at the core
-
-Arabic and English resources, right-to-left interfaces, Egyptian profile/system data such as Panda and Caluminium PS, regional defaults and EGP-aware commercial workflows make localization part of the workshop model. Egyptian technical vocabulary and local fabrication context also inform YDT's assistance.
-
-**من تخطيط الورشة إلى التصنيع والصيانة، في بيئة عمل عربية وإنجليزية مترابطة.**
-
-[Language resources](locales/) · [Regional interfaces](src/components/regional/) · [Egyptian fabrication context](src/lib/intelligence/EgyptianFabricationIntelligence.ts)
-
-## Where the platform is heading
-
-- Strengthen the link between approved profile calibration, released production and machine acknowledgements.
-- Extend the machine passport across installation, maintenance, parts and future condition data.
-- Bring workshop planning, spatial visualization and fabrication decisions closer together.
-- Deepen Arabic workshop workflows and governed YDT assistance while preserving deterministic engineering boundaries.
-
-## Repository organization
-
-See [Project layout](docs/PROJECT_LAYOUT.md) for source/tooling locations, retained historical artifacts and local output conventions. Regenerable reports and downloaded bundles belong in ignored `.artifacts/`, not the project root.
-
-## Local development
-
-Use Node.js 22.22.2 (within the repository's Node 22 engine range), npm and Python 3.11 for backend work.
-
-```bash
+```sh
 npm ci
 cp .env.example .env
 npm run dev
 ```
 
-The frontend runs on port `3000`. To run the technical-assistance backend:
+Configure local development credentials in `.env`. Never commit credentials. The frontend serves port `3000` and proxies `/api` to port `8000`.
 
-```bash
+For the technical-assistance API:
+
+```sh
 cd python_backend
 python -m venv .venv
-# Activate the virtual environment for your shell.
+# Activate .venv using your shell's activation command.
 pip install -r requirements-dev.txt
 cp .env.example .env
 python -m uvicorn api.prestige_endpoints:app --host 0.0.0.0 --port 8000
 ```
 
-Configure development credentials locally and keep environment files out of Git. See [AGENTS.md](AGENTS.md) for contribution guidance and verification commands.
+The deployment entry point is descriptor-specific; `python_backend/railway.json` uses `apis.main:app`. External database and cache configuration is required for integration checks.
+
+## Verification
+
+| Command | Purpose |
+| --- | --- |
+| `npm run lint` | Frontend lint checks |
+| `npm run type-check` | Node type check and application baseline regression gate |
+| `npm run type-check:strict` | Full type check without baseline allowances |
+| `npm run test` | Frontend unit and integration tests |
+| `npm run test:api` | Backend API tests |
+| `npm run build` | Production frontend build and catalogue assets |
+| `npm run security:gate1` | Repository secret scan |
+
+A passing baseline gate does **not** mean the application is type-clean. See [CI gate semantics](docs/ci/README.md). Report actual command results and integration limitations; do not infer certification, manufacturing accuracy or release readiness from documentation labels.
+
+## Repository discipline
+
+Keep source, required assets, dependency locks, configuration, migrations, tests, specifications and maintained operating guidance. Use Git history for retired plans and completion narratives. Put generated reports and scratch work in ignored `.artifacts/`. Retain audit evidence when it supports an active contract or release decision.
 
 ## License
 

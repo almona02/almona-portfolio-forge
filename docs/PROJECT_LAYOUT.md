@@ -1,59 +1,33 @@
-# Project layout and root-folder policy
+# Repository structure and retention policy
 
-The repository root holds project entry points and configuration that build, hosting and developer tools discover by name. Day-to-day source code and utilities belong in the folders below.
+Keep a file when it is required to build, run, test, deploy, operate, explain or audit the maintained system.
 
 | Location | Purpose |
 | --- | --- |
-| `src/`, `public/`, `locales/` | Main web application, public resources and translations |
-| `python_backend/`, `api/` | Backend services and API entry points |
-| `realityos_core/`, `sdk/`, vertical directories | Shared domain/ledger infrastructure and integration code |
-| `scripts/` | Repository tooling; deployment/security/CI commands retain their existing paths |
-| `scripts/diagnostics/redis/` | Retained environment, connection and cache diagnostic helpers |
-| `scripts/documentation/` | Diagram/documentation generation tools |
-| `scripts/setup/` | Optional development-machine installers; not application runtime code |
-| `docs/architecture/diagrams/` | The three SVG architecture illustrations |
-| `docs/archive/commit-messages/` | Historical commit-message drafts |
-| `docs/archive/root-reports/` | Historical report exports still referenced by documentation, plus the old plan inventory |
-| `docs/audits/` | Dated evidence, decisions and cleanup manifests |
-| `tests/`, `qa/` | Test and verification resources |
-| `supabase/`, `migrations/` | Database history and operational contracts; not deduplicated by filename |
-| `config/`, `k8s/`, `pilot-deployment/` | Environment/deployment support |
-| `.artifacts/` (ignored) | Local build/test/lint logs and temporary analysis output |
+| `src/`, `public/`, `locales/` | Web application, required assets and translations |
+| `python_backend/`, `api/`, `ai_agents/` | APIs, technical services and runtime knowledge |
+| `realityos_core/`, `sdk/`, vertical directories | Domain infrastructure and integrations |
+| `tests/`, `qa/`, test fixtures | Reproducible verification |
+| `scripts/` | Build, validation, maintenance and deployment tooling |
+| `supabase/`, `migrations/` | Database history and operational contracts |
+| `config/`, `k8s/`, `pilot-deployment/` | Deployment support |
+| `docs/` | Specifications, architecture, operating guides and necessary evidence |
+| `vendor/` | Required vendored dependency and license material |
+| `.artifacts/` (ignored) | Local reports, logs, analysis and scratch work |
 
-Platform-specific client folders and existing deployment scripts remain in place; this map is not a certification of every module's production readiness.
+Platform-specific clients retain their established directories. Root entry points, package manifests and lockfiles, tool configuration, environment templates and deployment descriptors stay at the paths expected by their consumers.
 
-## Commands after reorganization
+## Retention rules
 
-Use the README-recommended Node 22.22.2 (package engines require `>=22.19 <23`). Older Node 22 minors may not support the native TypeScript imports used by catalogue build scripts.
+- Preserve executable code, required data/assets, tests, migrations, licenses and dependency locks.
+- Maintain one authoritative description of each contract; link to its implementation and verification.
+- Retain audit evidence and acceptance criteria supporting active release decisions.
+- Retire superseded plans, completion narratives and duplicate status reports through reviewed changes. Git history preserves tracked originals.
+- Check incoming references before deleting documents: some documentation is also consumed by tooling and knowledge generation.
+- Do not remove SQL history, Docker variants, deployment scripts or binary assets solely because their names look old or duplicated.
+- Keep secrets local. Do not commit private environment files, generated bundles, console exports or personal tool state.
+- Keep editor and coding-assistant preferences local. Shared CI workflows in `.github/` and YDT service code in `ai_agents/` are functional project infrastructure and remain versioned.
 
-Run diagnostics from the repository root so dotenv continues to use the same local environment:
+## Quality claims
 
-```sh
-npx tsx scripts/diagnostics/redis/env-check.ts
-npx tsx scripts/diagnostics/redis/check-redis-env.ts
-```
-
-The existing `scripts/diagnostics/redis/test-cache-performance.ts` is a **mutating** benchmark: it writes and deletes keys under `aftersales:ticket:*`. Use a disposable Redis instance. This cleanup validates its syntax/import resolution without executing Redis operations.
-
-Generate the illustrations with:
-
-```sh
-python scripts/documentation/generate_diagrams.py
-```
-
-Output always goes to `docs/architecture/diagrams/`, independent of the caller's working directory. Existing illustrations and their wording are preserved. These are documentation drawings, not manufacturing authority data.
-
-The optional installer formerly named `download.ps1` is now `scripts/setup/install-blackbox-cli.ps1`. It was moved without changing its behavior; no installer was executed during this cleanup.
-
-For local logs in PowerShell:
-
-```powershell
-New-Item -ItemType Directory -Force .artifacts | Out-Null
-npm run test:batch1 *> .artifacts/workflow-tests.log
-```
-
-## What stays at root
-
-Keep `README.md`, `AGENTS.md`, package/lockfiles, `index.html`, Vite/Vitest/TypeScript/ESLint/Tailwind/PostCSS/Playwright configuration and hosting/deployment descriptors at their established locations. Environment templates and private environment files remain where their consumers expect them. Root SQL snapshots, Docker variants and deployment scripts require a consumer/deployment review before moving or deletion.
-
-Do not copy downloaded production bundles, desktop shortcuts, console exports or commit drafts back to the root. Exact ignore rules cover the retired generated files; genuine fixtures and all text files elsewhere are not blanket-ignored. Git history retains the removed content; no history rewrite is required.
+State the checked revision, command, result and limitations when reporting verification. Constitutional requirements describe intended controls; claims of compliance or production acceptance require evidence. See [engineering overview](INSTITUTIONAL_OVERVIEW.md) and [CI gate semantics](ci/README.md).

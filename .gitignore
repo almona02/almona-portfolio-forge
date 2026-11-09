@@ -172,6 +172,28 @@ batch1-release*/
 
 # Local analysis output belongs under .artifacts/, not the repository root.
 /.artifacts/
+# Local agent execution evidence and editor planning output
+/.lint-wave-provenance/
+/.cursor/analysis/
+/.cursor/plans/
+# Personal assistant/editor settings are not shared project configuration.
+/.amazonq/
+/.cursor/
+/.kilocode/
+/.tabby/
+/.qodo/
+/.blackboxrules
+/.cursorrules
+/blackbox_mcp_settings.json
+/AGENTS.local.md
+# Retired external binaries and regenerable analysis exports
+/archive/external-tools/
+/hero-image-optimization-plan.json
+/image-analysis-report.json
+/unused-js-analysis.json
+/test_output.svg
+/tier2_response.json
+/storybook-static/
 # Retired root console exports, downloaded bundles and temporary files
 /COMMIT_MESSAGE.txt
 /FINAL_COMMIT_MESSAGE.txt
