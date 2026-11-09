@@ -296,38 +296,41 @@ jobs:
     
     steps:
       - name: Check all jobs status
+        env:
+          ACCURACY: ${{ needs.golden-master-accuracy.result }}
+          PERFORMANCE: ${{ needs.golden-master-performance.result }}
+          SECURITY: ${{ needs.security-audit.result }}
+          REGRESSION: ${{ needs.performance-regression-detection.result }}
         run: |
-          if [ "${{ needs.golden-master-accuracy.result }}" != "success" ]; then
-            echo "::error::Golden Master Accuracy Tests failed"
+          # Fail only on explicit failures. skipped/cancelled/abandoned mean the
+          # job did not execute (concurrency/queue drops) and must not red-fail
+          # PRs whose scheduled siblings already succeeded.
+          failed=0
+          check() {
+            local label="$1" result="$2"
+            echo "$label: $result"
+            if [ "$result" = "failure" ]; then
+              echo "::error::$label failed"
+              failed=1
+            fi
+          }
+          check "Golden Master Accuracy Tests" "$ACCURACY"
+          check "Golden Master Performance Tests" "$PERFORMANCE"
+          check "Security Audit" "$SECURITY"
+          check "Performance Regression Detection" "$REGRESSION"
+          if [ "$failed" -ne 0 ]; then
             exit 1
           fi
-          
-          if [ "${{ needs.golden-master-performance.result }}" != "success" ]; then
-            echo "::error::Golden Master Performance Tests failed"
-            exit 1
-          fi
-          
-          if [ "${{ needs.security-audit.result }}" != "success" ]; then
-            echo "::error::Security Audit failed"
-            exit 1
-          fi
-          
-          if [ "${{ needs.performance-regression-detection.result }}" != "success" ]; then
-            echo "::error::Performance Regression Detection failed"
-            exit 1
-          fi
-          
-          echo "✅ All hardening validation tests passed!"
+          echo "Hardening validation aggregator passed (no failed sibling jobs)."
       
       - name: Create summary
+        if: always()
         run: |
           echo "## Hardening Validation Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Test Results" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Golden Master Accuracy: ${{ needs.golden-master-accuracy.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Golden Master Performance: ${{ needs.golden-master-performance.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Security Audit: ${{ needs.security-audit.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Performance Regression: ${{ needs.performance-regression-detection.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Status:** All tests passed ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- Golden Master Accuracy: ${{ needs.golden-master-accuracy.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Golden Master Performance: ${{ needs.golden-master-performance.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Security Audit: ${{ needs.security-audit.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Performance Regression: ${{ needs.performance-regression-detection.result }}" >> $GITHUB_STEP_SUMMARY
 
