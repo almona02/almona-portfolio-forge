@@ -306,3 +306,19 @@ batch1-release*/
 /vendor-prod.js
 /vendor-prod.js.map
 /verification_error.txt
+
+# Post-152 hygiene: local verification scratch and heavy source PNGs (use WebP)
+/verify_tier2.sh
+/verify_tier2_complete.sh
+/verify_tier2_generic.sh
+/verify_smartscan_quick.sh
+/deploy_and_verify.sh
+/nginx-minimal.conf
+/dummy_profile_sample.jpg
+/public/images/egyptian-industrial-hero-bg.png
+/public/images/about-page-image.png
+/public/images/hero01 (1).png
+/public/images/hero01 (2).png
+/public/images/hero01 (3).png
+/public/images/hero01 (4).png
+/public/images/factory .png

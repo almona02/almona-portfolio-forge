@@ -35,7 +35,7 @@ const About = () => {
           <div
             className="absolute inset-0 z-0"
             style={{
-              backgroundImage: 'url(/images/egyptian-industrial-hero-bg.png)',
+              backgroundImage: 'url(/images/egyptian-industrial-hero-bg.webp)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
@@ -119,7 +119,7 @@ const About = () => {
                 minHeight: isMobile ? '400px' : '500px'
               }}>
                 <img
-                  src="/images/egyptian-industrial-hero-bg.png"
+                  src="/images/egyptian-industrial-hero-bg.webp"
                   alt={copy("Cross-Empire Innovation: Egyptian Pharaoh and Ottoman Pasha overseeing YILMAZ industrial machinery")}
                   className="w-full h-full object-contain object-center"
                   loading="lazy"
@@ -277,7 +277,7 @@ const About = () => {
                 maxHeight: isMobile ? '55vh' : '70vh'
               }}>
                 <img
-                  src="/images/about-page-image.png"
+                  src="/images/about-page-image.webp"
                   alt={copy("Almona Industrial Excellence - Cross-Empire Innovation")}
                   className="w-full h-full object-contain object-center"
                   loading="lazy"
