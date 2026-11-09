@@ -29,11 +29,16 @@ export async function auditPage(browser: Browser, base: string, route: Route): P
       catch (error) { if (attempt === 2) throw error; }
     }
     // Poll semantic content rather than networkidle: analytics and chat can keep connections open.
-    if (!route.missing) await page.waitForFunction(() => {
-      const root = document.querySelector('main') || document.querySelector('#root') || document.body;
-      const text = root.textContent?.trim() || '';
-      return text.length > 80 && !!root.querySelector('h1');
-    }, { }, { timeout: 15000 }).catch(() => undefined);
+    if (!route.missing) {
+      await page.waitForFunction(() => {
+        const root = document.querySelector('main') || document.querySelector('#root') || document.body;
+        const text = root.textContent?.trim() || '';
+        return text.length > 80 && !!root.querySelector('h1');
+      }, { }, { timeout: 15000 }).catch(() => undefined);
+      // Marketplace hero/H1 appears before inventory finishes. Snapshotting early
+      // falsely fails listing-*:discovery when cards have not mounted yet.
+      await page.waitForFunction(() => !document.querySelector('[aria-busy="true"]'), { }, { timeout: 20000 }).catch(() => undefined);
+    }
     await page.waitForTimeout(750);
     evidence.rendered = snapshot(await page.content(), page.url());
     if (new URL(page.url()).pathname !== new URL(url).pathname) evidence.errors.push(`Browser navigation changed path to ${page.url()}`);

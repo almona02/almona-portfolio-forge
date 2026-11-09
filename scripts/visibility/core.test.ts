@@ -17,6 +17,10 @@ beforeAll(async () => {
     res.setHeader('content-type', 'text/html');
     res.setHeader('set-cookie', 'fixture_session=do-not-persist; HttpOnly; Path=/');
     if (req.url === '/delayed') { res.end(`<html lang="en"><body><main id="content">Loading…</main><script>setTimeout(()=>document.querySelector('main').innerHTML=${JSON.stringify(`<h1>Ready</h1><p>${'Delayed content '.repeat(12)}</p>`)},300)</script></body></html>`); return; }
+    if (req.url?.startsWith('/used-machines')) {
+      res.end(`<!doctype html><html lang="en"><head><title>Marketplace</title><meta name="description" content="Used machines"><link rel="canonical" href="${base}/used-machines"></head><body><main><h1>Used Machines Marketplace</h1><p>${'Browse listings '.repeat(10)}</p><div id="grid" aria-busy="true" aria-label="Loading listings…"></div></main><script>setTimeout(()=>{const g=document.getElementById('grid');g.removeAttribute('aria-busy');g.innerHTML='<a href="/used-machines/one">Detail</a>'},400)</script></body></html>`);
+      return;
+    }
     res.end(html(`<link rel="canonical" href="${base}/"><link rel="canonical" href="${base}/duplicate"><script type="application/ld+json">{bad}</script>`));
   });
   await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -55,6 +59,10 @@ describe('technical visibility evidence', () => {
     const page = await auditPage(browser, base, { id: 'delayed', path: '/delayed', language: 'en' });
     expect(page.raw?.headings).toEqual([]);
     expect(page.rendered?.headings).toEqual(['Ready']);
+  });
+  it('waits for marketplace aria-busy inventory before discovery snapshots', async () => {
+    const page = await auditPage(browser, base, { id: 'marketplace-en', path: '/used-machines?lng=en', language: 'en', critical: true });
+    expect(page.rendered?.links.some(link => link.endsWith('/used-machines/one'))).toBe(true);
   });
   it('distinguishes denied, empty inventory, unavailable listing and network outage', async () => {
     expect((await request(`${base}/blocked`)).status).toBe(403);
