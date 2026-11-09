@@ -1,5 +1,0 @@
-Deployment trigger - $(date)
-Fix Vercel deployment configuration
-- Changed installCommand from pnpm to npm ci
-- Fixed package manager mismatch
-- Triggering new deployment

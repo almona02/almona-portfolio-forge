@@ -172,6 +172,68 @@ batch1-release*/
 
 # Local analysis output belongs under .artifacts/, not the repository root.
 /.artifacts/
+# Local agent execution evidence and editor planning output
+/.lint-wave-provenance/
+/.cursor/analysis/
+/.cursor/plans/
+# Personal assistant/editor settings are not shared project configuration.
+/.amazonq/
+/.cursor/
+/.kilocode/
+/.tabby/
+/.qodo/
+/.blackboxrules
+/.cursorrules
+/blackbox_mcp_settings.json
+/AGENTS.local.md
+# Retired parking lots and regenerable analysis exports (use Git history)
+/archive/
+/performance-reports/
+/hero-image-optimization-plan.json
+/image-analysis-report.json
+/unused-js-analysis.json
+/test_output.svg
+/tier2_response.json
+/storybook-static/
+/INSTALL_AND_RUN_TESTS.bat
+/add_redis.bat
+/test-almona02-live.js
+/test-almona02-live.py
+/deploy_smartscan.sh
+/deploy_smartscan_311.sh
+/deploy_smartscan_enhanced.sh
+/deploy_smartscan_final.sh
+/deploy_pilot.sh
+/Dockerfile.frontend.realistic
+/Dockerfile.frontend.slim.fixed
+/database-schema.sql
+/inventory_management_schema.sql
+/service-ticketing-system.sql
+/service-ticketing-system-secure.sql
+/setup_railway_redis.bat
+/setup-windows.ps1
+/railway_commands.sh
+/railway-service-checker.sh
+/test_api_comprehensive.py
+/test_calibration_quick.py
+/test_final_integration.py
+/test_pilot_erp.sh
+/test_pilot_workshop.sh
+/test_scanner_quick.py
+/test_smartscan.sh
+/validate_ocr.py
+/validate_production.sh
+# Retired documentation parking lots
+/docs/notes/
+/docs/archive/
+/docs/reviews/
+/docs/program/
+/docs/institutional-rollout/
+/docs/realityos_egyptian_rollout/
+/docs/early-access/
+/docs/beta-testing/
+/docs/diagrams/
+/docs/launch/
 # Retired root console exports, downloaded bundles and temporary files
 /COMMIT_MESSAGE.txt
 /FINAL_COMMIT_MESSAGE.txt
