@@ -22,7 +22,7 @@ Platform-specific clients retain their established directories. Root entry point
 - Preserve executable code, required data/assets, tests, migrations, licenses and dependency locks.
 - Maintain one authoritative description of each contract; link to its implementation and verification.
 - Retain audit evidence and acceptance criteria supporting active release decisions.
-- Retire superseded plans, completion narratives and duplicate status reports through reviewed changes. Git history preserves tracked originals.
+- Retire superseded plans, completion narratives and duplicate status reports through reviewed changes. Git history preserves tracked originals. Prefer a short living canon: README, this policy, `INSTITUTIONAL_OVERVIEW.md`, AICS-001, `docs/ci/`, `docs/security/`, and `docs/constitutional/`.
 - Check incoming references before deleting documents: some documentation is also consumed by tooling and knowledge generation.
 - Do not remove SQL history, Docker variants, deployment scripts or binary assets solely because their names look old or duplicated.
 - Keep secrets local. Do not commit private environment files, generated bundles, console exports or personal tool state.

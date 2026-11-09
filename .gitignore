@@ -186,14 +186,19 @@ batch1-release*/
 /.cursorrules
 /blackbox_mcp_settings.json
 /AGENTS.local.md
-# Retired external binaries and regenerable analysis exports
-/archive/external-tools/
+# Retired parking lots and regenerable analysis exports (use Git history)
+/archive/
+/performance-reports/
 /hero-image-optimization-plan.json
 /image-analysis-report.json
 /unused-js-analysis.json
 /test_output.svg
 /tier2_response.json
 /storybook-static/
+/INSTALL_AND_RUN_TESTS.bat
+/add_redis.bat
+/test-almona02-live.js
+/test-almona02-live.py
 # Retired root console exports, downloaded bundles and temporary files
 /COMMIT_MESSAGE.txt
 /FINAL_COMMIT_MESSAGE.txt
