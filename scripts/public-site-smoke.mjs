@@ -45,17 +45,19 @@ try {
   report.pages.push({ device: 'no-javascript', models: expectedModels, model: 'ALM 6510', specificationsReadable: true });
   await noScript.close();
 
+  // Catalogue documents are static HTML (no SPA mount). Broken comparison JSON
+  // must not matter; model links stay in the prerendered document either way.
   const recovery = await browser.newContext({ serviceWorkers: 'block', locale: 'en-EG' });
   await recovery.addInitScript(() => localStorage.setItem('saved_comparisons', '{broken-json'));
   const products = await recovery.newPage();
   const productErrors = [];
   products.on('pageerror', error => productErrors.push(error.message));
   await products.goto(new URL('/products/machines', base).href);
-  await products.locator('#filtered-results h3:visible').first().waitFor({ state: 'visible', timeout: 30000 });
+  await products.locator('main.public-catalog h1').waitFor({ state: 'visible', timeout: 30000 });
   assert.doesNotMatch(await products.locator('body').innerText(), /Something went wrong|Application Error/);
   assert.deepEqual(productErrors, [], 'Products page JavaScript errors');
-  assert.equal(await products.locator('details nav a').count(), expectedModels, 'All model links remain discoverable after rendering');
-  report.pages.push({ device: 'products-recovery', malformedComparisonTolerated: true, runtimeErrors: productErrors });
+  assert.equal(await products.locator('main.public-catalog article a').count(), expectedModels, 'All model links remain discoverable in static catalogue HTML');
+  report.pages.push({ device: 'products-recovery', malformedComparisonTolerated: true, staticCatalogue: true, runtimeErrors: productErrors });
   const missingProduct = await recovery.request.get(new URL('/products/machines/not-a-real-model', base).href);
   assert.equal(missingProduct.status(), 404);
   await recovery.close();
