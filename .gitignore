@@ -39,6 +39,8 @@ htmlcov/
 !docs/ci/typecheck-app-baseline.json
 !docs/ci/typecheck-app-baseline.win32.json
 !docs/ci/typecheck-app-baseline.linux.json
+!vertical_almona/manifest.json
+!vertical_tmg_shield/manifest.json
 !docs/ci/README.md
 # Exception: i18n locale trees (already tracked historically; keep new namespaces shippable)
 !locales/
@@ -313,7 +315,6 @@ batch1-release*/
 /verify_tier2_generic.sh
 /verify_smartscan_quick.sh
 /deploy_and_verify.sh
-/nginx-minimal.conf
 /dummy_profile_sample.jpg
 /public/images/egyptian-industrial-hero-bg.png
 /public/images/about-page-image.png

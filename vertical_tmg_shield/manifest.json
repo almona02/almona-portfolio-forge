@@ -1,0 +1,69 @@
+{
+  "vertical_id": "tmg_shield",
+  "name": "TMG Shield",
+  "version": "0.1.0",
+  "description": "Asset management and maintenance compliance vertical for RealityOS",
+  "author": "RealityOS Team",
+  "core_version_required": ">=1.0.0,<2.0.0",
+  "requires_vertical": [],
+  "rule_classes": [
+    "TMGAssetRule",
+    "TMGMaintenanceRule",
+    "TMGAuditRule"
+  ],
+  "event_types": [
+    "VERIFICATION",
+    "INSPECTION",
+    "FAULT",
+    "OFF"
+  ],
+  "per_vertical_secret": true,
+  "constitutional_compliance": {
+    "principle_1_human_verified": true,
+    "principle_2_append_only": true,
+    "principle_3_cryptographic_chain": true,
+    "principle_4_erp_consumer": true,
+    "principle_5_vertical_agnosticism": true,
+    "principle_6_no_admin_override": true
+  },
+  "proof_requirements": {
+    "asset_verification": {
+      "qr_code": "mandatory",
+      "gps": "mandatory",
+      "photos": "optional",
+      "max_photos": 2,
+      "timestamp": "mandatory"
+    },
+    "maintenance_completion": {
+      "qr_code": "mandatory",
+      "gps": "mandatory",
+      "photos": "mandatory",
+      "max_photos": 2,
+      "contractor_id": "mandatory_if_applicable",
+      "timestamp": "mandatory"
+    },
+    "contractor_work": {
+      "qr_code": "mandatory",
+      "gps": "mandatory",
+      "photos": "mandatory",
+      "max_photos": 2,
+      "contractor_id": "mandatory",
+      "timestamp": "mandatory"
+    }
+  },
+  "metadata": {
+    "domain": "asset_management",
+    "use_cases": [
+      "asset_tracking",
+      "maintenance_compliance",
+      "audit_trails",
+      "contractor_verification"
+    ],
+    "erp_integration": {
+      "supported": ["SAP", "Oracle"],
+      "pattern": "erp_bridge",
+      "direction": "realityos_to_erp"
+    }
+  }
+}
+
