@@ -1,0 +1,35 @@
+{
+  "vertical_id": "almona_vertical",
+  "name": "Almona Industrial Solutions",
+  "version": "1.0.0",
+  "description": "Aluminium/UPVC fabrication vertical with AI calibration learning",
+  "author": "Almona Industrial Solutions",
+  "core_version_required": ">=1.0.0,<2.0.0",
+  "requires_vertical": [],
+  "rule_classes": [
+    "AlmonaCalibrationRule",
+    "AlmonaAnomalyRule",
+    "AlmonaFreezeRule"
+  ],
+  "event_types": [
+    "VERIFICATION",
+    "FAULT",
+    "OFF"
+  ],
+  "per_vertical_secret": true,
+  "constitutional_compliance": {
+    "principle_1": true,
+    "principle_2": true,
+    "principle_3": true,
+    "principle_4": true,
+    "principle_5": true,
+    "principle_6": true
+  },
+  "metadata": {
+    "industry": "fabrication",
+    "materials": ["aluminium", "upvc"],
+    "regions": ["global"],
+    "features": ["calibration_learning", "cnc_integration"]
+  }
+}
+
