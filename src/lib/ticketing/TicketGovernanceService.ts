@@ -236,45 +236,30 @@ export async function governedCreateTicket(
 
   const autoAssign = await resolveAutoAssignment(ticketId, ticketType, ticketPriority, actorId);
   if (autoAssign) {
-    const assignPatch = buildGovernedTransitionPatch({
+    const { governTicketAssign } = await import('@/lib/ticketGovernanceApi');
+    const assignedTicket = await governTicketAssign({
       ticketId,
-      currentStatus: 'open',
-      targetStatus: 'assigned',
-      actorId,
-      rationale: 'Deterministic policy assignment',
+      assigneeId: autoAssign.assignedTo,
+      rationale: `Deterministic policy assignment (${autoAssign.assignmentResult.ruleId})`,
     });
-    const { data: assignedRow, error: assignErr } = await supabase
-      .from('service_tickets')
-      .update({
-        ...assignPatch,
-        assigned_to: autoAssign.assignedTo,
-        assigned_at: new Date().toISOString(),
-        assigned_by: actorId,
-      })
-      .eq('id', ticketId)
-      .select(SELECT_COLUMNS)
-      .single();
-
-    if (!assignErr && assignedRow) {
-      eventResults.assigned = await recordServiceEvent({
-        eventType: 'VERIFICATION',
-        entityId: ticketId,
-        payload: {
-          kind: 'ticket_assigned',
-          assignedTo: autoAssign.assignedTo,
-          ruleId: autoAssign.assignmentResult.ruleId,
-        },
-        verifiedBy: actorId,
-        correlationId: `assign-${ticketId}`,
-      });
-      return {
-        row: assignedRow as Record<string, unknown>,
-        ticketType,
-        ticketPriority,
-        actorId,
-        eventResults,
-      };
-    }
+    eventResults.assigned = await recordServiceEvent({
+      eventType: 'VERIFICATION',
+      entityId: ticketId,
+      payload: {
+        kind: 'ticket_assigned',
+        assignedTo: autoAssign.assignedTo,
+        ruleId: autoAssign.assignmentResult.ruleId,
+      },
+      verifiedBy: actorId,
+      correlationId: `assign-${ticketId}`,
+    });
+    return {
+      row: assignedTicket as unknown as Record<string, unknown>,
+      ticketType,
+      ticketPriority,
+      actorId,
+      eventResults,
+    };
   }
 
   return {

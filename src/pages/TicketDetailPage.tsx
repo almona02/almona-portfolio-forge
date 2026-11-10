@@ -70,13 +70,37 @@ const TicketDetailPage = () => {
 
   const isSharedView = !!shareToken
 
+  const hydrateAttachmentUrls = async (
+    rows: MessageRow[],
+    token: string | null,
+  ): Promise<MessageRow[]> => {
+    return Promise.all(rows.map(async (m) => ({
+      ...m,
+      attachments: await Promise.all((m.attachments ?? []).map(async (a) => {
+        const storagePath = a.storage_path
+        if (!storagePath) {
+          return { filename: a.filename, size: a.size, type: a.type, storage_path: undefined }
+        }
+        try {
+          const url = token
+            ? await ticketMessageApi.createSharedAttachmentUrl(token, storagePath)
+            : await ticketMessageApi.createSignedAttachmentUrl(storagePath)
+          return { ...a, storage_path: storagePath, url }
+        } catch {
+          return { filename: a.filename, size: a.size, type: a.type, storage_path: storagePath }
+        }
+      })),
+    })))
+  }
+
   const loadAuthenticated = async () => {
     if (!ticketId) return
     const { data, error: err } = await supabase.from('service_tickets').select('*').eq('id', ticketId).maybeSingle()
     if (err || !data) { setError('Ticket not found or unavailable.'); setLoading(false); return }
     setTicket(data as TicketRow)
     const { data: msgs } = await supabase.from('ticket_messages').select('*').eq('ticket_id', ticketId).order('created_at', { ascending: true })
-    setMessages((msgs ?? []) as MessageRow[])
+    const hydrated = await hydrateAttachmentUrls((msgs ?? []) as MessageRow[], null)
+    setMessages(hydrated)
     setLoading(false)
   }
 
@@ -86,9 +110,10 @@ const TicketDetailPage = () => {
     setError(null)
     if (shareToken) {
       void ticketMessageApi.getSharedTicket(shareToken)
-        .then((data) => {
+        .then(async (data) => {
           setTicket(data.ticket as TicketRow)
-          setMessages(data.messages as MessageRow[])
+          const hydrated = await hydrateAttachmentUrls(data.messages as MessageRow[], shareToken)
+          setMessages(hydrated)
           setLoading(false)
         })
         .catch(() => { setError('Invalid or expired share link.'); setLoading(false) })
@@ -114,7 +139,7 @@ const TicketDetailPage = () => {
       setReply('')
       setFiles(null)
       const { data: msgs } = await supabase.from('ticket_messages').select('*').eq('ticket_id', ticket.id).order('created_at', { ascending: true })
-      setMessages((msgs ?? []) as MessageRow[])
+      setMessages(await hydrateAttachmentUrls((msgs ?? []) as MessageRow[], null))
       toast({ title: 'Message sent' })
     } catch (e) {
       toast({ title: 'Send failed', description: (e as Error)?.message ?? 'Unknown error', variant: 'destructive' })
@@ -210,9 +235,15 @@ const TicketDetailPage = () => {
                           {m.attachments?.length > 0 && (
                             <div className="mt-2 grid grid-cols-3 gap-2">
                               {m.attachments.map((a, i) => (
-                                <a key={i} href={a.url} target="_blank" rel="noopener noreferrer">
-                                  <img src={a.url} alt={a.filename} className="w-full h-20 object-cover rounded border" />
-                                </a>
+                                a.url ? (
+                                  <a key={i} href={a.url} target="_blank" rel="noopener noreferrer">
+                                    <img src={a.url} alt={a.filename} className="w-full h-20 object-cover rounded border" />
+                                  </a>
+                                ) : (
+                                  <div key={i} className="w-full h-20 rounded border flex items-center justify-center text-[10px] text-muted-foreground px-1 text-center">
+                                    {a.filename || 'Attachment unavailable'}
+                                  </div>
+                                )
                               ))}
                             </div>
                           )}

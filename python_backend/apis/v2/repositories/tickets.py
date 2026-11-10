@@ -51,6 +51,71 @@ class TicketsRepository:
         rows = getattr(resp, "data", []) or []
         return rows[0] if rows else None
 
+    def govern_ticket_transition(
+        self,
+        ticket_id: UUID,
+        to_status: str,
+        actor_id: UUID,
+        rationale: Optional[str] = None,
+        resolution_summary: Optional[str] = None,
+    ) -> Optional[Dict[str, Any]]:
+        resp = self._db.rpc(
+            "govern_ticket_transition",
+            {
+                "p_ticket_id": str(ticket_id),
+                "p_to_status": to_status,
+                "p_rationale": rationale,
+                "p_resolution_summary": resolution_summary,
+                "p_actor_id": str(actor_id),
+            },
+        ).execute()
+        data = getattr(resp, "data", None)
+        if isinstance(data, list):
+            return data[0] if data else None
+        return data
+
+    def govern_ticket_assign(
+        self,
+        ticket_id: UUID,
+        assignee_id: UUID,
+        actor_id: UUID,
+        rationale: Optional[str] = None,
+    ) -> Optional[Dict[str, Any]]:
+        resp = self._db.rpc(
+            "govern_ticket_assign",
+            {
+                "p_ticket_id": str(ticket_id),
+                "p_assignee_id": str(assignee_id),
+                "p_rationale": rationale,
+                "p_actor_id": str(actor_id),
+            },
+        ).execute()
+        data = getattr(resp, "data", None)
+        if isinstance(data, list):
+            return data[0] if data else None
+        return data
+
+    def govern_ticket_set_priority(
+        self,
+        ticket_id: UUID,
+        priority: str,
+        actor_id: UUID,
+        rationale: Optional[str] = None,
+    ) -> Optional[Dict[str, Any]]:
+        resp = self._db.rpc(
+            "govern_ticket_set_priority",
+            {
+                "p_ticket_id": str(ticket_id),
+                "p_priority": priority,
+                "p_rationale": rationale,
+                "p_actor_id": str(actor_id),
+            },
+        ).execute()
+        data = getattr(resp, "data", None)
+        if isinstance(data, list):
+            return data[0] if data else None
+        return data
+
     # Messages
     def insert_message(self, message: Dict[str, Any]) -> Dict[str, Any]:
         resp = self._db.table("ticket_messages").insert(message).execute()

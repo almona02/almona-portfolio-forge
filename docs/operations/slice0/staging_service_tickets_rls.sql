@@ -1,5 +1,6 @@
 -- Slice 0 staging/prod RLS enablement package for service_tickets.
 -- PREPARE ONLY — apply only after explicit environment approval.
+-- Authorization is owner / assignee / admin|support — not every technician via profiles self-read.
 BEGIN;
 SET LOCAL lock_timeout = '5s';
 
@@ -14,7 +15,7 @@ USING (
   OR EXISTS (
     SELECT 1 FROM public.profiles p
     WHERE p.id = auth.uid()
-      AND p.role::text IN ('admin', 'support', 'technician', 'sales_rep')
+      AND p.role::text IN ('admin', 'support')
   )
 );
 
@@ -41,7 +42,7 @@ USING (
   OR EXISTS (
     SELECT 1 FROM public.profiles p
     WHERE p.id = auth.uid()
-      AND p.role::text IN ('admin', 'support', 'technician')
+      AND p.role::text IN ('admin', 'support')
   )
 )
 WITH CHECK (
@@ -50,12 +51,14 @@ WITH CHECK (
   OR EXISTS (
     SELECT 1 FROM public.profiles p
     WHERE p.id = auth.uid()
-      AND p.role::text IN ('admin', 'support', 'technician')
+      AND p.role::text IN ('admin', 'support')
   )
 );
 
--- Tighten ticket_messages so assignees can participate without exposing cross-customer rows.
+-- Messages: admin/support see all; assignees see all on assigned tickets;
+-- owners see non-internal only. Does not grant every technician via role alone.
 DROP POLICY IF EXISTS "Users can view ticket messages" ON public.ticket_messages;
+DROP POLICY IF EXISTS ticket_messages_select_scoped ON public.ticket_messages;
 CREATE POLICY ticket_messages_select_scoped ON public.ticket_messages
 FOR SELECT TO authenticated
 USING (
@@ -63,17 +66,22 @@ USING (
     SELECT 1 FROM public.service_tickets st
     WHERE st.id = ticket_messages.ticket_id
       AND (
-        st.user_id = auth.uid()
-        OR st.assigned_to = auth.uid()
-        OR EXISTS (
+        EXISTS (
           SELECT 1 FROM public.profiles p
-          WHERE p.id = auth.uid() AND p.role::text IN ('admin', 'support', 'technician')
+          WHERE p.id = auth.uid() AND p.role::text IN ('admin', 'support')
+        )
+        OR st.assigned_to = auth.uid()
+        OR (
+          st.user_id = auth.uid()
+          AND COALESCE(ticket_messages.is_internal_note, false) = false
+          AND COALESCE(ticket_messages.message_type, 'message') IS DISTINCT FROM 'internal_note'
         )
       )
   )
 );
 
 DROP POLICY IF EXISTS "Users can insert ticket messages" ON public.ticket_messages;
+DROP POLICY IF EXISTS ticket_messages_insert_scoped ON public.ticket_messages;
 CREATE POLICY ticket_messages_insert_scoped ON public.ticket_messages
 FOR INSERT TO authenticated
 WITH CHECK (
@@ -86,9 +94,16 @@ WITH CHECK (
         OR st.assigned_to = auth.uid()
         OR EXISTS (
           SELECT 1 FROM public.profiles p
-          WHERE p.id = auth.uid() AND p.role::text IN ('admin', 'support', 'technician')
+          WHERE p.id = auth.uid() AND p.role::text IN ('admin', 'support')
         )
       )
+  )
+  AND (
+    (
+      COALESCE(ticket_messages.is_internal_note, false) = false
+      AND COALESCE(ticket_messages.message_type, 'message') IS DISTINCT FROM 'internal_note'
+    )
+    OR public.st_assigned_or_staff(ticket_messages.ticket_id)
   )
 );
 

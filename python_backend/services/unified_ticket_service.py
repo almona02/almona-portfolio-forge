@@ -147,46 +147,43 @@ class UnifiedTicketService:
         ticket_id: UUID,
         status: TicketStatus,
         resolution_summary: Optional[str] = None,
+        actor_id: Optional[UUID] = None,
     ) -> Optional[TicketResponse]:
-        """Update status; set resolution timestamps for resolved/closed."""
-        update = {
-            "status": status.value,
-            "updated_at": utcnow_iso(),
-        }
-        if status in {TicketStatus.resolved, TicketStatus.closed}:
-            update["resolved_at"] = utcnow_iso()
-            if resolution_summary:
-                update["resolution_summary"] = resolution_summary
-        resp = (
-            self.supabase.table("service_tickets")
-            .update(update)
-            .eq("id", str(ticket_id))
-            .execute()
-        )
+        """Update status through govern_ticket_transition (actor required)."""
+        if actor_id is None:
+            raise ValueError("actor_id is required for governed status updates")
+        resp = self.supabase.rpc(
+            "govern_ticket_transition",
+            {
+                "p_ticket_id": str(ticket_id),
+                "p_to_status": status.value,
+                "p_rationale": "unified_ticket_service",
+                "p_resolution_summary": resolution_summary,
+                "p_actor_id": str(actor_id),
+            },
+        ).execute()
         if not resp.data:
             return None
-        return TicketResponse(**resp.data[0])
+        row = resp.data[0] if isinstance(resp.data, list) else resp.data
+        return TicketResponse(**row)
 
     def assign_ticket(
         self, ticket_id: UUID, assignee_id: UUID, assigned_by: UUID
     ) -> Optional[TicketResponse]:
-        """Assign ticket to staff (status -> in_progress)."""
-        update = {
-            "assigned_to": str(assignee_id),
-            "assigned_by": str(assigned_by),
-            "assigned_at": utcnow_iso(),
-            "status": TicketStatus.in_progress.value,
-            "updated_at": utcnow_iso(),
-        }
-        resp = (
-            self.supabase.table("service_tickets")
-            .update(update)
-            .eq("id", str(ticket_id))
-            .execute()
-        )
+        """Assign ticket via govern_ticket_assign (preserves actor identity)."""
+        resp = self.supabase.rpc(
+            "govern_ticket_assign",
+            {
+                "p_ticket_id": str(ticket_id),
+                "p_assignee_id": str(assignee_id),
+                "p_rationale": f"Assigned by {assigned_by}",
+                "p_actor_id": str(assigned_by),
+            },
+        ).execute()
         if not resp.data:
             return None
-        return TicketResponse(**resp.data[0])
+        row = resp.data[0] if isinstance(resp.data, list) else resp.data
+        return TicketResponse(**row)
 
     # ------------------------------------------------------------------
     # Messaging
@@ -228,17 +225,26 @@ class UnifiedTicketService:
     # Convenience helpers
     # ------------------------------------------------------------------
     def change_priority(
-        self, ticket_id: UUID, priority: TicketPriority
+        self,
+        ticket_id: UUID,
+        priority: TicketPriority,
+        actor_id: Optional[UUID] = None,
     ) -> Optional[TicketResponse]:
-        resp = (
-            self.supabase.table("service_tickets")
-            .update({"priority": priority.value, "updated_at": utcnow_iso()})
-            .eq("id", str(ticket_id))
-            .execute()
-        )
+        if actor_id is None:
+            raise ValueError("actor_id is required for governed priority updates")
+        resp = self.supabase.rpc(
+            "govern_ticket_set_priority",
+            {
+                "p_ticket_id": str(ticket_id),
+                "p_priority": priority.value,
+                "p_rationale": "unified_ticket_service",
+                "p_actor_id": str(actor_id),
+            },
+        ).execute()
         if not resp.data:
             return None
-        return TicketResponse(**resp.data[0])
+        row = resp.data[0] if isinstance(resp.data, list) else resp.data
+        return TicketResponse(**row)
 
     def link_related_ticket(
         self, ticket_id: UUID, related_service_ticket_id: UUID

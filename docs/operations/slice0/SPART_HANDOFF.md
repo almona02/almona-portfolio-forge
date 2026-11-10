@@ -1,58 +1,57 @@
-# Slice 0 Spart handoff — service security boundary
+# Slice 0 Spart handoff — remediation freeze (post-BLOCKED)
 
 ## Implementation base
 
 | Item | Value |
 |---|---|
-| Worktree | `C:/projects/almona-slice0` (isolated; original workspace untouched) |
+| Worktree | `C:/projects/almona-slice0` |
 | Branch | `feat/service-slice0-security` |
-| Review freeze SHA | `bb40d8ab` (+ edge-function membership fix commit after verification) |
+| Review freeze SHA | `9b54fb02` — supersedes `bb40d8ab` / `6bc8cb7e` |
 | Base commit | `13faec98` (`origin/main` after #154) |
-| Spec reference | Wonder manual-machines spec (target product; **not** implemented beyond existing ticket states) |
-| Verification | `docs/operations/slice0/VERIFICATION_REPORT.md` — disposable DB **PASS 10/10**; live edge invoke **unavailable** |
-| Deployment package | `docs/operations/slice0/DEPLOYMENT_PACKAGE.md` (ordered; not an apply approval) |
+| Prior Spark verdict | **BLOCKED** on `6bc8cb7e` (B1–B4 + C1–C10) |
+| Verification | `docs/operations/slice0/VERIFICATION_REPORT.md` — Spark battery **108/108 PASS** on remediated tree |
+| Spark archive | `.artifacts/slice0/spark-review-20261111/` (immutable BLOCKED evidence) |
+| Deployment package | `docs/operations/slice0/DEPLOYMENT_PACKAGE.md` (ordered; **not** an apply approval) |
 
-## Personally revalidated on implementation base / deployed envs
+## Defect-by-defect disposition
 
-- Deployed Prod + Stage `get_shared_ticket` returned full `row_to_json` + all messages (**verified via authorized SQL**, no customer rows dumped).
-- Stage `service_tickets.relrowsecurity = false` (**verified**).
-- Stage `ticket-attachments.public = true` + anon `ticket-attachments-public-read` (**verified**).
-- Client technician + bulk assign bypassed governance (**verified in code** on `13faec98`).
-- `TicketGovernanceService` is browser-side (**verified**); not a trusted boundary alone.
+| ID | Disposition |
+|---|---|
+| B1 | Fixed — owner/definer identity gate; GUC unused |
+| B2 | Fixed — helper EXECUTE + schema USAGE + audit SELECT grant |
+| B3 | Fixed — owner excluded from internal notes + attachment membership |
+| B4 | Fixed — assigned technician can create shares |
+| B5 | Already fixed in `6bc8cb7e`; re-confirmed |
+| C1–C7, C10 | Fixed (see verification table) |
+| C8–C9 | Documented (not code defects) |
 
-## Diff summary (Slice 0 only)
+## Trusted mutation boundary
 
-1. `supabase/migrations/20261111010000_service_slice0_security_boundary.sql` — share allowlist + revocation, private attachments, governed RPCs, protected-column trigger, atomic `ticket_governance_audit`, revoke anon table access.
-2. `docs/operations/slice0/staging_service_tickets_rls.sql` + `STAGING_RLS_REMEDIATION.md` — **prepared, not applied**.
-3. `supabase/functions/ticket-share-attachment` — signed URL for share viewers; **no public download fallback**.
-4. Client: `ticketGovernanceApi`, technician/admin/bulk/status paths, ProtectedRoute roles, attachment path/signed URL API, UI removal of `pending_approval` / reopen/close-from-open invalid tech actions.
-5. Tests: Vitest unit + SQL checklist under `supabase/tests/service_slice0_security_boundary_test.sql`.
-
-## Explicit product decisions documented in Slice 0
-
-- `pending_approval` and reopen-from-closed: **removed from UI / rejected by RPC** until Wonder policy + DB enforcement land.
-- Technician decline uses FSM-valid `assigned → cancelled` (not `open`).
-- Bulk assign partial-failure: per-id errors collected; successes audited; client returns succeeded rows and warns on partial.
+- Protected columns change only when `current_user` is the `service_tickets` table owner (`postgres` / `supabase_admin`) — i.e. inside SECURITY DEFINER `govern_ticket_*` RPCs.
+- Callers cannot authorize mutations via `SET service_tickets.governed` (or any other GUC).
+- `service_role` is **not** exempt from the trigger; backend writers must call `govern_*` with `p_actor_id` when JWT uid is absent.
+- Direct HTTP inability to issue `SET` does not dismiss the DB flaw; the DB gate is closed regardless.
 
 ## Reproduction for Spart
 
-1. Review migration SQL (DEFINER `search_path`, grants, caller checks).
-2. On disposable DB: apply security migration + staging RLS SQL; run `supabase/tests/service_slice0_security_boundary_test.sql`.
-3. Negative cases: direct `UPDATE service_tickets SET status=...` as authenticated → blocked; anon SELECT → denied after RLS package; share token expired/revoked/short → error; internal note absent from share payload; attachment public URL 404 after private bucket.
-4. Positive cases: assigned technician `govern_ticket_transition` to `in_progress`; admin `govern_ticket_assign`; bulk with one bad id → partial.
+1. Diff freeze SHA vs `13faec98` (or vs `6bc8cb7e` for remediation-only delta).
+2. On disposable DB with representative grants: apply security migration + staging RLS; run Spark `battery.cjs` (or `.artifacts/slice0/battery_remediation.cjs`).
+3. Confirm D-07b blocked with GUC set; O-02/O-08/G-01/H-03 pass; A-01 rollback pass.
+4. Client units 17/17; Python ticket service 2/2.
 
 ## Environment apply status
 
-**NOT APPLIED** to staging or production. Code approval ≠ environment approval.
+**NOT APPLIED** to staging or production. Code freeze ≠ environment approval.
 
-## Residual risks
+## Residual risks / NOT TESTED
 
-- Existing message JSON may still contain historical public URLs; share RPC strips them, but old CDN/cache URLs may linger until bucket privacy fully propagates.
-- Legacy flat storage paths (pre-scoped uploads) are readable only by staff under new storage policy — owners may need re-upload for customer self-serve download.
-- `service_tickets` table-wide UPDATE grant remains for non-protected columns; trigger is the enforcement for status/assignee. Column privilege surgery alone was intentionally not relied upon.
-- Staging RLS package not applied; Stage remains exposed until env approval.
-- Live DB authorization tests against staging/prod **blocked** by no-apply rule; Vitest covers client contracts only.
+- Live edge + Storage signed-URL round-trip: **NOT TESTED**
+- Browser attachment rendering: **NOT TESTED**
+- Full `supabase db reset` of entire migration history: **NOT TESTED**
+- Issued 60s URLs survive revoke until expiry (by design)
+- Allowlisted share free text may contain PII
+- RLS package still requires explicit env approval wherever RLS is off
 
 ## Out of scope (not done)
 
-Machine registry, squads, jobs, reports, contract workflows, Wonder new ticket states, attachment create-persistence on ticket wizard.
+Machine registry, squads, jobs, reports, contract workflows, Wonder new ticket states, later phases.

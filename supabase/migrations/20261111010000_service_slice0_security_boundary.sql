@@ -2,12 +2,18 @@
 -- governed status/assignment RPCs with atomic audit, and blocked direct mutation
 -- of protected ticket columns.
 -- PREPARE ONLY — do not apply to staging/production without separate env approval.
+--
+-- Trusted mutation boundary: SECURITY DEFINER RPCs owned by the migration role
+-- (postgres). The BEFORE UPDATE trigger allows protected-column changes only when
+-- current_user is the table owner (definer identity). Caller-settable GUCs are
+-- never used as authorization.
 BEGIN;
 SET LOCAL lock_timeout = '5s';
 
 CREATE SCHEMA IF NOT EXISTS admin_private;
 REVOKE ALL ON SCHEMA admin_private FROM PUBLIC;
 REVOKE ALL ON SCHEMA admin_private FROM anon, authenticated;
+GRANT USAGE ON SCHEMA admin_private TO authenticated;
 
 CREATE OR REPLACE FUNCTION admin_private.caller_uid()
 RETURNS uuid
@@ -17,7 +23,8 @@ SET search_path = pg_catalog, public
 AS $$
   SELECT NULLIF(auth.uid(), '00000000-0000-0000-0000-000000000000'::uuid);
 $$;
-REVOKE ALL ON FUNCTION admin_private.caller_uid() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION admin_private.caller_uid() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION admin_private.caller_uid() TO authenticated;
 
 CREATE OR REPLACE FUNCTION admin_private.caller_role()
 RETURNS text
@@ -30,7 +37,63 @@ AS $$
   FROM public.profiles p
   WHERE p.id = admin_private.caller_uid();
 $$;
-REVOKE ALL ON FUNCTION admin_private.caller_role() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION admin_private.caller_role() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION admin_private.caller_role() TO authenticated;
+
+CREATE OR REPLACE FUNCTION admin_private.is_service_role_request()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SET search_path = pg_catalog
+AS $$
+  SELECT
+    current_user IN ('service_role', 'supabase_admin')
+    OR COALESCE(
+      NULLIF(current_setting('request.jwt.claim.role', true), ''),
+      NULLIF(current_setting('request.jwt.claims', true), '')::jsonb ->> 'role'
+    ) = 'service_role';
+$$;
+REVOKE ALL ON FUNCTION admin_private.is_service_role_request() FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION admin_private.is_service_role_request() TO service_role;
+
+CREATE OR REPLACE FUNCTION admin_private.can_read_ticket_attachment(object_name text)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $$
+  SELECT CASE
+    WHEN admin_private.caller_uid() IS NULL THEN false
+    WHEN admin_private.caller_role() IN ('admin', 'support') THEN true
+    WHEN (storage.foldername(object_name))[1] = admin_private.caller_uid()::text THEN true
+    WHEN EXISTS (
+      SELECT 1
+      FROM public.service_tickets st
+      WHERE st.id::text = (storage.foldername(object_name))[1]
+        AND st.assigned_to = admin_private.caller_uid()
+    ) THEN true
+    ELSE EXISTS (
+      SELECT 1
+      FROM public.ticket_messages m
+      JOIN public.service_tickets st ON st.id = m.ticket_id
+      WHERE st.id::text = (storage.foldername(object_name))[1]
+        AND st.user_id = admin_private.caller_uid()
+        AND COALESCE(m.is_internal_note, false) = false
+        AND COALESCE(m.message_type, 'message') IS DISTINCT FROM 'internal_note'
+        AND EXISTS (
+          SELECT 1
+          FROM jsonb_array_elements(COALESCE(m.attachments, '[]'::jsonb)) att
+          WHERE COALESCE(
+            nullif(att->>'storage_path', ''),
+            nullif(substring(att->>'url' from 'ticket-attachments/(.+)$'), '')
+          ) = object_name
+        )
+    )
+  END;
+$$;
+REVOKE ALL ON FUNCTION admin_private.can_read_ticket_attachment(text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION admin_private.can_read_ticket_attachment(text) TO authenticated;
 
 CREATE OR REPLACE FUNCTION public.is_valid_ticket_status_transition(p_from text, p_to text)
 RETURNS boolean
@@ -62,6 +125,37 @@ ALTER TABLE public.ticket_shares
   ADD COLUMN IF NOT EXISTS revoked_at timestamptz,
   ADD COLUMN IF NOT EXISTS revoked_by uuid REFERENCES auth.users(id);
 
+-- Assigned technician + owner + admin/support may manage shares (escalate flow).
+DROP POLICY IF EXISTS ticket_shares_manage ON public.ticket_shares;
+CREATE POLICY ticket_shares_manage ON public.ticket_shares
+FOR ALL TO authenticated
+USING (
+  EXISTS (
+    SELECT 1
+    FROM public.service_tickets st
+    WHERE st.id = ticket_shares.ticket_id
+      AND (
+        st.user_id = auth.uid()
+        OR st.assigned_to = auth.uid()
+        OR admin_private.is_admin()
+        OR admin_private.caller_role() IN ('admin', 'support')
+      )
+  )
+)
+WITH CHECK (
+  EXISTS (
+    SELECT 1
+    FROM public.service_tickets st
+    WHERE st.id = ticket_shares.ticket_id
+      AND (
+        st.user_id = auth.uid()
+        OR st.assigned_to = auth.uid()
+        OR admin_private.is_admin()
+        OR admin_private.caller_role() IN ('admin', 'support')
+      )
+  )
+);
+
 CREATE OR REPLACE FUNCTION public.revoke_ticket_share(p_token text)
 RETURNS void
 LANGUAGE plpgsql
@@ -86,7 +180,7 @@ BEGIN
     RAISE EXCEPTION 'Ticket not found' USING ERRCODE = 'P0002';
   END IF;
   IF NOT (
-    v_role = 'admin'
+    v_role IN ('admin', 'support')
     OR v_ticket.user_id = v_uid
     OR v_ticket.assigned_to = v_uid
     OR v_share.created_by = v_uid
@@ -198,16 +292,7 @@ CREATE POLICY ticket_attachments_select ON storage.objects
 FOR SELECT TO authenticated
 USING (
   bucket_id = 'ticket-attachments'
-  AND (
-    admin_private.caller_role() IN ('admin', 'technician', 'support')
-    OR (storage.foldername(name))[1] = admin_private.caller_uid()::text
-    OR EXISTS (
-      SELECT 1
-      FROM public.service_tickets st
-      WHERE st.id::text = (storage.foldername(name))[1]
-        AND (st.user_id = admin_private.caller_uid() OR st.assigned_to = admin_private.caller_uid())
-    )
-  )
+  AND admin_private.can_read_ticket_attachment(name)
 );
 
 CREATE POLICY ticket_attachments_insert ON storage.objects
@@ -224,7 +309,7 @@ WITH CHECK (
         AND (
           st.user_id = admin_private.caller_uid()
           OR st.assigned_to = admin_private.caller_uid()
-          OR admin_private.caller_role() IN ('admin', 'technician', 'support')
+          OR admin_private.caller_role() IN ('admin', 'support')
         )
     )
   )
@@ -247,14 +332,28 @@ CREATE POLICY ticket_governance_audit_staff_read ON public.ticket_governance_aud
 FOR SELECT TO authenticated
 USING (admin_private.caller_role() IN ('admin', 'technician', 'support'));
 REVOKE INSERT, UPDATE, DELETE ON public.ticket_governance_audit FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON public.ticket_governance_audit TO authenticated;
 
+-- Protected columns may change only when current_user is the table owner
+-- (SECURITY DEFINER RPCs run as that owner). service_role and authenticated
+-- cannot impersonate that identity via SET SESSION AUTHORIZATION or GUCs.
 CREATE OR REPLACE FUNCTION public.enforce_governed_ticket_columns()
 RETURNS trigger
 LANGUAGE plpgsql
 SET search_path = pg_catalog, public
 AS $$
+DECLARE
+  v_owner name;
 BEGIN
-  IF COALESCE(current_setting('service_tickets.governed', true), '') = '1' THEN
+  SELECT pg_catalog.pg_get_userbyid(c.relowner)
+    INTO v_owner
+  FROM pg_catalog.pg_class c
+  JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+  WHERE n.nspname = 'public'
+    AND c.relname = 'service_tickets';
+
+  IF current_user IS NOT DISTINCT FROM v_owner
+     OR current_user IN ('postgres', 'supabase_admin') THEN
     RETURN NEW;
   END IF;
 
@@ -290,11 +389,94 @@ REVOKE ALL ON TABLE public.service_tickets FROM PUBLIC;
 REVOKE ALL ON TABLE public.service_tickets FROM anon;
 GRANT SELECT, INSERT, UPDATE ON TABLE public.service_tickets TO authenticated;
 
+-- Internal-note privacy at the message SELECT boundary (owner excluded).
+DROP POLICY IF EXISTS "Users can view ticket messages" ON public.ticket_messages;
+DROP POLICY IF EXISTS ticket_messages_select_scoped ON public.ticket_messages;
+CREATE POLICY ticket_messages_select_scoped ON public.ticket_messages
+FOR SELECT TO authenticated
+USING (
+  EXISTS (
+    SELECT 1
+    FROM public.service_tickets st
+    WHERE st.id = ticket_messages.ticket_id
+      AND (
+        EXISTS (
+          SELECT 1 FROM public.profiles p
+          WHERE p.id = auth.uid()
+            AND p.role::text IN ('admin', 'support')
+        )
+        OR st.assigned_to = auth.uid()
+        OR (
+          st.user_id = auth.uid()
+          AND COALESCE(ticket_messages.is_internal_note, false) = false
+          AND COALESCE(ticket_messages.message_type, 'message') IS DISTINCT FROM 'internal_note'
+        )
+      )
+  )
+);
+
+CREATE OR REPLACE FUNCTION public.st_assigned_or_staff(p_ticket_id uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.service_tickets st
+    WHERE st.id = p_ticket_id
+      AND (
+        st.assigned_to = auth.uid()
+        OR EXISTS (
+          SELECT 1 FROM public.profiles p
+          WHERE p.id = auth.uid()
+            AND p.role::text IN ('admin', 'support', 'technician')
+        )
+      )
+  );
+$$;
+REVOKE ALL ON FUNCTION public.st_assigned_or_staff(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.st_assigned_or_staff(uuid) TO authenticated;
+
+DROP POLICY IF EXISTS "Users can insert ticket messages" ON public.ticket_messages;
+DROP POLICY IF EXISTS ticket_messages_insert_scoped ON public.ticket_messages;
+CREATE POLICY ticket_messages_insert_scoped ON public.ticket_messages
+FOR INSERT TO authenticated
+WITH CHECK (
+  author_id = auth.uid()
+  AND EXISTS (
+    SELECT 1
+    FROM public.service_tickets st
+    WHERE st.id = ticket_messages.ticket_id
+      AND (
+        st.user_id = auth.uid()
+        OR st.assigned_to = auth.uid()
+        OR EXISTS (
+          SELECT 1 FROM public.profiles p
+          WHERE p.id = auth.uid()
+            AND p.role::text IN ('admin', 'support')
+        )
+      )
+  )
+  AND (
+    (
+      COALESCE(ticket_messages.is_internal_note, false) = false
+      AND COALESCE(ticket_messages.message_type, 'message') IS DISTINCT FROM 'internal_note'
+    )
+    OR public.st_assigned_or_staff(ticket_messages.ticket_id)
+  )
+);
+
+-- Drop both arities so CREATE is unambiguous on re-apply (defaults caused 42725).
+DROP FUNCTION IF EXISTS public.govern_ticket_transition(uuid, text, text, text);
+DROP FUNCTION IF EXISTS public.govern_ticket_transition(uuid, text, text, text, uuid);
 CREATE OR REPLACE FUNCTION public.govern_ticket_transition(
   p_ticket_id uuid,
   p_to_status text,
-  p_rationale text DEFAULT NULL,
-  p_resolution_summary text DEFAULT NULL
+  p_rationale text,
+  p_resolution_summary text,
+  p_actor_id uuid
 )
 RETURNS public.service_tickets
 LANGUAGE plpgsql
@@ -303,13 +485,27 @@ SET search_path = pg_catalog, public
 AS $$
 DECLARE
   v_uid uuid := admin_private.caller_uid();
-  v_role text := admin_private.caller_role();
+  v_role text;
   v_ticket public.service_tickets%ROWTYPE;
   v_next public.service_tickets%ROWTYPE;
 BEGIN
   IF v_uid IS NULL THEN
-    RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
+    IF NOT admin_private.is_service_role_request() THEN
+      RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
+    END IF;
+    IF p_actor_id IS NULL THEN
+      RAISE EXCEPTION 'Actor required for service-role governance' USING ERRCODE = '22023';
+    END IF;
+    v_uid := p_actor_id;
+  ELSIF p_actor_id IS NOT NULL AND p_actor_id IS DISTINCT FROM v_uid THEN
+    RAISE EXCEPTION 'Actor impersonation not permitted' USING ERRCODE = '42501';
   END IF;
+
+  SELECT p.role::text INTO v_role FROM public.profiles p WHERE p.id = v_uid;
+  IF v_role IS NULL THEN
+    RAISE EXCEPTION 'Unknown actor' USING ERRCODE = '42501';
+  END IF;
+
   IF p_to_status IS NULL OR p_to_status = 'pending_approval' THEN
     RAISE EXCEPTION 'Status not permitted' USING ERRCODE = '22023';
   END IF;
@@ -341,8 +537,6 @@ BEGIN
   ELSE
     RAISE EXCEPTION 'Not permitted' USING ERRCODE = '42501';
   END IF;
-
-  PERFORM set_config('service_tickets.governed', '1', true);
 
   UPDATE public.service_tickets t
   SET
@@ -381,13 +575,35 @@ BEGIN
   RETURN v_next;
 END;
 $$;
-REVOKE ALL ON FUNCTION public.govern_ticket_transition(uuid, text, text, text) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.govern_ticket_transition(uuid, text, text, text) TO authenticated;
+REVOKE ALL ON FUNCTION public.govern_ticket_transition(uuid, text, text, text, uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.govern_ticket_transition(uuid, text, text, text, uuid) TO authenticated, service_role;
 
+-- Exact 4-arg signature kept for PostgREST/clients/battery (no DEFAULT ambiguity).
+CREATE OR REPLACE FUNCTION public.govern_ticket_transition(
+  p_ticket_id uuid,
+  p_to_status text,
+  p_rationale text DEFAULT NULL,
+  p_resolution_summary text DEFAULT NULL
+)
+RETURNS public.service_tickets
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $$
+BEGIN
+  RETURN public.govern_ticket_transition(p_ticket_id, p_to_status, p_rationale, p_resolution_summary, NULL::uuid);
+END;
+$$;
+REVOKE ALL ON FUNCTION public.govern_ticket_transition(uuid, text, text, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.govern_ticket_transition(uuid, text, text, text) TO authenticated, service_role;
+
+DROP FUNCTION IF EXISTS public.govern_ticket_assign(uuid, uuid, text);
+DROP FUNCTION IF EXISTS public.govern_ticket_assign(uuid, uuid, text, uuid);
 CREATE OR REPLACE FUNCTION public.govern_ticket_assign(
   p_ticket_id uuid,
   p_assignee_id uuid,
-  p_rationale text DEFAULT NULL
+  p_rationale text,
+  p_actor_id uuid
 )
 RETURNS public.service_tickets
 LANGUAGE plpgsql
@@ -396,14 +612,25 @@ SET search_path = pg_catalog, public
 AS $$
 DECLARE
   v_uid uuid := admin_private.caller_uid();
-  v_role text := admin_private.caller_role();
+  v_role text;
+  v_assignee_role text;
   v_ticket public.service_tickets%ROWTYPE;
   v_next public.service_tickets%ROWTYPE;
   v_to_status text;
 BEGIN
   IF v_uid IS NULL THEN
-    RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
+    IF NOT admin_private.is_service_role_request() THEN
+      RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
+    END IF;
+    IF p_actor_id IS NULL THEN
+      RAISE EXCEPTION 'Actor required for service-role governance' USING ERRCODE = '22023';
+    END IF;
+    v_uid := p_actor_id;
+  ELSIF p_actor_id IS NOT NULL AND p_actor_id IS DISTINCT FROM v_uid THEN
+    RAISE EXCEPTION 'Actor impersonation not permitted' USING ERRCODE = '42501';
   END IF;
+
+  SELECT p.role::text INTO v_role FROM public.profiles p WHERE p.id = v_uid;
   IF v_role IS DISTINCT FROM 'admin' AND v_role IS DISTINCT FROM 'support' THEN
     RAISE EXCEPTION 'Only admin/support may assign tickets' USING ERRCODE = '42501';
   END IF;
@@ -411,14 +638,21 @@ BEGIN
     RAISE EXCEPTION 'Assignee required' USING ERRCODE = '22023';
   END IF;
 
+  SELECT p.role::text INTO v_assignee_role FROM public.profiles p WHERE p.id = p_assignee_id;
+  IF v_assignee_role IS NULL OR v_assignee_role NOT IN ('technician', 'admin', 'support') THEN
+    RAISE EXCEPTION 'Assignee must be a staff profile' USING ERRCODE = '22023';
+  END IF;
+
   SELECT * INTO v_ticket FROM public.service_tickets WHERE id = p_ticket_id FOR UPDATE;
   IF NOT FOUND THEN
     RAISE EXCEPTION 'Ticket not found' USING ERRCODE = 'P0002';
   END IF;
 
-  v_to_status := CASE WHEN v_ticket.status::text = 'open' THEN 'assigned' ELSE v_ticket.status::text END;
+  IF v_ticket.status::text IN ('closed', 'cancelled') THEN
+    RAISE EXCEPTION 'Cannot assign a % ticket', v_ticket.status USING ERRCODE = 'check_violation';
+  END IF;
 
-  PERFORM set_config('service_tickets.governed', '1', true);
+  v_to_status := CASE WHEN v_ticket.status::text = 'open' THEN 'assigned' ELSE v_ticket.status::text END;
 
   UPDATE public.service_tickets t
   SET
@@ -448,8 +682,25 @@ BEGIN
   RETURN v_next;
 END;
 $$;
+REVOKE ALL ON FUNCTION public.govern_ticket_assign(uuid, uuid, text, uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.govern_ticket_assign(uuid, uuid, text, uuid) TO authenticated, service_role;
+
+CREATE OR REPLACE FUNCTION public.govern_ticket_assign(
+  p_ticket_id uuid,
+  p_assignee_id uuid,
+  p_rationale text DEFAULT NULL
+)
+RETURNS public.service_tickets
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $$
+BEGIN
+  RETURN public.govern_ticket_assign(p_ticket_id, p_assignee_id, p_rationale, NULL::uuid);
+END;
+$$;
 REVOKE ALL ON FUNCTION public.govern_ticket_assign(uuid, uuid, text) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.govern_ticket_assign(uuid, uuid, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.govern_ticket_assign(uuid, uuid, text) TO authenticated, service_role;
 
 CREATE OR REPLACE FUNCTION public.govern_ticket_bulk_assign(
   p_ticket_ids uuid[],
@@ -467,13 +718,14 @@ DECLARE
   v_failed jsonb := '[]'::jsonb;
   v_row public.service_tickets%ROWTYPE;
 BEGIN
-  -- Partial-failure: each id is isolated; successes and audits persist with this call.
-  IF admin_private.caller_uid() IS NULL THEN
+  IF admin_private.caller_uid() IS NULL AND NOT admin_private.is_service_role_request() THEN
     RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
   END IF;
-  IF admin_private.caller_role() IS DISTINCT FROM 'admin'
-     AND admin_private.caller_role() IS DISTINCT FROM 'support' THEN
-    RAISE EXCEPTION 'Only admin/support may bulk-assign' USING ERRCODE = '42501';
+  IF admin_private.caller_uid() IS NOT NULL THEN
+    IF admin_private.caller_role() IS DISTINCT FROM 'admin'
+       AND admin_private.caller_role() IS DISTINCT FROM 'support' THEN
+      RAISE EXCEPTION 'Only admin/support may bulk-assign' USING ERRCODE = '42501';
+    END IF;
   END IF;
 
   FOREACH v_id IN ARRAY COALESCE(p_ticket_ids, ARRAY[]::uuid[]) LOOP
@@ -493,9 +745,55 @@ BEGIN
 END;
 $$;
 REVOKE ALL ON FUNCTION public.govern_ticket_bulk_assign(uuid[], uuid, text) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.govern_ticket_bulk_assign(uuid[], uuid, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.govern_ticket_bulk_assign(uuid[], uuid, text) TO authenticated, service_role;
 
-CREATE OR REPLACE FUNCTION public.govern_ticket_set_escalated(p_ticket_id uuid, p_escalated boolean DEFAULT true)
+CREATE OR REPLACE FUNCTION public.govern_ticket_bulk_transition(
+  p_ticket_ids uuid[],
+  p_to_status text,
+  p_rationale text DEFAULT NULL,
+  p_resolution_summary text DEFAULT NULL
+)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $$
+DECLARE
+  v_id uuid;
+  v_succeeded uuid[] := ARRAY[]::uuid[];
+  v_failed jsonb := '[]'::jsonb;
+  v_row public.service_tickets%ROWTYPE;
+BEGIN
+  IF admin_private.caller_uid() IS NULL THEN
+    RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
+  END IF;
+
+  FOREACH v_id IN ARRAY COALESCE(p_ticket_ids, ARRAY[]::uuid[]) LOOP
+    BEGIN
+      v_row := public.govern_ticket_transition(v_id, p_to_status, p_rationale, p_resolution_summary);
+      v_succeeded := array_append(v_succeeded, v_row.id);
+    EXCEPTION WHEN OTHERS THEN
+      v_failed := v_failed || jsonb_build_array(jsonb_build_object('ticket_id', v_id, 'error', SQLERRM));
+    END;
+  END LOOP;
+
+  RETURN jsonb_build_object(
+    'succeeded', to_jsonb(v_succeeded),
+    'failed', v_failed,
+    'partial', jsonb_array_length(v_failed) > 0 AND cardinality(v_succeeded) > 0
+  );
+END;
+$$;
+REVOKE ALL ON FUNCTION public.govern_ticket_bulk_transition(uuid[], text, text, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.govern_ticket_bulk_transition(uuid[], text, text, text) TO authenticated;
+
+DROP FUNCTION IF EXISTS public.govern_ticket_set_escalated(uuid, boolean);
+DROP FUNCTION IF EXISTS public.govern_ticket_set_escalated(uuid, boolean, uuid);
+CREATE OR REPLACE FUNCTION public.govern_ticket_set_escalated(
+  p_ticket_id uuid,
+  p_escalated boolean,
+  p_actor_id uuid
+)
 RETURNS public.service_tickets
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -503,13 +801,24 @@ SET search_path = pg_catalog, public
 AS $$
 DECLARE
   v_uid uuid := admin_private.caller_uid();
-  v_role text := admin_private.caller_role();
+  v_role text;
   v_ticket public.service_tickets%ROWTYPE;
   v_next public.service_tickets%ROWTYPE;
 BEGIN
   IF v_uid IS NULL THEN
-    RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
+    IF NOT admin_private.is_service_role_request() THEN
+      RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
+    END IF;
+    IF p_actor_id IS NULL THEN
+      RAISE EXCEPTION 'Actor required for service-role governance' USING ERRCODE = '22023';
+    END IF;
+    v_uid := p_actor_id;
+  ELSIF p_actor_id IS NOT NULL AND p_actor_id IS DISTINCT FROM v_uid THEN
+    RAISE EXCEPTION 'Actor impersonation not permitted' USING ERRCODE = '42501';
   END IF;
+
+  SELECT p.role::text INTO v_role FROM public.profiles p WHERE p.id = v_uid;
+
   SELECT * INTO v_ticket FROM public.service_tickets WHERE id = p_ticket_id FOR UPDATE;
   IF NOT FOUND THEN
     RAISE EXCEPTION 'Ticket not found' USING ERRCODE = 'P0002';
@@ -521,7 +830,6 @@ BEGIN
     RAISE EXCEPTION 'Not permitted' USING ERRCODE = '42501';
   END IF;
 
-  PERFORM set_config('service_tickets.governed', '1', true);
   UPDATE public.service_tickets
   SET escalated = COALESCE(p_escalated, true),
       escalated_at = CASE WHEN COALESCE(p_escalated, true) THEN now() ELSE NULL END,
@@ -538,7 +846,106 @@ BEGIN
   RETURN v_next;
 END;
 $$;
+REVOKE ALL ON FUNCTION public.govern_ticket_set_escalated(uuid, boolean, uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.govern_ticket_set_escalated(uuid, boolean, uuid) TO authenticated, service_role;
+
+CREATE OR REPLACE FUNCTION public.govern_ticket_set_escalated(
+  p_ticket_id uuid,
+  p_escalated boolean DEFAULT true
+)
+RETURNS public.service_tickets
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $$
+BEGIN
+  RETURN public.govern_ticket_set_escalated(p_ticket_id, p_escalated, NULL::uuid);
+END;
+$$;
 REVOKE ALL ON FUNCTION public.govern_ticket_set_escalated(uuid, boolean) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.govern_ticket_set_escalated(uuid, boolean) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.govern_ticket_set_escalated(uuid, boolean) TO authenticated, service_role;
+
+DROP FUNCTION IF EXISTS public.govern_ticket_set_priority(uuid, text, text, uuid);
+CREATE OR REPLACE FUNCTION public.govern_ticket_set_priority(
+  p_ticket_id uuid,
+  p_priority text,
+  p_rationale text,
+  p_actor_id uuid
+)
+RETURNS public.service_tickets
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $$
+DECLARE
+  v_uid uuid := admin_private.caller_uid();
+  v_role text;
+  v_ticket public.service_tickets%ROWTYPE;
+  v_next public.service_tickets%ROWTYPE;
+BEGIN
+  IF v_uid IS NULL THEN
+    IF NOT admin_private.is_service_role_request() THEN
+      RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
+    END IF;
+    IF p_actor_id IS NULL THEN
+      RAISE EXCEPTION 'Actor required for service-role governance' USING ERRCODE = '22023';
+    END IF;
+    v_uid := p_actor_id;
+  ELSIF p_actor_id IS NOT NULL AND p_actor_id IS DISTINCT FROM v_uid THEN
+    RAISE EXCEPTION 'Actor impersonation not permitted' USING ERRCODE = '42501';
+  END IF;
+
+  SELECT p.role::text INTO v_role FROM public.profiles p WHERE p.id = v_uid;
+  IF v_role IS DISTINCT FROM 'admin' AND v_role IS DISTINCT FROM 'support' THEN
+    RAISE EXCEPTION 'Only admin/support may change priority' USING ERRCODE = '42501';
+  END IF;
+  IF p_priority IS NULL OR p_priority NOT IN ('low', 'medium', 'high', 'urgent', 'critical') THEN
+    RAISE EXCEPTION 'Invalid priority' USING ERRCODE = '22023';
+  END IF;
+
+  SELECT * INTO v_ticket FROM public.service_tickets WHERE id = p_ticket_id FOR UPDATE;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Ticket not found' USING ERRCODE = 'P0002';
+  END IF;
+
+  UPDATE public.service_tickets
+  SET priority = p_priority,
+      updated_at = now()
+  WHERE id = p_ticket_id
+  RETURNING * INTO v_next;
+
+  INSERT INTO public.ticket_governance_audit(ticket_id, actor_id, action, from_status, to_status, assigned_to, details)
+  VALUES (
+    p_ticket_id,
+    v_uid,
+    'priority_update',
+    v_ticket.status::text,
+    v_next.status::text,
+    v_next.assigned_to,
+    jsonb_build_object('from_priority', v_ticket.priority::text, 'to_priority', p_priority, 'rationale', p_rationale, 'role', v_role)
+  );
+
+  RETURN v_next;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.govern_ticket_set_priority(uuid, text, text, uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.govern_ticket_set_priority(uuid, text, text, uuid) TO authenticated, service_role;
+
+CREATE OR REPLACE FUNCTION public.govern_ticket_set_priority(
+  p_ticket_id uuid,
+  p_priority text,
+  p_rationale text DEFAULT NULL
+)
+RETURNS public.service_tickets
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $$
+BEGIN
+  RETURN public.govern_ticket_set_priority(p_ticket_id, p_priority, p_rationale, NULL::uuid);
+END;
+$$;
+REVOKE ALL ON FUNCTION public.govern_ticket_set_priority(uuid, text, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.govern_ticket_set_priority(uuid, text, text) TO authenticated, service_role;
 
 COMMIT;

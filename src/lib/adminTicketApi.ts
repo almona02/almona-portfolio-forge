@@ -162,15 +162,12 @@ export const updateTicketStatusAndPriority = async (
   }
 
   if (updates.priority) {
-    // Priority is not a protected status/assignment column; still audit via ledger best-effort.
-    const { data, error } = await ticketDb
-      .from('service_tickets')
-      .update({ priority: updates.priority, updated_at: new Date().toISOString() })
-      .eq('id', ticketId)
-      .select()
-      .single<ServiceTicketRow>()
-    if (error) throw new Error(error.message)
-    mapped = baseMap(data)
+    const { governTicketSetPriority } = await import('@/lib/ticketGovernanceApi')
+    mapped = await governTicketSetPriority({
+      ticketId,
+      priority: updates.priority,
+      rationale: `Priority changed by ${actorId}`,
+    })
     await recordServiceEvent({
       eventType: 'VERIFICATION',
       entityId: ticketId,
@@ -364,9 +361,25 @@ export const bulkUpdateStatus = async (
   status: TicketStatus,
   actorId: string = 'admin',
 ): Promise<ServiceTicket[]> => {
-  const results: ServiceTicket[] = [];
-  for (const id of ticketIds) {
-    results.push(await updateTicketStatusAndPriority(id, { status }, actorId));
+  const { governTicketBulkTransition } = await import('@/lib/ticketGovernanceApi')
+  const result = await governTicketBulkTransition({
+    ticketIds,
+    toStatus: status,
+    rationale: `Bulk status by ${actorId}`,
+  })
+  if (result.succeeded.length === 0) {
+    throw new Error(
+      result.failed[0]?.error
+        || 'Bulk status update failed for all tickets'
+    )
   }
-  return results;
+  const { data, error } = await ticketDb
+    .from('service_tickets')
+    .select('*')
+    .in('id', result.succeeded)
+  if (error) throw new Error(error.message)
+  if (result.failed.length) {
+    console.warn('[bulkUpdateStatus] partial failure', result.failed)
+  }
+  return (data ?? []).map(baseMap)
 }

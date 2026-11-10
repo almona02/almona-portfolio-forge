@@ -289,7 +289,10 @@ def update_status(
     if not svc.get_ticket(ticket_id, _user_uuid(current_user)):
         raise HTTPException(status_code=404, detail="Ticket not found")
     updated = svc.update_ticket_status(
-        ticket_id, status_param, resolution_summary
+        ticket_id,
+        status_param,
+        resolution_summary,
+        actor_id=_user_uuid(current_user),
     )
     if not updated:
         raise HTTPException(

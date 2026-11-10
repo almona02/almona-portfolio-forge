@@ -145,11 +145,17 @@ class TicketService:
         self,
         ticket_id: UUID,
         status: TicketStatus,
-        resolution_summary: Optional[str] = None
+        resolution_summary: Optional[str] = None,
+        actor_id: Optional[UUID] = None,
     ) -> Optional[TicketResponse]:
         existing = self._repo.get_ticket_by_id(ticket_id)
         if not existing:
             return None
+        if actor_id is None:
+            raise TicketValidationError(
+                message="Actor identity required for governed status updates",
+                field="actor_id",
+            )
 
         current_status = existing.get("status", TicketStatus.OPEN.value)
         valid, rationale = validate_transition(current_status, status.value)
@@ -159,59 +165,42 @@ class TicketService:
                 field="status",
             )
 
-        update: Dict[str, Any] = {
-            "status": status.value,
-            "updated_at": utcnow_iso(),
-        }
-        if status in {TicketStatus.RESOLVED, TicketStatus.CLOSED}:
-            update["resolved_at"] = utcnow_iso()
-            if resolution_summary:
-                update["resolution_summary"] = resolution_summary
-        if status == TicketStatus.CLOSED:
-            update["closed_at"] = utcnow_iso()
-        if current_status == TicketStatus.OPEN.value and status.value in {
-            TicketStatus.ASSIGNED.value,
-            TicketStatus.IN_PROGRESS.value,
-        }:
-            update["first_response_at"] = utcnow_iso()
-
-        row = self._repo.update_ticket_fields(ticket_id, update)
+        try:
+            row = self._repo.govern_ticket_transition(
+                ticket_id=ticket_id,
+                to_status=status.value,
+                actor_id=actor_id,
+                rationale=rationale,
+                resolution_summary=resolution_summary,
+            )
+        except Exception as e:
+            raise SupabaseError(
+                message="Failed to update ticket status via govern_ticket_transition",
+                operation="govern_ticket_transition",
+                original_error=e,
+            )
         return TicketResponse(**row) if row else None
 
     def assign_ticket(
         self, ticket_id: UUID, assignee_id: UUID, assigned_by: UUID
     ) -> Optional[TicketResponse]:
-        """Assign a ticket to a user with FSM-governed status transition."""
+        """Assign a ticket via govern_ticket_assign (preserves actor identity)."""
         try:
             existing = self._repo.get_ticket_by_id(ticket_id)
             if not existing:
                 return None
 
-            current_status = existing.get("status", TicketStatus.OPEN.value)
-            update: Dict[str, Any] = {
-                "assigned_to": str(assignee_id),
-                "assigned_by": str(assigned_by),
-                "assigned_at": utcnow_iso(),
-                "updated_at": utcnow_iso(),
-            }
-
-            if current_status == TicketStatus.OPEN.value:
-                valid, rationale = validate_transition(current_status, TicketStatus.ASSIGNED.value)
-                if not valid:
-                    raise TicketValidationError(message=rationale, field="status")
-                update["status"] = TicketStatus.ASSIGNED.value
-                update["first_response_at"] = utcnow_iso()
-            elif current_status == TicketStatus.ASSIGNED.value:
-                valid, rationale = validate_transition(current_status, TicketStatus.IN_PROGRESS.value)
-                if valid:
-                    update["status"] = TicketStatus.IN_PROGRESS.value
-
             try:
-                row = self._repo.update_ticket_fields(ticket_id, update)
+                row = self._repo.govern_ticket_assign(
+                    ticket_id=ticket_id,
+                    assignee_id=assignee_id,
+                    actor_id=assigned_by,
+                    rationale=f"Assigned by {assigned_by}",
+                )
             except Exception as e:
                 raise SupabaseError(
                     message="Failed to assign ticket",
-                    operation="update_ticket_fields",
+                    operation="govern_ticket_assign",
                     original_error=e
                 )
 

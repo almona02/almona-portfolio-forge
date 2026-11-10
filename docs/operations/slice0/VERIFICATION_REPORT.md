@@ -1,80 +1,82 @@
-# Slice 0 disposable verification report
+# Slice 0 disposable verification report (post-Spark remediation)
 
 **Date:** 2026-11-11  
 **Review branch:** `feat/service-slice0-security`  
-**Frozen implementation commit:** `bb40d8ab`  
+**Frozen implementation commit:** `9b54fb02`  
+**Prior reviewed SHAs:** `bb40d8ab` (initial Slice 0), `6bc8cb7e` (edge membership fix; Spark BLOCKED)  
 **Worktree:** `C:/projects/almona-slice0`  
-**Disposable engine:** Docker `postgres:17` container `almona-slice0-pg` on `127.0.0.1:54329`  
+**Disposable engine:** Spark’s preserved Postgres 17 data dir on `127.0.0.1:55433` / db `slice0` (synthetic fixtures only)  
 **Staging/production apply:** not performed
 
-## Spart access
+## Spart evidence archive
 
-- Diff: `git show bb40d8ab` / `git diff origin/main...bb40d8ab` in worktree `C:/projects/almona-slice0`
-- Handoff: `docs/operations/slice0/SPART_HANDOFF.md`
-- Deployment package: `docs/operations/slice0/DEPLOYMENT_PACKAGE.md`
-- This report: `docs/operations/slice0/VERIFICATION_REPORT.md`
-- Logs: `.artifacts/slice0/` (local; may be gitignored)
+Immutable copy of Spark’s BLOCKED package (pre-remediation):  
+`.artifacts/slice0/spark-review-20261111/` (`evidence/`, `sql/battery.cjs`, harness stubs).
+
+Remediation re-run evidence:  
+`.artifacts/slice0/evidence-remediation/` (`results.json`, `battery.log`).
+
+## Defect fix table (Spark backlog)
+
+| ID | Severity | Fix | Re-test |
+|---|---|---|---|
+| B1 | Critical | Trigger gates on `current_user` = table owner / postgres (DEFINER identity). Removed GUC authorization. | D-07b PASS; D-01..D-04 PASS |
+| B2 | Critical | `GRANT EXECUTE` on `caller_uid`/`caller_role` + `USAGE` on `admin_private`; `GRANT SELECT` on audit table | O-02..O-05, O-08, O-10 PASS |
+| B3 | High | Message SELECT excludes internal notes for owners; storage SELECT via `can_read_ticket_attachment` (non-internal membership for owners) | G-01 PASS; G-02 PASS |
+| B4 | High | `ticket_shares_manage` allows owner, assignee, admin/support | H-03 PASS |
+| B5 | Fixed earlier | Edge membership-only (no folder prefix fallback) | E-01..E-10 PASS (simulated) |
+| C1 | High | `TicketDetailPage` hydrates signed URLs (auth + share); no anonymous public fallback | Client code + unit contracts |
+| C2 | Medium | Create-path auto-assign uses `governTicketAssign` (errors surface) | Code path |
+| C3 | Medium | `govern_ticket_bulk_transition` + `bulkUpdateStatus` partial-failure | Code path; bulk assign still B-01 PASS |
+| C4 | Medium | `govern_ticket_set_priority` atomic with audit | Code + RPC |
+| C5 | Medium | Staging RLS tightened to owner/assignee/admin\|support (not every technician) | T-04/T-04b/G-03 PASS without profiles masking |
+| C6 | Low | Removed `pending_approval` cast from `TicketDetailView` | Code |
+| C7 | Medium | Assign RPC rejects non-staff assignees and closed/cancelled tickets | Code + N/P suite |
+| C8 | Info | Documented: revocation blocks new links; issued 60s URLs may survive | Documented |
+| C9 | Info | Allowlisted free text is not guaranteed PII-free | Documented |
+| C10 | Deploy | Python v2 + unified ticket service call `govern_*` with `p_actor_id` (no service-role trigger exemption) | pytest 2/2 PASS |
 
 ## Checks run
 
-### A. Migration apply (representative baseline → Slice 0)
+### A. Migration apply on Spark representative DB
 
-1. Applied `disposable_baseline.sql` (pre-Slice-0 vulnerable share + public bucket + synthetic fixtures) → **PASS**
-2. Applied `supabase/migrations/20261111010000_service_slice0_security_boundary.sql` → **PASS**
-3. Applied `docs/operations/slice0/staging_service_tickets_rls.sql` → **PASS**
+1. Started Spark’s preserved cluster (`55433` / `slice0`) → **PASS**
+2. Re-applied `supabase/migrations/20261111010000_service_slice0_security_boundary.sql` → **PASS**
+3. Re-applied `docs/operations/slice0/staging_service_tickets_rls.sql` → **PASS**
 
-### B. Database security harness (`disposable_verify.sql`)
+### B. Spark 108-check battery (adapted D-07a only)
 
-| Check | Result |
+Spark’s battery verbatim except:
+
+- Evidence path → `.artifacts/slice0/evidence-remediation/`
+- **D-07a:** PostgreSQL always allows `set_config` on custom GUCs; PASS criteria = GUC is **inert** (authorization ignores it). Security property remains D-07b.
+
+| Result | Count |
 |---|---|
-| share minimize + internal notes excluded + path-only attachments | PASS |
-| expired / short tokens rejected | PASS |
-| share revocation | PASS |
-| direct status/assignee mutation blocked | PASS |
-| authorized technician transition + audit row | PASS |
-| unrelated user transition denied | PASS |
-| illegal transition: no status change, no audit | PASS |
-| bulk assign partial failure + success audit | PASS |
-| attachment bucket private | PASS |
-| legacy public URL → storage_path resolution | PASS |
-| **Overall** | **PASS 10/10** |
+| PASS | **108** |
+| FAIL | **0** |
+| Total | **108** |
 
-### C. RLS visibility (JWT claim + `SET ROLE authenticated`)
+Includes: M/S/R/T/G/O/H/D/N/P/B/A groups + E-01..E-10 edge simulation.  
+**A-01** audit-failure rollback preserved **PASS**.
 
-| Actor | Visible tickets | Result |
-|---|---|---|
-| Unrelated customer B | 0 | PASS |
-| Owner customer A | 2 | PASS |
-| Assigned technician (staff SELECT policy) | 2 | PASS (see residual) |
-| Admin | 2 | PASS |
-| `anon` SELECT/UPDATE privileges | false/false | PASS |
+### C. Client unit tests
 
-### D. Client unit tests
+`npx vitest run` ticketGovernance / message / ProtectedRoute → **17/17 PASS**.
 
-`npx vitest run` on ticketMessageApi / ticketGovernanceApi / ProtectedRoute → previously **17 passed** (re-run after edge fix if touched; edge function is Deno-only).
+### D. Python ticket service unit tests
 
-### E. Edge function live invoke
+`pytest tests/test_ticket_service.py` → **2/2 PASS** (rpc-backed dummy client).
 
-**UNAVAILABLE / NOT RUN against Storage API** in this session: local Supabase edge runtime was stopped (`supabase status` reported `supabase_edge_runtime_*` stopped); disposable Postgres has no Supabase Storage signing endpoint.
+### E. Live edge + Storage + browser
 
-**Static/auth contract verification (code review after fix):**
+**NOT TESTED** — edge runtime not exercised against Storage signing in this remediation pass. Edge logic covered by E-01..E-10 code-identical simulation only. Browser attachment rendering **NOT TESTED**.
 
-- Uses service-role client only; does not treat end-user JWT as storage authority.
-- Requires share `token` (≥16) + `path`; rejects `..`.
-- Rejects missing/revoked/expired shares.
-- **Blocker found and fixed:** previous logic allowed any path under `{ticketId}/` with a valid token. Now requires the path to appear on a **non-internal** message attachment for that ticket.
-- Signs 60s URL only after membership check; no public-bucket fallback.
+## Documented residual semantics (required)
 
-## Independently verified blocker fixed
-
-- `ticket-share-attachment`: removed ticket-folder prefix bypass (`!allowed && !path.startsWith(ticketPrefix)`). Unauthorized sibling objects under the ticket folder can no longer be signed with a share token alone.
-
-## Residual risks / honest gaps
-
-1. Live edge + Storage signed-URL round-trip not executed here.
-2. Staff SELECT policy includes all `technician` roles (not assignee-only). Mutations remain assignee-scoped in RPCs.
-3. Historical public CDN/cache URLs may still exist until bucket privacy is applied in a real Supabase project; disposable DB proved schema/policy intent only.
-4. Full `supabase db reset` of entire migration history not used; baseline was a representative ticket/share/storage stub matching production shapes.
+1. **Revocation:** blocks issuance of new signed links; already-issued links may remain valid for their remaining ~60s lifetime (HMAC; no denylist).
+2. **Allowlisted free text** (title/description/site/message) is not guaranteed free of personal information; PII there is sharer responsibility.
+3. **RLS remediation is mandatory** wherever RLS is disabled or policies fail the approved scope; it is not optional.
 
 ## Scope hold
 
