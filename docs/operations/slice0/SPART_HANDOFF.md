@@ -6,9 +6,11 @@
 |---|---|
 | Worktree | `C:/projects/almona-slice0` (isolated; original workspace untouched) |
 | Branch | `feat/service-slice0-security` |
+| Review freeze SHA | `bb40d8ab` (+ edge-function membership fix commit after verification) |
 | Base commit | `13faec98` (`origin/main` after #154) |
-| Planning inspection commit | `3fb30bc1` on `fix/restore-nginx-minimal-docker` (findings revalidated on `13faec98`) |
-| Spec reference | `docs/specs/SERVICE_WORKFLOW_SPECIFICATION_MANUAL_MACHINES.md` (target product; **not** implemented beyond existing ticket states) |
+| Spec reference | Wonder manual-machines spec (target product; **not** implemented beyond existing ticket states) |
+| Verification | `docs/operations/slice0/VERIFICATION_REPORT.md` — disposable DB **PASS 10/10**; live edge invoke **unavailable** |
+| Deployment package | `docs/operations/slice0/DEPLOYMENT_PACKAGE.md` (ordered; not an apply approval) |
 
 ## Personally revalidated on implementation base / deployed envs
 

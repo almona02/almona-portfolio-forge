@@ -47,8 +47,8 @@ Deno.serve(async (request) => {
       return reply(404, { error: 'Invalid or expired share link' })
     }
 
-    // Path must be under the shared ticket folder (or legacy flat object recorded on that ticket).
-    const ticketPrefix = `${share.ticket_id}/`
+    // Only paths attached to non-internal messages of this shared ticket may be signed.
+    // Do not allow "{ticketId}/..." prefix alone — that would leak other objects under the folder.
     const { data: messages, error: msgErr } = await server
       .from('ticket_messages')
       .select('attachments, is_internal_note, message_type')
@@ -66,7 +66,7 @@ Deno.serve(async (request) => {
         return stored === path
       })
     })
-    if (!allowed && !path.startsWith(ticketPrefix)) {
+    if (!allowed) {
       return reply(403, { error: 'Attachment not part of shared ticket' })
     }
 
