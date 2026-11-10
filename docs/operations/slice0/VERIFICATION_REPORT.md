@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-11  
 **Review branch:** `feat/service-slice0-security`  
-**Frozen implementation commit:** `631ab03d`  
+**Frozen implementation commit:** `06ff513b`  
 **Prior reviewed SHAs:** `bb40d8ab` (initial Slice 0), `6bc8cb7e` (edge membership fix; Spark BLOCKED)  
 **Worktree:** `C:/projects/almona-slice0`  
 **Disposable engine:** Spark’s preserved Postgres 17 data dir on `127.0.0.1:55433` / db `slice0` (synthetic fixtures only)  
