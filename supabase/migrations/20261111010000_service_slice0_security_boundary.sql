@@ -125,36 +125,35 @@ ALTER TABLE public.ticket_shares
   ADD COLUMN IF NOT EXISTS revoked_at timestamptz,
   ADD COLUMN IF NOT EXISTS revoked_by uuid REFERENCES auth.users(id);
 
--- Assigned technician + owner + admin/support may manage shares (escalate flow).
+-- Share manage authz via SECURITY DEFINER so support/admin role checks do not
+-- depend on the caller being able to SELECT profiles or the ticket under RLS.
+-- Scope remains owner / assignee / admin|support for that ticket only.
+CREATE OR REPLACE FUNCTION admin_private.can_manage_ticket_share(p_ticket_id uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.service_tickets st
+    WHERE st.id = p_ticket_id
+      AND (
+        st.user_id = admin_private.caller_uid()
+        OR st.assigned_to = admin_private.caller_uid()
+        OR admin_private.caller_role() IN ('admin', 'support')
+      )
+  );
+$$;
+REVOKE ALL ON FUNCTION admin_private.can_manage_ticket_share(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION admin_private.can_manage_ticket_share(uuid) TO authenticated;
+
 DROP POLICY IF EXISTS ticket_shares_manage ON public.ticket_shares;
 CREATE POLICY ticket_shares_manage ON public.ticket_shares
 FOR ALL TO authenticated
-USING (
-  EXISTS (
-    SELECT 1
-    FROM public.service_tickets st
-    WHERE st.id = ticket_shares.ticket_id
-      AND (
-        st.user_id = auth.uid()
-        OR st.assigned_to = auth.uid()
-        OR admin_private.is_admin()
-        OR admin_private.caller_role() IN ('admin', 'support')
-      )
-  )
-)
-WITH CHECK (
-  EXISTS (
-    SELECT 1
-    FROM public.service_tickets st
-    WHERE st.id = ticket_shares.ticket_id
-      AND (
-        st.user_id = auth.uid()
-        OR st.assigned_to = auth.uid()
-        OR admin_private.is_admin()
-        OR admin_private.caller_role() IN ('admin', 'support')
-      )
-  )
-);
+USING (admin_private.can_manage_ticket_share(ticket_id))
+WITH CHECK (admin_private.can_manage_ticket_share(ticket_id));
 
 CREATE OR REPLACE FUNCTION public.revoke_ticket_share(p_token text)
 RETURNS void
@@ -361,6 +360,7 @@ BEGIN
      OR NEW.assigned_to IS DISTINCT FROM OLD.assigned_to
      OR NEW.assigned_by IS DISTINCT FROM OLD.assigned_by
      OR NEW.assigned_at IS DISTINCT FROM OLD.assigned_at
+     OR NEW.priority IS DISTINCT FROM OLD.priority
      OR NEW.escalated IS DISTINCT FROM OLD.escalated
      OR NEW.escalated_at IS DISTINCT FROM OLD.escalated_at
      OR NEW.resolved_at IS DISTINCT FROM OLD.resolved_at

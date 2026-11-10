@@ -164,15 +164,36 @@ export function buildGovernedTransitionPatch(input: GovernedTransitionInput): Go
 const SELECT_COLUMNS =
   'id, title, description, type, priority, status, preferred_contact_method, user_id, ticket_number, digital_twin_code, contact_phone, contact_email, site_location, machine_serial_number, machine_model, sla_response_due, sla_resolution_due, sla_breached, escalated, escalated_at, assigned_to, assigned_at, assigned_by, first_response_at, created_at, updated_at';
 
+export type AssignmentCreateOutcome =
+  | { status: 'assigned'; assignedTo: string }
+  | { status: 'unassigned'; reason: 'no_candidate' | 'not_authorized' | 'assign_denied'; detail?: string };
+
 export interface GovernedCreateResult {
   row: Record<string, unknown>;
   ticketType: string;
   ticketPriority: string;
   actorId: string;
+  assignment: AssignmentCreateOutcome;
   eventResults: {
     created: EventPersistenceResult;
     assigned?: EventPersistenceResult;
   };
+}
+
+/** True when the actor may call govern_ticket_assign (admin/support). */
+export async function actorMayGovernAssign(actorId: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', actorId)
+    .maybeSingle();
+  if (error || !data?.role) return false;
+  return data.role === 'admin' || data.role === 'support';
+}
+
+function isAssignAuthorizationError(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err ?? '');
+  return /42501|not permitted|only admin\/support|permission denied|authorization/i.test(message);
 }
 
 /**
@@ -233,9 +254,34 @@ export async function governedCreateTicket(
   });
 
   const eventResults: GovernedCreateResult['eventResults'] = { created: createdEvent };
+  const createdRow = data as Record<string, unknown>;
+
+  const mayAssign = await actorMayGovernAssign(actorId);
+  if (!mayAssign) {
+    // Optional auto-assign is staff-only. Creation already succeeded — never fail the create.
+    return {
+      row: createdRow,
+      ticketType,
+      ticketPriority,
+      actorId,
+      assignment: { status: 'unassigned', reason: 'not_authorized' },
+      eventResults,
+    };
+  }
 
   const autoAssign = await resolveAutoAssignment(ticketId, ticketType, ticketPriority, actorId);
-  if (autoAssign) {
+  if (!autoAssign) {
+    return {
+      row: createdRow,
+      ticketType,
+      ticketPriority,
+      actorId,
+      assignment: { status: 'unassigned', reason: 'no_candidate' },
+      eventResults,
+    };
+  }
+
+  try {
     const { governTicketAssign } = await import('@/lib/ticketGovernanceApi');
     const assignedTicket = await governTicketAssign({
       ticketId,
@@ -258,17 +304,26 @@ export async function governedCreateTicket(
       ticketType,
       ticketPriority,
       actorId,
+      assignment: { status: 'assigned', assignedTo: autoAssign.assignedTo },
       eventResults,
     };
+  } catch (err) {
+    if (isAssignAuthorizationError(err)) {
+      return {
+        row: createdRow,
+        ticketType,
+        ticketPriority,
+        actorId,
+        assignment: {
+          status: 'unassigned',
+          reason: 'assign_denied',
+          detail: err instanceof Error ? err.message : String(err),
+        },
+        eventResults,
+      };
+    }
+    throw err;
   }
-
-  return {
-    row: data as Record<string, unknown>,
-    ticketType,
-    ticketPriority,
-    actorId,
-    eventResults,
-  };
 }
 
 export async function recordTransitionEvent(
