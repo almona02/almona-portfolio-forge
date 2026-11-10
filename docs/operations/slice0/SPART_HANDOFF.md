@@ -7,7 +7,6 @@
 | Worktree | `C:/projects/almona-slice0` |
 | Branch | `feat/service-slice0-security` |
 | Implementation freeze SHA | `06ff513b` — supersedes `bb40d8ab` / `6bc8cb7e` |
-| Review tip SHA | `b0c8b8e4` (docs labels only; same tree as freeze for code) |
 | Base commit | `13faec98` (`origin/main` after #154) |
 | Prior Spark verdict | **BLOCKED** on `6bc8cb7e` (B1–B4 + C1–C10) |
 | Verification | `docs/operations/slice0/VERIFICATION_REPORT.md` — Spark battery **108/108 PASS** on remediated tree |
