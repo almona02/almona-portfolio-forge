@@ -106,7 +106,9 @@ const TicketDetailPage = () => {
     try {
       const attachments: TicketAttachment[] = []
       if (files) {
-        for (const f of Array.from(files).slice(0, 6)) attachments.push(await ticketMessageApi.uploadAttachment(f))
+        for (const f of Array.from(files).slice(0, 6)) {
+          attachments.push(await ticketMessageApi.uploadAttachment(f, ticket.id))
+        }
       }
       await ticketMessageApi.sendMessage({ ticketId: ticket.id, authorId: user.id, message: reply.trim(), attachments })
       setReply('')

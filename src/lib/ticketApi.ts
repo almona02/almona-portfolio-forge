@@ -1,10 +1,6 @@
 import {
-  buildGovernedTransitionPatch,
   governedCreateTicket,
-  recordTransitionEvent,
-  validateStatusTransition,
 } from '@/lib/ticketing/TicketGovernanceService'
-import { recordServiceEvent } from '@/lib/ticketing/serviceEventLedger'
 import { supabase } from '@/lib/supabase'
 import { Database } from '@/types/database'
 import {
@@ -20,7 +16,7 @@ import {
     TicketWithDetails
 } from '@/types/tickets'
 
-type DBServiceTicketRow = Database['public']['Tables']['service_tickets']['Row'] & {
+export type DBServiceTicketRow = Database['public']['Tables']['service_tickets']['Row'] & {
   digital_twin_code?: string | null;
   category?: string | null;
   machine_model?: string | null;
@@ -29,7 +25,7 @@ type DBServiceTicketRow = Database['public']['Tables']['service_tickets']['Row']
 type DBTicketMessageRow = Database['public']['Tables']['ticket_messages']['Row'];
 
 // ---------- Helpers ----------
-function mapTicket(row: DBServiceTicketRow): ServiceTicket {
+export function mapTicket(row: DBServiceTicketRow): ServiceTicket {
   return {
     id: row.id,
     ticket_number: row.ticket_number,
@@ -131,30 +127,13 @@ export const updateTicketStatus = async (
   resolution_summary?: string,
   actorId?: string,
 ): Promise<ServiceTicket> => {
-  const existing = await getTicketById(ticketId)
-  if (!existing) throw new Error('Ticket not found')
-
-  const actor = actorId ?? existing.user_id ?? 'system'
-  validateStatusTransition(existing.status, status)
-
-  const patch = buildGovernedTransitionPatch({
+  const { governTicketTransition } = await import('@/lib/ticketGovernanceApi')
+  return governTicketTransition({
     ticketId,
-    currentStatus: existing.status,
-    targetStatus: status,
-    actorId: actor,
-    resolution_summary,
+    toStatus: status,
+    rationale: actorId ? `Status change by ${actorId}` : 'Status change',
+    resolutionSummary: resolution_summary,
   })
-
-  const { data, error } = await supabase
-    .from('service_tickets')
-    .update(patch as Database['public']['Tables']['service_tickets']['Update'])
-    .eq('id', ticketId)
-    .select()
-    .single()
-  if (error) throw new Error(error.message)
-
-  await recordTransitionEvent(ticketId, existing.status, status, actor, `TRANS-${ticketId}-${status}-${actor}`)
-  return mapTicket(data as DBServiceTicketRow)
 }
 
 // ---------- Messages ----------
@@ -219,43 +198,14 @@ export const createMessage = async (messageData: CreateMessageData & { author_id
 export const assignTicket = async (
   ticketId: string,
   assigneeId: string,
-  assignedBy?: string,
+  _assignedBy?: string,
 ): Promise<ServiceTicket> => {
-  const existing = await getTicketById(ticketId)
-  if (!existing) throw new Error('Ticket not found')
-
-  const actor = assignedBy ?? existing.user_id ?? 'system'
-  const statusPatch =
-    existing.status === 'open'
-      ? buildGovernedTransitionPatch({
-          ticketId,
-          currentStatus: existing.status,
-          targetStatus: 'assigned',
-          actorId: actor,
-          rationale: 'Manual assignment',
-        })
-      : { updated_at: new Date().toISOString() }
-
-  const { data, error } = await supabase
-    .from('service_tickets')
-    .update({
-      ...statusPatch,
-      assigned_to: assigneeId,
-      assigned_at: new Date().toISOString(),
-      assigned_by: actor,
-    })
-    .eq('id', ticketId)
-    .select()
-    .single()
-  if (error) throw new Error(error.message)
-
-  await recordServiceEvent({
-    eventType: 'VERIFICATION',
-    entityId: ticketId,
-    payload: { kind: 'ticket_assigned', assignedTo: assigneeId, manual: true },
-    verifiedBy: actor,
+  const { governTicketAssign } = await import('@/lib/ticketGovernanceApi')
+  return governTicketAssign({
+    ticketId,
+    assigneeId,
+    rationale: 'Manual assignment',
   })
-  return mapTicket(data as DBServiceTicketRow)
 }
 
 // ---------- Analytics ----------
@@ -286,12 +236,11 @@ export const getTicketStats = async (userId: string) => {
 }
 
 // ---------- Attachments ----------
+/** Uploads to the private ticket-attachments bucket and returns storage_path (not a public URL). */
 export const uploadTicketAttachment = async (file: File, ticketId: string): Promise<string> => {
-  const path = `${ticketId}/${Date.now()}-${file.name}`
-  const { error } = await supabase.storage.from('ticket-attachments').upload(path, file, { upsert: true })
-  if (error) throw new Error(error.message)
-  const { data: pub } = supabase.storage.from('ticket-attachments').getPublicUrl(path)
-  return pub.publicUrl
+  const attachment = await (await import('@/lib/ticketMessageApi')).ticketMessageApi.uploadAttachment(file, ticketId)
+  if (!attachment.storage_path) throw new Error('Upload did not return a storage path')
+  return attachment.storage_path
 }
 
 export const searchTickets = async (

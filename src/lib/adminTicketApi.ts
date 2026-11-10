@@ -1,8 +1,4 @@
-import {
-  buildGovernedTransitionPatch,
-  checkAndApplyEscalation,
-  validateStatusTransition,
-} from '@/lib/ticketing/TicketGovernanceService';
+import { checkAndApplyEscalation } from '@/lib/ticketing/TicketGovernanceService';
 import { recordServiceEvent } from '@/lib/ticketing/serviceEventLedger';
 import {
   ServiceTicket,
@@ -134,40 +130,14 @@ export const getAllTickets = async (filters?: TicketFilters): Promise<TicketWith
 export const assignTicket = async (
   ticketId: string,
   assigneeId: string,
-  assignedBy: string
+  _assignedBy: string
 ): Promise<ServiceTicket> => {
-  const { data: current } = await ticketDb.from('service_tickets').select('status').eq('id', ticketId).single<Pick<ServiceTicketRow, 'status'>>();
-  const currentStatus = current?.status ?? 'open';
-
-  const statusPatch =
-    currentStatus === 'open'
-      ? buildGovernedTransitionPatch({
-          ticketId,
-          currentStatus,
-          targetStatus: 'assigned',
-          actorId: assignedBy,
-          rationale: 'Admin assignment',
-        })
-      : { updated_at: new Date().toISOString() };
-
-  const patch: Record<string, unknown> = {
-    ...statusPatch,
-    assigned_to: assigneeId,
-    assigned_by: assignedBy,
-    assigned_at: new Date().toISOString(),
-  };
-
-  const { data, error } = await ticketDb.from('service_tickets').update(patch).eq('id', ticketId).select().single<ServiceTicketRow>();
-  if (error) throw new Error(error.message);
-
-  await recordServiceEvent({
-    eventType: 'VERIFICATION',
-    entityId: ticketId,
-    payload: { kind: 'ticket_assigned', assignedTo: assigneeId, manual: true },
-    verifiedBy: assignedBy,
-  });
-
-  return baseMap(data);
+  const { governTicketAssign } = await import('@/lib/ticketGovernanceApi')
+  return governTicketAssign({
+    ticketId,
+    assigneeId,
+    rationale: 'Admin assignment',
+  })
 }
 
 export const updateTicketStatusAndPriority = async (
@@ -175,74 +145,62 @@ export const updateTicketStatusAndPriority = async (
   updates: { status?: TicketStatus; priority?: TicketPriority; resolution_summary?: string },
   actorId: string = 'admin',
 ): Promise<ServiceTicket> => {
-  const { data: currentRow, error: fetchErr } = await ticketDb
-    .from('service_tickets')
-    .select('*')
-    .eq('id', ticketId)
-    .single<ServiceTicketRow>();
-  if (fetchErr || !currentRow) throw new Error(fetchErr?.message ?? 'Ticket not found');
-
-  const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
-
-  if (updates.status) {
-    validateStatusTransition(currentRow.status, updates.status);
-    Object.assign(
-      patch,
-      buildGovernedTransitionPatch({
-        ticketId,
-        currentStatus: currentRow.status,
-        targetStatus: updates.status,
-        actorId,
-        resolution_summary: updates.resolution_summary,
-      }),
-    );
+  if (updates.status === 'pending_approval') {
+    throw new Error('pending_approval is not an approved transition; removed pending product policy')
   }
 
-  if (updates.priority) patch['priority'] = updates.priority;
-
-  const { data, error } = await ticketDb.from('service_tickets').update(patch).eq('id', ticketId).select().single<ServiceTicketRow>();
-  if (error) throw new Error(error.message);
+  let mapped: ServiceTicket | null = null
 
   if (updates.status) {
+    const { governTicketTransition } = await import('@/lib/ticketGovernanceApi')
+    mapped = await governTicketTransition({
+      ticketId,
+      toStatus: updates.status,
+      rationale: `Status changed by ${actorId}`,
+      resolutionSummary: updates.resolution_summary,
+    })
+  }
+
+  if (updates.priority) {
+    // Priority is not a protected status/assignment column; still audit via ledger best-effort.
+    const { data, error } = await ticketDb
+      .from('service_tickets')
+      .update({ priority: updates.priority, updated_at: new Date().toISOString() })
+      .eq('id', ticketId)
+      .select()
+      .single<ServiceTicketRow>()
+    if (error) throw new Error(error.message)
+    mapped = baseMap(data)
     await recordServiceEvent({
       eventType: 'VERIFICATION',
       entityId: ticketId,
-      payload: {
-        kind: 'ticket_status_transition',
-        previousStatus: currentRow.status,
-        newStatus: updates.status,
-      },
+      payload: { kind: 'ticket_priority_update', priority: updates.priority },
       verifiedBy: actorId,
-    });
+    })
   }
 
-  const mapped = baseMap(data);
+  if (!mapped) {
+    const { data: currentRow, error: fetchErr } = await ticketDb
+      .from('service_tickets')
+      .select('*')
+      .eq('id', ticketId)
+      .single<ServiceTicketRow>()
+    if (fetchErr || !currentRow) throw new Error(fetchErr?.message ?? 'Ticket not found')
+    mapped = baseMap(currentRow)
+  }
 
   const escalation = await checkAndApplyEscalation({
     id: mapped.id,
     status: mapped.status,
     sla_resolution_due: mapped.sla_resolution_due,
     escalated: mapped.escalated ?? false,
-  });
-  if (escalation.escalated && escalation.patch) {
-    const { data: escalatedRow } = await ticketDb
-      .from('service_tickets')
-      .update(escalation.patch)
-      .eq('id', ticketId)
-      .select()
-      .single<ServiceTicketRow>();
-    if (escalatedRow) {
-      await recordServiceEvent({
-        eventType: 'FAULT',
-        entityId: ticketId,
-        payload: { kind: 'sla_escalation', ruleId: 'SLA_BREACH_ESCALATION' },
-        verifiedBy: actorId,
-      });
-      return baseMap(escalatedRow);
-    }
+  })
+  if (escalation.escalated) {
+    const { governTicketSetEscalated } = await import('@/lib/ticketGovernanceApi')
+    mapped = await governTicketSetEscalated(ticketId, true)
   }
 
-  return mapped;
+  return mapped
 }
 
 export const getAvailableAssignees = async (): Promise<Array<{ id: string; full_name: string | null; role: string | null; phone: string | null }>> => {
@@ -375,17 +333,30 @@ export const subscribeToTicketUpdates = (callback: (payload: {
     .subscribe()
 }
 
-// Bulk operations
+// Bulk operations — each id goes through govern_ticket_assign with per-id audit.
+// Partial-failure policy: succeeded ids are returned; failures throw a summary error if none succeed.
 export const bulkAssignTickets = async (ticketIds: string[], assigneeId: string, assignedBy: string): Promise<ServiceTicket[]> => {
-  const now = new Date().toISOString()
-  const patch = { assigned_to: assigneeId, assigned_by: assignedBy, assigned_at: now, updated_at: now }
+  const { governTicketBulkAssign } = await import('@/lib/ticketGovernanceApi')
+  const result = await governTicketBulkAssign({
+    ticketIds,
+    assigneeId,
+    rationale: `Bulk assign by ${assignedBy}`,
+  })
+  if (result.succeeded.length === 0) {
+    throw new Error(
+      result.failed[0]?.error
+        || 'Bulk assign failed for all tickets'
+    )
+  }
   const { data, error } = await ticketDb
     .from('service_tickets')
-    .update(patch)
-    .in('id', ticketIds)
-    .select();
-  if (error) throw new Error(error.message);
-  return (data ?? []).map(baseMap);
+    .select('*')
+    .in('id', result.succeeded)
+  if (error) throw new Error(error.message)
+  if (result.failed.length) {
+    console.warn('[bulkAssignTickets] partial failure', result.failed)
+  }
+  return (data ?? []).map(baseMap)
 }
 
 export const bulkUpdateStatus = async (

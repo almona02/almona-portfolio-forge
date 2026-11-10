@@ -13,7 +13,7 @@ vi.mock('@/context/AuthContext', () => ({
   useAuth: () => authState,
 }));
 
-function renderAt(path: string, requireAdmin = false) {
+function renderAt(path: string, requireAdmin = false, requireRoles?: string[]) {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
@@ -22,7 +22,7 @@ function renderAt(path: string, requireAdmin = false) {
         <Route
           path="/portal"
           element={(
-            <ProtectedRoute requireAdmin={requireAdmin}>
+            <ProtectedRoute requireAdmin={requireAdmin} requireRoles={requireRoles}>
               <div>portal-ok</div>
             </ProtectedRoute>
           )}
@@ -83,5 +83,22 @@ describe('ProtectedRoute', () => {
     authState.supabaseUser = null;
     renderAt('/portal');
     expect(screen.getByText('login-page')).toBeInTheDocument();
+  });
+
+  it('denies technician workspace to customers via requireRoles', () => {
+    authState.loading = false;
+    authState.user = { id: 'c1', role: 'customer' };
+    authState.supabaseUser = { id: 'c1' };
+    renderAt('/portal', false, ['technician', 'admin', 'support']);
+    expect(screen.getByText('home-page')).toBeInTheDocument();
+    expect(screen.queryByText('portal-ok')).not.toBeInTheDocument();
+  });
+
+  it('allows technicians into role-gated pages', () => {
+    authState.loading = false;
+    authState.user = { id: 't1', role: 'technician' };
+    authState.supabaseUser = { id: 't1' };
+    renderAt('/portal', false, ['technician', 'admin', 'support']);
+    expect(screen.getByText('portal-ok')).toBeInTheDocument();
   });
 });
