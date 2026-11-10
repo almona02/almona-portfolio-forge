@@ -1,6 +1,6 @@
 # Slice 0 ordered deployment package (NOT an approval to deploy)
 
-Review SHA: `9b54fb02` (supersedes `bb40d8ab` / `6bc8cb7e`).  
+Review SHA: `631ab03d` (supersedes `bb40d8ab` / `6bc8cb7e`).  
 Environment apply to staging/production remains a **separate explicit decision**.
 
 **Mandatory:** RLS remediation (`staging_service_tickets_rls.sql` or equivalent) wherever RLS is disabled or policies fail the approved owner/assignee/admin|support scope — not optional.
