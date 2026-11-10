@@ -10,10 +10,7 @@
 import { config } from 'dotenv';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import {
-  buildGovernedTransitionPatch,
-  computeSlaFields,
-} from '@/lib/ticketing/TicketGovernanceService';
+import { computeSlaFields } from '@/lib/ticketing/TicketGovernanceService';
 
 config();
 
@@ -225,52 +222,63 @@ describeLive('P0.11 — Live Supabase service ticketing boundary', () => {
     expect(eventsAfter).toBe(eventsBefore);
   });
 
-  it('positive path: legal FSM transition open → assigned persists', async () => {
+  it('positive path: legal FSM transition open → assigned via govern_ticket_transition RPC', async () => {
     if (!probeTicketId) throw new Error('probe ticket missing');
 
-    const patch = buildGovernedTransitionPatch({
-      ticketId: probeTicketId,
-      currentStatus: 'open',
-      targetStatus: 'assigned',
-      actorId: 'p011-test',
-    });
+    // Slice 0: protected columns require govern_* RPCs; direct UPDATE is rejected.
+    // Service-role calls must pass p_actor_id of an admin/support profile.
+    const { data: staff } = await admin
+      .from('profiles')
+      .select('id, role')
+      .in('role', ['admin', 'support'])
+      .limit(1)
+      .maybeSingle();
+    if (!staff?.id) {
+      throw new Error('[P0.11] No admin/support profile available for govern RPC actor');
+    }
 
-    const { data, error } = await admin
-      .from('service_tickets')
-      .update(patch)
-      .eq('id', probeTicketId)
-      .select('status')
-      .single();
+    const { data, error } = await admin.rpc('govern_ticket_transition', {
+      p_ticket_id: probeTicketId,
+      p_to_status: 'assigned',
+      p_rationale: 'p011-integration-test',
+      p_resolution_summary: null,
+      p_actor_id: staff.id,
+    });
 
     expect(error).toBeNull();
-    expect(data?.status).toBe('assigned');
+    const row = Array.isArray(data) ? data[0] : data;
+    expect(row?.status).toBe('assigned');
 
-    const transitionEvent = await recordEventViaAdmin(admin, probeTicketId, 'VERIFICATION', {
-      kind: 'ticket_status_transition',
-      from: 'open',
-      to: 'assigned',
-    });
-
-    if (!transitionEvent.persisted) {
-      throw new Error(`Transition event NOT persisted: ${transitionEvent.error ?? 'unknown'}`);
-    }
+    const { data: audit } = await admin
+      .from('ticket_governance_audit')
+      .select('action, to_status')
+      .eq('ticket_id', probeTicketId)
+      .eq('action', 'status_transition')
+      .order('created_at', { ascending: false })
+      .limit(1);
+    expect(audit?.[0]?.to_status).toBe('assigned');
   });
 
-  it('positive path: assigned → in_progress persists with read-back', async () => {
+  it('positive path: assigned → in_progress via govern_ticket_transition with read-back', async () => {
     if (!probeTicketId) throw new Error('probe ticket missing');
 
-    const patch = buildGovernedTransitionPatch({
-      ticketId: probeTicketId,
-      currentStatus: 'assigned',
-      targetStatus: 'in_progress',
-      actorId: 'p011-test',
+    const { data: staff } = await admin
+      .from('profiles')
+      .select('id')
+      .in('role', ['admin', 'support'])
+      .limit(1)
+      .maybeSingle();
+    if (!staff?.id) {
+      throw new Error('[P0.11] No admin/support profile available for govern RPC actor');
+    }
+
+    const { error } = await admin.rpc('govern_ticket_transition', {
+      p_ticket_id: probeTicketId,
+      p_to_status: 'in_progress',
+      p_rationale: 'p011-integration-test',
+      p_resolution_summary: null,
+      p_actor_id: staff.id,
     });
-
-    const { error } = await admin
-      .from('service_tickets')
-      .update(patch)
-      .eq('id', probeTicketId);
-
     expect(error).toBeNull();
 
     const { data: readBack } = await admin

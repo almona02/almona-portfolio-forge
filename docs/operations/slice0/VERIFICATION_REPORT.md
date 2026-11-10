@@ -43,8 +43,9 @@ Spark expanded suite (`battery_r3.cjs` from R2 + D-05 expectation aligned to pro
 
 1. Revocation blocks new signed links; issued ~60s URLs may remain valid until expiry.  
 2. Allowlisted share free text is not guaranteed PII-free.  
-3. RLS remediation is mandatory wherever RLS is off or policies fail approved scope.
+3. RLS remediation is mandatory wherever RLS is off or policies fail approved scope.  
+4. Create-path assign denial already returns the **created** ticket as `unassigned` (R1). Residual: do not re-insert on assign-only failure (duplicate risk). This is not an “uncreated ticket” defect.
 
 ## Scope hold
 
-No later phases. No staging/production apply.
+No later phases. Production apply unauthorized. Staging DB/edge evaluation recorded in `.artifacts/slice0/STAGING_EVALUATION_REPORT.md`.

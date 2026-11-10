@@ -30,8 +30,19 @@
 
 ## Environment apply status
 
-**NOT APPLIED** to staging or production.
+| Environment | Status |
+|---|---|
+| Staging Supabase `apnmoevmvihfzcnttctx` | **APPLIED** — DB/RLS/edge cutover; see `.artifacts/slice0/STAGING_EVALUATION_REPORT.md` |
+| Staging Vercel client | **NOT DEPLOYED** (team grant missing) |
+| Staging Python / Railway | **NOT DEPLOYED** (no non-prod Railway target; prod unauthorized) |
+| Production | **NOT APPLIED** |
+
+Deployed evaluation baseline: implementation `7e8ac0a1`; tip `c6d14a89` (docs pin only).
+
+## Post-insert assign residual (accurate)
+
+R1 is **already fixed** in `7e8ac0a1` (create kept; explicit `assignment.status = unassigned` on assign authz denial). Remaining risk is operational: a UI that retries **insert** after assign-only failure can duplicate tickets. Retry assign-only (or accept unassigned).
 
 ## Out of scope
 
-Later phases, Wonder states, machine registry, squads/jobs/reports.
+Later phases, Wonder states, machine registry, squads/jobs/reports. Production cutover.
