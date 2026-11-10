@@ -6,7 +6,7 @@
 |---|---|
 | Worktree | `C:/projects/almona-slice0` |
 | Branch | `feat/service-slice0-security` |
-| **Frozen implementation commit** | `FREEZE_SHA_PENDING` |
+| **Frozen implementation commit** | `7e8ac0a1` (`7e8ac0a19d782474f7c36b02ed4fc086c4abb453`) |
 | Base commit | `13faec98` |
 | Prior review SHAs | `06ff513b` (R1), `6bc8cb7e`, `bb40d8ab` — superseded |
 | Verification | `docs/operations/slice0/VERIFICATION_REPORT.md` — Spark expanded battery **141/141 PASS** |

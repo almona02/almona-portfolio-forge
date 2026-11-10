@@ -1,6 +1,6 @@
 # Slice 0 coordinated deployment package (NOT an approval to deploy)
 
-**Frozen implementation commit:** `FREEZE_SHA_PENDING`  
+**Frozen implementation commit:** `7e8ac0a1`  
 (Supersedes prior freeze labels `06ff513b`, `6bc8cb7e`, `bb40d8ab`.)
 
 Environment apply to staging/production remains a **separate explicit decision**.

@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-11  
 **Review branch:** `feat/service-slice0-security`  
-**Frozen implementation commit:** `FREEZE_SHA_PENDING`  
+**Frozen implementation commit:** `7e8ac0a1`  
 **Prior SHAs (superseded for review):** `06ff513b` (R1 remediation), `6bc8cb7e` / `bb40d8ab` (pre-Spark-R2)  
 **Worktree:** `C:/projects/almona-slice0`  
 **Disposable engine:** Spark R2 Postgres data dir on `127.0.0.1:55433` / db `slice0`  
