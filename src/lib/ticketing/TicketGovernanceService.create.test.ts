@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { from, recordServiceEvent } = vi.hoisted(() => ({
+const { from, rpc, recordServiceEvent } = vi.hoisted(() => ({
   from: vi.fn(),
+  rpc: vi.fn(),
   recordServiceEvent: vi.fn(),
 }))
 
 vi.mock('@/lib/supabase', () => ({
-  supabase: { from, auth: { getUser: vi.fn() } },
+  supabase: { from, rpc, auth: { getUser: vi.fn() } },
 }))
 
 vi.mock('@/lib/ticketing/serviceEventLedger', () => ({
@@ -78,6 +79,7 @@ function activeCountsMock() {
 beforeEach(() => {
   vi.resetAllMocks()
   recordServiceEvent.mockResolvedValue({ ok: true })
+  rpc.mockResolvedValue({ data: null, error: null })
 })
 
 describe('governedCreateTicket auto-assignment', () => {
@@ -153,5 +155,89 @@ describe('governedCreateTicket auto-assignment', () => {
         'admin-1',
       ),
     ).rejects.toThrow(/connection reset/)
+  })
+})
+
+describe('governedCreateTicket machine_id link', () => {
+  it('links via link_ticket_machine RPC after create', async () => {
+    const insert = ticketInsertMock('link-ticket')
+    from.mockImplementation((table: string) => {
+      if (table === 'service_tickets') return insert
+      if (table === 'profiles') return profilesMock({ actorRole: 'customer' })
+      return activeCountsMock()
+    })
+    rpc.mockResolvedValue({
+      data: { id: 'link-ticket', machine_id: 'mach-1', ticket_number: 'TKT-1' },
+      error: null,
+    })
+
+    const result = await governedCreateTicket(
+      {
+        title: 'Issue',
+        description: 'enough text here',
+        type: 'general',
+        priority: 'medium',
+        machine_id: 'mach-1',
+      } as never,
+      'cust-1',
+      'cust-1',
+    )
+
+    expect(rpc).toHaveBeenCalledWith('link_ticket_machine', {
+      p_ticket_id: 'link-ticket',
+      p_machine_id: 'mach-1',
+    })
+    expect(result.row.machine_id).toBe('mach-1')
+  })
+
+  it('fails create path when machine link is denied', async () => {
+    const insert = ticketInsertMock('deny-ticket')
+    from.mockImplementation((table: string) => {
+      if (table === 'service_tickets') return insert
+      if (table === 'profiles') return profilesMock({ actorRole: 'customer' })
+      return activeCountsMock()
+    })
+    rpc.mockResolvedValue({
+      data: null,
+      error: { message: 'Not authorized for machine' },
+    })
+
+    await expect(
+      governedCreateTicket(
+        {
+          title: 'Issue',
+          description: 'enough text here',
+          type: 'general',
+          priority: 'medium',
+          machine_id: 'foreign-mach',
+        } as never,
+        'cust-1',
+        'cust-1',
+      ),
+    ).rejects.toThrow(/Not authorized for machine/)
+  })
+
+  it('allows legacy free-text tickets without machine_id', async () => {
+    const insert = ticketInsertMock('legacy-ticket')
+    from.mockImplementation((table: string) => {
+      if (table === 'service_tickets') return insert
+      if (table === 'profiles') return profilesMock({ actorRole: 'customer' })
+      return activeCountsMock()
+    })
+
+    const result = await governedCreateTicket(
+      {
+        title: 'Issue',
+        description: 'enough text here',
+        type: 'general',
+        priority: 'medium',
+        machine_serial_number: 'FREE-TEXT-1',
+      } as never,
+      'cust-1',
+      'cust-1',
+    )
+
+    expect(rpc).not.toHaveBeenCalled()
+    expect(result.row.id).toBe('legacy-ticket')
   })
 })

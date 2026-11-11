@@ -22,6 +22,7 @@ interface TicketRow {
   status: string
   source: string | null
   maintenance_type: string | null
+  machine_id: string | null
   machine_serial_number: string | null
   site_location: string | null
   contact_phone: string | null
@@ -294,7 +295,8 @@ const TicketDetailPage = () => {
               <div className="flex justify-between gap-4"><span className="text-muted-foreground">Type</span><span className="capitalize text-right">{String(ticket.type).replace(/_/g, ' ')}</span></div>
               <div className="flex justify-between gap-4"><span className="text-muted-foreground">Created</span><span className="text-right">{format(new Date(ticket.created_at), 'MMM dd, yyyy HH:mm')}</span></div>
               {ticket.resolved_at && <div className="flex justify-between gap-4"><span className="text-muted-foreground">Resolved</span><span className="text-right">{format(new Date(ticket.resolved_at), 'MMM dd, yyyy HH:mm')}</span></div>}
-              {ticket.machine_serial_number && <div className="flex items-center justify-between gap-4"><span className="text-muted-foreground flex items-center gap-1"><Cpu className="h-3.5 w-3.5" /> Machine</span><span className="font-mono text-right">{ticket.machine_serial_number}</span></div>}
+              {ticket.machine_id && <div className="flex items-center justify-between gap-4"><span className="text-muted-foreground flex items-center gap-1"><Cpu className="h-3.5 w-3.5" /> Machine ID</span><span className="font-mono text-right text-xs break-all">{ticket.machine_id}</span></div>}
+              {ticket.machine_serial_number && <div className="flex items-center justify-between gap-4"><span className="text-muted-foreground flex items-center gap-1"><Cpu className="h-3.5 w-3.5" /> Manufacturer serial</span><span className="font-mono text-right">{ticket.machine_serial_number}</span></div>}
               {ticket.site_location && <div className="flex items-center justify-between gap-4"><span className="text-muted-foreground flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> Location</span><span className="text-right">{ticket.site_location}</span></div>}
               {ticket.contact_phone && <div className="flex items-center justify-between gap-4"><span className="text-muted-foreground flex items-center gap-1"><Phone className="h-3.5 w-3.5" /> Phone</span><a className="text-right" href={`tel:${ticket.contact_phone}`}>{ticket.contact_phone}</a></div>}
               {ticket.contact_email && <div className="flex items-center justify-between gap-4"><span className="text-muted-foreground flex items-center gap-1"><Mail className="h-3.5 w-3.5" /> Email</span><a className="text-right break-all" href={`mailto:${ticket.contact_email}`}>{ticket.contact_email}</a></div>}

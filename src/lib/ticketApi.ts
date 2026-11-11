@@ -54,6 +54,7 @@ export function mapTicket(row: DBServiceTicketRow): ServiceTicket {
     contact_email: row.contact_email,
     preferred_contact_method: row.preferred_contact_method || 'email',
     site_location: row.site_location,
+    machine_id: (row as { machine_id?: string | null }).machine_id ?? null,
     machine_serial_number: row.machine_serial_number,
   machine_model: row.machine_model ?? null,
     resolution_summary: row.resolution_summary,

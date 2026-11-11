@@ -33,6 +33,7 @@ export interface ServiceTicket {
   contact_email: string | null
   preferred_contact_method: string
   site_location: string | null
+  machine_id?: string | null
   machine_serial_number: string | null
   machine_model?: string | null
   resolution_summary: string | null
@@ -87,6 +88,8 @@ export interface CreateTicketData {
   contact_email?: string
   preferred_contact_method?: string
   site_location?: string
+  /** Authorized machines.id — linked server-side after create; never trust client-only FK. */
+  machine_id?: string
   machine_serial_number?: string
   machine_model?: string
   related_product_id?: string

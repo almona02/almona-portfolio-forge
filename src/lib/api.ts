@@ -65,6 +65,7 @@ interface TicketInsert {
   type: string;
   priority: string;
   machine_id?: string;
+  machine_serial_number?: string | null;
   maintenance_type?: string;
   scheduled_date?: string;
   status: string;
@@ -256,7 +257,7 @@ export const api = {
     const errMsg = String(error.message || '');
     const duplicate = error.code === '23505' || errMsg.includes('machines_serial_number_key');
     if (duplicate) {
-      // Pre-PR1 unique path: same-owner only; otherwise generic message (no foreign disclosure)
+      // Pre-PR1 unique path: same-owner only. Never confirm another account owns the serial.
       const { data: existing, error: lookupError } = await client
         .from('machines')
         .select('*')
@@ -264,7 +265,7 @@ export const api = {
         .eq('owner_id', machineData.owner_id)
         .maybeSingle();
       if (!lookupError && existing) return existing;
-      throw new Error('Registration could not be completed. Contact support if this persists.');
+      throw new Error('Registration could not be completed. Please try again or contact support.');
     }
     throw new Error(errMsg || 'Failed to register machine');
   },
@@ -288,13 +289,14 @@ export const api = {
 
   // Create a new support ticket
   createTicket: async (ticketData: TicketInsert & { attachments?: File[]; source?: string; context?: Record<string, unknown> }): Promise<Ticket> => {
+    // Legacy helper — prefer ticketApi.createTicket / governedCreateTicket for machine_id linking.
     const payload = {
       user_id: ticketData.user_id,
       title: ticketData.title,
       description: ticketData.description,
       type: ticketData.type,
       priority: ticketData.priority,
-      machine_serial_number: ticketData.machine_id ?? null,
+      machine_serial_number: ticketData.machine_serial_number ?? null,
       maintenance_type: ticketData.maintenance_type ?? null,
       status: ticketData.status,
       source: ticketData.source || 'api',

@@ -162,7 +162,7 @@ export function buildGovernedTransitionPatch(input: GovernedTransitionInput): Go
 }
 
 const SELECT_COLUMNS =
-  'id, title, description, type, priority, status, preferred_contact_method, user_id, ticket_number, digital_twin_code, contact_phone, contact_email, site_location, machine_serial_number, machine_model, sla_response_due, sla_resolution_due, sla_breached, escalated, escalated_at, assigned_to, assigned_at, assigned_by, first_response_at, created_at, updated_at';
+  'id, title, description, type, priority, status, preferred_contact_method, user_id, ticket_number, digital_twin_code, contact_phone, contact_email, site_location, machine_id, machine_serial_number, machine_model, sla_response_due, sla_resolution_due, sla_breached, escalated, escalated_at, assigned_to, assigned_at, assigned_by, first_response_at, created_at, updated_at';
 
 export type AssignmentCreateOutcome =
   | { status: 'assigned'; assignedTo: string }
@@ -225,6 +225,7 @@ export async function governedCreateTicket(
     contact_phone: ticketData.contact_phone || null,
     contact_email: ticketData.contact_email || null,
     site_location: ticketData.site_location || null,
+    // machine_id linked via RPC after insert (server-side authz). Free-text serial remains optional.
     machine_serial_number: ticketData.machine_serial_number || null,
     machine_model: (ticketData as { machine_model?: string }).machine_model || null,
   };
@@ -237,15 +238,39 @@ export async function governedCreateTicket(
 
   if (error) throw new Error(error.message);
 
-  const ticketId = String(data.id);
+  let created = data as Record<string, unknown>;
+  const requestedMachineId = ticketData.machine_id?.trim();
+  if (requestedMachineId) {
+    const { data: linked, error: linkErr } = await supabase.rpc('link_ticket_machine', {
+      p_ticket_id: created.id,
+      p_machine_id: requestedMachineId,
+    });
+    if (linkErr) {
+      throw new Error(linkErr.message || 'Not authorized to link that machine');
+    }
+    if (linked && typeof linked === 'object') {
+      created = { ...created, ...(linked as Record<string, unknown>) };
+    } else {
+      const { data: refreshed, error: refreshErr } = await supabase
+        .from('service_tickets')
+        .select(SELECT_COLUMNS)
+        .eq('id', String(created.id))
+        .single();
+      if (refreshErr) throw new Error(refreshErr.message);
+      created = refreshed as Record<string, unknown>;
+    }
+  }
+
+  const ticketId = String(created.id);
   const createdEvent = await recordServiceEvent({
     eventType: 'ON',
     entityId: ticketId,
     payload: {
       kind: 'ticket_created',
-      ticket_number: data.ticket_number,
+      ticket_number: created.ticket_number,
       type: ticketType,
       priority: ticketPriority,
+      machine_id: created.machine_id ?? null,
       sla_response_due: slaFields.sla_response_due,
       sla_resolution_due: slaFields.sla_resolution_due,
     },
@@ -254,7 +279,7 @@ export async function governedCreateTicket(
   });
 
   const eventResults: GovernedCreateResult['eventResults'] = { created: createdEvent };
-  const createdRow = data as Record<string, unknown>;
+  const createdRow = created;
 
   const mayAssign = await actorMayGovernAssign(actorId);
   if (!mayAssign) {

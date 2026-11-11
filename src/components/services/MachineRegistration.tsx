@@ -203,7 +203,15 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       }
       // Only invalidate if query previously existed (had a queryFn from a mounted component)
       // (No invalidate needed now; explicit fetch above handles sync.)
-      toast.success("Registration Complete", { description: "Machine successfully registered and synced." });
+      const reg = (saved as { _registration?: { provisional_asset_ref?: string | null; identity_confidence?: string }; provisional_asset_ref?: string | null; identity_confidence?: string; serial_number?: string | null });
+      const alm = reg._registration?.provisional_asset_ref || reg.provisional_asset_ref;
+      const provisional = (reg._registration?.identity_confidence || reg.identity_confidence) === 'provisional'
+        || (!machine.serialNumber && Boolean(alm));
+      toast.success('Registration Complete', {
+        description: provisional
+          ? `Provisional record created. Internal reference ${alm || '(assigned)'} is not a manufacturer serial.`
+          : 'Machine successfully registered and synced.',
+      });
       setStep("scan");
       setMachine({ serialNumber: "", model: "", installationDate: "", warrantyValid: false, photos: [] });
       setModelQuery('');
@@ -212,7 +220,11 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       idempotencyKeyRef.current = null;
     } catch (err) {
       const message = (err as { message?: string }).message || 'Failed to save machine to backend';
-      toast.error('Save Failed', { description: message });
+      // Never surface cross-account ownership hints from legacy paths.
+      const safe = /already registered|another (customer|account|owner)|owned by/i.test(message)
+        ? 'Registration could not be completed. Please try again or contact support.'
+        : message;
+      toast.error('Save Failed', { description: safe });
     } finally {
       savingRef.current = false;
       setIsSaving(false);
@@ -317,10 +329,13 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                         <div className="mt-2 text-sm text-muted-foreground">{machine.photos.length} photo(s) uploaded</div>
                       )}
                     </div>
+                    <p className="text-xs text-muted-foreground">
+                      Serial may be left blank when the plate is missing or illegible (provisional ALM internal ref). Photos help support later.
+                    </p>
                     <Button
                       className="w-full"
                       onClick={() => setStep("details")}
-                      disabled={!machine.model || (!machine.serialNumber && rawFiles.length === 0)}
+                      disabled={!machine.model}
                     >
                       Continue <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>
@@ -341,11 +356,19 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="serialNumber" className="typography-label">Serial Number</Label>
-                    <Input id="serialNumber" value={machine.serialNumber} readOnly className="bg-card/30 border-border/20" />
+                    <Label htmlFor="serialNumber" className="typography-label">Manufacturer serial (read-only)</Label>
+                    <Input
+                      id="serialNumber"
+                      value={machine.serialNumber || '(none — provisional registration)'}
+                      readOnly
+                      className="bg-card/30 border-border/20"
+                    />
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Identity fields cannot be edited after save in PR1. Catalog: {selectedCatalogId ? 'linked' : 'uncatalogued'}.
+                    </p>
                   </div>
                   <div>
-                    <Label htmlFor="model" className="typography-label">Model</Label>
+                    <Label htmlFor="model" className="typography-label">Model (read-only)</Label>
                     <Input id="model" value={machine.model} readOnly className="bg-card/30 border-border/20" />
                   </div>
                   <div>
