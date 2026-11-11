@@ -318,9 +318,29 @@ BEGIN
   RETURN v_id;
 END $$;
 
--- J1 legal walk to awaiting_review; completed denied without approved report.
+
+-- Approved-report chain (privileged inserts; job must be non-unassigned).
+CREATE OR REPLACE FUNCTION b1_approved_chain(p_job uuid) RETURNS uuid
+LANGUAGE plpgsql AS $$
+DECLARE v_v uuid; v_r uuid; v_rev uuid; v_rw uuid;
+BEGIN
+  SELECT (public.create_service_job_visit(p_job, 'chain', NULL)).id INTO v_v;
+  PERFORM public.govern_visit_transition(v_v, 'in_progress', 'chain', NULL);
+  PERFORM public.govern_visit_transition(v_v, 'completed', 'chain', NULL);
+  INSERT INTO public.service_reports (visit_id) VALUES (v_v) RETURNING id INTO v_r;
+  INSERT INTO public.service_report_revisions (
+    report_id, revision_number, findings, labour, verification_outcome, submitted_by
+  ) VALUES (v_r, 1, 'chain', '[]'::jsonb, 'verified_fixed', b1_uid('tech1'))
+  RETURNING id INTO v_rev;
+  INSERT INTO public.service_report_reviews (revision_id, reviewer_id, decision, comments)
+  VALUES (v_rev, b1_uid('support'), 'approved_issued', 'ok')
+  RETURNING id INTO v_rw;
+  RETURN v_rev;
+END $$;
+
+-- J1 legal job walk: bare completion denied; positive completion with approved chain.
 DO $$
-DECLARE v_j uuid; v_ok boolean := true; v_denied boolean := false;
+DECLARE v_j uuid; v_rev uuid; v_cr uuid; v_bare boolean := false; v_has_cr boolean;
 BEGIN
   IF NOT (b1_has_table('service_jobs') AND b1_has_func('create_service_job')
       AND b1_has_func('govern_job_transition')) THEN
@@ -328,14 +348,30 @@ BEGIN
   END IF;
   PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
   v_j := b1_mkticket_job('J1', true);
-  IF b1_state('service_jobs', v_j) <> 'unassigned' THEN v_ok := false; END IF;
+  IF b1_state('service_jobs', v_j) <> 'unassigned' THEN
+    PERFORM b1_note('J1', false, 'initial state not unassigned'); RETURN;
+  END IF;
   PERFORM public.govern_job_transition(v_j, 'planned', 'j1', NULL);
   PERFORM public.govern_job_transition(v_j, 'in_progress', 'j1', NULL);
   PERFORM public.govern_job_transition(v_j, 'awaiting_review', 'j1', NULL);
   BEGIN PERFORM public.govern_job_transition(v_j, 'completed', 'j1', NULL);
-  EXCEPTION WHEN check_violation THEN v_denied := true; END;
-  v_ok := v_ok AND b1_state('service_jobs', v_j) = 'awaiting_review' AND v_denied;
-  PERFORM b1_note('J1', v_ok, 'walk gated; complete needs issued report');
+  EXCEPTION WHEN check_violation THEN
+    v_bare := (SQLERRM ILIKE '%approved%issued%report%' OR SQLERRM ILIKE '%issued%report%');
+  END;
+  IF NOT v_bare THEN
+    PERFORM b1_note('J1', false, 'bare completion not denied with report reason'); RETURN;
+  END IF;
+  v_rev := b1_approved_chain(v_j);
+  PERFORM public.govern_job_transition(v_j, 'completed', 'j1', NULL);
+  SELECT EXISTS (SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'service_jobs'
+      AND column_name = 'completing_revision_id') INTO v_has_cr;
+  IF v_has_cr THEN
+    EXECUTE 'SELECT completing_revision_id FROM public.service_jobs WHERE id = $1'
+      INTO v_cr USING v_j;
+  END IF;
+  PERFORM b1_note('J1', b1_state('service_jobs', v_j) = 'completed'
+    AND (NOT v_has_cr OR v_cr = v_rev), 'walk + gated completion');
 EXCEPTION WHEN SQLSTATE '42883' THEN
   PERFORM b1_note('J1', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
 WHEN OTHERS THEN
@@ -1270,6 +1306,161 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
   BEGIN RESET ROLE; EXCEPTION WHEN OTHERS THEN NULL; END;
   PERFORM b1_note('X4b', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+
+-- X5 free resolved→in_progress govern denied (add-back only via job creation).
+DO $$
+DECLARE v_t uuid; v_denied boolean := false; v_s text; v_a0 int; v_a1 int;
+BEGIN
+  IF NOT public.is_valid_ticket_status_transition('resolved', 'in_progress') THEN
+    INSERT INTO b1_eval VALUES ('X5', 'SKIP', 'needs B1 FSM extension'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B1-X5');
+  PERFORM public.govern_ticket_transition(v_t, 'assigned', 'x5', NULL);
+  PERFORM public.govern_ticket_transition(v_t, 'in_progress', 'x5', NULL);
+  PERFORM public.govern_ticket_transition(v_t, 'resolved', 'x5', 'done');
+  v_a0 := b1_audit_n(v_t);
+  BEGIN PERFORM public.govern_ticket_transition(v_t, 'in_progress', 'x5', NULL);
+  EXCEPTION WHEN check_violation THEN
+    v_denied := (SQLERRM ILIKE '%job creation%');
+  END;
+  SELECT status INTO v_s FROM public.service_tickets WHERE id = v_t;
+  v_a1 := b1_audit_n(v_t);
+  PERFORM b1_note('X5', v_denied AND v_s = 'resolved' AND v_a0 = v_a1,
+    'free add-back denied');
+EXCEPTION WHEN OTHERS THEN
+  PERFORM b1_note('X5', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- X6 bulk resolve across jobless + activated tickets: partial, activated denied+named.
+DO $$
+DECLARE v_ok uuid; v_act uuid; v_j uuid; v_res text; s_ok text; s_act text;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('create_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('X6', 'SKIP', 'pending B1 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_ok := b1_mkticket('cust1', 'B1-X6A');
+  PERFORM public.govern_ticket_transition(v_ok, 'assigned', 'x6', NULL);
+  PERFORM public.govern_ticket_transition(v_ok, 'in_progress', 'x6', NULL);
+  v_act := b1_mkticket('cust1', 'B1-X6B');
+  PERFORM public.govern_ticket_transition(v_act, 'assigned', 'x6', NULL);
+  PERFORM public.govern_ticket_transition(v_act, 'in_progress', 'x6', NULL);
+  SELECT (public.create_service_job(v_act, 'req', true, 'x6')).id INTO v_j;
+  SELECT public.govern_ticket_bulk_transition(ARRAY[v_ok, v_act], 'resolved', 'x6', 'bulk')
+    ::text INTO v_res;
+  SELECT status INTO s_ok FROM public.service_tickets WHERE id = v_ok;
+  SELECT status INTO s_act FROM public.service_tickets WHERE id = v_act;
+  PERFORM b1_note('X6', s_ok = 'resolved' AND s_act = 'in_progress'
+    AND v_res ILIKE '%job%', 'bulk partial honors gate');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('X6', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('X6', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- W1 activation timestamp cannot be cleared by ordinary client updates.
+DO $$
+DECLARE v_t uuid; v_j uuid; v_still boolean;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('create_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('W1', 'SKIP', 'pending B1 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B1-W1');
+  SELECT (public.create_service_job(v_t, 'req', true, 'w1')).id INTO v_j;
+  SET ROLE b1_auth;
+  BEGIN
+    UPDATE public.service_tickets SET workflow_activated_at = NULL WHERE id = v_t;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END;
+  RESET ROLE;
+  SELECT (workflow_activated_at IS NOT NULL) INTO v_still
+    FROM public.service_tickets WHERE id = v_t;
+  PERFORM b1_note('W1', v_still, CASE WHEN v_still THEN 'activation durable'
+    ELSE 'FAIL-OPEN: activation cleared by client update' END);
+EXCEPTION WHEN OTHERS THEN
+  BEGIN RESET ROLE; EXCEPTION WHEN OTHERS THEN NULL; END;
+  PERFORM b1_note('W1', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- W2 activation actor cannot be rewritten by ordinary client updates.
+DO $$
+DECLARE v_t uuid; v_j uuid; v_same boolean;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('create_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('W2', 'SKIP', 'pending B1 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B1-W2');
+  SELECT (public.create_service_job(v_t, 'req', true, 'w2')).id INTO v_j;
+  SET ROLE b1_auth;
+  BEGIN
+    UPDATE public.service_tickets SET workflow_activated_by = b1_uid('cust2') WHERE id = v_t;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END;
+  RESET ROLE;
+  SELECT (workflow_activated_by = b1_uid('support')) INTO v_same
+    FROM public.service_tickets WHERE id = v_t;
+  PERFORM b1_note('W2', v_same, CASE WHEN v_same THEN 'actor durable'
+    ELSE 'FAIL-OPEN: activation actor rewritten by client update' END);
+EXCEPTION WHEN OTHERS THEN
+  BEGIN RESET ROLE; EXCEPTION WHEN OTHERS THEN NULL; END;
+  PERFORM b1_note('W2', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- W3 governed RPC paths never clear activation (waive leaves it set).
+DO $$
+DECLARE v_t uuid; v_j uuid; v_still boolean;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('create_service_job')
+      AND b1_has_func('waive_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('W3', 'SKIP', 'pending B1 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B1-W3');
+  SELECT (public.create_service_job(v_t, 'req', true, 'w3')).id INTO v_j;
+  PERFORM public.waive_service_job(v_j, 'covered', NULL);
+  SELECT (workflow_activated_at IS NOT NULL) INTO v_still
+    FROM public.service_tickets WHERE id = v_t;
+  PERFORM b1_note('W3', v_still, 'RPC paths preserve activation');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('W3', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('W3', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- W4 attempted clear must not bypass the gate.
+DO $$
+DECLARE v_t uuid; v_j uuid; v_bypassed boolean := false;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('create_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('W4', 'SKIP', 'pending B1 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B1-W4');
+  PERFORM public.govern_ticket_transition(v_t, 'assigned', 'w4', NULL);
+  PERFORM public.govern_ticket_transition(v_t, 'in_progress', 'w4', NULL);
+  SELECT (public.create_service_job(v_t, 'req', true, 'w4')).id INTO v_j;
+  SET ROLE b1_auth;
+  BEGIN
+    UPDATE public.service_tickets SET workflow_activated_at = NULL WHERE id = v_t;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END;
+  RESET ROLE;
+  BEGIN
+    PERFORM public.govern_ticket_transition(v_t, 'resolved', 'w4', 'bypass?');
+    v_bypassed := true;
+  EXCEPTION WHEN OTHERS THEN v_bypassed := false;
+  END;
+  PERFORM b1_note('W4', NOT v_bypassed, CASE WHEN v_bypassed
+    THEN 'FAIL-OPEN: cleared activation bypassed the gate'
+    ELSE 'no bypass' END);
+EXCEPTION WHEN OTHERS THEN
+  BEGIN RESET ROLE; EXCEPTION WHEN OTHERS THEN NULL; END;
+  PERFORM b1_note('W4', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
 SELECT check_id, status, detail FROM b1_eval ORDER BY check_id;
