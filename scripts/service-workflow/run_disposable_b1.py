@@ -23,28 +23,26 @@ ROOT = Path(__file__).resolve().parents[2]
 BASE = ROOT / "scripts/service-workflow/disposable_b1_base.sql"
 MIGRATION = ROOT / "supabase/migrations/20261111010000_service_slice0_security_boundary.sql"
 TKT_MIGRATION = ROOT / "supabase/migrations/20261111200000_staging_machine_photos_and_ticket_number.sql"
-B1_MIGRATION = ROOT / "supabase/migrations/20261111210000_service_workflow_b1_data_contract.sql"
-B2_MIGRATION = ROOT / "supabase/migrations/20261111220000_service_workflow_b2_assignment.sql"
+# Frozen implementations under test, extracted from git objects by SHA
+# (never from my worktree files, never merged branches).
+B1_FROZEN_SHA = "7a8307395b79df677a96f77cd993a77351b5805c"
+B1_MIGRATION_GIT_PATH = "supabase/migrations/20261111210000_service_workflow_b1_data_contract.sql"
+# B2: (None, None) until Cursor freezes; then set SHA + git path.
+B2_FROZEN_SHA: str | None = "8f2acc4e806e70e12e87a24dcbebaef78e63e085"
+B2_MIGRATION_GIT_PATH: str | None = "supabase/migrations/20261111220000_service_workflow_b2_assignment.sql"
 BATTERY = ROOT / "scripts/service-workflow/disposable_b1_battery.sql"
-B2_BATTERY = ROOT / "scripts/service-workflow/disposable_b2_battery.sql"
 OUT = ROOT / ".artifacts/slice0/service-workflow/disposable_b1_results.json"
+# Per-freeze evidence (old failing evidence preserved separately, never overwritten).
+OUT_SHA = ROOT / ".artifacts/slice0/service-workflow/disposable_b1_results_7a830739.json"
 PGBIN = Path(r"C:\Program Files\PostgreSQL\17\bin")
-# Keep disposable cluster under repo artifacts (C:/temp has been swept mid-run).
-DATADIR = OUT.parent / "pgdata"
+# Under .artifacts (gitignored): C:/temp is swept by an external cleaner that
+# deleted the live cluster dir mid-run twice (server PANIC, K-phase refused).
+DATADIR = ROOT / ".artifacts/slice0/service-workflow/_b1_cluster"
 PORT = "55442"
 USER = getpass.getuser()
 SUPPORT = "55555555-5555-5555-5555-555555555555"
 
-def _git_sha() -> str:
-    try:
-        return subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
-        ).strip()
-    except Exception:
-        return "UNKNOWN"
-
-
-results: dict = {"tested_sha": _git_sha(), "sql": {}, "concurrency": {}}
+results: dict = {"sql": {}, "concurrency": {}}
 
 
 def psql_file(db: str, path: Path) -> subprocess.CompletedProcess[str]:
@@ -114,30 +112,34 @@ def run_all() -> int:
     r = psql_file(db, sec)
     if r.returncode != 0:
         raise SystemExit(f"TKT section failed: {r.stderr}\n{r.stdout}")
-    r = psql_file(db, B1_MIGRATION)
+    b1f = OUT.parent / "_b1_frozen_migration.sql"
+    r = subprocess.run(["git", "show", f"{B1_FROZEN_SHA}:{B1_MIGRATION_GIT_PATH}"],
+                       capture_output=True, cwd=str(ROOT))
     if r.returncode != 0:
-        raise SystemExit(f"apply {B1_MIGRATION.name} failed: {r.stderr}\n{r.stdout}")
-    if B2_MIGRATION.exists():
-        r = psql_file(db, B2_MIGRATION)
+        raise SystemExit(f"cannot extract B1 migration at {B1_FROZEN_SHA}")
+    b1f.write_bytes(r.stdout)
+    r = psql_file(db, b1f)
+    if r.returncode != 0:
+        raise SystemExit(f"B1 migration failed: {r.stderr}\n{r.stdout}")
+    results["frozen_sha"] = B1_FROZEN_SHA
+    results["b1_migration"] = B1_MIGRATION_GIT_PATH
+    if B2_FROZEN_SHA and B2_MIGRATION_GIT_PATH:
+        b2f = OUT.parent / "_b2_frozen_migration.sql"
+        r = subprocess.run(["git", "show", f"{B2_FROZEN_SHA}:{B2_MIGRATION_GIT_PATH}"],
+                           capture_output=True, cwd=str(ROOT))
         if r.returncode != 0:
-            raise SystemExit(f"apply {B2_MIGRATION.name} failed: {r.stderr}\n{r.stdout}")
+            raise SystemExit(f"cannot extract B2 migration at {B2_FROZEN_SHA}")
+        b2f.write_bytes(r.stdout)
+        r = psql_file(db, b2f)
+        if r.returncode != 0:
+            raise SystemExit(f"B2 migration failed: {r.stderr}\n{r.stdout}")
+        results["b2_frozen_sha"] = B2_FROZEN_SHA
+        results["b2_migration"] = B2_MIGRATION_GIT_PATH
+    else:
+        results["b2_frozen_sha"] = "pending"
+        print("no B2 migration configured; B2 checks will SKIP")
 
-    battery_sql = BATTERY.read_text(encoding="utf-8")
-    if B2_BATTERY.exists():
-        # Strip B1 trailing summaries; B2 appends then we re-add summary once.
-        for marker in (
-            "SELECT check_id, status, detail FROM b1_eval ORDER BY check_id;\n"
-            "SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass, COUNT(*) FILTER (WHERE status='FAIL') AS fail, COUNT(*) FILTER (WHERE status='SKIP') AS skip, COUNT(*) FILTER (WHERE status='DEFER') AS defer FROM b1_eval;",
-        ):
-            battery_sql = battery_sql.replace(marker, "")
-        battery_sql = battery_sql.rstrip() + "\n\n" + B2_BATTERY.read_text(encoding="utf-8")
-        battery_sql += (
-            "\nSELECT check_id, status, detail FROM b1_eval ORDER BY check_id;\n"
-            "SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass, COUNT(*) FILTER (WHERE status='FAIL') AS fail, "
-            "COUNT(*) FILTER (WHERE status='SKIP') AS skip, COUNT(*) FILTER (WHERE status='DEFER') AS defer FROM b1_eval;\n"
-        )
-
-    persist = battery_sql.replace(
+    persist = BATTERY.read_text(encoding="utf-8").replace(
         "SELECT check_id, status, detail FROM b1_eval ORDER BY check_id;\n"
         "SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass, COUNT(*) FILTER (WHERE status='FAIL') AS fail, COUNT(*) FILTER (WHERE status='SKIP') AS skip, COUNT(*) FILTER (WHERE status='DEFER') AS defer FROM b1_eval;",
         "CREATE TABLE IF NOT EXISTS public.b1_results (check_id text PRIMARY KEY, status text, detail text);\n"
@@ -168,23 +170,65 @@ def run_all() -> int:
         print(counts.stdout)
 
     run_concurrency(db)
-    OUT.write_text(json.dumps(results, indent=2), encoding="utf-8")
-    print("wrote", OUT)
-    # B1 acceptance: zero FAIL and zero required-SKIP. DEFER is excluded.
-    n_fail = results["sql"].get("n_fail", 1)
-    n_skip = results["sql"].get("n_skip", 0)
-    k_blocked = [k for k, v in results["concurrency"].items()
-                 if v["status"] not in ("PASS", "SKIP")]
-    k_skip = [k for k, v in results["concurrency"].items()
-              if v["status"] == "SKIP"]
-    if n_fail or k_blocked:
-        print(f"B1 BLOCKED: failures present (sql_fail={n_fail} k={k_blocked})")
+    tag = (B2_FROZEN_SHA[:8] if B2_FROZEN_SHA else "b1only") + "_on_" + B1_FROZEN_SHA[:8]
+    out = ROOT / f".artifacts/slice0/service-workflow/disposable_b1b2_results_{tag}.json"
+    out.write_text(json.dumps(results, indent=2), encoding="utf-8")
+    print("wrote", out)
+    # Per-area verdicts. B1 = preserved baseline (all non-S checks + K1-K4);
+    # B2 = S-series + K5/K6/K7. DEFER excluded from both gates.
+    rows_text = results["sql"].get("rows", "")
+
+    def row_status(check_id: str) -> str:
+        for ln in rows_text.splitlines():
+            cells = [c.strip() for c in ln.split("|")]
+            if cells and cells[0] == check_id and len(cells) > 1:
+                return cells[1]
+        return "?"
+
+    b1_ids = ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10",
+              "J1", "J2", "J3", "J4", "J5", "J6", "J7",
+              "V1", "V2", "V3", "V4", "V6", "R1", "R2", "M1", "M2", "M3",
+              "X1", "X1b", "X2", "X3", "X4", "X4b", "X5", "X6",
+              "W1", "W2", "W3", "W4", "P1", "P2", "F1", "CC1",
+              "A1", "A2", "A3", "A4", "A5", "RV1", "ACK1"]
+    b2_ids = [f"S{i}" for i in range(1, 21)]
+    b1_fail = [i for i in b1_ids if row_status(i) == "FAIL"]
+    b1_skip = [i for i in b1_ids if row_status(i) == "SKIP"]
+    b2_fail = [i for i in b2_ids if row_status(i) == "FAIL"]
+    b2_skip = [i for i in b2_ids if row_status(i) == "SKIP"]
+    k = results["concurrency"]
+    b1_kbad = [kk for kk in ("K1", "K2", "K3", "K4")
+               if k.get(kk, {}).get("status") not in ("PASS", "SKIP")]
+    b1_kskip = [kk for kk in ("K1", "K2", "K3", "K4")
+                if k.get(kk, {}).get("status") == "SKIP"]
+    b2_kbad = [kk for kk in ("K5", "K6", "K7")
+               if k.get(kk, {}).get("status") not in ("PASS", "SKIP")]
+    b2_kskip = [kk for kk in ("K5", "K6", "K7")
+                if k.get(kk, {}).get("status") == "SKIP"]
+    results["b1_area"] = {"fail": b1_fail, "skip": b1_skip, "k_bad": b1_kbad,
+                          "k_skip": b1_kskip}
+    results["b2_area"] = {"fail": b2_fail, "skip": b2_skip, "k_bad": b2_kbad,
+                          "k_skip": b2_kskip}
+    tag = (B2_FROZEN_SHA[:8] if B2_FROZEN_SHA else "b1only") + "_on_" + B1_FROZEN_SHA[:8]
+    out = ROOT / f".artifacts/slice0/service-workflow/disposable_b1b2_results_{tag}.json"
+    out.write_text(json.dumps(results, indent=2), encoding="utf-8")
+    if b1_fail or b1_kbad:
+        print(f"B1 BASELINE BROKEN: sql={b1_fail} k={b1_kbad}")
+    elif b1_skip or b1_kskip:
+        print(f"B1 BASELINE BLOCKED: skip={b1_skip + b1_kskip}")
+    else:
+        print("B1 BASELINE: green (49/0/0/5 + K1-K4 PASS)")
+    if b2_fail or b2_kbad:
+        print(f"B2 BLOCKED: failures present (sql={b2_fail} k={b2_kbad})")
         return 1
-    if n_skip or k_skip:
-        print(f"B1 BLOCKED: {n_skip} required SQL checks SKIP, "
-              f"concurrency SKIP={k_skip} (pending B1 implementation)")
+    if b2_skip or b2_kskip:
+        print(f"B2 BLOCKED: {len(b2_skip)} required SQL SKIP, "
+              f"concurrency SKIP={b2_kskip} (pending B2 implementation)")
         return 2
-    print("B1 ACCEPTED: zero FAIL, zero required-SKIP")
+    if b1_fail or b1_kbad or b1_skip or b1_kskip:
+        print("B2 checks green but B1 baseline regressed or skipping")
+        return 3
+    print("B1 BASELINE + B2 ACCEPTED: zero FAIL, zero required-SKIP")
     return 0
 
 
@@ -214,6 +258,43 @@ def run_concurrency(db: str) -> None:
         n = cur.fetchone()[0]
         c.close()
         return n
+
+    def b2_present() -> bool:
+        c = psycopg2.connect(**dsn)
+        c.autocommit = True
+        cur = c.cursor()
+        cur.execute("SELECT EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'assign_service_job');")
+        present = cur.fetchone()[0]
+        c.close()
+        return bool(present)
+
+    def ensure_present() -> bool:
+        c = psycopg2.connect(**dsn)
+        c.autocommit = True
+        cur = c.cursor()
+        cur.execute("SELECT EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'ensure_default_service_job');")
+        present = cur.fetchone()[0]
+        c.close()
+        return bool(present)
+
+    def setup_job(num: str) -> str:
+        c = psycopg2.connect(**dsn)
+        c.autocommit = True
+        cur = c.cursor()
+        cur.execute("SET app.b1_uid = %s;", (SUPPORT,))
+        cur.execute(
+            "INSERT INTO public.service_tickets (ticket_number, user_id, title, status)"
+            " VALUES (%s, '11111111-1111-1111-1111-111111111111', %s, 'open')"
+            " RETURNING id;", (num, num))
+        tid = cur.fetchone()[0]
+        cur.execute("SELECT (public.create_service_job(%s, %s, true, 'k')).id;",
+                    (tid, num))
+        jid = cur.fetchone()[0]
+        c.close()
+        return jid
+
+    TECH1 = "33333333-3333-3333-3333-333333333333"
+    TECH2 = "44444444-4444-4444-4444-444444444444"
 
     # K1: same-ticket race — T1 assigned->in_progress wins; T2 ->cancelled fails.
     try:
@@ -311,10 +392,10 @@ def run_concurrency(db: str) -> None:
         c.close()
         return bool(present)
 
-    def k_skip(kid: str) -> None:
+    def k_skip(kid: str, area: str = "B1") -> None:
         results["concurrency"][kid] = {
-            "status": "SKIP", "detail": "pending B1 implementation"}
-        print("SKIP", kid, "pending B1 implementation")
+            "status": "SKIP", "detail": f"pending {area} implementation"}
+        print("SKIP", kid, f"pending {area} implementation")
 
     # K2: same-job race — T1 planned->cancelled wins; T2 ->in_progress fails.
     try:
@@ -483,61 +564,205 @@ def run_concurrency(db: str) -> None:
     except Exception as e:  # noqa: BLE001
         k_note("K4", False, f"harness: {e}")
 
-    # K5: concurrent ensure_default_service_job → exactly one Job 1
-    try:
+    def audit_n_job() -> int:
         c = psycopg2.connect(**dsn)
         c.autocommit = True
         cur = c.cursor()
-        cur.execute(
-            "SELECT EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'ensure_default_service_job');")
-        if not cur.fetchone()[0]:
-            results["concurrency"]["K5"] = {"status": "SKIP", "detail": "pending B2"}
-            print("SKIP K5 pending B2")
-            c.close()
+        cur.execute("SELECT count(*) FROM public.service_workflow_audit;")
+        n = cur.fetchone()[0]
+        c.close()
+        return n
+
+    def job_assignee(jid: str):
+        c = psycopg2.connect(**dsn)
+        c.autocommit = True
+        cur = c.cursor()
+        cur.execute("SELECT assigned_technician_id FROM public.service_jobs WHERE id = %s;",
+                    (jid,))
+        row = cur.fetchone()
+        c.close()
+        return row[0] if row else None
+
+    # K5: same-tech concurrent first-assign — both succeed, one assignee, audit <= +2.
+    try:
+        if not b2_present():
+            k_skip("K5", "B2")
         else:
-            cur.execute("SET app.b1_uid = %s;", (SUPPORT,))
-            cur.execute(
-                "INSERT INTO public.service_tickets (ticket_number, user_id, title, status)"
-                " VALUES ('B2-K5T', '11111111-1111-1111-1111-111111111111', 'k5', 'open')"
-                " RETURNING id;")
-            k5t = cur.fetchone()[0]
-            c.close()
+            kj = setup_job("B1-K5J")
+            kn0 = audit_n_job()
             out5: dict = {}
 
-            def k5_worker(label: str) -> None:
+            def k5_t1():
+                cc = psycopg2.connect(**dsn)
+                try:
+                    cu = cc.cursor()
+                    cu.execute("SET app.b1_uid = %s;", (SUPPORT,))
+                    cu.execute("SELECT public.assign_service_job(%s, %s, 'k5', NULL);",
+                               (kj, TECH1))
+                    time.sleep(3)
+                    cc.commit()
+                    out5["t1"] = "ok"
+                except Exception as e:  # noqa: BLE001
+                    out5["t1"] = getattr(e, "pgcode", "?")
+                    cc.rollback()
+                finally:
+                    cc.close()
+
+            def k5_t2():
+                time.sleep(0.7)
                 cc = psycopg2.connect(**dsn)
                 cc.autocommit = True
                 try:
                     cu = cc.cursor()
                     cu.execute("SET app.b1_uid = %s;", (SUPPORT,))
-                    cu.execute(
-                        "SELECT id FROM public.ensure_default_service_job(%s, %s, 'Job 1', 'k5', NULL);",
-                        (k5t, "33333333-3333-3333-3333-333333333333"),
-                    )
-                    out5[label] = cu.fetchone()[0]
+                    cu.execute("SET statement_timeout = '15s';")
+                    cu.execute("SELECT public.assign_service_job(%s, %s, 'k5', NULL);",
+                               (kj, TECH1))
+                    out5["t2"] = "ok"
                 except Exception as e:  # noqa: BLE001
-                    out5[label] = getattr(e, "pgcode", str(e))
+                    out5["t2"] = getattr(e, "pgcode", "?")
                 finally:
                     cc.close()
 
-            t1 = threading.Thread(target=k5_worker, args=("a",))
-            t2 = threading.Thread(target=k5_worker, args=("b",))
-            t1.start()
-            t2.start()
-            t1.join(30)
-            t2.join(30)
-            c = psycopg2.connect(**dsn)
-            c.autocommit = True
-            cur = c.cursor()
-            cur.execute("SELECT count(*) FROM public.service_jobs WHERE ticket_id = %s;", (k5t,))
-            njobs = cur.fetchone()[0]
-            c.close()
-            same = out5.get("a") == out5.get("b") and isinstance(out5.get("a"), type(out5.get("b")))
-            # UUID equality when both succeeded
-            ok = njobs == 1 and out5.get("a") == out5.get("b")
-            k_note("K5", ok, f"jobs={njobs} a={out5.get('a')} b={out5.get('b')}")
+            a5, b5 = threading.Thread(target=k5_t1), threading.Thread(target=k5_t2)
+            a5.start()
+            b5.start()
+            a5.join(30)
+            b5.join(30)
+            fin5 = job_assignee(kj)
+            ok5 = (out5.get("t1") == "ok" and out5.get("t2") == "ok"
+                   and str(fin5) == TECH1 and audit_n_job() - kn0 <= 2)
+            k_note("K5", ok5, f"t1={out5.get('t1')} t2={out5.get('t2')} assignee={fin5}")
     except Exception as e:  # noqa: BLE001
         k_note("K5", False, f"harness: {e}")
+
+    # K6: different-tech concurrent assign — serialized; final is exactly one
+    # winner and audit reflects the serialized order (1-2 rows, last wins).
+    try:
+        if not b2_present():
+            k_skip("K6", "B2")
+        else:
+            kj = setup_job("B1-K6J")
+            kn0 = audit_n_job()
+            out6: dict = {}
+
+            def k6_t1():
+                cc = psycopg2.connect(**dsn)
+                try:
+                    cu = cc.cursor()
+                    cu.execute("SET app.b1_uid = %s;", (SUPPORT,))
+                    cu.execute("SELECT public.assign_service_job(%s, %s, 'k6-t1', NULL);",
+                               (kj, TECH1))
+                    time.sleep(3)
+                    cc.commit()
+                    out6["t1"] = "ok"
+                except Exception as e:  # noqa: BLE001
+                    out6["t1"] = getattr(e, "pgcode", "?")
+                    cc.rollback()
+                finally:
+                    cc.close()
+
+            def k6_t2():
+                time.sleep(0.7)
+                cc = psycopg2.connect(**dsn)
+                cc.autocommit = True
+                try:
+                    cu = cc.cursor()
+                    cu.execute("SET app.b1_uid = %s;", (SUPPORT,))
+                    cu.execute("SET statement_timeout = '15s';")
+                    cu.execute("SELECT public.assign_service_job(%s, %s, 'k6-t2', NULL);",
+                               (kj, TECH2))
+                    out6["t2"] = "ok"
+                except Exception as e:  # noqa: BLE001
+                    out6["t2"] = getattr(e, "pgcode", "?")
+                finally:
+                    cc.close()
+
+            a6, b6 = threading.Thread(target=k6_t1), threading.Thread(target=k6_t2)
+            a6.start()
+            b6.start()
+            a6.join(30)
+            b6.join(30)
+            fin6 = job_assignee(kj)
+            delta6 = audit_n_job() - kn0
+            ok6 = (out6.get("t1") == "ok" and out6.get("t2") == "ok"
+                   and str(fin6) == TECH2 and delta6 == 2)
+            k_note("K6", ok6, f"t1={out6.get('t1')} t2={out6.get('t2')} "
+                              f"final={fin6} audit+={delta6}")
+    except Exception as e:  # noqa: BLE001
+        k_note("K6", False, f"harness: {e}")
+
+    # K7: concurrent ensure_default_service_job — both succeed, exactly one
+    # Job 1 (sequence 1), one history row, assignee = TECH1. Retry/double
+    # submit must not create a second default job.
+    try:
+        if not ensure_present():
+            k_skip("K7", "B2")
+        else:
+            kt = setup_ticket("B1-K7T", "open")
+            kn0 = audit_n_job()
+            out7: dict = {}
+
+            def k7_t1():
+                cc = psycopg2.connect(**dsn)
+                try:
+                    cu = cc.cursor()
+                    cu.execute("SET app.b1_uid = %s;", (SUPPORT,))
+                    cu.execute("SELECT (public.ensure_default_service_job(%s, %s, 'Job 1', 'k7', NULL)).id;",
+                               (kt, TECH1))
+                    time.sleep(3)
+                    cc.commit()
+                    out7["t1"] = "ok"
+                except Exception as e:  # noqa: BLE001
+                    out7["t1"] = getattr(e, "pgcode", "?")
+                    cc.rollback()
+                finally:
+                    cc.close()
+
+            def k7_t2():
+                time.sleep(0.7)
+                cc = psycopg2.connect(**dsn)
+                cc.autocommit = True
+                try:
+                    cu = cc.cursor()
+                    cu.execute("SET app.b1_uid = %s;", (SUPPORT,))
+                    cu.execute("SET statement_timeout = '15s';")
+                    cu.execute("SELECT (public.ensure_default_service_job(%s, %s, 'Job 1', 'k7', NULL)).id;",
+                               (kt, TECH1))
+                    out7["t2"] = "ok"
+                except Exception as e:  # noqa: BLE001
+                    out7["t2"] = getattr(e, "pgcode", "?")
+                finally:
+                    cc.close()
+
+            a7, b7 = threading.Thread(target=k7_t1), threading.Thread(target=k7_t2)
+            a7.start()
+            b7.start()
+            a7.join(30)
+            b7.join(30)
+            c7 = psycopg2.connect(**dsn)
+            c7.autocommit = True
+            cur7 = c7.cursor()
+            cur7.execute("SELECT count(*), count(*) FILTER (WHERE job_sequence = 1) "
+                         "FROM public.service_jobs WHERE ticket_id = %s;", (kt,))
+            njobs, nseq1 = cur7.fetchone()
+            cur7.execute("SELECT count(*) FROM public.service_job_assignment_history h "
+                         "JOIN public.service_jobs j ON j.id = h.job_id "
+                         "WHERE j.ticket_id = %s;", (kt,))
+            nhist = cur7.fetchone()[0]
+            cur7.execute("SELECT assigned_technician_id FROM public.service_jobs "
+                         "WHERE ticket_id = %s LIMIT 1;", (kt,))
+            fin7 = cur7.fetchone()[0]
+            c7.close()
+            delta7 = audit_n_job() - kn0
+            ok7 = (out7.get("t1") == "ok" and out7.get("t2") == "ok"
+                   and njobs == 1 and nseq1 == 1 and nhist == 1
+                   and str(fin7) == TECH1)
+            k_note("K7", ok7, f"t1={out7.get('t1')} t2={out7.get('t2')} "
+                              f"jobs={njobs} seq1={nseq1} hist={nhist} "
+                              f"assignee={fin7} audit+={delta7}")
+    except Exception as e:  # noqa: BLE001
+        k_note("K7", False, f"harness: {e}")
 
 
 if __name__ == "__main__":

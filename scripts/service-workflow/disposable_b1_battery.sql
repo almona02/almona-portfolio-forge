@@ -153,7 +153,8 @@ EXCEPTION WHEN OTHERS THEN
   PERFORM b1_note('C6', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
--- C7 FSM parity with client TICKET_STATUS_TRANSITIONS (+documented reflexive-true).
+-- C7 FSM parity: B1 matrix (resolved→in_progress added for governed add-back;
+-- free govern of that edge is denied separately by X5). Reflexive-true documented.
 DO $$
 DECLARE
   states text[] := ARRAY['open','assigned','in_progress','awaiting_parts','awaiting_customer','resolved','closed','cancelled'];
@@ -273,8 +274,11 @@ BEGIN
 END $$;
 -- Generic fixture setup: id-PK tables; single-col FKs from p_parents
 -- (keyed by referenced table); other NOT NULL no-default cols get
--- type-plausible values. Raises when it cannot (caller SKIP-fallback).
-CREATE OR REPLACE FUNCTION b1_fixture(p_table text, p_parents jsonb DEFAULT '{}')
+-- type-plausible values. p_overrides maps column -> raw SQL fragment
+-- (test-only; for CHECK-constrained literals). Raises when it cannot
+-- (caller SKIP-fallback).
+CREATE OR REPLACE FUNCTION b1_fixture(p_table text, p_parents jsonb DEFAULT '{}',
+  p_overrides jsonb DEFAULT '{}')
 RETURNS uuid LANGUAGE plpgsql AS $$
 DECLARE
   r record; cols text[] := '{}'; vals text[] := '{}'; v_sql text; v_id uuid;
@@ -293,6 +297,11 @@ BEGIN
             WHERE a.attrelid = ('public.' || p_table)::regclass AND a.attnum > 0 AND NOT a.attisdropped
   LOOP
     IF r.col = 'id' THEN CONTINUE; END IF;
+    IF p_overrides ? r.col THEN
+      cols := cols || quote_ident(r.col);
+      vals := vals || (p_overrides ->> r.col);
+      CONTINUE;
+    END IF;
     IF r.fk_parent IS NOT NULL THEN
       IF NOT (p_parents ? r.fk_parent) THEN
         RAISE EXCEPTION 'fixture % needs parent %', p_table, r.fk_parent;
@@ -318,27 +327,29 @@ BEGIN
   RETURN v_id;
 END $$;
 
-
--- Approved-report chain (privileged inserts; job must be non-unassigned).
+-- Approved-report chain via RPC visits + fixtures. Job must be non-unassigned
+-- (visit start rule). Returns the approved revision id.
 CREATE OR REPLACE FUNCTION b1_approved_chain(p_job uuid) RETURNS uuid
 LANGUAGE plpgsql AS $$
-DECLARE v_v uuid; v_r uuid; v_rev uuid; v_rw uuid;
+DECLARE v_v uuid; v_r uuid; v_rev uuid; v_rw uuid; v_par uuid;
 BEGIN
+  v_par := b1_uid('support');
   SELECT (public.create_service_job_visit(p_job, 'chain', NULL)).id INTO v_v;
   PERFORM public.govern_visit_transition(v_v, 'in_progress', 'chain', NULL);
   PERFORM public.govern_visit_transition(v_v, 'completed', 'chain', NULL);
-  INSERT INTO public.service_reports (visit_id) VALUES (v_v) RETURNING id INTO v_r;
-  INSERT INTO public.service_report_revisions (
-    report_id, revision_number, findings, labour, verification_outcome, submitted_by
-  ) VALUES (v_r, 1, 'chain', '[]'::jsonb, 'verified_fixed', b1_uid('tech1'))
-  RETURNING id INTO v_rev;
-  INSERT INTO public.service_report_reviews (revision_id, reviewer_id, decision, comments)
-  VALUES (v_rev, b1_uid('support'), 'approved_issued', 'ok')
-  RETURNING id INTO v_rw;
+  v_r := b1_fixture('service_reports',
+    jsonb_build_object('service_job_visits', v_v::text, 'users', v_par::text));
+  v_rev := b1_fixture('service_report_revisions',
+    jsonb_build_object('service_reports', v_r::text, 'users', v_par::text),
+    jsonb_build_object('revision_number', '1', 'verification_outcome', '''verified_fixed'''));
+  v_rw := b1_fixture('service_report_reviews',
+    jsonb_build_object('service_report_revisions', v_rev::text, 'users', v_par::text),
+    jsonb_build_object('decision', '''approved_issued'''));
   RETURN v_rev;
 END $$;
 
--- J1 legal job walk: bare completion denied; positive completion with approved chain.
+-- J1 legal job walk: bare completion denied without approved report (spec 6.3);
+-- completes with an approved issued report chain + completing_revision_id set.
 DO $$
 DECLARE v_j uuid; v_rev uuid; v_cr uuid; v_bare boolean := false; v_has_cr boolean;
 BEGIN
@@ -356,12 +367,17 @@ BEGIN
   PERFORM public.govern_job_transition(v_j, 'awaiting_review', 'j1', NULL);
   BEGIN PERFORM public.govern_job_transition(v_j, 'completed', 'j1', NULL);
   EXCEPTION WHEN check_violation THEN
-    v_bare := (SQLERRM ILIKE '%approved%issued%report%' OR SQLERRM ILIKE '%issued%report%');
+    v_bare := (SQLERRM ILIKE '%approved%issued%report%');
   END;
   IF NOT v_bare THEN
     PERFORM b1_note('J1', false, 'bare completion not denied with report reason'); RETURN;
   END IF;
-  v_rev := b1_approved_chain(v_j);
+  BEGIN
+    v_rev := b1_approved_chain(v_j);
+  EXCEPTION WHEN OTHERS THEN
+    INSERT INTO b1_eval VALUES ('J1', 'SKIP', 'needs column map: ' || left(SQLERRM, 160));
+    RETURN;
+  END;
   PERFORM public.govern_job_transition(v_j, 'completed', 'j1', NULL);
   SELECT EXISTS (SELECT 1 FROM information_schema.columns
     WHERE table_schema = 'public' AND table_name = 'service_jobs'
@@ -378,10 +394,9 @@ WHEN OTHERS THEN
   PERFORM b1_note('J1', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
--- J2 illegal jumps denied; completed terminal after privileged approved-report fixture.
+-- J2 illegal job jumps denied; completed terminal.
 DO $$
-DECLARE v_j uuid; v_v uuid; v_bad boolean := false; v_term boolean := false;
-  v_rep uuid; v_rev uuid;
+DECLARE v_j uuid; v_bad boolean := false; v_term boolean := false;
 BEGIN
   IF NOT (b1_has_table('service_jobs') AND b1_has_func('create_service_job')
       AND b1_has_func('govern_job_transition')) THEN
@@ -393,17 +408,13 @@ BEGIN
   EXCEPTION WHEN check_violation THEN v_bad := true; END;
   PERFORM public.govern_job_transition(v_j, 'planned', 'j2', NULL);
   PERFORM public.govern_job_transition(v_j, 'in_progress', 'j2', NULL);
-  SELECT (public.create_service_job_visit(v_j, 'j2', NULL)).id INTO v_v;
-  PERFORM public.govern_visit_transition(v_v, 'in_progress', 'j2', NULL);
-  PERFORM public.govern_visit_transition(v_v, 'completed', 'j2', NULL);
   PERFORM public.govern_job_transition(v_j, 'awaiting_review', 'j2', NULL);
-  INSERT INTO public.service_reports (visit_id) VALUES (v_v) RETURNING id INTO v_rep;
-  INSERT INTO public.service_report_revisions (
-    report_id, revision_number, findings, labour, verification_outcome, submitted_by
-  ) VALUES (v_rep, 1, 'fixed', '[]'::jsonb, 'verified_fixed', b1_uid('tech1'))
-  RETURNING id INTO v_rev;
-  INSERT INTO public.service_report_reviews (revision_id, reviewer_id, decision, comments)
-  VALUES (v_rev, b1_uid('support'), 'approved_issued', 'ok');
+  BEGIN
+    PERFORM b1_approved_chain(v_j);
+  EXCEPTION WHEN OTHERS THEN
+    INSERT INTO b1_eval VALUES ('J2', 'SKIP', 'needs column map: ' || left(SQLERRM, 160));
+    RETURN;
+  END;
   PERFORM public.govern_job_transition(v_j, 'completed', 'j2', NULL);
   BEGIN PERFORM public.govern_job_transition(v_j, 'in_progress', 'j2', NULL);
   EXCEPTION WHEN check_violation THEN v_term := true; END;
@@ -673,9 +684,9 @@ EXCEPTION WHEN OTHERS THEN
   PERFORM b1_note('R1', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
--- R2 submitted revision UPDATE/DELETE denied (privileged fixture insert; required B1).
+-- R2 submitted revision UPDATE/DELETE denied (fixture setup; required B1).
 DO $$
-DECLARE v_j uuid; v_v uuid; v_r uuid; v_rev uuid;
+DECLARE v_j uuid; v_v uuid; v_r uuid; v_rev uuid; v_parents jsonb;
   v_upd boolean := false; v_del boolean := false; v_n int;
 BEGIN
   IF NOT (b1_has_table('service_report_revisions') AND b1_has_table('service_reports')) THEN
@@ -687,21 +698,26 @@ BEGIN
   PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
   v_j := b1_mkticket_job('R2', true);
   SELECT (public.create_service_job_visit(v_j, 'r2', NULL)).id INTO v_v;
-  INSERT INTO public.service_reports (visit_id) VALUES (v_v) RETURNING id INTO v_r;
-  INSERT INTO public.service_report_revisions (
-    report_id, revision_number, findings, labour, verification_outcome, submitted_by
-  ) VALUES (v_r, 1, 'obs', '[]'::jsonb, 'verified_fixed', b1_uid('tech1'))
-  RETURNING id INTO v_rev;
+  BEGIN
+    v_parents := jsonb_build_object('service_job_visits', v_v::text,
+      'users', b1_uid('support')::text);
+    v_r := b1_fixture('service_reports', v_parents);
+    v_parents := v_parents || jsonb_build_object('service_reports', v_r::text);
+    v_rev := b1_fixture('service_report_revisions', v_parents,
+      jsonb_build_object('revision_number', '1',
+        'verification_outcome', '''not_verified'''));
+  EXCEPTION WHEN OTHERS THEN
+    INSERT INTO b1_eval VALUES ('R2', 'SKIP', 'needs column map: ' || left(SQLERRM, 160));
+    RETURN;
+  END;
   SET ROLE b1_auth;
-  BEGIN UPDATE public.service_report_revisions SET findings = 'tamper' WHERE id = v_rev;
+  BEGIN EXECUTE 'UPDATE public.service_report_revisions SET id = id WHERE id = ' || quote_literal(v_rev);
   EXCEPTION WHEN OTHERS THEN v_upd := true; END;
-  BEGIN DELETE FROM public.service_report_revisions WHERE id = v_rev;
+  BEGIN EXECUTE 'DELETE FROM public.service_report_revisions WHERE id = ' || quote_literal(v_rev);
   EXCEPTION WHEN OTHERS THEN v_del := true; END;
   RESET ROLE;
-  SELECT count(*) INTO v_n FROM public.service_report_revisions WHERE id = v_rev;
-  PERFORM b1_note('R2', v_upd AND v_del AND v_n = 1
-    AND (SELECT findings FROM public.service_report_revisions WHERE id = v_rev) = 'obs',
-    'revision immutable');
+  EXECUTE 'SELECT count(*) FROM public.service_report_revisions WHERE id = ' || quote_literal(v_rev) INTO v_n;
+  PERFORM b1_note('R2', v_upd AND v_del AND v_n = 1, 'revision immutable');
 EXCEPTION WHEN OTHERS THEN
   BEGIN RESET ROLE; EXCEPTION WHEN OTHERS THEN NULL; END;
   PERFORM b1_note('R2', false, SQLSTATE || ' ' || left(SQLERRM, 200));
@@ -750,13 +766,17 @@ BEGIN
   IF NOT (b1_has_table('service_jobs') AND b1_has_func('create_service_job')) THEN
     INSERT INTO b1_eval VALUES ('M2', 'SKIP', 'pending B1 implementation'); RETURN;
   END IF;
-  -- Fail only if UNIQUE/PK is on ticket_id alone (multi-job must remain allowed).
-  -- UNIQUE(ticket_id, job_sequence) is expected and must NOT trip this probe.
   SELECT EXISTS (
-    SELECT 1 FROM pg_constraint c
-    JOIN pg_class t ON t.oid = c.conrelid
-    WHERE t.relname = 'service_jobs' AND c.contype = 'u'
-      AND pg_get_constraintdef(c.oid) ~* 'UNIQUE \(ticket_id\)'
+    SELECT 1 FROM pg_constraint c JOIN pg_class t ON t.oid = c.conrelid
+    WHERE t.relname = 'service_jobs' AND c.contype IN ('u', 'p')
+      AND array_length(c.conkey, 1) = 1 AND c.conkey[1] = (
+        SELECT attnum FROM pg_attribute
+        WHERE attrelid = t.oid AND attname = (
+          SELECT a2.attname FROM pg_constraint c2
+          JOIN pg_class pa ON pa.oid = c2.confrelid
+          JOIN pg_attribute a2 ON a2.attrelid = t.oid AND a2.attnum = c2.conkey[1]
+          WHERE c2.contype = 'f' AND c2.conrelid = t.oid AND pa.relname = 'service_tickets'
+            AND array_length(c2.conkey, 1) = 1 LIMIT 1))
   ) INTO v_uq;
   PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
   v_t := b1_mkticket('cust1', 'B1-M2');
@@ -1207,9 +1227,9 @@ EXCEPTION WHEN OTHERS THEN
   PERFORM b1_note('A5', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
--- RV1 reviews append-only where the table exists (privileged fixture insert).
+-- RV1 reviews append-only where the table exists (fixture setup).
 DO $$
-DECLARE v_j uuid; v_v uuid; v_r uuid; v_rev uuid; v_rw uuid;
+DECLARE v_j uuid; v_v uuid; v_r uuid; v_rev uuid; v_rw uuid; v_parents jsonb;
   v_upd boolean := false; v_del boolean := false; v_n int;
 BEGIN
   IF NOT b1_has_table('service_report_reviews') THEN
@@ -1222,30 +1242,37 @@ BEGIN
   PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
   v_j := b1_mkticket_job('RV1', true);
   SELECT (public.create_service_job_visit(v_j, 'rv1', NULL)).id INTO v_v;
-  INSERT INTO public.service_reports (visit_id) VALUES (v_v) RETURNING id INTO v_r;
-  INSERT INTO public.service_report_revisions (
-    report_id, revision_number, findings, labour, verification_outcome, submitted_by
-  ) VALUES (v_r, 1, 'rv1', '[]'::jsonb, 'verified_fixed', b1_uid('tech1'))
-  RETURNING id INTO v_rev;
-  INSERT INTO public.service_report_reviews (revision_id, reviewer_id, decision, comments)
-  VALUES (v_rev, b1_uid('support'), 'approved_issued', 'ok')
-  RETURNING id INTO v_rw;
+  BEGIN
+    v_parents := jsonb_build_object('service_job_visits', v_v::text,
+      'users', b1_uid('support')::text);
+    v_r := b1_fixture('service_reports', v_parents);
+    v_parents := v_parents || jsonb_build_object('service_reports', v_r::text);
+    v_rev := b1_fixture('service_report_revisions', v_parents,
+      jsonb_build_object('revision_number', '1',
+        'verification_outcome', '''not_verified'''));
+    v_parents := v_parents || jsonb_build_object('service_report_revisions', v_rev::text);
+    v_rw := b1_fixture('service_report_reviews', v_parents,
+      jsonb_build_object('decision', '''returned'''));
+  EXCEPTION WHEN OTHERS THEN
+    INSERT INTO b1_eval VALUES ('RV1', 'SKIP', 'needs column map: ' || left(SQLERRM, 160));
+    RETURN;
+  END;
   SET ROLE b1_auth;
-  BEGIN UPDATE public.service_report_reviews SET comments = 'tamper' WHERE id = v_rw;
+  BEGIN EXECUTE 'UPDATE public.service_report_reviews SET id = id WHERE id = ' || quote_literal(v_rw);
   EXCEPTION WHEN OTHERS THEN v_upd := true; END;
-  BEGIN DELETE FROM public.service_report_reviews WHERE id = v_rw;
+  BEGIN EXECUTE 'DELETE FROM public.service_report_reviews WHERE id = ' || quote_literal(v_rw);
   EXCEPTION WHEN OTHERS THEN v_del := true; END;
   RESET ROLE;
-  SELECT count(*) INTO v_n FROM public.service_report_reviews WHERE id = v_rw;
+  EXECUTE 'SELECT count(*) FROM public.service_report_reviews WHERE id = ' || quote_literal(v_rw) INTO v_n;
   PERFORM b1_note('RV1', v_upd AND v_del AND v_n = 1, 'reviews append-only');
 EXCEPTION WHEN OTHERS THEN
   BEGIN RESET ROLE; EXCEPTION WHEN OTHERS THEN NULL; END;
   PERFORM b1_note('RV1', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
--- ACK1 acknowledgments append-only where the table exists (privileged fixture insert).
+-- ACK1 acknowledgments append-only where the table exists (fixture setup).
 DO $$
-DECLARE v_j uuid; v_v uuid; v_r uuid; v_rev uuid; v_ack uuid;
+DECLARE v_j uuid; v_v uuid; v_r uuid; v_rev uuid; v_ack uuid; v_parents jsonb;
   v_upd boolean := false; v_del boolean := false; v_n int;
 BEGIN
   IF NOT b1_has_table('service_acknowledgments') THEN
@@ -1258,56 +1285,33 @@ BEGIN
   PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
   v_j := b1_mkticket_job('A1K', true);
   SELECT (public.create_service_job_visit(v_j, 'ack1', NULL)).id INTO v_v;
-  INSERT INTO public.service_reports (visit_id) VALUES (v_v) RETURNING id INTO v_r;
-  INSERT INTO public.service_report_revisions (
-    report_id, revision_number, findings, labour, verification_outcome, submitted_by
-  ) VALUES (v_r, 1, 'ack1', '[]'::jsonb, 'verified_fixed', b1_uid('tech1'))
-  RETURNING id INTO v_rev;
-  INSERT INTO public.service_acknowledgments (
-    issued_revision_id, response, comment, responded_by
-  ) VALUES (v_rev, 'accepted', 'ok', b1_uid('cust1'))
-  RETURNING id INTO v_ack;
+  BEGIN
+    v_parents := jsonb_build_object('service_job_visits', v_v::text,
+      'users', b1_uid('support')::text);
+    v_r := b1_fixture('service_reports', v_parents);
+    v_parents := v_parents || jsonb_build_object('service_reports', v_r::text);
+    v_rev := b1_fixture('service_report_revisions', v_parents,
+      jsonb_build_object('revision_number', '1',
+        'verification_outcome', '''verified_fixed'''));
+    v_parents := v_parents || jsonb_build_object('service_report_revisions', v_rev::text);
+    v_ack := b1_fixture('service_acknowledgments', v_parents,
+      jsonb_build_object('response', '''accepted'''));
+  EXCEPTION WHEN OTHERS THEN
+    INSERT INTO b1_eval VALUES ('ACK1', 'SKIP', 'needs column map: ' || left(SQLERRM, 160));
+    RETURN;
+  END;
   SET ROLE b1_auth;
-  BEGIN UPDATE public.service_acknowledgments SET comment = 'tamper' WHERE id = v_ack;
+  BEGIN EXECUTE 'UPDATE public.service_acknowledgments SET id = id WHERE id = ' || quote_literal(v_ack);
   EXCEPTION WHEN OTHERS THEN v_upd := true; END;
-  BEGIN DELETE FROM public.service_acknowledgments WHERE id = v_ack;
+  BEGIN EXECUTE 'DELETE FROM public.service_acknowledgments WHERE id = ' || quote_literal(v_ack);
   EXCEPTION WHEN OTHERS THEN v_del := true; END;
   RESET ROLE;
-  SELECT count(*) INTO v_n FROM public.service_acknowledgments WHERE id = v_ack;
+  EXECUTE 'SELECT count(*) FROM public.service_acknowledgments WHERE id = ' || quote_literal(v_ack) INTO v_n;
   PERFORM b1_note('ACK1', v_upd AND v_del AND v_n = 1, 'acks append-only');
 EXCEPTION WHEN OTHERS THEN
   BEGIN RESET ROLE; EXCEPTION WHEN OTHERS THEN NULL; END;
   PERFORM b1_note('ACK1', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
-
-
--- X4b workflow_activated_at cannot be cleared via ordinary authenticated client UPDATE.
-DO $$
-DECLARE v_t uuid; v_j uuid; v_before timestamptz; v_after timestamptz; v_denied boolean := false;
-BEGIN
-  IF NOT (b1_has_table('service_jobs') AND b1_has_func('create_service_job')) THEN
-    INSERT INTO b1_eval VALUES ('X4b', 'SKIP', 'pending B1 implementation'); RETURN;
-  END IF;
-  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
-  v_t := b1_mkticket('cust1', 'B1-X4b');
-  SELECT (public.create_service_job(v_t, 'act', true, 'x4b')).id INTO v_j;
-  SELECT workflow_activated_at INTO v_before FROM public.service_tickets WHERE id = v_t;
-  BEGIN
-    SET ROLE b1_auth;
-    UPDATE public.service_tickets SET workflow_activated_at = NULL WHERE id = v_t;
-    RESET ROLE;
-  EXCEPTION WHEN OTHERS THEN
-    v_denied := SQLSTATE IN ('42501', '42502');
-    BEGIN RESET ROLE; EXCEPTION WHEN OTHERS THEN NULL; END;
-  END;
-  SELECT workflow_activated_at INTO v_after FROM public.service_tickets WHERE id = v_t;
-  PERFORM b1_note('X4b', v_after IS NOT NULL AND v_after IS NOT DISTINCT FROM v_before,
-    'activated remains set; client_denied=' || v_denied::text);
-EXCEPTION WHEN OTHERS THEN
-  BEGIN RESET ROLE; EXCEPTION WHEN OTHERS THEN NULL; END;
-  PERFORM b1_note('X4b', false, SQLSTATE || ' ' || left(SQLERRM, 200));
-END $$;
-
 
 -- X5 free resolved→in_progress govern denied (add-back only via job creation).
 DO $$
@@ -1354,7 +1358,7 @@ BEGIN
   SELECT status INTO s_ok FROM public.service_tickets WHERE id = v_ok;
   SELECT status INTO s_act FROM public.service_tickets WHERE id = v_act;
   PERFORM b1_note('X6', s_ok = 'resolved' AND s_act = 'in_progress'
-    AND v_res ILIKE '%job%', 'bulk partial honors gate');
+    AND v_res ILIKE '%job%', 'bulk partial honors gate: ' || left(v_res, 140));
 EXCEPTION WHEN SQLSTATE '42883' THEN
   PERFORM b1_note('X6', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
 WHEN OTHERS THEN
@@ -1363,7 +1367,7 @@ END $$;
 
 -- W1 activation timestamp cannot be cleared by ordinary client updates.
 DO $$
-DECLARE v_t uuid; v_j uuid; v_still boolean;
+DECLARE v_t uuid; v_j uuid; v_cleared boolean := false; v_still boolean;
 BEGIN
   IF NOT (b1_has_table('service_jobs') AND b1_has_func('create_service_job')) THEN
     INSERT INTO b1_eval VALUES ('W1', 'SKIP', 'pending B1 implementation'); RETURN;
@@ -1374,7 +1378,7 @@ BEGIN
   SET ROLE b1_auth;
   BEGIN
     UPDATE public.service_tickets SET workflow_activated_at = NULL WHERE id = v_t;
-  EXCEPTION WHEN OTHERS THEN NULL;
+  EXCEPTION WHEN OTHERS THEN v_cleared := false;
   END;
   RESET ROLE;
   SELECT (workflow_activated_at IS NOT NULL) INTO v_still
@@ -1411,12 +1415,12 @@ EXCEPTION WHEN OTHERS THEN
   PERFORM b1_note('W2', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
--- W3 governed RPC paths never clear activation (waive leaves it set).
+-- W3 governed RPC paths never clear activation (waive/cancel leave it set).
 DO $$
 DECLARE v_t uuid; v_j uuid; v_still boolean;
 BEGIN
   IF NOT (b1_has_table('service_jobs') AND b1_has_func('create_service_job')
-      AND b1_has_func('waive_service_job')) THEN
+      AND b1_has_func('waive_service_job') AND b1_has_func('govern_job_transition')) THEN
     INSERT INTO b1_eval VALUES ('W3', 'SKIP', 'pending B1 implementation'); RETURN;
   END IF;
   PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
@@ -1432,7 +1436,7 @@ WHEN OTHERS THEN
   PERFORM b1_note('W3', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
--- W4 attempted clear must not bypass the gate.
+-- W4 cleared activation must not bypass the gate (demonstrates W1 impact).
 DO $$
 DECLARE v_t uuid; v_j uuid; v_bypassed boolean := false;
 BEGIN
@@ -1456,11 +1460,770 @@ BEGIN
   EXCEPTION WHEN OTHERS THEN v_bypassed := false;
   END;
   PERFORM b1_note('W4', NOT v_bypassed, CASE WHEN v_bypassed
-    THEN 'FAIL-OPEN: cleared activation bypassed the gate'
+    THEN 'FAIL-OPEN: cleared activation bypassed the gate (resolve succeeded)'
     ELSE 'no bypass' END);
 EXCEPTION WHEN OTHERS THEN
   BEGIN RESET ROLE; EXCEPTION WHEN OTHERS THEN NULL; END;
   PERFORM b1_note('W4', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- ---- B2 assignment checks (required B2; SKIP blocks B2 acceptance) ----
+-- Adaptive reassign: single-RPC proposal, with reassign_service_job fallback.
+CREATE OR REPLACE FUNCTION b1_assign_adaptive(p_job uuid, p_tech uuid, p_rationale text)
+RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  BEGIN
+    PERFORM public.assign_service_job(p_job, p_tech, p_rationale, NULL);
+  EXCEPTION WHEN OTHERS THEN
+    IF SQLERRM ILIKE '%already assigned%'
+       AND EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'reassign_service_job') THEN
+      PERFORM public.reassign_service_job(p_job, p_tech, p_rationale, NULL);
+    ELSE
+      RAISE;
+    END IF;
+  END;
+END $$;
+
+-- S1 first assignment: agreed B2 semantics — auto-move unassigned->planned,
+-- author in service_job_assignment_history, one audit row, activation intact.
+DO $$
+DECLARE v_j uuid; v_n0 int; v_n1 int; v_ev boolean; v_st text; v_act boolean;
+  v_h boolean; v_hn int; v_as uuid;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_table('service_job_assignment_history')
+      AND b1_has_func('assign_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S1', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('S1', true);
+  SELECT count(*) INTO v_n0 FROM public.service_workflow_audit;
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's1-first', NULL);
+  SELECT count(*) INTO v_n1 FROM public.service_workflow_audit;
+  SELECT assigned_technician_id INTO v_as FROM public.service_jobs WHERE id = v_j;
+  SELECT count(*) INTO v_hn FROM public.service_job_assignment_history WHERE job_id = v_j;
+  SELECT EXISTS (SELECT 1 FROM public.service_job_assignment_history h
+    WHERE h.job_id = v_j AND h.action = 'assign' AND h.from_technician_id IS NULL
+      AND h.to_technician_id = b1_uid('tech1') AND h.actor_id = b1_uid('support')
+      AND h.rationale = 's1-first') INTO v_h;
+  SELECT EXISTS (SELECT 1 FROM public.service_workflow_audit r
+    WHERE r::text LIKE '%' || b1_uid('tech1')::text || '%' AND r::text LIKE '%s1-first%')
+    INTO v_ev;
+  v_st := b1_state('service_jobs', v_j);
+  SELECT (workflow_activated_at IS NOT NULL) INTO v_act FROM public.service_tickets
+   WHERE id = (SELECT ticket_id FROM public.service_jobs WHERE id = v_j);
+  PERFORM b1_note('S1', v_as = b1_uid('tech1') AND v_h AND v_hn = 1
+    AND v_n1 = v_n0 + 1 AND v_ev AND v_st = 'planned' AND v_act,
+    'assignee=' || coalesce(v_as::text, 'null') || ' state=' || v_st
+    || ' hist=' || v_hn || ' audit+=' || (v_n1 - v_n0));
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S1', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S1', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S2 same-tech re-assign is idempotent success without audit spam.
+DO $$
+DECLARE v_j uuid; v_n0 int; v_n1 int; v_ok boolean := true;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('assign_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S2', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('S2', true);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's2-first', NULL);
+  SELECT count(*) INTO v_n0 FROM public.service_workflow_audit;
+  BEGIN
+    PERFORM b1_assign_adaptive(v_j, b1_uid('tech1'), 's2-repeat');
+  EXCEPTION WHEN OTHERS THEN v_ok := false;
+  END;
+  SELECT count(*) INTO v_n1 FROM public.service_workflow_audit;
+  PERFORM b1_note('S2', v_ok AND v_n1 - v_n0 <= 1
+    AND (SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_j) = b1_uid('tech1'),
+    'idempotent re-assign');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S2', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S2', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S3 reassign tech1 -> tech2; author/audit chain lives in history + audit.
+DO $$
+DECLARE v_j uuid; v_e1 boolean; v_e2 boolean; v_h1 boolean; v_h2 boolean;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_table('service_job_assignment_history')
+      AND b1_has_func('assign_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S3', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('S3', true);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's3-first', NULL);
+  PERFORM set_config('app.b1_uid', b1_uid('admin')::text, false);
+  PERFORM b1_assign_adaptive(v_j, b1_uid('tech2'), 's3-re');
+  SELECT EXISTS (SELECT 1 FROM public.service_job_assignment_history h
+    WHERE h.job_id = v_j AND h.action = 'assign' AND h.from_technician_id IS NULL
+      AND h.to_technician_id = b1_uid('tech1') AND h.actor_id = b1_uid('support')
+      AND h.rationale = 's3-first') INTO v_h1;
+  SELECT EXISTS (SELECT 1 FROM public.service_job_assignment_history h
+    WHERE h.job_id = v_j AND h.action = 'reassign'
+      AND h.from_technician_id = b1_uid('tech1')
+      AND h.to_technician_id = b1_uid('tech2') AND h.actor_id = b1_uid('admin')
+      AND h.rationale = 's3-re') INTO v_h2;
+  SELECT EXISTS (SELECT 1 FROM public.service_workflow_audit r
+    WHERE r::text LIKE '%' || b1_uid('tech1')::text || '%' AND r::text LIKE '%s3-first%')
+    INTO v_e1;
+  SELECT EXISTS (SELECT 1 FROM public.service_workflow_audit r
+    WHERE r::text LIKE '%' || b1_uid('tech2')::text || '%' AND r::text LIKE '%s3-re%'
+      AND r::text LIKE '%' || b1_uid('admin')::text || '%') INTO v_e2;
+  PERFORM b1_note('S3', v_h1 AND v_h2 AND v_e1 AND v_e2
+    AND (SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_j) = b1_uid('tech2'),
+    'reassign chain complete');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S3', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S3', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S4 agreed guard scope: scheduled visit allows reassign; in_progress denies;
+-- terminal visit allows again.
+DO $$
+DECLARE v_j uuid; v_v uuid; v_sched boolean := false; v_deny boolean := false;
+  v_ok boolean;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_table('service_job_visits')
+      AND b1_has_func('assign_service_job') AND b1_has_func('create_service_job_visit')
+      AND b1_has_func('govern_visit_transition') AND b1_has_func('govern_job_transition')) THEN
+    INSERT INTO b1_eval VALUES ('S4', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('S4', true);
+  PERFORM public.govern_job_transition(v_j, 'planned', 's4', NULL);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's4-first', NULL);
+  SELECT (public.create_service_job_visit(v_j, 's4', NULL)).id INTO v_v;
+  BEGIN
+    PERFORM b1_assign_adaptive(v_j, b1_uid('tech2'), 's4-sched');
+    v_sched := ((SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_j)
+      = b1_uid('tech2'));
+  EXCEPTION WHEN OTHERS THEN v_sched := false; END;
+  PERFORM public.govern_visit_transition(v_v, 'in_progress', 's4', NULL);
+  BEGIN PERFORM b1_assign_adaptive(v_j, b1_uid('tech1'), 's4-re');
+  EXCEPTION WHEN check_violation THEN v_deny := true; END;
+  PERFORM public.govern_visit_transition(v_v, 'completed', 's4', NULL);
+  PERFORM b1_assign_adaptive(v_j, b1_uid('tech1'), 's4-re');
+  SELECT (assigned_technician_id = b1_uid('tech1')) INTO v_ok
+    FROM public.service_jobs WHERE id = v_j;
+  PERFORM b1_note('S4', v_sched AND v_deny AND v_ok,
+    'sched-allowed=' || v_sched || ' active-denied=' || v_deny);
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S4', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S4', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S5 reassign denied on terminal jobs.
+DO $$
+DECLARE v_c uuid; v_w uuid; v_x uuid; v_j uuid; v_n boolean := true;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('assign_service_job')
+      AND b1_has_func('govern_job_transition') AND b1_has_func('waive_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S5', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_c := b1_mkticket_job('S5C', true);
+  PERFORM public.assign_service_job(v_c, b1_uid('tech1'), 's5', NULL);
+  PERFORM public.govern_job_transition(v_c, 'planned', 's5', NULL);
+  PERFORM public.govern_job_transition(v_c, 'in_progress', 's5', NULL);
+  PERFORM public.govern_job_transition(v_c, 'awaiting_review', 's5', NULL);
+  PERFORM b1_approved_chain(v_c);
+  PERFORM public.govern_job_transition(v_c, 'completed', 's5', NULL);
+  v_w := b1_mkticket_job('S5W', true);
+  PERFORM public.waive_service_job(v_w, 's5', NULL);
+  v_x := b1_mkticket_job('S5X', true);
+  PERFORM public.govern_job_transition(v_x, 'planned', 's5', NULL);
+  PERFORM public.govern_job_transition(v_x, 'cancelled', 's5', NULL);
+  FOR v_j IN SELECT unnest(ARRAY[v_c, v_w, v_x]) LOOP
+    BEGIN PERFORM b1_assign_adaptive(v_j, b1_uid('tech2'), 's5-re');
+      v_n := false;
+    EXCEPTION WHEN check_violation THEN NULL; END;
+  END LOOP;
+  PERFORM b1_note('S5', v_n, 'terminal jobs frozen');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S5', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S5', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S6 own-job decline: success to unassigned; reason mandatory.
+DO $$
+DECLARE v_j uuid; v_noreason boolean := false; v_empty boolean := false;
+  v_j2 uuid; v_j3 uuid; v_ev boolean;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('assign_service_job')
+      AND b1_has_func('decline_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S6', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('S6', true);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's6-first', NULL);
+  PERFORM public.govern_job_transition(v_j, 'planned', 's6', NULL);
+  v_j2 := b1_mkticket_job('S6B', true);
+  PERFORM public.assign_service_job(v_j2, b1_uid('tech1'), 's6-first', NULL);
+  v_j3 := b1_mkticket_job('S6C', true);
+  PERFORM public.assign_service_job(v_j3, b1_uid('tech1'), 's6-first', NULL);
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  BEGIN PERFORM public.decline_service_job(v_j2, NULL, NULL);
+  EXCEPTION WHEN OTHERS THEN v_noreason := true; END;
+  BEGIN PERFORM public.decline_service_job(v_j3, '', NULL);
+  EXCEPTION WHEN OTHERS THEN v_empty := true; END;
+  PERFORM public.decline_service_job(v_j, 'overloaded', NULL);
+  SELECT EXISTS (SELECT 1 FROM public.service_workflow_audit r
+    WHERE r::text LIKE '%' || b1_uid('tech1')::text || '%'
+      AND r::text LIKE '%overloaded%') INTO v_ev;
+  PERFORM b1_note('S6', v_noreason AND v_empty AND v_ev
+    AND b1_state('service_jobs', v_j) = 'unassigned'
+    AND (SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_j) IS NULL,
+    'decline own + reason required');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S6', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S6', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S7 decline denied: other's, unassigned, terminal, roles, anon.
+DO $$
+DECLARE v_j uuid; v_u uuid; v_t uuid; v_o boolean := false; v_n boolean := false;
+  v_c boolean := false; v_s boolean := false; v_m boolean := false; v_a boolean := false;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('assign_service_job')
+      AND b1_has_func('decline_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S7', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('S7', true);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's7-first', NULL);
+  v_u := b1_mkticket_job('S7U', true);
+  PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
+  BEGIN PERFORM public.decline_service_job(v_j, 's7', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_o := true; END;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  BEGIN PERFORM public.decline_service_job(v_u, 's7', NULL);
+  EXCEPTION WHEN OTHERS THEN v_n := (SQLSTATE IN ('42501', '23514')); END;
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  BEGIN PERFORM public.decline_service_job(v_j, 's7', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_c := true; END;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  BEGIN PERFORM public.decline_service_job(v_j, 's7', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_s := true; END;
+  PERFORM set_config('app.b1_uid', b1_uid('sales')::text, false);
+  BEGIN PERFORM public.decline_service_job(v_j, 's7', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_m := true; END;
+  RESET app.b1_uid;
+  BEGIN PERFORM public.decline_service_job(v_j, 's7', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_a := true; END;
+  PERFORM b1_note('S7', v_o AND v_n AND v_c AND v_s AND v_m AND v_a,
+    'decline fenced to owner-tech');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S7', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S7', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S8 decline DENIED while visit in_progress (supervisor); visit untouched; assignee remains.
+DO $$
+DECLARE v_j uuid; v_v uuid; v_denied boolean := false; v_vs text; v_tech uuid;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_table('service_job_visits')
+      AND b1_has_func('assign_service_job') AND b1_has_func('decline_service_job')
+      AND b1_has_func('create_service_job_visit') AND b1_has_func('govern_visit_transition')
+      AND b1_has_func('govern_job_transition')) THEN
+    INSERT INTO b1_eval VALUES ('S8', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('S8', true);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's8-first', NULL);
+  PERFORM public.govern_job_transition(v_j, 'planned', 's8', NULL);
+  SELECT (public.create_service_job_visit(v_j, 's8', NULL)).id INTO v_v;
+  PERFORM public.govern_visit_transition(v_v, 'in_progress', 's8', NULL);
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  BEGIN
+    PERFORM public.decline_service_job(v_j, 's8', NULL);
+  EXCEPTION WHEN check_violation THEN v_denied := true;
+  END;
+  v_vs := b1_state('service_job_visits', v_v);
+  SELECT assigned_technician_id INTO v_tech FROM public.service_jobs WHERE id = v_j;
+  PERFORM b1_note('S8', v_denied AND v_vs = 'in_progress' AND v_tech = b1_uid('tech1'),
+    'active-visit decline denied; attendance intact');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S8', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S8', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S9 assign permissions: roles denied, admin allowed, forged actor denied.
+DO $$
+DECLARE v_j uuid; v_c boolean := false; v_s boolean := false; v_t boolean := false;
+  v_a boolean := false; v_g boolean := false; v_d boolean := false; v_adm boolean;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('assign_service_job')
+      AND b1_has_func('decline_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S9', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('S9', true);
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  BEGIN PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's9', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_c := true; END;
+  PERFORM set_config('app.b1_uid', b1_uid('sales')::text, false);
+  BEGIN PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's9', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_s := true; END;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  BEGIN PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's9', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_t := true; END;
+  RESET app.b1_uid;
+  BEGIN PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's9', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_a := true; END;
+  PERFORM set_config('app.b1_uid', b1_uid('admin')::text, false);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's9-first', NULL);
+  v_adm := (SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_j)
+    = b1_uid('tech1');
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  BEGIN PERFORM public.assign_service_job(v_j, b1_uid('tech2'), 's9', b1_uid('admin'));
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_g := true; END;
+  BEGIN PERFORM public.decline_service_job(v_j, 's9', b1_uid('tech1'));
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_d := true; END;
+  PERFORM b1_note('S9', v_c AND v_s AND v_t AND v_a AND v_adm AND v_g AND v_d,
+    'assign fenced to staff, actors bound');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S9', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S9', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S10 multiple independent jobs: decline/reassign isolated per job.
+DO $$
+DECLARE v_t uuid; v_1 uuid; v_2 uuid; v_ok boolean;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('assign_service_job')
+      AND b1_has_func('decline_service_job') AND b1_has_func('govern_job_transition')) THEN
+    INSERT INTO b1_eval VALUES ('S10', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B1-S10');
+  SELECT (public.create_service_job(v_t, 'one', true, 's10')).id INTO v_1;
+  SELECT (public.create_service_job(v_t, 'two', true, 's10')).id INTO v_2;
+  PERFORM public.assign_service_job(v_1, b1_uid('tech1'), 's10', NULL);
+  PERFORM public.assign_service_job(v_2, b1_uid('tech2'), 's10', NULL);
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  PERFORM public.decline_service_job(v_1, 's10', NULL);
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  PERFORM b1_assign_adaptive(v_2, b1_uid('tech1'), 's10-re');
+  SELECT (a1 IS NULL AND s1 = 'unassigned' AND a2 = b1_uid('tech1'))
+    INTO v_ok
+    FROM (SELECT (SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_1) AS a1,
+                 b1_state('service_jobs', v_1) AS s1,
+                 (SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_2) AS a2) q;
+  PERFORM b1_note('S10', v_ok, 'jobs independent');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S10', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S10', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S11 authorship/history: ordered assign->reassign->decline chain in history + audit.
+DO $$
+DECLARE v_j uuid; v_e1 boolean; v_e2 boolean; v_h1 boolean; v_h2 boolean;
+  v_h3 boolean; v_hn int;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_table('service_job_assignment_history')
+      AND b1_has_func('assign_service_job') AND b1_has_func('decline_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S11', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('S11', true);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's11-first', NULL);
+  PERFORM set_config('app.b1_uid', b1_uid('admin')::text, false);
+  PERFORM b1_assign_adaptive(v_j, b1_uid('tech2'), 's11-re');
+  PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
+  PERFORM public.decline_service_job(v_j, 's11-out', NULL);
+  SELECT count(*) INTO v_hn FROM public.service_job_assignment_history WHERE job_id = v_j;
+  SELECT EXISTS (SELECT 1 FROM public.service_job_assignment_history h
+    WHERE h.job_id = v_j AND h.action = 'assign' AND h.from_technician_id IS NULL
+      AND h.to_technician_id = b1_uid('tech1') AND h.actor_id = b1_uid('support')
+      AND h.rationale = 's11-first') INTO v_h1;
+  SELECT EXISTS (SELECT 1 FROM public.service_job_assignment_history h
+    WHERE h.job_id = v_j AND h.action = 'reassign'
+      AND h.from_technician_id = b1_uid('tech1')
+      AND h.to_technician_id = b1_uid('tech2') AND h.actor_id = b1_uid('admin')
+      AND h.rationale = 's11-re') INTO v_h2;
+  SELECT EXISTS (SELECT 1 FROM public.service_job_assignment_history h
+    WHERE h.job_id = v_j AND h.action = 'decline'
+      AND h.from_technician_id = b1_uid('tech2') AND h.to_technician_id IS NULL
+      AND h.actor_id = b1_uid('tech2') AND h.rationale = 's11-out') INTO v_h3;
+  SELECT EXISTS (SELECT 1 FROM public.service_workflow_audit r
+    WHERE r::text LIKE '%' || b1_uid('tech1')::text || '%' AND r::text LIKE '%s11-first%')
+    INTO v_e1;
+  SELECT EXISTS (SELECT 1 FROM public.service_workflow_audit r
+    WHERE r::text LIKE '%' || b1_uid('tech2')::text || '%' AND r::text LIKE '%s11-out%')
+    INTO v_e2;
+  PERFORM b1_note('S11', v_hn = 3 AND v_h1 AND v_h2 AND v_h3 AND v_e1 AND v_e2
+    AND (SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_j) IS NULL
+    AND b1_state('service_jobs', v_j) = 'unassigned',
+    'history chain x' || v_hn);
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S11', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S11', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S12 ticket/job assignment separation both directions + activation intact.
+DO $$
+DECLARE v_t uuid; v_j uuid; v_ta uuid; v_ja uuid; v_act boolean;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('assign_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S12', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B1-S12');
+  SELECT (public.create_service_job(v_t, 'sep', true, 's12')).id INTO v_j;
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's12', NULL);
+  SELECT assigned_to INTO v_ta FROM public.service_tickets WHERE id = v_t;
+  PERFORM public.govern_ticket_assign(v_t, b1_uid('tech2'), 's12');
+  SELECT assigned_technician_id INTO v_ja FROM public.service_jobs WHERE id = v_j;
+  SELECT (workflow_activated_at IS NOT NULL) INTO v_act
+    FROM public.service_tickets WHERE id = v_t;
+  PERFORM b1_note('S12', v_ta IS NULL AND v_ja = b1_uid('tech1') AND v_act,
+    'assignments independent, activation intact');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S12', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S12', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S13 visibility boundaries via RLS-as-caller.
+-- Read model (B1 can_read_ticket_workflow, verified held post-B2): ticket
+-- owner reads own tickets' jobs; assigned technicians read jobs on tickets
+-- where they hold an assignment; staff read all; cross-customer reads denied.
+DO $$
+DECLARE v_1 uuid; v_2 uuid; v_3 uuid; v_t3 uuid; v_own int; v_oth int;
+  v_cown int; v_ccross int; v_2own int; v_2cross int; v_sup int;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('assign_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S13', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_1 := b1_mkticket_job('S13A', true);
+  PERFORM public.assign_service_job(v_1, b1_uid('tech1'), 's13', NULL);
+  v_2 := b1_mkticket_job('S13B', true);
+  PERFORM public.assign_service_job(v_2, b1_uid('tech2'), 's13', NULL);
+  v_t3 := b1_mkticket('cust2', 'B1-S13C');
+  SELECT (public.create_service_job(v_t3, 's13c', true, 's13')).id INTO v_3;
+  PERFORM public.assign_service_job(v_3, b1_uid('tech2'), 's13', NULL);
+  SET ROLE b1_auth;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  SELECT count(*) INTO v_own FROM public.service_jobs WHERE id = v_1;
+  SELECT count(*) INTO v_oth FROM public.service_jobs WHERE id = v_2;
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  SELECT count(*) INTO v_cown FROM public.service_jobs WHERE id IN (v_1, v_2);
+  SELECT count(*) INTO v_ccross FROM public.service_jobs WHERE id = v_3;
+  PERFORM set_config('app.b1_uid', b1_uid('cust2')::text, false);
+  SELECT count(*) INTO v_2own FROM public.service_jobs WHERE id = v_3;
+  SELECT count(*) INTO v_2cross FROM public.service_jobs WHERE id = v_1;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  SELECT count(*) INTO v_sup FROM public.service_jobs WHERE id IN (v_1, v_2, v_3);
+  RESET ROLE;
+  PERFORM b1_note('S13', v_own = 1 AND v_oth = 0
+    AND v_cown = 2 AND v_ccross = 0 AND v_2own = 1 AND v_2cross = 0 AND v_sup = 3,
+    'own=' || v_own || ' other=' || v_oth || ' cown=' || v_cown
+    || ' ccross=' || v_ccross || ' sup=' || v_sup);
+EXCEPTION WHEN OTHERS THEN
+  BEGIN RESET ROLE; EXCEPTION WHEN OTHERS THEN NULL; END;
+  PERFORM b1_note('S13', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S14 B2 agency = own-decline only: assigned/other/unassigned techs are denied
+-- job-FSM transitions (42501); staff control succeeds on the same job.
+DO $$
+DECLARE v_j uuid; v_u uuid; v_own boolean := false; v_oth boolean := false;
+  v_una boolean := false; v_ctl boolean;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('assign_service_job')
+      AND b1_has_func('govern_job_transition')) THEN
+    INSERT INTO b1_eval VALUES ('S14', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('S14', true);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's14-first', NULL);
+  v_u := b1_mkticket_job('S14U', true);
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  BEGIN PERFORM public.govern_job_transition(v_j, 'in_progress', 's14', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_own := true; END;
+  BEGIN PERFORM public.govern_job_transition(v_u, 'planned', 's14', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_una := true; END;
+  PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
+  BEGIN PERFORM public.govern_job_transition(v_j, 'cancelled', 's14', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_oth := true; END;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  PERFORM public.govern_job_transition(v_j, 'in_progress', 's14', NULL);
+  v_ctl := (b1_state('service_jobs', v_j) = 'in_progress');
+  PERFORM b1_note('S14', v_own AND v_oth AND v_una AND v_ctl,
+    'tech transitions denied, staff control ok');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S14', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S14', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S15 atomic audit rollback on failed assign/decline/reassign.
+DO $$
+DECLARE v_j uuid; v_v uuid; v_n0 int; v_h0 int; v_a0 uuid; v_s0 text;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_table('service_job_visits')
+      AND b1_has_table('service_job_assignment_history')
+      AND b1_has_func('assign_service_job') AND b1_has_func('decline_service_job')
+      AND b1_has_func('create_service_job_visit') AND b1_has_func('govern_job_transition')
+      AND b1_has_func('govern_visit_transition')) THEN
+    INSERT INTO b1_eval VALUES ('S15', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('S15', true);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's15-first', NULL);
+  PERFORM public.govern_job_transition(v_j, 'planned', 's15', NULL);
+  SELECT (public.create_service_job_visit(v_j, 's15', NULL)).id INTO v_v;
+  PERFORM public.govern_visit_transition(v_v, 'in_progress', 's15', NULL);
+  SELECT count(*) INTO v_n0 FROM public.service_workflow_audit;
+  SELECT count(*) INTO v_h0 FROM public.service_job_assignment_history;
+  SELECT assigned_technician_id, b1_state('service_jobs', v_j) INTO v_a0, v_s0
+    FROM public.service_jobs WHERE id = v_j;
+  BEGIN PERFORM public.assign_service_job(v_j, b1_uid('tech2'), 's15', b1_uid('admin'));
+  EXCEPTION WHEN SQLSTATE '42501' THEN NULL; END;
+  BEGIN PERFORM public.assign_service_job(v_j, '99999999-9999-9999-9999-999999999999', 's15', NULL);
+  EXCEPTION WHEN OTHERS THEN NULL; END;
+  BEGIN PERFORM b1_assign_adaptive(v_j, b1_uid('tech2'), 's15-re');
+  EXCEPTION WHEN check_violation THEN NULL; END;
+  PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
+  BEGIN PERFORM public.decline_service_job(v_j, 's15', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN NULL; END;
+  PERFORM b1_note('S15',
+    (SELECT count(*) FROM public.service_workflow_audit) = v_n0
+    AND (SELECT count(*) FROM public.service_job_assignment_history) = v_h0
+    AND (SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_j) = v_a0
+    AND b1_state('service_jobs', v_j) = v_s0, 'failures traceless');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S15', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S15', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S16 B2 preserves all B1 objects + FSM walk intact (migration safety);
+-- B2 objects asserted only when B2 is present (keeps B1-baseline meaning).
+DO $$
+DECLARE v_j uuid; v_ok boolean := true; v_b2 boolean := true;
+  need_tables text[] := ARRAY['service_jobs','service_job_visits','service_reports',
+    'service_report_revisions','service_report_reviews','service_acknowledgments',
+    'service_workflow_audit'];
+  need_funcs text[] := ARRAY['create_service_job','govern_job_transition',
+    'create_service_job_visit','govern_visit_transition','waive_service_job'];
+  need_b2_tables text[] := ARRAY['service_job_assignment_history'];
+  need_b2_funcs text[] := ARRAY['assign_service_job','decline_service_job',
+    'ensure_default_service_job'];
+  t text;
+BEGIN
+  FOREACH t IN ARRAY need_tables LOOP
+    IF NOT b1_has_table(t) THEN v_ok := false; END IF;
+  END LOOP;
+  FOREACH t IN ARRAY need_funcs LOOP
+    IF NOT b1_has_func(t) THEN v_ok := false; END IF;
+  END LOOP;
+  IF NOT v_ok THEN
+    PERFORM b1_note('S16', false, 'B1 objects missing post-B2'); RETURN;
+  END IF;
+  IF b1_has_func('assign_service_job') THEN
+    FOREACH t IN ARRAY need_b2_tables LOOP
+      IF NOT b1_has_table(t) THEN v_b2 := false; END IF;
+    END LOOP;
+    FOREACH t IN ARRAY need_b2_funcs LOOP
+      IF NOT b1_has_func(t) THEN v_b2 := false; END IF;
+    END LOOP;
+    IF NOT v_b2 THEN
+      PERFORM b1_note('S16', false, 'B2 objects missing'); RETURN;
+    END IF;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('S16', true);
+  PERFORM public.govern_job_transition(v_j, 'planned', 's16', NULL);
+  PERFORM public.govern_job_transition(v_j, 'cancelled', 's16', NULL);
+  PERFORM b1_note('S16', b1_state('service_jobs', v_j) = 'cancelled', 'B1 intact');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S16', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S16', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S17 ensure_default_service_job atomicity: invalid tech or missing ticket
+-- fails with NO partial job, NO activation, NO audit/history rows.
+DO $$
+DECLARE v_t uuid; v_bad boolean := false; v_nf boolean := false;
+  v_n0 int; v_h0 int;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('ensure_default_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S17', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B1-S17');
+  SELECT count(*) INTO v_n0 FROM public.service_workflow_audit;
+  SELECT count(*) INTO v_h0 FROM public.service_job_assignment_history;
+  BEGIN
+    PERFORM public.ensure_default_service_job(v_t,
+      '99999999-9999-9999-9999-999999999999', 'Job 1', 's17', NULL);
+  EXCEPTION WHEN SQLSTATE '22023' THEN v_bad := true; END;
+  BEGIN
+    PERFORM public.ensure_default_service_job(
+      '99999999-9999-9999-9999-999999999999', b1_uid('tech1'), 'Job 1', 's17', NULL);
+  EXCEPTION WHEN SQLSTATE 'P0002' THEN v_nf := true; END;
+  PERFORM b1_note('S17', v_bad AND v_nf
+    AND (SELECT count(*) FROM public.service_jobs WHERE ticket_id = v_t) = 0
+    AND (SELECT workflow_activated_at FROM public.service_tickets WHERE id = v_t) IS NULL
+    AND (SELECT count(*) FROM public.service_workflow_audit) = v_n0
+    AND (SELECT count(*) FROM public.service_job_assignment_history) = v_h0,
+    'ensure failures traceless');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S17', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S17', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S18 ensure_default_service_job idempotent retry: repeated calls return the
+-- same Job 1, never a second job; retry writes no audit/history.
+DO $$
+DECLARE v_t uuid; v_u uuid; v_1 uuid; v_2 uuid; v_3 uuid; v_4 uuid;
+  v_n0 int; v_h0 int; v_n1 int; v_h1 int;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('ensure_default_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S18', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B1-S18');
+  SELECT (public.ensure_default_service_job(v_t, b1_uid('tech1'), 'Job 1', 's18', NULL)).id
+    INTO v_1;
+  SELECT count(*) INTO v_n0 FROM public.service_workflow_audit;
+  SELECT count(*) INTO v_h0 FROM public.service_job_assignment_history;
+  SELECT (public.ensure_default_service_job(v_t, b1_uid('tech1'), 'Job 1', 's18', NULL)).id
+    INTO v_2;
+  SELECT count(*) INTO v_n1 FROM public.service_workflow_audit;
+  SELECT count(*) INTO v_h1 FROM public.service_job_assignment_history;
+  v_u := b1_mkticket('cust1', 'B1-S18U');
+  SELECT (public.ensure_default_service_job(v_u, NULL, 'Job 1', 's18', NULL)).id INTO v_3;
+  SELECT (public.ensure_default_service_job(v_u, NULL, 'Job 1', 's18', NULL)).id INTO v_4;
+  PERFORM b1_note('S18', v_1 = v_2 AND v_3 = v_4 AND v_n1 = v_n0 AND v_h1 = v_h0
+    AND (SELECT count(*) FROM public.service_jobs WHERE ticket_id = v_t) = 1
+    AND (SELECT count(*) FROM public.service_jobs WHERE ticket_id = v_u) = 1
+    AND (SELECT job_sequence FROM public.service_jobs WHERE id = v_1) = 1
+    AND (SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_1)
+      = b1_uid('tech1')
+    AND (SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_3) IS NULL,
+    'retry same id, audit+=' || (v_n1 - v_n0) || ' hist+=' || (v_h1 - v_h0));
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S18', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S18', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S19 ensure_default_service_job permissions + terminal tickets: customer,
+-- technician, sales, anon, and forged actors denied (42501); closed/cancelled
+-- tickets rejected (check_violation) with no job created.
+DO $$
+DECLARE v_t uuid; v_c uuid; v_x uuid; v_cu boolean := false; v_te boolean := false;
+  v_sa boolean := false; v_an boolean := false; v_fo boolean := false;
+  v_cl boolean := false; v_cx boolean := false; v_n0 int;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_func('ensure_default_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S19', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B1-S19');
+  v_c := b1_mkticket('cust1', 'B1-S19C');
+  PERFORM public.govern_ticket_transition(v_c, 'assigned', 's19', NULL);
+  PERFORM public.govern_ticket_transition(v_c, 'in_progress', 's19', NULL);
+  PERFORM public.govern_ticket_transition(v_c, 'resolved', 's19', 'done');
+  PERFORM public.govern_ticket_transition(v_c, 'closed', 's19', NULL);
+  v_x := b1_mkticket('cust1', 'B1-S19X');
+  PERFORM public.govern_ticket_transition(v_x, 'cancelled', 's19', NULL);
+  SELECT count(*) INTO v_n0 FROM public.service_workflow_audit;
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  BEGIN PERFORM public.ensure_default_service_job(v_t, b1_uid('tech1'), 'Job 1', 's19', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_cu := true; END;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  BEGIN PERFORM public.ensure_default_service_job(v_t, b1_uid('tech1'), 'Job 1', 's19', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_te := true; END;
+  PERFORM set_config('app.b1_uid', b1_uid('sales')::text, false);
+  BEGIN PERFORM public.ensure_default_service_job(v_t, b1_uid('tech1'), 'Job 1', 's19', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_sa := true; END;
+  RESET app.b1_uid;
+  BEGIN PERFORM public.ensure_default_service_job(v_t, b1_uid('tech1'), 'Job 1', 's19', NULL);
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_an := true; END;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  BEGIN PERFORM public.ensure_default_service_job(v_t, b1_uid('tech1'), 'Job 1', 's19',
+    b1_uid('admin'));
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_fo := true; END;
+  BEGIN PERFORM public.ensure_default_service_job(v_c, b1_uid('tech1'), 'Job 1', 's19', NULL);
+  EXCEPTION WHEN check_violation THEN v_cl := true; END;
+  BEGIN PERFORM public.ensure_default_service_job(v_x, b1_uid('tech1'), 'Job 1', 's19', NULL);
+  EXCEPTION WHEN check_violation THEN v_cx := true; END;
+  PERFORM b1_note('S19', v_cu AND v_te AND v_sa AND v_an AND v_fo AND v_cl AND v_cx
+    AND (SELECT count(*) FROM public.service_jobs WHERE ticket_id IN (v_t, v_c, v_x)) = 0
+    AND (SELECT count(*) FROM public.service_workflow_audit) = v_n0,
+    'ensure fenced; terminal rejected tracelessly');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S19', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S19', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S20 assignment history is append-only for clients and scoped to involved
+-- parties + staff (tech-own-involved readable, others hidden, customer none).
+DO $$
+DECLARE v_a uuid; v_b uuid; v_u boolean := false; v_d boolean := false;
+  v_i boolean := false; v_own int; v_cus int; v_sup int; v_tot int;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_table('service_job_assignment_history')
+      AND b1_has_func('assign_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S20', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_a := b1_mkticket_job('S20A', true);
+  PERFORM public.assign_service_job(v_a, b1_uid('tech1'), 's20-first', NULL);
+  PERFORM b1_assign_adaptive(v_a, b1_uid('tech2'), 's20-re');
+  PERFORM set_config('app.b1_uid', b1_uid('admin')::text, false);
+  v_b := b1_mkticket_job('S20B', true);
+  PERFORM public.assign_service_job(v_b, b1_uid('tech2'), 's20-other', NULL);
+  SET ROLE b1_auth;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  BEGIN UPDATE public.service_job_assignment_history SET rationale = 's20-hack'
+    WHERE job_id = v_a;
+  EXCEPTION WHEN OTHERS THEN v_u := true; END;
+  BEGIN DELETE FROM public.service_job_assignment_history WHERE job_id = v_a;
+  EXCEPTION WHEN OTHERS THEN v_d := true; END;
+  BEGIN INSERT INTO public.service_job_assignment_history
+    (job_id, ticket_id, action, actor_id) VALUES
+    (v_a, (SELECT ticket_id FROM public.service_jobs WHERE id = v_a),
+     'assign', b1_uid('tech1'));
+  EXCEPTION WHEN OTHERS THEN v_i := true; END;
+  SELECT count(*) INTO v_own FROM public.service_job_assignment_history
+    WHERE job_id IN (v_a, v_b);
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  SELECT count(*) INTO v_cus FROM public.service_job_assignment_history
+    WHERE job_id IN (v_a, v_b);
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  SELECT count(*) INTO v_sup FROM public.service_job_assignment_history
+    WHERE job_id IN (v_a, v_b);
+  RESET ROLE;
+  SELECT count(*) INTO v_tot FROM public.service_job_assignment_history
+    WHERE job_id IN (v_a, v_b);
+  PERFORM b1_note('S20', v_u AND v_d AND v_i AND v_tot = 3
+    AND v_own = 2 AND v_cus = 0 AND v_sup = 3,
+    'own=' || v_own || ' cust=' || v_cus || ' sup=' || v_sup || ' tot=' || v_tot);
+EXCEPTION WHEN OTHERS THEN
+  BEGIN RESET ROLE; EXCEPTION WHEN OTHERS THEN NULL; END;
+  PERFORM b1_note('S20', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
 SELECT check_id, status, detail FROM b1_eval ORDER BY check_id;

@@ -18,8 +18,9 @@ Rules:
 3. **Job assignment / reassignment** updates only the named job. It MUST NOT grant the technician access to unrelated jobs on the ticket, nor to private/draft reports belonging to other jobs (B1 RLS remains authoritative).
 4. **Additional jobs** are created with `create_service_job` (B1) and assigned independently; they remain independent of Job 1 and of the ticket assignee.
 5. **Decline** is technician-only on **their own** assigned job, reason mandatory; returns job to `unassigned`, clears job technician, preserves ticket assignee and assignment history.
-6. **Reassignment** is denied while the job has a visit in `in_progress`.
-7. Assignment changes + workflow audit MUST commit atomically (same transaction); failure rolls both back.
+6. **Reassignment / decline** is denied while the job has a visit in `in_progress`. A **scheduled** visit does **not** by itself prohibit reassignment; attendance consistency and assignment history must still be preserved.
+7. Assignment changes + workflow audit MUST commit atomically **inside each assignment RPC** (same transaction); failure rolls both back. Actor/time attribution is preserved via `service_job_assignment_history.actor_id` / `created_at` (job-row `assigned_by`/`assigned_at` not required).
+8. UI opt-in may compose ticket assign + `ensure_default_service_job` as two RPCs; see `B2_OPTIN_TRANSACTION_BOUNDARY.md`.
 
 ## Legacy compatibility
 

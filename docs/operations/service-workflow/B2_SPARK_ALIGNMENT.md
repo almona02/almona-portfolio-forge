@@ -14,28 +14,23 @@
 
 No `reassign_service_job` split.
 
-## Supervisor resolutions (override Spark interpretations 2 / 5 where noted)
+## Supervisor resolutions
 
-1. **Active-visit decline:** DENY while visit `in_progress` (freeze does this). Ending/aborting visits is B3. **Spark S8 must expect DENY**, not liberate-with-active-visit.
-2. **Assignment concurrency:** Same-tech retry = idempotent no-op (no duplicate history). Competing different-tech assigns serialize on job `FOR UPDATE`; last writer wins with truthful reassign history. Documented policy for Spark K5/K6.
-3. **Technician agency:** B2 = own-job **decline only**. No unrestricted `govern_job_transition` for technicians. Visit execution = B3. **Spark S14 → DEFER** (not FAIL against freeze).
-4. **Opt-in workflow entry:** UI is two RPCs (ticket assign, then `ensure_default_service_job`). Partial is recoverable: retry `ensure_default` does not create a second Job 1. Ticket-only assign never activates.
-5. **UI:** Job 1 checkbox + legacy unchecked + auth failures + repeated submit are in scope for UI acceptance; **additional-job assign/reassign/decline UI is deferred** (API-covered only).
+1. **Active-visit decline:** DENY while visit `in_progress`. Ending/aborting visits is B3. Scheduled visits do not block decline/reassign by themselves.
+2. **Assignment concurrency:** Same-tech retry = idempotent no-op (no duplicate history). Competing different-tech assigns serialize on job `FOR UPDATE`; last writer wins with truthful reassign history (K5/K6).
+3. **Technician agency:** B2 = own-job **decline only**. Visit execution = B3.
+4. **Opt-in workflow entry:** UI is two RPCs (ticket assign, then `ensure_default_service_job`). Partial after A is recoverable; B is DB-atomic and retry-safe (see `B2_OPTIN_TRANSACTION_BOUNDARY.md`).
+5. **UI:** Opt-in checkbox path accepted at freeze (U1–U6). **Full** additional-job / decline UI is completed in a separate correction commit after harness reconciliation — not part of `8f2acc4e`.
 
-## Spark interpretation deltas vs freeze (gaps if unfixed)
+## Spark interpretation deltas (resolved by harness/policy, not freeze code change)
 
-| Point | Spark `b2_contract` | Freeze `8f2acc4e` |
-|-------|---------------------|-------------------|
-| Assign state | Unchanged (`unassigned`) | First assign may set `planned` |
-| Author cols | `assigned_by` / `assigned_at` | Absent (history table + audit only) → S1/S11 SKIP |
-| Reassign open visit | Deny scheduled **and** in_progress | Deny **in_progress** only |
-| Tech RLS SELECT own jobs | Required (S13) | B1 staff-only SELECT remains |
-| `assigned_technician` name | Used in Spark SQL | Column is `assigned_technician_id` |
+| Point | Resolution |
+|-------|------------|
+| Author cols | Map to `service_job_assignment_history.actor_id` / `created_at` — not a freeze defect |
+| Reassign vs scheduled visit | Allowed; only `in_progress` blocks |
+| Tech job SELECT | B1 `can_read_ticket_workflow` boundaries hold post-B2 (S13 final PASS) |
+| Column name | `assigned_technician_id` |
 
-## Deferred B2 UI (authorized scope not demonstrated in UI)
+## Verdict reconciliation
 
-- Assign/reassign an **additional** job (Job 2+)
-- Decline UI for technicians
-- Dedicated job-assignment panel / history viewer
-
-The Job 1 checkbox alone does **not** cover those surfaces; disposable SQL covers the RPCs.
+See `B2_VERDICT_RECONCILIATION_8f2acc4e.md`. Early BLOCKED run preserved separately from final ACCEPTED.

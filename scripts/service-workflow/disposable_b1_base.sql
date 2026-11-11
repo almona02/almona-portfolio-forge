@@ -17,6 +17,10 @@ CREATE OR REPLACE FUNCTION auth.uid() RETURNS uuid
 LANGUAGE sql STABLE SET search_path = pg_catalog AS $$
   SELECT NULLIF(current_setting('app.b1_uid', true), '')::uuid;
 $$;
+-- Mirrors hosted Supabase: authenticated clients may call auth.uid().
+-- Without this, invoker-context policies calling admin_private.caller_uid()
+-- fail as the b1_auth stand-in role with "permission denied for schema auth".
+GRANT USAGE ON SCHEMA auth TO authenticated;
 
 -- TEST-ONLY STUBS for hosted storage (policies reference these; unexercised here).
 CREATE SCHEMA IF NOT EXISTS storage;
@@ -79,22 +83,6 @@ CREATE TABLE IF NOT EXISTS public.ticket_messages (
   is_internal_note boolean NOT NULL DEFAULT false,
   message_type text NOT NULL DEFAULT 'message',
   created_at timestamptz NOT NULL DEFAULT now()
-);
-
--- Existing contract PM visit authority (must coexist with B1 service_job_visits).
-CREATE TABLE IF NOT EXISTS public.service_contracts (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  owner_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  factory_name text NOT NULL DEFAULT '',
-  status text NOT NULL DEFAULT 'active'
-);
-CREATE TABLE IF NOT EXISTS public.service_visits (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  contract_id uuid NOT NULL REFERENCES public.service_contracts(id) ON DELETE CASCADE,
-  scheduled_at date NOT NULL DEFAULT CURRENT_DATE,
-  status text NOT NULL DEFAULT 'scheduled'
-    CHECK (status IN ('scheduled', 'completed', 'cancelled')),
-  type text NOT NULL DEFAULT 'preventive'
 );
 
 -- Fixture actors (fixed UUIDs so checks are deterministic).

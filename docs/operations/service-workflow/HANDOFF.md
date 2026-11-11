@@ -17,19 +17,22 @@ Machine-registration → linked-ticket journey complete on **staging** at `ca9f5
 | BLOCKED archive | `SPARK_B1_VERDICT_c6b1e46a.md` (retained; do not overwrite) |
 | Migration | `20261111210000_service_workflow_b1_data_contract.sql` |
 
-Full Spark battery retained (including **W2–W4**, **X5/X6**, positive **J1** completion). Cursor’s narrower harness is supporting only. Do not cite placeholder SHAs (`2bb20cb1`) as the freeze.
+## B2 — DB + opt-in ACCEPTED; full UI correction next
 
-## B2 — IMPLEMENTED (disposable; Spark verify next)
+| Item | Value |
+|------|-------|
+| Freeze SHA | `8f2acc4e806e70e12e87a24dcbebaef78e63e085` |
+| DB | ACCEPTED (S1–S20 + K5–K7); B1 regression green |
+| Opt-in UI | ACCEPTED (U1–U6) |
+| Full multi-job UI | Incomplete at freeze — separate correction commit |
+| Reconciliation | [`B2_VERDICT_RECONCILIATION_8f2acc4e.md`](./B2_VERDICT_RECONCILIATION_8f2acc4e.md) |
+| Tx boundary | [`B2_OPTIN_TRANSACTION_BOUNDARY.md`](./B2_OPTIN_TRANSACTION_BOUNDARY.md) |
 
-Contract: [`B2_ASSIGNMENT_CONTRACT.md`](./B2_ASSIGNMENT_CONTRACT.md)  
-Report: [`B2_IMPLEMENTATION_REPORT.md`](./B2_IMPLEMENTATION_REPORT.md)  
-Spark: [`SPARK_B2_HANDOFF.md`](./SPARK_B2_HANDOFF.md)
+Early BLOCKED verdict preserved as `SPARK_B2_VERDICT_8f2acc4e_run1_BLOCKED.md`. Final ACCEPTED as `SPARK_B2_VERDICT_8f2acc4e_final_ACCEPTED.md`.
 
-Cursor disposable: 59 PASS / 0 FAIL / 0 SKIP / 5 DEFER; K1–K5 PASS (supporting only).
+Harness (committed): `scripts/service-workflow/` + `src/components/support/TicketAssignmentDialog.b2.test.tsx`.
 
-Out of scope still: squads, visit execution, reports, closure UI, staging/production apply, merge.
-
-**#155** remains frozen at `ca9f5067`. **#156** stays draft.
+**#155** remains frozen at `ca9f5067`. **#156** stays draft. No staging/production apply, merge, or B3.
 
 ## Spec
 
