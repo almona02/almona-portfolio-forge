@@ -96,10 +96,31 @@ async def login_for_access_token(
             )
             
             access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            # Include auth user id so governed ticket routes can resolve p_actor_id.
+            # Email remains in `sub` for backwards-compatible subject checks.
+            role = None
+            try:
+                profile = (
+                    supabase_client.client.table("profiles")
+                    .select("role")
+                    .eq("id", str(user_response.user.id))
+                    .limit(1)
+                    .execute()
+                )
+                if profile.data:
+                    role = profile.data[0].get("role")
+            except Exception:
+                role = None
+            token_claims = {
+                "sub": str(user_response.user.id),
+                "id": str(user_response.user.id),
+                "email": user_response.user.email,
+                "role": role,
+            }
             access_token = create_access_token(
-                data={"sub": user_response.user.email}, expires_delta=access_token_expires
+                data=token_claims, expires_delta=access_token_expires
             )
-            refresh_token = create_refresh_token(data={"sub": user_response.user.email})
+            refresh_token = create_refresh_token(data=token_claims)
             return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
         else:
             # Log failed login attempt (username only as we don't have ID)
