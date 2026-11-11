@@ -54,13 +54,16 @@ Contract file: `scripts/service-workflow/b1_contract.md`.
 ## Disposable results (summary)
 
 Harness: `python scripts/service-workflow/run_disposable_b1.py`  
-Worktree for Spark: `/c/projects/almona-slice0-b1-verify` checked out at the freeze SHA (clean).  
+Worktree for Spark: `/c/projects/almona-slice0-b1-verify` @ `7a8307395b79df677a96f77cd993a77351b5805c` (clean).  
 Migration applied by harness only (disposable PG17).
 
 | Suite | Result |
 |-------|--------|
-| SQL battery (expanded) | recorded by Spark run at freeze |
-| Concurrency | `K1`–`K4` required |
+| SQL battery (expanded) | **44 PASS / 0 FAIL / 0 SKIP / 5 DEFER** |
+| Concurrency | **K1 PASS, K2 PASS, K3 PASS, K4 PASS** |
+| Gate | **B1 ACCEPTED** (zero FAIL, zero required-SKIP) |
+
+Artifact: `.artifacts/slice0/service-workflow/disposable_b1_results.json` (`tested_sha` = freeze).
 
 ### Deferred (explicit; do not block B1)
 
