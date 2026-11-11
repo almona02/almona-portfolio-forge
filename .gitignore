@@ -4,6 +4,7 @@
 .env.preview
 .env.production
 .env.*.local
+.env.staging.service_role
 .env.rotation.publishable
 .env.rotation.secret
 python_backend/.env
@@ -323,3 +324,4 @@ batch1-release*/
 /public/images/hero01 (3).png
 /public/images/hero01 (4).png
 /public/images/factory .png
+.vercel
