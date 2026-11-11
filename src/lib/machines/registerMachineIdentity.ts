@@ -44,10 +44,17 @@ function resolveCatalogLinkStatus(input: RegisterMachineIdentityInput): CatalogL
  * Preferred PR1 registration path — server-side idempotency + authz-safe duplicates.
  * Foreign matches create staff-only review cases; customer response does not disclose them.
  */
+function hasPersistedPhotoEvidence(urls: string[] | null | undefined): boolean {
+  return Boolean(urls?.some((url) => typeof url === 'string' && url.trim().length > 0));
+}
+
 export async function registerMachineIdentity(
   input: RegisterMachineIdentityInput,
 ): Promise<RegisterMachineIdentityResult> {
   const serial = preserveRawSerial(input.serial_number ?? null);
+  if (!serial && !hasPersistedPhotoEvidence(input.photo_urls)) {
+    throw new Error('plate_area_photo_evidence_required when serial is absent');
+  }
   const catalog_link_status = resolveCatalogLinkStatus(input);
   const { data, error } = await supabase.rpc('register_machine_identity', {
     p_name: input.name,

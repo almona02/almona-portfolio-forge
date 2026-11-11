@@ -132,7 +132,15 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       }
       const derivedName = machine.model || `Machine ${machine.serialNumber || ''}`.trim();
 
-      // Upload photos (best-effort: continue if some fail)
+      const missingSerial = !machine.serialNumber?.trim();
+      if (missingSerial && rawFiles.length === 0) {
+        toast.error('Plate-area photo required', {
+          description: 'When the manufacturer serial is missing, a plate-area photo must be uploaded and saved before registration can complete.',
+        });
+        return;
+      }
+
+      // Persist photo evidence before registration. Upload failure keeps the draft recoverable.
       let uploadedUrls: string[] = [];
       if (rawFiles.length) {
         const uploads = await Promise.allSettled(
@@ -140,9 +148,16 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
         );
         uploadedUrls = uploads
           .filter((r): r is PromiseFulfilledResult<string> => r.status === 'fulfilled')
-           
           .map(r => r.value);
         const failed = uploads.filter(r => r.status === 'rejected').length;
+        if (failed || (missingSerial && uploadedUrls.length === 0)) {
+          toast.error('Photo upload failed', {
+            description: missingSerial
+              ? 'Plate-area evidence could not be saved. Your draft is preserved — fix the upload and try again. Registration did not run.'
+              : `${failed} photo(s) could not be saved. Your draft is preserved.`,
+          });
+          return;
+        }
         if (failed) {
           toast.warning('Some photos failed to upload', { description: `${failed} photo(s) could not be saved.` });
         }
@@ -165,8 +180,9 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       const previous = queryClient.getQueryData(cacheKey);
       queryClient.setQueryData(cacheKey, (old: unknown[] | undefined) => [optimisticMachine, ...(old || [])]);
 
+      let saved: Record<string, unknown>;
       try {
-        const saved = await api.registerMachine({
+        saved = await api.registerMachine({
           name: derivedName,
           model: machine.model || 'Unknown Model',
           serial_number: machine.serialNumber || null,
@@ -178,8 +194,8 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
           catalog_link_status: selectedCatalogId ? 'linked' : 'uncatalogued',
           catalog_uncertain: false,
           idempotency_key: idempotencyKeyRef.current,
-          missing_serial_reason: machine.serialNumber ? null : 'plate_missing_or_illegible',
-        });
+          missing_serial_reason: missingSerial ? 'plate_missing_or_illegible' : null,
+        }) as Record<string, unknown>;
         // Replace optimistic entry
         queryClient.setQueryData(cacheKey, (current: unknown) => {
           const list = Array.isArray(current) ? current as Record<string, unknown>[] : [];
@@ -197,16 +213,19 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
           // silent fail; optimistic data remains
         }
       } catch (persistErr) {
-        // Rollback optimistic item
+        // Rollback optimistic item — keep local draft (form + rawFiles) for recovery
         queryClient.setQueryData(cacheKey, previous);
         throw persistErr;
       }
-      // Only invalidate if query previously existed (had a queryFn from a mounted component)
-      // (No invalidate needed now; explicit fetch above handles sync.)
-      const reg = (saved as { _registration?: { provisional_asset_ref?: string | null; identity_confidence?: string }; provisional_asset_ref?: string | null; identity_confidence?: string; serial_number?: string | null });
+      const reg = saved as {
+        _registration?: { provisional_asset_ref?: string | null; identity_confidence?: string };
+        provisional_asset_ref?: string | null;
+        identity_confidence?: string;
+        serial_number?: string | null;
+      };
       const alm = reg._registration?.provisional_asset_ref || reg.provisional_asset_ref;
       const provisional = (reg._registration?.identity_confidence || reg.identity_confidence) === 'provisional'
-        || (!machine.serialNumber && Boolean(alm));
+        || (missingSerial && Boolean(alm));
       toast.success('Registration Complete', {
         description: provisional
           ? `Provisional record created. Internal reference ${alm || '(assigned)'} is not a manufacturer serial.`
@@ -223,7 +242,9 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       // Never surface cross-account ownership hints from legacy paths.
       const safe = /already registered|another (customer|account|owner)|owned by/i.test(message)
         ? 'Registration could not be completed. Please try again or contact support.'
-        : message;
+        : /plate_area_photo_evidence_required/i.test(message)
+          ? 'Plate-area photo evidence must be uploaded and saved before missing-serial registration can complete.'
+          : message;
       toast.error('Save Failed', { description: safe });
     } finally {
       savingRef.current = false;
@@ -317,7 +338,9 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                       )}
                     </div>
                     <div>
-                      <Label htmlFor="photos" className="typography-label">Upload Photos</Label>
+                      <Label htmlFor="photos" className="typography-label">
+                        {machine.serialNumber?.trim() ? 'Upload Photos' : 'Plate-area photo (required)'}
+                      </Label>
                       <div className="flex items-center gap-2">
                         <Input id="photos" type="file" multiple accept="image/*" onChange={handleFileUpload} className="hidden" />
                         <Button onClick={() => document.getElementById('photos')?.click()} className="w-full border border-border">
@@ -326,15 +349,23 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                         </Button>
                       </div>
                       {machine.photos && machine.photos.length > 0 && (
-                        <div className="mt-2 text-sm text-muted-foreground">{machine.photos.length} photo(s) uploaded</div>
+                        <div className="mt-2 text-sm text-muted-foreground">{machine.photos.length} photo(s) selected — must save successfully on submit</div>
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Serial may be left blank when the plate is missing or illegible (provisional ALM internal ref). Photos help support later.
+                      Serial may be left blank when the plate is missing or illegible (provisional ALM internal ref). Missing-serial registration requires a successfully saved plate-area photo; the ALM reference is not a manufacturer serial.
                     </p>
                     <Button
                       className="w-full"
-                      onClick={() => setStep("details")}
+                      onClick={() => {
+                        if (!machine.serialNumber?.trim() && rawFiles.length === 0) {
+                          toast.error('Plate-area photo required', {
+                            description: 'Select at least one plate-area photo before continuing without a serial.',
+                          });
+                          return;
+                        }
+                        setStep("details");
+                      }}
                       disabled={!machine.model}
                     >
                       Continue <ChevronRight className="ml-2 h-4 w-4" />

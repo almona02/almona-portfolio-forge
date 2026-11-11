@@ -72,13 +72,34 @@ BEGIN
     INSERT INTO mi_eval VALUES ('A2_uncatalogued', 'PASS', coalesce(v_r->>'catalog_link_status',''));
   END IF;
 
-  -- A3 missing serial provisional
+  -- A3 missing serial provisional requires persisted plate-area photo evidence
+  BEGIN
+    PERFORM public.register_machine_identity(
+      'No plate', 'Unknown press', NULL, 'elumatec', NULL, true,
+      NULL, false, NULL, 'idem-miss-no-photo', 'service_intake', NULL, 'plate_illegible'
+    );
+    INSERT INTO mi_eval VALUES ('A3b_missing_serial_no_photo', 'FAIL', 'expected plate_area_photo_evidence_required');
+  EXCEPTION WHEN others THEN
+    IF SQLERRM ILIKE '%plate_area_photo_evidence_required%' THEN
+      INSERT INTO mi_eval VALUES ('A3b_missing_serial_no_photo', 'PASS', SQLERRM);
+    ELSE
+      INSERT INTO mi_eval VALUES ('A3b_missing_serial_no_photo', 'FAIL', SQLERRM);
+    END IF;
+  END;
+
   v_r := public.register_machine_identity(
     'No plate', 'Unknown press', NULL, 'elumatec', NULL, true,
-    NULL, false, NULL, 'idem-miss-1', 'service_intake', NULL, 'plate_illegible'
+    NULL, false, ARRAY['https://evidence.example/plate-area.jpg'], 'idem-miss-1', 'service_intake', NULL, 'plate_illegible'
   );
   IF (v_r->>'identity_confidence') = 'provisional'
-     AND EXISTS (SELECT 1 FROM public.machines m WHERE m.id = (v_r->>'machine_id')::uuid AND m.serial_number IS NULL AND m.provisional_asset_ref LIKE 'ALM-%') THEN
+     AND EXISTS (
+       SELECT 1 FROM public.machines m
+       WHERE m.id = (v_r->>'machine_id')::uuid
+         AND m.serial_number IS NULL
+         AND m.provisional_asset_ref LIKE 'ALM-%'
+         AND m.provisional_asset_ref IS DISTINCT FROM coalesce(m.serial_number_raw, '')
+         AND cardinality(m.photo_urls) >= 1
+     ) THEN
     INSERT INTO mi_eval VALUES ('A3_missing_serial', 'PASS', v_r->>'machine_id');
   ELSE
     INSERT INTO mi_eval VALUES ('A3_missing_serial', 'FAIL', v_r::text);

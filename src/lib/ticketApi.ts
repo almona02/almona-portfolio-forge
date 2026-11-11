@@ -1,5 +1,8 @@
 import {
   governedCreateTicket,
+  retryLinkTicketMachine,
+  type MachineLinkCreateOutcome,
+  type RetryLinkTicketMachineResult,
 } from '@/lib/ticketing/TicketGovernanceService'
 import { supabase } from '@/lib/supabase'
 import { Database } from '@/types/database'
@@ -68,16 +71,35 @@ export function mapTicket(row: DBServiceTicketRow): ServiceTicket {
 }
 
 // ---------- Ticket CRUD ----------
+export type CreateTicketOutcome = {
+  ticket: ServiceTicket;
+  machineLink: MachineLinkCreateOutcome;
+};
+
 /**
  * Canonical ticket creation — always routes through TicketGovernanceService.
  * V2 ticket create bypass removed (P0.10.2); no alternate create authority.
+ * Post-insert machine-link failures return the created ticket with an unlinked outcome
+ * (never presented as a failed ticket create).
  */
-export const createTicket = async (ticketData: CreateTicketData, userId: string): Promise<ServiceTicket> => {
+export const createTicket = async (
+  ticketData: CreateTicketData,
+  userId: string,
+): Promise<CreateTicketOutcome> => {
   const currentUser = (await supabase.auth.getUser()).data.user;
   const currentUserId = currentUser?.id || undefined;
   const result = await governedCreateTicket(ticketData, userId, currentUserId);
-  return mapTicket(result.row as DBServiceTicketRow);
-}
+  return {
+    ticket: mapTicket(result.row as DBServiceTicketRow),
+    machineLink: result.machineLink,
+  };
+};
+
+/** Link-only retry against an existing ticket (no second insert). */
+export const retryTicketMachineLink = async (
+  ticketId: string,
+  machineId: string,
+): Promise<RetryLinkTicketMachineResult> => retryLinkTicketMachine(ticketId, machineId);
 
 export const getUserTickets = async (
   userId: string,

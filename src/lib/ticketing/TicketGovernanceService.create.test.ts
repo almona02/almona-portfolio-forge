@@ -18,7 +18,7 @@ vi.mock('@/lib/ticketGovernanceApi', () => ({
   governTicketAssign: vi.fn(),
 }))
 
-import { governedCreateTicket } from './TicketGovernanceService'
+import { governedCreateTicket, retryLinkTicketMachine } from './TicketGovernanceService'
 import { governTicketAssign } from '@/lib/ticketGovernanceApi'
 
 function ticketInsertMock(ticketId: string) {
@@ -188,9 +188,10 @@ describe('governedCreateTicket machine_id link', () => {
       p_machine_id: 'mach-1',
     })
     expect(result.row.machine_id).toBe('mach-1')
+    expect(result.machineLink).toEqual({ status: 'linked', machineId: 'mach-1' })
   })
 
-  it('fails create path when machine link is denied', async () => {
+  it('keeps created ticket identity when machine link is denied (no unauthorized link)', async () => {
     const insert = ticketInsertMock('deny-ticket')
     from.mockImplementation((table: string) => {
       if (table === 'service_tickets') return insert
@@ -202,19 +203,60 @@ describe('governedCreateTicket machine_id link', () => {
       error: { message: 'Not authorized for machine' },
     })
 
-    await expect(
-      governedCreateTicket(
-        {
-          title: 'Issue',
-          description: 'enough text here',
-          type: 'general',
-          priority: 'medium',
-          machine_id: 'foreign-mach',
-        } as never,
-        'cust-1',
-        'cust-1',
-      ),
-    ).rejects.toThrow(/Not authorized for machine/)
+    const result = await governedCreateTicket(
+      {
+        title: 'Issue',
+        description: 'enough text here',
+        type: 'general',
+        priority: 'medium',
+        machine_id: 'foreign-mach',
+      } as never,
+      'cust-1',
+      'cust-1',
+    )
+
+    expect(result.row.id).toBe('deny-ticket')
+    expect(result.row.machine_id).toBeUndefined()
+    expect(result.machineLink.status).toBe('unlinked')
+    if (result.machineLink.status === 'unlinked' && result.machineLink.reason !== 'not_requested') {
+      expect(result.machineLink.reason).toBe('link_denied')
+      expect(result.machineLink.retryable).toBe(true)
+      expect(result.machineLink.machineId).toBe('foreign-mach')
+      expect(result.machineLink.warning).toMatch(/Ticket was created/)
+    }
+    expect(insert.insert).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps created ticket identity on unexpected link failure', async () => {
+    const insert = ticketInsertMock('fail-ticket')
+    from.mockImplementation((table: string) => {
+      if (table === 'service_tickets') return insert
+      if (table === 'profiles') return profilesMock({ actorRole: 'customer' })
+      return activeCountsMock()
+    })
+    rpc.mockResolvedValue({
+      data: null,
+      error: { message: 'connection reset' },
+    })
+
+    const result = await governedCreateTicket(
+      {
+        title: 'Issue',
+        description: 'enough text here',
+        type: 'general',
+        priority: 'medium',
+        machine_id: 'mach-2',
+      } as never,
+      'cust-1',
+      'cust-1',
+    )
+
+    expect(result.row.id).toBe('fail-ticket')
+    expect(result.machineLink.status).toBe('unlinked')
+    if (result.machineLink.status === 'unlinked' && result.machineLink.reason !== 'not_requested') {
+      expect(result.machineLink.reason).toBe('link_failed')
+      expect(result.machineLink.retryable).toBe(true)
+    }
   })
 
   it('allows legacy free-text tickets without machine_id', async () => {
@@ -239,5 +281,32 @@ describe('governedCreateTicket machine_id link', () => {
 
     expect(rpc).not.toHaveBeenCalled()
     expect(result.row.id).toBe('legacy-ticket')
+    expect(result.machineLink).toEqual({ status: 'unlinked', reason: 'not_requested' })
+  })
+})
+
+describe('retryLinkTicketMachine', () => {
+  it('retries link against the original ticket without inserting another ticket', async () => {
+    from.mockImplementation(() => {
+      throw new Error('retry path must not insert tickets')
+    })
+    rpc.mockResolvedValue({
+      data: { id: 'deny-ticket', machine_id: 'mach-1', ticket_number: 'TKT-1' },
+      error: null,
+    })
+
+    const result = await retryLinkTicketMachine('deny-ticket', 'mach-1')
+
+    expect(rpc).toHaveBeenCalledWith('link_ticket_machine', {
+      p_ticket_id: 'deny-ticket',
+      p_machine_id: 'mach-1',
+    })
+    expect(rpc).toHaveBeenCalledTimes(1)
+    expect(result).toEqual({
+      status: 'linked',
+      ticketId: 'deny-ticket',
+      machineId: 'mach-1',
+      row: { id: 'deny-ticket', machine_id: 'mach-1', ticket_number: 'TKT-1' },
+    })
   })
 })

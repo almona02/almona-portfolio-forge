@@ -207,6 +207,16 @@ export const api = {
             ? 'linked'
             : 'uncatalogued');
 
+    const serialPresent = Boolean(
+      typeof machineData.serial_number === 'string' && machineData.serial_number.trim(),
+    );
+    const persistedPhotos = (machineData.photo_urls ?? []).filter(
+      (url) => typeof url === 'string' && url.trim().length > 0,
+    );
+    if (!serialPresent && persistedPhotos.length === 0) {
+      throw new Error('plate_area_photo_evidence_required when serial is absent');
+    }
+
     // Server-side path: idempotency + authz-safe duplicates (no cross-customer disclosure)
     const rpc = await client.rpc('register_machine_identity', {
       p_name: machineData.name,

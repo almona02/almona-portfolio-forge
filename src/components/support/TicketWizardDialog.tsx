@@ -4,10 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { createTicket } from '@/lib/ticketApi';
+import { createTicket, type CreateTicketOutcome } from '@/lib/ticketApi';
 import { getPresignedUrl, uploadFile } from '@/lib/uploads/ticketAttachments';
 import { UnifiedTicketFormData, createTicketZodSchema } from '@/lib/validation/ticket';
-import { ServiceTicket, TicketPriority, TicketType } from '@/types/tickets';
+import { TicketPriority, TicketType } from '@/types/tickets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
@@ -269,10 +269,19 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
         related_order_id: undefined,
       }, user.id);
     },
-    onSuccess: (ticket: ServiceTicket) => {
+    onSuccess: (outcome: CreateTicketOutcome) => {
+      const ticket = outcome.ticket;
       console.log('[TicketWizardDialog] Ticket created successfully:', ticket);
       console.log('[TicketWizardDialog] Digital twin code:', ticket.digital_twin_code);
-      toast({ title: 'Ticket Created', description: 'Your support ticket has been submitted.' });
+      const link = outcome.machineLink;
+      const linkNote =
+        link.status === 'unlinked' && link.reason !== 'not_requested' && 'warning' in link
+          ? ` ${link.warning}`
+          : '';
+      toast({
+        title: 'Ticket Created',
+        description: `Your support ticket has been submitted.${linkNote}`,
+      });
       setCreatedTicketId(ticket.id);
       setCreatedTicketTwin(ticket.digital_twin_code || null);
       setActiveStepIndex(steps.findIndex(s => s.id === 'success'));

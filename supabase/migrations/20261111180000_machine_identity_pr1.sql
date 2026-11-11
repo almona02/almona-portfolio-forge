@@ -610,6 +610,18 @@ BEGIN
     IF p_missing_serial_reason IS NULL OR btrim(p_missing_serial_reason) = '' THEN
       RAISE EXCEPTION 'missing_serial_reason required when serial is absent' USING ERRCODE = '22023';
     END IF;
+    -- Spec 4.2: plate-area photo evidence required for provisional registration.
+    -- Gate is registration-path only; grandfathered legacy rows are unaffected.
+    IF p_photo_urls IS NULL
+       OR coalesce(cardinality(p_photo_urls), 0) = 0
+       OR NOT EXISTS (
+         SELECT 1
+         FROM unnest(p_photo_urls) AS u(url)
+         WHERE nullif(btrim(url), '') IS NOT NULL
+       ) THEN
+      RAISE EXCEPTION 'plate_area_photo_evidence_required when serial is absent'
+        USING ERRCODE = '22023';
+    END IF;
     v_confidence := 'provisional';
     v_alm := public.machine_allocate_alm_ref();
   ELSE

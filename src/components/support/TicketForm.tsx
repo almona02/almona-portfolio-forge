@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createTicketZodSchema, UnifiedTicketFormData } from '@/lib/validation/ticket';
 import { useAuth } from '@/context/AuthContext';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { createTicket } from '@/lib/ticketApi';
+import { createTicket, retryTicketMachineLink, type CreateTicketOutcome } from '@/lib/ticketApi';
 import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -115,8 +115,15 @@ export const TicketForm: React.FC<TicketFormProps> = ({
     }
   }, [initialValues, setValue]);
 
+  const [pendingLink, setPendingLink] = useState<{
+    ticketId: string;
+    machineId: string;
+    warning: string;
+  } | null>(null);
+  const [linkRetrying, setLinkRetrying] = useState(false);
+
   const mutation = useMutation({
-    mutationFn: async (data: UnifiedTicketFormData) => {
+    mutationFn: async (data: UnifiedTicketFormData): Promise<CreateTicketOutcome> => {
       if (!user) throw new Error('Not authenticated');
       // Map to existing createTicket API shape
       const machineId = data.machine_id?.trim() || undefined;
@@ -144,7 +151,21 @@ export const TicketForm: React.FC<TicketFormProps> = ({
         related_order_id: undefined,
       }, user.id);
     },
-    onSuccess: () => {
+    onSuccess: (outcome) => {
+      const link = outcome.machineLink;
+      if (link.status === 'unlinked' && link.reason !== 'not_requested' && 'retryable' in link) {
+        setPendingLink({
+          ticketId: outcome.ticket.id,
+          machineId: link.machineId,
+          warning: link.warning,
+        });
+        toast({
+          title: 'Ticket Created',
+          description: `${link.warning} Ticket ${outcome.ticket.ticket_number || outcome.ticket.id}.`,
+        });
+        return;
+      }
+      setPendingLink(null);
       toast({ title: 'Ticket Created', description: 'Your support ticket has been submitted.' });
       onSuccess?.();
     },
@@ -153,6 +174,31 @@ export const TicketForm: React.FC<TicketFormProps> = ({
       toast({ title: 'Error', description: msg, variant: 'destructive' });
     }
   });
+
+  const handleRetryLink = async () => {
+    if (!pendingLink || linkRetrying) return;
+    setLinkRetrying(true);
+    try {
+      const result = await retryTicketMachineLink(pendingLink.ticketId, pendingLink.machineId);
+      if (result.status === 'linked') {
+        setPendingLink(null);
+        toast({ title: 'Machine linked', description: 'The machine was linked to the existing ticket.' });
+        onSuccess?.();
+        return;
+      }
+      setPendingLink({
+        ticketId: result.ticketId,
+        machineId: result.machineId,
+        warning: result.warning,
+      });
+      toast({ title: 'Link still pending', description: result.warning, variant: 'destructive' });
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Link retry failed';
+      toast({ title: 'Link retry failed', description: msg, variant: 'destructive' });
+    } finally {
+      setLinkRetrying(false);
+    }
+  };
 
   const onSubmit = (data: UnifiedTicketFormData) => {
     mutation.mutate(data);
@@ -362,6 +408,18 @@ export const TicketForm: React.FC<TicketFormProps> = ({
           </LazyMotionDiv>
         )}
       </LazyAnimatePresence>
+
+      {pendingLink && (
+        <div className="rounded-md border border-border/30 bg-card/40 p-3 text-sm space-y-2">
+          <p>{pendingLink.warning}</p>
+          <p className="text-xs text-muted-foreground">
+            Ticket {pendingLink.ticketId} was created. Retry links that ticket only — no second ticket is created.
+          </p>
+          <Button type="button" variant="outline" disabled={linkRetrying} onClick={() => { void handleRetryLink(); }}>
+            {linkRetrying ? 'Retrying link…' : 'Retry machine link'}
+          </Button>
+        </div>
+      )}
 
       {(!showAttachments || mode==='dialog') && (
         <div className="flex justify-end pt-2">
