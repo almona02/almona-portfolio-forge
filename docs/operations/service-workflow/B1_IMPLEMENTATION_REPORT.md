@@ -3,7 +3,7 @@
 **Status:** Implemented on draft PR #156. **Local/disposable verification only.**  
 **Base tip:** `ca9f5067` (#155 frozen). **No staging/production apply. No merge. No B2–B7.**  
 **Migration:** `supabase/migrations/20261111210000_service_workflow_b1_data_contract.sql`  
-**Frozen commit:** `59a2da0f` (implementation `5eef3722`) on `feat/service-workflow-b1-planning`
+**Frozen commit:** `c6b1e46a` (implementation `5eef3722`) on `feat/service-workflow-b1-planning`
 
 ## Naming agreement (Spark)
 
