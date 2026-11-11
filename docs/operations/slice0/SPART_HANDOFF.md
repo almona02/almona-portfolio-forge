@@ -32,12 +32,13 @@
 
 | Environment | Status |
 |---|---|
-| Staging Supabase `apnmoevmvihfzcnttctx` | **APPLIED** — DB/RLS/edge cutover; see `.artifacts/slice0/STAGING_EVALUATION_REPORT.md` |
-| Staging Vercel client | **NOT DEPLOYED** (team grant missing) |
-| Staging Python / Railway | **NOT DEPLOYED** (no non-prod Railway target; prod unauthorized) |
+| Staging Supabase `apnmoevmvihfzcnttctx` | **APPLIED** — DB/RLS/edge cutover |
+| Staging Vercel client | **NOT DEPLOYED** (needs team grant + staging-only env; default Preview/Production point at prod Supabase) |
+| Staging Python / Railway | **NOT DEPLOYED** (no Railway staging environment exists; prod unauthorized) |
 | Production | **NOT APPLIED** |
 
-Deployed evaluation baseline: implementation `7e8ac0a1`; tip `c6d14a89` (docs pin only).
+Acceptance evidence: `.artifacts/slice0/STAGING_ACCEPTANCE_REPORT.md`  
+Deployed evaluation baseline: implementation `7e8ac0a1`; tip includes test-assertion commit `d260ec78` (no runtime delta vs freeze).
 
 ## Post-insert assign residual (accurate)
 
