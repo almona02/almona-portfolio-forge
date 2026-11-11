@@ -44,5 +44,5 @@ Evidence JSON: `.artifacts/slice0/service-workflow/disposable_b1_results.json` (
 
 ## Frozen commit
 
-Recorded on branch `feat/service-workflow-b1-planning` after this report lands (see PR #156).  
+**Frozen commit:** `5eef37223941bee0e6b4f5dde53a13fb734db2cf` on `feat/service-workflow-b1-planning` (PR #156).  
 PR #155 tip remains `ca9f5067`.
