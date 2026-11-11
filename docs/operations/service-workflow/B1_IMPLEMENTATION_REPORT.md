@@ -3,7 +3,7 @@
 **Status:** Implemented on draft PR #156. **Local/disposable verification only.**  
 **Base tip:** `ca9f5067` (#155 frozen). **No staging/production apply. No merge. No B2–B7.**  
 **Migration:** `supabase/migrations/20261111210000_service_workflow_b1_data_contract.sql`  
-**Frozen full commit (B1 acceptance):** `2bb20cb128315a21afac3369762eee8274d8f5f5`
+**Frozen full commit (B1 acceptance):** `7a8307395b79df677a96f77cd993a77351b5805c`
 
 ## Commit relationship
 
@@ -12,6 +12,7 @@
 | `5eef37223941bee0e6b4f5dde53a13fb734db2cf` | Initial B1 schema/RLS/RPC/battery land | Yes |
 | `c6b1e46aa385a4eadcb125ce7c42761732908867` | Docs-only: finalize freeze label | No |
 | `4f64fd5f9480f1a57d0b84bfee955f79a2bf360c` | Docs-only: point freeze label at tip | No |
+| `7a8307395b79df677a96f77cd993a77351b5805c` | **B1 acceptance freeze** (activation protect + expanded harness) | Yes |
 
 Spark’s first expanded pass against `5eef3722` found: activation clearable via client UPDATE (`X4b`), M2 false-positive uniqueness probe, and required fixture SKIPs for R2/RV1/ACK1. Acceptance freeze includes activation-column protection + expanded harness fixes.
 

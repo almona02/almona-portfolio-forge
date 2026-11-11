@@ -50,7 +50,7 @@ This handover delivers the specification for review. It does **not** grant imple
 | Harness | `python scripts/service-workflow/run_disposable_b1.py` |
 | #155 frozen tip | `ca9f506715567e1f2ea08fdcd4e2bb0d5e3d10da` (unchanged) |
 
-**Frozen full commit SHA (B1 acceptance):** `2bb20cb128315a21afac3369762eee8274d8f5f5`
+**Frozen full commit SHA (B1 acceptance):** `7a8307395b79df677a96f77cd993a77351b5805c`
 
 **SHA relationship (pre-acceptance docs tip):**
 
