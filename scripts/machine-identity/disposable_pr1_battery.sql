@@ -44,24 +44,32 @@ BEGIN
   PERFORM pg_temp.auth_as(v_owner, 'customer');
   v_r := public.register_machine_identity(
     'Catalog CNC', 'YM-5K', 'YM-5K-238492', 'yilmaz', 'ym-5k', false,
-    NULL, false, NULL, 'idem-catalog-1', 'web_registration', NULL, NULL
+    NULL, false, NULL, 'idem-catalog-1', 'web_registration', NULL, NULL, 'linked'
   );
-  IF (v_r->>'machine_id') IS NULL OR (v_r->>'idempotent')::boolean IS TRUE THEN
+  IF (v_r->>'machine_id') IS NULL
+     OR (v_r->>'idempotent')::boolean IS TRUE
+     OR (v_r->>'catalog_link_status') IS DISTINCT FROM 'linked' THEN
     INSERT INTO mi_eval VALUES ('A1_catalog', 'FAIL', v_r::text);
   ELSE
     INSERT INTO mi_eval VALUES ('A1_catalog', 'PASS', v_r->>'machine_id');
   END IF;
   v_id := (v_r->>'machine_id')::uuid;
 
-  -- A2 uncatalogued
+  -- A2 uncatalogued (explicit catalog_link_status)
   v_r := public.register_machine_identity(
     'Shop saw', 'Custom Panel Saw', 'CPS-100/22', 'unknown', NULL, true,
-    NULL, false, NULL, 'idem-uncat-1', 'web_registration', NULL, NULL
+    NULL, false, NULL, 'idem-uncat-1', 'web_registration', NULL, NULL, 'uncatalogued'
   );
-  IF (v_r->>'machine_id') IS NULL OR (v_r->>'identity_confidence') IS NULL THEN
+  IF (v_r->>'machine_id') IS NULL
+     OR (v_r->>'catalog_link_status') IS DISTINCT FROM 'uncatalogued'
+     OR EXISTS (
+       SELECT 1 FROM public.machines m
+       WHERE m.id = (v_r->>'machine_id')::uuid
+         AND m.catalog_link_status = 'uncatalogued'
+     ) IS NOT TRUE THEN
     INSERT INTO mi_eval VALUES ('A2_uncatalogued', 'FAIL', v_r::text);
   ELSE
-    INSERT INTO mi_eval VALUES ('A2_uncatalogued', 'PASS', coalesce(v_r->>'identity_confidence',''));
+    INSERT INTO mi_eval VALUES ('A2_uncatalogued', 'PASS', coalesce(v_r->>'catalog_link_status',''));
   END IF;
 
   -- A3 missing serial provisional
@@ -98,31 +106,55 @@ BEGIN
     INSERT INTO mi_eval VALUES ('A6b_idempotent_conflict', 'PASS', SQLERRM);
   END;
 
-  -- A5 cross-customer: other owner registers same serial → review, no disclosure in payload
+  -- A5 cross-customer: staff-only case; customer response identical to clear registration
   PERFORM pg_temp.auth_as(v_other, 'customer');
   v_r := public.register_machine_identity(
     'Claimed CNC', 'YM-5K', 'YM-5K-238492', 'yilmaz', 'ym-5k', false,
     NULL, false, NULL, 'idem-other-1', 'web_registration', NULL, NULL
   );
-  IF (v_r->>'needs_staff_review')::boolean
-     AND (v_r->>'identity_review_status') = 'duplicate_review'
-     AND (v_r::text NOT ILIKE '%' || v_owner::text || '%') THEN
+  IF coalesce((v_r->>'needs_staff_review')::boolean, false) = false
+     AND (v_r->>'identity_review_status') = 'clear'
+     AND (v_r::text NOT ILIKE '%' || v_owner::text || '%')
+     AND (v_r::text NOT ILIKE '%' || v_id::text || '%')
+     AND EXISTS (
+       SELECT 1 FROM public.machine_duplicate_cases c
+       WHERE c.serial_canonical = 'YM-5K-238492'
+         AND c.incoming_owner_id = v_other
+         AND c.candidate_machine_id = v_id
+         AND c.status = 'open'
+     )
+     AND EXISTS (
+       SELECT 1 FROM public.machine_identity_events e
+       WHERE e.machine_id = (v_r->>'machine_id')::uuid
+         AND e.event_type = 'duplicate_case_opened'
+         AND e.visibility = 'staff_only'
+     )
+     AND NOT EXISTS (
+       SELECT 1 FROM public.machine_identity_events e
+       WHERE e.machine_id = (v_r->>'machine_id')::uuid
+         AND e.visibility = 'owner_visible'
+         AND e.after_values ? 'duplicate_case_id'
+     ) THEN
     INSERT INTO mi_eval VALUES ('A5_cross_customer_review', 'PASS', v_r->>'message');
   ELSE
     INSERT INTO mi_eval VALUES ('A5_cross_customer_review', 'FAIL', v_r::text);
   END IF;
   v_id2 := (v_r->>'machine_id')::uuid;
 
-  -- Customer duplicate detect must not set foreign_match_exists true/false leak... returns null for non-staff
+  -- Customer duplicate detect: foreign_match_exists NULL; sep flag not from foreign-only
   v_r := public.machine_duplicate_detect('YM-5K-238492', 'yilmaz');
-  IF (v_r->>'foreign_match_exists') IS NULL AND jsonb_typeof(v_r->'own_matches') = 'array' THEN
+  IF (v_r->>'foreign_match_exists') IS NULL
+     AND jsonb_typeof(v_r->'own_matches') = 'array'
+     AND coalesce((v_r->>'review_flag_separator_insensitive')::boolean, false) = false THEN
     INSERT INTO mi_eval VALUES ('A5b_detect_no_foreign_leak', 'PASS', v_r::text);
   ELSE
     INSERT INTO mi_eval VALUES ('A5b_detect_no_foreign_leak', 'FAIL', v_r::text);
   END IF;
 
-  -- Retired included in staff detection
+  -- Retired included in staff detection (fixture update via allow_protected_update)
+  PERFORM set_config('machine_identity.allow_protected_update', 'on', true);
   UPDATE public.machines SET identity_lifecycle = 'retired' WHERE id = v_id;
+  PERFORM set_config('machine_identity.allow_protected_update', 'off', true);
   PERFORM pg_temp.auth_as(v_admin, 'admin');
   v_r := public.machine_duplicate_detect('YM-5K-238492', 'yilmaz');
   IF jsonb_array_length(v_r->'staff_matches') >= 1 THEN
@@ -130,21 +162,21 @@ BEGIN
   ELSE
     INSERT INTO mi_eval VALUES ('A_retired_in_detection', 'FAIL', v_r::text);
   END IF;
+  PERFORM set_config('machine_identity.allow_protected_update', 'on', true);
   UPDATE public.machines SET identity_lifecycle = 'active' WHERE id = v_id;
+  PERFORM set_config('machine_identity.allow_protected_update', 'off', true);
 
-  -- Separator-insensitive flags review only (different canonical)
+  -- Customer sep flag reflects own records only (other has YM5K238492? not yet)
   PERFORM pg_temp.auth_as(v_owner, 'customer');
   v_r := public.register_machine_identity(
     'Sep variant owner', 'YM-5K', 'YM5K238492', 'yilmaz', NULL, true,
-    NULL, false, NULL, 'idem-sep-owner', 'web_registration', NULL, NULL
+    NULL, false, NULL, 'idem-sep-owner', 'web_registration', NULL, NULL, 'uncertain'
   );
-  -- own exact different canonical is allowed; cross-customer sep flag tested via other
-  PERFORM pg_temp.auth_as(v_other, 'customer');
-  -- ensure another sep-insensitive candidate exists under owner with different canonical already
-  v_r := public.machine_duplicate_detect('YM-5K-238492', 'yilmaz');
-  -- as other looking at own only — flag may be true from global exists check
-  IF (v_r ? 'review_flag_separator_insensitive') THEN
-    INSERT INTO mi_eval VALUES ('A_sep_insensitive_flag_present', 'PASS', (v_r->>'review_flag_separator_insensitive'));
+  -- Owner now has sep variant of own YM-5K-238492 → own advisory review allowed
+  IF (v_r->>'identity_review_status') = 'duplicate_review'
+     AND (v_r->>'catalog_link_status') = 'uncertain' THEN
+    INSERT INTO mi_eval VALUES ('A_sep_insensitive_flag_present', 'PASS',
+      'own_sep_review=' || coalesce(v_r->>'needs_staff_review','?'));
   ELSE
     INSERT INTO mi_eval VALUES ('A_sep_insensitive_flag_present', 'FAIL', v_r::text);
   END IF;
@@ -187,6 +219,48 @@ BEGIN
     END IF;
   END;
 
+  -- Technician linking deferred (deny even when assigned)
+  INSERT INTO auth.users(id) VALUES ('a1000000-0000-4000-8000-000000000003')
+  ON CONFLICT DO NOTHING;
+  UPDATE public.service_tickets
+  SET assigned_to = 'a1000000-0000-4000-8000-000000000003'
+  WHERE id = v_ticket;
+  PERFORM pg_temp.auth_as('a1000000-0000-4000-8000-000000000003', 'technician');
+  BEGIN
+    PERFORM public.link_ticket_machine(v_ticket, v_id);
+    INSERT INTO mi_eval VALUES ('A8b_technician_link_deferred', 'FAIL', 'expected deny');
+  EXCEPTION WHEN others THEN
+    IF SQLSTATE = '42501' THEN
+      INSERT INTO mi_eval VALUES ('A8b_technician_link_deferred', 'PASS', SQLERRM);
+    ELSE
+      INSERT INTO mi_eval VALUES ('A8b_technician_link_deferred', 'FAIL', SQLERRM);
+    END IF;
+  END;
+
+  -- Protected identity fields blocked without allow_protected_update
+  BEGIN
+    UPDATE public.machines SET serial_canonical = 'HACKED' WHERE id = v_id;
+    INSERT INTO mi_eval VALUES ('A8c_protected_edit_blocked', 'FAIL', 'expected deny');
+  EXCEPTION WHEN others THEN
+    IF SQLSTATE = '42501' THEN
+      INSERT INTO mi_eval VALUES ('A8c_protected_edit_blocked', 'PASS', SQLERRM);
+    ELSE
+      INSERT INTO mi_eval VALUES ('A8c_protected_edit_blocked', 'FAIL', SQLERRM);
+    END IF;
+  END;
+
+  -- UUID immutability independent of audit FK
+  BEGIN
+    UPDATE public.machines SET id = 'c1000000-0000-4000-8000-00000000dead' WHERE id = v_id;
+    INSERT INTO mi_eval VALUES ('A8d_uuid_immutable', 'FAIL', 'id changed');
+  EXCEPTION WHEN others THEN
+    IF EXISTS (SELECT 1 FROM public.machines WHERE id = v_id) THEN
+      INSERT INTO mi_eval VALUES ('A8d_uuid_immutable', 'PASS', SQLERRM);
+    ELSE
+      INSERT INTO mi_eval VALUES ('A8d_uuid_immutable', 'FAIL', 'row lost');
+    END IF;
+  END;
+
   -- Null machine_id tickets still insertable
   INSERT INTO public.service_tickets(id, ticket_number, user_id, title, description, type, priority, status, machine_id)
   VALUES (
@@ -224,6 +298,7 @@ BEGIN
   INSERT INTO public.machines(id, name, model, serial_number, owner_id)
   VALUES ('c1000000-0000-4000-8000-000000000001', 'Legacy', 'L1', 'LEG-001', v_owner)
   ON CONFLICT (id) DO NOTHING;
+  PERFORM set_config('machine_identity.allow_protected_update', 'on', true);
   UPDATE public.machines
   SET serial_number_raw = COALESCE(serial_number_raw, serial_number),
       serial_canonical = COALESCE(serial_canonical, public.machine_serial_canonical_v1(serial_number)),
@@ -231,6 +306,7 @@ BEGIN
       manufacturer_validation_status = 'unchecked',
       legacy_gaps = '["installation_date_unknown","brand_unknown","catalog_unlinked"]'::jsonb
   WHERE id = 'c1000000-0000-4000-8000-000000000001';
+  PERFORM set_config('machine_identity.allow_protected_update', 'off', true);
   IF EXISTS (
     SELECT 1 FROM public.machines
     WHERE id = 'c1000000-0000-4000-8000-000000000001'

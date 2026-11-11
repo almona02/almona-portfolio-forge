@@ -190,10 +190,21 @@ export const api = {
     brand?: string | null;
     catalog_model_id?: string | null;
     catalog_uncertain?: boolean;
+    catalog_link_status?: 'linked' | 'uncatalogued' | 'uncertain' | null;
     idempotency_key?: string | null;
     missing_serial_reason?: string | null;
   }) => {
     const client = supabase as unknown as { from: (table: string) => any; rpc: (fn: string, args: Record<string, unknown>) => any };
+
+    const catalog_link_status =
+      machineData.catalog_link_status
+      ?? (machineData.catalog_model_id && !machineData.catalog_uncertain
+        ? 'linked'
+        : machineData.catalog_uncertain
+          ? 'uncertain'
+          : machineData.catalog_model_id
+            ? 'linked'
+            : 'uncatalogued');
 
     // Server-side path: idempotency + authz-safe duplicates (no cross-customer disclosure)
     const rpc = await client.rpc('register_machine_identity', {
@@ -201,8 +212,9 @@ export const api = {
       p_model: machineData.model,
       p_serial_raw: machineData.serial_number ?? null,
       p_brand: machineData.brand ?? null,
-      p_catalog_model_id: machineData.catalog_model_id ?? null,
-      p_catalog_uncertain: machineData.catalog_uncertain ?? !machineData.catalog_model_id,
+      p_catalog_model_id: catalog_link_status === 'linked' ? machineData.catalog_model_id ?? null : null,
+      p_catalog_uncertain: catalog_link_status === 'uncertain',
+      p_catalog_link_status: catalog_link_status,
       p_installation_date: machineData.installation_date ?? null,
       p_warranty_valid: machineData.warranty_valid ?? null,
       p_photo_urls: machineData.photo_urls ?? null,

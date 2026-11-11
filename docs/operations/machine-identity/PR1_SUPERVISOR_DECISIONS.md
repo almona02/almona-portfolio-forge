@@ -7,14 +7,23 @@
 ## Supervisor decisions (binding for PR1)
 
 1. **Raw serials preserved.** Default normalized value **retains separators**. A separate separator-insensitive comparison may **only** flag review candidates; it must never assert identity or auto-link.
-2. **Catalog linkage optional.** Uncatalogued manufacturer/model text is supported with explicit uncertainty.
+2. **Catalog linkage optional.** Uncatalogued manufacturer/model text is supported with explicit uncertainty (`catalog_link_status`: `linked` | `uncatalogued` | `uncertain`).
 3. **Three axes separated:** identity confidence, review status, and operational lifecycle — with documented mapping to Wonder states.
-4. **Retired records** are included in authorized duplicate detection.
+4. **Retired records** are included in authorized (staff) duplicate detection.
 5. **Omitted nonessential Wonder fields and QR criteria are explicitly deferred.** PR1 does **not** claim full-spec acceptance.
 
-## Wonder v0.2 gap corrections (recorded)
+## Correction-pass decisions (2026-11-11)
 
-From Wonder `docs/machine-identity-spec.md` v0.2 review decisions:
+6. **No foreign-match disclosure.** Customer-visible duplicate results (including separator-insensitive flags and review outcomes) depend only on authorized records. A foreign match may create a **staff-only** review case and must not change the customer response in a way that reveals the foreign match.
+7. **Identity corrections deferred.** Ordinary client/direct updates to protected identity fields are **blocked**. Authorized corrections with atomic before/after audit are out of PR1. UUID immutability is enforced independently of audit FKs. Do not call edit-audit complete.
+8. **Technician ticket-machine linking deferred.** Supported paths: customer-own and admin/support. Technician access is not broadened for tests.
+9. **Duplicate-case events** are recorded in a staff-only audit trail (`visibility=staff_only`) without exposing another owner through customer-visible history.
+
+See `PR1_CORRECTION_PASS.md` for matrices and acceptance mapping.
+
+## Wonder v0.2/v0.3 gap corrections (recorded)
+
+From Wonder `docs/machine-identity-spec.md` review decisions:
 
 1. **Scope retained, priority narrowed** — all lines one model; conventional/manual workflows first; no connectivity assumed.
 2. **`ALM-` is internal only** — never a manufacturer serial, never stored/displayed as one, never submitted to manufacturer systems.
@@ -31,7 +40,8 @@ From Wonder `docs/machine-identity-spec.md` v0.2 review decisions:
 | `provisional` (identity) | `identity_confidence = provisional` + `provisional_asset_ref` | Serial fields null; ALM- internal |
 | `active` (identity lifecycle) | `identity_lifecycle = active` | Default for usable machines |
 | `retired` | `identity_lifecycle = retired` | Still visible to authorized duplicate detection |
-| `serial_disputed` / duplicate case | `identity_review_status ∈ {duplicate_review, serial_disputed}` | Separate from lifecycle |
+| `serial_disputed` / duplicate case | `identity_review_status ∈ {duplicate_review, serial_disputed}` | Own-record review only for customers; foreign → staff case |
+| Catalog link | `catalog_link_status` | `linked` / `uncatalogued` / `uncertain` |
 | Serial verification | `manufacturer_validation_status` / feeds `identity_confidence` | Default `unchecked` (no manufacturer API in PR1) |
 | CNC operational idle/running/… | `machine_profiles.status` only | **Not** identity lifecycle |
 | `transfer_pending` | — | Deferred |

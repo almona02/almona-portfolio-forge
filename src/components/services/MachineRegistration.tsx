@@ -175,7 +175,8 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
           warranty_valid: isWithinStandardWarranty(machine.installationDate),
           photo_urls: uploadedUrls.length ? uploadedUrls : null,
           catalog_model_id: selectedCatalogId,
-          catalog_uncertain: !selectedCatalogId,
+          catalog_link_status: selectedCatalogId ? 'linked' : 'uncatalogued',
+          catalog_uncertain: false,
           idempotency_key: idempotencyKeyRef.current,
           missing_serial_reason: machine.serialNumber ? null : 'plate_missing_or_illegible',
         });

@@ -1,34 +1,29 @@
-# Spark coordination — Machine Identity PR1 tests
+# Spark coordination — Machine Identity PR1 (correction pass)
 
-**Freeze target:** commit that lands migration `20261111180000_machine_identity_pr1.sql` + client helpers.  
-**Remote apply:** not authorized. Local disposable only.
+**Remote apply:** not authorized. Local disposable only.  
+**Migration:** `supabase/migrations/20261111180000_machine_identity_pr1.sql` (amended in correction pass).
 
-## Already executed by Cursor (local ephemeral PG `:55434`)
+## Correction-pass targeted tests (priority)
 
-| Suite | Result |
-|---|---|
-| Disposable battery on **production-shaped** registry (UNIQUE+NOT NULL serial, then migration) | **15/15 PASS** |
-| Disposable battery on **staging-shaped** missing registry (no `machines`, no ticket `machine_id`, then migration) | **15/15 PASS** |
-| Vitest `src/lib/machines/serialCanonical.test.ts` | run in same freeze |
+1. **Non-disclosure:** customer `machine_duplicate_detect` + `register_machine_identity` — foreign exact/sep must not flip customer review/`needs_staff_review`/sep flag; `foreign_match_exists` stays `null` for customers.  
+2. **Staff-only duplicate audit:** `duplicate_case_opened` with `visibility=staff_only`; owner-visible events must not contain `duplicate_case_id` or foreign ids.  
+3. **Catalog status:** `linked` / `uncatalogued` / `uncertain` distinct on register + row.  
+4. **Technician link deferred:** assigned technician denied (including own-machine edge).  
+5. **Protected identity edits blocked;** `machines.id` immutable without relying on audit FK; non-identity updates allowed without inventing edit-audit completeness.  
+6. Re-run full disposable dual-shape + Spark verifier after correction commit.
 
-Evidence: `.artifacts/slice0/machine-identity/disposable_pr1_results.json`
-
-Re-run locally:
+## Re-run locally
 
 ```bash
-# ephemeral cluster already documented in scripts/machine-identity/run_disposable_pr1.py
+# Cursor dual-shape battery (ephemeral PG :55434)
 python scripts/machine-identity/run_disposable_pr1.py
+
+# Spark independent verifier (ephemeral PG :55435 by default)
+python scripts/machine-identity/spark_pr1_verify.py
+
 npx vitest run src/lib/machines/serialCanonical.test.ts
 ```
 
-## Requested Spark focus (machine-specific)
+## Out of scope
 
-1. Re-run disposable batteries independently; confirm both starting shapes.  
-2. Review RPC contracts: `register_machine_identity`, `machine_duplicate_detect`, `link_ticket_machine` for authz / non-disclosure.  
-3. Confirm separator-insensitive path **flags only** (no auto-link).  
-4. Confirm recovery note: cannot restore UNIQUE/NOT NULL after null/duplicate serials without human remediation.  
-5. Do **not** apply to staging/production.
-
-## Out of scope for Spark this pass
-
-Transfers, QR, passport UI, merges, staging apply, production cutover.
+Transfers, QR, passport UI, merges, staging/production apply, authorized identity-correction RPC.

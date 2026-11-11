@@ -1,10 +1,10 @@
--- Machine identity PR1 (Wonder v0.2 — narrow slice)
+-- Machine identity PR1 (Wonder v0.2 - narrow slice)
 -- Character: additive schema + constraint relaxation + staging schema-convergence.
 -- Reuses public.machines.id and service_tickets.machine_id (prod). Does not copy production data.
 -- NOT for silent staging/production apply without separate approval; local disposable first.
 --
 -- Recovery note: after null/duplicate serials exist, restoring UNIQUE(serial_number) / NOT NULL
--- requires a human remediation plan — never silent deletion or invented serials.
+-- requires a human remediation plan - never silent deletion or invented serials.
 
 BEGIN;
 SET LOCAL lock_timeout = '5s';
@@ -64,16 +64,36 @@ CREATE TABLE IF NOT EXISTS public.machines (
   photo_urls text[]
 );
 
--- Prod-shaped DBs already have UNIQUE(serial_number) and NOT NULL — relaxed below.
+-- Prod-shaped DBs already have UNIQUE(serial_number) and NOT NULL - relaxed below.
 -- New staging-shaped table is created without the hard unique.
 
 CREATE INDEX IF NOT EXISTS idx_machines_owner_id ON public.machines (owner_id);
 
 ALTER TABLE public.machines ENABLE ROW LEVEL SECURITY;
 
+-- Owner may SELECT/INSERT own rows. Protected identity columns cannot be
+-- client-updated (trigger below); non-identity fields may UPDATE.
 DROP POLICY IF EXISTS machines_manage_own ON public.machines;
-CREATE POLICY machines_manage_own ON public.machines
-  FOR ALL TO authenticated
+DROP POLICY IF EXISTS machines_select_own ON public.machines;
+DROP POLICY IF EXISTS machines_insert_own ON public.machines;
+DROP POLICY IF EXISTS machines_update_own_nonidentity ON public.machines;
+
+CREATE POLICY machines_select_own ON public.machines
+  FOR SELECT TO authenticated
+  USING (
+    COALESCE((auth.jwt() ->> 'is_anonymous')::boolean, false) = false
+    AND owner_id = auth.uid()
+  );
+
+CREATE POLICY machines_insert_own ON public.machines
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    COALESCE((auth.jwt() ->> 'is_anonymous')::boolean, false) = false
+    AND owner_id = auth.uid()
+  );
+
+CREATE POLICY machines_update_own_nonidentity ON public.machines
+  FOR UPDATE TO authenticated
   USING (
     COALESCE((auth.jwt() ->> 'is_anonymous')::boolean, false) = false
     AND owner_id = auth.uid()
@@ -102,6 +122,7 @@ ALTER TABLE public.machines
   ADD COLUMN IF NOT EXISTS brand text,
   ADD COLUMN IF NOT EXISTS catalog_model_id text,
   ADD COLUMN IF NOT EXISTS catalog_uncertain boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS catalog_link_status text NOT NULL DEFAULT 'uncatalogued',
   ADD COLUMN IF NOT EXISTS serial_number_raw text,
   ADD COLUMN IF NOT EXISTS serial_canonical text,
   ADD COLUMN IF NOT EXISTS serial_normalization_version text,
@@ -114,6 +135,13 @@ ALTER TABLE public.machines
   ADD COLUMN IF NOT EXISTS registration_source text,
   ADD COLUMN IF NOT EXISTS registration_idempotency_key text,
   ADD COLUMN IF NOT EXISTS site_label text;
+
+-- Explicit catalog axis: linked | uncatalogued | uncertain (v0.3). catalog_uncertain is a
+-- convenience mirror of (status = 'uncertain') only - status is authoritative.
+ALTER TABLE public.machines DROP CONSTRAINT IF EXISTS machines_catalog_link_status_chk;
+ALTER TABLE public.machines
+  ADD CONSTRAINT machines_catalog_link_status_chk
+  CHECK (catalog_link_status IN ('linked', 'uncatalogued', 'uncertain'));
 
 -- Checks (idempotent via drop/create)
 ALTER TABLE public.machines DROP CONSTRAINT IF EXISTS machines_identity_lifecycle_chk;
@@ -186,6 +214,20 @@ SET
          AND identity_confidence IS NOT NULL THEN identity_confidence
     ELSE 'legacy_incomplete'
   END,
+  catalog_link_status = CASE
+    WHEN catalog_link_status IS DISTINCT FROM 'uncatalogued'
+         AND catalog_link_status IS NOT NULL THEN catalog_link_status
+    WHEN catalog_model_id IS NOT NULL AND coalesce(catalog_uncertain, false) = false THEN 'linked'
+    WHEN coalesce(catalog_uncertain, false) = true THEN 'uncertain'
+    WHEN catalog_model_id IS NULL THEN 'uncatalogued'
+    ELSE 'uncertain'
+  END,
+  catalog_uncertain = CASE
+    WHEN catalog_model_id IS NOT NULL AND coalesce(catalog_uncertain, false) = false THEN false
+    WHEN coalesce(catalog_uncertain, false) = true THEN true
+    WHEN catalog_model_id IS NULL THEN false
+    ELSE true
+  END,
   legacy_gaps = CASE
     WHEN jsonb_typeof(legacy_gaps) = 'array' AND legacy_gaps <> '[]'::jsonb THEN legacy_gaps
     ELSE (
@@ -205,7 +247,7 @@ BEGIN
   IF to_regclass('public.service_tickets') IS NOT NULL THEN
     ALTER TABLE public.service_tickets
       ADD COLUMN IF NOT EXISTS machine_id uuid;
-    -- Add FK only when machines exists (always true after §1)
+    -- Add FK only when machines exists (always true after section 1)
     IF NOT EXISTS (
       SELECT 1 FROM pg_constraint
       WHERE conname = 'service_tickets_machine_id_fkey'
@@ -272,8 +314,20 @@ CREATE TABLE IF NOT EXISTS public.machine_identity_events (
   before_values jsonb,
   after_values jsonb,
   reason text,
-  evidence_refs jsonb
+  evidence_refs jsonb,
+  -- staff_only: foreign duplicate cases and other non-disclosing audit; never owner-visible
+  visibility text NOT NULL DEFAULT 'owner_visible'
+    CHECK (visibility IN ('owner_visible', 'staff_only'))
 );
+
+-- Idempotent add for DBs that created the table before visibility existed
+ALTER TABLE public.machine_identity_events
+  ADD COLUMN IF NOT EXISTS visibility text NOT NULL DEFAULT 'owner_visible';
+
+ALTER TABLE public.machine_identity_events DROP CONSTRAINT IF EXISTS machine_identity_events_visibility_chk;
+ALTER TABLE public.machine_identity_events
+  ADD CONSTRAINT machine_identity_events_visibility_chk
+  CHECK (visibility IN ('owner_visible', 'staff_only'));
 
 CREATE INDEX IF NOT EXISTS idx_machine_identity_events_machine
   ON public.machine_identity_events (machine_id, occurred_at DESC);
@@ -284,9 +338,12 @@ DROP POLICY IF EXISTS machine_identity_events_owner_select ON public.machine_ide
 CREATE POLICY machine_identity_events_owner_select ON public.machine_identity_events
   FOR SELECT TO authenticated
   USING (
-    EXISTS (
-      SELECT 1 FROM public.machines m
-      WHERE m.id = machine_id AND m.owner_id = auth.uid()
+    (
+      visibility = 'owner_visible'
+      AND EXISTS (
+        SELECT 1 FROM public.machines m
+        WHERE m.id = machine_id AND m.owner_id = auth.uid()
+      )
     )
     OR EXISTS (
       SELECT 1 FROM public.profiles p
@@ -294,7 +351,6 @@ CREATE POLICY machine_identity_events_owner_select ON public.machine_identity_ev
     )
   );
 
-DROP POLICY IF EXISTS machine_identity_events_insert_service ON public.machine_identity_events;
 -- Inserts happen via SECURITY DEFINER RPCs (table owner / definer).
 
 -- ---------------------------------------------------------------------------
@@ -311,7 +367,7 @@ AS $$
   END;
 $$;
 
--- Separator-insensitive form: review-flag only — never identity assertion / auto-link
+-- Separator-insensitive form: review-flag only - never identity assertion / auto-link
 CREATE OR REPLACE FUNCTION public.machine_serial_separator_insensitive_v1(p_raw text)
 RETURNS text
 LANGUAGE sql
@@ -359,6 +415,73 @@ AS $$
   SELECT COALESCE(public.machine_actor_role() IN ('admin', 'support'), false);
 $$;
 
+-- Resolve explicit catalog_link_status from inputs (authoritative for PR1).
+CREATE OR REPLACE FUNCTION public.machine_resolve_catalog_link_status(
+  p_catalog_model_id text,
+  p_catalog_uncertain boolean DEFAULT NULL,
+  p_catalog_link_status text DEFAULT NULL
+)
+RETURNS text
+LANGUAGE sql
+IMMUTABLE
+AS $$
+  SELECT CASE
+    WHEN p_catalog_link_status IN ('linked', 'uncatalogued', 'uncertain') THEN p_catalog_link_status
+    WHEN nullif(btrim(p_catalog_model_id), '') IS NOT NULL
+         AND coalesce(p_catalog_uncertain, false) = false THEN 'linked'
+    WHEN coalesce(p_catalog_uncertain, false) = true THEN 'uncertain'
+    ELSE 'uncatalogued'
+  END;
+$$;
+
+-- UUID immutability + block silent identity edits (corrections deferred in PR1).
+-- Future authorized correction RPC may SET LOCAL machine_identity.allow_protected_update = 'on'.
+CREATE OR REPLACE FUNCTION public.machines_enforce_identity_guards()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  IF TG_OP = 'UPDATE' AND NEW.id IS DISTINCT FROM OLD.id THEN
+    RAISE EXCEPTION 'machines.id is immutable'
+      USING ERRCODE = '22023';
+  END IF;
+
+  IF TG_OP = 'UPDATE'
+     AND current_setting('machine_identity.allow_protected_update', true) IS DISTINCT FROM 'on' THEN
+    IF NEW.serial_number IS DISTINCT FROM OLD.serial_number
+       OR NEW.serial_number_raw IS DISTINCT FROM OLD.serial_number_raw
+       OR NEW.serial_canonical IS DISTINCT FROM OLD.serial_canonical
+       OR NEW.serial_normalization_version IS DISTINCT FROM OLD.serial_normalization_version
+       OR NEW.brand IS DISTINCT FROM OLD.brand
+       OR NEW.catalog_model_id IS DISTINCT FROM OLD.catalog_model_id
+       OR NEW.catalog_uncertain IS DISTINCT FROM OLD.catalog_uncertain
+       OR NEW.catalog_link_status IS DISTINCT FROM OLD.catalog_link_status
+       OR NEW.provisional_asset_ref IS DISTINCT FROM OLD.provisional_asset_ref
+       OR NEW.identity_lifecycle IS DISTINCT FROM OLD.identity_lifecycle
+       OR NEW.identity_review_status IS DISTINCT FROM OLD.identity_review_status
+       OR NEW.identity_confidence IS DISTINCT FROM OLD.identity_confidence
+       OR NEW.manufacturer_validation_status IS DISTINCT FROM OLD.manufacturer_validation_status
+       OR NEW.owner_id IS DISTINCT FROM OLD.owner_id
+       OR NEW.registration_idempotency_key IS DISTINCT FROM OLD.registration_idempotency_key
+       OR NEW.legacy_gaps IS DISTINCT FROM OLD.legacy_gaps
+       OR NEW.registration_source IS DISTINCT FROM OLD.registration_source
+    THEN
+      RAISE EXCEPTION
+        'Protected identity fields are not client-editable in PR1; identity corrections deferred'
+        USING ERRCODE = '42501';
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_machines_identity_guards ON public.machines;
+CREATE TRIGGER trg_machines_identity_guards
+  BEFORE UPDATE ON public.machines
+  FOR EACH ROW
+  EXECUTE FUNCTION public.machines_enforce_identity_guards();
+
 -- ---------------------------------------------------------------------------
 -- 8) Register machine (idempotent, authz-safe duplicates)
 -- ---------------------------------------------------------------------------
@@ -375,7 +498,8 @@ CREATE OR REPLACE FUNCTION public.register_machine_identity(
   p_idempotency_key text DEFAULT NULL,
   p_registration_source text DEFAULT 'web_registration',
   p_site_label text DEFAULT NULL,
-  p_missing_serial_reason text DEFAULT NULL
+  p_missing_serial_reason text DEFAULT NULL,
+  p_catalog_link_status text DEFAULT NULL
 )
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -395,6 +519,11 @@ DECLARE
   v_review text := 'clear';
   v_alm text;
   v_payload_fp text;
+  v_catalog_status text;
+  v_catalog_uncertain boolean;
+  v_own_sep_review boolean := false;
+  v_foreign_exact boolean := false;
+  v_foreign_sep boolean := false;
 BEGIN
   IF v_uid IS NULL THEN
     RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
@@ -402,13 +531,20 @@ BEGIN
 
   v_canon := public.machine_serial_canonical_v1(p_serial_raw);
   v_sep := public.machine_serial_separator_insensitive_v1(p_serial_raw);
+  v_catalog_status := public.machine_resolve_catalog_link_status(
+    p_catalog_model_id, p_catalog_uncertain, p_catalog_link_status
+  );
+  IF v_catalog_status = 'linked' AND nullif(btrim(p_catalog_model_id), '') IS NULL THEN
+    RAISE EXCEPTION 'catalog_link_status linked requires catalog_model_id' USING ERRCODE = '22023';
+  END IF;
+  v_catalog_uncertain := (v_catalog_status = 'uncertain');
   v_payload_fp := md5(concat_ws('|',
     coalesce(p_name, ''), coalesce(p_model, ''), coalesce(v_canon, ''),
     coalesce(p_brand, ''), coalesce(p_catalog_model_id, ''),
-    coalesce(p_idempotency_key, '')
+    coalesce(v_catalog_status, ''), coalesce(p_idempotency_key, '')
   ));
 
-  -- Idempotency: same actor + key → same machine; conflicting payload rejected
+  -- Idempotency: same actor + key -> same machine; conflicting payload rejected
   IF p_idempotency_key IS NOT NULL THEN
     SELECT * INTO v_existing
     FROM public.machines m
@@ -424,11 +560,13 @@ BEGIN
       END IF;
 
       INSERT INTO public.machine_identity_events (
-        machine_id, actor_id, actor_role, event_type, provenance, after_values, reason
+        machine_id, actor_id, actor_role, event_type, provenance,
+        after_values, reason, visibility
       ) VALUES (
         v_existing.id, v_uid, v_role, 'idempotent_replay', p_registration_source,
         jsonb_build_object('idempotency_key', p_idempotency_key),
-        'concurrent or retried registration'
+        'concurrent or retried registration',
+        'owner_visible'
       );
 
       RETURN jsonb_build_object(
@@ -436,7 +574,11 @@ BEGIN
         'idempotent', true,
         'identity_review_status', v_existing.identity_review_status,
         'identity_confidence', v_existing.identity_confidence,
-        'provisional_asset_ref', v_existing.provisional_asset_ref
+        'catalog_link_status', v_existing.catalog_link_status,
+        'provisional_asset_ref', CASE
+          WHEN public.machine_is_staff() THEN v_existing.provisional_asset_ref
+          ELSE NULL
+        END
       );
     END IF;
   END IF;
@@ -452,7 +594,7 @@ BEGIN
     v_alm := NULL;
   END IF;
 
-  -- Own exact canonical match → return same machine (non-conflicting retry without key)
+  -- Own exact canonical match -> return same machine (non-conflicting retry without key)
   IF v_canon IS NOT NULL THEN
     SELECT * INTO v_existing
     FROM public.machines m
@@ -468,12 +610,29 @@ BEGIN
         'idempotent', true,
         'identity_review_status', v_existing.identity_review_status,
         'identity_confidence', v_existing.identity_confidence,
-        'provisional_asset_ref', v_existing.provisional_asset_ref
+        'catalog_link_status', v_existing.catalog_link_status,
+        'provisional_asset_ref', CASE
+          WHEN public.machine_is_staff() THEN v_existing.provisional_asset_ref
+          ELSE NULL
+        END
       );
+    END IF;
+
+    -- Own separator-insensitive advisory (authorized records only) may open local review
+    SELECT EXISTS (
+      SELECT 1 FROM public.machines m
+      WHERE m.owner_id = v_uid
+        AND public.machine_serial_separator_insensitive_v1(m.serial_number_raw) = v_sep
+        AND m.serial_canonical IS DISTINCT FROM v_canon
+        AND coalesce(m.brand, '') = coalesce(p_brand, '')
+    ) INTO v_own_sep_review;
+    IF v_own_sep_review THEN
+      v_review := 'duplicate_review';
     END IF;
   END IF;
 
-  -- Cross-customer / broader detection (includes retired). Never reveal other owner to customer.
+  -- Foreign exact / sep-insensitive: staff-only case. Customer-visible review/status
+  -- must NOT change in a way that discloses the foreign match.
   IF v_canon IS NOT NULL THEN
     SELECT * INTO v_other
     FROM public.machines m
@@ -484,7 +643,7 @@ BEGIN
     LIMIT 1;
 
     IF FOUND THEN
-      v_review := 'duplicate_review';
+      v_foreign_exact := true;
       INSERT INTO public.machine_duplicate_cases (
         brand, serial_canonical, serial_raw, candidate_machine_id,
         incoming_owner_id, created_by, separator_insensitive_flag
@@ -492,14 +651,14 @@ BEGIN
         p_brand, v_canon, p_serial_raw, v_other.id, v_uid, v_uid, false
       ) RETURNING id INTO v_case_id;
     ELSIF v_sep IS NOT NULL THEN
-      -- Separator-insensitive: flag only, do not assert identity / auto-link
       IF EXISTS (
         SELECT 1 FROM public.machines m
         WHERE public.machine_serial_separator_insensitive_v1(m.serial_number_raw) = v_sep
           AND m.serial_canonical IS DISTINCT FROM v_canon
+          AND coalesce(m.brand, '') = coalesce(p_brand, '')
           AND m.owner_id IS DISTINCT FROM v_uid
       ) THEN
-        v_review := 'duplicate_review';
+        v_foreign_sep := true;
         INSERT INTO public.machine_duplicate_cases (
           brand, serial_canonical, serial_raw, candidate_machine_id,
           incoming_owner_id, created_by, separator_insensitive_flag
@@ -513,6 +672,7 @@ BEGIN
   INSERT INTO public.machines (
     name, model, serial_number, serial_number_raw, serial_canonical,
     serial_normalization_version, brand, catalog_model_id, catalog_uncertain,
+    catalog_link_status,
     owner_id, installation_date, warranty_valid, photo_urls,
     provisional_asset_ref, identity_lifecycle, identity_review_status,
     identity_confidence, manufacturer_validation_status, legacy_gaps,
@@ -525,8 +685,9 @@ BEGIN
     v_canon,
     'v1_retain_separators',
     nullif(btrim(p_brand), ''),
-    nullif(btrim(p_catalog_model_id), ''),
-    coalesce(p_catalog_uncertain, p_catalog_model_id IS NULL),
+    CASE WHEN v_catalog_status = 'linked' THEN nullif(btrim(p_catalog_model_id), '') ELSE NULL END,
+    v_catalog_uncertain,
+    v_catalog_status,
     v_uid,
     p_installation_date,
     coalesce(p_warranty_valid, false),
@@ -538,7 +699,7 @@ BEGIN
     CASE WHEN v_canon IS NULL THEN 'not_applicable' ELSE 'unchecked' END,
     CASE
       WHEN v_canon IS NULL THEN jsonb_build_array('manufacturer_serial_not_recorded', p_missing_serial_reason)
-      WHEN p_catalog_model_id IS NULL THEN jsonb_build_array('catalog_unlinked')
+      WHEN v_catalog_status <> 'linked' THEN jsonb_build_array('catalog_unlinked')
       ELSE '[]'::jsonb
     END,
     p_registration_source,
@@ -547,33 +708,59 @@ BEGIN
   )
   RETURNING * INTO v_new;
 
+  -- Owner-visible registration event: no foreign case ids / match indicators
   INSERT INTO public.machine_identity_events (
-    machine_id, actor_id, actor_role, event_type, provenance, after_values, reason
+    machine_id, actor_id, actor_role, event_type, provenance,
+    after_values, reason, visibility
   ) VALUES (
     v_new.id, v_uid, v_role, 'registered', p_registration_source,
     jsonb_build_object(
       'identity_confidence', v_new.identity_confidence,
       'identity_review_status', v_new.identity_review_status,
-      'catalog_uncertain', v_new.catalog_uncertain,
-      'duplicate_case_id', v_case_id,
+      'catalog_link_status', v_new.catalog_link_status,
       'payload_fp', v_payload_fp
     ),
-    p_missing_serial_reason
+    p_missing_serial_reason,
+    'owner_visible'
   );
 
-  -- Customer response: never include other-owner candidate ids
+  -- Staff-only duplicate-case trail (never customer-visible history)
+  IF v_case_id IS NOT NULL THEN
+    INSERT INTO public.machine_identity_events (
+      machine_id, actor_id, actor_role, event_type, provenance,
+      after_values, reason, visibility
+    ) VALUES (
+      v_new.id, v_uid, v_role, 'duplicate_case_opened', 'duplicate_detection',
+      jsonb_build_object(
+        'duplicate_case_id', v_case_id,
+        'match_kind', CASE
+          WHEN v_foreign_exact THEN 'foreign_exact_canonical'
+          WHEN v_foreign_sep THEN 'foreign_separator_insensitive'
+          ELSE 'unspecified'
+        END,
+        'separator_insensitive_flag', v_foreign_sep,
+        -- candidate id is staff-only; never returned to customers
+        'candidate_machine_id', CASE WHEN v_foreign_exact THEN v_other.id ELSE NULL END
+      ),
+      'Staff review case; customer response unchanged',
+      'staff_only'
+    );
+  END IF;
+
+  -- Customer response depends only on authorized (own) review state.
+  -- Foreign matches must not flip needs_staff_review / review status here.
   RETURN jsonb_build_object(
     'machine_id', v_new.id,
     'idempotent', false,
     'identity_review_status', v_new.identity_review_status,
     'identity_confidence', v_new.identity_confidence,
-    'provisional_asset_ref', CASE WHEN public.machine_is_staff() THEN v_new.provisional_asset_ref ELSE NULL END,
-    'needs_staff_review', v_new.identity_review_status = 'duplicate_review',
-    'message', CASE
-      WHEN v_new.identity_review_status = 'duplicate_review'
-        THEN 'Registration recorded for review. No confirmation of other registrations is provided.'
-      ELSE 'registered'
-    END
+    'catalog_link_status', v_new.catalog_link_status,
+    'provisional_asset_ref', CASE
+      WHEN public.machine_is_staff() THEN v_new.provisional_asset_ref
+      ELSE NULL
+    END,
+    'needs_staff_review', (v_review = 'duplicate_review' AND v_own_sep_review),
+    'message', 'registered'
   );
 END;
 $$;
@@ -600,13 +787,20 @@ DECLARE
   v_staff boolean := public.machine_is_staff();
   v_own jsonb := '[]'::jsonb;
   v_staff_hits jsonb := '[]'::jsonb;
-  v_flag boolean := false;
+  v_flag_own boolean := false;
+  v_flag_staff boolean := false;
+  v_foreign_exact boolean := false;
 BEGIN
   IF v_uid IS NULL THEN
     RAISE EXCEPTION 'Authentication required' USING ERRCODE = '42501';
   END IF;
   IF v_canon IS NULL THEN
-    RETURN jsonb_build_object('own_matches', '[]'::jsonb, 'review_flag_separator_insensitive', false);
+    RETURN jsonb_build_object(
+      'own_matches', '[]'::jsonb,
+      'staff_matches', '[]'::jsonb,
+      'review_flag_separator_insensitive', false,
+      'foreign_match_exists', NULL
+    );
   END IF;
 
   SELECT coalesce(jsonb_agg(jsonb_build_object(
@@ -621,12 +815,14 @@ BEGIN
     AND m.serial_canonical = v_canon
     AND coalesce(m.brand, '') = coalesce(p_brand, '');
 
-  -- Separator-insensitive advisory flag (no auto-link / no foreign disclosure)
+  -- Customer-visible sep flag: authorized (own) records only
   SELECT EXISTS (
     SELECT 1 FROM public.machines m
-    WHERE public.machine_serial_separator_insensitive_v1(m.serial_number_raw) = v_sep
+    WHERE m.owner_id = v_uid
+      AND public.machine_serial_separator_insensitive_v1(m.serial_number_raw) = v_sep
       AND m.serial_canonical IS DISTINCT FROM v_canon
-  ) INTO v_flag;
+      AND coalesce(m.brand, '') = coalesce(p_brand, '')
+  ) INTO v_flag_own;
 
   IF v_staff THEN
     SELECT coalesce(jsonb_agg(jsonb_build_object(
@@ -647,14 +843,32 @@ BEGIN
     WHERE m.serial_canonical = v_canon
       AND coalesce(m.brand, '') = coalesce(p_brand, '');
     -- Includes retired by design (no lifecycle filter)
+
+    SELECT EXISTS (
+      SELECT 1 FROM public.machines m
+      WHERE public.machine_serial_separator_insensitive_v1(m.serial_number_raw) = v_sep
+        AND m.serial_canonical IS DISTINCT FROM v_canon
+        AND coalesce(m.brand, '') = coalesce(p_brand, '')
+    ) INTO v_flag_staff;
+
+    SELECT EXISTS (
+      SELECT 1 FROM public.machines m
+      WHERE m.serial_canonical = v_canon
+        AND coalesce(m.brand, '') = coalesce(p_brand, '')
+        AND m.owner_id IS DISTINCT FROM v_uid
+    ) INTO v_foreign_exact;
   END IF;
 
   RETURN jsonb_build_object(
     'own_matches', v_own,
     'staff_matches', CASE WHEN v_staff THEN v_staff_hits ELSE '[]'::jsonb END,
-    'review_flag_separator_insensitive', v_flag,
-    -- Cross-customer existence never returned to non-staff:
-    'foreign_match_exists', CASE WHEN v_staff THEN (jsonb_array_length(v_staff_hits) > 0) ELSE NULL END
+    -- Customers: own-only sep flag. Staff: fleet advisory flag.
+    'review_flag_separator_insensitive', CASE
+      WHEN v_staff THEN v_flag_staff
+      ELSE v_flag_own
+    END,
+    -- Cross-customer existence never returned to non-staff (NULL, not false):
+    'foreign_match_exists', CASE WHEN v_staff THEN v_foreign_exact ELSE NULL END
   );
 END;
 $$;
@@ -663,7 +877,7 @@ REVOKE ALL ON FUNCTION public.machine_duplicate_detect FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.machine_duplicate_detect TO authenticated;
 
 -- ---------------------------------------------------------------------------
--- 10) Ticket ↔ machine link with server-side access check
+-- 10) Ticket - machine link with server-side access check
 -- ---------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.link_ticket_machine(
   p_ticket_id uuid,
@@ -695,11 +909,17 @@ BEGIN
     RAISE EXCEPTION 'Machine not found' USING ERRCODE = 'P0002';
   END IF;
 
-  -- Ticket access: owner or staff (align with Slice 0 staff roles)
+  -- PR1 ticket-link matrix (technician linking explicitly deferred):
+  --   customer (ticket owner) + own machine -> allow
+  --   admin / support -> allow
+  --   technician (assigned or otherwise) -> deny in PR1
+  IF v_role = 'technician' THEN
+    RAISE EXCEPTION 'Technician ticket-machine linking deferred in PR1'
+      USING ERRCODE = '42501';
+  END IF;
+
   IF v_ticket.user_id = v_uid OR v_role IN ('admin', 'support') THEN
     NULL; -- ticket ok
-  ELSIF v_role = 'technician' AND v_ticket.assigned_to = v_uid THEN
-    NULL;
   ELSE
     RAISE EXCEPTION 'Not authorized for ticket' USING ERRCODE = '42501';
   END IF;
@@ -723,10 +943,12 @@ BEGIN
   RETURNING * INTO v_ticket;
 
   INSERT INTO public.machine_identity_events (
-    machine_id, actor_id, actor_role, event_type, provenance, after_values
+    machine_id, actor_id, actor_role, event_type, provenance,
+    after_values, visibility
   ) VALUES (
     p_machine_id, v_uid, v_role, 'ticket_linked', 'ticket_link',
-    jsonb_build_object('ticket_id', p_ticket_id)
+    jsonb_build_object('ticket_id', p_ticket_id),
+    'owner_visible'
   );
 
   RETURN v_ticket;
