@@ -33,11 +33,12 @@ Implementation at `8f2acc4e` was **not** modified between run-1 and final. Only 
 | **S13** | FAIL “tech-own visible, others hidden” / `own=1 other=0 cust=1 sup=2` | **Test assumption error** | B1 `can_read_ticket_workflow` already grants owner-own + assignee-tech + staff; customer-on-own-ticket is intentional. Harness rewritten to own/other/owner-own/cross-customer/staff → PASS. |
 | **S15** | FAIL “failures traceless” (coupled to wrong open-visit / author expectations in early suite) | **Test assumption / probe coupling** | Final S15/S17 assert failed assign/decline/ensure leave no job/history/audit residue → PASS on unchanged freeze. |
 | **S20** (later Spark run before green) | FAIL `42501 permission denied for schema auth` | **Harness setup error** | History SELECT → `caller_uid()` → `auth.uid()`; disposable `b1_auth` lacked `GRANT USAGE ON SCHEMA auth` (hosted Supabase grants it). Base grant added → PASS. |
-| **S14** | Early DEFER (or misread as tech FSM) | **Correct DEFER / PASS** | Final: techs denied job-FSM transitions; staff control ok. Visit execution remains B3 (V5 DEFER). |
+| **S14** | Early DEFER (misread as tech job-FSM acceptance) | **Final PASS** | Techs denied all `govern_job_transition` (incl. own jobs); staff control ok. B2 agency = decline only. Visit execution remains B3 (V5 DEFER). |
 
 ## Required SKIP vs later DEFER (final)
 
-- **Required SKIP:** none.
+- **Required SKIP:** none. Early S1/S3/S11 “author cols” SKIPs were harness assumptions — assignment history already carries `actor_id` / `created_at`.
+- **Read model:** B1 `can_read_ticket_workflow` remains authoritative post-B2 (owner-own, assignee-tech, staff-all, cross-customer denied). Not a staff-only SELECT gap.
 - **Later DEFER (explicitly untested):** M4, M5 (B4), R3, R4 (B5), V5 (B3 visit execution).
 
 ## Two-RPC recoverable partial vs atomic opt-in

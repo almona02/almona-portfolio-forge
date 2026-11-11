@@ -140,13 +140,17 @@ function asJob(row: unknown): ServiceJobRow {
 
 function mapJobRpcError(message: string): Error {
   const lower = message.toLowerCase()
-  if (lower.includes('in_progress') || lower.includes('in progress') || lower.includes('active visit')) {
+  // Include hyphenated "in-progress" (actual B2 server text). Unknown/auth
+  // messages fall through unchanged — do not reclassify them as active-visit.
+  if (
+    lower.includes('in_progress') ||
+    lower.includes('in progress') ||
+    lower.includes('in-progress') ||
+    lower.includes('active visit')
+  ) {
     return new Error(
       'Cannot change job assignment while a visit is in progress. End or abort the visit in the visit workflow first.',
     )
-  }
-  if (lower.includes('42501') || lower.includes('only admin') || lower.includes('only the assigned')) {
-    return new Error(message)
   }
   return new Error(message)
 }

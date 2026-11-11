@@ -1,8 +1,8 @@
 # B2 — Cursor alignment vs Spark `b2_contract.md`
 
-**Freeze under test:** `8f2acc4e806e70e12e87a24dcbebaef78e63e085`  
-**Branch/ref:** `origin/feat/service-workflow-b1-planning` (draft #156).  
-**Reachability:** commit is an ancestor of the remote branch tip; `git fetch origin` then `git show 8f2acc4e806e70e12e87a24dcbebaef78e63e085`.
+**DB freeze:** `8f2acc4e806e70e12e87a24dcbebaef78e63e085`  
+**UI correction:** `c88468ae28060bc15e11c6af28da686535a74832`  
+**Mapper fix:** see HANDOFF tip after this commit lands on `feat/service-workflow-b1-planning` (draft #156).
 
 ## RPC signatures (match)
 
@@ -10,27 +10,25 @@
 |----------------|----------------------|
 | `assign_service_job(p_job_id, p_technician_id, p_rationale, p_actor_id=NULL)` | Exact match (assign + reassign) |
 | `decline_service_job(p_job_id, p_reason, p_actor_id=NULL)` | Exact match |
-| *(Job 1)* | Extra: `ensure_default_service_job(p_ticket_id, p_technician_id=NULL, p_title='Job 1', p_rationale, p_actor_id=NULL)` — idempotent opt-in Job 1 |
+| *(Job 1)* | Extra: `ensure_default_service_job(...)` — idempotent opt-in Job 1 |
 
-No `reassign_service_job` split.
+## Reconciliation (Spark final DB — retained)
 
-## Supervisor resolutions
+| Point | Status |
+|-------|--------|
+| Required SKIP | **None.** Early S1/S3/S11 “author cols” SKIPs were harness assumptions. |
+| Assignment history | **S1/S3/S11 PASS** via `service_job_assignment_history.actor_id` / `created_at` (+ audit). |
+| Read model | **S13 PASS** — B1 `can_read_ticket_workflow` (owner-own, assignee-tech, staff-all, cross-customer denied). **Not** staff-only SELECT. |
+| S14 technician agency | **PASS** — decline only; techs denied job-FSM; staff control ok. |
+| Scheduled visits | **Do not block** reassign/decline (S4/S22); only `in_progress` blocks. |
+| Opt-in boundary | Two client RPCs; each DB-atomic; S21 proves partial + retry → one Job 1. |
+| DB totals @ `8f2acc4e` | **71/0/0/5** SQL + K1–K7 PASS (B1 baseline 49 verbatim). |
 
-1. **Active-visit decline:** DENY while visit `in_progress`. Ending/aborting visits is B3. Scheduled visits do not block decline/reassign by themselves.
-2. **Assignment concurrency:** Same-tech retry = idempotent no-op (no duplicate history). Competing different-tech assigns serialize on job `FOR UPDATE`; last writer wins with truthful reassign history (K5/K6).
-3. **Technician agency:** B2 = own-job **decline only**. Visit execution = B3.
-4. **Opt-in workflow entry:** UI is two RPCs (ticket assign, then `ensure_default_service_job`). Partial after A is recoverable; B is DB-atomic and retry-safe (see `B2_OPTIN_TRANSACTION_BOUNDARY.md`).
-5. **UI:** Opt-in checkbox path accepted at freeze (U1–U6). **Full** additional-job / decline UI is completed in a separate correction commit after harness reconciliation — not part of `8f2acc4e`.
+## UI error mapping
 
-## Spark interpretation deltas (resolved by harness/policy, not freeze code change)
+Server text (migration): `Cannot reassign|decline job with an in-progress visit` (hyphen).  
+`mapJobRpcError` must match `in-progress` (and existing underscore/space forms). Auth/unknown errors pass through unchanged.
 
-| Point | Resolution |
-|-------|------------|
-| Author cols | Map to `service_job_assignment_history.actor_id` / `created_at` — not a freeze defect |
-| Reassign vs scheduled visit | Allowed; only `in_progress` blocks |
-| Tech job SELECT | B1 `can_read_ticket_workflow` boundaries hold post-B2 (S13 final PASS) |
-| Column name | `assigned_technician_id` |
+## Verdict files
 
-## Verdict reconciliation
-
-See `B2_VERDICT_RECONCILIATION_8f2acc4e.md`. Early BLOCKED run preserved separately from final ACCEPTED.
+See `B2_VERDICT_RECONCILIATION_8f2acc4e.md`. Early BLOCKED vs final ACCEPTED preserved under distinct names.
