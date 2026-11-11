@@ -294,18 +294,16 @@ export const api = {
     });
     if (error) throw error;
 
-    // Prefer a long-lived signed URL so persisted photo_urls are downloadable
-    // under authorization without making the bucket public.
+    // Private bucket: never treat getPublicUrl as usable evidence. Persist only
+    // after a signed URL is issued; keep the storage path in the error for recovery.
     const { data: signed, error: signErr } = await storage.createSignedUrl(path, 60 * 60 * 24 * 365);
-    if (!signErr && signed?.signedUrl) {
-      return signed.signedUrl as string;
+    if (signErr || !signed?.signedUrl) {
+      const detail = signErr?.message || 'signed URL unavailable';
+      throw new Error(
+        `Photo uploaded to machine-photos/${path} but evidence signing failed: ${detail}`,
+      );
     }
-
-    const { data: pub } = storage.getPublicUrl(path);
-    if (!pub?.publicUrl) {
-      throw new Error('Photo uploaded but evidence URL could not be issued');
-    }
-    return pub.publicUrl as string;
+    return signed.signedUrl as string;
   },
 
   /** Owner-scoped re-sign for a machine-photos object path (authorized download). */

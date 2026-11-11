@@ -12,10 +12,32 @@ type TicketShareRow = {
   revoked_at: string | null
   created_at: string
 }
+type TicketAttachmentPersist = {
+  filename: string
+  size: number
+  type: string
+  url?: string
+  storage_path?: string
+}
+
+type TicketMessagesTable = Database['public']['Tables']['ticket_messages']
 type TicketMessagingDatabase = {
   public: {
     Tables: {
-      ticket_messages: Database['public']['Tables']['ticket_messages'] & { Relationships: [] }
+      // Slice 0 private attachments use storage_path; url is optional signed download only.
+      // Override generated Insert/Row so TS2769 does not require legacy public url.
+      ticket_messages: {
+        Row: Omit<TicketMessagesTable['Row'], 'attachments'> & {
+          attachments: TicketAttachmentPersist[]
+        }
+        Insert: Omit<TicketMessagesTable['Insert'], 'attachments'> & {
+          attachments?: TicketAttachmentPersist[]
+        }
+        Update: Omit<TicketMessagesTable['Update'], 'attachments'> & {
+          attachments?: TicketAttachmentPersist[]
+        }
+        Relationships: []
+      }
       ticket_shares: {
         Row: TicketShareRow
         Insert: Pick<TicketShareRow, 'ticket_id' | 'token'> & Partial<Omit<TicketShareRow, 'ticket_id' | 'token'>>

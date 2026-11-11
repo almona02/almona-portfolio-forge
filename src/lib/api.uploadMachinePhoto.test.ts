@@ -40,6 +40,7 @@ describe('uploadMachinePhoto', () => {
     expect(String(path).startsWith('owner-uid-1/')).toBe(true)
     expect(opts).toMatchObject({ upsert: true, contentType: 'image/png' })
     expect(createSignedUrl).toHaveBeenCalled()
+    expect(getPublicUrl).not.toHaveBeenCalled()
     expect(url).toBe('https://example.test/signed/plate.png')
   })
 
@@ -51,5 +52,20 @@ describe('uploadMachinePhoto', () => {
       message: 'Bucket not found',
     })
     expect(createSignedUrl).not.toHaveBeenCalled()
+    expect(getPublicUrl).not.toHaveBeenCalled()
+  })
+
+  it('does not report usable evidence when signing fails; preserves storage path in the error', async () => {
+    upload.mockResolvedValue({ error: null })
+    createSignedUrl.mockResolvedValue({
+      data: null,
+      error: { message: 'sign denied' },
+    })
+
+    const file = new File([new Uint8Array([1])], 'plate.png', { type: 'image/png' })
+    await expect(api.uploadMachinePhoto(file, 'owner-uid-1', 'unassigned')).rejects.toThrow(
+      /machine-photos\/owner-uid-1\/.*evidence signing failed: sign denied/,
+    )
+    expect(getPublicUrl).not.toHaveBeenCalled()
   })
 })
