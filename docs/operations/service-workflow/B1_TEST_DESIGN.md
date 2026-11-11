@@ -17,11 +17,11 @@ Base schema for the disposable battery **includes** Slice 0 + machine-identity m
 
 ## Battery structure (disposable SQL)
 
-Suggested files (names provisional until implementation approval):
+Implemented harness (Spark-aligned):
 
-- `tests/sql/service_workflow_b1_baseline.sql` — apply Slice 0 + MI + B1 migrations on empty/disposable DB  
-- `tests/sql/service_workflow_b1_transitions.sql` — legal/illegal job/visit/report/review/ack transitions  
-- `tests/sql/service_workflow_b1_closure_predicates.sql` — required/optional/waived helpers (ack may stub until B6)
+- `scripts/service-workflow/disposable_b1_base.sql` + `disposable_b1_battery.sql` + `run_disposable_b1.py`
+- Applies real Slice 0 boundary + ticket_number section + `20261111210000_service_workflow_b1_data_contract.sql`
+- Visit table under test: **`service_job_visits`** (contract `service_visits` coexist stub in base)
 
 ### Transition matrix (must assert)
 

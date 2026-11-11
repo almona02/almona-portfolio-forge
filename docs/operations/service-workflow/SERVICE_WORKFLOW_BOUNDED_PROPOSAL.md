@@ -26,16 +26,12 @@ Acceptance scenarios S1–S12 and backlog B1–B7 in the spec are the review con
 
 ## Proposed next slice (bounded): **B1 only — data contract + state guards**
 
-### In scope
+### In scope (implemented — see `B1_IMPLEMENTATION_REPORT.md`)
 
-1. **Schema** for: `service_jobs`, `service_visits`, `service_reports` (or visit-bound report root), `service_report_revisions`, `service_report_reviews`, `service_report_acknowledgments`, plus append-only audit rows (reuse Slice 0 audit patterns where possible).
-2. **State machines** per Section 5 with **SECURITY DEFINER** transition RPCs (governed pattern from Slice 0) — no direct client UPDATEs of state columns.
-3. **Disposable-database battery** proving:
-   - legal/illegal transitions
-   - multiple jobs per ticket
-   - revision immutability (edit-after-submit denied)
-   - adding a required job to a `resolved` ticket returns ticket to `in_progress` via governed FSM
-   - mixed required / optional / waived jobs do not corrupt closure predicate helpers (helpers may stub acknowledgment until B6)
+1. **Schema** for: `service_jobs`, **`service_job_visits`** (distinct from existing contract `service_visits`), `service_reports`, `service_report_revisions`, `service_report_reviews`, `service_acknowledgments` (append-only events), `service_workflow_audit`. Durable `workflow_activated_at` on tickets.
+2. **State machines** with **SECURITY DEFINER** RPCs, real RLS (no permissive stubs), protected relationship/assignee/required/immutable columns, atomic audit. Job `completed` requires approved issued report (ordered by visit_sequence + revision_number).
+3. **Disposable-database battery** proving transitions, multi-job/multi-visit, immutability fixtures, resolved job add-back, legacy jobless parity, named prerequisites (acknowledgment returns `acknowledgment_not_implemented` — never stubbed satisfied), concurrency races.
+4. **FSM note:** Slice 0 lacked `resolved→in_progress`; B1 adds a narrow governed extension used only inside `create_service_job` for required-job add-back (closed reopen still prohibited).
 
 ### Explicitly out of this first PR
 
