@@ -11,7 +11,7 @@ B1 freeze (must stay green): `7a8307395b79df677a96f77cd993a77351b5805c`
 B2 migration: `supabase/migrations/20261111220000_service_workflow_b2_assignment.sql`  
 Contract: `docs/operations/service-workflow/B2_ASSIGNMENT_CONTRACT.md`  
 Harness: `python scripts/service-workflow/run_disposable_b1.py`  
-Worktree tip: use a clean worktree at the B2 freeze SHA once labeled in `B2_IMPLEMENTATION_REPORT.md`.
+**B2 freeze SHA:** `8f2acc4e806e70e12e87a24dcbebaef78e63e085` (feat UI+RPC+battery). Branch tip may include docs-only commits after.
 
 ## Required coverage
 

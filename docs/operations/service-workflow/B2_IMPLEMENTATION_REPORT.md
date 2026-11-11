@@ -4,7 +4,7 @@
 **Depends on:** B1 accepted at `7a8307395b79df677a96f77cd993a77351b5805c`  
 **Migration:** `supabase/migrations/20261111220000_service_workflow_b2_assignment.sql`  
 **Contract:** [`B2_ASSIGNMENT_CONTRACT.md`](./B2_ASSIGNMENT_CONTRACT.md)  
-**B2 freeze SHA (runtime tip before docs stamp):** 
+**B2 freeze SHA:** `8f2acc4e806e70e12e87a24dcbebaef78e63e085`
 
 **No staging/production apply. No merge. No B3+.**
 
