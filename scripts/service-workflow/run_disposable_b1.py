@@ -24,10 +24,13 @@ BASE = ROOT / "scripts/service-workflow/disposable_b1_base.sql"
 MIGRATION = ROOT / "supabase/migrations/20261111010000_service_slice0_security_boundary.sql"
 TKT_MIGRATION = ROOT / "supabase/migrations/20261111200000_staging_machine_photos_and_ticket_number.sql"
 B1_MIGRATION = ROOT / "supabase/migrations/20261111210000_service_workflow_b1_data_contract.sql"
+B2_MIGRATION = ROOT / "supabase/migrations/20261111220000_service_workflow_b2_assignment.sql"
 BATTERY = ROOT / "scripts/service-workflow/disposable_b1_battery.sql"
+B2_BATTERY = ROOT / "scripts/service-workflow/disposable_b2_battery.sql"
 OUT = ROOT / ".artifacts/slice0/service-workflow/disposable_b1_results.json"
 PGBIN = Path(r"C:\Program Files\PostgreSQL\17\bin")
-DATADIR = Path("C:/temp/b1-disposable")
+# Keep disposable cluster under repo artifacts (C:/temp has been swept mid-run).
+DATADIR = OUT.parent / "pgdata"
 PORT = "55442"
 USER = getpass.getuser()
 SUPPORT = "55555555-5555-5555-5555-555555555555"
@@ -114,8 +117,27 @@ def run_all() -> int:
     r = psql_file(db, B1_MIGRATION)
     if r.returncode != 0:
         raise SystemExit(f"apply {B1_MIGRATION.name} failed: {r.stderr}\n{r.stdout}")
+    if B2_MIGRATION.exists():
+        r = psql_file(db, B2_MIGRATION)
+        if r.returncode != 0:
+            raise SystemExit(f"apply {B2_MIGRATION.name} failed: {r.stderr}\n{r.stdout}")
 
-    persist = BATTERY.read_text(encoding="utf-8").replace(
+    battery_sql = BATTERY.read_text(encoding="utf-8")
+    if B2_BATTERY.exists():
+        # Strip B1 trailing summaries; B2 appends then we re-add summary once.
+        for marker in (
+            "SELECT check_id, status, detail FROM b1_eval ORDER BY check_id;\n"
+            "SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass, COUNT(*) FILTER (WHERE status='FAIL') AS fail, COUNT(*) FILTER (WHERE status='SKIP') AS skip, COUNT(*) FILTER (WHERE status='DEFER') AS defer FROM b1_eval;",
+        ):
+            battery_sql = battery_sql.replace(marker, "")
+        battery_sql = battery_sql.rstrip() + "\n\n" + B2_BATTERY.read_text(encoding="utf-8")
+        battery_sql += (
+            "\nSELECT check_id, status, detail FROM b1_eval ORDER BY check_id;\n"
+            "SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass, COUNT(*) FILTER (WHERE status='FAIL') AS fail, "
+            "COUNT(*) FILTER (WHERE status='SKIP') AS skip, COUNT(*) FILTER (WHERE status='DEFER') AS defer FROM b1_eval;\n"
+        )
+
+    persist = battery_sql.replace(
         "SELECT check_id, status, detail FROM b1_eval ORDER BY check_id;\n"
         "SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass, COUNT(*) FILTER (WHERE status='FAIL') AS fail, COUNT(*) FILTER (WHERE status='SKIP') AS skip, COUNT(*) FILTER (WHERE status='DEFER') AS defer FROM b1_eval;",
         "CREATE TABLE IF NOT EXISTS public.b1_results (check_id text PRIMARY KEY, status text, detail text);\n"
@@ -460,6 +482,62 @@ def run_concurrency(db: str) -> None:
                    f"state={k4state} jobs={k4jobs}")
     except Exception as e:  # noqa: BLE001
         k_note("K4", False, f"harness: {e}")
+
+    # K5: concurrent ensure_default_service_job → exactly one Job 1
+    try:
+        c = psycopg2.connect(**dsn)
+        c.autocommit = True
+        cur = c.cursor()
+        cur.execute(
+            "SELECT EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'ensure_default_service_job');")
+        if not cur.fetchone()[0]:
+            results["concurrency"]["K5"] = {"status": "SKIP", "detail": "pending B2"}
+            print("SKIP K5 pending B2")
+            c.close()
+        else:
+            cur.execute("SET app.b1_uid = %s;", (SUPPORT,))
+            cur.execute(
+                "INSERT INTO public.service_tickets (ticket_number, user_id, title, status)"
+                " VALUES ('B2-K5T', '11111111-1111-1111-1111-111111111111', 'k5', 'open')"
+                " RETURNING id;")
+            k5t = cur.fetchone()[0]
+            c.close()
+            out5: dict = {}
+
+            def k5_worker(label: str) -> None:
+                cc = psycopg2.connect(**dsn)
+                cc.autocommit = True
+                try:
+                    cu = cc.cursor()
+                    cu.execute("SET app.b1_uid = %s;", (SUPPORT,))
+                    cu.execute(
+                        "SELECT id FROM public.ensure_default_service_job(%s, %s, 'Job 1', 'k5', NULL);",
+                        (k5t, "33333333-3333-3333-3333-333333333333"),
+                    )
+                    out5[label] = cu.fetchone()[0]
+                except Exception as e:  # noqa: BLE001
+                    out5[label] = getattr(e, "pgcode", str(e))
+                finally:
+                    cc.close()
+
+            t1 = threading.Thread(target=k5_worker, args=("a",))
+            t2 = threading.Thread(target=k5_worker, args=("b",))
+            t1.start()
+            t2.start()
+            t1.join(30)
+            t2.join(30)
+            c = psycopg2.connect(**dsn)
+            c.autocommit = True
+            cur = c.cursor()
+            cur.execute("SELECT count(*) FROM public.service_jobs WHERE ticket_id = %s;", (k5t,))
+            njobs = cur.fetchone()[0]
+            c.close()
+            same = out5.get("a") == out5.get("b") and isinstance(out5.get("a"), type(out5.get("b")))
+            # UUID equality when both succeeded
+            ok = njobs == 1 and out5.get("a") == out5.get("b")
+            k_note("K5", ok, f"jobs={njobs} a={out5.get('a')} b={out5.get('b')}")
+    except Exception as e:  # noqa: BLE001
+        k_note("K5", False, f"harness: {e}")
 
 
 if __name__ == "__main__":
