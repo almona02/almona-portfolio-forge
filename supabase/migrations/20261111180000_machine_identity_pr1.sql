@@ -1,16 +1,16 @@
 -- Machine identity PR1 (Wonder v0.2 - narrow slice)
 -- Character: additive schema + constraint relaxation + staging schema-convergence.
 -- Reuses public.machines.id and service_tickets.machine_id (prod). Does not copy production data.
--- NOT for silent staging/production apply without separate approval; local disposable first.
+-- Staging apply authorized only with explicit supervisor approval; production apply unauthorized.
 --
 -- Recovery note: after null/duplicate serials exist, restoring UNIQUE(serial_number) / NOT NULL
 -- requires a human remediation plan - never silent deletion or invented serials.
 
-BEGIN;
-SET LOCAL lock_timeout = '5s';
+SET lock_timeout = '5s';
 
 -- ---------------------------------------------------------------------------
--- 0) Minimal auth stubs only when absent (disposable / incomplete local DBs)
+-- 0) Minimal auth stubs ONLY when absent (disposable DBs).
+--    Never CREATE OR REPLACE hosted auth.uid / auth.jwt.
 -- ---------------------------------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS auth;
 
@@ -18,21 +18,32 @@ CREATE TABLE IF NOT EXISTS auth.users (
   id uuid PRIMARY KEY
 );
 
-CREATE OR REPLACE FUNCTION auth.uid()
-RETURNS uuid
-LANGUAGE sql
-STABLE
-AS $$
-  SELECT NULLIF(current_setting('request.jwt.claim.sub', true), '')::uuid;
-$$;
+DO $$
+BEGIN
+  IF to_regprocedure('auth.uid()') IS NULL THEN
+    EXECUTE $fn$
+      CREATE FUNCTION auth.uid()
+      RETURNS uuid
+      LANGUAGE sql
+      STABLE
+      AS $body$
+        SELECT NULLIF(current_setting('request.jwt.claim.sub', true), '')::uuid;
+      $body$
+    $fn$;
+  END IF;
 
-CREATE OR REPLACE FUNCTION auth.jwt()
-RETURNS jsonb
-LANGUAGE sql
-STABLE
-AS $$
-  SELECT COALESCE(NULLIF(current_setting('request.jwt.claims', true), '')::jsonb, '{}'::jsonb);
-$$;
+  IF to_regprocedure('auth.jwt()') IS NULL THEN
+    EXECUTE $fn$
+      CREATE FUNCTION auth.jwt()
+      RETURNS jsonb
+      LANGUAGE sql
+      STABLE
+      AS $body$
+        SELECT COALESCE(NULLIF(current_setting('request.jwt.claims', true), '')::jsonb, '{}'::jsonb);
+      $body$
+    $fn$;
+  END IF;
+END $$;
 
 -- Role used by Supabase RLS (no-op on hosted when already present)
 DO $$ BEGIN
@@ -957,5 +968,3 @@ $$;
 
 REVOKE ALL ON FUNCTION public.link_ticket_machine FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.link_ticket_machine TO authenticated;
-
-COMMIT;
