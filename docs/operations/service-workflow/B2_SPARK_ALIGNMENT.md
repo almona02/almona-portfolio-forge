@@ -2,7 +2,7 @@
 
 **DB freeze:** `8f2acc4e806e70e12e87a24dcbebaef78e63e085`  
 **UI correction:** `c88468ae28060bc15e11c6af28da686535a74832`  
-**Mapper fix:** see HANDOFF tip after this commit lands on `feat/service-workflow-b1-planning` (draft #156).
+**Mapper fix:** `5c8bfebe9a4e4675d973c73d1670770904caa32d`
 
 ## RPC signatures (match)
 

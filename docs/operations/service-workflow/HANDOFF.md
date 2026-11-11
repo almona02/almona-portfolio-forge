@@ -21,7 +21,7 @@ Machine-registration → linked-ticket journey complete on **staging** at `ca9f5
 | **Database** | `8f2acc4e` | **ACCEPTED / retained** — 71/0/0/5 SQL (B1 49 verbatim + S1–S22) + K1–K7; zero SKIP; 5 DEFER = B3–B7 only |
 | **Opt-in UI** | `8f2acc4e` | **ACCEPTED** — U1–U6 |
 | **Multi-job UI** | `c88468ae` | Panel/dashboard landed; mapper guidance was dead code until hyphen fix |
-| **Mapper fix** | *(this tip — see git log)* | `mapJobRpcError` matches server `in-progress` text; auth/unknown passthrough |
+| **Mapper fix** | `5c8bfebe9a4e4675d973c73d1670770904caa32d` | `mapJobRpcError` matches server `in-progress` text; auth/unknown passthrough |
 | **Browser** | — | **NOT TESTED** (no authorized B1/B2 staging apply) |
 
 Reconciliation: [`B2_VERDICT_RECONCILIATION_8f2acc4e.md`](./B2_VERDICT_RECONCILIATION_8f2acc4e.md) · Alignment: [`B2_SPARK_ALIGNMENT.md`](./B2_SPARK_ALIGNMENT.md)
