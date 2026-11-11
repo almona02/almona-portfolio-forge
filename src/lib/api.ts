@@ -280,21 +280,42 @@ export const api = {
     throw new Error(errMsg || 'Failed to register machine');
   },
 
-  // Upload a machine photo (returns public URL). Bucket must exist in Supabase storage.
+  // Upload plate/machine evidence to the private machine-photos bucket.
+  // Path first segment MUST be owner uid (storage RLS). Returns a durable
+  // authenticated object URL for photo_urls persistence + authorized download.
   uploadMachinePhoto: async (file: File, ownerId: string, serial: string) => {
     const safeSegment = (value: string) =>
       value.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_').slice(0, 80) || 'file';
-    const path = `${safeSegment(ownerId)}/machine-photos/${safeSegment(serial)}/${Date.now()}-${safeSegment(file.name || 'photo')}`;
-    // profile-thumbnails already allows this user to upload under their id.
-    // The machine-photos bucket has no insert policy, so the browser request returns 400.
-    const storage = (supabase as unknown as { storage: any }).storage.from('profile-thumbnails');
+    const path = `${safeSegment(ownerId)}/${safeSegment(serial)}/${Date.now()}-${safeSegment(file.name || 'photo')}`;
+    const storage = (supabase as unknown as { storage: any }).storage.from('machine-photos');
     const { error } = await storage.upload(path, file, {
       upsert: true,
       contentType: file.type || 'application/octet-stream',
     });
     if (error) throw error;
+
+    // Prefer a long-lived signed URL so persisted photo_urls are downloadable
+    // under authorization without making the bucket public.
+    const { data: signed, error: signErr } = await storage.createSignedUrl(path, 60 * 60 * 24 * 365);
+    if (!signErr && signed?.signedUrl) {
+      return signed.signedUrl as string;
+    }
+
     const { data: pub } = storage.getPublicUrl(path);
+    if (!pub?.publicUrl) {
+      throw new Error('Photo uploaded but evidence URL could not be issued');
+    }
     return pub.publicUrl as string;
+  },
+
+  /** Owner-scoped re-sign for a machine-photos object path (authorized download). */
+  createMachinePhotoDownloadUrl: async (objectPath: string, expiresInSeconds = 3600) => {
+    const storage = (supabase as unknown as { storage: any }).storage.from('machine-photos');
+    const { data, error } = await storage.createSignedUrl(objectPath, expiresInSeconds);
+    if (error || !data?.signedUrl) {
+      throw new Error(error?.message || 'Authorized download URL unavailable');
+    }
+    return data.signedUrl as string;
   },
 
   // Create a new support ticket

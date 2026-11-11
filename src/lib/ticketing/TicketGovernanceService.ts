@@ -307,6 +307,9 @@ export async function governedCreateTicket(
   const slaFields = computeSlaFields(ticketPriority, ticketType, createdAt);
   const actorId = currentUserId ?? userId;
 
+  // ticket_number is intentionally omitted: DB BEFORE INSERT trigger
+  // service_tickets_assign_ticket_number allocates a unique server-side value.
+  // Do not invent collision-prone client numbers; do not swallow insert errors.
   const insertPayload = {
     title: ticketData.title?.toString().slice(0, 200) || 'Support Ticket',
     description: ticketData.description || 'Support ticket created via services page',

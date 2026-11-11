@@ -83,6 +83,28 @@ beforeEach(() => {
 })
 
 describe('governedCreateTicket auto-assignment', () => {
+  it('omits client ticket_number so the DB trigger allocates server-side', async () => {
+    const insert = ticketInsertMock('cust-ticket')
+    from.mockImplementation((table: string) => {
+      if (table === 'service_tickets') return insert
+      if (table === 'profiles') {
+        return profilesMock({ actorRole: 'customer', candidateIds: ['tech-1'] })
+      }
+      return activeCountsMock()
+    })
+
+    await governedCreateTicket(
+      { title: 'Issue', description: 'enough text here', type: 'general', priority: 'medium' } as never,
+      'cust-1',
+      'cust-1',
+    )
+
+    expect(insert.insert).toHaveBeenCalledTimes(1)
+    const payload = insert.insert.mock.calls[0][0][0] as Record<string, unknown>
+    expect(payload).not.toHaveProperty('ticket_number')
+    expect(payload.title).toBe('Issue')
+  })
+
   it('returns created ticket unassigned when customer cannot assign (even if staff profiles are visible)', async () => {
     const insert = ticketInsertMock('cust-ticket')
     from.mockImplementation((table: string) => {
