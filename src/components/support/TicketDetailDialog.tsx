@@ -9,6 +9,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TicketStatusBadge } from './TicketStatusBadge';
+import { ServiceJobAssignmentPanel } from './ServiceJobAssignmentPanel';
 import { TicketWithDetails } from '@/types/tickets';
 import { format } from 'date-fns';
 import { Link2, MessageCircle, Mail } from 'lucide-react';
@@ -18,6 +19,8 @@ interface TicketDetailDialogProps {
   ticket: TicketWithDetails | null;
   isOpen: boolean;
   onClose: () => void;
+  currentUserId?: string;
+  viewerRole?: string;
 }
 
 const Row: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
@@ -27,7 +30,13 @@ const Row: React.FC<{ label: string; children: React.ReactNode }> = ({ label, ch
   </div>
 );
 
-export const TicketDetailDialog: React.FC<TicketDetailDialogProps> = ({ ticket, isOpen, onClose }) => {
+export const TicketDetailDialog: React.FC<TicketDetailDialogProps> = ({
+  ticket,
+  isOpen,
+  onClose,
+  currentUserId,
+  viewerRole = 'admin',
+}) => {
   const { toast } = useToast();
 
   const ticketUrl = typeof window !== 'undefined' ? `${window.location.origin}/support/tickets/${ticket?.id}` : `/support/tickets/${ticket?.id}`;
@@ -113,6 +122,15 @@ export const TicketDetailDialog: React.FC<TicketDetailDialogProps> = ({ ticket, 
             </Button>
           )}
         </div>
+
+        {currentUserId && (
+          <ServiceJobAssignmentPanel
+            ticketId={ticket.id}
+            currentUserId={currentUserId}
+            viewerRole={viewerRole}
+            ticketAssigneeName={ticket.assigned_user?.full_name}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

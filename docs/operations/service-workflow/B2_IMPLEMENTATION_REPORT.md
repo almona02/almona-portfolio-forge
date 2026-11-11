@@ -26,7 +26,18 @@ History table: `service_job_assignment_history` (append-only) + `service_workflo
 
 ## UI
 
-`TicketAssignmentDialog`: optional checkbox **Start service workflow (Job 1)** — calls ticket assign then `ensure_default_service_job`. No squads / visit / report / closure UI.
+**Freeze `8f2acc4e`:** `TicketAssignmentDialog` opt-in checkbox **Start service workflow (Job 1)** — ticket assign then `ensure_default_service_job` (two RPCs; see `B2_OPTIN_TRANSACTION_BOUNDARY.md`).
+
+**Correction (post-freeze):** `ServiceJobAssignmentPanel` in ticket details + technician workspace:
+
+1. List all jobs with independent assignees/states  
+2. Admin/support create additional jobs and assign/reassign  
+3. Technician decline own eligible jobs (mandatory reason)  
+4. Clear errors for active-visit + authorization failures  
+5. Ticket case contact shown independently of job technicians  
+6. Mutations refresh job list; repeated submits call RPCs again (DB idempotent where applicable)
+
+No squads / visit execution / report / closure UI (B3+).
 
 ## Disposable results (Cursor supporting)
 

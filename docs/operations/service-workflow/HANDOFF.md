@@ -24,7 +24,7 @@ Machine-registration → linked-ticket journey complete on **staging** at `ca9f5
 | Freeze SHA | `8f2acc4e806e70e12e87a24dcbebaef78e63e085` |
 | DB | ACCEPTED (S1–S20 + K5–K7); B1 regression green |
 | Opt-in UI | ACCEPTED (U1–U6) |
-| Full multi-job UI | Incomplete at freeze — separate correction commit |
+| Full multi-job UI | Correction commit on tip after harness reconcile (`ServiceJobAssignmentPanel`) |
 | Reconciliation | [`B2_VERDICT_RECONCILIATION_8f2acc4e.md`](./B2_VERDICT_RECONCILIATION_8f2acc4e.md) |
 | Tx boundary | [`B2_OPTIN_TRANSACTION_BOUNDARY.md`](./B2_OPTIN_TRANSACTION_BOUNDARY.md) |
 
