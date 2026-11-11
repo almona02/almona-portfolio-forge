@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 from datetime import datetime, timezone
 
 from supabase import Client  # type: ignore
@@ -115,8 +115,15 @@ class TicketService:
             created = datetime.now(timezone.utc)
             sla = calculate_sla_deadlines(priority_value, category.value, created)
 
+            # ticket_number is NOT NULL with no DB default
+            ticket_number = (
+                payload_data.get("ticket_number")
+                or f"API-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid4().hex[:8].upper()}"
+            )
+
             # Only columns that exist on public.service_tickets
             data: Dict[str, Any] = {
+                "ticket_number": ticket_number,
                 "category": category.value,
                 "title": title,
                 "description": payload_data.get("description"),
@@ -128,6 +135,7 @@ class TicketService:
                 "sla_response_due": sla.response_due.isoformat().replace("+00:00", "Z"),
                 "sla_resolution_due": sla.resolution_due.isoformat().replace("+00:00", "Z"),
                 "sla_breached": False,
+                "escalated": False,
                 "created_at": utcnow_iso(),
                 "updated_at": utcnow_iso(),
             }
