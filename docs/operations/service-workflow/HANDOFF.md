@@ -1,62 +1,34 @@
-# Handoff — Next workflow: Ticket → Job → Visit → Report
+# Handoff — Ticket → Job → Visit → Report
 
-**From:** Wonder (specification)
-**To:** Cursor (implementation owner), Spark (independent verification)
+**From:** Wonder (specification) → Cursor (implementation) → Spark (verification)  
 **Date:** 2026-11-11
 
 ## Prior milestone (closed)
 
-Machine-registration → linked-ticket journey is complete on **staging**:
+Machine-registration → linked-ticket journey complete on **staging** at `ca9f5067` (Spark browser PASS). Production untouched. Signing-failure remains unit-only (not browser-verified).
 
-- Spark independently passed the browser journey against commit `ca9f5067`.
-- Type check passes (reported at handover).
-- The stale alias token incident is classified as an **access-handoff failure, not an application failure**. No application change is requested for it.
-- **Retained qualification:** signing-failure behavior is covered by unit tests only; it has **not** been browser-tested. Do not represent it as browser-verified in any later report.
-
-Production remains untouched and unauthorized.
-
-## Next specification (this handover)
-
-**Specification:** `docs/service-workflow-spec.md` (v1.0) — Ticket → Service Job → Visit → Service Report.
-
-Bounded scope, in order:
-
-1. Multiple jobs per ticket; the initial interface creates Job 1 by default. Each job has multiple visits. Ticket closure is gated across **all** required jobs (completed or manager-waived); optional jobs never block.
-2. Assignment with current roles only (`admin`/`support` assign; one accountable technician per job). Future squads are explicitly separate and must not be pre-built.
-3. "One active visit per job" is an operational (service-enforced) rule, not a database assumption.
-4. Technician findings, labour, evidence, verification outcome, and report submission. Findings are observations only — no diagnostic or repair instructions.
-5. Manager review/issue with immutable report revisions; customer acknowledgment (accepted / refused / unavailable, per Journey A14–A15).
-6. Closure prerequisites named per failure, plus exception handling (no-access, waiver, cancellation, unavailable customer).
-
-Explicitly later: squads, contracts/billing, parts fulfillment, diagnostic content, parallel visits, reopening closed tickets.
-
-Acceptance: 12 testable scenarios (S1–S12) and a dependency-ordered backlog (B1–B7) in the specification. B1 (data contract and state guards) is the highest-risk unit and carries the first tests.
-
-## Gate
-
-This handover delivers the specification for review. It does **not** grant implementation authorization. Implementation starts only on a recorded go-ahead against this specification, staging-first, with no production deploy implied.
-
----
-
-## B1 freeze (Cursor → Spark) — 2026-11-11
-
-**Authorized scope:** B1 only, disposable verification. No staging/production apply, no merge, no B2.
+## B1 — CLOSED (accepted)
 
 | Item | Value |
 |------|-------|
-| Branch | `feat/service-workflow-b1-planning` (draft PR #156) |
-| Verify worktree | `/c/projects/almona-slice0-b1-verify` |
-| Migration | `supabase/migrations/20261111210000_service_workflow_b1_data_contract.sql` |
-| Harness | `python scripts/service-workflow/run_disposable_b1.py` |
-| #155 frozen tip | `ca9f506715567e1f2ea08fdcd4e2bb0d5e3d10da` (unchanged) |
+| Freeze SHA | `7a8307395b79df677a96f77cd993a77351b5805c` |
+| Spark result | **49 PASS / 0 FAIL / 0 required SKIP / 5 DEFER**; **K1–K4 PASS** |
+| Verdict | `.artifacts/slice0/service-workflow/SPARK_B1_VERDICT_7a830739.md` |
+| BLOCKED archive | `SPARK_B1_VERDICT_c6b1e46a.md` (retained; do not overwrite) |
+| Migration | `20261111210000_service_workflow_b1_data_contract.sql` |
 
-**Frozen full commit SHA (B1 acceptance):** `7a8307395b79df677a96f77cd993a77351b5805c`
+Full Spark battery retained (including **W2–W4**, **X5/X6**, positive **J1** completion). Cursor’s narrower harness is supporting only. Do not cite placeholder SHAs (`2bb20cb1`) as the freeze.
 
-**SHA relationship (pre-acceptance docs tip):**
+## B2 — AUTHORIZED (disposable only)
 
-- `5eef3722` — only commit with B1 runtime (schema/RLS/RPCs) among the early tip set
-- `c6b1e46a`, `4f64fd5f` — docs-only freeze-label commits (no runtime delta)
+Contract: [`B2_ASSIGNMENT_CONTRACT.md`](./B2_ASSIGNMENT_CONTRACT.md).
 
-Acceptance freeze supersedes those labels after Spark gaps (X4b / M2 probe / R2·RV1·ACK1 fixtures) were closed.
+In scope: governed job assign/reassign; idempotent Job 1 on explicit workflow entry; tech decline with reason; assignment history + atomic audit; no reassign during in-progress visit; minimal assignment UI.
 
-**Spark rule:** verify the freeze SHA above (not pre-implementation baseline). Required SKIP blocks acceptance; DEFER to B2–B6 does not. Cursor’s narrower battery is supporting evidence only.
+Out of scope: squads, visit execution, reports, closure UI, staging/production apply, merge.
+
+**#155** remains frozen at `ca9f5067`. **#156** stays draft.
+
+## Spec
+
+`docs/service-workflow-spec.md` v1.0. Backlog B3–B7 not authorized by this handoff.

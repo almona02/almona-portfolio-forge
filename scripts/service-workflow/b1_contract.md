@@ -69,13 +69,18 @@ Authz `42501`; illegal transitions `check_violation` (23514); missing mandatory 
 7. `cancelled → waived` only via `waive_service_job`.
 8. Resolve/close gate lives in `govern_ticket_transition` for activated tickets.
 
-## Check inventory
+## Check inventory (Spark full battery — authoritative for B1)
 
-REQUIRED B1 (SKIP blocks): `C1–C10`, `J1–J7`, `V1–V4`, `V6`, `R1–R2`, `M1–M3`,
-`X1`/`X1b`/`X2`/`X3`/`X4`/`X4b`, `P1–P2`, `F1`, `CC1`, `A1–A5`, `RV1`, `ACK1`,
-`K1–K4`.
+REQUIRED B1 (SKIP blocks): `C1–C10`, `J1–J7` (J1 includes positive completion),
+`V1–V4`, `V6`, `R1–R2`, `M1–M3`, `X1`/`X1b`/`X2`/`X3`/`X4`/`X4b`, `X5`, `X6`,
+`W1`–`W4`, `P1–P2`, `F1`, `CC1`, `A1–A5`, `RV1`, `ACK1`, `K1–K4`.
+
+Accepted Spark tally at `7a830739`: **49 PASS / 0 FAIL / 0 required SKIP / 5 DEFER**.
 
 DEFER (do not block): `V5` (B3), `R3`/`R4`/`M4`/`M5` (B4/B5).
+
+Cursor narrower harness (e.g. 44 PASS without W2–W4/X5/X6/positive J1) is
+supporting only — do not drop Spark coverage when syncing harness files.
 
 ## How to run
 
