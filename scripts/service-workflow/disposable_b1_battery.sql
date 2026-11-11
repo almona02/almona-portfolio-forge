@@ -2226,5 +2226,123 @@ EXCEPTION WHEN OTHERS THEN
   PERFORM b1_note('S20', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
+-- S21 opt-in entry is TWO transactions (proves the atomic-vs-partial
+-- boundary): failed ticket-assign persists nothing; assign-OK + ensure-FAIL
+-- persists the ticket assignment only (no job, no activation, no
+-- workflow-audit/history rows); the dialog-retry sequence (assign again +
+-- ensure) recovers to exactly one Job 1.
+DO $$
+DECLARE v_t uuid; v_j uuid; v_j2 uuid; v_ja int; v_act boolean;
+  v_fo boolean := false; v_bad boolean := false;
+  v_ta0 int; v_n0 int; v_h0 int;
+  v_a_clean boolean; v_a_taudit int;
+  v_p_asn boolean; v_p_jobs int; v_p_act boolean; v_p_wa int; v_p_hist int;
+  v_p_taudit int;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_table('service_job_assignment_history')
+      AND b1_has_func('ensure_default_service_job')
+      AND b1_has_func('assign_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('S21', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B1-S21');
+  SELECT count(*) INTO v_ta0 FROM public.ticket_governance_audit WHERE ticket_id = v_t;
+  SELECT count(*) INTO v_n0 FROM public.service_workflow_audit;
+  SELECT count(*) INTO v_h0 FROM public.service_job_assignment_history;
+  -- Leg A: forged ticket-assign fails AND persists nothing.
+  BEGIN PERFORM public.govern_ticket_assign(v_t, b1_uid('tech1'), 's21', b1_uid('admin'));
+  EXCEPTION WHEN SQLSTATE '42501' THEN v_fo := true; END;
+  SELECT (assigned_to IS NULL AND status = 'open') INTO v_a_clean
+    FROM public.service_tickets WHERE id = v_t;
+  SELECT count(*) INTO v_a_taudit FROM public.ticket_governance_audit
+    WHERE ticket_id = v_t;
+  -- Leg B: assign OK, then ensure fails -> partial outcome persists.
+  PERFORM public.govern_ticket_assign(v_t, b1_uid('tech1'), 's21', NULL);
+  BEGIN PERFORM public.ensure_default_service_job(v_t,
+    '99999999-9999-9999-9999-999999999999', 'Job 1', 's21', NULL);
+  EXCEPTION WHEN SQLSTATE '22023' THEN v_bad := true; END;
+  SELECT (assigned_to = b1_uid('tech1') AND status = 'assigned') INTO v_p_asn
+    FROM public.service_tickets WHERE id = v_t;
+  SELECT count(*) INTO v_p_jobs FROM public.service_jobs WHERE ticket_id = v_t;
+  SELECT (workflow_activated_at IS NOT NULL) INTO v_p_act
+    FROM public.service_tickets WHERE id = v_t;
+  SELECT count(*) INTO v_p_wa FROM public.service_workflow_audit;
+  SELECT count(*) INTO v_p_hist FROM public.service_job_assignment_history;
+  SELECT count(*) INTO v_p_taudit FROM public.ticket_governance_audit
+    WHERE ticket_id = v_t;
+  -- Leg C: dialog-retry sequence (assign again + ensure) recovers fully.
+  PERFORM public.govern_ticket_assign(v_t, b1_uid('tech1'), 's21-retry', NULL);
+  SELECT (public.ensure_default_service_job(v_t, b1_uid('tech1'), 'Job 1', 's21', NULL)).id
+    INTO v_j;
+  SELECT (public.ensure_default_service_job(v_t, b1_uid('tech1'), 'Job 1', 's21', NULL)).id
+    INTO v_j2;
+  SELECT count(*) INTO v_ja FROM public.service_jobs WHERE ticket_id = v_t;
+  SELECT (workflow_activated_at IS NOT NULL) INTO v_act
+    FROM public.service_tickets WHERE id = v_t;
+  PERFORM b1_note('S21', v_fo AND v_a_clean AND v_a_taudit = v_ta0 AND v_bad
+    AND (SELECT assigned_to FROM public.service_tickets WHERE id = v_t)
+      = b1_uid('tech1')
+    AND v_p_asn AND v_p_jobs = 0 AND NOT v_p_act
+    AND v_p_wa = v_n0 AND v_p_hist = v_h0 AND v_p_taudit = v_ta0 + 1
+    AND v_j = v_j2 AND v_ja = 1 AND v_act
+    AND (SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_j)
+      = b1_uid('tech1')
+    AND b1_state('service_jobs', v_j) = 'planned',
+    'partial=ticket-only; retry=one Job 1 ' || left(v_j::text, 8));
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S21', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S21', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
+-- S22 scheduled visits block neither reassign nor decline; visit rows keep
+-- their attending snapshot (history preserved); post-reassign visits stamp
+-- the new assignee; every move stays history-chained.
+DO $$
+DECLARE v_j uuid; v_d uuid; v_v1 uuid; v_v2 uuid; v_vd uuid;
+  v_att1 uuid; v_att1b uuid; v_st1 text; v_att2 uuid; v_hn int;
+  v_dok boolean := false;
+BEGIN
+  IF NOT (b1_has_table('service_jobs') AND b1_has_table('service_job_visits')
+      AND b1_has_table('service_job_assignment_history')
+      AND b1_has_func('assign_service_job') AND b1_has_func('decline_service_job')
+      AND b1_has_func('create_service_job_visit')) THEN
+    INSERT INTO b1_eval VALUES ('S22', 'SKIP', 'pending B2 implementation'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('S22', true);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's22-first', NULL);
+  SELECT (public.create_service_job_visit(v_j, 's22', NULL)).id INTO v_v1;
+  SELECT attending_technician_id INTO v_att1
+    FROM public.service_job_visits WHERE id = v_v1;
+  PERFORM b1_assign_adaptive(v_j, b1_uid('tech2'), 's22-re');
+  SELECT attending_technician_id, b1_state('service_job_visits', v_v1)
+    INTO v_att1b, v_st1 FROM public.service_job_visits WHERE id = v_v1;
+  SELECT (public.create_service_job_visit(v_j, 's22', NULL)).id INTO v_v2;
+  SELECT attending_technician_id INTO v_att2
+    FROM public.service_job_visits WHERE id = v_v2;
+  SELECT count(*) INTO v_hn FROM public.service_job_assignment_history
+    WHERE job_id = v_j;
+  v_d := b1_mkticket_job('S22D', true);
+  PERFORM public.assign_service_job(v_d, b1_uid('tech1'), 's22-first', NULL);
+  SELECT (public.create_service_job_visit(v_d, 's22', NULL)).id INTO v_vd;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  BEGIN
+    PERFORM public.decline_service_job(v_d, 's22-out', NULL);
+    v_dok := ((SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_d)
+      IS NULL AND b1_state('service_jobs', v_d) = 'unassigned'
+      AND b1_state('service_job_visits', v_vd) = 'scheduled');
+  EXCEPTION WHEN OTHERS THEN v_dok := false; END;
+  PERFORM b1_note('S22', v_att1 = b1_uid('tech1') AND v_att1b = b1_uid('tech1')
+    AND v_st1 = 'scheduled' AND v_att2 = b1_uid('tech2') AND v_hn = 2
+    AND (SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_j)
+      = b1_uid('tech2')
+    AND v_dok, 'visits snapshot attendance; moves chained');
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('S22', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('S22', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
 SELECT check_id, status, detail FROM b1_eval ORDER BY check_id;
 SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass, COUNT(*) FILTER (WHERE status='FAIL') AS fail, COUNT(*) FILTER (WHERE status='SKIP') AS skip, COUNT(*) FILTER (WHERE status='DEFER') AS defer FROM b1_eval;

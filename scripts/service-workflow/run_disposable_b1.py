@@ -191,7 +191,7 @@ def run_all() -> int:
               "X1", "X1b", "X2", "X3", "X4", "X4b", "X5", "X6",
               "W1", "W2", "W3", "W4", "P1", "P2", "F1", "CC1",
               "A1", "A2", "A3", "A4", "A5", "RV1", "ACK1"]
-    b2_ids = [f"S{i}" for i in range(1, 21)]
+    b2_ids = [f"S{i}" for i in range(1, 23)]
     b1_fail = [i for i in b1_ids if row_status(i) == "FAIL"]
     b1_skip = [i for i in b1_ids if row_status(i) == "SKIP"]
     b2_fail = [i for i in b2_ids if row_status(i) == "FAIL"]

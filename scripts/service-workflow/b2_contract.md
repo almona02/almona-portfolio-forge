@@ -91,7 +91,56 @@ Agreed interpretations (supervisor-resolved; replace the earlier proposal):
 - `K5` same-tech concurrent assign idempotent; `K6` different-tech
   concurrent assign serialized (last-wins, truthful history); `K7`
   concurrent ensure yields exactly one Job 1.
+- `S21` opt-in transaction boundary: failed ticket-assign persists nothing;
+  assign-OK + ensure-FAIL persists the ticket assignment only; dialog-retry
+  (assign again + ensure) recovers to exactly one Job 1.
+- `S22` scheduled visits block neither reassign nor decline; visit rows keep
+  their attending snapshot; post-reassign visits stamp the new assignee;
+  every move stays history-chained.
 
 DEFER stays B3–B7 only (S14 is an active deny-check, not a deferral).
 Runner reports `B1 BASELINE:` and `B2:` lines separately; exit 0 requires
 zero FAIL and zero required-SKIP in both (DEFER excluded).
+
+## Reconciliation (8f2acc4e reports)
+
+Transaction boundary (S21 proves each row):
+
+| Step fails | Persists | Does NOT persist |
+|---|---|---|
+| `govern_ticket_assign` (e.g. forged actor 42501) | nothing | assignee, status change, audit |
+| `assignTicket` OK, `ensure_default_service_job` fails (e.g. bad tech 22023) | ticket `assigned_to` + status + one `ticket_governance_audit` row | job, activation, workflow-audit, history |
+| retry: assign again (same assignee OK) + `ensure` OK | one Job 1 (seq 1, planned, tech), activation, audit + history | second Job 1 (retry returns the same id) |
+
+So "atomic opt-in" holds WITHIN `ensure_default_service_job` (one RPC =
+one transaction: create + assign + activation + audit commit or roll back
+together), while the dialog flow is a TWO-RPC recoverable partial outcome
+(assign, then ensure, in separate transactions). Both wordings describe the
+same boundary at different levels; S21 + U4/U5 pin it.
+
+Actor/time attribution (exact storage; per supervisor ruling, field names
+are not mandatory — the attribution is):
+
+| Requirement | Storage |
+|---|---|
+| who assigned/reassigned/declined | `service_job_assignment_history.actor_id` + `service_workflow_audit.actor_id` on the `job_assign`/`job_reassign`/`job_decline` row |
+| when | `service_job_assignment_history.created_at` + audit `created_at` |
+| from → to | `service_job_assignment_history.from_technician_id` / `.to_technician_id` (+ audit details jsonb) |
+| why | `service_job_assignment_history.rationale` (+ audit rationale) |
+
+No `assigned_by`/`assigned_at` columns exist on `service_jobs`; the history
+table (client append-only, S20) plus audit carry the full chain (S1/S3/S11).
+Cursor's alignment note predicting S1/S11 SKIP is superseded: attribution
+verified PASS via history.
+
+Scheduled-visit rule (S4 + S22): scheduled visits never block reassignment
+or decline merely for being scheduled; `in_progress` visits block both
+(check_violation). Reassignment never rewrites visit rows: earlier visits
+keep their `attending_technician_id` snapshot, later visits stamp the
+current assignee at creation, and the history chain explains every move.
+
+Read-model correction (S13): B1's `service_jobs` SELECT policy was never
+staff-only; it is `admin_private.can_read_ticket_workflow` (owner +
+ticket-assignee + staff + assigned-technician). Cursor's alignment note
+claiming "B1 staff-only SELECT remains" is factually superseded; S13
+measures the real tuple (own/other/owner-own/cross-customer/staff).
