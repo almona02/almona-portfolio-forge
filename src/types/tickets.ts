@@ -54,7 +54,9 @@ export interface TicketMessage {
   is_internal_note: boolean
   attachments: Array<{
     filename: string
-    url: string
+    /** Optional signed download URL; private objects prefer storage_path. */
+    url?: string
+    storage_path?: string
     size: number
     type: string
   }>
@@ -105,7 +107,8 @@ export interface CreateMessageData {
   is_internal_note?: boolean
   attachments?: Array<{
     filename: string
-    url: string
+    url?: string
+    storage_path?: string
     size: number
     type: string
   }>
