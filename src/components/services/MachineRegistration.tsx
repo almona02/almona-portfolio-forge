@@ -49,6 +49,8 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
   const [showTrainingDialog, setShowTrainingDialog] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const savingRef = useRef(false);
+  /** Stable across concurrent retries of the same registration attempt. */
+  const idempotencyKeyRef = useRef<string | null>(null);
   const [modelQuery, setModelQuery] = useState('');
   const [selectedCatalogId, setSelectedCatalogId] = useState<string | null>(null);
   const { data: catalogMachines = [] } = useYilmazMachines();
@@ -122,6 +124,12 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
     try {
       savingRef.current = true;
       setIsSaving(true);
+      if (!idempotencyKeyRef.current) {
+        idempotencyKeyRef.current =
+          typeof crypto !== 'undefined' && 'randomUUID' in crypto
+            ? crypto.randomUUID()
+            : `reg-${user.id}-${Date.now()}`;
+      }
       const derivedName = machine.model || `Machine ${machine.serialNumber || ''}`.trim();
 
       // Upload photos (best-effort: continue if some fail)
@@ -160,12 +168,16 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       try {
         const saved = await api.registerMachine({
           name: derivedName,
-            model: machine.model || 'Unknown Model',
-            serial_number: machine.serialNumber,
-            owner_id: user.id,
-            installation_date: machine.installationDate || null,
-            warranty_valid: isWithinStandardWarranty(machine.installationDate),
-            photo_urls: uploadedUrls.length ? uploadedUrls : null
+          model: machine.model || 'Unknown Model',
+          serial_number: machine.serialNumber || null,
+          owner_id: user.id,
+          installation_date: machine.installationDate || null,
+          warranty_valid: isWithinStandardWarranty(machine.installationDate),
+          photo_urls: uploadedUrls.length ? uploadedUrls : null,
+          catalog_model_id: selectedCatalogId,
+          catalog_uncertain: !selectedCatalogId,
+          idempotency_key: idempotencyKeyRef.current,
+          missing_serial_reason: machine.serialNumber ? null : 'plate_missing_or_illegible',
         });
         // Replace optimistic entry
         queryClient.setQueryData(cacheKey, (current: unknown) => {
@@ -196,6 +208,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       setModelQuery('');
       setSelectedCatalogId(null);
       setRawFiles([]);
+      idempotencyKeyRef.current = null;
     } catch (err) {
       const message = (err as { message?: string }).message || 'Failed to save machine to backend';
       toast.error('Save Failed', { description: message });
@@ -273,7 +286,22 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                           ))}
                         </ul>
                       )}
-                      <p className="mt-1 text-xs text-muted-foreground">Choose a model from the products catalog. Free text is not accepted.</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Prefer a catalog model. Uncatalogued text is allowed and marked uncertain.
+                      </p>
+                      {modelQuery.trim() && !selectedCatalogId && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="mt-2 w-full"
+                          onClick={() => {
+                            setSelectedCatalogId(null);
+                            setMachine((current) => ({ ...current, model: modelQuery.trim() }));
+                          }}
+                        >
+                          Use uncatalogued model “{modelQuery.trim()}”
+                        </Button>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor="photos" className="typography-label">Upload Photos</Label>
@@ -288,7 +316,11 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                         <div className="mt-2 text-sm text-muted-foreground">{machine.photos.length} photo(s) uploaded</div>
                       )}
                     </div>
-                    <Button className="w-full" onClick={() => setStep("details")} disabled={!machine.serialNumber || !selectedCatalogId || machine.model !== modelQuery}>
+                    <Button
+                      className="w-full"
+                      onClick={() => setStep("details")}
+                      disabled={!machine.model || (!machine.serialNumber && rawFiles.length === 0)}
+                    >
                       Continue <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>

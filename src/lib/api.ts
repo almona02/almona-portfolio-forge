@@ -178,51 +178,83 @@ export const api = {
     }
   },
 
-  // Register a new machine
+  // Register a new machine (PR1: prefer register_machine_identity RPC)
   registerMachine: async (machineData: {
     name: string;
     model: string;
-    serial_number: string;
+    serial_number?: string | null;
     owner_id: string;
     installation_date?: string | null;
     warranty_valid?: boolean | null;
     photo_urls?: string[] | null;
+    brand?: string | null;
+    catalog_model_id?: string | null;
+    catalog_uncertain?: boolean;
+    idempotency_key?: string | null;
+    missing_serial_reason?: string | null;
   }) => {
-   
-  const client = supabase as unknown as { from: (table: string) => any };
-  const { data, error } = await client
-      .from('machines')
-      .insert([machineData])
-      .select()
-      .single();
+    const client = supabase as unknown as { from: (table: string) => any; rpc: (fn: string, args: Record<string, unknown>) => any };
 
+    // Server-side path: idempotency + authz-safe duplicates (no cross-customer disclosure)
+    const rpc = await client.rpc('register_machine_identity', {
+      p_name: machineData.name,
+      p_model: machineData.model,
+      p_serial_raw: machineData.serial_number ?? null,
+      p_brand: machineData.brand ?? null,
+      p_catalog_model_id: machineData.catalog_model_id ?? null,
+      p_catalog_uncertain: machineData.catalog_uncertain ?? !machineData.catalog_model_id,
+      p_installation_date: machineData.installation_date ?? null,
+      p_warranty_valid: machineData.warranty_valid ?? null,
+      p_photo_urls: machineData.photo_urls ?? null,
+      p_idempotency_key: machineData.idempotency_key ?? null,
+      p_registration_source: 'web_registration',
+      p_missing_serial_reason: machineData.missing_serial_reason ?? null,
+    });
+
+    if (!rpc.error && rpc.data?.machine_id) {
+      const { data: row, error: fetchErr } = await client
+        .from('machines')
+        .select('*')
+        .eq('id', rpc.data.machine_id)
+        .maybeSingle();
+      if (!fetchErr && row) {
+        return { ...row, _registration: rpc.data };
+      }
+      return { id: rpc.data.machine_id, ...rpc.data };
+    }
+
+    // If RPC missing (pre-migration), fall back — but never leak other-account existence.
+    const message = String(rpc.error?.message || '');
+    if (rpc.error && !/register_machine_identity|Could not find|PGRST202/i.test(message)) {
+      throw new Error(message || 'Failed to register machine');
+    }
+
+    const insertPayload = {
+      name: machineData.name,
+      model: machineData.model,
+      serial_number: machineData.serial_number ?? null,
+      owner_id: machineData.owner_id,
+      installation_date: machineData.installation_date ?? null,
+      warranty_valid: machineData.warranty_valid ?? null,
+      photo_urls: machineData.photo_urls ?? null,
+    };
+    const { data, error } = await client.from('machines').insert([insertPayload]).select().single();
     if (!error) return data;
 
-    const message = String(error.message || '');
-    const duplicate = error.code === '23505' || message.includes('machines_serial_number_key');
+    const errMsg = String(error.message || '');
+    const duplicate = error.code === '23505' || errMsg.includes('machines_serial_number_key');
     if (duplicate) {
+      // Pre-PR1 unique path: same-owner only; otherwise generic message (no foreign disclosure)
       const { data: existing, error: lookupError } = await client
         .from('machines')
         .select('*')
         .eq('serial_number', machineData.serial_number)
+        .eq('owner_id', machineData.owner_id)
         .maybeSingle();
-      if (!lookupError && existing && existing.owner_id === machineData.owner_id) {
-        const incoming = machineData.photo_urls || [];
-        if (incoming.length) {
-          const merged = Array.from(new Set([...(existing.photo_urls || []), ...incoming]));
-          const { data: updated } = await client
-            .from('machines')
-            .update({ photo_urls: merged })
-            .eq('id', existing.id)
-            .select()
-            .single();
-          if (updated) return updated;
-        }
-        return existing;
-      }
-      throw new Error('This serial number is already registered to another account.');
+      if (!lookupError && existing) return existing;
+      throw new Error('Registration could not be completed. Contact support if this persists.');
     }
-    throw new Error(message || 'Failed to register machine');
+    throw new Error(errMsg || 'Failed to register machine');
   },
 
   // Upload a machine photo (returns public URL). Bucket must exist in Supabase storage.
