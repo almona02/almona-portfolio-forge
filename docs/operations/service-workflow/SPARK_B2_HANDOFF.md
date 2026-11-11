@@ -6,7 +6,8 @@
 
 ## What to verify
 
-Branch: `feat/service-workflow-b1-planning` (draft #156)  
+Branch/ref: `origin/feat/service-workflow-b1-planning` (draft #156)
+Reachable freeze: `8f2acc4e806e70e12e87a24dcbebaef78e63e085` (ancestor of tip). Alignment: `B2_SPARK_ALIGNMENT.md`.  
 B1 freeze (must stay green): `7a8307395b79df677a96f77cd993a77351b5805c`  
 B2 migration: `supabase/migrations/20261111220000_service_workflow_b2_assignment.sql`  
 Contract: `docs/operations/service-workflow/B2_ASSIGNMENT_CONTRACT.md`  
