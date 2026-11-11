@@ -11,15 +11,22 @@ SET lock_timeout = '5s';
 -- ---------------------------------------------------------------------------
 -- 0) Minimal auth stubs ONLY when absent (disposable DBs).
 --    Never CREATE OR REPLACE hosted auth.uid / auth.jwt.
+--    Never issue CREATE TABLE IF NOT EXISTS against hosted auth schema:
+--    Postgres still requires CREATE privilege on schema auth for that form.
 -- ---------------------------------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS auth;
-
-CREATE TABLE IF NOT EXISTS auth.users (
-  id uuid PRIMARY KEY
-);
-
 DO $$
 BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = 'auth') THEN
+    CREATE SCHEMA auth;
+  END IF;
+
+  -- Hosted Supabase already has auth.users; skip entirely when present.
+  IF to_regclass('auth.users') IS NULL THEN
+    CREATE TABLE auth.users (
+      id uuid PRIMARY KEY
+    );
+  END IF;
+
   IF to_regprocedure('auth.uid()') IS NULL THEN
     EXECUTE $fn$
       CREATE FUNCTION auth.uid()
@@ -51,11 +58,16 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
--- profiles stub for disposable DBs; real environments already have a richer table
-CREATE TABLE IF NOT EXISTS public.profiles (
-  id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  role text
-);
+-- profiles stub for disposable DBs only; never touch an existing hosted profiles table
+DO $$
+BEGIN
+  IF to_regclass('public.profiles') IS NULL THEN
+    CREATE TABLE public.profiles (
+      id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+      role text
+    );
+  END IF;
+END $$;
 
 -- ---------------------------------------------------------------------------
 -- 1) Schema convergence: public.machines (staging-shaped missing registry)
