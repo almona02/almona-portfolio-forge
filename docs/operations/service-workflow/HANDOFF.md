@@ -35,3 +35,28 @@ Acceptance: 12 testable scenarios (S1–S12) and a dependency-ordered backlog (B
 ## Gate
 
 This handover delivers the specification for review. It does **not** grant implementation authorization. Implementation starts only on a recorded go-ahead against this specification, staging-first, with no production deploy implied.
+
+---
+
+## B1 freeze (Cursor → Spark) — 2026-11-11
+
+**Authorized scope:** B1 only, disposable verification. No staging/production apply, no merge, no B2.
+
+| Item | Value |
+|------|-------|
+| Branch | `feat/service-workflow-b1-planning` (draft PR #156) |
+| Verify worktree | `/c/projects/almona-slice0-b1-verify` |
+| Migration | `supabase/migrations/20261111210000_service_workflow_b1_data_contract.sql` |
+| Harness | `python scripts/service-workflow/run_disposable_b1.py` |
+| #155 frozen tip | `ca9f506715567e1f2ea08fdcd4e2bb0d5e3d10da` (unchanged) |
+
+**Frozen full commit SHA (B1 acceptance):** `2bb20cb128315a21afac3369762eee8274d8f5f5`
+
+**SHA relationship (pre-acceptance docs tip):**
+
+- `5eef3722` — only commit with B1 runtime (schema/RLS/RPCs) among the early tip set
+- `c6b1e46a`, `4f64fd5f` — docs-only freeze-label commits (no runtime delta)
+
+Acceptance freeze supersedes those labels after Spark gaps (X4b / M2 probe / R2·RV1·ACK1 fixtures) were closed.
+
+**Spark rule:** verify the freeze SHA above (not pre-implementation baseline). Required SKIP blocks acceptance; DEFER to B2–B6 does not. Cursor’s narrower battery is supporting evidence only.

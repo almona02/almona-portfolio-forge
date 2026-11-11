@@ -58,11 +58,24 @@ Slice 0 FSM lacked `resolved → in_progress`. B1 documents a **narrow governed 
 
 Authz `42501`; illegal transitions `check_violation` (23514); missing mandatory reason `22023`.
 
+## Eight Spark alignment answers (confirmed)
+
+1. State column is `state` (jobs/visits).
+2. Visit create is 3-arg `create_service_job_visit(job, rationale, actor)`; scheduled window later.
+3. `create_service_job` actor = `auth.uid()` (no actor param).
+4. Audit columns: `actor_id` + `created_at` (+ action/from/to/rationale).
+5. Fixture literals: verification / review decision / ack response enums as in States above; privileged inserts supply them.
+6. Technician job transitions denied at B1 (admin/support only).
+7. `cancelled → waived` only via `waive_service_job`.
+8. Resolve/close gate lives in `govern_ticket_transition` for activated tickets.
+
 ## Check inventory
 
-- `C1–C10` legacy ticket governance — must PASS (C7 includes documented `resolved>in_progress` validity bit).
-- `J*`, `V*`, `M*`, `X*`, `A*`, `I*` (immutability fixtures), `K*` concurrency.
-- Deferred SKIP: `V5` reschedule (B3), `R3/R4/M4/M5` submit/review behavior (B4/B5), acknowledgment UX (B6), full visibility matrix (B7).
+REQUIRED B1 (SKIP blocks): `C1–C10`, `J1–J7`, `V1–V4`, `V6`, `R1–R2`, `M1–M3`,
+`X1`/`X1b`/`X2`/`X3`/`X4`/`X4b`, `P1–P2`, `F1`, `CC1`, `A1–A5`, `RV1`, `ACK1`,
+`K1–K4`.
+
+DEFER (do not block): `V5` (B3), `R3`/`R4`/`M4`/`M5` (B4/B5).
 
 ## How to run
 

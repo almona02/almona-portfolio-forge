@@ -32,7 +32,16 @@ PORT = "55442"
 USER = getpass.getuser()
 SUPPORT = "55555555-5555-5555-5555-555555555555"
 
-results: dict = {"sql": {}, "concurrency": {}}
+def _git_sha() -> str:
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+        ).strip()
+    except Exception:
+        return "UNKNOWN"
+
+
+results: dict = {"tested_sha": _git_sha(), "sql": {}, "concurrency": {}}
 
 
 def psql_file(db: str, path: Path) -> subprocess.CompletedProcess[str]:
@@ -108,12 +117,12 @@ def run_all() -> int:
 
     persist = BATTERY.read_text(encoding="utf-8").replace(
         "SELECT check_id, status, detail FROM b1_eval ORDER BY check_id;\n"
-        "SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass, COUNT(*) FILTER (WHERE status='FAIL') AS fail, COUNT(*) FILTER (WHERE status='SKIP') AS skip FROM b1_eval;",
+        "SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass, COUNT(*) FILTER (WHERE status='FAIL') AS fail, COUNT(*) FILTER (WHERE status='SKIP') AS skip, COUNT(*) FILTER (WHERE status='DEFER') AS defer FROM b1_eval;",
         "CREATE TABLE IF NOT EXISTS public.b1_results (check_id text PRIMARY KEY, status text, detail text);\n"
         "TRUNCATE public.b1_results;\n"
         "INSERT INTO public.b1_results SELECT check_id, status, detail FROM b1_eval;\n"
         "SELECT check_id, status, detail FROM public.b1_results ORDER BY check_id;\n"
-        "SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass, COUNT(*) FILTER (WHERE status='FAIL') AS fail, COUNT(*) FILTER (WHERE status='SKIP') AS skip FROM public.b1_results;",
+        "SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass, COUNT(*) FILTER (WHERE status='FAIL') AS fail, COUNT(*) FILTER (WHERE status='SKIP') AS skip, COUNT(*) FILTER (WHERE status='DEFER') AS defer FROM public.b1_results;",
     )
     tmp = OUT.parent / "_b1_battery_run.sql"
     tmp.write_text(persist, encoding="utf-8")
@@ -126,20 +135,35 @@ def run_all() -> int:
         rows = psql(db, "SELECT check_id, status, detail FROM public.b1_results ORDER BY 1;")
         counts = psql(db, "SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass, "
                           "COUNT(*) FILTER (WHERE status='FAIL') AS fail, "
-                          "COUNT(*) FILTER (WHERE status='SKIP') AS skip FROM public.b1_results;")
+                          "COUNT(*) FILTER (WHERE status='SKIP') AS skip, "
+                          "COUNT(*) FILTER (WHERE status='DEFER') AS defer FROM public.b1_results;")
         fails = [ln for ln in rows.stdout.splitlines()
                  if "| FAIL " in ln or ln.strip().startswith("FAIL")]
+        skips = [ln for ln in rows.stdout.splitlines() if "| SKIP " in ln]
         results["sql"] = {"ok": not fails, "counts": counts.stdout.strip(),
-                          "rows": rows.stdout}
+                          "rows": rows.stdout, "n_fail": len(fails),
+                          "n_skip": len(skips)}
         print(counts.stdout)
 
     run_concurrency(db)
     OUT.write_text(json.dumps(results, indent=2), encoding="utf-8")
     print("wrote", OUT)
-    sql_ok = results["sql"].get("ok", False)
-    k_ok = all(v["status"] in ("PASS", "SKIP")
-               for v in results["concurrency"].values())
-    return 0 if (sql_ok and k_ok) else 1
+    # B1 acceptance: zero FAIL and zero required-SKIP. DEFER is excluded.
+    n_fail = results["sql"].get("n_fail", 1)
+    n_skip = results["sql"].get("n_skip", 0)
+    k_blocked = [k for k, v in results["concurrency"].items()
+                 if v["status"] not in ("PASS", "SKIP")]
+    k_skip = [k for k, v in results["concurrency"].items()
+              if v["status"] == "SKIP"]
+    if n_fail or k_blocked:
+        print(f"B1 BLOCKED: failures present (sql_fail={n_fail} k={k_blocked})")
+        return 1
+    if n_skip or k_skip:
+        print(f"B1 BLOCKED: {n_skip} required SQL checks SKIP, "
+              f"concurrency SKIP={k_skip} (pending B1 implementation)")
+        return 2
+    print("B1 ACCEPTED: zero FAIL, zero required-SKIP")
+    return 0
 
 
 def run_concurrency(db: str) -> None:
@@ -254,81 +278,188 @@ def run_concurrency(db: str) -> None:
     except Exception as e:  # noqa: BLE001
         k_note("K3", False, f"harness: {e}")
 
-    # K2: same-job race — T1 planned→in_progress wins; T2 →cancelled fails under lock.
-    try:
+    def b1_present() -> bool:
         c = psycopg2.connect(**dsn)
         c.autocommit = True
         cur = c.cursor()
         cur.execute("SELECT to_regclass('public.service_jobs') IS NOT NULL "
-                    "AND EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'govern_job_transition');")
+                    "AND EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'govern_job_transition') "
+                    "AND EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'create_service_job');")
         present = cur.fetchone()[0]
-        if not present:
+        c.close()
+        return bool(present)
+
+    def k_skip(kid: str) -> None:
+        results["concurrency"][kid] = {
+            "status": "SKIP", "detail": "pending B1 implementation"}
+        print("SKIP", kid, "pending B1 implementation")
+
+    # K2: same-job race — T1 planned->cancelled wins; T2 ->in_progress fails.
+    try:
+        if not b1_present():
+            k_skip("K2")
+        else:
+            c = psycopg2.connect(**dsn)
+            c.autocommit = True
+            cur = c.cursor()
+            cur.execute("SET app.b1_uid = %s;", (SUPPORT,))
+            cur.execute(
+                "INSERT INTO public.service_tickets (ticket_number, user_id, title, status)"
+                " VALUES ('B1-K2T', '11111111-1111-1111-1111-111111111111', 'k2', 'open')"
+                " RETURNING id;")
+            kt = cur.fetchone()[0]
+            cur.execute("SELECT (public.create_service_job(%s, 'k2', true, 'k2')).id;",
+                        (kt,))
+            kj = cur.fetchone()[0]
+            cur.execute("SELECT public.govern_job_transition(%s, 'planned', 'k2', NULL);",
+                        (kj,))
+            cur.execute("SELECT count(*) FROM public.service_workflow_audit;")
+            kn0 = cur.fetchone()[0]
             c.close()
-            results["concurrency"]["K2"] = {
-                "status": "SKIP", "detail": "pending B1 implementation"}
-            print("SKIP K2 pending B1 implementation")
-            return
-        cur.execute("SET app.b1_uid = %s;", (SUPPORT,))
-        cur.execute(
-            "INSERT INTO public.service_tickets (ticket_number, user_id, title, status)"
-            " VALUES ('B1-K2', '11111111-1111-1111-1111-111111111111', 'k2', 'open')"
-            " RETURNING id;")
-        tid = cur.fetchone()[0]
-        cur.execute(
-            "SELECT (public.create_service_job(%s, 'race', true, 'k2')).id;", (tid,))
-        jid = cur.fetchone()[0]
-        cur.execute("SELECT public.govern_job_transition(%s, 'planned', 'k2', NULL);", (jid,))
-        c.close()
-        outcome2: dict = {}
+            outcome2: dict = {}
 
-        def k2_t1():
-            c1 = psycopg2.connect(**dsn)
-            try:
-                cur1 = c1.cursor()
-                cur1.execute("SET app.b1_uid = %s;", (SUPPORT,))
-                cur1.execute(
-                    "SELECT public.govern_job_transition(%s, 'in_progress', 'k2', NULL);",
-                    (jid,))
-                time.sleep(3)
-                c1.commit()
-                outcome2["t1"] = "ok"
-            except Exception as e:  # noqa: BLE001
-                outcome2["t1"] = f"ERR {getattr(e, 'pgcode', '?')} {e}"
-                c1.rollback()
-            finally:
-                c1.close()
+            def k2_t1():
+                cc = psycopg2.connect(**dsn)
+                try:
+                    cu = cc.cursor()
+                    cu.execute("SET app.b1_uid = %s;", (SUPPORT,))
+                    cu.execute("SELECT public.govern_job_transition(%s, 'cancelled', 'k2', NULL);",
+                               (kj,))
+                    time.sleep(3)
+                    cc.commit()
+                    outcome2["t1"] = "ok"
+                except Exception as e:  # noqa: BLE001
+                    outcome2["t1"] = f"ERR {getattr(e, 'pgcode', '?')} {e}"
+                    cc.rollback()
+                finally:
+                    cc.close()
 
-        def k2_t2():
-            time.sleep(0.7)
-            c2 = psycopg2.connect(**dsn)
-            c2.autocommit = True
-            try:
-                cur2 = c2.cursor()
-                cur2.execute("SET app.b1_uid = %s;", (SUPPORT,))
-                cur2.execute("SET statement_timeout = '15s';")
-                # Illegal from planned and still illegal from in_progress without report.
-                cur2.execute(
-                    "SELECT public.govern_job_transition(%s, 'completed', 'k2 race', NULL);",
-                    (jid,))
-                outcome2["t2"] = "UNEXPECTED-OK"
-            except Exception as e:  # noqa: BLE001
-                outcome2["t2"] = getattr(e, "pgcode", "?")
-            finally:
-                c2.close()
+            def k2_t2():
+                time.sleep(0.7)
+                cc = psycopg2.connect(**dsn)
+                cc.autocommit = True
+                try:
+                    cu = cc.cursor()
+                    cu.execute("SET app.b1_uid = %s;", (SUPPORT,))
+                    cu.execute("SET statement_timeout = '15s';")
+                    cu.execute("SELECT public.govern_job_transition(%s, 'in_progress', 'k2', NULL);",
+                               (kj,))
+                    outcome2["t2"] = "UNEXPECTED-OK"
+                except Exception as e:  # noqa: BLE001
+                    outcome2["t2"] = getattr(e, "pgcode", "?")
+                finally:
+                    cc.close()
 
-        a, b = threading.Thread(target=k2_t1), threading.Thread(target=k2_t2)
-        a.start(); b.start(); a.join(30); b.join(30)
-        c = psycopg2.connect(**dsn)
-        c.autocommit = True
-        cur = c.cursor()
-        cur.execute("SELECT state FROM public.service_jobs WHERE id = %s;", (jid,))
-        final = cur.fetchone()[0]
-        c.close()
-        ok = (outcome2.get("t1") == "ok" and outcome2.get("t2") == "23514"
-              and final == "in_progress")
-        k_note("K2", ok, f"t1={outcome2.get('t1')} t2={outcome2.get('t2')} final={final}")
+            a2, b2 = threading.Thread(target=k2_t1), threading.Thread(target=k2_t2)
+            a2.start()
+            b2.start()
+            a2.join(30)
+            b2.join(30)
+            c = psycopg2.connect(**dsn)
+            c.autocommit = True
+            cur = c.cursor()
+            cur.execute("SELECT count(*) FROM public.service_workflow_audit;")
+            kn1 = cur.fetchone()[0]
+            c.close()
+            ok2 = (outcome2.get("t1") == "ok" and outcome2.get("t2") == "23514"
+                   and kn1 == kn0 + 1)
+            k_note("K2", ok2, f"t1={outcome2.get('t1')} t2={outcome2.get('t2')}")
     except Exception as e:  # noqa: BLE001
         k_note("K2", False, f"harness: {e}")
+
+    # K4: job creation vs ticket closure race — exactly one coherent outcome:
+    # (create wins -> close denied, ticket in_progress, 1 job) OR
+    # (close wins -> create fails, ticket closed, 0 jobs).
+    try:
+        if not b1_present():
+            k_skip("K4")
+        else:
+            c = psycopg2.connect(**dsn)
+            c.autocommit = True
+            cur = c.cursor()
+            cur.execute("SET app.b1_uid = %s;", (SUPPORT,))
+            cur.execute(
+                "INSERT INTO public.service_tickets (ticket_number, user_id, title, status)"
+                " VALUES ('B1-K4T', '11111111-1111-1111-1111-111111111111', 'k4', 'open')"
+                " RETURNING id;")
+            k4t = cur.fetchone()[0]
+            for st in ("assigned", "in_progress", "resolved"):
+                summ = "'done'" if st == "resolved" else "NULL"
+                cur.execute(
+                    f"SELECT public.govern_ticket_transition(%s, '{st}', 'k4', {summ});",
+                    (k4t,))
+            c.close()
+            outcome4: dict = {}
+
+            def k4_t1():
+                cc = psycopg2.connect(**dsn)
+                try:
+                    cu = cc.cursor()
+                    cu.execute("SET app.b1_uid = %s;", (SUPPORT,))
+                    cu.execute("SELECT public.create_service_job(%s, 'race', true, 'k4');",
+                               (k4t,))
+                    time.sleep(3)
+                    cc.commit()
+                    outcome4["create"] = "ok"
+                except Exception as e:  # noqa: BLE001
+                    outcome4["create"] = getattr(e, "pgcode", "?")
+                    cc.rollback()
+                finally:
+                    cc.close()
+
+            def k4_t2():
+                time.sleep(0.7)
+                cc = psycopg2.connect(**dsn)
+                cc.autocommit = True
+                try:
+                    cu = cc.cursor()
+                    cu.execute("SET app.b1_uid = %s;", (SUPPORT,))
+                    cu.execute("SET statement_timeout = '20s';")
+                    cu.execute("SELECT public.govern_ticket_transition(%s, 'closed', 'k4', NULL);",
+                               (k4t,))
+                    outcome4["close"] = "ok"
+                except Exception as e:  # noqa: BLE001
+                    outcome4["close"] = getattr(e, "pgcode", "?")
+                finally:
+                    cc.close()
+
+            a4, b4 = threading.Thread(target=k4_t1), threading.Thread(target=k4_t2)
+            a4.start()
+            b4.start()
+            a4.join(40)
+            b4.join(40)
+            c = psycopg2.connect(**dsn)
+            c.autocommit = True
+            cur = c.cursor()
+            cur.execute("SELECT status FROM public.service_tickets WHERE id = %s;", (k4t,))
+            k4state = cur.fetchone()[0]
+            # job count via FK discovery (column-name agnostic)
+            cur.execute(
+                "SELECT a.attname FROM pg_constraint c "
+                "JOIN pg_class ch ON ch.oid = c.conrelid "
+                "JOIN pg_class pa ON pa.oid = c.confrelid "
+                "JOIN pg_attribute a ON a.attrelid = ch.oid AND a.attnum = c.conkey[1] "
+                "WHERE c.contype = 'f' AND ch.relname = 'service_jobs' "
+                "AND pa.relname = 'service_tickets' AND array_length(c.conkey, 1) = 1 LIMIT 1;")
+            fkrow = cur.fetchone()
+            if fkrow:
+                cur.execute(f"SELECT count(*) FROM public.service_jobs WHERE {fkrow[0]} = %s;",
+                            (k4t,))
+                k4jobs = cur.fetchone()[0]
+            else:
+                k4jobs = -1
+            c.close()
+            create_ok = outcome4.get("create") == "ok"
+            close_ok = outcome4.get("close") == "ok"
+            coherent_a = (create_ok and not close_ok and k4state == "in_progress"
+                          and k4jobs == 1)
+            coherent_b = (close_ok and not create_ok and k4state == "closed"
+                          and k4jobs == 0)
+            k_note("K4", coherent_a or coherent_b,
+                   f"create={outcome4.get('create')} close={outcome4.get('close')} "
+                   f"state={k4state} jobs={k4jobs}")
+    except Exception as e:  # noqa: BLE001
+        k_note("K4", False, f"harness: {e}")
 
 
 if __name__ == "__main__":
