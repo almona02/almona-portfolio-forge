@@ -93,8 +93,8 @@ raise QuoteValidationError(
 ```python
 # Insufficient permissions
 raise TicketPermissionError(
-    message="Only staff can assign tickets",
-    required_role="admin, technician, or sales_rep",
+    message="Only admin/support may assign tickets",
+    required_role="admin or support",
     user_role="customer"
 )
 ```
