@@ -2,7 +2,8 @@
 
 **Status:** Implemented on draft PR #156. **Local/disposable verification only.**  
 **Base tip:** `ca9f5067` (#155 frozen). **No staging/production apply. No merge. No B2–B7.**  
-**Migration:** `supabase/migrations/20261111210000_service_workflow_b1_data_contract.sql`
+**Migration:** `supabase/migrations/20261111210000_service_workflow_b1_data_contract.sql`  
+**Frozen commit:** `59a2da0f` (implementation `5eef3722`) on `feat/service-workflow-b1-planning`
 
 ## Naming agreement (Spark)
 
@@ -26,8 +27,7 @@ Contract file: `scripts/service-workflow/b1_contract.md`.
 
 ## Disposable results (summary)
 
-Harness: `python scripts/service-workflow/run_disposable_b1.py`  
-Evidence JSON: `.artifacts/slice0/service-workflow/disposable_b1_results.json` (local; not required in git).
+Harness: `python scripts/service-workflow/run_disposable_b1.py`
 
 | Suite | Result |
 |-------|--------|
@@ -42,7 +42,7 @@ Evidence JSON: `.artifacts/slice0/service-workflow/disposable_b1_results.json` (
 | R3, R4, M4, M5 | B4/B5 submit/review behavior |
 | (B6/B7) | Acknowledgment UX; full visibility regression matrix |
 
-## Frozen commit
+## PR hygiene
 
-**Frozen commit:** `5eef37223941bee0e6b4f5dde53a13fb734db2cf` on `feat/service-workflow-b1-planning` (PR #156).  
-PR #155 tip remains `ca9f5067`.
+- #156 remains **draft**  
+- #155 tip remains `ca9f506715567e1f2ea08fdcd4e2bb0d5e3d10da`
