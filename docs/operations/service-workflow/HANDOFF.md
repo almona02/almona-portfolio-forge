@@ -19,13 +19,15 @@ Machine-registration → linked-ticket journey complete on **staging** at `ca9f5
 
 Full Spark battery retained (including **W2–W4**, **X5/X6**, positive **J1** completion). Cursor’s narrower harness is supporting only. Do not cite placeholder SHAs (`2bb20cb1`) as the freeze.
 
-## B2 — AUTHORIZED (disposable only)
+## B2 — IMPLEMENTED (disposable; Spark verify next)
 
-Contract: [`B2_ASSIGNMENT_CONTRACT.md`](./B2_ASSIGNMENT_CONTRACT.md).
+Contract: [`B2_ASSIGNMENT_CONTRACT.md`](./B2_ASSIGNMENT_CONTRACT.md)  
+Report: [`B2_IMPLEMENTATION_REPORT.md`](./B2_IMPLEMENTATION_REPORT.md)  
+Spark: [`SPARK_B2_HANDOFF.md`](./SPARK_B2_HANDOFF.md)
 
-In scope: governed job assign/reassign; idempotent Job 1 on explicit workflow entry; tech decline with reason; assignment history + atomic audit; no reassign during in-progress visit; minimal assignment UI.
+Cursor disposable: 59 PASS / 0 FAIL / 0 SKIP / 5 DEFER; K1–K5 PASS (supporting only).
 
-Out of scope: squads, visit execution, reports, closure UI, staging/production apply, merge.
+Out of scope still: squads, visit execution, reports, closure UI, staging/production apply, merge.
 
 **#155** remains frozen at `ca9f5067`. **#156** stays draft.
 

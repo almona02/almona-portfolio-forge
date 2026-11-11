@@ -31,7 +31,7 @@ Spark’s **49** is the full executed PASS set (including W1–W4, X5, X6, and p
 
 **5 DEFER (unchanged):** V5, R3, R4, M4, M5 — later B3–B5; do not block B1.
 
-**Harness note:** committed Spark-full battery also retains Cursor  alongside , so disposable reruns report **50 PASS / 5 DEFER** (55 executed rows) without dropping Spark coverage.
+**Harness note:** committed Spark-full battery also retains Cursor X4b alongside W1, so disposable reruns report **50 PASS / 5 DEFER** (55 executed rows) without dropping Spark coverage.
 
 Do **not** treat Cursor’s narrower run as independent acceptance. Do **not** cite amend-placeholder SHAs (`2bb20cb1`, `bd95335b`) as the freeze — only `7a830739…`.
 
