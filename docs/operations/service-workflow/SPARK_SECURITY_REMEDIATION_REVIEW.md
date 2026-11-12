@@ -17,6 +17,8 @@
 | This review handoff | `docs/operations/service-workflow/SPARK_SECURITY_REMEDIATION_REVIEW.md` |
 | Parent handoff | `docs/operations/service-workflow/HANDOFF.md` |
 | **Apply record** | `docs/operations/service-workflow/STAGING_SECURITY_REMEDIATION_APPLY_RECORD.md` |
+| **Exact applied SQL** | `docs/operations/service-workflow/applied-sql/` (transcript originals; stamp 1 truncated) |
+| **Session handoff** | `C:\projects\_almona_handoff\slice0-b2-security-sessions` (Spark confirm pending) |
 | **Amended package SHA** | `d4cfc8ce7ca34a076dd10edf38d9df0348dd69c4` |
 | **Cursor disposable pre-run (amended)** | PASS — before FAIL SEC1/SEC4/SEC5/SEC7/SEC8; after 8/0; SEC8 reproduced→fixed; SEC6 PASS. **Not** Spark evidence. |
 | **Spark independent verdict** | Cited from Spark’s independent report (FULL ACK chain): disposable SEC **8/8** PASS + independent probes **15/15** PASS. Do not treat Cursor’s pre-run row as Spark’s result. |

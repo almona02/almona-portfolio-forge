@@ -24,7 +24,8 @@ Browser testing **paused** until Spark live verification. Staging corrective **a
 | **Corrective** | `20261112150000_service_workflow_security_remediation.sql` @ `d4cfc8ce` |
 | **Cursor disposable pre-run** | SEC 8/0 PASS (Cursor evidence only) |
 | **Spark independent (cited)** | SEC 8/8 + probes 15/15 PASS — Spark’s report; not Cursor pre-recording |
-| **Fresh sessions** | Agent store `sessions_b2_security_20261112/` |
+| **Fresh sessions** | `C:\projects\_almona_handoff\slice0-b2-security-sessions` (Spark confirm pending) |
+| **Applied SQL** | `docs/operations/service-workflow/applied-sql/` (exact MCP payloads) |
 
 **Canonical security handoff:**  
 `docs/operations/service-workflow/SPARK_SECURITY_REMEDIATION_REVIEW.md`  
