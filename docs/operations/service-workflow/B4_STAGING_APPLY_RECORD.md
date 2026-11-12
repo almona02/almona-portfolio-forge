@@ -1,8 +1,9 @@
 # B4 staging apply + verification record
 
-**Authorized implementation:** `6a64a01e23dd51439ddfa31243253d4050d93f30`  
+**Authorized implementation (initial):** `6a64a01e23dd51439ddfa31243253d4050d93f30`  
+**Correction tip (Spark PASS → preview redeploy):** `f63c91454df69a0146404200d10c4058465b38fc`  
 **Target DB:** Supabase staging `apnmoevmvihfzcnttctx` (`almona02-staging`)  
-**Preview:** Vercel `dpl_5bfdrjKDqindCoB1QZdf6u7JCd4v` → `https://almona-portfolio-forge-e841uqu93.vercel.app` (SSO-protected; bypass only in `C:\projects\_almona_handoff\slice0-b4-staging-verification\preview_access.json`)  
+**Preview (correction redeploy):** Vercel `dpl_CTBcHefqYngHhdSmhMrgtp9rihjE` → `https://almona-portfolio-forge-h70i4otva.vercel.app` (SSO-protected; bypass only in `C:\projects\_almona_handoff\slice0-b4-staging-verification\preview_access.json`)  
 **Gates:** Staging only · no merge · no production · no B5 · #155 frozen · #156 draft
 
 ## Pre-apply
@@ -61,17 +62,27 @@ UI refetch/remount: covered by Vitest at `6a64a01e` (retained). Share-token: get
 
 ## Preview / handoff
 
+### Initial (6a64a01e)
+
 | Field | Value |
 |-------|-------|
-| Deployment | `dpl_5bfdrjKDqindCoB1QZdf6u7JCd4v` |
+| Deployment | `dpl_5bfdrjKDqindCoB1QZdf6u7JCd4v` (share bypass **revoked** after correction redeploy) |
 | URL | `https://almona-portfolio-forge-e841uqu93.vercel.app` |
 | Git SHA | `6a64a01e23dd51439ddfa31243253d4050d93f30` |
+
+### Correction redeploy (f63c9145 — Spark PASS STAGING-B4-01/02)
+
+| Field | Value |
+|-------|-------|
+| Deployment | `dpl_CTBcHefqYngHhdSmhMrgtp9rihjE` |
+| URL | `https://almona-portfolio-forge-h70i4otva.vercel.app` |
+| Git SHA | `f63c91454df69a0146404200d10c4058465b38fc` |
 | Target | staging |
-| Branch env | `VITE_SUPABASE_*` preview vars for `feat/service-workflow-b1-planning` (staging project comment) |
+| Branch env | `VITE_SUPABASE_*` preview vars for `feat/service-workflow-b1-planning` (staging project) |
 | Handoff | `C:\projects\_almona_handoff\slice0-b4-staging-verification` |
-| Cursor preview fetch | HTTP 200 app HTML |
+| Cursor preview fetch | HTTP 200 app HTML via share unlock |
 | Session auth smoke | admin/support/technician/owner **AUTH_OK** |
-| Preview share unlock | confirmed via share URL (secret not in chat) |
+| Preview share unlock | confirmed (secret only in `preview_access.json`) |
 
 ## Verdict correction
 
