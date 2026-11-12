@@ -14,7 +14,7 @@
 5. **Getter visibility (F-B4-03):** `get_service_report_for_visit` must enforce customer visibility — owners see only issued/customer-visible revisions; unissued revisions and their evidence are omitted. Anon/share tokens have no EXECUTE.
 6. **Visit must be `completed`** before submit (checked only after auth).
 7. **Payload (required on new submit):** findings, work performed, labour entries **or** explicit `no_labour`, verification outcome (+ reason when not `verified_fixed`), supporting evidence paths (≥1), technician declaration.
-8. **Labour:** JSON array of `{hours: number>0, description: non-empty}` XOR `no_labour=true` with `[]` (RPC). Table CHECK only forbids `no_labour=true` with non-empty labour — does not invent `no_labour` for legacy empty arrays.
+8. **Labour (F-B4-05):** JSON array of `{hours: number>0, description: non-empty}` XOR `no_labour=true` with `[]`. Enforced at **table CHECK** and in submit RPC. Migration preflight refuses existing rows that violate the XOR (with actionable counts); it does **not** invent historical `no_labour` declarations.
 9. **Evidence:** private `ticket-attachments` object names, readable by the submitter, under the ticket folder or submitter folder; object must exist.
 10. **Idempotency:** `client_submission_id` unique per report; retries return the same revision; concurrent same-key inserts converge. UI must not rotate the key after a successful submit.
 11. **Immutability:** submitted rows cannot be edited/deleted via ordinary client or `service_role` direct writes (B2 revocations retained). SECURITY DEFINER submit RPC is the write path.

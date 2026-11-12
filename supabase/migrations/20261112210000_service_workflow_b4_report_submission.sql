@@ -42,6 +42,10 @@ WHERE work_performed IS NULL
 DO $$
 DECLARE
   v_missing_wp int;
+  v_labour_bad int;
+  v_empty_without_decl int;
+  v_nonempty_with_decl int;
+  v_bad_shape int;
   v_existing int;
 BEGIN
   SELECT count(*) INTO v_existing FROM public.service_report_revisions;
@@ -56,8 +60,50 @@ BEGIN
       USING ERRCODE = 'P0001';
   END IF;
 
+  -- F-B4-05: full labour XOR must hold before the table CHECK is applied.
+  -- Do not invent no_labour=true for empty historical arrays — stop with counts.
+  SELECT count(*) INTO v_empty_without_decl
+  FROM public.service_report_revisions
+  WHERE no_labour IS NOT TRUE
+    AND (
+      labour IS NULL
+      OR jsonb_typeof(labour) IS DISTINCT FROM 'array'
+      OR jsonb_array_length(labour) = 0
+    );
+
+  SELECT count(*) INTO v_nonempty_with_decl
+  FROM public.service_report_revisions
+  WHERE no_labour IS TRUE
+    AND jsonb_typeof(labour) = 'array'
+    AND jsonb_array_length(labour) > 0;
+
+  SELECT count(*) INTO v_bad_shape
+  FROM public.service_report_revisions
+  WHERE no_labour IS NOT TRUE
+    AND jsonb_typeof(labour) = 'array'
+    AND jsonb_array_length(labour) > 0
+    AND EXISTS (
+      SELECT 1
+      FROM jsonb_array_elements(labour) el
+      WHERE jsonb_typeof(el) IS DISTINCT FROM 'object'
+         OR nullif(btrim(COALESCE(el->>'description', '')), '') IS NULL
+         OR el->>'hours' IS NULL
+         OR (el->>'hours') !~ '^-?[0-9]+(\.[0-9]+)?$'
+         OR (el->>'hours')::numeric <= 0
+    );
+
+  v_labour_bad := v_empty_without_decl + v_nonempty_with_decl + v_bad_shape;
+
+  IF v_labour_bad > 0 THEN
+    RAISE EXCEPTION
+      'B4 preflight blocked (F-B4-05 labour XOR): % of % service_report_revisions row(s) violate the labour/no_labour invariant (empty_without_no_labour=%; no_labour_with_nonempty_labour=%; invalid_labour_entry_shape=%). Review each row and either (a) set an explicit no_labour=true with labour=[] after confirming no labour was performed, or (b) supply a nonempty valid labour array with no_labour=false. Do not invent historical no_labour declarations in this migration.',
+      v_labour_bad, v_existing,
+      v_empty_without_decl, v_nonempty_with_decl, v_bad_shape
+      USING ERRCODE = 'P0001';
+  END IF;
+
   IF v_existing > 0 THEN
-    RAISE NOTICE 'B4 preflight: % existing revision(s) compatible for work_performed NOT NULL; technician_declaration remains nullable for legacy rows',
+    RAISE NOTICE 'B4 preflight: % existing revision(s) compatible for work_performed NOT NULL and labour XOR; technician_declaration remains nullable for legacy rows',
       v_existing;
   END IF;
 END $$;
@@ -66,14 +112,15 @@ ALTER TABLE public.service_report_revisions
   ALTER COLUMN work_performed SET NOT NULL;
 -- technician_declaration stays nullable for pre-B4 rows; submit RPC requires it for new revisions.
 
--- Forbid contradictory labour + no_labour only. Do not invent no_labour=true for empty
--- legacy labour arrays. Full labour XOR is enforced in submit_service_report_revision.
+-- F-B4-05: full table-level labour XOR (matches approved contract + RPC).
+-- no_labour=true ⇒ empty []; no_labour=false ⇒ nonempty array (entry shape enforced in RPC + preflight).
 ALTER TABLE public.service_report_revisions
   DROP CONSTRAINT IF EXISTS service_report_revisions_labour_xor_no_labour;
 ALTER TABLE public.service_report_revisions
   ADD CONSTRAINT service_report_revisions_labour_xor_no_labour
   CHECK (
-    NOT (no_labour = true AND jsonb_typeof(labour) = 'array' AND jsonb_array_length(labour) > 0)
+    (no_labour = true AND jsonb_typeof(labour) = 'array' AND jsonb_array_length(labour) = 0)
+    OR (no_labour = false AND jsonb_typeof(labour) = 'array' AND jsonb_array_length(labour) >= 1)
   );
 
 CREATE UNIQUE INDEX IF NOT EXISTS service_report_revisions_client_submission_uidx

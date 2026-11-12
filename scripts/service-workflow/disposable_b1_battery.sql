@@ -329,15 +329,55 @@ END $$;
 -- type-plausible values. p_overrides maps column -> raw SQL fragment
 -- (test-only; for CHECK-constrained literals). Raises when it cannot
 -- (caller SKIP-fallback).
+-- Explicit labour XOR defaults for synthetic service_report_revisions rows under B4.
+-- Production table CHECK is not weakened; fixtures must declare labour or no_labour.
+CREATE OR REPLACE FUNCTION b1_revision_fixture_overrides(p_overrides jsonb DEFAULT '{}')
+RETURNS jsonb LANGUAGE plpgsql AS $$
+DECLARE
+  v jsonb := COALESCE(p_overrides, '{}'::jsonb);
+  v_has_no_labour boolean := EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'service_report_revisions'
+      AND column_name = 'no_labour');
+  v_has_wp boolean := EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'service_report_revisions'
+      AND column_name = 'work_performed');
+BEGIN
+  IF v_has_wp AND NOT (v ? 'work_performed') THEN
+    v := v || jsonb_build_object('work_performed', quote_literal('fixture work performed'));
+  END IF;
+  IF v_has_wp AND NOT (v ? 'findings') THEN
+    v := v || jsonb_build_object('findings', quote_literal('fixture findings'));
+  END IF;
+  IF v_has_no_labour THEN
+    IF (v ? 'no_labour') OR (v ? 'labour') THEN
+      -- Caller supplied an explicit side; leave as-is (must satisfy XOR).
+      NULL;
+    ELSE
+      -- Explicit no-labour declaration — not an invented historical claim; test-only fixture.
+      v := v || jsonb_build_object(
+        'no_labour', 'true',
+        'labour', '''[]''::jsonb'
+      );
+    END IF;
+  END IF;
+  RETURN v;
+END $$;
+
 CREATE OR REPLACE FUNCTION b1_fixture(p_table text, p_parents jsonb DEFAULT '{}',
   p_overrides jsonb DEFAULT '{}')
 RETURNS uuid LANGUAGE plpgsql AS $$
 DECLARE
   r record; cols text[] := '{}'; vals text[] := '{}'; v_sql text; v_id uuid;
+  v_overrides jsonb := COALESCE(p_overrides, '{}'::jsonb);
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns
                  WHERE table_schema = 'public' AND table_name = p_table AND column_name = 'id') THEN
     RAISE EXCEPTION 'fixture needs id PK on %', p_table;
+  END IF;
+  IF p_table = 'service_report_revisions' THEN
+    v_overrides := b1_revision_fixture_overrides(v_overrides);
   END IF;
   FOR r IN SELECT a.attname AS col, format_type(a.atttypid, a.atttypmod) AS typ,
                   NOT a.attnotnull AS nullable,
@@ -349,9 +389,9 @@ BEGIN
             WHERE a.attrelid = ('public.' || p_table)::regclass AND a.attnum > 0 AND NOT a.attisdropped
   LOOP
     IF r.col = 'id' THEN CONTINUE; END IF;
-    IF p_overrides ? r.col THEN
+    IF v_overrides ? r.col THEN
       cols := cols || quote_ident(r.col);
-      vals := vals || (p_overrides ->> r.col);
+      vals := vals || (v_overrides ->> r.col);
       CONTINUE;
     END IF;
     IF r.fk_parent IS NOT NULL THEN
@@ -413,7 +453,14 @@ BEGIN
     jsonb_build_object('service_job_visits', v_v::text, 'users', v_par::text));
   v_rev := b1_fixture('service_report_revisions',
     jsonb_build_object('service_reports', v_r::text, 'users', v_par::text),
-    jsonb_build_object('revision_number', '1', 'verification_outcome', '''verified_fixed'''));
+    jsonb_build_object(
+      'revision_number', '1',
+      'verification_outcome', '''verified_fixed''',
+      'findings', quote_literal('approved-chain findings'),
+      'work_performed', quote_literal('approved-chain work'),
+      'no_labour', 'true',
+      'labour', '''[]''::jsonb'
+    ));
   v_rw := b1_fixture('service_report_reviews',
     jsonb_build_object('service_report_revisions', v_rev::text, 'users', v_par::text),
     jsonb_build_object('decision', '''approved_issued'''));
@@ -800,8 +847,14 @@ BEGIN
     v_r := b1_fixture('service_reports', v_parents);
     v_parents := v_parents || jsonb_build_object('service_reports', v_r::text);
     v_rev := b1_fixture('service_report_revisions', v_parents,
-      jsonb_build_object('revision_number', '1',
-        'verification_outcome', '''not_verified'''));
+      jsonb_build_object(
+        'revision_number', '1',
+        'verification_outcome', '''not_verified''',
+        'findings', quote_literal('r2 findings'),
+        'work_performed', quote_literal('r2 work'),
+        'no_labour', 'true',
+        'labour', '''[]''::jsonb'
+      ));
   EXCEPTION WHEN OTHERS THEN
     INSERT INTO b1_eval VALUES ('R2', 'SKIP', 'needs column map: ' || left(SQLERRM, 160));
     RETURN;
@@ -1344,8 +1397,14 @@ BEGIN
     v_r := b1_fixture('service_reports', v_parents);
     v_parents := v_parents || jsonb_build_object('service_reports', v_r::text);
     v_rev := b1_fixture('service_report_revisions', v_parents,
-      jsonb_build_object('revision_number', '1',
-        'verification_outcome', '''not_verified'''));
+      jsonb_build_object(
+        'revision_number', '1',
+        'verification_outcome', '''not_verified''',
+        'findings', quote_literal('rv1 findings'),
+        'work_performed', quote_literal('rv1 work'),
+        'labour', '''[{"hours":1,"description":"fixture labour"}]''::jsonb',
+        'no_labour', 'false'
+      ));
     v_parents := v_parents || jsonb_build_object('service_report_revisions', v_rev::text);
     v_rw := b1_fixture('service_report_reviews', v_parents,
       jsonb_build_object('decision', '''returned'''));
@@ -1387,8 +1446,14 @@ BEGIN
     v_r := b1_fixture('service_reports', v_parents);
     v_parents := v_parents || jsonb_build_object('service_reports', v_r::text);
     v_rev := b1_fixture('service_report_revisions', v_parents,
-      jsonb_build_object('revision_number', '1',
-        'verification_outcome', '''verified_fixed'''));
+      jsonb_build_object(
+        'revision_number', '1',
+        'verification_outcome', '''verified_fixed''',
+        'findings', quote_literal('ack1 findings'),
+        'work_performed', quote_literal('ack1 work'),
+        'no_labour', 'true',
+        'labour', '''[]''::jsonb'
+      ));
     v_parents := v_parents || jsonb_build_object('service_report_revisions', v_rev::text);
     v_ack := b1_fixture('service_acknowledgments', v_parents,
       jsonb_build_object('response', '''accepted'''));

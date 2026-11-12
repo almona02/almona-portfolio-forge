@@ -477,6 +477,84 @@ BEGIN
 END $$;
 
 -- ---------------------------------------------------------------------------
+-- F-B4-05: full table-level labour XOR (not soft); valid sides succeed
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_path text; v_rep uuid;
+  a boolean := false; b boolean := false; c boolean := false; d boolean := false;
+  v_rev public.service_report_revisions;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('f405');
+  v_path := v_t::text || '/b4/f405.jpg';
+  PERFORM b4_seed_evidence(v_t, v_path);
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  v_rev := public.submit_service_report_revision(
+    v_v, 'f', 'w', '[]'::jsonb, true, 'verified_fixed', NULL, 'decl',
+    ARRAY[v_path], NULL, gen_random_uuid(), NULL);
+  SELECT report_id INTO v_rep FROM public.service_report_revisions WHERE id = v_rev.id;
+
+  -- Reject: empty labour without no_labour
+  BEGIN
+    INSERT INTO public.service_report_revisions(
+      report_id, revision_number, findings, work_performed, labour, no_labour,
+      verification_outcome, technician_declaration, submitted_by
+    ) VALUES (
+      v_rep, 90, 'x', 'x', '[]'::jsonb, false,
+      'verified_fixed', 'd', b1_uid('tech1')
+    );
+  EXCEPTION WHEN check_violation THEN
+    a := true;
+  END;
+
+  -- Reject: no_labour with nonempty labour
+  BEGIN
+    INSERT INTO public.service_report_revisions(
+      report_id, revision_number, findings, work_performed, labour, no_labour,
+      verification_outcome, technician_declaration, submitted_by
+    ) VALUES (
+      v_rep, 91, 'x', 'x', '[{"hours":1,"description":"z"}]'::jsonb, true,
+      'verified_fixed', 'd', b1_uid('tech1')
+    );
+  EXCEPTION WHEN check_violation THEN
+    b := true;
+  END;
+
+  -- Accept: explicit no_labour + []
+  BEGIN
+    INSERT INTO public.service_report_revisions(
+      report_id, revision_number, findings, work_performed, labour, no_labour,
+      verification_outcome, technician_declaration, submitted_by
+    ) VALUES (
+      v_rep, 92, 'x', 'x', '[]'::jsonb, true,
+      'verified_fixed', 'd', b1_uid('tech1')
+    );
+    c := true;
+    DELETE FROM public.service_report_revisions WHERE report_id = v_rep AND revision_number = 92;
+  EXCEPTION WHEN OTHERS THEN
+    c := false;
+  END;
+
+  -- Accept: nonempty labour + no_labour=false
+  BEGIN
+    INSERT INTO public.service_report_revisions(
+      report_id, revision_number, findings, work_performed, labour, no_labour,
+      verification_outcome, technician_declaration, submitted_by
+    ) VALUES (
+      v_rep, 93, 'x', 'x', '[{"hours":1.5,"description":"align"}]'::jsonb, false,
+      'verified_fixed', 'd', b1_uid('tech1')
+    );
+    d := true;
+    DELETE FROM public.service_report_revisions WHERE report_id = v_rep AND revision_number = 93;
+  EXCEPTION WHEN OTHERS THEN
+    d := false;
+  END;
+
+  PERFORM b4_note('F-B4-05', a AND b AND c AND d,
+    format('empty_reject=%s xor_reject=%s no_lab_ok=%s labour_ok=%s', a, b, c, d));
+END $$;
+
+-- ---------------------------------------------------------------------------
 -- R4-09: no self-issue, premature job completion, or ticket closure
 -- ---------------------------------------------------------------------------
 DO $$

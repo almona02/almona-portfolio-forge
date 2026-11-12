@@ -1,11 +1,11 @@
 # B4 report submission — Spark freeze handoff
 
-**Status:** Frozen for independent Spark review  
-**Freeze tip:** `91acc120ddb9b3094306cef610edec4d7b72c1cc` (implementation `e203b438`; docs stamp)  
+**Status:** Frozen for independent Spark review (F-B4-05 correction)  
+**Freeze tip:** _(set on correction commit)_  
 **Branch:** `feat/service-workflow-b1-planning`  
 **Depends on:** B3 staging-development acceptance at `4e0ddd22`  
 **Contract:** [`B4_REPORT_CONTRACT.md`](./B4_REPORT_CONTRACT.md)  
-**Findings vs prior tip:** [`B4_FINDINGS_DISPOSITION_6827c775.md`](./B4_FINDINGS_DISPOSITION_6827c775.md) (`6827c775` had OPEN F-B4-03/04, UI retry, compat; this freeze corrects them)  
+**Prior tip:** `e203b4387d56197847694bc60be387815e244d5c` — **BLOCKED on F-B4-05** (soft table labour CHECK). Privacy / auth-order / UI recovery / delegation evidence from that review is retained but does not cover labour XOR. See [`B4_FINDINGS_DISPOSITION_e203b438.md`](./B4_FINDINGS_DISPOSITION_e203b438.md).  
 **Gates:** **No B4 staging apply** until Spark PASS · no merge · no production · #155 frozen · #156 draft
 
 ## Deliverables
@@ -19,26 +19,23 @@
 | API | `src/lib/ticketGovernanceApi.ts` |
 | Vitest | `src/components/support/ServiceReportPanel.b4.test.tsx` |
 
-## Spark review focus
+## Spark review focus (narrow — F-B4-05)
 
-1. One report root / append-only revisions; attending-tech-only submit; historical `submitted_by` after reassignment.
-2. Required fields, labour XOR no-labour, evidence private-read + existence, checklist pin contract.
-3. Idempotent `client_submission_id`; concurrent same-key does not duplicate.
-4. B2 report-family `REVOKE INSERT/UPDATE/DELETE` for `authenticated`/`anon`/`service_role` still hold; no self-issue / job complete / ticket close.
-5. Job may enter `awaiting_review` only; B5/B6 untouched.
-6. Minimal UI: recoverable upload/submit failures; truthful **submitted** status (no false success).
+1. Table CHECK enforces full labour XOR: `no_labour=true` ⇒ `[]`; `no_labour=false` ⇒ nonempty labour.
+2. RPC validation preserved; invalid table inserts rejected at the boundary.
+3. Migration preflight: clean success for compatible rows; incompatible empty-labour / bad shape stops with actionable counts — **no** invented `no_labour`.
+4. B1 fixtures supply explicit labour/no_labour (production rules not weakened).
+5. Retain accepted evidence for F-B4-03/04, UI retry, service-role delegation, R4-05, audit — no full audit restart.
 
 ## Disposable / local verification
-
-Apply B1→B4 migrations on throwaway PG17 (`disposable_b1_base` + prior batteries), then:
 
 `python scripts/service-workflow/run_disposable_b4.py`
 
 Expected (bound to this freeze tip):
-- **B4 required:** R4-01..R4-10 + F-B4-04 **PASS**; R5/R6/draft **DEFER**
+- **B4 required:** R4-01..R4-10 + F-B4-04 + **F-B4-05** **PASS**; R5/R6/draft **DEFER**
 - **B3 under B4:** 39 PASS / 0 FAIL
 - **B1/B2 under B4:** 72 PASS / 0 FAIL / 4 DEFER
-- Migration applied **untouched** (F-B4-00). Evidence: `.artifacts/slice0/service-workflow/disposable_b4_results.json` (gitignored)
+- Migration applied **untouched** (F-B4-00).
 
 ## Explicit non-actions
 
