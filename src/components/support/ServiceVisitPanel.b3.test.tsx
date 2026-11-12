@@ -27,6 +27,30 @@ vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: () => ({ user: { id: 'tech-1' } }),
+}))
+
+vi.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          maybeSingle: async () => ({
+            data: {
+              id: 'job-1',
+              ticket_id: 'ticket-1',
+              assigned_technician_id: 'tech-1',
+              state: 'in_progress',
+            },
+            error: null,
+          }),
+        }),
+      }),
+    }),
+  },
+}))
+
 import {
   abortServiceJobVisit,
   B3_MINIMUM_SAFETY_ATTESTATION,

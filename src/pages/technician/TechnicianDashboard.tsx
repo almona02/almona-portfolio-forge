@@ -162,7 +162,11 @@ const TechnicianDashboard: React.FC = () => {
                         </Button>
                       )}
                   </div>
-                  <ServiceVisitPanel jobId={job.id} viewerRole="technician" canExecute />
+                  <ServiceVisitPanel
+                    jobId={job.id}
+                    viewerRole="technician"
+                    canExecute={job.assigned_technician_id === user?.id}
+                  />
                   {declineJobId === job.id && (
                     <div className="space-y-2">
                       <Label htmlFor={`tech-decline-${job.id}`}>Decline reason (required)</Label>

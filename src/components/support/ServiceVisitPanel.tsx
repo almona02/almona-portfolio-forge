@@ -18,6 +18,7 @@ import {
   type ServiceVisitRow,
 } from '@/lib/ticketGovernanceApi'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/context/AuthContext'
 import { ServiceReportPanel } from '@/components/support/ServiceReportPanel'
 import { toast } from 'sonner'
 
@@ -47,6 +48,7 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
   viewerRole,
   canExecute = false,
 }) => {
+  const { user } = useAuth()
   const queryClient = useQueryClient()
   const staff = viewerRole === 'admin' || viewerRole === 'support'
   const [startAt, setStartAt] = useState('')
@@ -279,15 +281,6 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
                     Complete visit
                   </Button>
                 )}
-                {v.state === 'completed' && jobMetaQuery.data?.ticket_id && (
-                  <div className="w-full">
-                    <ServiceReportPanel
-                      visitId={v.id}
-                      ticketId={jobMetaQuery.data.ticket_id}
-                      canSubmit={!!canExecute && viewerRole === 'technician'}
-                    />
-                  </div>
-                )}
                 <div className="w-full space-y-1">
                   <Label className="text-xs">Outcome reason (abort / no-access)</Label>
                   <Textarea
@@ -345,6 +338,27 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
                 </div>
               </div>
             )}
+
+            {/* B4: report form is for completed visits — not gated by start/complete controls.
+                Submission authority is historical attending_technician_id, not current job assignee. */}
+            {v.state === 'completed' &&
+              jobMetaQuery.data?.ticket_id &&
+              (staff ||
+                (viewerRole === 'technician' &&
+                  !!user?.id &&
+                  v.attending_technician_id === user.id)) && (
+                <div className="w-full" data-testid={`service-report-mount-${v.id}`}>
+                  <ServiceReportPanel
+                    visitId={v.id}
+                    ticketId={jobMetaQuery.data.ticket_id}
+                    canSubmit={
+                      viewerRole === 'technician' &&
+                      !!user?.id &&
+                      v.attending_technician_id === user.id
+                    }
+                  />
+                </div>
+              )}
           </li>
         ))}
       </ul>

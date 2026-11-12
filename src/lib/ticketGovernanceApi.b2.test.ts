@@ -118,12 +118,32 @@ describe('ticketGovernanceApi B2 wrappers (Spark independent)', () => {
     expect(rows[0].technician_name).toBeUndefined()
   })
 
-  it('U18c technician list filters by assignee', async () => {
-    const orderMock = vi.fn(async () => ({ data: [], error: null }))
+  it('U18c technician list filters by assignee and merges attended completed visits', async () => {
+    const orderMock = vi.fn(async () => ({
+      data: [{ id: 'j-assigned', assigned_technician_id: 'tech-1' }],
+      error: null,
+    }))
     const eqMock = vi.fn(() => ({ order: orderMock }))
-    fromMock.mockReturnValueOnce({ select: vi.fn(() => ({ eq: eqMock })) })
-    await listServiceJobsForTechnician('tech-1')
+    const visitEq2 = vi.fn(async () => ({
+      data: [{ job_id: 'j-hist' }, { job_id: 'j-assigned' }],
+      error: null,
+    }))
+    const visitEq1 = vi.fn(() => ({ eq: visitEq2 }))
+    fromMock
+      .mockReturnValueOnce({ select: vi.fn(() => ({ eq: eqMock })) })
+      .mockReturnValueOnce({ select: vi.fn(() => ({ eq: visitEq1 })) })
+      .mockReturnValueOnce({
+        select: vi.fn(() => ({
+          in: vi.fn(async () => ({
+            data: [{ id: 'j-hist', assigned_technician_id: 'tech-2' }],
+            error: null,
+          })),
+        })),
+      })
+    const rows = await listServiceJobsForTechnician('tech-1')
     expect(fromMock).toHaveBeenCalledWith('service_jobs')
+    expect(fromMock).toHaveBeenCalledWith('service_job_visits')
     expect(eqMock).toHaveBeenCalledWith('assigned_technician_id', 'tech-1')
+    expect(rows.map((r) => r.id)).toEqual(['j-assigned', 'j-hist'])
   })
 })

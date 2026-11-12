@@ -246,13 +246,37 @@ export async function listServiceJobsForTicket(ticketId: string): Promise<Servic
 
 /** B2: list jobs assigned to the current technician (any ticket). */
 export async function listServiceJobsForTechnician(technicianId: string): Promise<ServiceJobRow[]> {
+  const selectCols =
+    'id, ticket_id, job_sequence, title, required, state, assigned_technician_id, created_at, updated_at'
   const { data, error } = await supabase
     .from('service_jobs')
-    .select('id, ticket_id, job_sequence, title, required, state, assigned_technician_id, created_at, updated_at')
+    .select(selectCols)
     .eq('assigned_technician_id', technicianId)
     .order('updated_at', { ascending: false })
   if (error) throw new Error(error.message)
-  return (data ?? []) as ServiceJobRow[]
+
+  // B4: keep jobs reachable after reassignment when this tech remains the
+  // historical attending technician on a completed visit (report submission).
+  const { data: attendedVisits, error: vErr } = await supabase
+    .from('service_job_visits')
+    .select('job_id')
+    .eq('attending_technician_id', technicianId)
+    .eq('state', 'completed')
+  if (vErr) throw new Error(vErr.message)
+  const attendedJobIds = [
+    ...new Set((attendedVisits ?? []).map((v: { job_id: string }) => v.job_id)),
+  ]
+  const assigned = (data ?? []) as ServiceJobRow[]
+  const have = new Set(assigned.map((j) => j.id))
+  const missing = attendedJobIds.filter((id) => !have.has(id))
+  if (missing.length === 0) return assigned
+
+  const { data: extra, error: eErr } = await supabase
+    .from('service_jobs')
+    .select(selectCols)
+    .in('id', missing)
+  if (eErr) throw new Error(eErr.message)
+  return [...assigned, ...((extra ?? []) as ServiceJobRow[])]
 }
 
 /** B1/B2: create an additional job on a ticket (admin/support). */

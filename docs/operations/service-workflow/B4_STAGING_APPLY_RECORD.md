@@ -24,8 +24,9 @@
 | 2 | `service_workflow_b4_report_submission_helpers` | `20261112224059` | Evidence helpers + labour/evidence/checklist validators |
 | 3 | `service_workflow_b4_report_submission_submit_rpc` | `20261112224211` | `submit_service_report_revision` |
 | 4 | `service_workflow_b4_report_submission_getter_rpc` | `20261112224219` | `get_service_report_for_visit` |
+| 5 | `service_workflow_b4_attachment_insert_definer` | `20261112232020` | STAGING-B4-01: DEFINER insert helper + historical attending read/workflow (see `B4_STAGING_B4_01_02_CORRECTION.md`) |
 
-Canonical source bytes: `docs/operations/service-workflow/applied-sql/b4-staging/` (`lf_sha256` `4f04d4da…`). Implementation equivalence verified post-apply (RPCs, full XOR CHECK, grants).
+Canonical source bytes: `docs/operations/service-workflow/applied-sql/b4-staging/`. Implementation equivalence verified post-apply (RPCs, full XOR CHECK, grants).
 
 ## Post-apply verification
 
