@@ -24,6 +24,7 @@ B2_SHA = "8f2acc4e806e70e12e87a24dcbebaef78e63e085"
 B2_PATH = "supabase/migrations/20261111220000_service_workflow_b2_assignment.sql"
 SEC = ROOT / "supabase/migrations/20261112150000_service_workflow_security_remediation.sql"
 B3 = ROOT / "supabase/migrations/20261112180000_service_workflow_b3_visit_execution.sql"
+B3FIX = ROOT / "supabase/migrations/20261112190000_service_workflow_b3_visit_corrections.sql"
 BATTERY = ROOT / "scripts/service-workflow/disposable_b3_battery.sql"
 OUT_DIR = ROOT / ".artifacts/slice0/service-workflow"
 OUT = OUT_DIR / "disposable_b3_results.json"
@@ -108,6 +109,7 @@ def run_all() -> int:
     apply(db, b2f, "B2")
     apply(db, SEC, "security remediation")
     apply(db, B3, "B3 visit execution")
+    apply(db, B3FIX, "B3 visit corrections")
     apply(db, BATTERY, "B3 battery")
 
     rows = psql(db, "SELECT check_id, status, detail FROM public.b3_eval ORDER BY 1;")

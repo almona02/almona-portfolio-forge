@@ -251,6 +251,22 @@ BEGIN
   SELECT (public.create_service_job(v_t, p_title, p_required, 'battery')).id INTO v_j;
   RETURN v_j;
 END $$;
+
+-- D-B3-01 fixture helper: first visit start requires ticket status assigned.
+CREATE OR REPLACE FUNCTION b1_arm_ticket_for_visit(p_job uuid, p_tech uuid DEFAULT NULL)
+RETURNS void LANGUAGE plpgsql AS $$
+DECLARE v_ticket uuid; v_tech uuid := COALESCE(p_tech, b1_uid('tech1'));
+BEGIN
+  SELECT ticket_id INTO v_ticket FROM public.service_jobs WHERE id = p_job;
+  UPDATE public.service_tickets
+  SET status = 'assigned',
+      assigned_to = COALESCE(assigned_to, v_tech),
+      assigned_by = COALESCE(assigned_by, b1_uid('support')),
+      assigned_at = COALESCE(assigned_at, now()),
+      updated_at = now()
+  WHERE id = v_ticket AND status = 'open';
+END $$;
+
 -- State-column name discovery (state preferred, status fallback).
 CREATE OR REPLACE FUNCTION b1_statecol(p_table text) RETURNS text
 LANGUAGE sql STABLE AS $$
@@ -332,13 +348,26 @@ END $$;
 CREATE OR REPLACE FUNCTION b1_approved_chain(p_job uuid) RETURNS uuid
 LANGUAGE plpgsql AS $$
 DECLARE v_v uuid; v_r uuid; v_rev uuid; v_rw uuid; v_par uuid; v_assignee uuid;
+  v_ticket uuid; v_tstatus text;
 BEGIN
   v_par := b1_uid('support');
   -- B3: visit start requires a current job assignee. Assign without changing
   -- non-unassigned job state so J1/J2 completion assertions stay intact.
-  SELECT assigned_technician_id INTO v_assignee FROM public.service_jobs WHERE id = p_job;
+  SELECT assigned_technician_id, ticket_id INTO v_assignee, v_ticket
+    FROM public.service_jobs WHERE id = p_job;
   IF v_assignee IS NULL THEN
     PERFORM public.assign_service_job(p_job, b1_uid('tech1'), 'chain-assign', NULL);
+  END IF;
+  -- D-B3-01: first visit start expects ticket assigned (or already in_progress).
+  SELECT status INTO v_tstatus FROM public.service_tickets WHERE id = v_ticket;
+  IF v_tstatus = 'open' THEN
+    UPDATE public.service_tickets
+    SET status = 'assigned',
+        assigned_to = COALESCE(assigned_to, b1_uid('tech1')),
+        assigned_by = COALESCE(assigned_by, b1_uid('support')),
+        assigned_at = COALESCE(assigned_at, now()),
+        updated_at = now()
+    WHERE id = v_ticket;
   END IF;
   SELECT (public.create_service_job_visit(p_job, 'chain', NULL)).id INTO v_v;
   PERFORM public.govern_visit_transition(v_v, 'in_progress', 'chain', NULL);
@@ -564,6 +593,7 @@ BEGIN
   PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
   v_j := b1_mkticket_job('V1', true);
   PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'v1', NULL);
+  PERFORM b1_arm_ticket_for_visit(v_j);
   SELECT (public.create_service_job_visit(v_j, 'v1', NULL)).id INTO v_v;
   PERFORM public.govern_visit_transition(v_v, 'in_progress', 'v1', NULL);
   PERFORM public.govern_visit_transition(v_v, 'completed', 'v1', NULL);
@@ -1632,6 +1662,7 @@ BEGIN
     v_sched := ((SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_j)
       = b1_uid('tech2'));
   EXCEPTION WHEN OTHERS THEN v_sched := false; END;
+  PERFORM b1_arm_ticket_for_visit(v_j, b1_uid('tech2'));
   PERFORM public.govern_visit_transition(v_v, 'in_progress', 's4', NULL);
   BEGIN PERFORM b1_assign_adaptive(v_j, b1_uid('tech1'), 's4-re');
   EXCEPTION WHEN check_violation THEN v_deny := true; END;
@@ -1770,6 +1801,7 @@ BEGIN
   PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's8-first', NULL);
   PERFORM public.govern_job_transition(v_j, 'planned', 's8', NULL);
   SELECT (public.create_service_job_visit(v_j, 's8', NULL)).id INTO v_v;
+  PERFORM b1_arm_ticket_for_visit(v_j);
   PERFORM public.govern_visit_transition(v_v, 'in_progress', 's8', NULL);
   PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
   BEGIN
@@ -2016,6 +2048,7 @@ BEGIN
   PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 's15-first', NULL);
   PERFORM public.govern_job_transition(v_j, 'planned', 's15', NULL);
   SELECT (public.create_service_job_visit(v_j, 's15', NULL)).id INTO v_v;
+  PERFORM b1_arm_ticket_for_visit(v_j);
   PERFORM public.govern_visit_transition(v_v, 'in_progress', 's15', NULL);
   SELECT count(*) INTO v_n0 FROM public.service_workflow_audit;
   SELECT count(*) INTO v_h0 FROM public.service_job_assignment_history;

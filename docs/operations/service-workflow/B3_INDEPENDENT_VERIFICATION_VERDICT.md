@@ -1,41 +1,31 @@
 # B3 independent verification verdict
 
-**Implementation under test:** `9882a256edb376de9ea726a510c96e40af69f845`  
-**Handoff (stamped):** `a470a303` → `docs/operations/service-workflow/B3_VISIT_EXECUTION_HANDOFF.md`  
-**Harness follow-up:** see git tip after this verdict commit (fixture/battery only; **no runtime change**)  
+**Spark status:** **CONDITIONAL PASS** — targeted corrections frozen for re-review  
+**Implementation base:** `9882a256edb376de9ea726a510c96e40af69f845`  
+**Corrections package:** `20261112190000_service_workflow_b3_visit_corrections.sql` (+ UI/API/battery)  
+**Handoff:** [`B3_VISIT_EXECUTION_HANDOFF.md`](./B3_VISIT_EXECUTION_HANDOFF.md) · [`B3_CONDITIONAL_PASS_CORRECTIONS.md`](./B3_CONDITIONAL_PASS_CORRECTIONS.md)  
 **Gates:** No staging apply · no merge · no production · #155 frozen · #156 draft
 
-## Verdict
-
-**PASS** against disposable/local matrix on implementation `9882a256edb376de9ea726a510c96e40af69f845`.
+## Cursor local re-verification (post-correction)
 
 | Suite | PASS | FAIL | SKIP | DEFER |
 |-------|-----:|-----:|-----:|------:|
-| B3 independent disposable | 25 | 0 | 0 | 0 |
-| B1/B2 regression under B3 | 72 | 0 | 0 | 4 |
-| **Combined required** | **97** | **0** | **0** | — |
+| B3 disposable (incl. F1/D1/D2) | 28 | 0 | 0 | 0 |
+| B1/B2 regression under B3+corrections | 72 | 0 | 0 | 4 |
+| **Required** | **100** | **0** | **0** | — |
 
-Later-scope DEFER only: `M4`, `M5` (B4/B5), `R3`, `R4` (B5).
+Later-scope DEFER only: `M4`, `M5`, `R3`, `R4` (B4/B5).
 
-## Fixture repairs (harness, not runtime)
+### Correction checks
 
-1. **J1/J2** — `b1_approved_chain` performs governed `assign_service_job` before visit start; completion/transition assertions preserved → **PASS** (no longer SKIP).
-2. **V1** — assigns B2 technician before visit walk → **PASS** (no longer DEFER).
-3. **V5** — executes schedule/reschedule history + same-window idempotency + terminal blocked → **PASS** (no longer DEFER).
+| ID | Result |
+|----|--------|
+| B3-F1 (F-B3-01 auth-before-idempotent) | PASS |
+| B3-D1 (D-B3-01 first-start ticket) | PASS |
+| B3-D2 (D-B3-02 safety gate) | PASS |
 
-## Independent B3 matrix (beyond Cursor B3-01..13)
+Vitest panel/mapper suites green after start/safety API shape change.
 
-| ID | Coverage |
-|----|----------|
-| B3-01…13 | Original Cursor battery |
-| B3-L1 | Lifecycle schedule→start→complete; job/ticket remain open |
-| B3-L2 | Abort/no-access historical attending frozen; new visit after reassign |
-| B3-C1 | Concurrent starts: one wins, other denied |
-| B3-R1 | Repeat complete idempotent (no audit duplication) |
-| B3-H1 | Schedule history append-only (prior row immutable) |
-| B3-G1 | Visit complete does not close ticket / complete job |
-| B3-A1…A6 | Anonymous + forged `p_actor_id` denied on all six new RPCs |
+## Not accepted as final PASS
 
-## Explicitly not done
-
-Staging apply, merge, production, B4 implementation.
+Spark must re-run the affected authorization, idempotency, first-start atomicity, and safety-gate matrix on the correction commit before staging apply is considered.

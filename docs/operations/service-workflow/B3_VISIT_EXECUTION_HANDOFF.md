@@ -1,7 +1,8 @@
 # B3 visit execution — freeze handoff
 
-**Status:** Implementation frozen for Spark review  
+**Status:** Spark **CONDITIONAL PASS** — corrections frozen for re-review  
 **Freeze commit:** `9882a256edb376de9ea726a510c96e40af69f845`  
+**Corrections:** see tip / [`B3_CONDITIONAL_PASS_CORRECTIONS.md`](./B3_CONDITIONAL_PASS_CORRECTIONS.md) (`20261112190000_…`)  
 **Branch:** `feat/service-workflow-b1-planning`  
 **Depends on:** B1/B2 accepted at `49c78969` — see [`B1_B2_STAGING_ACCEPTANCE_CLOSEOUT.md`](./B1_B2_STAGING_ACCEPTANCE_CLOSEOUT.md)  
 **Contract:** [`B3_VISIT_CONTRACT.md`](./B3_VISIT_CONTRACT.md)  
@@ -12,7 +13,7 @@
 
 | Artifact | Path |
 |----------|------|
-| Migration (not applied) | `supabase/migrations/20261112180000_service_workflow_b3_visit_execution.sql` |
+| Migration (not applied) | `20261112180000_…b3_visit_execution.sql` + `20261112190000_…b3_visit_corrections.sql` |
 | Contract | `docs/operations/service-workflow/B3_VISIT_CONTRACT.md` |
 | Disposable battery | `scripts/service-workflow/disposable_b3_battery.sql` |
 | UI | `src/components/support/ServiceVisitPanel.tsx` (+ assignment panel / technician dashboard wiring) |
@@ -24,8 +25,8 @@
 1. Schedule/reschedule append-only history; invalid windows rejected.
 2. Start authority = current job assignee; reassignment repoints `scheduled` attending only; blocks when `in_progress`.
 3. One active visit per job (RPC only); complete/abort/no-access do **not** complete the job.
-4. B1 facades (`create_service_job_visit`, `govern_visit_transition`) remain compatible.
-5. Disposable B3 battery + B1/B2 batteries still PASS locally; UI reason gates + error mapping.
+4. **F-B3-01** auth before idempotent terminal return; **D-B3-01** first-start ticket `assigned→in_progress`; **D-B3-02** minimum safety gate.
+5. B1 facades remain compatible; disposable B3 + B1/B2 regressions PASS locally.
 
 ## Explicitly out of scope
 

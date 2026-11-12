@@ -160,6 +160,20 @@ export function mapJobRpcError(message: string): Error {
   ) {
     return new Error('A reason is required for this visit outcome.')
   }
+  if (
+    lower.includes('minimum safety attestation') ||
+    lower.includes('safety check failed') ||
+    lower.includes('latest safety check failed')
+  ) {
+    return new Error(
+      'Visit start requires the minimum safety confirmation. A failed safety check blocks work start (abort or no-access may still be recorded).',
+    )
+  }
+  if (lower.includes('ticket status') && lower.includes('incompatible')) {
+    return new Error(
+      'Cannot start this visit while the ticket is in an incompatible status. The ticket must be assigned (first start) or already in progress.',
+    )
+  }
   // Assignment/decline blocked by active attendance (B2/B3).
   if (
     (lower.includes('reassign') || lower.includes('decline') || lower.includes('assign')) &&
@@ -370,10 +384,40 @@ export async function rescheduleServiceJobVisit(input: {
   return asVisit(data)
 }
 
-export async function startServiceJobVisit(visitId: string): Promise<ServiceVisitRow> {
-  const { data, error } = await supabase.rpc('start_service_job_visit', { p_visit_id: visitId })
+/** Exact B3 minimum safety attestation (must match server constant). */
+export const B3_MINIMUM_SAFETY_ATTESTATION =
+  'I confirm minimum on-site safety prerequisites for starting this visit ' +
+  '(site access, isolation awareness, and PPE as applicable). ' +
+  'This confirmation does not assert that every machine-specific hazard has been addressed.'
+
+export async function startServiceJobVisit(input: {
+  visitId: string
+  safetyAttestation: string
+  safetyNotes?: string
+}): Promise<ServiceVisitRow> {
+  const { data, error } = await supabase.rpc('start_service_job_visit', {
+    p_visit_id: input.visitId,
+    p_safety_attestation: input.safetyAttestation,
+    p_safety_notes: input.safetyNotes ?? null,
+  })
   if (error) throw mapJobRpcError(error.message)
   return asVisit(data)
+}
+
+export async function recordVisitSafetyCheck(input: {
+  visitId: string
+  result: 'passed' | 'failed'
+  notes?: string
+  attestation?: string
+}): Promise<unknown> {
+  const { data, error } = await supabase.rpc('record_visit_safety_check', {
+    p_visit_id: input.visitId,
+    p_result: input.result,
+    p_notes: input.notes ?? null,
+    p_attestation: input.attestation ?? null,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return data
 }
 
 export async function completeServiceJobVisit(visitId: string): Promise<ServiceVisitRow> {

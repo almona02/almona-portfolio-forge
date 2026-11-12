@@ -7,9 +7,11 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import {
   abortServiceJobVisit,
+  B3_MINIMUM_SAFETY_ATTESTATION,
   completeServiceJobVisit,
   listServiceVisitsForJob,
   recordVisitNoAccess,
+  recordVisitSafetyCheck,
   rescheduleServiceJobVisit,
   scheduleServiceJobVisit,
   startServiceJobVisit,
@@ -48,6 +50,7 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
   const [startAt, setStartAt] = useState('')
   const [endAt, setEndAt] = useState('')
   const [outcomeReason, setOutcomeReason] = useState<Record<string, string>>({})
+  const [safetyAck, setSafetyAck] = useState<Record<string, boolean>>({})
   const [actionError, setActionError] = useState<string | null>(null)
   const [busyId, setBusyId] = useState<string | null>(null)
 
@@ -192,14 +195,59 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
             {canExecute && (v.state === 'scheduled' || v.state === 'in_progress') && (
               <div className="flex flex-wrap gap-2">
                 {v.state === 'scheduled' && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    disabled={busyId === v.id}
-                    onClick={() => void run(v.id, () => startServiceJobVisit(v.id), 'Visit started')}
-                  >
-                    Start
-                  </Button>
+                  <div className="w-full space-y-2">
+                    <label className="flex items-start gap-2 text-xs text-muted-foreground">
+                      <input
+                        type="checkbox"
+                        className="mt-0.5"
+                        checked={!!safetyAck[v.id]}
+                        onChange={(e) =>
+                          setSafetyAck((prev) => ({ ...prev, [v.id]: e.target.checked }))
+                        }
+                      />
+                      <span>{B3_MINIMUM_SAFETY_ATTESTATION}</span>
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        disabled={busyId === v.id || !safetyAck[v.id]}
+                        onClick={() =>
+                          void run(
+                            v.id,
+                            () =>
+                              startServiceJobVisit({
+                                visitId: v.id,
+                                safetyAttestation: B3_MINIMUM_SAFETY_ATTESTATION,
+                              }),
+                            'Visit started',
+                          )
+                        }
+                      >
+                        Start
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        disabled={busyId === v.id}
+                        onClick={() =>
+                          void run(
+                            v.id,
+                            () =>
+                              recordVisitSafetyCheck({
+                                visitId: v.id,
+                                result: 'failed',
+                                notes: (outcomeReason[v.id] ?? '').trim() || 'safety failed',
+                              }),
+                            'Safety check failed (work start blocked)',
+                          )
+                        }
+                      >
+                        Record failed safety
+                      </Button>
+                    </div>
+                  </div>
                 )}
                 {v.state === 'in_progress' && (
                   <Button

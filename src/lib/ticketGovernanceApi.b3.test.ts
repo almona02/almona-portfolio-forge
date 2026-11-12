@@ -34,4 +34,17 @@ describe('mapJobRpcError B3', () => {
       /while a visit is in progress/i,
     )
   })
+
+  it('maps safety attestation / failed gate', () => {
+    expect(mapJobRpcError('Minimum safety attestation required before visit start').message).toMatch(
+      /minimum safety confirmation/i,
+    )
+  })
+
+  it('maps incompatible ticket parent status', () => {
+    expect(
+      mapJobRpcError('Cannot start visit: ticket status open is incompatible (expected assigned)')
+        .message,
+    ).toMatch(/incompatible status/i)
+  })
 })

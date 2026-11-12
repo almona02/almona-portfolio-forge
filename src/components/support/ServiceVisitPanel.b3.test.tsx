@@ -7,21 +7,29 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ServiceVisitPanel } from './ServiceVisitPanel'
 import type { ServiceVisitRow } from '@/lib/ticketGovernanceApi'
 
-vi.mock('@/lib/ticketGovernanceApi', () => ({
-  listServiceVisitsForJob: vi.fn(),
-  scheduleServiceJobVisit: vi.fn(),
-  rescheduleServiceJobVisit: vi.fn(),
-  startServiceJobVisit: vi.fn(),
-  completeServiceJobVisit: vi.fn(),
-  abortServiceJobVisit: vi.fn(),
-  recordVisitNoAccess: vi.fn(),
-}))
+vi.mock('@/lib/ticketGovernanceApi', async () => {
+  const actual = await vi.importActual<typeof import('@/lib/ticketGovernanceApi')>(
+    '@/lib/ticketGovernanceApi',
+  )
+  return {
+    ...actual,
+    listServiceVisitsForJob: vi.fn(),
+    scheduleServiceJobVisit: vi.fn(),
+    rescheduleServiceJobVisit: vi.fn(),
+    startServiceJobVisit: vi.fn(),
+    completeServiceJobVisit: vi.fn(),
+    abortServiceJobVisit: vi.fn(),
+    recordVisitNoAccess: vi.fn(),
+    recordVisitSafetyCheck: vi.fn(),
+  }
+})
 vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
 import {
   abortServiceJobVisit,
+  B3_MINIMUM_SAFETY_ATTESTATION,
   listServiceVisitsForJob,
   startServiceJobVisit,
 } from '@/lib/ticketGovernanceApi'
@@ -100,12 +108,29 @@ describe('ServiceVisitPanel B3', () => {
     )
   })
 
+  it('requires safety attestation before start', async () => {
+    const { user } = setup('technician', true)
+    await screen.findByText(/Visit 1: scheduled/)
+    const startBtn = screen.getByRole('button', { name: 'Start' })
+    expect(startBtn).toBeDisabled()
+    await user.click(screen.getByRole('checkbox'))
+    expect(startBtn).toBeEnabled()
+    await user.click(startBtn)
+    await waitFor(() =>
+      expect(startMock).toHaveBeenCalledWith({
+        visitId: 'visit-1',
+        safetyAttestation: B3_MINIMUM_SAFETY_ATTESTATION,
+      }),
+    )
+  })
+
   it('surfaces mapped start concurrency errors', async () => {
     startMock.mockRejectedValueOnce(
       new Error('Another visit is already in progress on this job. Finish or abort it first.'),
     )
     const { user } = setup('technician', true)
     await screen.findByText(/Visit 1: scheduled/)
+    await user.click(screen.getByRole('checkbox'))
     await user.click(screen.getByRole('button', { name: 'Start' }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/already in progress/i)
   })
