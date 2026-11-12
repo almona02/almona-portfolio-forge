@@ -41,13 +41,14 @@ ALTER TABLE public.service_report_revisions
   ALTER COLUMN work_performed SET NOT NULL,
   ALTER COLUMN technician_declaration SET NOT NULL;
 
+-- Forbid contradictory labour + no_labour. Full XOR (require labour or no_labour)
+-- is enforced in submit_service_report_revision so pre-B4 disposable inserts remain valid.
 ALTER TABLE public.service_report_revisions
   DROP CONSTRAINT IF EXISTS service_report_revisions_labour_xor_no_labour;
 ALTER TABLE public.service_report_revisions
   ADD CONSTRAINT service_report_revisions_labour_xor_no_labour
   CHECK (
-    (no_labour = true AND labour = '[]'::jsonb)
-    OR (no_labour = false AND jsonb_typeof(labour) = 'array' AND jsonb_array_length(labour) >= 1)
+    NOT (no_labour = true AND jsonb_typeof(labour) = 'array' AND jsonb_array_length(labour) > 0)
   );
 
 CREATE UNIQUE INDEX IF NOT EXISTS service_report_revisions_client_submission_uidx
@@ -200,9 +201,39 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE FUNCTION admin_private.actor_can_read_ticket_attachment(
+  p_object_name text,
+  p_actor_uid uuid,
+  p_actor_role text
+)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, public, admin_private
+AS $$
+  SELECT CASE
+    WHEN p_actor_uid IS NULL THEN false
+    WHEN p_actor_role IN ('admin', 'support') THEN true
+    WHEN (storage.foldername(p_object_name))[1] = p_actor_uid::text THEN true
+    WHEN EXISTS (
+      SELECT 1
+      FROM public.service_tickets st
+      WHERE st.id::text = (storage.foldername(p_object_name))[1]
+        AND (
+          st.assigned_to = p_actor_uid
+          OR admin_private.is_ticket_job_technician(st.id, p_actor_uid)
+        )
+    ) THEN true
+    ELSE false
+  END;
+$$;
+
 CREATE OR REPLACE FUNCTION admin_private.validate_report_evidence_paths(
   p_ticket_id uuid,
-  p_paths text[]
+  p_paths text[],
+  p_actor_uid uuid,
+  p_actor_role text
 )
 RETURNS void
 LANGUAGE plpgsql
@@ -228,11 +259,11 @@ BEGIN
     END IF;
     v_folder := (storage.foldername(p))[1];
     IF v_folder IS DISTINCT FROM p_ticket_id::text
-       AND v_folder IS DISTINCT FROM admin_private.caller_uid()::text THEN
+       AND v_folder IS DISTINCT FROM p_actor_uid::text THEN
       RAISE EXCEPTION 'Evidence path must be under the ticket or submitter private folder'
         USING ERRCODE = '42501';
     END IF;
-    IF NOT admin_private.can_read_ticket_attachment(p) THEN
+    IF NOT admin_private.actor_can_read_ticket_attachment(p, p_actor_uid, p_actor_role) THEN
       RAISE EXCEPTION 'Evidence path is not privately readable by the submitter'
         USING ERRCODE = '42501';
     END IF;
@@ -308,6 +339,7 @@ SET search_path = pg_catalog, public, admin_private
 AS $$
 DECLARE
   v_actor record;
+  v_hier record;
   v_ticket public.service_tickets;
   v_job public.service_jobs;
   v_visit public.service_job_visits;
@@ -320,24 +352,30 @@ BEGIN
   SELECT * INTO v_actor FROM admin_private.workflow_resolve_actor(p_actor_id);
 
   -- Lock ticket → job → visit (F-B3-03 order).
-  SELECT h.ticket, h.job, h.visit
-  INTO v_ticket, v_job, v_visit
-  FROM admin_private.lock_visit_hierarchy(p_visit_id) AS h;
-  IF v_visit.id IS NULL THEN
-    RAISE EXCEPTION 'Visit not found' USING ERRCODE = 'P0002';
-  END IF;
+  SELECT * INTO v_hier FROM admin_private.lock_visit_hierarchy(p_visit_id);
+  v_ticket := v_hier.ticket;
+  v_job := v_hier.job;
+  v_visit := v_hier.visit;
 
   IF v_visit.state IS DISTINCT FROM 'completed' THEN
     RAISE EXCEPTION 'Reports may only be submitted for completed visits'
       USING ERRCODE = 'check_violation';
   END IF;
 
-  -- Only the current attending technician may submit. Staff cannot substitute.
+  -- R4-05: authorship is the technician recorded on this completed visit
+  -- (attending_technician_id), not the job's current assignee. Later job
+  -- reassignment must not strip the historical attendee or let a new assignee
+  -- impersonate them. Staff cannot substitute.
+  IF v_visit.attending_technician_id IS NULL THEN
+    RAISE EXCEPTION 'Completed visit has no attending technician; cannot submit report'
+      USING ERRCODE = '22023';
+  END IF;
   IF v_actor.role IS DISTINCT FROM 'technician'
      OR v_actor.uid IS DISTINCT FROM v_visit.attending_technician_id THEN
-    RAISE EXCEPTION 'Only the attending technician for this visit may submit a report'
+    RAISE EXCEPTION 'Only the historical attending technician for this visit may submit a report'
       USING ERRCODE = '42501';
   END IF;
+  -- Explicitly ignore job.assigned_technician_id for authorization (may differ after reassignment).
 
   IF p_findings IS NULL OR btrim(p_findings) = '' THEN
     RAISE EXCEPTION 'Findings are required' USING ERRCODE = '22023';
@@ -360,7 +398,9 @@ BEGIN
   END IF;
 
   PERFORM admin_private.validate_report_labour(COALESCE(p_labour, '[]'::jsonb), COALESCE(p_no_labour, false));
-  PERFORM admin_private.validate_report_evidence_paths(v_ticket.id, p_evidence_paths);
+  PERFORM admin_private.validate_report_evidence_paths(
+    v_ticket.id, p_evidence_paths, v_actor.uid, v_actor.role
+  );
   PERFORM admin_private.validate_checklist_for_pin(v_visit, p_checklist_results);
 
   -- Ensure one report root per visit.
@@ -496,11 +536,12 @@ REVOKE ALL ON FUNCTION public.submit_service_report_revision(
 ) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.submit_service_report_revision(
   uuid, text, text, jsonb, boolean, text, text, text, text[], jsonb, uuid, uuid
-) TO authenticated;
--- service_role: no broad write exception; disposable tests use authenticated JWT actors.
+) TO authenticated, service_role;
+-- Anon denied. service_role may call only with delegated p_actor_id (workflow_resolve_actor);
+-- direct table INSERT/UPDATE/DELETE remain REVOKEd (B2).
 REVOKE EXECUTE ON FUNCTION public.submit_service_report_revision(
   uuid, text, text, jsonb, boolean, text, text, text, text[], jsonb, uuid, uuid
-) FROM anon, service_role;
+) FROM anon;
 
 CREATE OR REPLACE FUNCTION public.get_service_report_for_visit(p_visit_id uuid)
 RETURNS jsonb

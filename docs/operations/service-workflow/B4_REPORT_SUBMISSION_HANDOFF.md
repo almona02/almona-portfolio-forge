@@ -30,9 +30,13 @@
 
 Apply B1→B4 migrations on throwaway PG17 (`disposable_b1_base` + prior batteries), then:
 
-`psql … -f scripts/service-workflow/disposable_b4_battery.sql`
+`python scripts/service-workflow/run_disposable_b4.py`
 
-Expect M4 / M4B / M4C / M4D / M4E **PASS**.
+Expected (bound to this freeze tip):
+- **B4 required:** R4-01..R4-10 **PASS** (10); R5/R6/draft **DEFER** (3)
+- **B3 under B4:** 39 PASS / 0 FAIL
+- **B1/B2 under B4:** 72 PASS / 0 FAIL / 4 DEFER
+- Evidence: `.artifacts/slice0/service-workflow/disposable_b4_results.json` (gitignored)
 
 ## Explicit non-actions
 

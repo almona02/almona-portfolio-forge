@@ -9,7 +9,7 @@
 
 1. **One report root per visit** (`service_reports.visit_id` UNIQUE).
 2. **Append-only submitted revisions** (`service_report_revisions`). No draft rows on the server; clients may keep local recoverable drafts.
-3. **Submitter** = current `service_job_visits.attending_technician_id` with role `technician`. Staff cannot substitute. `submitted_by` is historical and survives later reassignment.
+3. **Submitter (R4-05)** = the technician recorded on that visit as `service_job_visits.attending_technician_id` (role `technician`). Authorization is **not** the job’s current `assigned_technician_id`. Later job reassignment must not strip the historical attendee’s right to submit for that completed visit, and must not let a new assignee impersonate them. Staff cannot substitute. `submitted_by` is frozen on the revision.
 4. **Visit must be `completed`** before submit.
 5. **Payload (required):** findings, work performed, labour entries **or** explicit `no_labour`, verification outcome (+ reason when not `verified_fixed`), supporting evidence paths (≥1), technician declaration.
 6. **Labour:** JSON array of `{hours: number>0, description: non-empty}` XOR `no_labour=true` with `[]`.

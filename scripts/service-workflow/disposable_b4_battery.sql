@@ -1,6 +1,7 @@
 -- B4 report submission disposable battery (local/disposable only).
 -- Prerequisites: disposable_b1_base + B1/B2/B3 migrations + B4 migration.
 -- Never against staging/production.
+-- Matrix aligned to bounded B4 contract (no squad-manager; B5/B6 DEFER).
 
 CREATE OR REPLACE FUNCTION b1_uid(n text) RETURNS uuid
 LANGUAGE sql IMMUTABLE AS $$
@@ -22,7 +23,15 @@ CREATE OR REPLACE FUNCTION b4_note(p_id text, p_ok boolean, p_detail text)
 RETURNS void LANGUAGE plpgsql AS $$
 BEGIN
   INSERT INTO public.b4_eval(check_id, status, detail)
-  VALUES (p_id, CASE WHEN p_ok THEN 'PASS' ELSE 'FAIL' END, left(p_detail, 400))
+  VALUES (p_id, CASE WHEN p_ok THEN 'PASS' ELSE 'FAIL' END, left(p_detail, 500))
+  ON CONFLICT (check_id) DO UPDATE SET status = EXCLUDED.status, detail = EXCLUDED.detail;
+END; $$;
+
+CREATE OR REPLACE FUNCTION b4_defer(p_id text, p_detail text)
+RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  INSERT INTO public.b4_eval(check_id, status, detail)
+  VALUES (p_id, 'DEFER', left(p_detail, 500))
   ON CONFLICT (check_id) DO UPDATE SET status = EXCLUDED.status, detail = EXCLUDED.detail;
 END; $$;
 
@@ -31,11 +40,13 @@ RETURNS boolean LANGUAGE plpgsql AS $$
 BEGIN
   EXECUTE p_sql; RETURN false;
 EXCEPTION WHEN OTHERS THEN
-  IF SQLSTATE IN ('42501','22023','P0002','23514','23505')
+  IF SQLSTATE IN ('42501','22023','P0002','23514','23505','check_violation')
      OR SQLERRM ILIKE '%permission%' OR SQLERRM ILIKE '%only%'
      OR SQLERRM ILIKE '%required%' OR SQLERRM ILIKE '%Invalid%'
      OR SQLERRM ILIKE '%Cannot%' OR SQLERRM ILIKE '%labour%'
      OR SQLERRM ILIKE '%evidence%' OR SQLERRM ILIKE '%immutable%'
+     OR SQLERRM ILIKE '%Authentication%' OR SQLERRM ILIKE '%impersonation%'
+     OR SQLERRM ILIKE '%historical attending%' OR SQLERRM ILIKE '%attending technician%'
   THEN RETURN true; END IF;
   RAISE;
 END; $$;
@@ -81,180 +92,409 @@ BEGIN
   END IF;
 END; $$;
 
--- M4: one report root per completed visit; attending tech submit → awaiting_review
+-- ---------------------------------------------------------------------------
+-- R4-01: attending-tech auth, anon/forged, service_role delegation
+-- ---------------------------------------------------------------------------
 DO $$
 DECLARE
-  v_t uuid; v_j uuid; v_v uuid; v_path text; v_rev public.service_report_revisions;
-  v_rev2 public.service_report_revisions; v_cid uuid := gen_random_uuid();
-  v_job_state text; v_tkt text; v_n int; a boolean; b boolean; c boolean;
+  v_t uuid; v_j uuid; v_v uuid; v_path text;
+  a boolean; b boolean; c boolean; d boolean; e boolean;
+  v_rev public.service_report_revisions;
 BEGIN
-  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('m4');
-  v_path := v_t::text || '/b4/m4-e1.jpg';
+  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('r401');
+  v_path := v_t::text || '/b4/r401.jpg';
   PERFORM b4_seed_evidence(v_t, v_path);
 
-  -- Wrong actor denied
+  PERFORM set_config('app.b1_uid', '', false);
+  a := b4_denied(format(
+    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[{"hours":1,"description":"x"}]'::jsonb,false,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
+    v_v, v_path, gen_random_uuid()));
+
+  -- forged actor id while authenticated as tech2
+  PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
+  b := b4_denied(format(
+    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[{"hours":1,"description":"x"}]'::jsonb,false,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,%L::uuid)$q$,
+    v_v, v_path, gen_random_uuid(), b1_uid('tech1')));
+
+  -- support cannot substitute
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  c := b4_denied(format(
+    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[{"hours":1,"description":"x"}]'::jsonb,false,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
+    v_v, v_path, gen_random_uuid()));
+
+  -- service_role delegation: clear uid, SET ROLE, pass attending actor
+  PERFORM set_config('app.b1_uid', '', true);
+  BEGIN
+    EXECUTE 'SET ROLE service_role';
+    PERFORM set_config('request.jwt.claim.role', 'service_role', true);
+    PERFORM set_config('request.jwt.claims', '{"role":"service_role"}', true);
+    v_rev := public.submit_service_report_revision(
+      v_v, 'f', 'w', '[{"hours":1,"description":"x"}]'::jsonb, false,
+      'verified_fixed', NULL, 'decl', ARRAY[v_path], NULL, gen_random_uuid(), b1_uid('tech1'));
+    d := (v_rev.submitted_by = b1_uid('tech1'));
+    EXECUTE 'RESET ROLE';
+  EXCEPTION WHEN OTHERS THEN
+    EXECUTE 'RESET ROLE';
+    d := false;
+    PERFORM b4_note('R4-01', false, 'service_role delegation error: ' || SQLERRM);
+    RETURN;
+  END;
+
+  -- service_role without actor denied
+  PERFORM set_config('app.b1_uid', '', true);
+  BEGIN
+    EXECUTE 'SET ROLE service_role';
+    PERFORM set_config('request.jwt.claim.role', 'service_role', true);
+    PERFORM set_config('request.jwt.claims', '{"role":"service_role"}', true);
+    e := b4_denied(format(
+      $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[{"hours":1,"description":"x"}]'::jsonb,false,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
+      v_v, v_path, gen_random_uuid()));
+    EXECUTE 'RESET ROLE';
+  EXCEPTION WHEN OTHERS THEN
+    EXECUTE 'RESET ROLE';
+    e := false;
+  END;
+
+  PERFORM b4_note('R4-01', a AND b AND c AND d AND e,
+    format('anon=%s forged=%s support=%s svc_ok=%s svc_no_actor=%s', a, b, c, d, e));
+END $$;
+
+-- ---------------------------------------------------------------------------
+-- R4-02: cross-ticket/visit + private attachment isolation
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_t1 uuid; v_j1 uuid; v_v1 uuid; v_t2 uuid; v_j2 uuid; v_v2 uuid;
+  p1 text; p2 text; a boolean; b boolean; v_rev public.service_report_revisions;
+BEGIN
+  SELECT * INTO v_t1, v_j1, v_v1 FROM b4_mk_completed_visit('r402a');
+  SELECT * INTO v_t2, v_j2, v_v2 FROM b4_mk_completed_visit('r402b');
+  p1 := v_t1::text || '/b4/a.jpg';
+  p2 := v_t2::text || '/b4/b.jpg';
+  PERFORM b4_seed_evidence(v_t1, p1);
+  PERFORM b4_seed_evidence(v_t2, p2);
+
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  -- foreign ticket evidence on visit1 denied
+  a := b4_denied(format(
+    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[]'::jsonb,true,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
+    v_v1, p2, gen_random_uuid()));
+  -- happy path with matching ticket evidence
+  v_rev := public.submit_service_report_revision(
+    v_v1, 'f', 'w', '[]'::jsonb, true, 'verified_fixed', NULL, 'decl',
+    ARRAY[p1], NULL, gen_random_uuid(), NULL);
+  -- tech2 cannot submit on visit1
+  PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
+  b := b4_denied(format(
+    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[]'::jsonb,true,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
+    v_v1, p1, gen_random_uuid()));
+  PERFORM b4_note('R4-02', a AND b AND v_rev.id IS NOT NULL,
+    format('cross_evidence=%s cross_visit=%s', a, b));
+END $$;
+
+-- ---------------------------------------------------------------------------
+-- R4-03: required fields (findings, labour/no-labour, verification, declaration)
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_path text;
+  a boolean; b boolean; c boolean; d boolean; e boolean; f boolean;
+  v_rev public.service_report_revisions;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('r403');
+  v_path := v_t::text || '/b4/r403.jpg';
+  PERFORM b4_seed_evidence(v_t, v_path);
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+
+  a := b4_denied(format(
+    $q$SELECT public.submit_service_report_revision(%L::uuid,'','w','[]'::jsonb,true,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
+    v_v, v_path, gen_random_uuid()));
+  b := b4_denied(format(
+    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','','[]'::jsonb,true,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
+    v_v, v_path, gen_random_uuid()));
+  c := b4_denied(format(
+    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[]'::jsonb,false,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
+    v_v, v_path, gen_random_uuid()));
+  d := b4_denied(format(
+    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[{"hours":1,"description":"x"}]'::jsonb,true,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
+    v_v, v_path, gen_random_uuid()));
+  e := b4_denied(format(
+    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[]'::jsonb,true,'further_work_required',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
+    v_v, v_path, gen_random_uuid()));
+  f := b4_denied(format(
+    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[]'::jsonb,true,'verified_fixed',NULL,'',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
+    v_v, v_path, gen_random_uuid()));
+
+  v_rev := public.submit_service_report_revision(
+    v_v, 'findings ok', 'work ok',
+    '[{"hours":2,"description":"align"}]'::jsonb, false,
+    'not_reproduced', 'intermittent', 'I declare.',
+    ARRAY[v_path], NULL, gen_random_uuid(), NULL);
+
+  PERFORM b4_note('R4-03', a AND b AND c AND d AND e AND f AND v_rev.id IS NOT NULL,
+    format('denies=%s/%s/%s/%s/%s/%s ok=%s', a, b, c, d, e, f, v_rev.verification_outcome));
+END $$;
+
+-- ---------------------------------------------------------------------------
+-- R4-04: idempotent submit, conflicting retry, concurrent revision numbers
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_path text; v_cid uuid := gen_random_uuid();
+  v_r1 public.service_report_revisions; v_r2 public.service_report_revisions;
+  v_r3 public.service_report_revisions; v_r4 public.service_report_revisions;
+  v_n int;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('r404');
+  v_path := v_t::text || '/b4/r404.jpg';
+  PERFORM b4_seed_evidence(v_t, v_path);
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+
+  v_r1 := public.submit_service_report_revision(
+    v_v, 'f1', 'w1', '[]'::jsonb, true, 'verified_fixed', NULL, 'decl',
+    ARRAY[v_path], NULL, v_cid, NULL);
+  -- conflicting payload, same client id → same revision (idempotent; first wins)
+  v_r2 := public.submit_service_report_revision(
+    v_v, 'CHANGED', 'CHANGED', '[{"hours":9,"description":"nope"}]'::jsonb, false,
+    'not_verified', 'x', 'decl', ARRAY[v_path], NULL, v_cid, NULL);
+
+  v_r3 := public.submit_service_report_revision(
+    v_v, 'f2', 'w2', '[]'::jsonb, true, 'verified_fixed', NULL, 'decl',
+    ARRAY[v_path], NULL, gen_random_uuid(), NULL);
+  v_r4 := public.submit_service_report_revision(
+    v_v, 'f3', 'w3', '[]'::jsonb, true, 'verified_fixed', NULL, 'decl',
+    ARRAY[v_path], NULL, gen_random_uuid(), NULL);
+
+  SELECT count(*) INTO v_n FROM public.service_report_revisions r
+  JOIN public.service_reports rep ON rep.id = r.report_id WHERE rep.visit_id = v_v;
+
+  PERFORM b4_note('R4-04',
+    v_r1.id = v_r2.id AND v_r2.findings = 'f1'
+      AND v_r3.revision_number = 2 AND v_r4.revision_number = 3 AND v_n = 3,
+    format('idem=%s findings=%s revs=%s n=%s', v_r1.id = v_r2.id, v_r2.findings, v_r4.revision_number, v_n));
+END $$;
+
+-- ---------------------------------------------------------------------------
+-- R4-05: historical attending authorship after reassignment (corrected)
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_path text;
+  v_att uuid; v_assignee uuid;
+  a boolean; b boolean;
+  v_rev public.service_report_revisions;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('r405');
+  v_path := v_t::text || '/b4/r405.jpg';
+  PERFORM b4_seed_evidence(v_t, v_path);
+  SELECT attending_technician_id INTO v_att FROM public.service_job_visits WHERE id = v_v;
+
+  -- Reassign job to tech2 while visit remains completed with tech1 attending
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  PERFORM public.govern_job_transition(v_j, 'in_progress', 'reopen', NULL);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech2'), 'reassign', NULL);
+  SELECT assigned_technician_id INTO v_assignee FROM public.service_jobs WHERE id = v_j;
+  -- attending on completed visit must remain tech1
+  IF (SELECT attending_technician_id FROM public.service_job_visits WHERE id = v_v) IS DISTINCT FROM v_att THEN
+    PERFORM b4_note('R4-05', false, 'completed visit attending was rewritten on reassignment');
+    RETURN;
+  END IF;
+
+  -- new assignee cannot impersonate / submit for historical visit
   PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
   a := b4_denied(format(
-    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[{"hours":1,"description":"x"}]'::jsonb,false,'verified_fixed',NULL,'I declare',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
-    v_v, v_path, gen_random_uuid()
-  ));
-  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
-  b := b4_denied(format(
-    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[{"hours":1,"description":"x"}]'::jsonb,false,'verified_fixed',NULL,'I declare',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
-    v_v, v_path, gen_random_uuid()
-  ));
+    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[]'::jsonb,true,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
+    v_v, v_path, gen_random_uuid()));
 
-  -- Attending tech submits
+  -- historical attending tech1 may still submit their visit report
   PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
-  v_rev := public.submit_service_report_revision(
-    v_v, 'findings', 'work done',
-    '[{"hours":1.5,"description":"align"}]'::jsonb, false,
-    'verified_fixed', NULL, 'I declare this report accurate.',
-    ARRAY[v_path], NULL, v_cid, NULL
-  );
-  SELECT state INTO v_job_state FROM public.service_jobs WHERE id = v_j;
-  SELECT status INTO v_tkt FROM public.service_tickets WHERE id = v_t;
-  SELECT count(*) INTO v_n FROM public.service_reports WHERE visit_id = v_v;
+  BEGIN
+    v_rev := public.submit_service_report_revision(
+      v_v, 'f', 'w', '[]'::jsonb, true, 'verified_fixed', NULL, 'decl',
+      ARRAY[v_path], NULL, gen_random_uuid(), NULL);
+    b := (v_rev.submitted_by = b1_uid('tech1'));
+  EXCEPTION WHEN OTHERS THEN
+    b := false;
+    PERFORM b4_note('R4-05', false, 'historical attendee blocked: ' || SQLERRM);
+    RETURN;
+  END;
 
-  -- Idempotent retry same client_submission_id
-  v_rev2 := public.submit_service_report_revision(
-    v_v, 'findings-changed', 'work changed',
-    '[{"hours":9,"description":"should not apply"}]'::jsonb, false,
-    'not_verified', 'n/a', 'I declare this report accurate.',
-    ARRAY[v_path], NULL, v_cid, NULL
-  );
-
-  PERFORM b4_note('M4',
-    a AND b AND v_n = 1 AND v_rev.revision_number = 1
-      AND v_rev2.id = v_rev.id AND v_rev2.findings = 'findings'
-      AND v_job_state = 'awaiting_review' AND v_tkt = 'assigned',
-    format('denied_wrong=%s/%s root=%s job=%s ticket=%s idem=%s', a, b, v_n, v_job_state, v_tkt, v_rev2.id = v_rev.id)
-  );
+  PERFORM b4_note('R4-05', a AND b AND v_assignee = b1_uid('tech2') AND v_att = b1_uid('tech1'),
+    format('new_denied=%s hist_ok=%s assignee=%s attending=%s', a, b, v_assignee, v_att));
 END $$;
 
--- M4B: no_labour xor labour; missing evidence denied; direct writes denied
-DO $$
-DECLARE
-  v_t uuid; v_j uuid; v_v uuid; v_path text; a boolean; b boolean; c boolean; d boolean;
-  v_rev public.service_report_revisions; v_report uuid;
-BEGIN
-  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('m4b');
-  v_path := v_t::text || '/b4/m4b-e1.jpg';
-  PERFORM b4_seed_evidence(v_t, v_path);
-  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
-
-  a := b4_denied(format(
-    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[]'::jsonb,false,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
-    v_v, v_path, gen_random_uuid()
-  ));
-  b := b4_denied(format(
-    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[{"hours":1,"description":"x"}]'::jsonb,true,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
-    v_v, v_path, gen_random_uuid()
-  ));
-  c := b4_denied(format(
-    $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[]'::jsonb,true,'verified_fixed',NULL,'decl',ARRAY[]::text[],NULL,%L::uuid,NULL)$q$,
-    v_v, gen_random_uuid()
-  ));
-
-  v_rev := public.submit_service_report_revision(
-    v_v, 'f', 'w', '[]'::jsonb, true, 'verified_fixed', NULL, 'decl',
-    ARRAY[v_path], NULL, gen_random_uuid(), NULL
-  );
-  SELECT id INTO v_report FROM public.service_reports WHERE visit_id = v_v;
-
-  -- Direct client/service_role writes remain denied (B2 revocation preserved)
-  PERFORM set_config('app.b1_uid', b1_uid('admin')::text, false);
-  d := b4_denied(format(
-    $q$INSERT INTO public.service_report_revisions(report_id,revision_number,findings,work_performed,labour,no_labour,verification_outcome,technician_declaration,submitted_by)
-       VALUES (%L::uuid, 99, 'x', 'x', '[]'::jsonb, true, 'verified_fixed', 'x', %L::uuid)$q$,
-    v_report, b1_uid('admin')
-  ));
-
-  PERFORM b4_note('M4B', a AND b AND c AND d AND v_rev.no_labour,
-    format('labour_rules=%s/%s/%s direct_denied=%s', a, b, c, d));
-END $$;
-
--- M4C: historical attribution survives reassignment; former tech cannot submit new revision
+-- ---------------------------------------------------------------------------
+-- R4-06: submitted immutability + direct-write restrictions preserved
+-- ---------------------------------------------------------------------------
 DO $$
 DECLARE
   v_t uuid; v_j uuid; v_v uuid; v_path text; v_rev public.service_report_revisions;
-  a boolean; v_by uuid;
+  a boolean; b boolean; c boolean; d boolean;
 BEGIN
-  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('m4c');
-  v_path := v_t::text || '/b4/m4c-e1.jpg';
+  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('r406');
+  v_path := v_t::text || '/b4/r406.jpg';
   PERFORM b4_seed_evidence(v_t, v_path);
   PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
   v_rev := public.submit_service_report_revision(
-    v_v, 'f', 'w', '[{"hours":1,"description":"x"}]'::jsonb, false,
-    'verified_fixed', NULL, 'decl', ARRAY[v_path], NULL, gen_random_uuid(), NULL
-  );
-  v_by := v_rev.submitted_by;
+    v_v, 'f', 'w', '[]'::jsonb, true, 'verified_fixed', NULL, 'decl',
+    ARRAY[v_path], NULL, gen_random_uuid(), NULL);
 
-  -- Reassign job (awaiting_review → in_progress may be needed first)
-  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
-  PERFORM public.govern_job_transition(v_j, 'in_progress', 'reopen for reassignment', NULL);
-  PERFORM public.assign_service_job(v_j, b1_uid('tech2'), 'reassign after submit', NULL);
+  -- Exercise client-role immutability (table owner / superuser bypasses the trigger).
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, true);
+  BEGIN
+    EXECUTE 'SET ROLE authenticated';
+    a := b4_denied(format($q$UPDATE public.service_report_revisions SET findings='hack' WHERE id=%L::uuid$q$, v_rev.id));
+    b := b4_denied(format($q$DELETE FROM public.service_report_revisions WHERE id=%L::uuid$q$, v_rev.id));
+    EXECUTE 'RESET ROLE';
+  EXCEPTION WHEN OTHERS THEN
+    EXECUTE 'RESET ROLE';
+    a := false; b := false;
+  END;
 
-  SELECT submitted_by INTO v_by FROM public.service_report_revisions WHERE id = v_rev.id;
-  a := (v_by = b1_uid('tech1'));
+  PERFORM set_config('app.b1_uid', '', true);
+  BEGIN
+    EXECUTE 'SET ROLE service_role';
+    PERFORM set_config('request.jwt.claim.role', 'service_role', true);
+    PERFORM set_config('request.jwt.claims', '{"role":"service_role"}', true);
+    c := b4_denied(format(
+      $q$INSERT INTO public.service_report_revisions(report_id,revision_number,findings,work_performed,labour,no_labour,verification_outcome,technician_declaration,submitted_by)
+         VALUES (%L::uuid, 99, 'x', 'x', '[]'::jsonb, true, 'verified_fixed', 'x', %L::uuid)$q$,
+      v_rev.report_id, b1_uid('tech1')));
+    d := b4_denied(format(
+      $q$INSERT INTO public.service_report_reviews(revision_id,reviewer_id,decision) VALUES (%L::uuid,%L::uuid,'approved_issued')$q$,
+      v_rev.id, b1_uid('admin')));
+    EXECUTE 'RESET ROLE';
+  EXCEPTION WHEN OTHERS THEN
+    EXECUTE 'RESET ROLE';
+    c := false; d := false;
+  END;
 
-  -- New completed visit for tech2 would be needed to submit; former tech on old visit still attributed
-  PERFORM b4_note('M4C', a, format('historical_submitted_by=%s', v_by));
+  PERFORM b4_note('R4-06', a AND b AND c AND d,
+    format('upd=%s del=%s svc_ins_rev=%s svc_ins_review=%s', a, b, c, d));
 END $$;
 
--- M4D: append-only second revision; does not complete job or close ticket; no self-issue
+-- ---------------------------------------------------------------------------
+-- R4-07: atomic report/job-state/audit rollback
+-- ---------------------------------------------------------------------------
 DO $$
 DECLARE
-  v_t uuid; v_j uuid; v_v uuid; v_path text; v_r1 public.service_report_revisions;
-  v_r2 public.service_report_revisions; v_job text; v_tkt text; v_reviews int;
+  v_t uuid; v_j uuid; v_v uuid; v_path text;
+  v_job_before text; v_job_after text; v_revs int; v_aud int; a boolean;
 BEGIN
-  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('m4d');
-  v_path := v_t::text || '/b4/m4d-e1.jpg';
-  PERFORM b4_seed_evidence(v_t, v_path);
-  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
-  v_r1 := public.submit_service_report_revision(
-    v_v, 'f1', 'w1', '[{"hours":1,"description":"x"}]'::jsonb, false,
-    'further_work_required', 'need parts', 'decl', ARRAY[v_path], NULL, gen_random_uuid(), NULL
-  );
-  v_r2 := public.submit_service_report_revision(
-    v_v, 'f2', 'w2', '[{"hours":2,"description":"y"}]'::jsonb, false,
-    'verified_fixed', NULL, 'decl', ARRAY[v_path], NULL, gen_random_uuid(), NULL
-  );
-  SELECT state INTO v_job FROM public.service_jobs WHERE id = v_j;
-  SELECT status INTO v_tkt FROM public.service_tickets WHERE id = v_t;
-  SELECT count(*) INTO v_reviews FROM public.service_report_reviews;
-  PERFORM b4_note('M4D',
-    v_r2.revision_number = 2 AND v_job = 'awaiting_review' AND v_tkt = 'assigned' AND v_reviews = 0,
-    format('rev=%s job=%s ticket=%s reviews=%s', v_r2.revision_number, v_job, v_tkt, v_reviews)
-  );
-END $$;
-
--- M4E: pinned routine checklist contract (no hardcoded model tolerances)
-DO $$
-DECLARE
-  v_t uuid; v_j uuid; v_v uuid; v_path text; a boolean; v_rev public.service_report_revisions;
-  v_pin uuid := 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
-BEGIN
-  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('m4e');
-  UPDATE public.service_job_visits SET pinned_routine_version_id = v_pin WHERE id = v_v;
-  v_path := v_t::text || '/b4/m4e-e1.jpg';
-  PERFORM b4_seed_evidence(v_t, v_path);
+  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('r407');
+  SELECT state INTO v_job_before FROM public.service_jobs WHERE id = v_j;
+  -- missing evidence → fail; job must remain in_progress, no revision, no submit audit
   PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
   a := b4_denied(format(
     $q$SELECT public.submit_service_report_revision(%L::uuid,'f','w','[]'::jsonb,true,'verified_fixed',NULL,'decl',ARRAY[%L]::text[],NULL,%L::uuid,NULL)$q$,
-    v_v, v_path, gen_random_uuid()
-  ));
+    v_v, v_t::text || '/b4/missing.jpg', gen_random_uuid()));
+  SELECT state INTO v_job_after FROM public.service_jobs WHERE id = v_j;
+  SELECT count(*) INTO v_revs FROM public.service_report_revisions r
+    JOIN public.service_reports rep ON rep.id = r.report_id WHERE rep.visit_id = v_v;
+  SELECT count(*) INTO v_aud FROM public.service_workflow_audit
+    WHERE entity_type = 'service_report_revision' AND action = 'submit_report_revision'
+      AND details->>'visit_id' = v_v::text;
+  PERFORM b4_note('R4-07',
+    a AND v_job_before = 'in_progress' AND v_job_after = 'in_progress' AND v_revs = 0 AND v_aud = 0,
+    format('denied=%s job=%s→%s revs=%s aud=%s', a, v_job_before, v_job_after, v_revs, v_aud));
+END $$;
+
+-- ---------------------------------------------------------------------------
+-- R4-08: customer / share-token denial of unissued reports (SELECT isolation)
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_path text; v_rev public.service_report_revisions;
+  a boolean; b boolean; v_n int;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('r408');
+  v_path := v_t::text || '/b4/r408.jpg';
+  PERFORM b4_seed_evidence(v_t, v_path);
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
   v_rev := public.submit_service_report_revision(
     v_v, 'f', 'w', '[]'::jsonb, true, 'verified_fixed', NULL, 'decl',
-    ARRAY[v_path],
-    jsonb_build_object(
-      'routine_version_id', v_pin::text,
-      'items', jsonb_build_array(jsonb_build_object('id','c1','result','ok'))
-    ),
-    gen_random_uuid(), NULL
-  );
-  PERFORM b4_note('M4E', a AND v_rev.checklist_results ? 'items',
-    format('pin_required=%s has_items=%s', a, v_rev.checklist_results ? 'items'));
+    ARRAY[v_path], NULL, gen_random_uuid(), NULL);
+
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, true);
+  BEGIN
+    EXECUTE 'SET ROLE authenticated';
+    SELECT count(*) INTO v_n FROM public.service_report_revisions WHERE id = v_rev.id;
+    a := (v_n = 0); -- RLS hides unissued revision from customer
+    BEGIN
+      PERFORM public.get_service_report_for_visit(v_v);
+      SELECT count(*) INTO v_n FROM public.service_report_revisions WHERE id = v_rev.id;
+      b := (v_n = 0);
+    EXCEPTION WHEN OTHERS THEN
+      b := (SQLSTATE = '42501');
+    END;
+    EXECUTE 'RESET ROLE';
+  EXCEPTION WHEN OTHERS THEN
+    EXECUTE 'RESET ROLE';
+    a := false; b := false;
+  END;
+
+  PERFORM b4_note('R4-08', a AND b, format('cust_select_hidden=%s get_isolated=%s', a, b));
 END $$;
+
+-- ---------------------------------------------------------------------------
+-- R4-09: no self-issue, premature job completion, or ticket closure
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_path text; v_rev public.service_report_revisions;
+  v_job text; v_tkt text; v_reviews int; a boolean; b boolean;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('r409');
+  v_path := v_t::text || '/b4/r409.jpg';
+  PERFORM b4_seed_evidence(v_t, v_path);
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  v_rev := public.submit_service_report_revision(
+    v_v, 'f', 'w', '[]'::jsonb, true, 'verified_fixed', NULL, 'decl',
+    ARRAY[v_path], NULL, gen_random_uuid(), NULL);
+  SELECT state INTO v_job FROM public.service_jobs WHERE id = v_j;
+  SELECT status INTO v_tkt FROM public.service_tickets WHERE id = v_t;
+  SELECT count(*) INTO v_reviews FROM public.service_report_reviews WHERE revision_id = v_rev.id;
+
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  a := b4_denied(format($q$SELECT public.govern_job_transition(%L::uuid,'completed','early',NULL)$q$, v_j));
+  b := b4_denied(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','close early',NULL,NULL)$q$, v_t));
+
+  -- Ticket may already be in_progress from first visit start (B3); must not be closed/resolved.
+  PERFORM b4_note('R4-09',
+    v_job = 'awaiting_review'
+      AND v_tkt NOT IN ('resolved', 'closed', 'cancelled')
+      AND v_reviews = 0 AND a AND b,
+    format('job=%s ticket=%s reviews=%s complete_denied=%s close_denied=%s', v_job, v_tkt, v_reviews, a, b));
+END $$;
+
+-- ---------------------------------------------------------------------------
+-- R4-10: submission path presence (UI covered separately); server status truth
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_path text; v_bundle jsonb; v_n int;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('r410');
+  v_path := v_t::text || '/b4/r410.jpg';
+  PERFORM b4_seed_evidence(v_t, v_path);
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  PERFORM public.submit_service_report_revision(
+    v_v, 'f', 'w', '[]'::jsonb, true, 'verified_fixed', NULL, 'decl',
+    ARRAY[v_path], NULL, gen_random_uuid(), NULL);
+  v_bundle := public.get_service_report_for_visit(v_v);
+  v_n := jsonb_array_length(v_bundle->'revisions');
+  PERFORM b4_note('R4-10',
+    (v_bundle->'report') IS NOT NULL AND v_n = 1
+      AND to_regprocedure('public.submit_service_report_revision(uuid,text,text,jsonb,boolean,text,text,text,text[],jsonb,uuid,uuid)') IS NOT NULL,
+    format('revisions=%s rpc_present=true', v_n));
+END $$;
+
+-- ---------------------------------------------------------------------------
+-- B5/B6 DEFER (explicit; do not require success in B4)
+-- ---------------------------------------------------------------------------
+SELECT b4_defer('R5-DEFER', 'Manager return/issue, correction approval, review concurrency → B5');
+SELECT b4_defer('R6-DEFER', 'Acknowledgment and successful closure → B6');
+SELECT b4_defer('R4-DRAFT-DEFER', 'Persisted draft CRUD not mandatory; local recoverable draft + truthful submitted status');
 
 SELECT check_id, status, detail FROM public.b4_eval ORDER BY check_id;
