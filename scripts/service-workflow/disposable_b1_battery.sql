@@ -2295,13 +2295,14 @@ WHEN OTHERS THEN
   PERFORM b1_note('S21', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
--- S22 scheduled visits block neither reassign nor decline; visit rows keep
--- their attending snapshot (history preserved); post-reassign visits stamp
--- the new assignee; every move stays history-chained.
+-- S22 (B3-updated): scheduled visits still allow reassign/decline; attending on
+-- scheduled visits is REPOINTED to the new assignee (B3 attendance rule).
+-- New visits stamp current assignee; history stays chained. Decline clears
+-- scheduled attending to NULL.
 DO $$
 DECLARE v_j uuid; v_d uuid; v_v1 uuid; v_v2 uuid; v_vd uuid;
   v_att1 uuid; v_att1b uuid; v_st1 text; v_att2 uuid; v_hn int;
-  v_dok boolean := false;
+  v_dok boolean := false; v_att_d uuid;
 BEGIN
   IF NOT (b1_has_table('service_jobs') AND b1_has_table('service_job_visits')
       AND b1_has_table('service_job_assignment_history')
@@ -2329,15 +2330,17 @@ BEGIN
   PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
   BEGIN
     PERFORM public.decline_service_job(v_d, 's22-out', NULL);
+    SELECT attending_technician_id INTO v_att_d FROM public.service_job_visits WHERE id = v_vd;
     v_dok := ((SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_d)
       IS NULL AND b1_state('service_jobs', v_d) = 'unassigned'
-      AND b1_state('service_job_visits', v_vd) = 'scheduled');
+      AND b1_state('service_job_visits', v_vd) = 'scheduled'
+      AND v_att_d IS NULL);
   EXCEPTION WHEN OTHERS THEN v_dok := false; END;
-  PERFORM b1_note('S22', v_att1 = b1_uid('tech1') AND v_att1b = b1_uid('tech1')
+  PERFORM b1_note('S22', v_att1 = b1_uid('tech1') AND v_att1b = b1_uid('tech2')
     AND v_st1 = 'scheduled' AND v_att2 = b1_uid('tech2') AND v_hn = 2
     AND (SELECT assigned_technician_id FROM public.service_jobs WHERE id = v_j)
       = b1_uid('tech2')
-    AND v_dok, 'visits snapshot attendance; moves chained');
+    AND v_dok, 'B3 repoint scheduled attending; moves chained');
 EXCEPTION WHEN SQLSTATE '42883' THEN
   PERFORM b1_note('S22', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
 WHEN OTHERS THEN

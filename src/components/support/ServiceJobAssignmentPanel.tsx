@@ -19,6 +19,7 @@ import {
   listServiceJobsForTicket,
   type ServiceJobRow,
 } from '@/lib/ticketGovernanceApi'
+import { ServiceVisitPanel } from '@/components/support/ServiceVisitPanel'
 import { toast } from 'sonner'
 
 export type ServiceJobViewerRole = 'admin' | 'support' | 'technician' | 'customer' | string
@@ -226,6 +227,15 @@ export const ServiceJobAssignmentPanel: React.FC<ServiceJobAssignmentPanelProps>
             </Button>
           </div>
         )}
+
+        <ServiceVisitPanel
+          jobId={job.id}
+          viewerRole={viewerRole}
+          canExecute={
+            staff ||
+            (viewerRole === 'technician' && job.assigned_technician_id === currentUserId)
+          }
+        />
       </li>
     )
   }

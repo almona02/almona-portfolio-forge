@@ -19,6 +19,7 @@ import {
   listServiceJobsForTechnician,
   type ServiceJobRow,
 } from '@/lib/ticketGovernanceApi'
+import { ServiceVisitPanel } from '@/components/support/ServiceVisitPanel'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
 import { Loader2, RefreshCw, Share2, Wrench, CheckCircle2, XCircle, PlayCircle } from 'lucide-react'
@@ -161,6 +162,7 @@ const TechnicianDashboard: React.FC = () => {
                         </Button>
                       )}
                   </div>
+                  <ServiceVisitPanel jobId={job.id} viewerRole="technician" canExecute />
                   {declineJobId === job.id && (
                     <div className="space-y-2">
                       <Label htmlFor={`tech-decline-${job.id}`}>Decline reason (required)</Label>

@@ -27,6 +27,7 @@ vi.mock('@/lib/ticketGovernanceApi', () => ({
   createServiceJob: vi.fn(),
   assignServiceJob: vi.fn(),
   declineServiceJob: vi.fn(),
+  listServiceVisitsForJob: vi.fn().mockResolvedValue([]),
 }))
 vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn() },

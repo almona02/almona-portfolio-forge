@@ -138,15 +138,43 @@ function asJob(row: unknown): ServiceJobRow {
   return r
 }
 
-function mapJobRpcError(message: string): Error {
+/** Map Postgres/RPC errors to stable UI messages (assignment + B3 visits). */
+export function mapJobRpcError(message: string): Error {
   const lower = message.toLowerCase()
-  // Include hyphenated "in-progress" (actual B2 server text). Unknown/auth
-  // messages fall through unchanged — do not reclassify them as active-visit.
+  if (lower.includes('one active visit per job')) {
+    return new Error('Another visit is already in progress on this job. Finish or abort it first.')
+  }
+  if (lower.includes('only the currently assigned technician may start')) {
+    return new Error('Only the technician currently assigned to this job may start the visit.')
+  }
+  if (lower.includes('scheduled_end must be after') || lower.includes('scheduled_start and scheduled_end')) {
+    return new Error('Visit window is invalid: end must be after start.')
+  }
+  if (lower.includes('only scheduled visits may be rescheduled')) {
+    return new Error('Terminal or in-progress visits cannot be rescheduled. Schedule a new visit instead.')
+  }
   if (
-    lower.includes('in_progress') ||
-    lower.includes('in progress') ||
-    lower.includes('in-progress') ||
-    lower.includes('active visit')
+    lower.includes('abort reason mandatory') ||
+    lower.includes('no-access reason mandatory') ||
+    lower.includes('outcome reason mandatory')
+  ) {
+    return new Error('A reason is required for this visit outcome.')
+  }
+  // Assignment/decline blocked by active attendance (B2/B3).
+  if (
+    (lower.includes('reassign') || lower.includes('decline') || lower.includes('assign')) &&
+    (lower.includes('in_progress') ||
+      lower.includes('in progress') ||
+      lower.includes('in-progress') ||
+      lower.includes('active visit'))
+  ) {
+    return new Error(
+      'Cannot change job assignment while a visit is in progress. End or abort the visit in the visit workflow first.',
+    )
+  }
+  if (
+    lower.includes('cannot reassign job with an in-progress visit') ||
+    lower.includes('cannot decline job with an in-progress visit')
   ) {
     return new Error(
       'Cannot change job assignment while a visit is in progress. End or abort the visit in the visit workflow first.',
@@ -255,4 +283,125 @@ export async function declineServiceJob(input: {
   const row = data as { id?: string } | null
   if (!row?.id) throw new Error('decline_service_job returned no id')
   return { id: row.id }
+}
+
+export type ServiceVisitState = 'scheduled' | 'in_progress' | 'completed' | 'aborted' | 'no_access'
+
+export interface ServiceVisitRow {
+  id: string
+  job_id: string
+  visit_sequence: number
+  state: ServiceVisitState | string
+  scheduled_start: string | null
+  scheduled_end: string | null
+  actual_start: string | null
+  actual_end: string | null
+  attending_technician_id: string | null
+  outcome_reason: string | null
+  updated_at: string
+}
+
+function asVisit(row: unknown): ServiceVisitRow {
+  return row as ServiceVisitRow
+}
+
+/** B3: list visits for a job. */
+export async function listServiceVisitsForJob(jobId: string): Promise<ServiceVisitRow[]> {
+  const { data, error } = await supabase
+    .from('service_job_visits')
+    .select(
+      'id, job_id, visit_sequence, state, scheduled_start, scheduled_end, actual_start, actual_end, attending_technician_id, outcome_reason, updated_at',
+    )
+    .eq('job_id', jobId)
+    .order('visit_sequence', { ascending: true })
+  if (error) throw new Error(error.message)
+  return (data ?? []) as ServiceVisitRow[]
+}
+
+/** B3: list visits across jobs assigned to a technician. */
+export async function listServiceVisitsForTechnician(technicianId: string): Promise<ServiceVisitRow[]> {
+  const { data: jobs, error: jErr } = await supabase
+    .from('service_jobs')
+    .select('id')
+    .eq('assigned_technician_id', technicianId)
+  if (jErr) throw new Error(jErr.message)
+  const ids = (jobs ?? []).map((j: { id: string }) => j.id)
+  if (ids.length === 0) return []
+  const { data, error } = await supabase
+    .from('service_job_visits')
+    .select(
+      'id, job_id, visit_sequence, state, scheduled_start, scheduled_end, actual_start, actual_end, attending_technician_id, outcome_reason, updated_at',
+    )
+    .in('job_id', ids)
+    .order('scheduled_start', { ascending: true })
+  if (error) throw new Error(error.message)
+  return (data ?? []) as ServiceVisitRow[]
+}
+
+export async function scheduleServiceJobVisit(input: {
+  jobId: string
+  scheduledStart: string
+  scheduledEnd: string
+  rationale?: string
+}): Promise<ServiceVisitRow> {
+  const { data, error } = await supabase.rpc('schedule_service_job_visit', {
+    p_job_id: input.jobId,
+    p_scheduled_start: input.scheduledStart,
+    p_scheduled_end: input.scheduledEnd,
+    p_rationale: input.rationale ?? null,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return asVisit(data)
+}
+
+export async function rescheduleServiceJobVisit(input: {
+  visitId: string
+  scheduledStart: string
+  scheduledEnd: string
+  rationale?: string
+}): Promise<ServiceVisitRow> {
+  const { data, error } = await supabase.rpc('reschedule_service_job_visit', {
+    p_visit_id: input.visitId,
+    p_scheduled_start: input.scheduledStart,
+    p_scheduled_end: input.scheduledEnd,
+    p_rationale: input.rationale ?? null,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return asVisit(data)
+}
+
+export async function startServiceJobVisit(visitId: string): Promise<ServiceVisitRow> {
+  const { data, error } = await supabase.rpc('start_service_job_visit', { p_visit_id: visitId })
+  if (error) throw mapJobRpcError(error.message)
+  return asVisit(data)
+}
+
+export async function completeServiceJobVisit(visitId: string): Promise<ServiceVisitRow> {
+  const { data, error } = await supabase.rpc('complete_service_job_visit', { p_visit_id: visitId })
+  if (error) throw mapJobRpcError(error.message)
+  return asVisit(data)
+}
+
+export async function abortServiceJobVisit(input: {
+  visitId: string
+  reason: string
+}): Promise<ServiceVisitRow> {
+  const { data, error } = await supabase.rpc('abort_service_job_visit', {
+    p_visit_id: input.visitId,
+    p_reason: input.reason,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return asVisit(data)
+}
+
+export async function recordVisitNoAccess(input: {
+  visitId: string
+  reason: string
+}): Promise<ServiceVisitRow> {
+  const { data, error } = await supabase.rpc('record_visit_no_access', {
+    p_visit_id: input.visitId,
+    p_reason: input.reason,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return asVisit(data)
 }
