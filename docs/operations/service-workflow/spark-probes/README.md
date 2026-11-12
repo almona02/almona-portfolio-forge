@@ -1,4 +1,10 @@
-# Sanitized Spark probes (B3)
+# Sanitized Spark probes
+
+## B4
+
+See `B4_README.md` and `B4_*` artifacts. Final tip verdict: `../B4_INDEPENDENT_VERIFICATION_VERDICT_6a64a01e.md`. Historical e203 erroneous PASS / Spark F-B4-05 BLOCKED: `../B4_INDEPENDENT_VERIFICATION_VERDICT_e203b438.md`.
+
+## B3
 
 Disposable/local only. No staging credentials. Fixture UUIDs are the shared disposable battery identities (tech1/tech2/support), not live staging secrets.
 

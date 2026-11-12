@@ -1,19 +1,19 @@
 # B4 report submission — Spark freeze handoff
 
-**Status:** Frozen for independent Spark review (F-B4-05 correction)  
-**Implementation freeze:** `6a64a01e23dd51439ddfa31243253d4050d93f30`  
-**Docs tip:** `e2550430a6a158b5bba772a39cd11345a6b6a70e` (stamp only; migration/fixtures = implementation)  
+**Status:** Staging applied + verification handoff delivered (Spark live confirm pending)  
+**Implementation:** `6a64a01e23dd51439ddfa31243253d4050d93f30`  
+**Staging record:** [`B4_STAGING_APPLY_RECORD.md`](./B4_STAGING_APPLY_RECORD.md)  
 **Branch:** `feat/service-workflow-b1-planning`  
 **Depends on:** B3 staging-development acceptance at `4e0ddd22`  
 **Contract:** [`B4_REPORT_CONTRACT.md`](./B4_REPORT_CONTRACT.md)  
-**Prior tip:** `e203b4387d56197847694bc60be387815e244d5c` — **BLOCKED on F-B4-05** (soft table labour CHECK). Privacy / auth-order / UI recovery / delegation evidence from that review is retained but does not cover labour XOR. See [`B4_FINDINGS_DISPOSITION_e203b438.md`](./B4_FINDINGS_DISPOSITION_e203b438.md).  
-**Gates:** **No B4 staging apply** until Spark PASS · no merge · no production · #155 frozen · #156 draft
+**Prior tip:** `e203b438` — Spark **BLOCKED on F-B4-05** (Cursor PASS claim corrected as erroneous). See [`B4_INDEPENDENT_VERIFICATION_VERDICT_e203b438.md`](./B4_INDEPENDENT_VERIFICATION_VERDICT_e203b438.md).  
+**Gates:** No merge · no production · no B5 · #155 frozen · #156 draft
 
 ## Deliverables
 
 | Artifact | Path |
 |----------|------|
-| Migration (not applied) | `supabase/migrations/20261112210000_service_workflow_b4_report_submission.sql` |
+| Migration (staging applied) | `supabase/migrations/20261112210000_service_workflow_b4_report_submission.sql` |
 | Contract | `docs/operations/service-workflow/B4_REPORT_CONTRACT.md` |
 | Disposable battery | `scripts/service-workflow/disposable_b4_battery.sql` |
 | UI | `src/components/support/ServiceReportPanel.tsx` (wired from completed visits in `ServiceVisitPanel`) |
