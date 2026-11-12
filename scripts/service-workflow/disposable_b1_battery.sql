@@ -331,9 +331,15 @@ END $$;
 -- (visit start rule). Returns the approved revision id.
 CREATE OR REPLACE FUNCTION b1_approved_chain(p_job uuid) RETURNS uuid
 LANGUAGE plpgsql AS $$
-DECLARE v_v uuid; v_r uuid; v_rev uuid; v_rw uuid; v_par uuid;
+DECLARE v_v uuid; v_r uuid; v_rev uuid; v_rw uuid; v_par uuid; v_assignee uuid;
 BEGIN
   v_par := b1_uid('support');
+  -- B3: visit start requires a current job assignee. Assign without changing
+  -- non-unassigned job state so J1/J2 completion assertions stay intact.
+  SELECT assigned_technician_id INTO v_assignee FROM public.service_jobs WHERE id = p_job;
+  IF v_assignee IS NULL THEN
+    PERFORM public.assign_service_job(p_job, b1_uid('tech1'), 'chain-assign', NULL);
+  END IF;
   SELECT (public.create_service_job_visit(p_job, 'chain', NULL)).id INTO v_v;
   PERFORM public.govern_visit_transition(v_v, 'in_progress', 'chain', NULL);
   PERFORM public.govern_visit_transition(v_v, 'completed', 'chain', NULL);
@@ -375,7 +381,7 @@ BEGIN
   BEGIN
     v_rev := b1_approved_chain(v_j);
   EXCEPTION WHEN OTHERS THEN
-    INSERT INTO b1_eval VALUES ('J1', 'SKIP', 'needs column map: ' || left(SQLERRM, 160));
+    PERFORM b1_note('J1', false, 'approved_chain: ' || left(SQLERRM, 200));
     RETURN;
   END;
   PERFORM public.govern_job_transition(v_j, 'completed', 'j1', NULL);
@@ -412,7 +418,7 @@ BEGIN
   BEGIN
     PERFORM b1_approved_chain(v_j);
   EXCEPTION WHEN OTHERS THEN
-    INSERT INTO b1_eval VALUES ('J2', 'SKIP', 'needs column map: ' || left(SQLERRM, 160));
+    PERFORM b1_note('J2', false, 'approved_chain: ' || left(SQLERRM, 200));
     RETURN;
   END;
   PERFORM public.govern_job_transition(v_j, 'completed', 'j2', NULL);
@@ -547,29 +553,22 @@ WHEN OTHERS THEN
   PERFORM b1_note('J7', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
--- V1 legal visit walk (arms fully at B2 if start requires assignee).
+-- V1 legal visit walk with B2 assignee (required for B3 start authority).
 DO $$
 DECLARE v_j uuid; v_v uuid; v_ok boolean := true;
 BEGIN
   IF NOT (b1_has_table('service_job_visits') AND b1_has_func('create_service_job_visit')
-      AND b1_has_func('govern_visit_transition')) THEN
-    INSERT INTO b1_eval VALUES ('V1', 'SKIP', 'pending B1 implementation'); RETURN;
+      AND b1_has_func('govern_visit_transition') AND b1_has_func('assign_service_job')) THEN
+    INSERT INTO b1_eval VALUES ('V1', 'SKIP', 'pending B1/B2 implementation'); RETURN;
   END IF;
   PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
   v_j := b1_mkticket_job('V1', true);
-  PERFORM public.govern_job_transition(v_j, 'planned', 'v1', NULL);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'v1', NULL);
   SELECT (public.create_service_job_visit(v_j, 'v1', NULL)).id INTO v_v;
-  BEGIN
-    PERFORM public.govern_visit_transition(v_v, 'in_progress', 'v1', NULL);
-  EXCEPTION WHEN OTHERS THEN
-    IF SQLERRM ILIKE '%assign%' THEN
-      INSERT INTO b1_eval VALUES ('V1', 'DEFER', 'start needs B2 assignee'); RETURN;
-    END IF;
-    RAISE;
-  END;
+  PERFORM public.govern_visit_transition(v_v, 'in_progress', 'v1', NULL);
   PERFORM public.govern_visit_transition(v_v, 'completed', 'v1', NULL);
   v_ok := b1_state('service_job_visits', v_v) = 'completed';
-  PERFORM b1_note('V1', v_ok, 'visit walk ok');
+  PERFORM b1_note('V1', v_ok, 'visit walk ok with assignee');
 EXCEPTION WHEN SQLSTATE '42883' THEN
   PERFORM b1_note('V1', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
 WHEN OTHERS THEN
@@ -644,10 +643,39 @@ WHEN OTHERS THEN
   PERFORM b1_note('V4', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
--- V5 reschedule appends a change record (B3; deferred).
+-- V5 reschedule appends history (B3 RPCs); same-window idempotent; terminal blocked.
 DO $$
+DECLARE
+  v_j uuid; v_v uuid; v_hist int; v_hist2 int; v_term boolean := false;
+  v_start timestamptz := now() + interval '2 hours';
+  v_end timestamptz := now() + interval '4 hours';
 BEGIN
-  INSERT INTO b1_eval VALUES ('V5', 'DEFER', 'B3 behavior; explicitly untested');
+  IF NOT (b1_has_func('schedule_service_job_visit')
+      AND b1_has_func('reschedule_service_job_visit')
+      AND b1_has_table('service_job_visit_schedule_history')) THEN
+    INSERT INTO b1_eval VALUES ('V5', 'SKIP', 'pending B3 schedule RPCs'); RETURN;
+  END IF;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_j := b1_mkticket_job('V5', true);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'v5', NULL);
+  SELECT (public.schedule_service_job_visit(v_j, v_start, v_end, 'v5-win', NULL)).id INTO v_v;
+  SELECT count(*) INTO v_hist FROM public.service_job_visit_schedule_history WHERE visit_id = v_v;
+  PERFORM public.reschedule_service_job_visit(
+    v_v, v_start + interval '30 min', v_end + interval '30 min', 'v5-rs', NULL);
+  SELECT count(*) INTO v_hist FROM public.service_job_visit_schedule_history WHERE visit_id = v_v;
+  PERFORM public.reschedule_service_job_visit(
+    v_v, v_start + interval '30 min', v_end + interval '30 min', 'v5-rs-dup', NULL);
+  SELECT count(*) INTO v_hist2 FROM public.service_job_visit_schedule_history WHERE visit_id = v_v;
+  PERFORM public.govern_visit_transition(v_v, 'aborted', 'v5-stop', NULL);
+  BEGIN
+    PERFORM public.reschedule_service_job_visit(v_v, v_start, v_end, 'v5-term', NULL);
+  EXCEPTION WHEN OTHERS THEN v_term := true; END;
+  PERFORM b1_note('V5', v_hist = 2 AND v_hist2 = 2 AND v_term,
+    'hist=' || v_hist || ' idem=' || v_hist2 || ' term_blocked=' || v_term);
+EXCEPTION WHEN SQLSTATE '42883' THEN
+  PERFORM b1_note('V5', false, 'contract signature mismatch: ' || left(SQLERRM, 200));
+WHEN OTHERS THEN
+  PERFORM b1_note('V5', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
 -- R1 B1 data contract: all entities exist with parent FKs (column-name agnostic).

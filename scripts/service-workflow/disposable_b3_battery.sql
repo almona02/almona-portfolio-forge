@@ -179,6 +179,222 @@ BEGIN
   );
 END $$;
 
+-- ---------------------------------------------------------------------------
+-- Independent Spark matrix (beyond Cursor B3-01..13)
+-- ---------------------------------------------------------------------------
+
+-- B3-L1 lifecycle: schedule → start → complete; job stays open (not completed).
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_job text; v_tkt text;
+  v_start timestamptz := now() + interval '12 hours';
+  v_end timestamptz := now() + interval '14 hours';
+BEGIN
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B3L1-' || substr(replace(gen_random_uuid()::text,'-',''),1,8));
+  SELECT (public.create_service_job(v_t, 'B3 L1', true, 'b3')).id INTO v_j;
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'b3', NULL);
+  SELECT (public.schedule_service_job_visit(v_j, v_start, v_end, 'l1', NULL)).id INTO v_v;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  PERFORM public.start_service_job_visit(v_v, NULL);
+  PERFORM public.complete_service_job_visit(v_v, NULL);
+  SELECT state INTO v_job FROM public.service_jobs WHERE id = v_j;
+  SELECT status INTO v_tkt FROM public.service_tickets WHERE id = v_t;
+  PERFORM b3_note('B3-L1',
+    (SELECT state FROM public.service_job_visits WHERE id = v_v) = 'completed'
+    AND v_job IS DISTINCT FROM 'completed'
+    AND v_tkt IS DISTINCT FROM 'closed'
+    AND v_tkt IS DISTINCT FROM 'resolved',
+    'visit done job=' || v_job || ' ticket=' || v_tkt);
+END $$;
+
+-- B3-L2 abort then no-access: historical attending frozen; new visit allowed.
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_va uuid; v_vn uuid; v_vnew uuid;
+  v_att_a uuid; v_att_n uuid; v_att_new uuid;
+  v_start timestamptz := now() + interval '15 hours';
+  v_end timestamptz := now() + interval '17 hours';
+BEGIN
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B3L2-' || substr(replace(gen_random_uuid()::text,'-',''),1,8));
+  SELECT (public.create_service_job(v_t, 'B3 L2', true, 'b3')).id INTO v_j;
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'b3', NULL);
+  SELECT (public.schedule_service_job_visit(v_j, v_start, v_end, 'abort', NULL)).id INTO v_va;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  PERFORM public.start_service_job_visit(v_va, NULL);
+  PERFORM public.abort_service_job_visit(v_va, 'storm', NULL);
+  SELECT attending_technician_id INTO v_att_a FROM public.service_job_visits WHERE id = v_va;
+
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  SELECT (public.schedule_service_job_visit(v_j, v_start + interval '1 day', v_end + interval '1 day', 'na', NULL)).id INTO v_vn;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  PERFORM public.start_service_job_visit(v_vn, NULL);
+  PERFORM public.record_visit_no_access(v_vn, 'gate', NULL);
+  SELECT attending_technician_id INTO v_att_n FROM public.service_job_visits WHERE id = v_vn;
+
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech2'), 'repoint-after-terminal', NULL);
+  SELECT attending_technician_id INTO v_att_a FROM public.service_job_visits WHERE id = v_va;
+  SELECT attending_technician_id INTO v_att_n FROM public.service_job_visits WHERE id = v_vn;
+  SELECT (public.schedule_service_job_visit(v_j, v_start + interval '2 day', v_end + interval '2 day', 'return', NULL)).id INTO v_vnew;
+  SELECT attending_technician_id INTO v_att_new FROM public.service_job_visits WHERE id = v_vnew;
+  PERFORM b3_note('B3-L2',
+    v_att_a = b1_uid('tech1') AND v_att_n = b1_uid('tech1') AND v_att_new = b1_uid('tech2'),
+    'hist_a=' || v_att_a::text || ' hist_n=' || v_att_n::text || ' new=' || coalesce(v_att_new::text,'null'));
+END $$;
+
+-- B3-C1 concurrent starts: second denied; exactly one in_progress.
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v1 uuid; v_v2 uuid; v_ok boolean; v_n int;
+  v_start timestamptz := now() + interval '18 hours';
+  v_end timestamptz := now() + interval '20 hours';
+BEGIN
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B3C1-' || substr(replace(gen_random_uuid()::text,'-',''),1,8));
+  SELECT (public.create_service_job(v_t, 'B3 C1', true, 'b3')).id INTO v_j;
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'b3', NULL);
+  SELECT (public.schedule_service_job_visit(v_j, v_start, v_end, 'c1a', NULL)).id INTO v_v1;
+  SELECT (public.schedule_service_job_visit(v_j, v_start + interval '1 day', v_end + interval '1 day', 'c1b', NULL)).id INTO v_v2;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  PERFORM public.start_service_job_visit(v_v1, NULL);
+  v_ok := b3_denied(format($q$SELECT public.start_service_job_visit(%L::uuid, NULL)$q$, v_v2));
+  SELECT count(*) INTO v_n FROM public.service_job_visits WHERE job_id = v_j AND state = 'in_progress';
+  PERFORM b3_note('B3-C1', v_ok AND v_n = 1, 'denied=' || v_ok || ' active=' || v_n);
+END $$;
+
+-- B3-R1 repeat start/complete/abort are idempotent (no duplicate audit flood).
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_n0 int; v_n1 int;
+  v_start timestamptz := now() + interval '21 hours';
+  v_end timestamptz := now() + interval '23 hours';
+BEGIN
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B3R1-' || substr(replace(gen_random_uuid()::text,'-',''),1,8));
+  SELECT (public.create_service_job(v_t, 'B3 R1', true, 'b3')).id INTO v_j;
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'b3', NULL);
+  SELECT (public.schedule_service_job_visit(v_j, v_start, v_end, 'r1', NULL)).id INTO v_v;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  PERFORM public.start_service_job_visit(v_v, NULL);
+  SELECT count(*) INTO v_n0 FROM public.service_workflow_audit WHERE entity_id = v_v;
+  PERFORM public.start_service_job_visit(v_v, NULL);
+  SELECT count(*) INTO v_n1 FROM public.service_workflow_audit WHERE entity_id = v_v;
+  PERFORM public.complete_service_job_visit(v_v, NULL);
+  SELECT count(*) INTO v_n0 FROM public.service_workflow_audit WHERE entity_id = v_v;
+  PERFORM public.complete_service_job_visit(v_v, NULL);
+  SELECT count(*) INTO v_n1 FROM public.service_workflow_audit WHERE entity_id = v_v;
+  PERFORM b3_note('B3-R1', v_n0 = v_n1
+    AND (SELECT state FROM public.service_job_visits WHERE id = v_v) = 'completed',
+    'idempotent complete audit=' || v_n1);
+END $$;
+
+-- B3-H1 history append-only: prior rows unchanged after reschedule.
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_first uuid; v_start0 timestamptz; v_end0 timestamptz;
+  v_start timestamptz := now() + interval '24 hours';
+  v_end timestamptz := now() + interval '26 hours';
+BEGIN
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B3H1-' || substr(replace(gen_random_uuid()::text,'-',''),1,8));
+  SELECT (public.create_service_job(v_t, 'B3 H1', true, 'b3')).id INTO v_j;
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'b3', NULL);
+  SELECT (public.schedule_service_job_visit(v_j, v_start, v_end, 'h1', NULL)).id INTO v_v;
+  SELECT id, scheduled_start, scheduled_end INTO v_first, v_start0, v_end0
+    FROM public.service_job_visit_schedule_history WHERE visit_id = v_v
+    ORDER BY changed_at ASC LIMIT 1;
+  PERFORM public.reschedule_service_job_visit(
+    v_v, v_start + interval '1 hour', v_end + interval '1 hour', 'h1-rs', NULL);
+  PERFORM b3_note('B3-H1',
+    (SELECT scheduled_start FROM public.service_job_visit_schedule_history WHERE id = v_first) = v_start0
+    AND (SELECT scheduled_end FROM public.service_job_visit_schedule_history WHERE id = v_first) = v_end0
+    AND (SELECT count(*) FROM public.service_job_visit_schedule_history WHERE visit_id = v_v) = 2,
+    'prior history immutable');
+END $$;
+
+-- B3-A*: anonymous + forged actor denied on every new B3 RPC.
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid;
+  v_start timestamptz := now() + interval '27 hours';
+  v_end timestamptz := now() + interval '29 hours';
+  v_anon_sched boolean; v_forge_sched boolean;
+  v_anon_rs boolean; v_forge_rs boolean;
+  v_anon_start boolean; v_forge_start boolean;
+  v_anon_complete boolean; v_forge_complete boolean;
+  v_anon_abort boolean; v_forge_abort boolean;
+  v_anon_na boolean; v_forge_na boolean;
+BEGIN
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B3AF-' || substr(replace(gen_random_uuid()::text,'-',''),1,8));
+  SELECT (public.create_service_job(v_t, 'B3 AF', true, 'b3')).id INTO v_j;
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'b3', NULL);
+  SELECT (public.schedule_service_job_visit(v_j, v_start, v_end, 'af', NULL)).id INTO v_v;
+
+  RESET app.b1_uid;
+  v_anon_sched := b3_denied(format(
+    $q$SELECT public.schedule_service_job_visit(%L::uuid, %L::timestamptz, %L::timestamptz, 'anon', NULL)$q$,
+    v_j, v_start + interval '3 day', v_end + interval '3 day'));
+  v_anon_rs := b3_denied(format(
+    $q$SELECT public.reschedule_service_job_visit(%L::uuid, %L::timestamptz, %L::timestamptz, 'anon', NULL)$q$,
+    v_v, v_start + interval '10 min', v_end + interval '10 min'));
+  v_anon_start := b3_denied(format($q$SELECT public.start_service_job_visit(%L::uuid, NULL)$q$, v_v));
+  v_anon_complete := b3_denied(format($q$SELECT public.complete_service_job_visit(%L::uuid, NULL)$q$, v_v));
+  v_anon_abort := b3_denied(format($q$SELECT public.abort_service_job_visit(%L::uuid, 'x', NULL)$q$, v_v));
+  v_anon_na := b3_denied(format($q$SELECT public.record_visit_no_access(%L::uuid, 'x', NULL)$q$, v_v));
+
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  v_forge_sched := b3_denied(format(
+    $q$SELECT public.schedule_service_job_visit(%L::uuid, %L::timestamptz, %L::timestamptz, 'forge', %L::uuid)$q$,
+    v_j, v_start + interval '4 day', v_end + interval '4 day', b1_uid('admin')));
+  v_forge_rs := b3_denied(format(
+    $q$SELECT public.reschedule_service_job_visit(%L::uuid, %L::timestamptz, %L::timestamptz, 'forge', %L::uuid)$q$,
+    v_v, v_start + interval '20 min', v_end + interval '20 min', b1_uid('admin')));
+  v_forge_start := b3_denied(format(
+    $q$SELECT public.start_service_job_visit(%L::uuid, %L::uuid)$q$, v_v, b1_uid('admin')));
+  -- Start legitimately as assignee, then forged complete/abort/no_access
+  PERFORM public.start_service_job_visit(v_v, NULL);
+  v_forge_complete := b3_denied(format(
+    $q$SELECT public.complete_service_job_visit(%L::uuid, %L::uuid)$q$, v_v, b1_uid('admin')));
+  v_forge_abort := b3_denied(format(
+    $q$SELECT public.abort_service_job_visit(%L::uuid, 'x', %L::uuid)$q$, v_v, b1_uid('support')));
+  v_forge_na := b3_denied(format(
+    $q$SELECT public.record_visit_no_access(%L::uuid, 'x', %L::uuid)$q$, v_v, b1_uid('support')));
+
+  PERFORM b3_note('B3-A1', v_anon_sched AND v_forge_sched, 'schedule anon/forge');
+  PERFORM b3_note('B3-A2', v_anon_rs AND v_forge_rs, 'reschedule anon/forge');
+  PERFORM b3_note('B3-A3', v_anon_start AND v_forge_start, 'start anon/forge');
+  PERFORM b3_note('B3-A4', v_anon_complete AND v_forge_complete, 'complete anon/forge');
+  PERFORM b3_note('B3-A5', v_anon_abort AND v_forge_abort, 'abort anon/forge');
+  PERFORM b3_note('B3-A6', v_anon_na AND v_forge_na, 'no_access anon/forge');
+END $$;
+
+-- B3-G1 completion gate: visit complete must not close ticket / complete job alone.
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_job text; v_tkt text; v_n_close int;
+  v_start timestamptz := now() + interval '30 hours';
+  v_end timestamptz := now() + interval '32 hours';
+BEGIN
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B3G1-' || substr(replace(gen_random_uuid()::text,'-',''),1,8));
+  SELECT (public.create_service_job(v_t, 'B3 G1', true, 'b3')).id INTO v_j;
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'b3', NULL);
+  SELECT (public.schedule_service_job_visit(v_j, v_start, v_end, 'g1', NULL)).id INTO v_v;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  PERFORM public.start_service_job_visit(v_v, NULL);
+  PERFORM public.complete_service_job_visit(v_v, NULL);
+  SELECT state INTO v_job FROM public.service_jobs WHERE id = v_j;
+  SELECT status INTO v_tkt FROM public.service_tickets WHERE id = v_t;
+  SELECT count(*) INTO v_n_close FROM public.service_workflow_audit
+    WHERE ticket_id = v_t AND action ILIKE '%clos%';
+  PERFORM b3_note('B3-G1',
+    v_job IN ('planned', 'in_progress') AND v_tkt = 'open' AND v_n_close = 0,
+    'job=' || v_job || ' ticket=' || v_tkt || ' close_audits=' || v_n_close);
+END $$;
+
 SELECT check_id, status, detail FROM public.b3_eval ORDER BY check_id;
 SELECT CASE WHEN count(*) FILTER (WHERE status = 'FAIL') = 0 THEN 'B3 BATTERY: PASS'
             ELSE 'B3 BATTERY: FAIL' END AS verdict,

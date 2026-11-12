@@ -77,7 +77,7 @@ REQUIRED B1 (SKIP blocks): `C1–C10`, `J1–J7` (J1 includes positive completio
 
 Accepted Spark tally at `7a830739`: **49 PASS / 0 FAIL / 0 required SKIP / 5 DEFER**.
 
-DEFER (do not block): `V5` (B3), `R3`/`R4`/`M4`/`M5` (B4/B5).
+DEFER (do not block): `R3`/`R4`/`M4`/`M5` (B4/B5 only). `V5` is executed under B3 schedule/reschedule RPCs.
 
 Cursor narrower harness (e.g. 44 PASS without W2–W4/X5/X6/positive J1) is
 supporting only — do not drop Spark coverage when syncing harness files.

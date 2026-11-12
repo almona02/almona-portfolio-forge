@@ -138,24 +138,19 @@ def run_all() -> int:
         db,
         "SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass, "
         "COUNT(*) FILTER (WHERE status='FAIL') AS fail, "
-        "COUNT(*) FILTER (WHERE status='SKIP') AS skip "
+        "COUNT(*) FILTER (WHERE status='SKIP') AS skip, "
+        "COUNT(*) FILTER (WHERE status='DEFER') AS defer "
         "FROM public.b1_eval;",
     )
+    b1_all = psql(db, "SELECT check_id, status, detail FROM public.b1_eval ORDER BY 1;")
     b1_fails = psql(
         db,
         "SELECT check_id, detail FROM public.b1_eval WHERE status='FAIL' ORDER BY 1;",
     )
     print(b1_counts.stdout)
+    print(b1_all.stdout)
     if b1_fails.stdout.strip() and "0 rows" not in b1_fails.stdout:
         print(b1_fails.stdout)
-    b1_fail_n = 0
-    for ln in b1_counts.stdout.splitlines():
-        if "|" in ln and "pass" not in ln.lower() and "---" not in ln and "row" not in ln.lower():
-            parts = [p.strip() for p in ln.split("|")]
-            if len(parts) >= 2 and parts[1].isdigit():
-                b1_fail_n = int(parts[1])
-                break
-    # Parse fail column more reliably
     fail_row = psql(db, "SELECT COUNT(*)::int FROM public.b1_eval WHERE status='FAIL';")
     try:
         b1_fail_n = int([ln for ln in fail_row.stdout.splitlines() if ln.strip().isdigit()][0])
@@ -169,6 +164,8 @@ def run_all() -> int:
         "rows": rows.stdout,
         "b1_b2_regression_fail_count": b1_fail_n,
         "b1_b2_counts": b1_counts.stdout.strip(),
+        "b1_b2_rows": b1_all.stdout,
+        "implementation_sha": "9882a256edb376de9ea726a510c96e40af69f845",
         "b1_sha": B1_SHA,
         "b2_sha": B2_SHA,
         "b3_migration": str(B3.relative_to(ROOT)),
