@@ -17,6 +17,8 @@
 | This review handoff | `docs/operations/service-workflow/SPARK_SECURITY_REMEDIATION_REVIEW.md` |
 | Parent handoff | `docs/operations/service-workflow/HANDOFF.md` |
 | **Amended package SHA** | `d4cfc8ce7ca34a076dd10edf38d9df0348dd69c4` |
+| **Tip (docs stamp)** | `5f8612395b49e4af620e9fd91ff08f552e49f8eb` |
+| **Spark disposable re-run** | **PASS** — before FAIL SEC1/SEC4/SEC5/SEC7/SEC8; after 8/0; SEC8 reproduced→fixed; SEC6 PASS |
 
 ---
 
