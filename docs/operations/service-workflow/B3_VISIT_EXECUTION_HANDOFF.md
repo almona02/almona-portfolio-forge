@@ -11,7 +11,7 @@
 **Depends on:** B1/B2 accepted at `49c78969` — see [`B1_B2_STAGING_ACCEPTANCE_CLOSEOUT.md`](./B1_B2_STAGING_ACCEPTANCE_CLOSEOUT.md)  
 **Contract:** [`B3_VISIT_CONTRACT.md`](./B3_VISIT_CONTRACT.md)  
 **Issues:** #155 frozen · #156 draft  
-**Gates:** **No staging `apply_migration` · no merge · no production** until Spark B3 review PASS
+**Gates:** B3 staging apply **authorized and recorded** at runtime `4e0ddd22` — see [`B3_STAGING_APPLY_RECORD.md`](./B3_STAGING_APPLY_RECORD.md). **No merge · no production · no B4**. #155 frozen · #156 draft.
 
 ## Deliverables
 

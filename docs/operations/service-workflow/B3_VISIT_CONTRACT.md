@@ -1,6 +1,6 @@
 # B3 visit execution contract
 
-**Status:** Spark **CONDITIONAL PASS** — corrections frozen for re-review. **No staging apply** until Spark PASS.  
+**Status:** B3 corrections applied on **staging** at runtime `4e0ddd22` (see [`B3_STAGING_APPLY_RECORD.md`](./B3_STAGING_APPLY_RECORD.md)). **No merge / production / B4**.  
 **Depends on:** B1/B2 accepted at `49c78969`.  
 **Freeze:** `9882a256` · **Corrections:** see tip / `B3_CONDITIONAL_PASS_CORRECTIONS.md`  
 **#155** frozen · **#156** draft · no merge / production.
