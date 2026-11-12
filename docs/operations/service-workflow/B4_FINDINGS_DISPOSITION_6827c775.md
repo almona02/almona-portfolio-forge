@@ -22,4 +22,8 @@ Implementation fixes for OPEN items above required a new SHA:
 
 **`e203b4387d56197847694bc60be387815e244d5c`** — closes F-B4-03, F-B4-04, UI retry/remount, migration preflight/compat; preserves F-B4-00/02; updates fixtures to ordinary-caller denials and soft labour contract.
 
-Spark must re-verify against `e203b438` (untouched migration apply). Do not treat a PASS on `6827c775` or `e83e7c2c` as a verdict on this tip.
+**Branch tip / disposable bind:** `91acc120ddb9b3094306cef610edec4d7b72c1cc` (docs stamp on `e203b438`; migration bytes unchanged from implementation commit).
+
+Cursor disposable (untouched migration apply): B4 11P/0F/3D · B3 39/0 · B1/B2 72/0/4D · Vitest ServiceReportPanel.b4 5/5 · VERDICT PASS sha `91acc120`.
+
+Spark must re-verify against tip `91acc120` (or `e203b438`). Do not treat a PASS on `6827c775` or `e83e7c2c` as a verdict on this tip.
