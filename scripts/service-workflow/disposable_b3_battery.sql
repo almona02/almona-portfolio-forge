@@ -819,6 +819,16 @@ BEGIN
   PERFORM b3_note('B3-F2-7', v_ok, 'both reassign/start serializations coherent');
 END $$;
 
+-- F-B3-03: lock-order helpers present (concurrent probes run from Python harness).
+DO $$
+DECLARE v_ok boolean;
+BEGIN
+  v_ok := to_regprocedure('admin_private.lock_ticket_for_workflow(uuid)') IS NOT NULL
+      AND to_regprocedure('admin_private.lock_job_hierarchy(uuid)') IS NOT NULL
+      AND to_regprocedure('admin_private.lock_visit_hierarchy(uuid)') IS NOT NULL;
+  PERFORM b3_note('B3-F3-0', v_ok, 'canonical lock helpers ticket→job→visit');
+END $$;
+
 SELECT check_id, status, detail FROM public.b3_eval ORDER BY check_id;
 SELECT CASE WHEN count(*) FILTER (WHERE status = 'FAIL') = 0 THEN 'B3 BATTERY: PASS'
             ELSE 'B3 BATTERY: FAIL' END AS verdict,

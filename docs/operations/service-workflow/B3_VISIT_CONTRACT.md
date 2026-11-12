@@ -41,6 +41,10 @@ Visit start requires **explicit** safety evidence:
 
 Passed personal acknowledgments bind to visit + attending technician + assignment generation. Reassignment (including tech1→tech2→tech1) invalidates reuse while preserving history. Admin/support cannot substitute a personal passed ack; they may record failed checks/observations. See [`B3_F_B3_02_ACK_BINDING.md`](./B3_F_B3_02_ACK_BINDING.md).
 
+## F-B3-03 — Lock order
+
+All visit start / assignment / attendance / safety / first-start ticket paths acquire **ticket → job → visit** (visits by `id`). Parent IDs peeked before locking are revalidated after locks. See [`B3_F_B3_03_LOCK_ORDER.md`](./B3_F_B3_03_LOCK_ORDER.md).
+
 ## RPCs
 
 | RPC | Who |
@@ -69,5 +73,6 @@ The B3 safety gate is the **minimum start gate**, not the completed model-specif
 - `supabase/migrations/20261112190000_service_workflow_b3_visit_corrections.sql` (F-B3-01 / D-B3-01 / D-B3-02)
 - `supabase/migrations/20261112194500_service_workflow_b3_safety_path_final.sql` (no implicit ack; ordinal ordering; anon grants)
 - `supabase/migrations/20261112200000_service_workflow_b3_f_b3_02_ack_binding.sql` (F-B3-02 ack binding)
+- `supabase/migrations/20261112201500_service_workflow_b3_f_b3_03_lock_order.sql` (F-B3-03 lock order)
 
 Disposable battery: `scripts/service-workflow/disposable_b3_battery.sql`

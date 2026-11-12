@@ -27,7 +27,9 @@ B3 = ROOT / "supabase/migrations/20261112180000_service_workflow_b3_visit_execut
 B3FIX = ROOT / "supabase/migrations/20261112190000_service_workflow_b3_visit_corrections.sql"
 B3SAFE = ROOT / "supabase/migrations/20261112194500_service_workflow_b3_safety_path_final.sql"
 B3ACK = ROOT / "supabase/migrations/20261112200000_service_workflow_b3_f_b3_02_ack_binding.sql"
+B3LOCK = ROOT / "supabase/migrations/20261112201500_service_workflow_b3_f_b3_03_lock_order.sql"
 BATTERY = ROOT / "scripts/service-workflow/disposable_b3_battery.sql"
+CONCURRENT = ROOT / "scripts/service-workflow/disposable_b3_concurrent_lock_order.py"
 OUT_DIR = ROOT / ".artifacts/slice0/service-workflow"
 OUT = OUT_DIR / "disposable_b3_results.json"
 PGBIN = Path(r"C:\Program Files\PostgreSQL\17\bin")
@@ -114,7 +116,17 @@ def run_all() -> int:
     apply(db, B3FIX, "B3 visit corrections")
     apply(db, B3SAFE, "B3 safety-path final")
     apply(db, B3ACK, "B3 F-B3-02 ack binding")
+    apply(db, B3LOCK, "B3 F-B3-03 lock order")
     apply(db, BATTERY, "B3 battery")
+
+    # Barrier-synchronized start-vs-reassign + shared-lock probes (F-B3-03).
+    conc = subprocess.run(
+        [sys.executable, str(CONCURRENT), "--port", PORT, "--db", db, "--user", USER],
+        text=True, capture_output=True, check=False, cwd=str(ROOT),
+    )
+    if conc.returncode != 0:
+        raise SystemExit(f"F-B3-03 concurrent probe failed:\n{conc.stderr}\n{conc.stdout}")
+    print(conc.stdout)
 
     rows = psql(db, "SELECT check_id, status, detail FROM public.b3_eval ORDER BY 1;")
     verdict = psql(db, "SELECT CASE WHEN count(*) FILTER (WHERE status = 'FAIL') = 0 "
