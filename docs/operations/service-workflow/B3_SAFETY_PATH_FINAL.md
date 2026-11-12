@@ -1,7 +1,7 @@
 # B3 final safety-path correction
 
 **Accepted base:** `a8503d1416b62db97e5c28b4da45f350a65e5a01` (CONDITIONAL PASS corrections)  
-**This correction:** _stamped on freeze tip_  
+**This correction:** `742d1a98fccc34c5a28277cb2f8ea34587ae2b2e`  
 **Migration:** `supabase/migrations/20261112194500_service_workflow_b3_safety_path_final.sql`  
 **Local disposable:** B3 31/0 PASS (incl. B3-S1/S2/S3, B3-D2); B1/B2 under B3 72 PASS / 4 DEFER (M4/M5/R3/R4)  
 **Gates:** No staging apply until Spark targeted review PASS · no merge · no production · no B4
