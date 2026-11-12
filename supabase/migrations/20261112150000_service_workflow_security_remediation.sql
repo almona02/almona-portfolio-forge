@@ -154,8 +154,18 @@ REVOKE INSERT, UPDATE, DELETE ON public.service_job_visits FROM authenticated, a
 REVOKE INSERT, UPDATE, DELETE ON public.service_job_assignment_history FROM authenticated, anon, service_role;
 REVOKE INSERT, UPDATE, DELETE ON public.service_workflow_audit FROM authenticated, anon, service_role;
 
+-- Spark blocking amendment: service_role must not forge report/revision/review/ack
+-- rows to unlock job completion. Report submission/review RPCs are deferred (B3+);
+-- do not compensate with a broad service_role write exception. SELECT preserved.
+REVOKE INSERT, UPDATE, DELETE ON public.service_reports FROM authenticated, anon, service_role;
+REVOKE INSERT, UPDATE, DELETE ON public.service_report_revisions FROM authenticated, anon, service_role;
+REVOKE INSERT, UPDATE, DELETE ON public.service_report_reviews FROM authenticated, anon, service_role;
+REVOKE INSERT, UPDATE, DELETE ON public.service_acknowledgments FROM authenticated, anon, service_role;
+
 GRANT SELECT ON public.service_jobs, public.service_job_visits TO authenticated;
 GRANT SELECT ON public.service_job_assignment_history TO authenticated;
+GRANT SELECT ON public.service_reports, public.service_report_revisions,
+  public.service_report_reviews, public.service_acknowledgments TO authenticated;
 
 -- ---------------------------------------------------------------------------
 -- 4) create_service_job — restore + optional service-role actor

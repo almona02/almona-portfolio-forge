@@ -47,8 +47,13 @@ GRANT EXECUTE ON FUNCTION public.waive_service_job(uuid, text, uuid) TO anon;
 GRANT EXECUTE ON FUNCTION public.create_service_job_visit(uuid, text, uuid) TO anon;
 GRANT EXECUTE ON FUNCTION public.govern_visit_transition(uuid, text, text, uuid) TO anon;
 GRANT EXECUTE ON FUNCTION public.create_service_job(uuid, text, boolean, text) TO anon;
+GRANT USAGE ON SCHEMA public TO service_role;
 ALTER ROLE service_role BYPASSRLS;
 GRANT INSERT, UPDATE, DELETE ON public.service_jobs TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.service_reports TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.service_report_revisions TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.service_report_reviews TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.service_acknowledgments TO service_role;
 """
 
 STAGING_ANON_PROBE_AFTER = """
@@ -200,13 +205,13 @@ def main() -> int:
         after = run_sec(db, "after_fix")
         results["after_fix"] = after
 
-        # Expected: before has at least SEC1/SEC4/SEC5 fail-open; after all PASS
+        # Expected: before includes SEC1/SEC4/SEC5/SEC8 fail-open; after all PASS
         before_fails = [k for k, v in before.get("rows", {}).items() if v["status"] == "FAIL"]
         after_fails = [k for k, v in after.get("rows", {}).items() if v["status"] == "FAIL"]
         results["verdict"] = {
             "before_fail_ids": before_fails,
             "after_fail_ids": after_fails,
-            "reproduced": bool(set(before_fails) & {"SEC1", "SEC4", "SEC5"}),
+            "reproduced": bool(set(before_fails) & {"SEC1", "SEC4", "SEC5", "SEC8"}),
             "fixed": after.get("ok") is True,
         }
         OUT.write_text(json.dumps(results, indent=2), encoding="utf-8")

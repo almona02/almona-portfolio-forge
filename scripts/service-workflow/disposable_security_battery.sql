@@ -352,6 +352,77 @@ EXCEPTION WHEN OTHERS THEN
   PERFORM sec_note('SEC7', false, SQLSTATE || ' ' || left(SQLERRM, 200));
 END $$;
 
+-- ---------------------------------------------------------------------------
+-- SEC8: Spark forged-review → job-completion (service_role direct writes)
+--   service_role must NOT INSERT report/revision/review to unlock completed.
+--   Report submission/review RPCs remain deferred — no compensating write grant.
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid;
+  v_rep uuid; v_rev uuid;
+  v_forge_ok boolean := false; v_completed boolean := false;
+  v_state text;
+BEGIN
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', sec_ticket('SEC8'));
+  SELECT (public.create_service_job(v_t, 'sec8', true, 'sec8')).id INTO v_j;
+  PERFORM public.govern_job_transition(v_j, 'planned', 'sec8', NULL);
+  PERFORM public.govern_job_transition(v_j, 'in_progress', 'sec8', NULL);
+  PERFORM public.govern_job_transition(v_j, 'awaiting_review', 'sec8', NULL);
+  SELECT (public.create_service_job_visit(v_j, 'sec8 visit', NULL)).id INTO v_v;
+  PERFORM public.govern_visit_transition(v_v, 'in_progress', 'sec8', NULL);
+  PERFORM public.govern_visit_transition(v_v, 'completed', 'sec8', NULL);
+
+  SET ROLE service_role;
+  PERFORM set_config('request.jwt.claim.role', 'service_role', true);
+  PERFORM set_config('request.jwt.claims', '{"role":"service_role"}', true);
+  PERFORM set_config('app.b1_uid', '', true);
+
+  BEGIN
+    INSERT INTO public.service_reports (visit_id)
+    VALUES (v_v) RETURNING id INTO v_rep;
+    INSERT INTO public.service_report_revisions (
+      report_id, revision_number, findings, verification_outcome, submitted_by
+    ) VALUES (
+      v_rep, 1, 'forged', 'verified_fixed', b1_uid('support')
+    ) RETURNING id INTO v_rev;
+    INSERT INTO public.service_report_reviews (
+      revision_id, reviewer_id, decision
+    ) VALUES (
+      v_rev, b1_uid('support'), 'approved_issued'
+    );
+    v_forge_ok := true;
+  EXCEPTION WHEN OTHERS THEN
+    v_forge_ok := false;
+  END;
+  RESET ROLE;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+
+  IF v_forge_ok THEN
+    BEGIN
+      PERFORM public.govern_job_transition(v_j, 'completed', 'sec8 forged', NULL);
+      v_completed := true;
+    EXCEPTION WHEN OTHERS THEN
+      v_completed := false;
+    END;
+  END IF;
+
+  SELECT state INTO v_state FROM public.service_jobs WHERE id = v_j;
+
+  PERFORM sec_note('SEC8',
+    (NOT v_forge_ok) AND (NOT v_completed) AND v_state = 'awaiting_review',
+    CASE WHEN NOT v_forge_ok AND NOT v_completed AND v_state = 'awaiting_review'
+      THEN 'service_role forged review blocked; job stays awaiting_review'
+      WHEN v_forge_ok AND v_completed
+      THEN 'FAIL-OPEN: forged review unlocked job completion'
+      ELSE format('forge=%s completed=%s state=%s', v_forge_ok, v_completed, v_state)
+    END);
+EXCEPTION WHEN OTHERS THEN
+  BEGIN RESET ROLE; EXCEPTION WHEN OTHERS THEN NULL; END;
+  PERFORM sec_note('SEC8', false, SQLSTATE || ' ' || left(SQLERRM, 200));
+END $$;
+
 SELECT check_id, status, detail FROM public.sec_eval ORDER BY check_id;
 SELECT COUNT(*) FILTER (WHERE status='PASS') AS pass,
        COUNT(*) FILTER (WHERE status='FAIL') AS fail
