@@ -27,6 +27,8 @@ A CRLF checkout’s **raw** SHA-256 differs (`7f08776d…`) and must not be labe
 | 1c | *unstamped* `execute_sql` | — | `01b_unstamped_execute_sql_2_transcript_line_1280.sql` | `create_service_job` drop/recreate + EXECUTE grants |
 | 2 | `20261112142222` `apply_migration` | `service_workflow_security_remediation_rpc_bodies` | `02_20261112142222_service_workflow_security_remediation_rpc_bodies.sql` | Remaining RPC restores + govern_ticket overloads + anon EXECUTE scrub |
 | 3 | `20261112142617` `apply_migration` | `service_workflow_security_remediation_enforce_sync` | `03_20261112142617_service_workflow_security_remediation_enforce_sync.sql` | Re-apply enforce body to match approved migration comments/`prosrc` |
+| 4 | `20261112171000` `apply_migration` | `profiles_select_own_for_role_routing` | `04_20261112171000_profiles_select_own_for_role_routing.sql` | B2 staging: own-row profiles SELECT (fixes `/technician` bounce) |
+| 5 | `20261112171100` `apply_migration` | `profiles_select_staff_directory_for_assignment` | `05_20261112171100_profiles_select_staff_directory_for_assignment.sql` | B2 staging: admin/support staff directory for assignees |
 
 Orders **1b** and **1c** are material to the live schema but have **no** `schema_migrations` row. They are preserved here as original transcript payloads so the three stamps are not mistaken for a complete apply log.
 
