@@ -1,7 +1,7 @@
 # B3 visit execution — freeze handoff
 
 **Status:** Implementation frozen for Spark review  
-**Freeze commit:** `c65d055e70da8f64f68e2d3908e8ecbc5e6720a2`
+**Freeze commit:** `9882a256edb376de9ea726a510c96e40af69f845`  
 **Branch:** `feat/service-workflow-b1-planning`  
 **Depends on:** B1/B2 accepted at `49c78969` — see [`B1_B2_STAGING_ACCEPTANCE_CLOSEOUT.md`](./B1_B2_STAGING_ACCEPTANCE_CLOSEOUT.md)  
 **Contract:** [`B3_VISIT_CONTRACT.md`](./B3_VISIT_CONTRACT.md)  
