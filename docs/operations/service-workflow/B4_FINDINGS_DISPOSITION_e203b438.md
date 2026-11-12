@@ -10,4 +10,4 @@ Prior independent PASS on privacy / auth-order / UI recovery / delegation remain
 
 ## Correction freeze
 
-**`6a64a01e`** — restores full table XOR + preflight counts + fixture adaptations. Spark re-verify labour narrowly; retain accepted `e203b438` evidence for other findings.
+**`6a64a01e23dd51439ddfa31243253d4050d93f30`** — restores full table XOR + preflight counts + fixture adaptations. Spark re-verify labour narrowly; retain accepted `e203b438` evidence for other findings. Docs tip `e2550430` stamps this disposition only.
