@@ -31,7 +31,11 @@ Starting the **first** authorized visit advances the ticket `assigned → in_pro
 
 ## D-B3-02 — Minimum safety prerequisite
 
-Visit start requires the exact server attestation from `b3_minimum_safety_attestation()` and records an attributable `passed` row in `service_job_visit_safety_checks`. Missing/wrong attestation or a latest `failed` check denies start. Failed checks may still lead to non-work outcomes (`abort` / `no_access`) without claiming safe completion. This gate does **not** assert machine-specific hazard clearance.
+Visit start requires **explicit** safety evidence:
+1. `p_safety_attestation` matching `b3_minimum_safety_attestation()`, or
+2. a previously recorded explicit `passed` check that is still **latest** (`attested_at DESC, ordinal DESC`).
+
+`govern_visit_transition → in_progress` does **not** invent a passed attestation. Missing evidence fails clearly. A later explicit passed supersedes a prior failed; a later failed supersedes a prior passed. Abort/no-access do not fabricate a passed check. This gate does **not** assert machine-specific hazard clearance.
 
 ## RPCs
 
@@ -59,5 +63,6 @@ The B3 safety gate is the **minimum start gate**, not the completed model-specif
 
 - `supabase/migrations/20261112180000_service_workflow_b3_visit_execution.sql` (freeze)
 - `supabase/migrations/20261112190000_service_workflow_b3_visit_corrections.sql` (F-B3-01 / D-B3-01 / D-B3-02)
+- `supabase/migrations/20261112194500_service_workflow_b3_safety_path_final.sql` (no implicit ack; ordinal ordering; anon grants)
 
 Disposable battery: `scripts/service-workflow/disposable_b3_battery.sql`

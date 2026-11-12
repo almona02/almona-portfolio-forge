@@ -536,7 +536,7 @@ END $$;
 -- D-B3-02: safety gate — missing/failed deny start; failed may still abort/no-access; attestation exact.
 DO $$
 DECLARE
-  v_t uuid; v_j uuid; v_v uuid; v_v2 uuid; v_ok boolean := true; v_fail_id uuid;
+  v_t uuid; v_j uuid; v_v uuid; v_v2 uuid; v_v3 uuid; v_ok boolean := true; v_fail_id uuid;
   v_start timestamptz := now() + interval '39 hours';
   v_end timestamptz := now() + interval '41 hours';
 BEGIN
@@ -547,28 +547,133 @@ BEGIN
   PERFORM b3_arm_ticket(v_j);
   SELECT (public.schedule_service_job_visit(v_j, v_start, v_end, 'd2', NULL)).id INTO v_v;
   PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
-  -- missing attestation
+  -- missing attestation / prior ack
   v_ok := v_ok AND b3_denied(format($q$SELECT public.start_service_job_visit(%L::uuid, NULL, NULL, 'x')$q$, v_v));
   -- wrong generic claim text
   v_ok := v_ok AND b3_denied(format(
     $q$SELECT public.start_service_job_visit(%L::uuid, NULL, %L::text, 'x')$q$,
     v_v, 'All machine hazards cleared'));
-  -- failed check recorded; start denied; abort still allowed (non-work outcome)
+  -- failed check recorded; start without new explicit attest denied; abort allowed (no fabricated pass)
   SELECT (public.record_visit_safety_check(v_v, 'failed', 'site unsafe', NULL, NULL)).id INTO v_fail_id;
   v_ok := v_ok AND v_fail_id IS NOT NULL;
-  v_ok := v_ok AND b3_denied(format(
-    $q$SELECT public.start_service_job_visit(%L::uuid, NULL, %L::text, 'x')$q$, v_v, b3_safety()));
+  v_ok := v_ok AND b3_denied(format($q$SELECT public.start_service_job_visit(%L::uuid, NULL, NULL, 'x')$q$, v_v));
   PERFORM public.abort_service_job_visit(v_v, 'unsafe site — no work started', NULL);
   v_ok := v_ok AND (SELECT state FROM public.service_job_visits WHERE id = v_v) = 'aborted';
+  v_ok := v_ok AND NOT EXISTS (
+    SELECT 1 FROM public.service_job_visit_safety_checks
+    WHERE visit_id = v_v AND result = 'passed');
 
   PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
   SELECT (public.schedule_service_job_visit(v_j, v_start + interval '1 day', v_end + interval '1 day', 'd2b', NULL)).id INTO v_v2;
   PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
   PERFORM public.record_visit_safety_check(v_v2, 'failed', 'locked', NULL, NULL);
   PERFORM public.record_visit_no_access(v_v2, 'no access after failed safety', NULL);
+  v_ok := v_ok AND (SELECT state FROM public.service_job_visits WHERE id = v_v2) = 'no_access';
+  v_ok := v_ok AND NOT EXISTS (
+    SELECT 1 FROM public.service_job_visit_safety_checks
+    WHERE visit_id = v_v2 AND result = 'passed');
+
+  -- Later explicit passed supersedes failed and allows start
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  SELECT (public.schedule_service_job_visit(v_j, v_start + interval '2 day', v_end + interval '2 day', 'd2c', NULL)).id INTO v_v3;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  PERFORM public.record_visit_safety_check(v_v3, 'failed', 'temp', NULL, NULL);
+  PERFORM b3_start(v_v3); -- explicit attestation on start supersedes failed
   PERFORM b3_note('B3-D2', v_ok
-    AND (SELECT state FROM public.service_job_visits WHERE id = v_v2) = 'no_access',
-    'safety gate + non-work outcomes');
+    AND (SELECT state FROM public.service_job_visits WHERE id = v_v3) = 'in_progress',
+    'safety gate + non-work + supersede');
+END $$;
+
+-- Safety-path final: facade rejects missing ack; prior explicit passed works; ordering; anon grants.
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_v2 uuid;
+  v_ok boolean := true;
+  v_fail uuid; v_pass uuid; v_latest uuid;
+  v_ts timestamptz := clock_timestamp();
+  v_start timestamptz := now() + interval '42 hours';
+  v_end timestamptz := now() + interval '44 hours';
+  v_anon_exec boolean := false;
+BEGIN
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B3S-' || substr(replace(gen_random_uuid()::text,'-',''),1,8));
+  SELECT (public.create_service_job(v_t, 'B3 S', true, 'b3')).id INTO v_j;
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'b3', NULL);
+  PERFORM b3_arm_ticket(v_j);
+  SELECT (public.schedule_service_job_visit(v_j, v_start, v_end, 's1', NULL)).id INTO v_v;
+
+  -- Facade start without prior ack must fail (no implicit attestation)
+  v_ok := v_ok AND b3_denied(format(
+    $q$SELECT public.govern_visit_transition(%L::uuid, 'in_progress', 'facade', NULL)$q$, v_v));
+
+  -- Explicit prior passed + facade start succeeds
+  PERFORM public.record_visit_safety_check(v_v, 'passed', 'prior', NULL, b3_safety());
+  PERFORM public.govern_visit_transition(v_v, 'in_progress', 'facade-ok', NULL);
+  v_ok := v_ok AND (SELECT state FROM public.service_job_visits WHERE id = v_v) = 'in_progress';
+  PERFORM public.complete_service_job_visit(v_v, NULL);
+  PERFORM b3_note('B3-S1', v_ok, 'facade rejects missing ack; prior pass works');
+
+  -- Deterministic ordering: same attested_at, higher ordinal wins (failed then passed)
+  v_ok := true;
+  SELECT (public.schedule_service_job_visit(v_j, v_start + interval '1 day', v_end + interval '1 day', 's2', NULL)).id INTO v_v2;
+  INSERT INTO public.service_job_visit_safety_checks (
+    visit_id, result, attested_by, attestation, notes, attested_at, details
+  ) VALUES (
+    v_v2, 'failed', b1_uid('tech1'), 'safety_check_failed', 'tie-fail', v_ts,
+    jsonb_build_object('gate', 'b3_minimum_safety', 'test', 'tie')
+  ) RETURNING id INTO v_fail;
+  INSERT INTO public.service_job_visit_safety_checks (
+    visit_id, result, attested_by, attestation, notes, attested_at, details
+  ) VALUES (
+    v_v2, 'passed', b1_uid('tech1'), b3_safety(), 'tie-pass', v_ts,
+    jsonb_build_object('gate', 'b3_minimum_safety', 'test', 'tie')
+  ) RETURNING id INTO v_pass;
+  SELECT id INTO v_latest FROM public.service_job_visit_safety_checks
+  WHERE visit_id = v_v2
+  ORDER BY attested_at DESC, ordinal DESC
+  LIMIT 1;
+  v_ok := v_ok AND v_latest = v_pass AND v_pass IS DISTINCT FROM v_fail;
+  -- start via prior pass (NULL attestation) must use latest=passed, not ignore failed
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  PERFORM public.start_service_job_visit(v_v2, NULL, NULL, 'prior-pass');
+  PERFORM b3_note('B3-S2', v_ok
+    AND (SELECT state FROM public.service_job_visits WHERE id = v_v2) = 'in_progress',
+    'tie-break ordinal latest=' || v_latest::text);
+END $$;
+
+DO $$
+DECLARE
+  v_has_anon boolean;
+  v_ok boolean := true;
+  r record;
+BEGIN
+  -- Hosted-default style: ensure anon has no EXECUTE after migration
+  FOR r IN
+    SELECT p.oid
+    FROM pg_proc p
+    JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public'
+      AND p.proname IN (
+        'start_service_job_visit', 'record_visit_safety_check',
+        'govern_visit_transition', 'complete_service_job_visit',
+        'abort_service_job_visit', 'record_visit_no_access',
+        'schedule_service_job_visit', 'reschedule_service_job_visit'
+      )
+  LOOP
+    SELECT has_function_privilege('anon', r.oid, 'EXECUTE') INTO v_has_anon;
+    IF COALESCE(v_has_anon, false) THEN
+      v_ok := false;
+    END IF;
+  END LOOP;
+
+  -- Adversarial re-grant: even if EXECUTE is restored to anon, in-function auth still denies
+  EXECUTE 'GRANT EXECUTE ON FUNCTION public.start_service_job_visit(uuid, uuid, text, text) TO anon';
+  RESET app.b1_uid;
+  v_ok := v_ok AND b3_denied(format(
+    $q$SELECT public.start_service_job_visit(%L::uuid, NULL, NULL, 'x')$q$,
+    '00000000-0000-0000-0000-000000000001'));
+  EXECUTE 'REVOKE ALL ON FUNCTION public.start_service_job_visit(uuid, uuid, text, text) FROM anon';
+  PERFORM b3_note('B3-S3', v_ok, 'anon grants revoked; adversarial re-grant still auth-denied');
 END $$;
 
 SELECT check_id, status, detail FROM public.b3_eval ORDER BY check_id;

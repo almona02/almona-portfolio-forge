@@ -267,6 +267,23 @@ BEGIN
   WHERE id = v_ticket AND status = 'open';
 END $$;
 
+-- Explicit safety acknowledgment before govern_visit_transition → in_progress.
+-- Facade must NOT invent a passed attestation.
+CREATE OR REPLACE FUNCTION b1_ack_visit_safety(p_visit uuid, p_notes text DEFAULT 'battery')
+RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  IF to_regprocedure('public.record_visit_safety_check(uuid,text,text,uuid,text)') IS NULL THEN
+    RETURN; -- pre-B3 correction DBs
+  END IF;
+  PERFORM public.record_visit_safety_check(
+    p_visit,
+    'passed',
+    p_notes,
+    NULL,
+    public.b3_minimum_safety_attestation()
+  );
+END $$;
+
 -- State-column name discovery (state preferred, status fallback).
 CREATE OR REPLACE FUNCTION b1_statecol(p_table text) RETURNS text
 LANGUAGE sql STABLE AS $$
@@ -370,6 +387,7 @@ BEGIN
     WHERE id = v_ticket;
   END IF;
   SELECT (public.create_service_job_visit(p_job, 'chain', NULL)).id INTO v_v;
+  PERFORM b1_ack_visit_safety(v_v, 'chain');
   PERFORM public.govern_visit_transition(v_v, 'in_progress', 'chain', NULL);
   PERFORM public.govern_visit_transition(v_v, 'completed', 'chain', NULL);
   v_r := b1_fixture('service_reports',
@@ -595,6 +613,7 @@ BEGIN
   PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'v1', NULL);
   PERFORM b1_arm_ticket_for_visit(v_j);
   SELECT (public.create_service_job_visit(v_j, 'v1', NULL)).id INTO v_v;
+  PERFORM b1_ack_visit_safety(v_v, 'v1');
   PERFORM public.govern_visit_transition(v_v, 'in_progress', 'v1', NULL);
   PERFORM public.govern_visit_transition(v_v, 'completed', 'v1', NULL);
   v_ok := b1_state('service_job_visits', v_v) = 'completed';
@@ -1663,6 +1682,7 @@ BEGIN
       = b1_uid('tech2'));
   EXCEPTION WHEN OTHERS THEN v_sched := false; END;
   PERFORM b1_arm_ticket_for_visit(v_j, b1_uid('tech2'));
+  PERFORM b1_ack_visit_safety(v_v, 's4');
   PERFORM public.govern_visit_transition(v_v, 'in_progress', 's4', NULL);
   BEGIN PERFORM b1_assign_adaptive(v_j, b1_uid('tech1'), 's4-re');
   EXCEPTION WHEN check_violation THEN v_deny := true; END;
@@ -1802,6 +1822,7 @@ BEGIN
   PERFORM public.govern_job_transition(v_j, 'planned', 's8', NULL);
   SELECT (public.create_service_job_visit(v_j, 's8', NULL)).id INTO v_v;
   PERFORM b1_arm_ticket_for_visit(v_j);
+  PERFORM b1_ack_visit_safety(v_v, 's8');
   PERFORM public.govern_visit_transition(v_v, 'in_progress', 's8', NULL);
   PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
   BEGIN
@@ -2049,6 +2070,7 @@ BEGIN
   PERFORM public.govern_job_transition(v_j, 'planned', 's15', NULL);
   SELECT (public.create_service_job_visit(v_j, 's15', NULL)).id INTO v_v;
   PERFORM b1_arm_ticket_for_visit(v_j);
+  PERFORM b1_ack_visit_safety(v_v, 's15');
   PERFORM public.govern_visit_transition(v_v, 'in_progress', 's15', NULL);
   SELECT count(*) INTO v_n0 FROM public.service_workflow_audit;
   SELECT count(*) INTO v_h0 FROM public.service_job_assignment_history;

@@ -36,9 +36,11 @@ describe('mapJobRpcError B3', () => {
   })
 
   it('maps safety attestation / failed gate', () => {
-    expect(mapJobRpcError('Minimum safety attestation required before visit start').message).toMatch(
-      /minimum safety confirmation/i,
-    )
+    expect(
+      mapJobRpcError(
+        'Explicit safety acknowledgment required before visit start (attest on start or record a passed check first)',
+      ).message,
+    ).toMatch(/explicit safety acknowledgment/i)
   })
 
   it('maps incompatible ticket parent status', () => {

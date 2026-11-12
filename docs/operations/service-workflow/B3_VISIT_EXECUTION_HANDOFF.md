@@ -3,6 +3,7 @@
 **Status:** Spark **CONDITIONAL PASS** — corrections frozen for re-review  
 **Freeze commit:** `9882a256edb376de9ea726a510c96e40af69f845`  
 **Correction commit:** `a8503d1416b62db97e5c28b4da45f350a65e5a01`  
+**Safety-path final:** see tip / [`B3_SAFETY_PATH_FINAL.md`](./B3_SAFETY_PATH_FINAL.md) (`20261112194500_…`)  
 **Corrections:** [`B3_CONDITIONAL_PASS_CORRECTIONS.md`](./B3_CONDITIONAL_PASS_CORRECTIONS.md) (`20261112190000_…`)  
 **Branch:** `feat/service-workflow-b1-planning`  
 **Depends on:** B1/B2 accepted at `49c78969` — see [`B1_B2_STAGING_ACCEPTANCE_CLOSEOUT.md`](./B1_B2_STAGING_ACCEPTANCE_CLOSEOUT.md)  
@@ -14,7 +15,7 @@
 
 | Artifact | Path |
 |----------|------|
-| Migration (not applied) | `20261112180000_…b3_visit_execution.sql` + `20261112190000_…b3_visit_corrections.sql` |
+| Migration (not applied) | `…180000` + `…190000` corrections + `…194500` safety-path final |
 | Contract | `docs/operations/service-workflow/B3_VISIT_CONTRACT.md` |
 | Disposable battery | `scripts/service-workflow/disposable_b3_battery.sql` |
 | UI | `src/components/support/ServiceVisitPanel.tsx` (+ assignment panel / technician dashboard wiring) |
