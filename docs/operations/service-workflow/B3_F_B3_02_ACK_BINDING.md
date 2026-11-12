@@ -1,7 +1,7 @@
 # F-B3-02 — Personal safety acknowledgment binding
 
 **Base:** safety-path final `742d1a98` (accepted evidence retained)  
-**This correction:** _stamped on freeze_  
+**This correction:** `b7a6dace3510e486357a1e10c5b80a985818b717`  
 **Migration:** `supabase/migrations/20261112200000_service_workflow_b3_f_b3_02_ack_binding.sql`  
 **Local disposable:** B3 38/0 PASS (incl. B3-F2-1..7); B1/B2 under B3 72 PASS / 4 DEFER (M4/M5/R3/R4)  
 **Gates:** No staging apply until Spark targeted review PASS · no merge · no production · no B4
