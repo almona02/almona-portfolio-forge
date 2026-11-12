@@ -10,14 +10,16 @@
 1. **One report root per visit** (`service_reports.visit_id` UNIQUE).
 2. **Append-only submitted revisions** (`service_report_revisions`). No draft rows on the server; clients may keep local recoverable drafts.
 3. **Submitter (R4-05)** = the technician recorded on that visit as `service_job_visits.attending_technician_id` (role `technician`). Authorization is **not** the job’s current `assigned_technician_id`. Later job reassignment must not strip the historical attendee’s right to submit for that completed visit, and must not let a new assignee impersonate them. Staff cannot substitute. `submitted_by` is frozen on the revision.
-4. **Visit must be `completed`** before submit.
-5. **Payload (required):** findings, work performed, labour entries **or** explicit `no_labour`, verification outcome (+ reason when not `verified_fixed`), supporting evidence paths (≥1), technician declaration.
-6. **Labour:** JSON array of `{hours: number>0, description: non-empty}` XOR `no_labour=true` with `[]`.
-7. **Evidence:** private `ticket-attachments` object names, readable by the submitter, under the ticket folder or submitter folder; object must exist.
-8. **Idempotency:** `client_submission_id` unique per report; retries return the same revision; concurrent same-key inserts converge.
-9. **Immutability:** submitted rows cannot be edited/deleted via ordinary client or `service_role` direct writes (B2 revocations retained). SECURITY DEFINER submit RPC is the write path.
-10. **Job effect:** may move `in_progress → awaiting_review`. Must **not** create reviews/issues, complete the job, or close/resolve the ticket.
-11. **Atomic audit:** submit (+ optional job transition) write `service_workflow_audit` in the same transaction.
+4. **Auth order (F-B4-04):** attending-tech authorization runs before visit-state checks so unrelated callers cannot distinguish visit states via errors.
+5. **Getter visibility (F-B4-03):** `get_service_report_for_visit` must enforce customer visibility — owners see only issued/customer-visible revisions; unissued revisions and their evidence are omitted. Anon/share tokens have no EXECUTE.
+6. **Visit must be `completed`** before submit (checked only after auth).
+7. **Payload (required on new submit):** findings, work performed, labour entries **or** explicit `no_labour`, verification outcome (+ reason when not `verified_fixed`), supporting evidence paths (≥1), technician declaration.
+8. **Labour:** JSON array of `{hours: number>0, description: non-empty}` XOR `no_labour=true` with `[]` (RPC). Table CHECK only forbids `no_labour=true` with non-empty labour — does not invent `no_labour` for legacy empty arrays.
+9. **Evidence:** private `ticket-attachments` object names, readable by the submitter, under the ticket folder or submitter folder; object must exist.
+10. **Idempotency:** `client_submission_id` unique per report; retries return the same revision; concurrent same-key inserts converge. UI must not rotate the key after a successful submit.
+11. **Immutability:** submitted rows cannot be edited/deleted via ordinary client or `service_role` direct writes (B2 revocations retained). SECURITY DEFINER submit RPC is the write path.
+12. **Job effect:** may move `in_progress → awaiting_review`. Must **not** create reviews/issues, complete the job, or close/resolve the ticket.
+13. **Atomic audit:** submit (+ optional job transition) write `service_workflow_audit` in the same transaction.
 
 ## Configurable routines (integration only)
 

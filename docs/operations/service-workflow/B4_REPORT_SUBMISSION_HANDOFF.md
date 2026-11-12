@@ -4,6 +4,7 @@
 **Branch:** `feat/service-workflow-b1-planning`  
 **Depends on:** B3 staging-development acceptance at `4e0ddd22`  
 **Contract:** [`B4_REPORT_CONTRACT.md`](./B4_REPORT_CONTRACT.md)  
+**Findings vs prior tip:** [`B4_FINDINGS_DISPOSITION_6827c775.md`](./B4_FINDINGS_DISPOSITION_6827c775.md) (`6827c775` had OPEN F-B4-03/04, UI retry, compat; this freeze corrects them)  
 **Gates:** **No B4 staging apply** until Spark PASS · no merge · no production · #155 frozen · #156 draft
 
 ## Deliverables
@@ -33,10 +34,10 @@ Apply B1→B4 migrations on throwaway PG17 (`disposable_b1_base` + prior batteri
 `python scripts/service-workflow/run_disposable_b4.py`
 
 Expected (bound to this freeze tip):
-- **B4 required:** R4-01..R4-10 **PASS** (10); R5/R6/draft **DEFER** (3)
+- **B4 required:** R4-01..R4-10 + F-B4-04 **PASS**; R5/R6/draft **DEFER**
 - **B3 under B4:** 39 PASS / 0 FAIL
 - **B1/B2 under B4:** 72 PASS / 0 FAIL / 4 DEFER
-- Evidence: `.artifacts/slice0/service-workflow/disposable_b4_results.json` (gitignored)
+- Migration applied **untouched** (F-B4-00). Evidence: `.artifacts/slice0/service-workflow/disposable_b4_results.json` (gitignored)
 
 ## Explicit non-actions
 

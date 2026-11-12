@@ -140,7 +140,8 @@ def run_all() -> int:
     apply(db, B3SAFE, "B3 safety")
     apply(db, B3ACK, "B3 ack binding")
     apply(db, B3LOCK, "B3 lock order")
-    apply(db, B4, "B4 report submission")
+    # F-B4-00: apply committed migration bytes only — no harness SQL rewrite.
+    apply(db, B4, "B4 report submission (untouched migration)")
     apply(db, BATTERY, "B4 battery")
 
     b4_rows = psql(db, "SELECT check_id, status, detail FROM public.b4_eval ORDER BY 1;")

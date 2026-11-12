@@ -9,6 +9,7 @@ import {
   getServiceReportForVisit,
   submitServiceReportRevision,
   uploadReportEvidence,
+  type ServiceReportRevisionRow,
 } from '@/lib/ticketGovernanceApi'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
@@ -28,12 +29,42 @@ interface ServiceReportPanelProps {
   canSubmit: boolean
 }
 
+function submittedStorageKey(visitId: string) {
+  return `b4-submitted:${visitId}`
+}
+
+function draftStorageKey(visitId: string) {
+  return `b4-draft:${visitId}`
+}
+
+function readStoredSubmission(visitId: string): {
+  revision: ServiceReportRevisionRow
+  clientSubmissionId: string
+} | null {
+  try {
+    const raw = sessionStorage.getItem(submittedStorageKey(visitId))
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as {
+      revision?: ServiceReportRevisionRow
+      clientSubmissionId?: string
+    }
+    if (!parsed.revision?.id || !parsed.clientSubmissionId) return null
+    return {
+      revision: parsed.revision,
+      clientSubmissionId: parsed.clientSubmissionId,
+    }
+  } catch {
+    return null
+  }
+}
+
 export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
   visitId,
   ticketId,
   canSubmit,
 }) => {
   const queryClient = useQueryClient()
+  const stored = useMemo(() => readStoredSubmission(visitId), [visitId])
   const [findings, setFindings] = useState('')
   const [workPerformed, setWorkPerformed] = useState('')
   const [noLabour, setNoLabour] = useState(false)
@@ -46,8 +77,14 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
   const [evidencePaths, setEvidencePaths] = useState<string[]>([])
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [refetchError, setRefetchError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
-  const [clientSubmissionId, setClientSubmissionId] = useState(() => crypto.randomUUID())
+  const [clientSubmissionId, setClientSubmissionId] = useState(
+    () => stored?.clientSubmissionId ?? crypto.randomUUID(),
+  )
+  const [confirmedRevision, setConfirmedRevision] = useState<ServiceReportRevisionRow | null>(
+    () => stored?.revision ?? null,
+  )
 
   const reportQuery = useQuery({
     queryKey: ['service-report', visitId],
@@ -55,14 +92,15 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
   })
 
   const submittedHead = useMemo(() => {
+    if (confirmedRevision) return confirmedRevision
     const revs = reportQuery.data?.revisions ?? []
     if (revs.length === 0) return null
     return revs[revs.length - 1]
-  }, [reportQuery.data])
+  }, [confirmedRevision, reportQuery.data])
 
   useEffect(() => {
-    // Local draft keys — recoverable across soft failures without claiming server submit.
-    const key = `b4-draft:${visitId}`
+    if (submittedHead) return
+    const key = draftStorageKey(visitId)
     try {
       const raw = sessionStorage.getItem(key)
       if (!raw) return
@@ -89,13 +127,12 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
     } catch {
       /* ignore corrupt draft */
     }
-  }, [visitId])
+  }, [visitId, submittedHead])
 
   useEffect(() => {
     if (submittedHead) return
-    const key = `b4-draft:${visitId}`
     sessionStorage.setItem(
-      key,
+      draftStorageKey(visitId),
       JSON.stringify({
         findings,
         workPerformed,
@@ -150,6 +187,7 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
 
   const onSubmit = async () => {
     setSubmitError(null)
+    setRefetchError(null)
     if (!declarationAck) {
       const msg = 'Confirm the technician declaration before submit.'
       setSubmitError(msg)
@@ -167,7 +205,7 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
                 description: labourDescription.trim(),
               },
             ]
-      await submitServiceReportRevision({
+      const revision = await submitServiceReportRevision({
         visitId,
         findings: findings.trim(),
         workPerformed: workPerformed.trim(),
@@ -179,11 +217,25 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
         evidencePaths,
         clientSubmissionId,
       })
-      sessionStorage.removeItem(`b4-draft:${visitId}`)
-      setClientSubmissionId(crypto.randomUUID())
+
+      // Persist submitted identity BEFORE refetch. Never rotate the request key after success.
+      setConfirmedRevision(revision)
+      sessionStorage.setItem(
+        submittedStorageKey(visitId),
+        JSON.stringify({ revision, clientSubmissionId }),
+      )
+      sessionStorage.removeItem(draftStorageKey(visitId))
       toast.success('Report submitted')
-      await queryClient.invalidateQueries({ queryKey: ['service-report', visitId] })
-      await queryClient.invalidateQueries({ queryKey: ['service-jobs'] })
+
+      try {
+        await queryClient.invalidateQueries({ queryKey: ['service-report', visitId] })
+        await queryClient.invalidateQueries({ queryKey: ['service-jobs'] })
+        await reportQuery.refetch()
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : 'Submitted status refetch failed'
+        setRefetchError(msg)
+        toast.error('Report submitted; status refresh failed — showing submitted revision')
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Report submit failed'
       setSubmitError(msg)
@@ -194,7 +246,7 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
     }
   }
 
-  if (reportQuery.isLoading) {
+  if (reportQuery.isLoading && !confirmedRevision) {
     return (
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading report status…
@@ -210,6 +262,14 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
           Revision {submittedHead.revision_number} · {submittedHead.verification_outcome} ·{' '}
           {new Date(submittedHead.submitted_at).toLocaleString()}
         </p>
+        <p className="text-xs text-muted-foreground">
+          Submission id {submittedHead.client_submission_id ?? clientSubmissionId}
+        </p>
+        {refetchError && (
+          <p className="text-xs text-destructive">
+            Status refresh failed after submit; showing confirmed revision ({refetchError}).
+          </p>
+        )}
         <p className="text-xs">
           Submitted content is append-only. Manager review/issue is B5; acknowledgment is B6.
         </p>

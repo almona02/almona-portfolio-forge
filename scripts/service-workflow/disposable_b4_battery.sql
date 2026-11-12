@@ -400,12 +400,12 @@ BEGIN
 END $$;
 
 -- ---------------------------------------------------------------------------
--- R4-08: customer / share-token denial of unissued reports (SELECT isolation)
+-- R4-08 / F-B4-03: customer cannot retrieve unissued revisions via RLS or getter RPC
 -- ---------------------------------------------------------------------------
 DO $$
 DECLARE
   v_t uuid; v_j uuid; v_v uuid; v_path text; v_rev public.service_report_revisions;
-  a boolean; b boolean; v_n int;
+  a boolean; b boolean; c boolean; v_n int; v_bundle jsonb;
 BEGIN
   SELECT * INTO v_t, v_j, v_v FROM b4_mk_completed_visit('r408');
   v_path := v_t::text || '/b4/r408.jpg';
@@ -420,20 +420,60 @@ BEGIN
     EXECUTE 'SET ROLE authenticated';
     SELECT count(*) INTO v_n FROM public.service_report_revisions WHERE id = v_rev.id;
     a := (v_n = 0); -- RLS hides unissued revision from customer
-    BEGIN
-      PERFORM public.get_service_report_for_visit(v_v);
-      SELECT count(*) INTO v_n FROM public.service_report_revisions WHERE id = v_rev.id;
-      b := (v_n = 0);
-    EXCEPTION WHEN OTHERS THEN
-      b := (SQLSTATE = '42501');
-    END;
+    v_bundle := public.get_service_report_for_visit(v_v);
+    b := (COALESCE(jsonb_array_length(v_bundle->'revisions'), 0) = 0);
+    -- evidence path must not appear in customer getter payload
+    c := (v_bundle::text NOT LIKE '%' || v_path || '%');
     EXECUTE 'RESET ROLE';
   EXCEPTION WHEN OTHERS THEN
     EXECUTE 'RESET ROLE';
-    a := false; b := false;
+    a := false; b := false; c := false;
+    PERFORM b4_note('R4-08', false, 'customer getter error: ' || SQLERRM);
+    RETURN;
   END;
 
-  PERFORM b4_note('R4-08', a AND b, format('cust_select_hidden=%s get_isolated=%s', a, b));
+  PERFORM b4_note('R4-08', a AND b AND c,
+    format('cust_select_hidden=%s getter_empty=%s evidence_omitted=%s', a, b, c));
+END $$;
+
+-- ---------------------------------------------------------------------------
+-- F-B4-04: authorization precedes visit-state disclosure
+-- ---------------------------------------------------------------------------
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_path text;
+  v_sqlstate text; v_msg text; a boolean := false; b boolean := false;
+BEGIN
+  -- Create a scheduled (not completed) visit owned by tech1
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  INSERT INTO public.service_tickets (ticket_number, user_id, title, description, type, priority, status, assigned_to, assigned_by, assigned_at)
+  VALUES (
+    'B4-f404-' || substr(replace(gen_random_uuid()::text,'-',''),1,6),
+    b1_uid('cust1'), 'b4', 'b4', 'general', 'medium', 'assigned',
+    b1_uid('tech1'), b1_uid('support'), now()
+  ) RETURNING id INTO v_t;
+  SELECT (public.create_service_job(v_t, 'F404', true, 'b4')).id INTO v_j;
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'b4', NULL);
+  SELECT (public.schedule_service_job_visit(
+    v_j, now()+interval '1 hour', now()+interval '2 hours', 'b4', NULL
+  )).id INTO v_v;
+  v_path := v_t::text || '/b4/f404.jpg';
+  PERFORM b4_seed_evidence(v_t, v_path);
+
+  -- Unrelated tech2 on non-completed visit must get 42501 auth, not state disclosure
+  PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
+  BEGIN
+    PERFORM public.submit_service_report_revision(
+      v_v, 'f', 'w', '[]'::jsonb, true, 'verified_fixed', NULL, 'decl',
+      ARRAY[v_path], NULL, gen_random_uuid(), NULL);
+  EXCEPTION WHEN OTHERS THEN
+    v_sqlstate := SQLSTATE; v_msg := SQLERRM;
+    a := (SQLSTATE = '42501' AND SQLERRM ILIKE '%historical attending%');
+    b := (SQLERRM ILIKE '%completed visits%' OR SQLERRM ILIKE '%Reports may only%');
+  END;
+
+  PERFORM b4_note('F-B4-04', a AND NOT b,
+    format('auth_first=%s state_leaked=%s sqlstate=%s msg=%s', a, b, v_sqlstate, left(v_msg, 120)));
 END $$;
 
 -- ---------------------------------------------------------------------------

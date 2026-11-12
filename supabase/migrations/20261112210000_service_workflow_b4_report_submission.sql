@@ -31,18 +31,43 @@ COMMENT ON COLUMN public.service_report_revisions.checklist_results IS
 COMMENT ON COLUMN public.service_report_revisions.client_submission_id IS
   'B4: client idempotency key; retries with the same id return the existing revision.';
 
--- Backfill NOT NULL narrative columns for any pre-B4 rows (none expected on staging).
+-- Compatibility: expand work_performed from existing findings (same content, not invented).
+-- Do NOT invent technician_declaration or no_labour=true for legacy rows.
 UPDATE public.service_report_revisions
-SET work_performed = COALESCE(work_performed, findings),
-    technician_declaration = COALESCE(technician_declaration, 'legacy-pre-b4')
-WHERE work_performed IS NULL OR technician_declaration IS NULL;
+SET work_performed = findings
+WHERE work_performed IS NULL
+  AND findings IS NOT NULL
+  AND btrim(findings) <> '';
+
+DO $$
+DECLARE
+  v_missing_wp int;
+  v_existing int;
+BEGIN
+  SELECT count(*) INTO v_existing FROM public.service_report_revisions;
+  SELECT count(*) INTO v_missing_wp
+  FROM public.service_report_revisions
+  WHERE work_performed IS NULL OR btrim(work_performed) = '';
+
+  IF v_missing_wp > 0 THEN
+    RAISE EXCEPTION
+      'B4 preflight blocked: % of % service_report_revisions row(s) lack work_performed after findings backfill. Provide a truthful reviewed backfill or remove incompatible rows before applying. technician_declaration is intentionally left nullable for legacy rows (required only on new B4 submits).',
+      v_missing_wp, v_existing
+      USING ERRCODE = 'P0001';
+  END IF;
+
+  IF v_existing > 0 THEN
+    RAISE NOTICE 'B4 preflight: % existing revision(s) compatible for work_performed NOT NULL; technician_declaration remains nullable for legacy rows',
+      v_existing;
+  END IF;
+END $$;
 
 ALTER TABLE public.service_report_revisions
-  ALTER COLUMN work_performed SET NOT NULL,
-  ALTER COLUMN technician_declaration SET NOT NULL;
+  ALTER COLUMN work_performed SET NOT NULL;
+-- technician_declaration stays nullable for pre-B4 rows; submit RPC requires it for new revisions.
 
--- Forbid contradictory labour + no_labour. Full XOR (require labour or no_labour)
--- is enforced in submit_service_report_revision so pre-B4 disposable inserts remain valid.
+-- Forbid contradictory labour + no_labour only. Do not invent no_labour=true for empty
+-- legacy labour arrays. Full labour XOR is enforced in submit_service_report_revision.
 ALTER TABLE public.service_report_revisions
   DROP CONSTRAINT IF EXISTS service_report_revisions_labour_xor_no_labour;
 ALTER TABLE public.service_report_revisions
@@ -357,25 +382,20 @@ BEGIN
   v_job := v_hier.job;
   v_visit := v_hier.visit;
 
-  IF v_visit.state IS DISTINCT FROM 'completed' THEN
-    RAISE EXCEPTION 'Reports may only be submitted for completed visits'
-      USING ERRCODE = 'check_violation';
-  END IF;
-
-  -- R4-05: authorship is the technician recorded on this completed visit
-  -- (attending_technician_id), not the job's current assignee. Later job
-  -- reassignment must not strip the historical attendee or let a new assignee
-  -- impersonate them. Staff cannot substitute.
-  IF v_visit.attending_technician_id IS NULL THEN
-    RAISE EXCEPTION 'Completed visit has no attending technician; cannot submit report'
-      USING ERRCODE = '22023';
-  END IF;
+  -- F-B4-04: authorization BEFORE visit-state checks so unrelated callers cannot
+  -- distinguish visit states via error messages.
+  -- R4-05: authorship is visit.attending_technician_id (historical), not job assignee.
   IF v_actor.role IS DISTINCT FROM 'technician'
+     OR v_visit.attending_technician_id IS NULL
      OR v_actor.uid IS DISTINCT FROM v_visit.attending_technician_id THEN
     RAISE EXCEPTION 'Only the historical attending technician for this visit may submit a report'
       USING ERRCODE = '42501';
   END IF;
-  -- Explicitly ignore job.assigned_technician_id for authorization (may differ after reassignment).
+
+  IF v_visit.state IS DISTINCT FROM 'completed' THEN
+    RAISE EXCEPTION 'Reports may only be submitted for completed visits'
+      USING ERRCODE = 'check_violation';
+  END IF;
 
   IF p_findings IS NULL OR btrim(p_findings) = '' THEN
     RAISE EXCEPTION 'Findings are required' USING ERRCODE = '22023';
@@ -554,7 +574,14 @@ DECLARE
   v_report public.service_reports;
   v_visit public.service_job_visits;
   v_job public.service_jobs;
+  v_role text := admin_private.caller_role();
+  v_staff boolean;
 BEGIN
+  -- Share-token / anon callers have no EXECUTE grant; still deny if role missing.
+  IF admin_private.caller_uid() IS NULL THEN
+    RAISE EXCEPTION 'Not authorized to read report' USING ERRCODE = '42501';
+  END IF;
+
   SELECT * INTO v_visit FROM public.service_job_visits WHERE id = p_visit_id;
   IF NOT FOUND THEN
     RETURN NULL;
@@ -563,16 +590,27 @@ BEGIN
   IF NOT admin_private.can_read_ticket_workflow(v_job.ticket_id) THEN
     RAISE EXCEPTION 'Not authorized to read report' USING ERRCODE = '42501';
   END IF;
+
+  v_staff := v_role IN ('admin', 'support', 'technician');
+
   SELECT * INTO v_report FROM public.service_reports WHERE visit_id = p_visit_id;
   IF NOT FOUND THEN
     RETURN jsonb_build_object('report', NULL, 'revisions', '[]'::jsonb);
   END IF;
+
+  -- F-B4-03: customers (ticket owners) see only issued/customer-visible revisions.
+  -- Unissued revisions (and their evidence) are omitted entirely from the RPC payload.
+  -- Staff/technician workflow readers see all revisions. Anon/share tokens have no EXECUTE.
   RETURN jsonb_build_object(
     'report', to_jsonb(v_report),
     'revisions', COALESCE((
       SELECT jsonb_agg(to_jsonb(r) ORDER BY r.revision_number)
       FROM public.service_report_revisions r
       WHERE r.report_id = v_report.id
+        AND (
+          v_staff
+          OR admin_private.revision_is_customer_visible(r.id)
+        )
     ), '[]'::jsonb)
   );
 END;
@@ -580,5 +618,6 @@ $$;
 
 REVOKE ALL ON FUNCTION public.get_service_report_for_visit(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.get_service_report_for_visit(uuid) TO authenticated;
+REVOKE EXECUTE ON FUNCTION public.get_service_report_for_visit(uuid) FROM anon, service_role;
 
 COMMIT;
