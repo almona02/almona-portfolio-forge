@@ -1,8 +1,8 @@
 # Spark review — B1/B2 staging security remediation
 
-**Status:** B1/B2 staging acceptance **BLOCKED**. Browser testing **paused**.  
-**Containment:** ACTIVE (do not lift until corrective is applied).  
-**Corrective:** amended for Spark’s single blocking finding — **do not apply until Spark ACK**.  
+**Status:** Staging corrective **APPLIED**. B1/B2 staging acceptance **BLOCKED** until Spark live verification. Browser testing **paused**.  
+**Containment:** Lifted (stubs cleared; secured RPC bodies live).  
+**Corrective:** Spark FULL ACK received; applied on staging only (`d4cfc8ce`).  
 **#155** frozen · **#156** draft · production unauthorized · no B3 · no merge.
 
 ---
@@ -16,9 +16,10 @@
 | Battery runner | `scripts/service-workflow/run_disposable_security.py` |
 | This review handoff | `docs/operations/service-workflow/SPARK_SECURITY_REMEDIATION_REVIEW.md` |
 | Parent handoff | `docs/operations/service-workflow/HANDOFF.md` |
+| **Apply record** | `docs/operations/service-workflow/STAGING_SECURITY_REMEDIATION_APPLY_RECORD.md` |
 | **Amended package SHA** | `d4cfc8ce7ca34a076dd10edf38d9df0348dd69c4` |
-| **Tip (docs stamp)** | `5f8612395b49e4af620e9fd91ff08f552e49f8eb` |
-| **Spark disposable re-run** | **PASS** — before FAIL SEC1/SEC4/SEC5/SEC7/SEC8; after 8/0; SEC8 reproduced→fixed; SEC6 PASS |
+| **Cursor disposable pre-run (amended)** | PASS — before FAIL SEC1/SEC4/SEC5/SEC7/SEC8; after 8/0; SEC8 reproduced→fixed; SEC6 PASS. **Not** Spark evidence. |
+| **Spark independent verdict** | Cited from Spark’s independent report (FULL ACK chain): disposable SEC **8/8** PASS + independent probes **15/15** PASS. Do not treat Cursor’s pre-run row as Spark’s result. |
 
 ---
 
@@ -40,17 +41,15 @@ Extend service-role DML revocation beyond jobs/visits/history/audit to:
 
 ---
 
-## Containment (staging `apnmoevmvihfzcnttctx`)
+## Containment (staging `apnmoevmvihfzcnttctx`) — historical
 
 | Field | Value |
 |-------|--------|
 | **Applied at** | `2026-11-12T12:55:00+02:00` |
 | **Method** | Ad-hoc stubs + REVOKE anon (not a schema_migrations row) |
+| **Status** | **Cleared** by corrective apply (see apply record) |
 
-Stubbed: `assign_service_job`, `decline_service_job`, `ensure_default_service_job`, `govern_job_transition`, `waive_service_job`, `create_service_job_visit`, `govern_visit_transition`, `create_service_job`.  
-Effective `anon` EXECUTE = false on those + evaluate/govern ticket surfaces.
-
-Applied history (unchanged): `20261111222941` B1, `20261111223057` B2. Corrective **not** applied.
+Previously stubbed entry points restored with secured bodies. Applied history: `20261111222941` B1, `20261111223057` B2, plus corrective stamps in the apply record.
 
 ---
 
@@ -101,13 +100,12 @@ Latest disposable verdict: before FAIL SEC1/SEC4/SEC5/SEC7/SEC8 → after **8/0 
 
 ---
 
-## Spark procedure
+## Spark procedure (live phase — now)
 
-1. Confirm containment on staging.  
-2. **Rerun** disposable correction + legitimate-flow tests on this amended SHA (`run_disposable_security.py`; optional full B1/B2 battery for regression).  
-3. ACK → Cursor applies corrective on staging only, verifies deployed defs + effective grants (incl. report-table DML), issues fixtures.  
-4. Live security checks before browser resumes.
+1. Confirm deployed-definition / grant record matches approved migration (apply record).  
+2. Live actor / activation / INSERT / forgery / legitimate checks with fresh scoped sessions.  
+3. Resume B2 browser journey only after step 2 passes.
 
 ## Out of scope
 
-Production, B3, merge, applying corrective before ACK, fabricating report/review RPCs.
+Production, B3, merge, fabricating report/review RPCs.
