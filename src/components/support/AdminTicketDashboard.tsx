@@ -51,7 +51,7 @@ import { format } from 'date-fns'
 
 interface AdminTicketDashboardProps {
   currentUserId: string
-  userRole: 'admin' | 'technician' | 'sales_rep'
+  userRole: 'admin' | 'support' | 'technician' | 'sales_rep'
 }
 
 export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
@@ -497,7 +497,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
           setSelectedTicket(null)
         }}
         currentUserId={currentUserId}
-        viewerRole={userRole === 'technician' ? 'technician' : 'admin'}
+        viewerRole={userRole === 'technician' ? 'technician' : userRole === 'support' ? 'support' : 'admin'}
       />
     </div>
   )
