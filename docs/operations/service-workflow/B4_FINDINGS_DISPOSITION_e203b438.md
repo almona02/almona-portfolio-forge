@@ -10,4 +10,4 @@ Prior independent PASS on privacy / auth-order / UI recovery / delegation remain
 
 ## Correction freeze
 
-Implementation that restores full table XOR + preflight counts + fixture adaptations supersedes `e203b438` for Spark labour verification. Tip recorded in `B4_REPORT_SUBMISSION_HANDOFF.md`.
+**`6a64a01e`** — restores full table XOR + preflight counts + fixture adaptations. Spark re-verify labour narrowly; retain accepted `e203b438` evidence for other findings.

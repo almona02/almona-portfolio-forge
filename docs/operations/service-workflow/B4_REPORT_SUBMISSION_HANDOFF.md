@@ -1,7 +1,7 @@
 # B4 report submission — Spark freeze handoff
 
 **Status:** Frozen for independent Spark review (F-B4-05 correction)  
-**Freeze tip:** _(set on correction commit)_  
+**Freeze tip:** `6a64a01e` (implementation; docs stamp may trail)  
 **Branch:** `feat/service-workflow-b1-planning`  
 **Depends on:** B3 staging-development acceptance at `4e0ddd22`  
 **Contract:** [`B4_REPORT_CONTRACT.md`](./B4_REPORT_CONTRACT.md)  
