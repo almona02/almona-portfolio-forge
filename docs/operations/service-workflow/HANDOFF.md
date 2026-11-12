@@ -11,13 +11,14 @@ Machine-registration → linked-ticket on staging at `ca9f5067` (Spark browser P
 
 Freeze `7a830739` — Spark 49 PASS / 0 FAIL / 0 required SKIP / 5 DEFER + K1–K4.
 
-## B2 — staging acceptance BLOCKED (security; corrective applied)
+## B2 — staging acceptance BLOCKED (security PASS; app integration freeze)
 
-Browser testing **paused** until Spark live verification. Staging corrective **applied** under Spark FULL ACK (`d4cfc8ce`).
+Security live gate **PASSED**. Browser resumes against the B2 route-integration freeze (see `B2_BROWSER_INTEGRATION_HANDOFF.md`).
 
 | Layer | Result |
 |-------|--------|
-| **Deploy SHA (app)** | `849d6d7806100ae718f063b576d9786a53a6f6be` |
+| **Prior inspected app SHA** | `849d6d7806100ae718f063b576d9786a53a6f6be` |
+| **Integration freeze (app)** | `49c7896963e648d173020d7d25be6fbb3eb8a2d6` (+ staff SELECT migration tip) |
 | **Database (disposable B1/B2)** | ACCEPTED retained @ `8f2acc4e` |
 | **Staging migrations applied** | B1 → B2 → corrective (`20261112141845` / `20261112142222` / `20261112142617`) |
 | **Containment** | Cleared (secured bodies live) |
