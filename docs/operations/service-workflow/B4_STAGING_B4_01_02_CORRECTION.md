@@ -2,7 +2,7 @@
 
 **Gates:** Staging only · no merge · no production · no B5 · #155 frozen · #156 draft  
 **Prior authorized tip:** `6a64a01e` (staging preview `dpl_5bfdrjKDqindCoB1QZdf6u7JCd4v`)  
-**This corrective tip:** *(filled after commit)*
+**This corrective tip:** `f63c91454df69a0146404200d10c4058465b38fc`
 
 ## Inventory: approved B4 migration vs staging (pre-corrective)
 
