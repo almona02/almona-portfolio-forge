@@ -203,6 +203,21 @@ export function mapJobRpcError(message: string): Error {
       'Cannot change job assignment while a visit is in progress. End or abort the visit in the visit workflow first.',
     )
   }
+  if (lower.includes('only the attending technician')) {
+    return new Error('Only the attending technician for this visit may submit a report.')
+  }
+  if (lower.includes('reports may only be submitted for completed visits')) {
+    return new Error('Complete the visit before submitting a report.')
+  }
+  if (lower.includes('labour') || lower.includes('no_labour')) {
+    return new Error(message)
+  }
+  if (lower.includes('evidence')) {
+    return new Error(message)
+  }
+  if (lower.includes('technician declaration')) {
+    return new Error('A technician declaration is required before submit.')
+  }
   return new Error(message)
 }
 
@@ -457,4 +472,87 @@ export async function recordVisitNoAccess(input: {
   })
   if (error) throw mapJobRpcError(error.message)
   return asVisit(data)
+}
+
+/** B4: report revision row (submitted only; append-only). */
+export interface ServiceReportRevisionRow {
+  id: string
+  report_id: string
+  revision_number: number
+  findings: string
+  work_performed: string
+  labour: unknown
+  no_labour: boolean
+  verification_outcome: string
+  verification_reason: string | null
+  technician_declaration: string
+  evidence_paths: string[]
+  checklist_results: unknown | null
+  client_submission_id: string | null
+  submitted_by: string
+  submitted_at: string
+}
+
+export interface ServiceReportBundle {
+  report: { id: string; visit_id: string; created_at: string } | null
+  revisions: ServiceReportRevisionRow[]
+}
+
+export async function getServiceReportForVisit(visitId: string): Promise<ServiceReportBundle> {
+  const { data, error } = await supabase.rpc('get_service_report_for_visit', {
+    p_visit_id: visitId,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  const bundle = (data ?? { report: null, revisions: [] }) as ServiceReportBundle
+  return {
+    report: bundle.report ?? null,
+    revisions: Array.isArray(bundle.revisions) ? bundle.revisions : [],
+  }
+}
+
+export async function submitServiceReportRevision(input: {
+  visitId: string
+  findings: string
+  workPerformed: string
+  labour: Array<{ hours: number; description: string }>
+  noLabour: boolean
+  verificationOutcome: 'verified_fixed' | 'not_reproduced' | 'further_work_required' | 'not_verified'
+  verificationReason?: string
+  technicianDeclaration: string
+  evidencePaths: string[]
+  checklistResults?: Record<string, unknown> | null
+  clientSubmissionId: string
+}): Promise<ServiceReportRevisionRow> {
+  const { data, error } = await supabase.rpc('submit_service_report_revision', {
+    p_visit_id: input.visitId,
+    p_findings: input.findings,
+    p_work_performed: input.workPerformed,
+    p_labour: input.noLabour ? [] : input.labour,
+    p_no_labour: input.noLabour,
+    p_verification_outcome: input.verificationOutcome,
+    p_verification_reason: input.verificationReason ?? null,
+    p_technician_declaration: input.technicianDeclaration,
+    p_evidence_paths: input.evidencePaths,
+    p_checklist_results: input.checklistResults ?? null,
+    p_client_submission_id: input.clientSubmissionId,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return data as ServiceReportRevisionRow
+}
+
+/** Upload private evidence into ticket-attachments; returns object path. Recoverable on failure. */
+export async function uploadReportEvidence(input: {
+  ticketId: string
+  visitId: string
+  file: File
+  submitterUserId: string
+}): Promise<string> {
+  const safeName = input.file.name.replace(/[^a-zA-Z0-9._-]+/g, '_')
+  const path = `${input.ticketId}/b4/${input.visitId}/${crypto.randomUUID()}-${safeName}`
+  const { error } = await supabase.storage.from('ticket-attachments').upload(path, input.file, {
+    upsert: false,
+    contentType: input.file.type || undefined,
+  })
+  if (error) throw new Error(error.message || 'Evidence upload failed')
+  return path
 }

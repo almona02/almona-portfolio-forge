@@ -17,6 +17,8 @@ import {
   startServiceJobVisit,
   type ServiceVisitRow,
 } from '@/lib/ticketGovernanceApi'
+import { supabase } from '@/lib/supabase'
+import { ServiceReportPanel } from '@/components/support/ServiceReportPanel'
 import { toast } from 'sonner'
 
 export type ServiceVisitViewerRole = 'admin' | 'support' | 'technician' | string
@@ -57,6 +59,24 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
   const visitsQuery = useQuery({
     queryKey: ['service-visits', jobId],
     queryFn: () => listServiceVisitsForJob(jobId),
+  })
+
+  const jobMetaQuery = useQuery({
+    queryKey: ['service-job-meta', jobId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('service_jobs')
+        .select('id, ticket_id, assigned_technician_id, state')
+        .eq('id', jobId)
+        .maybeSingle()
+      if (error) throw new Error(error.message)
+      return data as {
+        id: string
+        ticket_id: string
+        assigned_technician_id: string | null
+        state: string
+      } | null
+    },
   })
 
   const refresh = async () => {
@@ -258,6 +278,15 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
                   >
                     Complete visit
                   </Button>
+                )}
+                {v.state === 'completed' && jobMetaQuery.data?.ticket_id && (
+                  <div className="w-full">
+                    <ServiceReportPanel
+                      visitId={v.id}
+                      ticketId={jobMetaQuery.data.ticket_id}
+                      canSubmit={!!canExecute && viewerRole === 'technician'}
+                    />
+                  </div>
                 )}
                 <div className="w-full space-y-1">
                   <Label className="text-xs">Outcome reason (abort / no-access)</Label>

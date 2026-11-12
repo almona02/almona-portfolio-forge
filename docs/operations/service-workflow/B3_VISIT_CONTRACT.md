@@ -58,14 +58,14 @@ All visit start / assignment / attendance / safety / first-start ticket paths ac
 
 B1 `create_service_job_visit` / `govern_visit_transition` remain as facades (`in_progress` uses the minimum attestation).
 
-## Configurable routine extension (B4 — not built in B3)
+## Configurable routine extension
 
-Visit execution stays **generic**. Columns reserved, unused by B3 logic:
+Visit execution stays **generic**. Columns reserved in B3; B4 documents the submit-time integration contract only (no admin editor/scheduler):
 
 - `service_job_visits.pinned_routine_version_id`
 - `service_job_visits.checklist_results`
 
-The B3 safety gate is the **minimum start gate**, not the completed model-specific routine system. Do not hardcode repair instructions or invent technical limits. Do not ship a routine editor/scheduler in B3.
+See [`B4_REPORT_CONTRACT.md`](./B4_REPORT_CONTRACT.md). The B3 safety gate remains the **minimum start gate**, not model-specific routine clearance.
 
 ## Migrations
 

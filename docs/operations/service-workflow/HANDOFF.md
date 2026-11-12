@@ -45,4 +45,12 @@ Security live gate **PASSED**. Browser resumes against the B2 route-integration 
 2. Live actor / activation / INSERT / forgery / legit checks with fresh sessions.  
 3. Browser resumes only after step 2 is green.
 
-**#155** frozen `ca9f5067`. **#156** draft. No production apply, merge, or B3.
+**#155** frozen `ca9f5067`. **#156** draft. No production apply or merge.
+
+## B3 — accepted for staging development (`4e0ddd22`)
+
+See [`B3_STAGING_DEVELOPMENT_ACCEPTANCE.md`](./B3_STAGING_DEVELOPMENT_ACCEPTANCE.md). Spark independent evidence published under `spark-probes/`. Hosted preview delivery remains **unresolved** for release readiness (local staging-backed browser only). Service-role live NOT TESTED (disposable only).
+
+## B4 — freeze for Spark review (not staging-applied)
+
+See [`B4_REPORT_SUBMISSION_HANDOFF.md`](./B4_REPORT_SUBMISSION_HANDOFF.md) / [`B4_REPORT_CONTRACT.md`](./B4_REPORT_CONTRACT.md). No B4 staging apply until Spark PASS.
