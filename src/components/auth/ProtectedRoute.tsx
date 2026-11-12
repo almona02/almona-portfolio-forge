@@ -1,7 +1,16 @@
 import { useAuth } from '@/context/AuthContext';
 import { Navigate, useLocation } from 'react-router-dom';
 
-const ProtectedRoute = ({ children, requireAdmin = false }: { children: JSX.Element; requireAdmin?: boolean }) => {
+const ProtectedRoute = ({
+  children,
+  requireAdmin = false,
+  requireRoles,
+}: {
+  children: JSX.Element;
+  requireAdmin?: boolean;
+  /** When set, profile role must be one of these values (DB remains the authority). */
+  requireRoles?: string[];
+}) => {
   const { user, supabaseUser, loading } = useAuth();
   const location = useLocation();
 
@@ -16,6 +25,12 @@ const ProtectedRoute = ({ children, requireAdmin = false }: { children: JSX.Elem
   // Database/API authorization remains the enforcement boundary.
   if (requireAdmin && user?.role !== 'admin') {
     return <Navigate to="/" replace />;
+  }
+  if (requireRoles?.length) {
+    const role = user?.role;
+    if (!role || !requireRoles.includes(role)) {
+      return <Navigate to="/" replace />;
+    }
   }
 
   return children;

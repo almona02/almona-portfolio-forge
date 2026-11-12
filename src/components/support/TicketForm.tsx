@@ -3,8 +3,9 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createTicketZodSchema, UnifiedTicketFormData } from '@/lib/validation/ticket';
 import { useAuth } from '@/context/AuthContext';
-import { useMutation } from '@tanstack/react-query';
-import { createTicket } from '@/lib/ticketApi';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { createTicket, retryTicketMachineLink, type CreateTicketOutcome } from '@/lib/ticketApi';
+import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,8 +13,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/useToast';
 import { TicketPriority, TicketType } from '@/types/tickets';
+import type { Machine } from '@/types/machine';
 import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import clsx from 'clsx';
+import { formatMachineOptionLabel } from '@/lib/machines/displayIdentity';
 
 /**
  * Props for the TicketForm component
@@ -88,6 +91,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
       type: 'general',
       priority: 'medium',
       maintenance_type: 'corrective',
+      machine_id: '',
       ...initialValues,
     }
   });
@@ -95,6 +99,13 @@ export const TicketForm: React.FC<TicketFormProps> = ({
   const { control, handleSubmit, formState: { errors, isSubmitting }, watch, setValue } = form;
   const selectedType = watch('type');
   const selectedPriority = watch('priority');
+  const selectedMachineId = watch('machine_id');
+
+  const { data: ownedMachines = [] } = useQuery({
+    queryKey: ['machines', user?.id],
+    queryFn: () => api.fetchUserMachines(user!.id),
+    enabled: Boolean(user?.id),
+  });
 
   useEffect(() => {
     if (initialValues) {
@@ -104,27 +115,57 @@ export const TicketForm: React.FC<TicketFormProps> = ({
     }
   }, [initialValues, setValue]);
 
+  const [pendingLink, setPendingLink] = useState<{
+    ticketId: string;
+    machineId: string;
+    warning: string;
+  } | null>(null);
+  const [linkRetrying, setLinkRetrying] = useState(false);
+
   const mutation = useMutation({
-    mutationFn: async (data: UnifiedTicketFormData) => {
+    mutationFn: async (data: UnifiedTicketFormData): Promise<CreateTicketOutcome> => {
       if (!user) throw new Error('Not authenticated');
       // Map to existing createTicket API shape
+      const machineId = data.machine_id?.trim() || undefined;
+      const selected = machineId
+        ? (ownedMachines as Machine[]).find((m) => m.id === machineId)
+        : undefined;
       return createTicket({
         title: data.title,
         description: data.description,
         type: data.type as TicketType,
         priority: data.priority as TicketPriority,
-  maintenance_type: data.maintenance_type,
+        maintenance_type: data.maintenance_type,
         contact_phone: data.contact_phone || undefined,
         contact_email: data.contact_email || undefined,
         preferred_contact_method: data.preferred_contact_method,
         site_location: data.site_location || undefined,
-        machine_serial_number: data.machine_serial_number || undefined,
+        machine_id: machineId,
+        // Legacy free-text path remains when no registered machine is selected.
+        machine_serial_number: selected
+          ? (selected.serial_number_raw || selected.serial_number || undefined)
+          : (data.machine_serial_number || undefined),
+        machine_model: selected?.model || data.machine_model || undefined,
         related_product_id: undefined,
         related_quote_id: undefined,
         related_order_id: undefined,
       }, user.id);
     },
-    onSuccess: () => {
+    onSuccess: (outcome) => {
+      const link = outcome.machineLink;
+      if (link.status === 'unlinked' && link.reason !== 'not_requested' && 'retryable' in link) {
+        setPendingLink({
+          ticketId: outcome.ticket.id,
+          machineId: link.machineId,
+          warning: link.warning,
+        });
+        toast({
+          title: 'Ticket Created',
+          description: `${link.warning} Ticket ${outcome.ticket.ticket_number || outcome.ticket.id}.`,
+        });
+        return;
+      }
+      setPendingLink(null);
       toast({ title: 'Ticket Created', description: 'Your support ticket has been submitted.' });
       onSuccess?.();
     },
@@ -133,6 +174,31 @@ export const TicketForm: React.FC<TicketFormProps> = ({
       toast({ title: 'Error', description: msg, variant: 'destructive' });
     }
   });
+
+  const handleRetryLink = async () => {
+    if (!pendingLink || linkRetrying) return;
+    setLinkRetrying(true);
+    try {
+      const result = await retryTicketMachineLink(pendingLink.ticketId, pendingLink.machineId);
+      if (result.status === 'linked') {
+        setPendingLink(null);
+        toast({ title: 'Machine linked', description: 'The machine was linked to the existing ticket.' });
+        onSuccess?.();
+        return;
+      }
+      setPendingLink({
+        ticketId: result.ticketId,
+        machineId: result.machineId,
+        warning: result.warning,
+      });
+      toast({ title: 'Link still pending', description: result.warning, variant: 'destructive' });
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Link retry failed';
+      toast({ title: 'Link retry failed', description: msg, variant: 'destructive' });
+    } finally {
+      setLinkRetrying(false);
+    }
+  };
 
   const onSubmit = (data: UnifiedTicketFormData) => {
     mutation.mutate(data);
@@ -261,11 +327,49 @@ export const TicketForm: React.FC<TicketFormProps> = ({
                     <Input {...field} placeholder="Cairo Workshop" className="bg-card border-border/30" />
                   )} />
                 </div>
-                <div className="space-y-2">
-                  <Label>Machine Serial</Label>
-                  <Controller name="machine_serial_number" control={control} render={({ field }) => (
-                    <Input {...field} placeholder="ALM-2024-001" className="bg-card border-border/30" />
+                <div className="space-y-2 md:col-span-2">
+                  <Label>Registered machine (optional)</Label>
+                  <Controller name="machine_id" control={control} render={({ field }) => (
+                    <Select
+                      value={field.value || '__none__'}
+                      onValueChange={(v) => {
+                        const next = v === '__none__' ? '' : v;
+                        field.onChange(next);
+                        const m = (ownedMachines as Machine[]).find((row) => row.id === next);
+                        if (m) {
+                          setValue('machine_serial_number', m.serial_number_raw || m.serial_number || '');
+                          setValue('machine_model', m.model || '');
+                        }
+                      }}
+                    >
+                      <SelectTrigger><SelectValue placeholder="Select one of your machines" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__none__">No registered machine (free-text only)</SelectItem>
+                        {(ownedMachines as Machine[]).map((m) => (
+                          <SelectItem key={m.id} value={m.id}>
+                            {formatMachineOptionLabel(m)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   )} />
+                  <p className="text-xs text-muted-foreground">
+                    Only machines you own appear here. Linking is checked again on the server.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label>Manufacturer serial (free text)</Label>
+                  <Controller name="machine_serial_number" control={control} render={({ field }) => (
+                    <Input
+                      {...field}
+                      readOnly={Boolean(selectedMachineId)}
+                      placeholder="As printed on the plate"
+                      className={clsx('bg-card border-border/30', selectedMachineId && 'bg-card/30')}
+                    />
+                  )} />
+                  <p className="text-xs text-muted-foreground">
+                    Manufacturer serial only — never enter an internal ALM reference here.
+                  </p>
                 </div>
               </div>
             )}
@@ -304,6 +408,18 @@ export const TicketForm: React.FC<TicketFormProps> = ({
           </LazyMotionDiv>
         )}
       </LazyAnimatePresence>
+
+      {pendingLink && (
+        <div className="rounded-md border border-border/30 bg-card/40 p-3 text-sm space-y-2">
+          <p>{pendingLink.warning}</p>
+          <p className="text-xs text-muted-foreground">
+            Ticket {pendingLink.ticketId} was created. Retry links that ticket only — no second ticket is created.
+          </p>
+          <Button type="button" variant="outline" disabled={linkRetrying} onClick={() => { void handleRetryLink(); }}>
+            {linkRetrying ? 'Retrying link…' : 'Retry machine link'}
+          </Button>
+        </div>
+      )}
 
       {(!showAttachments || mode==='dialog') && (
         <div className="flex justify-end pt-2">

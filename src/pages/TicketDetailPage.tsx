@@ -22,6 +22,7 @@ interface TicketRow {
   status: string
   source: string | null
   maintenance_type: string | null
+  machine_id: string | null
   machine_serial_number: string | null
   site_location: string | null
   contact_phone: string | null
@@ -70,13 +71,37 @@ const TicketDetailPage = () => {
 
   const isSharedView = !!shareToken
 
+  const hydrateAttachmentUrls = async (
+    rows: MessageRow[],
+    token: string | null,
+  ): Promise<MessageRow[]> => {
+    return Promise.all(rows.map(async (m) => ({
+      ...m,
+      attachments: await Promise.all((m.attachments ?? []).map(async (a) => {
+        const storagePath = a.storage_path
+        if (!storagePath) {
+          return { filename: a.filename, size: a.size, type: a.type, storage_path: undefined }
+        }
+        try {
+          const url = token
+            ? await ticketMessageApi.createSharedAttachmentUrl(token, storagePath)
+            : await ticketMessageApi.createSignedAttachmentUrl(storagePath)
+          return { ...a, storage_path: storagePath, url }
+        } catch {
+          return { filename: a.filename, size: a.size, type: a.type, storage_path: storagePath }
+        }
+      })),
+    })))
+  }
+
   const loadAuthenticated = async () => {
     if (!ticketId) return
     const { data, error: err } = await supabase.from('service_tickets').select('*').eq('id', ticketId).maybeSingle()
     if (err || !data) { setError('Ticket not found or unavailable.'); setLoading(false); return }
     setTicket(data as TicketRow)
     const { data: msgs } = await supabase.from('ticket_messages').select('*').eq('ticket_id', ticketId).order('created_at', { ascending: true })
-    setMessages((msgs ?? []) as MessageRow[])
+    const hydrated = await hydrateAttachmentUrls((msgs ?? []) as MessageRow[], null)
+    setMessages(hydrated)
     setLoading(false)
   }
 
@@ -86,9 +111,10 @@ const TicketDetailPage = () => {
     setError(null)
     if (shareToken) {
       void ticketMessageApi.getSharedTicket(shareToken)
-        .then((data) => {
+        .then(async (data) => {
           setTicket(data.ticket as TicketRow)
-          setMessages(data.messages as MessageRow[])
+          const hydrated = await hydrateAttachmentUrls(data.messages as MessageRow[], shareToken)
+          setMessages(hydrated)
           setLoading(false)
         })
         .catch(() => { setError('Invalid or expired share link.'); setLoading(false) })
@@ -106,13 +132,15 @@ const TicketDetailPage = () => {
     try {
       const attachments: TicketAttachment[] = []
       if (files) {
-        for (const f of Array.from(files).slice(0, 6)) attachments.push(await ticketMessageApi.uploadAttachment(f))
+        for (const f of Array.from(files).slice(0, 6)) {
+          attachments.push(await ticketMessageApi.uploadAttachment(f, ticket.id))
+        }
       }
       await ticketMessageApi.sendMessage({ ticketId: ticket.id, authorId: user.id, message: reply.trim(), attachments })
       setReply('')
       setFiles(null)
       const { data: msgs } = await supabase.from('ticket_messages').select('*').eq('ticket_id', ticket.id).order('created_at', { ascending: true })
-      setMessages((msgs ?? []) as MessageRow[])
+      setMessages(await hydrateAttachmentUrls((msgs ?? []) as MessageRow[], null))
       toast({ title: 'Message sent' })
     } catch (e) {
       toast({ title: 'Send failed', description: (e as Error)?.message ?? 'Unknown error', variant: 'destructive' })
@@ -208,9 +236,15 @@ const TicketDetailPage = () => {
                           {m.attachments?.length > 0 && (
                             <div className="mt-2 grid grid-cols-3 gap-2">
                               {m.attachments.map((a, i) => (
-                                <a key={i} href={a.url} target="_blank" rel="noopener noreferrer">
-                                  <img src={a.url} alt={a.filename} className="w-full h-20 object-cover rounded border" />
-                                </a>
+                                a.url ? (
+                                  <a key={i} href={a.url} target="_blank" rel="noopener noreferrer">
+                                    <img src={a.url} alt={a.filename} className="w-full h-20 object-cover rounded border" />
+                                  </a>
+                                ) : (
+                                  <div key={i} className="w-full h-20 rounded border flex items-center justify-center text-[10px] text-muted-foreground px-1 text-center">
+                                    {a.filename || 'Attachment unavailable'}
+                                  </div>
+                                )
                               ))}
                             </div>
                           )}
@@ -261,7 +295,8 @@ const TicketDetailPage = () => {
               <div className="flex justify-between gap-4"><span className="text-muted-foreground">Type</span><span className="capitalize text-right">{String(ticket.type).replace(/_/g, ' ')}</span></div>
               <div className="flex justify-between gap-4"><span className="text-muted-foreground">Created</span><span className="text-right">{format(new Date(ticket.created_at), 'MMM dd, yyyy HH:mm')}</span></div>
               {ticket.resolved_at && <div className="flex justify-between gap-4"><span className="text-muted-foreground">Resolved</span><span className="text-right">{format(new Date(ticket.resolved_at), 'MMM dd, yyyy HH:mm')}</span></div>}
-              {ticket.machine_serial_number && <div className="flex items-center justify-between gap-4"><span className="text-muted-foreground flex items-center gap-1"><Cpu className="h-3.5 w-3.5" /> Machine</span><span className="font-mono text-right">{ticket.machine_serial_number}</span></div>}
+              {ticket.machine_id && <div className="flex items-center justify-between gap-4"><span className="text-muted-foreground flex items-center gap-1"><Cpu className="h-3.5 w-3.5" /> Machine ID</span><span className="font-mono text-right text-xs break-all">{ticket.machine_id}</span></div>}
+              {ticket.machine_serial_number && <div className="flex items-center justify-between gap-4"><span className="text-muted-foreground flex items-center gap-1"><Cpu className="h-3.5 w-3.5" /> Manufacturer serial</span><span className="font-mono text-right">{ticket.machine_serial_number}</span></div>}
               {ticket.site_location && <div className="flex items-center justify-between gap-4"><span className="text-muted-foreground flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> Location</span><span className="text-right">{ticket.site_location}</span></div>}
               {ticket.contact_phone && <div className="flex items-center justify-between gap-4"><span className="text-muted-foreground flex items-center gap-1"><Phone className="h-3.5 w-3.5" /> Phone</span><a className="text-right" href={`tel:${ticket.contact_phone}`}>{ticket.contact_phone}</a></div>}
               {ticket.contact_email && <div className="flex items-center justify-between gap-4"><span className="text-muted-foreground flex items-center gap-1"><Mail className="h-3.5 w-3.5" /> Email</span><a className="text-right break-all" href={`mailto:${ticket.contact_email}`}>{ticket.contact_email}</a></div>}

@@ -65,6 +65,7 @@ interface TicketInsert {
   type: string;
   priority: string;
   machine_id?: string;
+  machine_serial_number?: string | null;
   maintenance_type?: string;
   scheduled_date?: string;
   status: string;
@@ -178,79 +179,153 @@ export const api = {
     }
   },
 
-  // Register a new machine
+  // Register a new machine (PR1: prefer register_machine_identity RPC)
   registerMachine: async (machineData: {
     name: string;
     model: string;
-    serial_number: string;
+    serial_number?: string | null;
     owner_id: string;
     installation_date?: string | null;
     warranty_valid?: boolean | null;
     photo_urls?: string[] | null;
+    brand?: string | null;
+    catalog_model_id?: string | null;
+    catalog_uncertain?: boolean;
+    catalog_link_status?: 'linked' | 'uncatalogued' | 'uncertain' | null;
+    idempotency_key?: string | null;
+    missing_serial_reason?: string | null;
   }) => {
-   
-  const client = supabase as unknown as { from: (table: string) => any };
-  const { data, error } = await client
-      .from('machines')
-      .insert([machineData])
-      .select()
-      .single();
+    const client = supabase as unknown as { from: (table: string) => any; rpc: (fn: string, args: Record<string, unknown>) => any };
 
+    const catalog_link_status =
+      machineData.catalog_link_status
+      ?? (machineData.catalog_model_id && !machineData.catalog_uncertain
+        ? 'linked'
+        : machineData.catalog_uncertain
+          ? 'uncertain'
+          : machineData.catalog_model_id
+            ? 'linked'
+            : 'uncatalogued');
+
+    const serialPresent = Boolean(
+      typeof machineData.serial_number === 'string' && machineData.serial_number.trim(),
+    );
+    const persistedPhotos = (machineData.photo_urls ?? []).filter(
+      (url) => typeof url === 'string' && url.trim().length > 0,
+    );
+    if (!serialPresent && persistedPhotos.length === 0) {
+      throw new Error('plate_area_photo_evidence_required when serial is absent');
+    }
+
+    // Server-side path: idempotency + authz-safe duplicates (no cross-customer disclosure)
+    const rpc = await client.rpc('register_machine_identity', {
+      p_name: machineData.name,
+      p_model: machineData.model,
+      p_serial_raw: machineData.serial_number ?? null,
+      p_brand: machineData.brand ?? null,
+      p_catalog_model_id: catalog_link_status === 'linked' ? machineData.catalog_model_id ?? null : null,
+      p_catalog_uncertain: catalog_link_status === 'uncertain',
+      p_catalog_link_status: catalog_link_status,
+      p_installation_date: machineData.installation_date ?? null,
+      p_warranty_valid: machineData.warranty_valid ?? null,
+      p_photo_urls: machineData.photo_urls ?? null,
+      p_idempotency_key: machineData.idempotency_key ?? null,
+      p_registration_source: 'web_registration',
+      p_missing_serial_reason: machineData.missing_serial_reason ?? null,
+    });
+
+    if (!rpc.error && rpc.data?.machine_id) {
+      const { data: row, error: fetchErr } = await client
+        .from('machines')
+        .select('*')
+        .eq('id', rpc.data.machine_id)
+        .maybeSingle();
+      if (!fetchErr && row) {
+        return { ...row, _registration: rpc.data };
+      }
+      return { id: rpc.data.machine_id, ...rpc.data };
+    }
+
+    // If RPC missing (pre-migration), fall back — but never leak other-account existence.
+    const message = String(rpc.error?.message || '');
+    if (rpc.error && !/register_machine_identity|Could not find|PGRST202/i.test(message)) {
+      throw new Error(message || 'Failed to register machine');
+    }
+
+    const insertPayload = {
+      name: machineData.name,
+      model: machineData.model,
+      serial_number: machineData.serial_number ?? null,
+      owner_id: machineData.owner_id,
+      installation_date: machineData.installation_date ?? null,
+      warranty_valid: machineData.warranty_valid ?? null,
+      photo_urls: machineData.photo_urls ?? null,
+    };
+    const { data, error } = await client.from('machines').insert([insertPayload]).select().single();
     if (!error) return data;
 
-    const message = String(error.message || '');
-    const duplicate = error.code === '23505' || message.includes('machines_serial_number_key');
+    const errMsg = String(error.message || '');
+    const duplicate = error.code === '23505' || errMsg.includes('machines_serial_number_key');
     if (duplicate) {
+      // Pre-PR1 unique path: same-owner only. Never confirm another account owns the serial.
       const { data: existing, error: lookupError } = await client
         .from('machines')
         .select('*')
         .eq('serial_number', machineData.serial_number)
+        .eq('owner_id', machineData.owner_id)
         .maybeSingle();
-      if (!lookupError && existing && existing.owner_id === machineData.owner_id) {
-        const incoming = machineData.photo_urls || [];
-        if (incoming.length) {
-          const merged = Array.from(new Set([...(existing.photo_urls || []), ...incoming]));
-          const { data: updated } = await client
-            .from('machines')
-            .update({ photo_urls: merged })
-            .eq('id', existing.id)
-            .select()
-            .single();
-          if (updated) return updated;
-        }
-        return existing;
-      }
-      throw new Error('This serial number is already registered to another account.');
+      if (!lookupError && existing) return existing;
+      throw new Error('Registration could not be completed. Please try again or contact support.');
     }
-    throw new Error(message || 'Failed to register machine');
+    throw new Error(errMsg || 'Failed to register machine');
   },
 
-  // Upload a machine photo (returns public URL). Bucket must exist in Supabase storage.
+  // Upload plate/machine evidence to the private machine-photos bucket.
+  // Path first segment MUST be owner uid (storage RLS). Returns a durable
+  // authenticated object URL for photo_urls persistence + authorized download.
   uploadMachinePhoto: async (file: File, ownerId: string, serial: string) => {
     const safeSegment = (value: string) =>
       value.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_').slice(0, 80) || 'file';
-    const path = `${safeSegment(ownerId)}/machine-photos/${safeSegment(serial)}/${Date.now()}-${safeSegment(file.name || 'photo')}`;
-    // profile-thumbnails already allows this user to upload under their id.
-    // The machine-photos bucket has no insert policy, so the browser request returns 400.
-    const storage = (supabase as unknown as { storage: any }).storage.from('profile-thumbnails');
+    const path = `${safeSegment(ownerId)}/${safeSegment(serial)}/${Date.now()}-${safeSegment(file.name || 'photo')}`;
+    const storage = (supabase as unknown as { storage: any }).storage.from('machine-photos');
     const { error } = await storage.upload(path, file, {
       upsert: true,
       contentType: file.type || 'application/octet-stream',
     });
     if (error) throw error;
-    const { data: pub } = storage.getPublicUrl(path);
-    return pub.publicUrl as string;
+
+    // Private bucket: never treat getPublicUrl as usable evidence. Persist only
+    // after a signed URL is issued; keep the storage path in the error for recovery.
+    const { data: signed, error: signErr } = await storage.createSignedUrl(path, 60 * 60 * 24 * 365);
+    if (signErr || !signed?.signedUrl) {
+      const detail = signErr?.message || 'signed URL unavailable';
+      throw new Error(
+        `Photo uploaded to machine-photos/${path} but evidence signing failed: ${detail}`,
+      );
+    }
+    return signed.signedUrl as string;
+  },
+
+  /** Owner-scoped re-sign for a machine-photos object path (authorized download). */
+  createMachinePhotoDownloadUrl: async (objectPath: string, expiresInSeconds = 3600) => {
+    const storage = (supabase as unknown as { storage: any }).storage.from('machine-photos');
+    const { data, error } = await storage.createSignedUrl(objectPath, expiresInSeconds);
+    if (error || !data?.signedUrl) {
+      throw new Error(error?.message || 'Authorized download URL unavailable');
+    }
+    return data.signedUrl as string;
   },
 
   // Create a new support ticket
   createTicket: async (ticketData: TicketInsert & { attachments?: File[]; source?: string; context?: Record<string, unknown> }): Promise<Ticket> => {
+    // Legacy helper — prefer ticketApi.createTicket / governedCreateTicket for machine_id linking.
     const payload = {
       user_id: ticketData.user_id,
       title: ticketData.title,
       description: ticketData.description,
       type: ticketData.type,
       priority: ticketData.priority,
-      machine_serial_number: ticketData.machine_id ?? null,
+      machine_serial_number: ticketData.machine_serial_number ?? null,
       maintenance_type: ticketData.maintenance_type ?? null,
       status: ticketData.status,
       source: ticketData.source || 'api',

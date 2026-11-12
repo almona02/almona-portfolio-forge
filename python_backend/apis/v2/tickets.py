@@ -289,7 +289,10 @@ def update_status(
     if not svc.get_ticket(ticket_id, _user_uuid(current_user)):
         raise HTTPException(status_code=404, detail="Ticket not found")
     updated = svc.update_ticket_status(
-        ticket_id, status_param, resolution_summary
+        ticket_id,
+        status_param,
+        resolution_summary,
+        actor_id=_user_uuid(current_user),
     )
     if not updated:
         raise HTTPException(
@@ -310,9 +313,13 @@ def assign_ticket(
     supabase: Client = Depends(get_supabase),
     current_user: Dict[str, Any] = Depends(get_current_user),
 ):
-    """Assign a ticket to a specific user."""
+    """Assign a ticket to a specific user.
+
+    Gateway matches DB policy: only admin/support may assign.
+    Technicians and sales_rep may be assignees, not assigners.
+    """
     user_role = current_user.get("role")
-    if user_role not in {"admin", "technician", "sales_rep"}:
+    if user_role not in {"admin", "support"}:
         context = create_error_context(
             request=request,
             user_id=str(_user_uuid(current_user)),
@@ -321,8 +328,8 @@ def assign_ticket(
             resource_id=str(ticket_id)
         )
         raise V2ForbiddenError(
-            message="Only staff can assign tickets",
-            required_role="admin, technician, or sales_rep",
+            message="Only admin/support may assign tickets",
+            required_role="admin or support",
             user_role=user_role,
             context=context
         )

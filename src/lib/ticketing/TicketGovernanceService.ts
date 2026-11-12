@@ -162,16 +162,133 @@ export function buildGovernedTransitionPatch(input: GovernedTransitionInput): Go
 }
 
 const SELECT_COLUMNS =
-  'id, title, description, type, priority, status, preferred_contact_method, user_id, ticket_number, digital_twin_code, contact_phone, contact_email, site_location, machine_serial_number, machine_model, sla_response_due, sla_resolution_due, sla_breached, escalated, escalated_at, assigned_to, assigned_at, assigned_by, first_response_at, created_at, updated_at';
+  'id, title, description, type, priority, status, preferred_contact_method, user_id, ticket_number, digital_twin_code, contact_phone, contact_email, site_location, machine_id, machine_serial_number, machine_model, sla_response_due, sla_resolution_due, sla_breached, escalated, escalated_at, assigned_to, assigned_at, assigned_by, first_response_at, created_at, updated_at';
+
+export type AssignmentCreateOutcome =
+  | { status: 'assigned'; assignedTo: string }
+  | { status: 'unassigned'; reason: 'no_candidate' | 'not_authorized' | 'assign_denied'; detail?: string };
+
+export type MachineLinkCreateOutcome =
+  | { status: 'linked'; machineId: string }
+  | { status: 'unlinked'; reason: 'not_requested' }
+  | {
+      status: 'unlinked';
+      reason: 'link_denied' | 'link_failed';
+      machineId: string;
+      warning: string;
+      retryable: true;
+    };
 
 export interface GovernedCreateResult {
   row: Record<string, unknown>;
   ticketType: string;
   ticketPriority: string;
   actorId: string;
+  assignment: AssignmentCreateOutcome;
+  machineLink: MachineLinkCreateOutcome;
   eventResults: {
     created: EventPersistenceResult;
     assigned?: EventPersistenceResult;
+    machineLinked?: EventPersistenceResult;
+  };
+}
+
+const SAFE_LINK_DENY_WARNING =
+  'Ticket was created, but the machine could not be linked. You can retry linking without creating another ticket.';
+const SAFE_LINK_FAIL_WARNING =
+  'Ticket was created, but machine linking failed unexpectedly. You can retry linking without creating another ticket.';
+
+/** True when the actor may call govern_ticket_assign (admin/support). */
+export async function actorMayGovernAssign(actorId: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', actorId)
+    .maybeSingle();
+  if (error || !data?.role) return false;
+  return data.role === 'admin' || data.role === 'support';
+}
+
+function isAssignAuthorizationError(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err ?? '');
+  return /42501|not permitted|only admin\/support|permission denied|authorization/i.test(message);
+}
+
+function isLinkAuthorizationError(message: string): boolean {
+  return /42501|not authorized|permission denied|authorization|foreign|another (customer|account|owner)/i.test(
+    message,
+  );
+}
+
+type LinkAttemptResult =
+  | { ok: true; row: Record<string, unknown> }
+  | { ok: false; denied: boolean; message: string };
+
+/**
+ * Link-only path against an existing ticket. Never inserts a second ticket.
+ * Safe for create-time soft failure and explicit UI retry.
+ */
+async function attemptLinkTicketMachine(
+  ticketId: string,
+  machineId: string,
+): Promise<LinkAttemptResult> {
+  const { data: linked, error: linkErr } = await supabase.rpc('link_ticket_machine', {
+    p_ticket_id: ticketId,
+    p_machine_id: machineId,
+  });
+
+  if (linkErr) {
+    const message = linkErr.message || 'Machine link failed';
+    return { ok: false, denied: isLinkAuthorizationError(message), message };
+  }
+
+  if (linked && typeof linked === 'object') {
+    return { ok: true, row: linked as Record<string, unknown> };
+  }
+
+  const { data: refreshed, error: refreshErr } = await supabase
+    .from('service_tickets')
+    .select(SELECT_COLUMNS)
+    .eq('id', ticketId)
+    .single();
+  if (refreshErr) {
+    return { ok: false, denied: false, message: refreshErr.message };
+  }
+  return { ok: true, row: refreshed as Record<string, unknown> };
+}
+
+export type RetryLinkTicketMachineResult =
+  | { status: 'linked'; ticketId: string; machineId: string; row: Record<string, unknown> }
+  | {
+      status: 'unlinked';
+      ticketId: string;
+      machineId: string;
+      reason: 'link_denied' | 'link_failed';
+      warning: string;
+      retryable: true;
+    };
+
+/** Link-only retry for a ticket that already exists (no reinsert). */
+export async function retryLinkTicketMachine(
+  ticketId: string,
+  machineId: string,
+): Promise<RetryLinkTicketMachineResult> {
+  const outcome = await attemptLinkTicketMachine(ticketId, machineId);
+  if (outcome.ok) {
+    return {
+      status: 'linked',
+      ticketId,
+      machineId,
+      row: outcome.row,
+    };
+  }
+  return {
+    status: 'unlinked',
+    ticketId,
+    machineId,
+    reason: outcome.denied ? 'link_denied' : 'link_failed',
+    warning: outcome.denied ? SAFE_LINK_DENY_WARNING : SAFE_LINK_FAIL_WARNING,
+    retryable: true,
   };
 }
 
@@ -190,6 +307,9 @@ export async function governedCreateTicket(
   const slaFields = computeSlaFields(ticketPriority, ticketType, createdAt);
   const actorId = currentUserId ?? userId;
 
+  // ticket_number is intentionally omitted: DB BEFORE INSERT trigger
+  // service_tickets_assign_ticket_number allocates a unique server-side value.
+  // Do not invent collision-prone client numbers; do not swallow insert errors.
   const insertPayload = {
     title: ticketData.title?.toString().slice(0, 200) || 'Support Ticket',
     description: ticketData.description || 'Support ticket created via services page',
@@ -204,6 +324,7 @@ export async function governedCreateTicket(
     contact_phone: ticketData.contact_phone || null,
     contact_email: ticketData.contact_email || null,
     site_location: ticketData.site_location || null,
+    // machine_id linked via RPC after insert (server-side authz). Free-text serial remains optional.
     machine_serial_number: ticketData.machine_serial_number || null,
     machine_model: (ticketData as { machine_model?: string }).machine_model || null,
   };
@@ -216,15 +337,38 @@ export async function governedCreateTicket(
 
   if (error) throw new Error(error.message);
 
-  const ticketId = String(data.id);
+  let created = data as Record<string, unknown>;
+  let machineLink: MachineLinkCreateOutcome = { status: 'unlinked', reason: 'not_requested' };
+  const requestedMachineId = ticketData.machine_id?.trim();
+  if (requestedMachineId) {
+    const linkOutcome = await attemptLinkTicketMachine(String(created.id), requestedMachineId);
+    if (linkOutcome.ok) {
+      created = linkOutcome.row;
+      machineLink = { status: 'linked', machineId: requestedMachineId };
+    } else {
+      // Ticket identity is preserved; do not throw as a create failure.
+      machineLink = {
+        status: 'unlinked',
+        reason: linkOutcome.denied ? 'link_denied' : 'link_failed',
+        machineId: requestedMachineId,
+        warning: linkOutcome.denied ? SAFE_LINK_DENY_WARNING : SAFE_LINK_FAIL_WARNING,
+        retryable: true,
+      };
+    }
+  }
+
+  const ticketId = String(created.id);
   const createdEvent = await recordServiceEvent({
     eventType: 'ON',
     entityId: ticketId,
     payload: {
       kind: 'ticket_created',
-      ticket_number: data.ticket_number,
+      ticket_number: created.ticket_number,
       type: ticketType,
       priority: ticketPriority,
+      machine_id: created.machine_id ?? null,
+      machine_link_status: machineLink.status,
+      machine_link_reason: 'reason' in machineLink ? machineLink.reason : undefined,
       sla_response_due: slaFields.sla_response_due,
       sla_resolution_due: slaFields.sla_resolution_due,
     },
@@ -233,57 +377,80 @@ export async function governedCreateTicket(
   });
 
   const eventResults: GovernedCreateResult['eventResults'] = { created: createdEvent };
+  const createdRow = created;
+
+  const mayAssign = await actorMayGovernAssign(actorId);
+  if (!mayAssign) {
+    // Optional auto-assign is staff-only. Creation already succeeded — never fail the create.
+    return {
+      row: createdRow,
+      ticketType,
+      ticketPriority,
+      actorId,
+      assignment: { status: 'unassigned', reason: 'not_authorized' },
+      machineLink,
+      eventResults,
+    };
+  }
 
   const autoAssign = await resolveAutoAssignment(ticketId, ticketType, ticketPriority, actorId);
-  if (autoAssign) {
-    const assignPatch = buildGovernedTransitionPatch({
-      ticketId,
-      currentStatus: 'open',
-      targetStatus: 'assigned',
+  if (!autoAssign) {
+    return {
+      row: createdRow,
+      ticketType,
+      ticketPriority,
       actorId,
-      rationale: 'Deterministic policy assignment',
-    });
-    const { data: assignedRow, error: assignErr } = await supabase
-      .from('service_tickets')
-      .update({
-        ...assignPatch,
-        assigned_to: autoAssign.assignedTo,
-        assigned_at: new Date().toISOString(),
-        assigned_by: actorId,
-      })
-      .eq('id', ticketId)
-      .select(SELECT_COLUMNS)
-      .single();
+      assignment: { status: 'unassigned', reason: 'no_candidate' },
+      machineLink,
+      eventResults,
+    };
+  }
 
-    if (!assignErr && assignedRow) {
-      eventResults.assigned = await recordServiceEvent({
-        eventType: 'VERIFICATION',
-        entityId: ticketId,
-        payload: {
-          kind: 'ticket_assigned',
-          assignedTo: autoAssign.assignedTo,
-          ruleId: autoAssign.assignmentResult.ruleId,
-        },
-        verifiedBy: actorId,
-        correlationId: `assign-${ticketId}`,
-      });
+  try {
+    const { governTicketAssign } = await import('@/lib/ticketGovernanceApi');
+    const assignedTicket = await governTicketAssign({
+      ticketId,
+      assigneeId: autoAssign.assignedTo,
+      rationale: `Deterministic policy assignment (${autoAssign.assignmentResult.ruleId})`,
+    });
+    eventResults.assigned = await recordServiceEvent({
+      eventType: 'VERIFICATION',
+      entityId: ticketId,
+      payload: {
+        kind: 'ticket_assigned',
+        assignedTo: autoAssign.assignedTo,
+        ruleId: autoAssign.assignmentResult.ruleId,
+      },
+      verifiedBy: actorId,
+      correlationId: `assign-${ticketId}`,
+    });
+    return {
+      row: assignedTicket as unknown as Record<string, unknown>,
+      ticketType,
+      ticketPriority,
+      actorId,
+      assignment: { status: 'assigned', assignedTo: autoAssign.assignedTo },
+      machineLink,
+      eventResults,
+    };
+  } catch (err) {
+    if (isAssignAuthorizationError(err)) {
       return {
-        row: assignedRow as Record<string, unknown>,
+        row: createdRow,
         ticketType,
         ticketPriority,
         actorId,
+        assignment: {
+          status: 'unassigned',
+          reason: 'assign_denied',
+          detail: err instanceof Error ? err.message : String(err),
+        },
+        machineLink,
         eventResults,
       };
     }
+    throw err;
   }
-
-  return {
-    row: data as Record<string, unknown>,
-    ticketType,
-    ticketPriority,
-    actorId,
-    eventResults,
-  };
 }
 
 export async function recordTransitionEvent(

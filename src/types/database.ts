@@ -288,7 +288,9 @@ export interface Database {
           is_internal_note: boolean
           attachments: Array<{
             filename: string
-            url: string
+            /** Optional signed download; prefer storage_path for private objects. */
+            url?: string
+            storage_path?: string
             size: number
             type: string
           }>
@@ -320,7 +322,8 @@ export interface Database {
           is_internal_note?: boolean
           attachments?: Array<{
             filename: string
-            url: string
+            url?: string
+            storage_path?: string
             size: number
             type: string
           }>
@@ -348,7 +351,8 @@ export interface Database {
           is_internal_note?: boolean
           attachments?: Array<{
             filename: string
-            url: string
+            url?: string
+            storage_path?: string
             size: number
             type: string
           }>

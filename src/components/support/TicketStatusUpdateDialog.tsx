@@ -30,13 +30,13 @@ interface TicketStatusUpdateDialogProps {
   onClose: () => void
 }
 
+// Slice 0: pending_approval / reopen-from-closed removed until product policy + DB enforcement exist.
 const statusOptions: { value: TicketStatus; label: string }[] = [
   { value: 'open', label: 'Open' },
   { value: 'assigned', label: 'Assigned' },
   { value: 'in_progress', label: 'In Progress' },
   { value: 'awaiting_parts', label: 'Awaiting Parts' },
   { value: 'awaiting_customer', label: 'Awaiting Customer' },
-  { value: 'pending_approval', label: 'Pending Approval' },
   { value: 'resolved', label: 'Resolved' },
   { value: 'closed', label: 'Closed' },
   { value: 'cancelled', label: 'Cancelled' }
