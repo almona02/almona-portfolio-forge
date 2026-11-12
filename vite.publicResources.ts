@@ -31,7 +31,9 @@ export function publicResourceBoundary(): Plugin {
     configurePreviewServer(server) {
       const root = path.resolve(server.config.root, server.config.build.outDir);
       server.middlewares.use(resourceBoundary(root));
-      // Mirror the deployed catalogue rewrites so preview tests exercise raw HTML too.
+      // Preview always serves the static catalogue documents so preview tests keep
+      // exercising raw crawler HTML. Production (vercel.json) gates these same
+      // targets by crawler user-agent and sends humans to the SPA instead.
       server.middlewares.use((req, res, next) => {
         const url = new URL(req.url || '/', 'http://localhost');
         const catalogues: Record<string, string> = { '/products': '/catalogue-products.html', '/products/machines': '/catalogue-machines.html' };
