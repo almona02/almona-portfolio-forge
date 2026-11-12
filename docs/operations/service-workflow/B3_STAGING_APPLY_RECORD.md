@@ -2,7 +2,7 @@
 
 **Authorized runtime:** `4e0ddd225e35ef615052214898db088b718f9e5c`  
 **Target DB:** Supabase staging `apnmoevmvihfzcnttctx` (`almona02-staging`)  
-**Preview:** Vercel `dpl_2grd69bNE2e2mwoNSfyqJMmCZ9xd` → `https://almona-portfolio-forge-ithk1ggd6.vercel.app` (SSO-protected; shareable bypass issued in chat / `.artifacts`)  
+**Preview:** Vercel `dpl_2grd69bNE2e2mwoNSfyqJMmCZ9xd` → `https://almona-portfolio-forge-ithk1ggd6.vercel.app` (SSO-protected; chat-pasted bypass revoked; replacement only in `C:\projects\_almona_handoff\slice0-b3-staging-verification\preview_access.json`)  
 **Gates:** Staging only · no merge · no production · no B4 · #155 frozen · #156 draft
 
 ## Pre-apply
@@ -62,7 +62,7 @@ All steps **PASS**. Real/jobless tickets unchanged (`24` before = `24` after). S
 | URL | `https://almona-portfolio-forge-ithk1ggd6.vercel.app` |
 | Git SHA | `4e0ddd225e35ef615052214898db088b718f9e5c` |
 | Target | staging |
-| Protection | Vercel SSO (`all_except_custom_domains`); shareable bypass TTL 7d delivered separately |
+| Protection | Vercel SSO (`all_except_custom_domains`); shareable bypass rotated into restricted handoff dir (chat paste revoked) |
 
 Branch preview env comment documents staging Supabase binding for `feat/service-workflow-b1-planning`.
 
