@@ -269,12 +269,26 @@ END $$;
 
 -- Explicit safety acknowledgment before govern_visit_transition → in_progress.
 -- Facade must NOT invent a passed attestation.
+-- F-B3-02: passed ack must be the attending/assigned technician's personal
+-- confirmation (staff cannot substitute). Temporarily adopt that actor.
 CREATE OR REPLACE FUNCTION b1_ack_visit_safety(p_visit uuid, p_notes text DEFAULT 'battery')
 RETURNS void LANGUAGE plpgsql AS $$
+DECLARE
+  v_prev text := current_setting('app.b1_uid', true);
+  v_bound uuid;
 BEGIN
   IF to_regprocedure('public.record_visit_safety_check(uuid,text,text,uuid,text)') IS NULL THEN
     RETURN; -- pre-B3 correction DBs
   END IF;
+  SELECT COALESCE(v.attending_technician_id, j.assigned_technician_id)
+    INTO v_bound
+  FROM public.service_job_visits v
+  JOIN public.service_jobs j ON j.id = v.job_id
+  WHERE v.id = p_visit;
+  IF v_bound IS NULL THEN
+    RAISE EXCEPTION 'b1_ack_visit_safety: no bound technician for visit %', p_visit;
+  END IF;
+  PERFORM set_config('app.b1_uid', v_bound::text, true);
   PERFORM public.record_visit_safety_check(
     p_visit,
     'passed',
@@ -282,6 +296,11 @@ BEGIN
     NULL,
     public.b3_minimum_safety_attestation()
   );
+  IF v_prev IS NULL OR v_prev = '' THEN
+    PERFORM set_config('app.b1_uid', '', true);
+  ELSE
+    PERFORM set_config('app.b1_uid', v_prev, true);
+  END IF;
 END $$;
 
 -- State-column name discovery (state preferred, status fallback).

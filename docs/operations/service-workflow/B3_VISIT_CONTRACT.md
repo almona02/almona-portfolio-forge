@@ -32,10 +32,14 @@ Starting the **first** authorized visit advances the ticket `assigned → in_pro
 ## D-B3-02 — Minimum safety prerequisite
 
 Visit start requires **explicit** safety evidence:
-1. `p_safety_attestation` matching `b3_minimum_safety_attestation()`, or
-2. a previously recorded explicit `passed` check that is still **latest** (`attested_at DESC, ordinal DESC`).
+1. `p_safety_attestation` matching `b3_minimum_safety_attestation()` from the **bound attending/assigned technician**, or
+2. a previously recorded personal `passed` check that is still **latest** (`attested_at DESC, ordinal DESC`) and bound to this visit + technician + current `assignment_generation`.
 
 `govern_visit_transition → in_progress` does **not** invent a passed attestation. Missing evidence fails clearly. A later explicit passed supersedes a prior failed; a later failed supersedes a prior passed. Abort/no-access do not fabricate a passed check. This gate does **not** assert machine-specific hazard clearance.
+
+## F-B3-02 — Acknowledgment binding
+
+Passed personal acknowledgments bind to visit + attending technician + assignment generation. Reassignment (including tech1→tech2→tech1) invalidates reuse while preserving history. Admin/support cannot substitute a personal passed ack; they may record failed checks/observations. See [`B3_F_B3_02_ACK_BINDING.md`](./B3_F_B3_02_ACK_BINDING.md).
 
 ## RPCs
 
@@ -64,5 +68,6 @@ The B3 safety gate is the **minimum start gate**, not the completed model-specif
 - `supabase/migrations/20261112180000_service_workflow_b3_visit_execution.sql` (freeze)
 - `supabase/migrations/20261112190000_service_workflow_b3_visit_corrections.sql` (F-B3-01 / D-B3-01 / D-B3-02)
 - `supabase/migrations/20261112194500_service_workflow_b3_safety_path_final.sql` (no implicit ack; ordinal ordering; anon grants)
+- `supabase/migrations/20261112200000_service_workflow_b3_f_b3_02_ack_binding.sql` (F-B3-02 ack binding)
 
 Disposable battery: `scripts/service-workflow/disposable_b3_battery.sql`

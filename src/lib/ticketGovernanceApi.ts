@@ -161,13 +161,21 @@ export function mapJobRpcError(message: string): Error {
     return new Error('A reason is required for this visit outcome.')
   }
   if (
+    lower.includes('cannot substitute a personal safety acknowledgment') ||
+    lower.includes('cannot substitute')
+  ) {
+    return new Error(
+      'Only the attending technician’s personal safety acknowledgment can authorize visit start. Staff may record failed checks or observations, but not substitute a passed acknowledgment.',
+    )
+  }
+  if (
     lower.includes('minimum safety attestation') ||
     lower.includes('explicit safety acknowledgment required') ||
     lower.includes('safety check failed') ||
     lower.includes('latest safety check failed')
   ) {
     return new Error(
-      'Visit start requires an explicit safety acknowledgment (attest on start or record a passed check first). Abort/no-access do not invent a passed check.',
+      'Visit start requires an explicit safety acknowledgment from the attending technician for the current assignment (attest on start or record a passed check first). Abort/no-access do not invent a passed check.',
     )
   }
   if (lower.includes('ticket status') && lower.includes('incompatible')) {

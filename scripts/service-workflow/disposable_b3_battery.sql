@@ -606,7 +606,8 @@ BEGIN
   v_ok := v_ok AND b3_denied(format(
     $q$SELECT public.govern_visit_transition(%L::uuid, 'in_progress', 'facade', NULL)$q$, v_v));
 
-  -- Explicit prior passed + facade start succeeds
+  -- Explicit prior passed by attending tech + facade start succeeds
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
   PERFORM public.record_visit_safety_check(v_v, 'passed', 'prior', NULL, b3_safety());
   PERFORM public.govern_visit_transition(v_v, 'in_progress', 'facade-ok', NULL);
   v_ok := v_ok AND (SELECT state FROM public.service_job_visits WHERE id = v_v) = 'in_progress';
@@ -615,18 +616,25 @@ BEGIN
 
   -- Deterministic ordering: same attested_at, higher ordinal wins (failed then passed)
   v_ok := true;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
   SELECT (public.schedule_service_job_visit(v_j, v_start + interval '1 day', v_end + interval '1 day', 's2', NULL)).id INTO v_v2;
   INSERT INTO public.service_job_visit_safety_checks (
-    visit_id, result, attested_by, attestation, notes, attested_at, details
+    visit_id, result, attested_by, attestation, notes, attested_at, details,
+    assignment_generation, for_technician_id
   ) VALUES (
     v_v2, 'failed', b1_uid('tech1'), 'safety_check_failed', 'tie-fail', v_ts,
-    jsonb_build_object('gate', 'b3_minimum_safety', 'test', 'tie')
+    jsonb_build_object('gate', 'b3_minimum_safety', 'test', 'tie'),
+    (SELECT assignment_generation FROM public.service_jobs WHERE id = v_j),
+    b1_uid('tech1')
   ) RETURNING id INTO v_fail;
   INSERT INTO public.service_job_visit_safety_checks (
-    visit_id, result, attested_by, attestation, notes, attested_at, details
+    visit_id, result, attested_by, attestation, notes, attested_at, details,
+    assignment_generation, for_technician_id
   ) VALUES (
     v_v2, 'passed', b1_uid('tech1'), b3_safety(), 'tie-pass', v_ts,
-    jsonb_build_object('gate', 'b3_minimum_safety', 'test', 'tie')
+    jsonb_build_object('gate', 'b3_minimum_safety', 'test', 'tie'),
+    (SELECT assignment_generation FROM public.service_jobs WHERE id = v_j),
+    b1_uid('tech1')
   ) RETURNING id INTO v_pass;
   SELECT id INTO v_latest FROM public.service_job_visit_safety_checks
   WHERE visit_id = v_v2
@@ -674,6 +682,141 @@ BEGIN
     '00000000-0000-0000-0000-000000000001'));
   EXECUTE 'REVOKE ALL ON FUNCTION public.start_service_job_visit(uuid, uuid, text, text) FROM anon';
   PERFORM b3_note('B3-S3', v_ok, 'anon grants revoked; adversarial re-grant still auth-denied');
+END $$;
+
+-- F-B3-02: personal ack bound to visit + attending tech + assignment generation.
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_v_other uuid;
+  v_ok boolean;
+  v_hist int;
+  v_gen0 bigint; v_gen1 bigint; v_gen2 bigint;
+  v_start timestamptz := now() + interval '50 hours';
+  v_end timestamptz := now() + interval '52 hours';
+BEGIN
+  -- 1) Same technician, same visit, unchanged assignment: valid prior acknowledgment works
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_t := b1_mkticket('cust1', 'B3F2-' || substr(replace(gen_random_uuid()::text,'-',''),1,8));
+  SELECT (public.create_service_job(v_t, 'B3 F2', true, 'b3')).id INTO v_j;
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'b3', NULL);
+  SELECT assignment_generation INTO v_gen0 FROM public.service_jobs WHERE id = v_j;
+  PERFORM b3_arm_ticket(v_j);
+  SELECT (public.schedule_service_job_visit(v_j, v_start, v_end, 'f2-1', NULL)).id INTO v_v;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  PERFORM public.record_visit_safety_check(v_v, 'passed', 'same-tech', NULL, b3_safety());
+  PERFORM public.start_service_job_visit(v_v, NULL, NULL, 'prior-ok');
+  v_ok := (SELECT state FROM public.service_job_visits WHERE id = v_v) = 'in_progress'
+      AND (SELECT assignment_generation FROM public.service_jobs WHERE id = v_j) = v_gen0;
+  PERFORM public.complete_service_job_visit(v_v, NULL);
+  PERFORM b3_note('B3-F2-1', v_ok, 'same tech/visit/generation prior pass');
+
+  -- 2) Reassignment: old acknowledgment rejected (history preserved)
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  SELECT (public.schedule_service_job_visit(v_j, v_start + interval '1 day', v_end + interval '1 day', 'f2-2', NULL)).id INTO v_v;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  PERFORM public.record_visit_safety_check(v_v, 'passed', 'pre-reassign', NULL, b3_safety());
+  SELECT count(*) INTO v_hist FROM public.service_job_visit_safety_checks WHERE visit_id = v_v;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech2'), 'reassign-f2', NULL);
+  SELECT assignment_generation INTO v_gen1 FROM public.service_jobs WHERE id = v_j;
+  v_ok := v_gen1 > v_gen0
+      AND (SELECT count(*) FROM public.service_job_visit_safety_checks WHERE visit_id = v_v) = v_hist;
+  PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
+  v_ok := v_ok AND b3_denied(format(
+    $q$SELECT public.start_service_job_visit(%L::uuid, NULL, NULL, 'reuse-old')$q$, v_v));
+  PERFORM b3_note('B3-F2-2', v_ok, 'reassign invalidates prior; hist=' || v_hist);
+
+  -- 3) Reassignment away and back: old acknowledgment still rejected
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'back-to-tech1', NULL);
+  SELECT assignment_generation INTO v_gen2 FROM public.service_jobs WHERE id = v_j;
+  v_ok := v_gen2 > v_gen1
+      AND (SELECT count(*) FROM public.service_job_visit_safety_checks WHERE visit_id = v_v) = v_hist;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  v_ok := v_ok AND b3_denied(format(
+    $q$SELECT public.start_service_job_visit(%L::uuid, NULL, NULL, 'reuse-after-roundtrip')$q$, v_v));
+  PERFORM b3_note('B3-F2-3', v_ok, 'tech1→tech2→tech1 still rejects old gen=' || v_gen2);
+
+  -- 4) Support acknowledgment cannot authorize technician start
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_ok := b3_denied(format(
+    $q$SELECT public.record_visit_safety_check(%L::uuid, 'passed', 'staff', NULL, %L::text)$q$,
+    v_v, b3_safety()));
+  -- Even a forged support passed row must not authorize tech start
+  INSERT INTO public.service_job_visit_safety_checks (
+    visit_id, result, attested_by, attestation, notes, details,
+    assignment_generation, for_technician_id
+  ) VALUES (
+    v_v, 'passed', b1_uid('support'), b3_safety(), 'forged-staff-pass',
+    jsonb_build_object('gate', 'b3_minimum_safety', 'test', 'f2-4'),
+    (SELECT assignment_generation FROM public.service_jobs WHERE id = v_j),
+    b1_uid('tech1')
+  );
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  v_ok := v_ok AND b3_denied(format(
+    $q$SELECT public.start_service_job_visit(%L::uuid, NULL, NULL, 'staff-pass')$q$, v_v));
+  -- Staff may still record failed observations
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  PERFORM public.record_visit_safety_check(v_v, 'failed', 'staff observation', NULL, NULL);
+  PERFORM b3_note('B3-F2-4', v_ok, 'support cannot substitute passed ack');
+
+  -- 5) Fresh confirmation by the new attending technician succeeds
+  -- (job currently tech1 after round-trip; move to tech2 and require fresh ack)
+  PERFORM public.assign_service_job(v_j, b1_uid('tech2'), 'fresh-tech2', NULL);
+  PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
+  PERFORM b3_start(v_v, NULL, 'fresh-tech2-ack');
+  v_ok := (SELECT state FROM public.service_job_visits WHERE id = v_v) = 'in_progress'
+      AND (SELECT attending_technician_id FROM public.service_job_visits WHERE id = v_v) = b1_uid('tech2');
+  PERFORM public.complete_service_job_visit(v_v, NULL);
+  PERFORM b3_note('B3-F2-5', v_ok, 'fresh attending tech confirmation');
+
+  -- 6) Cross-visit reuse and failed-check bypass remain denied
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  SELECT (public.schedule_service_job_visit(v_j, v_start + interval '2 day', v_end + interval '2 day', 'f2-6a', NULL)).id INTO v_v;
+  SELECT (public.schedule_service_job_visit(v_j, v_start + interval '3 day', v_end + interval '3 day', 'f2-6b', NULL)).id INTO v_v_other;
+  PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
+  PERFORM public.record_visit_safety_check(v_v, 'passed', 'visit-a', NULL, b3_safety());
+  -- other visit cannot reuse visit-a's pass
+  v_ok := b3_denied(format(
+    $q$SELECT public.start_service_job_visit(%L::uuid, NULL, NULL, 'cross-visit')$q$, v_v_other));
+  -- failed check blocks start even with older pass present on same visit
+  PERFORM public.record_visit_safety_check(v_v, 'failed', 'later-fail', NULL, NULL);
+  v_ok := v_ok AND b3_denied(format(
+    $q$SELECT public.start_service_job_visit(%L::uuid, NULL, NULL, 'failed-bypass')$q$, v_v));
+  -- history retained (passed + failed)
+  v_ok := v_ok AND (SELECT count(*) FROM public.service_job_visit_safety_checks WHERE visit_id = v_v) >= 2;
+  PERFORM b3_note('B3-F2-6', v_ok, 'cross-visit + failed bypass denied');
+
+  -- 7) Concurrent reassignment/start → coherent authorized outcomes (both serializations)
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  SELECT (public.schedule_service_job_visit(v_j, v_start + interval '4 day', v_end + interval '4 day', 'f2-7a', NULL)).id INTO v_v;
+  -- Serialization A: start first → reassign denied while in_progress
+  PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
+  PERFORM public.record_visit_safety_check(v_v, 'passed', 'ser-a', NULL, b3_safety());
+  PERFORM public.start_service_job_visit(v_v, NULL, NULL, 'ser-a');
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_ok := b3_denied(format(
+    $q$SELECT public.assign_service_job(%L::uuid, %L::uuid, 'during-start', NULL)$q$,
+    v_j, b1_uid('tech1')));
+  v_ok := v_ok AND (SELECT state FROM public.service_job_visits WHERE id = v_v) = 'in_progress';
+  PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
+  PERFORM public.complete_service_job_visit(v_v, NULL);
+
+  -- Serialization B: reassign first → prior-gen ack rejected; fresh ack by new tech works
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  SELECT (public.schedule_service_job_visit(v_j, v_start + interval '5 day', v_end + interval '5 day', 'f2-7b', NULL)).id INTO v_v;
+  PERFORM set_config('app.b1_uid', b1_uid('tech2')::text, false);
+  PERFORM public.record_visit_safety_check(v_v, 'passed', 'ser-b-old', NULL, b3_safety());
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'ser-b-reassign', NULL);
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  v_ok := v_ok AND b3_denied(format(
+    $q$SELECT public.start_service_job_visit(%L::uuid, NULL, NULL, 'stale-gen')$q$, v_v));
+  PERFORM b3_start(v_v, NULL, 'ser-b-fresh');
+  v_ok := v_ok AND (SELECT state FROM public.service_job_visits WHERE id = v_v) = 'in_progress'
+      AND (SELECT attending_technician_id FROM public.service_job_visits WHERE id = v_v) = b1_uid('tech1');
+  PERFORM public.complete_service_job_visit(v_v, NULL);
+  PERFORM b3_note('B3-F2-7', v_ok, 'both reassign/start serializations coherent');
 END $$;
 
 SELECT check_id, status, detail FROM public.b3_eval ORDER BY check_id;

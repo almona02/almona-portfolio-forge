@@ -4,6 +4,7 @@
 **Freeze commit:** `9882a256edb376de9ea726a510c96e40af69f845`  
 **Correction commit:** `a8503d1416b62db97e5c28b4da45f350a65e5a01`  
 **Safety-path final:** `742d1a98fccc34c5a28277cb2f8ea34587ae2b2e` / [`B3_SAFETY_PATH_FINAL.md`](./B3_SAFETY_PATH_FINAL.md) (`20261112194500_…`)  
+**F-B3-02 ack binding:** see tip / [`B3_F_B3_02_ACK_BINDING.md`](./B3_F_B3_02_ACK_BINDING.md) (`20261112200000_…`)  
 **Corrections:** [`B3_CONDITIONAL_PASS_CORRECTIONS.md`](./B3_CONDITIONAL_PASS_CORRECTIONS.md) (`20261112190000_…`)  
 **Branch:** `feat/service-workflow-b1-planning`  
 **Depends on:** B1/B2 accepted at `49c78969` — see [`B1_B2_STAGING_ACCEPTANCE_CLOSEOUT.md`](./B1_B2_STAGING_ACCEPTANCE_CLOSEOUT.md)  
@@ -15,7 +16,7 @@
 
 | Artifact | Path |
 |----------|------|
-| Migration (not applied) | `…180000` + `…190000` corrections + `…194500` safety-path final |
+| Migration (not applied) | `…180000` + `…190000` + `…194500` safety-path + `…200000` F-B3-02 |
 | Contract | `docs/operations/service-workflow/B3_VISIT_CONTRACT.md` |
 | Disposable battery | `scripts/service-workflow/disposable_b3_battery.sql` |
 | UI | `src/components/support/ServiceVisitPanel.tsx` (+ assignment panel / technician dashboard wiring) |
