@@ -118,3 +118,465 @@ export async function governTicketBulkTransition(input: {
     partial: Boolean(payload.partial),
   }
 }
+
+export type ServiceJobRow = {
+  id: string
+  ticket_id: string
+  job_sequence: number
+  title: string
+  required: boolean
+  state: string
+  assigned_technician_id: string | null
+  created_at: string
+  updated_at: string
+  technician_name?: string | null
+}
+
+function asJob(row: unknown): ServiceJobRow {
+  const r = row as ServiceJobRow
+  if (!r?.id) throw new Error('service job row missing id')
+  return r
+}
+
+/** Map Postgres/RPC errors to stable UI messages (assignment + B3 visits). */
+export function mapJobRpcError(message: string): Error {
+  const lower = message.toLowerCase()
+  if (lower.includes('one active visit per job')) {
+    return new Error('Another visit is already in progress on this job. Finish or abort it first.')
+  }
+  if (lower.includes('only the currently assigned technician may start')) {
+    return new Error('Only the technician currently assigned to this job may start the visit.')
+  }
+  if (lower.includes('scheduled_end must be after') || lower.includes('scheduled_start and scheduled_end')) {
+    return new Error('Visit window is invalid: end must be after start.')
+  }
+  if (lower.includes('only scheduled visits may be rescheduled')) {
+    return new Error('Terminal or in-progress visits cannot be rescheduled. Schedule a new visit instead.')
+  }
+  if (
+    lower.includes('abort reason mandatory') ||
+    lower.includes('no-access reason mandatory') ||
+    lower.includes('outcome reason mandatory')
+  ) {
+    return new Error('A reason is required for this visit outcome.')
+  }
+  if (
+    lower.includes('cannot substitute a personal safety acknowledgment') ||
+    lower.includes('cannot substitute')
+  ) {
+    return new Error(
+      'Only the attending technician’s personal safety acknowledgment can authorize visit start. Staff may record failed checks or observations, but not substitute a passed acknowledgment.',
+    )
+  }
+  if (
+    lower.includes('minimum safety attestation') ||
+    lower.includes('explicit safety acknowledgment required') ||
+    lower.includes('safety check failed') ||
+    lower.includes('latest safety check failed')
+  ) {
+    return new Error(
+      'Visit start requires an explicit safety acknowledgment from the attending technician for the current assignment (attest on start or record a passed check first). Abort/no-access do not invent a passed check.',
+    )
+  }
+  if (lower.includes('ticket status') && lower.includes('incompatible')) {
+    return new Error(
+      'Cannot start this visit while the ticket is in an incompatible status. The ticket must be assigned (first start) or already in progress.',
+    )
+  }
+  // Assignment/decline blocked by active attendance (B2/B3).
+  if (
+    (lower.includes('reassign') || lower.includes('decline') || lower.includes('assign')) &&
+    (lower.includes('in_progress') ||
+      lower.includes('in progress') ||
+      lower.includes('in-progress') ||
+      lower.includes('active visit'))
+  ) {
+    return new Error(
+      'Cannot change job assignment while a visit is in progress. End or abort the visit in the visit workflow first.',
+    )
+  }
+  if (
+    lower.includes('cannot reassign job with an in-progress visit') ||
+    lower.includes('cannot decline job with an in-progress visit')
+  ) {
+    return new Error(
+      'Cannot change job assignment while a visit is in progress. End or abort the visit in the visit workflow first.',
+    )
+  }
+  if (lower.includes('only the attending technician')) {
+    return new Error('Only the attending technician for this visit may submit a report.')
+  }
+  if (lower.includes('reports may only be submitted for completed visits')) {
+    return new Error('Complete the visit before submitting a report.')
+  }
+  if (lower.includes('labour') || lower.includes('no_labour')) {
+    return new Error(message)
+  }
+  if (lower.includes('evidence')) {
+    return new Error(message)
+  }
+  if (lower.includes('technician declaration')) {
+    return new Error('A technician declaration is required before submit.')
+  }
+  return new Error(message)
+}
+
+/** B2: list jobs for a ticket (independent assignees/states). Does not touch ticket.assigned_to. */
+export async function listServiceJobsForTicket(ticketId: string): Promise<ServiceJobRow[]> {
+  const { data, error } = await supabase
+    .from('service_jobs')
+    .select('id, ticket_id, job_sequence, title, required, state, assigned_technician_id, created_at, updated_at')
+    .eq('ticket_id', ticketId)
+    .order('job_sequence', { ascending: true })
+  if (error) throw new Error(error.message)
+  const jobs = (data ?? []) as ServiceJobRow[]
+  const techIds = [...new Set(jobs.map((j) => j.assigned_technician_id).filter(Boolean))] as string[]
+  if (techIds.length === 0) return jobs
+  const { data: profiles, error: pErr } = await supabase
+    .from('profiles')
+    .select('id, full_name')
+    .in('id', techIds)
+  if (pErr) return jobs
+  const names = new Map((profiles ?? []).map((p: { id: string; full_name: string | null }) => [p.id, p.full_name]))
+  return jobs.map((j) => ({
+    ...j,
+    technician_name: j.assigned_technician_id ? names.get(j.assigned_technician_id) ?? null : null,
+  }))
+}
+
+/** B2: list jobs assigned to the current technician (any ticket). */
+export async function listServiceJobsForTechnician(technicianId: string): Promise<ServiceJobRow[]> {
+  const selectCols =
+    'id, ticket_id, job_sequence, title, required, state, assigned_technician_id, created_at, updated_at'
+  const { data, error } = await supabase
+    .from('service_jobs')
+    .select(selectCols)
+    .eq('assigned_technician_id', technicianId)
+    .order('updated_at', { ascending: false })
+  if (error) throw new Error(error.message)
+
+  // B4: keep jobs reachable after reassignment when this tech remains the
+  // historical attending technician on a completed visit (report submission).
+  const { data: attendedVisits, error: vErr } = await supabase
+    .from('service_job_visits')
+    .select('job_id')
+    .eq('attending_technician_id', technicianId)
+    .eq('state', 'completed')
+  if (vErr) throw new Error(vErr.message)
+  const attendedJobIds = [
+    ...new Set((attendedVisits ?? []).map((v: { job_id: string }) => v.job_id)),
+  ]
+  const assigned = (data ?? []) as ServiceJobRow[]
+  const have = new Set(assigned.map((j) => j.id))
+  const missing = attendedJobIds.filter((id) => !have.has(id))
+  if (missing.length === 0) return assigned
+
+  const { data: extra, error: eErr } = await supabase
+    .from('service_jobs')
+    .select(selectCols)
+    .in('id', missing)
+  if (eErr) throw new Error(eErr.message)
+  return [...assigned, ...((extra ?? []) as ServiceJobRow[])]
+}
+
+/** B1/B2: create an additional job on a ticket (admin/support). */
+export async function createServiceJob(input: {
+  ticketId: string
+  title: string
+  required?: boolean
+  rationale?: string
+}): Promise<ServiceJobRow> {
+  const { data, error } = await supabase.rpc('create_service_job', {
+    p_ticket_id: input.ticketId,
+    p_title: input.title,
+    p_required: input.required ?? true,
+    p_rationale: input.rationale ?? null,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return asJob(data)
+}
+
+/** B2: opt-in Job 1 create/assign. Does not change ticket.assigned_to. */
+export async function ensureDefaultServiceJob(input: {
+  ticketId: string
+  technicianId?: string | null
+  title?: string
+  rationale?: string
+}): Promise<{ id: string }> {
+  const { data, error } = await supabase.rpc('ensure_default_service_job', {
+    p_ticket_id: input.ticketId,
+    p_technician_id: input.technicianId ?? null,
+    p_title: input.title ?? 'Job 1',
+    p_rationale: input.rationale ?? null,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  const row = data as { id?: string } | null
+  if (!row?.id) throw new Error('ensure_default_service_job returned no id')
+  return { id: row.id }
+}
+
+/** B2: assign/reassign job technician only. */
+export async function assignServiceJob(input: {
+  jobId: string
+  technicianId: string
+  rationale?: string
+}): Promise<{ id: string }> {
+  const { data, error } = await supabase.rpc('assign_service_job', {
+    p_job_id: input.jobId,
+    p_technician_id: input.technicianId,
+    p_rationale: input.rationale ?? null,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  const row = data as { id?: string } | null
+  if (!row?.id) throw new Error('assign_service_job returned no id')
+  return { id: row.id }
+}
+
+/** B2: technician declines own job. */
+export async function declineServiceJob(input: {
+  jobId: string
+  reason: string
+}): Promise<{ id: string }> {
+  const { data, error } = await supabase.rpc('decline_service_job', {
+    p_job_id: input.jobId,
+    p_reason: input.reason,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  const row = data as { id?: string } | null
+  if (!row?.id) throw new Error('decline_service_job returned no id')
+  return { id: row.id }
+}
+
+export type ServiceVisitState = 'scheduled' | 'in_progress' | 'completed' | 'aborted' | 'no_access'
+
+export interface ServiceVisitRow {
+  id: string
+  job_id: string
+  visit_sequence: number
+  state: ServiceVisitState | string
+  scheduled_start: string | null
+  scheduled_end: string | null
+  actual_start: string | null
+  actual_end: string | null
+  attending_technician_id: string | null
+  outcome_reason: string | null
+  updated_at: string
+}
+
+function asVisit(row: unknown): ServiceVisitRow {
+  return row as ServiceVisitRow
+}
+
+/** B3: list visits for a job. */
+export async function listServiceVisitsForJob(jobId: string): Promise<ServiceVisitRow[]> {
+  const { data, error } = await supabase
+    .from('service_job_visits')
+    .select(
+      'id, job_id, visit_sequence, state, scheduled_start, scheduled_end, actual_start, actual_end, attending_technician_id, outcome_reason, updated_at',
+    )
+    .eq('job_id', jobId)
+    .order('visit_sequence', { ascending: true })
+  if (error) throw new Error(error.message)
+  return (data ?? []) as ServiceVisitRow[]
+}
+
+/** B3: list visits across jobs assigned to a technician. */
+export async function listServiceVisitsForTechnician(technicianId: string): Promise<ServiceVisitRow[]> {
+  const { data: jobs, error: jErr } = await supabase
+    .from('service_jobs')
+    .select('id')
+    .eq('assigned_technician_id', technicianId)
+  if (jErr) throw new Error(jErr.message)
+  const ids = (jobs ?? []).map((j: { id: string }) => j.id)
+  if (ids.length === 0) return []
+  const { data, error } = await supabase
+    .from('service_job_visits')
+    .select(
+      'id, job_id, visit_sequence, state, scheduled_start, scheduled_end, actual_start, actual_end, attending_technician_id, outcome_reason, updated_at',
+    )
+    .in('job_id', ids)
+    .order('scheduled_start', { ascending: true })
+  if (error) throw new Error(error.message)
+  return (data ?? []) as ServiceVisitRow[]
+}
+
+export async function scheduleServiceJobVisit(input: {
+  jobId: string
+  scheduledStart: string
+  scheduledEnd: string
+  rationale?: string
+}): Promise<ServiceVisitRow> {
+  const { data, error } = await supabase.rpc('schedule_service_job_visit', {
+    p_job_id: input.jobId,
+    p_scheduled_start: input.scheduledStart,
+    p_scheduled_end: input.scheduledEnd,
+    p_rationale: input.rationale ?? null,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return asVisit(data)
+}
+
+export async function rescheduleServiceJobVisit(input: {
+  visitId: string
+  scheduledStart: string
+  scheduledEnd: string
+  rationale?: string
+}): Promise<ServiceVisitRow> {
+  const { data, error } = await supabase.rpc('reschedule_service_job_visit', {
+    p_visit_id: input.visitId,
+    p_scheduled_start: input.scheduledStart,
+    p_scheduled_end: input.scheduledEnd,
+    p_rationale: input.rationale ?? null,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return asVisit(data)
+}
+
+/** Exact B3 minimum safety attestation (must match server constant). */
+export const B3_MINIMUM_SAFETY_ATTESTATION =
+  'I confirm minimum on-site safety prerequisites for starting this visit ' +
+  '(site access, isolation awareness, and PPE as applicable). ' +
+  'This confirmation does not assert that every machine-specific hazard has been addressed.'
+
+export async function startServiceJobVisit(input: {
+  visitId: string
+  safetyAttestation: string
+  safetyNotes?: string
+}): Promise<ServiceVisitRow> {
+  const { data, error } = await supabase.rpc('start_service_job_visit', {
+    p_visit_id: input.visitId,
+    p_safety_attestation: input.safetyAttestation,
+    p_safety_notes: input.safetyNotes ?? null,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return asVisit(data)
+}
+
+export async function recordVisitSafetyCheck(input: {
+  visitId: string
+  result: 'passed' | 'failed'
+  notes?: string
+  attestation?: string
+}): Promise<unknown> {
+  const { data, error } = await supabase.rpc('record_visit_safety_check', {
+    p_visit_id: input.visitId,
+    p_result: input.result,
+    p_notes: input.notes ?? null,
+    p_attestation: input.attestation ?? null,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return data
+}
+
+export async function completeServiceJobVisit(visitId: string): Promise<ServiceVisitRow> {
+  const { data, error } = await supabase.rpc('complete_service_job_visit', { p_visit_id: visitId })
+  if (error) throw mapJobRpcError(error.message)
+  return asVisit(data)
+}
+
+export async function abortServiceJobVisit(input: {
+  visitId: string
+  reason: string
+}): Promise<ServiceVisitRow> {
+  const { data, error } = await supabase.rpc('abort_service_job_visit', {
+    p_visit_id: input.visitId,
+    p_reason: input.reason,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return asVisit(data)
+}
+
+export async function recordVisitNoAccess(input: {
+  visitId: string
+  reason: string
+}): Promise<ServiceVisitRow> {
+  const { data, error } = await supabase.rpc('record_visit_no_access', {
+    p_visit_id: input.visitId,
+    p_reason: input.reason,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return asVisit(data)
+}
+
+/** B4: report revision row (submitted only; append-only). */
+export interface ServiceReportRevisionRow {
+  id: string
+  report_id: string
+  revision_number: number
+  findings: string
+  work_performed: string
+  labour: unknown
+  no_labour: boolean
+  verification_outcome: string
+  verification_reason: string | null
+  technician_declaration: string
+  evidence_paths: string[]
+  checklist_results: unknown | null
+  client_submission_id: string | null
+  submitted_by: string
+  submitted_at: string
+}
+
+export interface ServiceReportBundle {
+  report: { id: string; visit_id: string; created_at: string } | null
+  revisions: ServiceReportRevisionRow[]
+}
+
+export async function getServiceReportForVisit(visitId: string): Promise<ServiceReportBundle> {
+  const { data, error } = await supabase.rpc('get_service_report_for_visit', {
+    p_visit_id: visitId,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  const bundle = (data ?? { report: null, revisions: [] }) as ServiceReportBundle
+  return {
+    report: bundle.report ?? null,
+    revisions: Array.isArray(bundle.revisions) ? bundle.revisions : [],
+  }
+}
+
+export async function submitServiceReportRevision(input: {
+  visitId: string
+  findings: string
+  workPerformed: string
+  labour: Array<{ hours: number; description: string }>
+  noLabour: boolean
+  verificationOutcome: 'verified_fixed' | 'not_reproduced' | 'further_work_required' | 'not_verified'
+  verificationReason?: string
+  technicianDeclaration: string
+  evidencePaths: string[]
+  checklistResults?: Record<string, unknown> | null
+  clientSubmissionId: string
+}): Promise<ServiceReportRevisionRow> {
+  const { data, error } = await supabase.rpc('submit_service_report_revision', {
+    p_visit_id: input.visitId,
+    p_findings: input.findings,
+    p_work_performed: input.workPerformed,
+    p_labour: input.noLabour ? [] : input.labour,
+    p_no_labour: input.noLabour,
+    p_verification_outcome: input.verificationOutcome,
+    p_verification_reason: input.verificationReason ?? null,
+    p_technician_declaration: input.technicianDeclaration,
+    p_evidence_paths: input.evidencePaths,
+    p_checklist_results: input.checklistResults ?? null,
+    p_client_submission_id: input.clientSubmissionId,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return data as ServiceReportRevisionRow
+}
+
+/** Upload private evidence into ticket-attachments; returns object path. Recoverable on failure. */
+export async function uploadReportEvidence(input: {
+  ticketId: string
+  visitId: string
+  file: File
+  submitterUserId: string
+}): Promise<string> {
+  const safeName = input.file.name.replace(/[^a-zA-Z0-9._-]+/g, '_')
+  const path = `${input.ticketId}/b4/${input.visitId}/${crypto.randomUUID()}-${safeName}`
+  const { error } = await supabase.storage.from('ticket-attachments').upload(path, input.file, {
+    upsert: false,
+    contentType: input.file.type || undefined,
+  })
+  if (error) throw new Error(error.message || 'Evidence upload failed')
+  return path
+}

@@ -44,14 +44,16 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(false);
-  const { signIn: login, user, actionLoading } = useAuth();
+  const { signIn: login, user, actionLoading, isProfileResolved } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from;
   const postLoginPath = from && from.startsWith('/') && !from.startsWith('//') ? from : roleHomePath(user?.role);
 
+  // Wait for profiles.role before choosing the home path. Optimistic
+  // placeholder role=customer would send technicians/support to /portal.
   useEffect(() => {
-    if (user) {
+    if (user && isProfileResolved) {
       requestAnimationFrame(() => {
         toast.success('Logged in successfully!');
         startTransition(() => {
@@ -59,7 +61,7 @@ const Login = () => {
         });
       });
     }
-  }, [user, navigate, postLoginPath]);
+  }, [user, isProfileResolved, navigate, postLoginPath]);
 
   useEffect(() => {
     try {
@@ -88,7 +90,7 @@ const Login = () => {
       } catch {
         // ignore storage issues
       }
-      void navigate(postLoginPath, { replace: true });
+      // Navigation is owned by the isProfileResolved effect above.
     } catch (error) {
       const errorMessage = getLoginErrorMessage(error);
       setError(errorMessage);

@@ -36,6 +36,7 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
   currentUserId
 }) => {
   const [selectedAssignee, setSelectedAssignee] = useState<string>('')
+  const [startWorkflowJob1, setStartWorkflowJob1] = useState(false)
   const queryClient = useQueryClient()
 
   // Fetch available assignees
@@ -53,10 +54,27 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
       ))
     : null
 
-  // Assignment mutation
+  // Assignment mutation — ticket case contact; optional opt-in Job 1 (B2).
   const assignMutation = useMutation({
-    mutationFn: ({ ticketId, assigneeId }: { ticketId: string; assigneeId: string }) =>
-      assignTicket(ticketId, assigneeId, currentUserId),
+    mutationFn: async ({
+      ticketId,
+      assigneeId,
+      createJob1,
+    }: {
+      ticketId: string
+      assigneeId: string
+      createJob1: boolean
+    }) => {
+      await assignTicket(ticketId, assigneeId, currentUserId)
+      if (createJob1) {
+        const { ensureDefaultServiceJob } = await import('@/lib/ticketGovernanceApi')
+        await ensureDefaultServiceJob({
+          ticketId,
+          technicianId: assigneeId,
+          rationale: 'Opt-in Job 1 on assignment',
+        })
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-tickets'] }).catch(() => toast.error('Unable to refresh tickets'))
       queryClient.invalidateQueries({ queryKey: ['ticket-metrics'] }).catch(() => toast.error('Unable to refresh ticket metrics'))
@@ -64,10 +82,13 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
         window.open(whatsappHref, '_blank', 'noopener,noreferrer')
         toast.success(`Ticket assigned — WhatsApp opened for ${selected?.full_name || 'technician'}`)
       } else {
-        toast.success('Ticket assigned successfully')
+        toast.success(startWorkflowJob1
+          ? 'Ticket assigned; Job 1 started'
+          : 'Ticket assigned successfully')
       }
       onClose()
       setSelectedAssignee('')
+      setStartWorkflowJob1(false)
     },
     onError: (error) => {
       toast.error('Failed to assign ticket: ' + error.message)
@@ -79,7 +100,8 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
     
     assignMutation.mutate({
       ticketId: ticket.id,
-      assigneeId: selectedAssignee
+      assigneeId: selectedAssignee,
+      createJob1: startWorkflowJob1,
     })
   }
 
@@ -87,6 +109,7 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
     if (assignMutation.isPending) return
     onClose()
     setSelectedAssignee('')
+    setStartWorkflowJob1(false)
   }
 
   if (!ticket) return null
@@ -167,6 +190,28 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
               </SelectContent>
             </Select>
             {assigneesFailed && <p role="alert">Unable to load team members. Reopen this dialog to retry.</p>}
+          </div>
+
+          <div className="space-y-2 rounded-md border border-border p-3">
+            <label className="flex items-start gap-2 text-sm">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={startWorkflowJob1}
+                disabled={assignMutation.isPending}
+                onChange={(e) => setStartWorkflowJob1(e.target.checked)}
+              />
+              <span>
+                <span className="font-medium">Start service workflow (Job 1)</span>
+                <span className="block text-muted-foreground">
+                  Creates Job 1 and assigns the selected person as the job technician.
+                  Ticket case contact and job technician are separate; later ticket
+                  reassignment will not move existing jobs. Activated tickets cannot
+                  complete the full lifecycle until later slices land. Leave unchecked
+                  for legacy jobless tickets.
+                </span>
+              </span>
+            </label>
           </div>
         </div>
 

@@ -1,0 +1,607 @@
+{
+  "b3_battery": {
+    "counts": {
+      "PASS": 25
+    },
+    "checks": [
+      {
+        "check_id": "B3-01",
+        "status": "PASS",
+        "detail": "hist=1"
+      },
+      {
+        "check_id": "B3-02",
+        "status": "PASS",
+        "detail": "invalid window denied"
+      },
+      {
+        "check_id": "B3-03",
+        "status": "PASS",
+        "detail": "hist after rs=2 after idem=2"
+      },
+      {
+        "check_id": "B3-04",
+        "status": "PASS",
+        "detail": "unrelated start denied"
+      },
+      {
+        "check_id": "B3-05",
+        "status": "PASS",
+        "detail": "second active start denied"
+      },
+      {
+        "check_id": "B3-06",
+        "status": "PASS",
+        "detail": "active count=1"
+      },
+      {
+        "check_id": "B3-07",
+        "status": "PASS",
+        "detail": "abort+return"
+      },
+      {
+        "check_id": "B3-08",
+        "status": "PASS",
+        "detail": "terminal reschedule denied"
+      },
+      {
+        "check_id": "B3-09",
+        "status": "PASS",
+        "detail": "att=44444444-4444-4444-4444-444444444444"
+      },
+      {
+        "check_id": "B3-10",
+        "status": "PASS",
+        "detail": "reassign during active denied"
+      },
+      {
+        "check_id": "B3-11",
+        "status": "PASS",
+        "detail": "job_state=in_progress"
+      },
+      {
+        "check_id": "B3-12",
+        "status": "PASS",
+        "detail": "no_access return visit"
+      },
+      {
+        "check_id": "B3-13",
+        "status": "PASS",
+        "detail": "denied start traceless"
+      },
+      {
+        "check_id": "B3-A1",
+        "status": "PASS",
+        "detail": "schedule anon/forge"
+      },
+      {
+        "check_id": "B3-A2",
+        "status": "PASS",
+        "detail": "reschedule anon/forge"
+      },
+      {
+        "check_id": "B3-A3",
+        "status": "PASS",
+        "detail": "start anon/forge"
+      },
+      {
+        "check_id": "B3-A4",
+        "status": "PASS",
+        "detail": "complete anon/forge"
+      },
+      {
+        "check_id": "B3-A5",
+        "status": "PASS",
+        "detail": "abort anon/forge"
+      },
+      {
+        "check_id": "B3-A6",
+        "status": "PASS",
+        "detail": "no_access anon/forge"
+      },
+      {
+        "check_id": "B3-C1",
+        "status": "PASS",
+        "detail": "denied=true active=1"
+      },
+      {
+        "check_id": "B3-G1",
+        "status": "PASS",
+        "detail": "job=in_progress ticket=open close_audits=0"
+      },
+      {
+        "check_id": "B3-H1",
+        "status": "PASS",
+        "detail": "prior history immutable"
+      },
+      {
+        "check_id": "B3-L1",
+        "status": "PASS",
+        "detail": "visit done job=in_progress ticket=open"
+      },
+      {
+        "check_id": "B3-L2",
+        "status": "PASS",
+        "detail": "hist_a=33333333-3333-3333-3333-333333333333 hist_n=33333333-3333-3333-3333-333333333333 new=44444444-4444-4444-4444-444444444444"
+      },
+      {
+        "check_id": "B3-R1",
+        "status": "PASS",
+        "detail": "idempotent complete audit=3"
+      }
+    ]
+  },
+  "b1_battery_original": {
+    "counts": {
+      "PASS": 72,
+      "DEFER": 4
+    },
+    "checks": [
+      {
+        "check_id": "A1",
+        "status": "PASS",
+        "detail": "atomic row+fields"
+      },
+      {
+        "check_id": "A2",
+        "status": "PASS",
+        "detail": "no trace on failure"
+      },
+      {
+        "check_id": "A3",
+        "status": "PASS",
+        "detail": "audit append-only"
+      },
+      {
+        "check_id": "A4",
+        "status": "PASS",
+        "detail": "actor+time present"
+      },
+      {
+        "check_id": "A5",
+        "status": "PASS",
+        "detail": "audit immutable"
+      },
+      {
+        "check_id": "ACK1",
+        "status": "PASS",
+        "detail": "acks append-only"
+      },
+      {
+        "check_id": "C1",
+        "status": "PASS",
+        "detail": "state=closed audit=6"
+      },
+      {
+        "check_id": "C10",
+        "status": "PASS",
+        "detail": "TKT-2026-000001"
+      },
+      {
+        "check_id": "C2",
+        "status": "PASS",
+        "detail": "state=open"
+      },
+      {
+        "check_id": "C3",
+        "status": "PASS",
+        "detail": "terminal holds"
+      },
+      {
+        "check_id": "C4",
+        "status": "PASS",
+        "detail": "own=in_progress"
+      },
+      {
+        "check_id": "C5",
+        "status": "PASS",
+        "detail": "cust+sales denied"
+      },
+      {
+        "check_id": "C6",
+        "status": "PASS",
+        "detail": "shape+atomic"
+      },
+      {
+        "check_id": "C7",
+        "status": "PASS",
+        "detail": "mismatches=0 (reflexive-true documented)"
+      },
+      {
+        "check_id": "C8",
+        "status": "PASS",
+        "detail": "{\"failed\": [{\"error\": \"Invalid ticket status transition: closed -> assigned\", \"ticket_id\": \"5af91be5-06a8-4d9c-aafd-1575cd18f500\"}], \"partial\": true, \"succeeded\": [\"abf5c535-9336-4a79-9fda-531cd657011"
+      },
+      {
+        "check_id": "C9",
+        "status": "PASS",
+        "detail": "trigger+revoke hold"
+      },
+      {
+        "check_id": "CC1",
+        "status": "PASS",
+        "detail": "customer boundary holds"
+      },
+      {
+        "check_id": "F1",
+        "status": "PASS",
+        "detail": "impersonation denied"
+      },
+      {
+        "check_id": "J1",
+        "status": "PASS",
+        "detail": "walk + gated completion"
+      },
+      {
+        "check_id": "J2",
+        "status": "PASS",
+        "detail": "illegal+terminal denied"
+      },
+      {
+        "check_id": "J3",
+        "status": "PASS",
+        "detail": "cancel guards hold"
+      },
+      {
+        "check_id": "J4",
+        "status": "PASS",
+        "detail": "waive guards hold"
+      },
+      {
+        "check_id": "J5",
+        "status": "PASS",
+        "detail": "conversion ok, waived terminal"
+      },
+      {
+        "check_id": "J6",
+        "status": "PASS",
+        "detail": "create gates hold"
+      },
+      {
+        "check_id": "J7",
+        "status": "PASS",
+        "detail": "denials leave no trace"
+      },
+      {
+        "check_id": "M1",
+        "status": "PASS",
+        "detail": "mixed jobs independent"
+      },
+      {
+        "check_id": "M2",
+        "status": "PASS",
+        "detail": "multi-job allowed"
+      },
+      {
+        "check_id": "M3",
+        "status": "PASS",
+        "detail": "retry visit coexists"
+      },
+      {
+        "check_id": "M4",
+        "status": "DEFER",
+        "detail": "B4 behavior; explicitly untested"
+      },
+      {
+        "check_id": "M5",
+        "status": "DEFER",
+        "detail": "B5 behavior; explicitly untested"
+      },
+      {
+        "check_id": "P1",
+        "status": "PASS",
+        "detail": "parents+state protected"
+      },
+      {
+        "check_id": "P2",
+        "status": "PASS",
+        "detail": "no customer/sales/anon agency"
+      },
+      {
+        "check_id": "R1",
+        "status": "PASS",
+        "detail": "entities + parent FKs"
+      },
+      {
+        "check_id": "R2",
+        "status": "PASS",
+        "detail": "revision immutable"
+      },
+      {
+        "check_id": "R3",
+        "status": "DEFER",
+        "detail": "B5 behavior; explicitly untested"
+      },
+      {
+        "check_id": "R4",
+        "status": "DEFER",
+        "detail": "B5 behavior; explicitly untested"
+      },
+      {
+        "check_id": "RV1",
+        "status": "PASS",
+        "detail": "reviews append-only"
+      },
+      {
+        "check_id": "S1",
+        "status": "PASS",
+        "detail": "assignee=33333333-3333-3333-3333-333333333333 state=planned hist=1 audit+=1"
+      },
+      {
+        "check_id": "S10",
+        "status": "PASS",
+        "detail": "jobs independent"
+      },
+      {
+        "check_id": "S11",
+        "status": "PASS",
+        "detail": "history chain x3"
+      },
+      {
+        "check_id": "S12",
+        "status": "PASS",
+        "detail": "assignments independent, activation intact"
+      },
+      {
+        "check_id": "S13",
+        "status": "PASS",
+        "detail": "own=1 other=0 cown=2 ccross=0 sup=3"
+      },
+      {
+        "check_id": "S14",
+        "status": "PASS",
+        "detail": "tech transitions denied, staff control ok"
+      },
+      {
+        "check_id": "S15",
+        "status": "PASS",
+        "detail": "failures traceless"
+      },
+      {
+        "check_id": "S16",
+        "status": "PASS",
+        "detail": "B1 intact"
+      },
+      {
+        "check_id": "S17",
+        "status": "PASS",
+        "detail": "ensure failures traceless"
+      },
+      {
+        "check_id": "S18",
+        "status": "PASS",
+        "detail": "retry same id, audit+=0 hist+=0"
+      },
+      {
+        "check_id": "S19",
+        "status": "PASS",
+        "detail": "ensure fenced; terminal rejected tracelessly"
+      },
+      {
+        "check_id": "S2",
+        "status": "PASS",
+        "detail": "idempotent re-assign"
+      },
+      {
+        "check_id": "S20",
+        "status": "PASS",
+        "detail": "own=2 cust=0 sup=3 tot=3"
+      },
+      {
+        "check_id": "S21",
+        "status": "PASS",
+        "detail": "partial=ticket-only; retry=one Job 1 4a6e0863"
+      },
+      {
+        "check_id": "S22",
+        "status": "PASS",
+        "detail": "B3 repoint scheduled attending; moves chained"
+      },
+      {
+        "check_id": "S3",
+        "status": "PASS",
+        "detail": "reassign chain complete"
+      },
+      {
+        "check_id": "S4",
+        "status": "PASS",
+        "detail": "sched-allowed=true active-denied=true"
+      },
+      {
+        "check_id": "S5",
+        "status": "PASS",
+        "detail": "terminal jobs frozen"
+      },
+      {
+        "check_id": "S6",
+        "status": "PASS",
+        "detail": "decline own + reason required"
+      },
+      {
+        "check_id": "S7",
+        "status": "PASS",
+        "detail": "decline fenced to owner-tech"
+      },
+      {
+        "check_id": "S8",
+        "status": "PASS",
+        "detail": "active-visit decline denied; attendance intact"
+      },
+      {
+        "check_id": "S9",
+        "status": "PASS",
+        "detail": "assign fenced to staff, actors bound"
+      },
+      {
+        "check_id": "V1",
+        "status": "PASS",
+        "detail": "visit walk ok with assignee"
+      },
+      {
+        "check_id": "V2",
+        "status": "PASS",
+        "detail": "jump denied"
+      },
+      {
+        "check_id": "V3",
+        "status": "PASS",
+        "detail": "terminal outcomes guarded"
+      },
+      {
+        "check_id": "V4",
+        "status": "PASS",
+        "detail": "terminal frozen, new visit ok"
+      },
+      {
+        "check_id": "V5",
+        "status": "PASS",
+        "detail": "hist=2 idem=2 term_blocked=true"
+      },
+      {
+        "check_id": "V6",
+        "status": "PASS",
+        "detail": "unassigned start denied"
+      },
+      {
+        "check_id": "W1",
+        "status": "PASS",
+        "detail": "activation durable"
+      },
+      {
+        "check_id": "W2",
+        "status": "PASS",
+        "detail": "actor durable"
+      },
+      {
+        "check_id": "W3",
+        "status": "PASS",
+        "detail": "RPC paths preserve activation"
+      },
+      {
+        "check_id": "W4",
+        "status": "PASS",
+        "detail": "no bypass"
+      },
+      {
+        "check_id": "X1",
+        "status": "PASS",
+        "detail": "state=in_progress"
+      },
+      {
+        "check_id": "X1b",
+        "status": "PASS",
+        "detail": "all-or-nothing"
+      },
+      {
+        "check_id": "X2",
+        "status": "PASS",
+        "detail": "jobless parity"
+      },
+      {
+        "check_id": "X3",
+        "status": "PASS",
+        "detail": "fail-closed + named, incl. add-back"
+      },
+      {
+        "check_id": "X4",
+        "status": "PASS",
+        "detail": "resolve names the job blocker, no trace"
+      },
+      {
+        "check_id": "X5",
+        "status": "PASS",
+        "detail": "free add-back denied"
+      },
+      {
+        "check_id": "X6",
+        "status": "PASS",
+        "detail": "bulk partial honors gate: {\"failed\": [{\"error\": \"Workflow prerequisites unsatisfied for resolved:\\nrequired_job_unsatisfied: Job 1 (req) state=unassigned\\n\", \"ticket_"
+      }
+    ]
+  },
+  "b1_jv_repaired": {
+    "counts": {
+      "PASS": 4
+    },
+    "checks": [
+      {
+        "check_id": "J1",
+        "status": "PASS",
+        "detail": "walk + gated completion (governed-assignment fixture)"
+      },
+      {
+        "check_id": "J2",
+        "status": "PASS",
+        "detail": "illegal+terminal denied (governed-assignment fixture)"
+      },
+      {
+        "check_id": "V1",
+        "status": "PASS",
+        "detail": "visit walk ok with valid B2 assignee"
+      },
+      {
+        "check_id": "V5",
+        "status": "PASS",
+        "detail": "reschedule appends history; same-window idempotent; window updated h=1,2,2"
+      }
+    ]
+  },
+  "spark_probes": {
+    "counts": {
+      "PASS": 8,
+      "FAIL": 2
+    },
+    "checks": [
+      {
+        "check_id": "SP-01",
+        "status": "PASS",
+        "detail": "complete-scheduled/resched-active/empty-abort/ws-noaccess/start-completed denied"
+      },
+      {
+        "check_id": "SP-02",
+        "status": "PASS",
+        "detail": "customer/sales/tech schedule denied; admin schedules"
+      },
+      {
+        "check_id": "SP-03",
+        "status": "PASS",
+        "detail": "unassigned+wrong-tech denied; staff on-behalf starts"
+      },
+      {
+        "check_id": "SP-04",
+        "status": "PASS",
+        "detail": "job=in_progress ticket=open actual_end stable"
+      },
+      {
+        "check_id": "SP-05",
+        "status": "FAIL",
+        "detail": ""
+      },
+      {
+        "check_id": "SP-05B",
+        "status": "FAIL",
+        "detail": "resolver anon+forged denied=false uid=66666666-6666-6666-6666-666666666666 role=admin svc=null cu=bobbi"
+      },
+      {
+        "check_id": "SP-05C",
+        "status": "PASS",
+        "detail": "hosted-anon+forged denied rr={t,t,t,t,t,t,t,t,t,t}"
+      },
+      {
+        "check_id": "SP-06",
+        "status": "PASS",
+        "detail": "forged p_actor_id denied on 10/10 RPCs"
+      },
+      {
+        "check_id": "SP-07",
+        "status": "PASS",
+        "detail": "audit n=4 acts=abort_visit,reschedule_visit,schedule_visit,start_visit"
+      },
+      {
+        "check_id": "SP-08",
+        "status": "PASS",
+        "detail": "decline cleared scheduled attending; terminal frozen; former start denied"
+      }
+    ]
+  }
+}
