@@ -1,7 +1,7 @@
 # F-B3-03 — Consistent workflow lock order
 
 **Base:** F-B3-02 ack binding `b7a6dace` (prior evidence retained)  
-**This correction:** _stamped on freeze_  
+**This correction:**   
 **Migration:** `supabase/migrations/20261112201500_service_workflow_b3_f_b3_03_lock_order.sql`  
 **Local disposable:** B3 44/0 PASS (incl. B3-F3-0..5; start_wins+reassign_wins, deadlocks=0); B1/B2 under B3 72 PASS / 4 DEFER  
 **Gates:** No staging apply until Spark targeted review PASS · no merge · no production · no B4
