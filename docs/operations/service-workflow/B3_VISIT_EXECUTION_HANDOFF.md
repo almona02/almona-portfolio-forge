@@ -2,8 +2,8 @@
 
 **Status:** Spark **CONDITIONAL PASS** — corrections frozen for re-review  
 **Freeze commit:** `9882a256edb376de9ea726a510c96e40af69f845`  
-**Correction commit:** 
-**Corrections:** see tip / [`B3_CONDITIONAL_PASS_CORRECTIONS.md`](./B3_CONDITIONAL_PASS_CORRECTIONS.md) (`20261112190000_…`)  
+**Correction commit:** `a8503d1416b62db97e5c28b4da45f350a65e5a01`  
+**Corrections:** [`B3_CONDITIONAL_PASS_CORRECTIONS.md`](./B3_CONDITIONAL_PASS_CORRECTIONS.md) (`20261112190000_…`)  
 **Branch:** `feat/service-workflow-b1-planning`  
 **Depends on:** B1/B2 accepted at `49c78969` — see [`B1_B2_STAGING_ACCEPTANCE_CLOSEOUT.md`](./B1_B2_STAGING_ACCEPTANCE_CLOSEOUT.md)  
 **Contract:** [`B3_VISIT_CONTRACT.md`](./B3_VISIT_CONTRACT.md)  

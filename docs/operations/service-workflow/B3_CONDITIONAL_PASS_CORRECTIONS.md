@@ -2,7 +2,7 @@
 
 **Spark status:** CONDITIONAL PASS (pending targeted corrections) → **corrections frozen for re-review**  
 **Implementation base:** `9882a256edb376de9ea726a510c96e40af69f845`  
-**Correction commit:** 
+**Correction commit:** `a8503d1416b62db97e5c28b4da45f350a65e5a01`  
 **Correction migration:** `supabase/migrations/20261112190000_service_workflow_b3_visit_corrections.sql`  
 **Gates:** No staging apply · no merge · no production · #155 frozen · #156 draft · no B4
 
