@@ -16,7 +16,7 @@
 | Battery runner | `scripts/service-workflow/run_disposable_security.py` |
 | This review handoff | `docs/operations/service-workflow/SPARK_SECURITY_REMEDIATION_REVIEW.md` |
 | Parent handoff | `docs/operations/service-workflow/HANDOFF.md` |
-| Tip SHA (after push) | see commit after push — one full SHA stamps this package |
+| **Remediation package SHA** | `72e2e2f55e1b1211a7c9996e0fdbfc0f182b7041` |
 
 ---
 

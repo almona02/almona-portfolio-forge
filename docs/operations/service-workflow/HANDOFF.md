@@ -21,7 +21,7 @@ Browser testing **paused**. Corrective **not applied** until Spark ACK.
 | **Database (disposable B1/B2)** | ACCEPTED retained @ `8f2acc4e` — 71/0/0/5 + K1–K7 |
 | **Staging migrations applied** | `20261111222941` B1 → `20261111223057` B2 only |
 | **Containment** | ACTIVE since `2026-11-12T12:55:00+02:00` — stubs + anon EXECUTE revoked |
-| **Corrective** | `20261112150000_service_workflow_security_remediation.sql` — review only |
+| **Corrective package SHA** | `72e2e2f55e1b1211a7c9996e0fdbfc0f182b7041` — review only; **not applied** |
 | **Security battery** | before FAIL SEC1/SEC4/SEC5/SEC7 → after 7/7 PASS (disposable) |
 
 **Canonical security handoff (Spark starts here):**  
