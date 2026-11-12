@@ -1,65 +1,64 @@
-# B2 browser integration — freeze for Spark
+# B2 browser integration — Spark journey complete
 
-**Status:** Routes verified on protected staging preview; Cursor smoke complete.  
-B1/B2 acceptance still requires Spark’s targeted browser pass. No B3 / production / merge.  
-**#155** frozen · **#156** draft.
+**Status:** B1/B2 verification **COMPLETE** (Spark browser journey PASS).  
+**Supervisor call:** recommend **UNBLOCK** for staging acceptance (release readiness is the supervisor’s decision).  
+No B3 / production / merge from this handoff. **#155** frozen · **#156** draft.
 
-## Source Spark previously inspected
-
-| Layer | Value |
-|-------|--------|
-| Prior preview app SHA | `849d6d7806100ae718f063b576d9786a53a6f6be` |
-| Gaps demonstrated there | Job panel only in admin dialog tests; support had no staff ticket-read path; `/technician` bounced to marketing home |
-
-## Root cause of `/technician` → marketing home (this freeze)
-
-Staging `profiles` SELECT was **admin-only**. AuthContext could not load technician/support `profiles.role`, kept optimistic `customer`, and role-gated routes bounced to `/`.
-
-**Fixes applied on staging (and committed):**
-
-1. `20261112171000_profiles_select_own_for_role_routing` — own-row SELECT  
-2. `20261112171100_profiles_select_staff_directory_for_assignment` — admin/support staff directory for assignees  
-3. Prior `20261112170000` staff ticket SELECT via `caller_role()` (retained)  
-4. App: panel mount, `/support/desk`, `ProtectedRoute` waits for `isProfileResolved`; Login waits for resolved profile before home navigate
-
-## This freeze
+## Spark final verification (authoritative)
 
 | Field | Value |
 |-------|--------|
-| **App route SHA** | `49c7896963e648d173020d7d25be6fbb3eb8a2d6` (panel + desk + profile-wait) |
-| **Tip (profiles SELECT + Login wait)** | see companion preview access after tip READY |
-| **Staging project** | `apnmoevmvihfzcnttctx` |
-| **Security corrective** | Retained @ `d4cfc8ce` (passed live gate — do not re-litigate) |
+| **Verdict** | B2 browser journey: **PASS** (all items; UI decline closed) |
+| **Tested revision** | `49c7896963e648d173020d7d25be6fbb3eb8a2d6` — `fix(service): wire B2 job panel and staff ticket routes` |
+| **Build binding** | Local `npx vite build` + `vite preview :3002` against staging `apnmoevmvihfzcnttctx` |
+| **Immutable deploy** | None for this run — Vercel `dpl_EJdBuGt2…` deleted; results bound to **source SHA**, not a hosted URL |
+| **Final item J-5d** | **PASS** — UI decline-click on dedicated job `JRN-DECLINE-ME`, ticket `TKT-2026-000004` (`2fafddb2…`) |
 
-## What changed (application)
+### J-5d persistence
 
-1. **`ServiceJobAssignmentPanel`** mounts on authenticated `/support/tickets/:ticketId` for admin/support/technician (not share view).  
-2. **`/support/desk`** — admin/support staff ticket list via `getAllTickets` + RLS.  
-3. **`/technician`** — works once own-profile SELECT exists; `ProtectedRoute` + Login wait for `isProfileResolved`.  
-4. **Staging RLS** — ticket staff checks use `caller_role()`; profiles own + staff-directory policies for routing/assignees.
+- Decline dialog + required reason rendered; confirm clicked (`j15_decline_dialog.png`)
+- Row removed from “My service jobs” (`j15_after.png`)
+- Job: `state=unassigned`, `assigned_technician_id=NULL`, history `[…, assign, decline]`
+- Ticket contact `assigned_to=NULL` unchanged; sibling Job 1 untouched
 
-## Cursor smoke (deployed preview `49c78969` + staging DB)
+### Journey tally (Spark, independent)
 
 | Check | Result |
 |-------|--------|
-| Tech hard-nav `/technician` | **Technician Workspace** (not marketing home); reload keeps workspace |
-| Tech decline with reason | Toast **Job declined**; job count 2→1 after reload; job state `unassigned` |
-| Support `/support/desk` | **Support desk** + **Tickets ( 23 )** including `B2-BR-OPTIN` / `B2-BR-MULTI` |
-| Support ticket detail panel | `/support/tickets/8ef54ccf-…` shows **Service jobs** + create/assign UI |
-| Support create job | **Job 4: Cursor B2 smoke job 4** visible after create; still present after reload |
-| API (earlier, same staging) | support SELECT MULTI 1; tech OPTIN 0; support create/assign; tech decline; owner create/decline 403 |
-| Unit | `supportTicketAccess.b2`, `TicketDetailPage.b2.route`, `ProtectedRoute`, `roleRouting` — 17/17 pass |
+| R-1–R-4 admin/support access, tech route direct + reload | PASS |
+| J-1 opt-in retry-safe, J-2 Job 2 independence | PASS |
+| J-3 reassign persistence, J-4b Job 4 UI assign | PASS |
+| J-5a/b/c reassign/decline persistence, J-5d UI decline-click | PASS |
+| J-6 active-visit denial, J-7a unauthorized denial, contact independence | PASS |
 
-Sessions: `C:\projects\_almona_handoff\slice0-b2-security-sessions`
+### Preserved prior evidence (unchanged)
 
-## Spark browser targets
+- Live security **18/18** PASS (11 deny + 7 legit)
+- RLS **T-1–T-6** PASS
+- Disposable SEC **8/8** + independent **15/15** + union **8/8**
+- Hashes **13/13** MATCH
+- Probes: `f085e3f8` on `review/spark-b2-security-probes` (unpushed)
+- Screenshots: `slice0-b2corr\j13–j15_*.png`
 
-1. Protected preview (immutable URL + share in `B2_PREVIEW_ACCESS.md`)  
-2. Support → `/support/desk` → ticket → jobs panel create/assign  
-3. Tech → `/technician` (not marketing) → decline → reload  
-4. Owner/customer rejected from `/support/desk` and `/technician`  
-5. No production / merge / B3
+## Residuals (unchanged in kind)
 
-## Preview
+- No immutable preview binding for Spark’s final run (deleted deploy)
+- Component **35/35** is Cursor-claimed, not Spark-run
+- Service-role JWT-claim branch live **NOT TESTED** (no key; disposable-covered)
+- Job completion/report RPCs absent live
+- Auth error classifier fragile
+- Support-created tickets skip auto-assign
+- No production work done
 
-Filled in companion agent-store `slice0/B2_PREVIEW_ACCESS.md` when tip deployment is READY.
+## Engineering context (Cursor — supporting)
+
+| Layer | Value |
+|-------|--------|
+| Prior Spark inspect (gaps) | `849d6d7806100ae718f063b576d9786a53a6f6be` |
+| Security corrective (live gate PASS) | `d4cfc8ce` — do not re-litigate |
+| Staging | `apnmoevmvihfzcnttctx` |
+| `/technician` bounce root cause | admin-only `profiles` SELECT → optimistic `customer` |
+| Staging RLS adds | `caller_role` staff ticket SELECT; `profiles_select_own`; `profiles_select_staff_directory` |
+| App routes | Panel on `/support/tickets/:id`; `/support/desk`; `ProtectedRoute` / Login wait for `isProfileResolved` |
+
+Companion access notes: agent-store `slice0/B2_PREVIEW_ACCESS.md`.
