@@ -18,4 +18,8 @@ Spark’s attached verdict covered older `e83e7c2c` and is **not** a verdict on 
 
 ## Correction freeze
 
-Implementation fixes for OPEN items above require a new SHA. Tip superseding this disposition is recorded in `B4_REPORT_SUBMISSION_HANDOFF.md` after freeze.
+Implementation fixes for OPEN items above required a new SHA:
+
+**`e203b4387d56197847694bc60be387815e244d5c`** — closes F-B4-03, F-B4-04, UI retry/remount, migration preflight/compat; preserves F-B4-00/02; updates fixtures to ordinary-caller denials and soft labour contract.
+
+Spark must re-verify against `e203b438` (untouched migration apply). Do not treat a PASS on `6827c775` or `e83e7c2c` as a verdict on this tip.
