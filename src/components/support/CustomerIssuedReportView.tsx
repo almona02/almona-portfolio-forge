@@ -12,7 +12,10 @@ interface CustomerIssuedReportViewProps {
   visitId: string
 }
 
-/** Customer view: getter already omits unissued revisions/evidence. */
+/**
+ * Customer view: getter already omits unissued revisions/evidence and staff comments.
+ * Renders every issued revision (history); a pending correction does not replace prior issued.
+ */
 export const CustomerIssuedReportView: React.FC<CustomerIssuedReportViewProps> = ({ visitId }) => {
   const reportQuery = useQuery({
     queryKey: ['service-report', visitId],
@@ -46,29 +49,42 @@ export const CustomerIssuedReportView: React.FC<CustomerIssuedReportViewProps> =
     )
   }
 
-  const head = issued[issued.length - 1]
-
   return (
-    <div className="space-y-2 rounded border border-border/70 p-3" data-testid="customer-issued-report">
-      <p className="text-sm font-medium">Issued report — revision {head.revision_number}</p>
+    <div className="space-y-3" data-testid="customer-issued-report">
+      {issued.map((rev) => (
+        <div
+          key={rev.id}
+          className="space-y-2 rounded border border-border/70 p-3"
+          data-testid={`customer-issued-revision-${rev.revision_number}`}
+        >
+          <p className="text-sm font-medium">Issued report — revision {rev.revision_number}</p>
+          <p className="text-xs text-muted-foreground">
+            Issued {new Date(rev.submitted_at).toLocaleString()} · {rev.verification_outcome}
+          </p>
+          <p className="text-sm whitespace-pre-wrap">{rev.findings}</p>
+          <p className="text-sm whitespace-pre-wrap">{rev.work_performed}</p>
+          {(rev.evidence_paths ?? []).length > 0 && (
+            <ul className="space-y-1">
+              {(rev.evidence_paths ?? []).map((p) => (
+                <li key={p}>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    data-testid={`customer-evidence-download-${rev.revision_number}`}
+                    onClick={() => void download(p)}
+                  >
+                    Download evidence
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ))}
       <p className="text-xs text-muted-foreground">
-        Issued {new Date(head.submitted_at).toLocaleString()} · {head.verification_outcome}
-      </p>
-      <p className="text-sm whitespace-pre-wrap">{head.findings}</p>
-      <p className="text-sm whitespace-pre-wrap">{head.work_performed}</p>
-      {(head.evidence_paths ?? []).length > 0 && (
-        <ul className="space-y-1">
-          {(head.evidence_paths ?? []).map((p) => (
-            <li key={p}>
-              <Button type="button" size="sm" variant="ghost" onClick={() => void download(p)}>
-                Download evidence
-              </Button>
-            </li>
-          ))}
-        </ul>
-      )}
-      <p className="text-xs text-muted-foreground">
-        Newer unissued corrections are not shown. Acknowledgment is B6.
+        Unissued corrections are not shown. Prior issued revisions remain listed. Acknowledgment is
+        B6.
       </p>
     </div>
   )

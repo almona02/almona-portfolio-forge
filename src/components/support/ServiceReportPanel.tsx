@@ -7,9 +7,11 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import {
   getServiceReportForVisit,
+  listServiceReportReviewsForRevisions,
   submitServiceReportRevision,
   uploadReportEvidence,
   type ServiceReportRevisionRow,
+  type ServiceReportReviewRow,
 } from '@/lib/ticketGovernanceApi'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
@@ -58,6 +60,25 @@ function readStoredSubmission(visitId: string): {
   }
 }
 
+function readDraftClientSubmissionId(visitId: string): string | null {
+  try {
+    const raw = sessionStorage.getItem(draftStorageKey(visitId))
+    if (!raw) return null
+    const draft = JSON.parse(raw) as { clientSubmissionId?: string }
+    return draft.clientSubmissionId ?? null
+  } catch {
+    return null
+  }
+}
+
+function reviewFor(
+  revisionId: string | undefined,
+  reviews: ServiceReportReviewRow[],
+): ServiceReportReviewRow | null {
+  if (!revisionId) return null
+  return reviews.find((r) => r.revision_id === revisionId) ?? null
+}
+
 export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
   visitId,
   ticketId,
@@ -80,7 +101,7 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
   const [refetchError, setRefetchError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [clientSubmissionId, setClientSubmissionId] = useState(
-    () => stored?.clientSubmissionId ?? crypto.randomUUID(),
+    () => stored?.clientSubmissionId ?? readDraftClientSubmissionId(visitId) ?? crypto.randomUUID(),
   )
   const [confirmedRevision, setConfirmedRevision] = useState<ServiceReportRevisionRow | null>(
     () => stored?.revision ?? null,
@@ -91,15 +112,78 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
     queryFn: () => getServiceReportForVisit(visitId),
   })
 
-  const submittedHead = useMemo(() => {
-    if (confirmedRevision) return confirmedRevision
-    const revs = reportQuery.data?.revisions ?? []
-    if (revs.length === 0) return null
-    return revs[revs.length - 1]
-  }, [confirmedRevision, reportQuery.data])
+  const revisionIds = useMemo(
+    () => (reportQuery.data?.revisions ?? []).map((r) => r.id),
+    [reportQuery.data],
+  )
+
+  const reviewsQuery = useQuery({
+    queryKey: ['service-report-reviews', visitId, revisionIds.join(',')],
+    queryFn: () => listServiceReportReviewsForRevisions(revisionIds),
+    enabled: revisionIds.length > 0,
+  })
+
+  const reviews = reviewsQuery.data ?? []
+  const serverRevisions = reportQuery.data?.revisions ?? []
+  const latestServer = serverRevisions.length > 0 ? serverRevisions[serverRevisions.length - 1] : null
+  const latestReview = reviewFor(latestServer?.id, reviews)
+
+  // Confirmed local submit wins until server catches up with that revision id.
+  const displayRevision = useMemo(() => {
+    if (confirmedRevision) {
+      const onServer = serverRevisions.find((r) => r.id === confirmedRevision.id)
+      return onServer ?? confirmedRevision
+    }
+    return latestServer
+  }, [confirmedRevision, serverRevisions, latestServer])
+
+  const displayReview = reviewFor(displayRevision?.id, reviews)
+  const needsRevision =
+    !!latestServer && latestReview?.decision === 'returned' && canSubmit
+
+  // When the latest server revision was returned, drop stale submitted cache and
+  // mint a new submission identity once (retained across failed retry/remount).
+  useEffect(() => {
+    if (!needsRevision || !latestServer) return
+    const storedNow = readStoredSubmission(visitId)
+    if (storedNow?.revision?.id === latestServer.id) {
+      sessionStorage.removeItem(submittedStorageKey(visitId))
+      setConfirmedRevision(null)
+    }
+    let draft: {
+      clientSubmissionId?: string
+      afterReturnOf?: string
+      [key: string]: unknown
+    } | null = null
+    try {
+      const raw = sessionStorage.getItem(draftStorageKey(visitId))
+      draft = raw ? (JSON.parse(raw) as typeof draft) : null
+    } catch {
+      draft = null
+    }
+    // Keep an existing draft id when it belongs to this return (or was written
+    // before afterReturnOf was stamped during loading).
+    if (
+      draft?.clientSubmissionId &&
+      (!draft.afterReturnOf || draft.afterReturnOf === latestServer.id)
+    ) {
+      setClientSubmissionId(draft.clientSubmissionId)
+      sessionStorage.setItem(
+        draftStorageKey(visitId),
+        JSON.stringify({ ...draft, afterReturnOf: latestServer.id }),
+      )
+      return
+    }
+    const fresh = crypto.randomUUID()
+    setClientSubmissionId(fresh)
+    sessionStorage.setItem(
+      draftStorageKey(visitId),
+      JSON.stringify({ ...(draft ?? {}), clientSubmissionId: fresh, afterReturnOf: latestServer.id }),
+    )
+  }, [needsRevision, latestServer, visitId])
 
   useEffect(() => {
-    if (submittedHead) return
+    if (displayRevision && !needsRevision) return
     const key = draftStorageKey(visitId)
     try {
       const raw = sessionStorage.getItem(key)
@@ -127,10 +211,10 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
     } catch {
       /* ignore corrupt draft */
     }
-  }, [visitId, submittedHead])
+  }, [visitId, displayRevision, needsRevision])
 
   useEffect(() => {
-    if (submittedHead) return
+    if (displayRevision && !needsRevision) return
     sessionStorage.setItem(
       draftStorageKey(visitId),
       JSON.stringify({
@@ -143,6 +227,7 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
         verificationReason,
         evidencePaths,
         clientSubmissionId,
+        afterReturnOf: needsRevision ? latestServer?.id : undefined,
       }),
     )
   }, [
@@ -156,7 +241,9 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
     verificationReason,
     evidencePaths,
     clientSubmissionId,
-    submittedHead,
+    displayRevision,
+    needsRevision,
+    latestServer?.id,
   ])
 
   const onUpload = async (file: File | null) => {
@@ -218,19 +305,20 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
         clientSubmissionId,
       })
 
-      // Persist submitted identity BEFORE refetch. Never rotate the request key after success.
       setConfirmedRevision(revision)
       sessionStorage.setItem(
         submittedStorageKey(visitId),
         JSON.stringify({ revision, clientSubmissionId }),
       )
       sessionStorage.removeItem(draftStorageKey(visitId))
-      toast.success('Report submitted')
+      toast.success(needsRevision ? 'Revised report submitted' : 'Report submitted')
 
       try {
         await queryClient.invalidateQueries({ queryKey: ['service-report', visitId] })
+        await queryClient.invalidateQueries({ queryKey: ['service-report-reviews', visitId] })
         await queryClient.invalidateQueries({ queryKey: ['service-jobs'] })
         await reportQuery.refetch()
+        await reviewsQuery.refetch()
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'Submitted status refetch failed'
         setRefetchError(msg)
@@ -246,7 +334,7 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
     }
   }
 
-  if (reportQuery.isLoading && !confirmedRevision) {
+  if ((reportQuery.isLoading || (revisionIds.length > 0 && reviewsQuery.isLoading)) && !confirmedRevision) {
     return (
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading report status…
@@ -254,30 +342,55 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
     )
   }
 
-  if (submittedHead) {
+  const showForm = canSubmit && (!displayRevision || needsRevision)
+  const showStatus = !!displayRevision && !needsRevision
+
+  if (showStatus && displayRevision) {
+    const statusLabel =
+      displayReview?.decision === 'approved_issued'
+        ? 'issued'
+        : displayReview?.decision === 'returned'
+          ? 'returned'
+          : 'submitted'
     return (
-      <div className="space-y-1 rounded border border-border/70 bg-muted/20 p-3 text-sm">
-        <p className="font-medium">Report status: submitted</p>
+      <div
+        className="space-y-1 rounded border border-border/70 bg-muted/20 p-3 text-sm"
+        data-testid="service-report-status"
+      >
+        <p className="font-medium">Report status: {statusLabel}</p>
         <p className="text-xs text-muted-foreground">
-          Revision {submittedHead.revision_number} · {submittedHead.verification_outcome} ·{' '}
-          {new Date(submittedHead.submitted_at).toLocaleString()}
+          Revision {displayRevision.revision_number} · {displayRevision.verification_outcome} ·{' '}
+          {new Date(displayRevision.submitted_at).toLocaleString()}
         </p>
         <p className="text-xs text-muted-foreground">
-          Submission id {submittedHead.client_submission_id ?? clientSubmissionId}
+          Submission id {displayRevision.client_submission_id ?? clientSubmissionId}
         </p>
+        {displayReview?.decision === 'returned' && (
+          <div
+            className="rounded border border-amber-500/40 bg-amber-500/10 p-2 text-xs"
+            data-testid="service-report-return-readonly"
+          >
+            <p className="font-medium">Returned for correction</p>
+            {displayReview.comments ? (
+              <p className="mt-1 whitespace-pre-wrap">{displayReview.comments}</p>
+            ) : (
+              <p className="mt-1 text-muted-foreground">No comments recorded.</p>
+            )}
+          </div>
+        )}
         {refetchError && (
           <p className="text-xs text-destructive">
             Status refresh failed after submit; showing confirmed revision ({refetchError}).
           </p>
         )}
         <p className="text-xs">
-          Submitted content is append-only. Manager review/issue is B5; acknowledgment is B6.
+          Submitted content is append-only. Acknowledgment is B6.
         </p>
       </div>
     )
   }
 
-  if (!canSubmit) {
+  if (!showForm) {
     return (
       <p className="text-xs text-muted-foreground">
         Report not submitted. Only the attending technician can submit after visit completion.
@@ -286,8 +399,30 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
   }
 
   return (
-    <div className="space-y-3 rounded border border-border/70 p-3">
-      <p className="text-sm font-medium">Submit visit report</p>
+    <div className="space-y-3 rounded border border-border/70 p-3" data-testid="service-report-form">
+      {needsRevision && latestServer && latestReview && (
+        <div
+          className="space-y-1 rounded border border-amber-500/40 bg-amber-500/10 p-2 text-xs"
+          data-testid="service-report-return-banner"
+        >
+          <p className="font-medium">
+            Revision {latestServer.revision_number} was returned — submit a new revision
+          </p>
+          {latestReview.comments ? (
+            <p className="whitespace-pre-wrap" data-testid="service-report-return-comments">
+              {latestReview.comments}
+            </p>
+          ) : (
+            <p className="text-muted-foreground">No comments recorded.</p>
+          )}
+          <p className="text-muted-foreground">
+            The returned revision stays unchanged. New submission id {clientSubmissionId}
+          </p>
+        </div>
+      )}
+      <p className="text-sm font-medium">
+        {needsRevision ? 'Resubmit visit report' : 'Submit visit report'}
+      </p>
       <div className="space-y-1">
         <Label className="text-xs">Findings</Label>
         <Textarea value={findings} onChange={(e) => setFindings(e.target.value)} rows={2} />
@@ -381,7 +516,7 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
       {submitError && <p className="text-xs text-destructive">{submitError}</p>}
       <Button type="button" size="sm" disabled={busy} onClick={() => void onSubmit()}>
         {busy ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : null}
-        Submit report
+        {needsRevision ? 'Resubmit report' : 'Submit report'}
       </Button>
     </div>
   )

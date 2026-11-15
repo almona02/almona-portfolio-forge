@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TicketStatusBadge } from '@/components/support/TicketStatusBadge'
 import { ServiceJobAssignmentPanel } from '@/components/support/ServiceJobAssignmentPanel'
+import { CustomerIssuedReportsSection } from '@/components/support/CustomerIssuedReportsSection'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { ticketMessageApi, type TicketAttachment } from '@/lib/ticketMessageApi'
@@ -74,6 +75,14 @@ const TicketDetailPage = () => {
   const staffRoles = new Set(['admin', 'support', 'technician'])
   const canManageJobs = Boolean(
     user?.id && isProfileResolved && user.role && staffRoles.has(user.role) && !isSharedView,
+  )
+  // Owner issued-report access only — does not open staff job/review controls.
+  const canViewIssuedReports = Boolean(
+    user?.id &&
+      isProfileResolved &&
+      user.role === 'customer' &&
+      !isSharedView &&
+      ticket?.user_id === user.id,
   )
 
   const hydrateAttachmentUrls = async (
@@ -324,6 +333,17 @@ const TicketDetailPage = () => {
                   currentUserId={user.id}
                   viewerRole={user.role}
                 />
+              </CardContent>
+            </Card>
+          )}
+
+          {canViewIssuedReports && (
+            <Card data-testid="customer-issued-reports-card">
+              <CardHeader>
+                <CardTitle className="text-base">Issued service reports</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CustomerIssuedReportsSection ticketId={ticket.id} />
               </CardContent>
             </Card>
           )}

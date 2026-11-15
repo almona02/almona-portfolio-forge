@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import {
   createReportEvidenceSignedUrl,
   getServiceReportForVisit,
+  listServiceReportReviewsForRevisions,
   reviewServiceReportRevision,
   type ServiceReportRevisionRow,
 } from '@/lib/ticketGovernanceApi'
@@ -40,8 +41,15 @@ export const ServiceReportReviewPanel: React.FC<ServiceReportReviewPanelProps> =
     return revs[revs.length - 1]
   })()
 
+  const headReviewQuery = useQuery({
+    queryKey: ['service-report-reviews', visitId, head?.id ?? ''],
+    queryFn: () => listServiceReportReviewsForRevisions(head ? [head.id] : []),
+    enabled: !!head,
+  })
+  const existingDecision = headReviewQuery.data?.[0] ?? null
+
   const isAuthor = !!head && !!currentUserId && head.submitted_by === currentUserId
-  const allowDecide = canReview && !!head && !isAuthor
+  const allowDecide = canReview && !!head && !isAuthor && !existingDecision
 
   const run = async (decision: 'approved_issued' | 'returned') => {
     if (!head) return
@@ -125,6 +133,12 @@ export const ServiceReportReviewPanel: React.FC<ServiceReportReviewPanelProps> =
       )}
       {isAuthor && (
         <p className="text-xs text-destructive">You authored this revision; self-review is not allowed.</p>
+      )}
+      {existingDecision && (
+        <p className="text-xs text-muted-foreground" data-testid="service-report-review-decided">
+          Decision: {existingDecision.decision}
+          {existingDecision.comments ? ` — ${existingDecision.comments}` : ''}
+        </p>
       )}
       {allowDecide && (
         <div className="space-y-2">

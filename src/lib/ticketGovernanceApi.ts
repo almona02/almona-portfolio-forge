@@ -605,6 +605,19 @@ export async function reviewServiceReportRevision(input: {
   return data as ServiceReportReviewRow
 }
 
+/** RLS-filtered reviews for the given revision ids (authors see returns; owners see issued only). */
+export async function listServiceReportReviewsForRevisions(
+  revisionIds: string[],
+): Promise<ServiceReportReviewRow[]> {
+  if (revisionIds.length === 0) return []
+  const { data, error } = await supabase
+    .from('service_report_reviews')
+    .select('id, revision_id, reviewer_id, decision, comments, decided_at')
+    .in('revision_id', revisionIds)
+  if (error) throw mapJobRpcError(error.message)
+  return (data ?? []) as ServiceReportReviewRow[]
+}
+
 /** Signed URL for authorized evidence download (RLS/Storage policy still apply). */
 export async function createReportEvidenceSignedUrl(
   objectPath: string,

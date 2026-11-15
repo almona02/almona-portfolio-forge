@@ -10,10 +10,13 @@ const getReport = vi.fn()
 const submitReport = vi.fn()
 const uploadEvidence = vi.fn()
 
+const listReviews = vi.fn()
+
 vi.mock('@/lib/ticketGovernanceApi', () => ({
   getServiceReportForVisit: (...args: unknown[]) => getReport(...args),
   submitServiceReportRevision: (...args: unknown[]) => submitReport(...args),
   uploadReportEvidence: (...args: unknown[]) => uploadEvidence(...args),
+  listServiceReportReviewsForRevisions: (...args: unknown[]) => listReviews(...args),
 }))
 
 vi.mock('@/lib/supabase', () => ({
@@ -61,6 +64,8 @@ describe('ServiceReportPanel B4', () => {
     getReport.mockReset()
     submitReport.mockReset()
     uploadEvidence.mockReset()
+    listReviews.mockReset()
+    listReviews.mockResolvedValue([])
     sessionStorage.clear()
   })
 

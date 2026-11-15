@@ -8,10 +8,12 @@ import { ServiceReportReviewPanel } from './ServiceReportReviewPanel'
 
 const getReport = vi.fn()
 const review = vi.fn()
+const listReviews = vi.fn()
 
 vi.mock('@/lib/ticketGovernanceApi', () => ({
   getServiceReportForVisit: (...args: unknown[]) => getReport(...args),
   reviewServiceReportRevision: (...args: unknown[]) => review(...args),
+  listServiceReportReviewsForRevisions: (...args: unknown[]) => listReviews(...args),
   createReportEvidenceSignedUrl: vi.fn(async () => 'https://example.test/signed'),
 }))
 
@@ -52,6 +54,8 @@ describe('ServiceReportReviewPanel B5', () => {
   beforeEach(() => {
     getReport.mockReset()
     review.mockReset()
+    listReviews.mockReset()
+    listReviews.mockResolvedValue([])
   })
 
   it('renders submitted revision and calls approve', async () => {
