@@ -20,6 +20,8 @@ import {
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { ServiceReportPanel } from '@/components/support/ServiceReportPanel'
+import { ServiceReportReviewPanel } from '@/components/support/ServiceReportReviewPanel'
+import { CustomerIssuedReportView } from '@/components/support/CustomerIssuedReportView'
 import { toast } from 'sonner'
 
 export type ServiceVisitViewerRole = 'admin' | 'support' | 'technician' | string
@@ -347,7 +349,7 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
                 (viewerRole === 'technician' &&
                   !!user?.id &&
                   v.attending_technician_id === user.id)) && (
-                <div className="w-full" data-testid={`service-report-mount-${v.id}`}>
+                <div className="w-full space-y-2" data-testid={`service-report-mount-${v.id}`}>
                   <ServiceReportPanel
                     visitId={v.id}
                     ticketId={jobMetaQuery.data.ticket_id}
@@ -357,8 +359,21 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
                       v.attending_technician_id === user.id
                     }
                   />
+                  {staff && (
+                    <ServiceReportReviewPanel
+                      visitId={v.id}
+                      canReview={staff}
+                      currentUserId={user?.id}
+                    />
+                  )}
                 </div>
               )}
+
+            {v.state === 'completed' && viewerRole === 'customer' && (
+              <div className="w-full" data-testid={`customer-issued-mount-${v.id}`}>
+                <CustomerIssuedReportView visitId={v.id} />
+              </div>
+            )}
           </li>
         ))}
       </ul>

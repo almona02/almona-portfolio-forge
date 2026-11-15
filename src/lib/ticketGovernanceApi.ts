@@ -580,3 +580,41 @@ export async function uploadReportEvidence(input: {
   if (error) throw new Error(error.message || 'Evidence upload failed')
   return path
 }
+
+/** B5: manager review decision row. */
+export interface ServiceReportReviewRow {
+  id: string
+  revision_id: string
+  reviewer_id: string
+  decision: 'approved_issued' | 'returned'
+  comments: string | null
+  decided_at: string
+}
+
+export async function reviewServiceReportRevision(input: {
+  revisionId: string
+  decision: 'approved_issued' | 'returned'
+  comments?: string
+}): Promise<ServiceReportReviewRow> {
+  const { data, error } = await supabase.rpc('review_service_report_revision', {
+    p_revision_id: input.revisionId,
+    p_decision: input.decision,
+    p_comments: input.comments ?? null,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return data as ServiceReportReviewRow
+}
+
+/** Signed URL for authorized evidence download (RLS/Storage policy still apply). */
+export async function createReportEvidenceSignedUrl(
+  objectPath: string,
+  expiresInSeconds = 120,
+): Promise<string> {
+  const { data, error } = await supabase.storage
+    .from('ticket-attachments')
+    .createSignedUrl(objectPath, expiresInSeconds)
+  if (error || !data?.signedUrl) {
+    throw new Error(error?.message || 'Evidence download unavailable')
+  }
+  return data.signedUrl
+}

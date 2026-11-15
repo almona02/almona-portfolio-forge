@@ -1,0 +1,77 @@
+import React from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  createReportEvidenceSignedUrl,
+  getServiceReportForVisit,
+} from '@/lib/ticketGovernanceApi'
+import { toast } from 'sonner'
+
+interface CustomerIssuedReportViewProps {
+  visitId: string
+}
+
+/** Customer view: getter already omits unissued revisions/evidence. */
+export const CustomerIssuedReportView: React.FC<CustomerIssuedReportViewProps> = ({ visitId }) => {
+  const reportQuery = useQuery({
+    queryKey: ['service-report', visitId],
+    queryFn: () => getServiceReportForVisit(visitId),
+  })
+
+  const issued = reportQuery.data?.revisions ?? []
+
+  const download = async (path: string) => {
+    try {
+      const url = await createReportEvidenceSignedUrl(path)
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Download failed')
+    }
+  }
+
+  if (reportQuery.isLoading) {
+    return (
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading issued report…
+      </div>
+    )
+  }
+
+  if (issued.length === 0) {
+    return (
+      <p className="text-xs text-muted-foreground" data-testid="customer-issued-report-empty">
+        No issued report is available for this visit yet.
+      </p>
+    )
+  }
+
+  const head = issued[issued.length - 1]
+
+  return (
+    <div className="space-y-2 rounded border border-border/70 p-3" data-testid="customer-issued-report">
+      <p className="text-sm font-medium">Issued report — revision {head.revision_number}</p>
+      <p className="text-xs text-muted-foreground">
+        Issued {new Date(head.submitted_at).toLocaleString()} · {head.verification_outcome}
+      </p>
+      <p className="text-sm whitespace-pre-wrap">{head.findings}</p>
+      <p className="text-sm whitespace-pre-wrap">{head.work_performed}</p>
+      {(head.evidence_paths ?? []).length > 0 && (
+        <ul className="space-y-1">
+          {(head.evidence_paths ?? []).map((p) => (
+            <li key={p}>
+              <Button type="button" size="sm" variant="ghost" onClick={() => void download(p)}>
+                Download evidence
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="text-xs text-muted-foreground">
+        Newer unissued corrections are not shown. Acknowledgment is B6.
+      </p>
+    </div>
+  )
+}
+
+export default CustomerIssuedReportView
