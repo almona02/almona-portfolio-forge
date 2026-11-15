@@ -80,13 +80,18 @@ vi.mock('@/components/support/ServiceJobAssignmentPanel', () => ({
 const listJobs = vi.fn()
 const listVisits = vi.fn()
 const getReport = vi.fn()
-const signedUrl = vi.fn(async () => 'https://example.test/signed')
+const signedUrl = vi.fn(
+  async (_objectPath: string, _expiresInSeconds?: number) => 'https://example.test/signed',
+)
 
 vi.mock('@/lib/ticketGovernanceApi', () => ({
-  listServiceJobsForTicket: (...args: unknown[]) => listJobs(...args),
-  listServiceVisitsForJob: (...args: unknown[]) => listVisits(...args),
-  getServiceReportForVisit: (...args: unknown[]) => getReport(...args),
-  createReportEvidenceSignedUrl: (...args: unknown[]) => signedUrl(...args),
+  listServiceJobsForTicket: (ticketId: string) => listJobs(ticketId),
+  listServiceVisitsForJob: (jobId: string) => listVisits(jobId),
+  getServiceReportForVisit: (visitId: string) => getReport(visitId),
+  createReportEvidenceSignedUrl: (objectPath: string, expiresInSeconds?: number) =>
+    expiresInSeconds === undefined
+      ? signedUrl(objectPath)
+      : signedUrl(objectPath, expiresInSeconds),
 }))
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }))

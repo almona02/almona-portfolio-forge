@@ -60,11 +60,25 @@ function readStoredSubmission(visitId: string): {
   }
 }
 
+/** Session draft persisted while a returned revision is being corrected. */
+type ReportDraftState = {
+  findings?: string
+  workPerformed?: string
+  noLabour?: boolean
+  labourHours?: string
+  labourDescription?: string
+  verificationOutcome?: VerificationOutcome
+  verificationReason?: string
+  evidencePaths?: string[]
+  clientSubmissionId?: string
+  afterReturnOf?: string
+}
+
 function readDraftClientSubmissionId(visitId: string): string | null {
   try {
     const raw = sessionStorage.getItem(draftStorageKey(visitId))
     if (!raw) return null
-    const draft = JSON.parse(raw) as { clientSubmissionId?: string }
+    const draft = JSON.parse(raw) as ReportDraftState
     return draft.clientSubmissionId ?? null
   } catch {
     return null
@@ -150,14 +164,10 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
       sessionStorage.removeItem(submittedStorageKey(visitId))
       setConfirmedRevision(null)
     }
-    let draft: {
-      clientSubmissionId?: string
-      afterReturnOf?: string
-      [key: string]: unknown
-    } | null = null
+    let draft: ReportDraftState | null = null
     try {
       const raw = sessionStorage.getItem(draftStorageKey(visitId))
-      draft = raw ? (JSON.parse(raw) as typeof draft) : null
+      draft = raw ? (JSON.parse(raw) as ReportDraftState) : null
     } catch {
       draft = null
     }
@@ -178,7 +188,11 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
     setClientSubmissionId(fresh)
     sessionStorage.setItem(
       draftStorageKey(visitId),
-      JSON.stringify({ ...(draft ?? {}), clientSubmissionId: fresh, afterReturnOf: latestServer.id }),
+      JSON.stringify({
+        ...(draft ?? {}),
+        clientSubmissionId: fresh,
+        afterReturnOf: latestServer.id,
+      }),
     )
   }, [needsRevision, latestServer, visitId])
 
@@ -188,17 +202,7 @@ export const ServiceReportPanel: React.FC<ServiceReportPanelProps> = ({
     try {
       const raw = sessionStorage.getItem(key)
       if (!raw) return
-      const draft = JSON.parse(raw) as {
-        findings?: string
-        workPerformed?: string
-        noLabour?: boolean
-        labourHours?: string
-        labourDescription?: string
-        verificationOutcome?: VerificationOutcome
-        verificationReason?: string
-        evidencePaths?: string[]
-        clientSubmissionId?: string
-      }
+      const draft = JSON.parse(raw) as ReportDraftState
       if (draft.findings) setFindings(draft.findings)
       if (draft.workPerformed) setWorkPerformed(draft.workPerformed)
       if (typeof draft.noLabour === 'boolean') setNoLabour(draft.noLabour)
