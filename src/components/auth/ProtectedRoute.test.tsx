@@ -7,6 +7,7 @@ const authState = {
   user: null as { id: string; role?: string } | null,
   supabaseUser: null as { id: string } | null,
   loading: false,
+  isProfileResolved: true,
 };
 
 vi.mock('@/context/AuthContext', () => ({
@@ -38,6 +39,7 @@ describe('ProtectedRoute', () => {
     null,
   ])('denies admin pages when the profile is not an admin: %j', (user) => {
     authState.loading = false;
+    authState.isProfileResolved = true;
     authState.user = user;
     authState.supabaseUser = { id: 'session-1' };
     renderAt('/portal', true);
@@ -47,6 +49,7 @@ describe('ProtectedRoute', () => {
 
   it('allows an admin profile to open an admin page', () => {
     authState.loading = false;
+    authState.isProfileResolved = true;
     authState.user = { id: 'admin-1', role: 'admin' };
     authState.supabaseUser = { id: 'admin-1' };
     renderAt('/portal', true);
@@ -54,6 +57,7 @@ describe('ProtectedRoute', () => {
   });
   it('shows loading and does not bounce to login while auth is unresolved', () => {
     authState.loading = true;
+    authState.isProfileResolved = false;
     authState.user = null;
     authState.supabaseUser = null;
     renderAt('/portal');
@@ -63,6 +67,7 @@ describe('ProtectedRoute', () => {
 
   it('renders children when a user is present', () => {
     authState.loading = false;
+    authState.isProfileResolved = true;
     authState.user = { id: 'u1' };
     authState.supabaseUser = { id: 'u1' };
     renderAt('/portal');
@@ -71,6 +76,7 @@ describe('ProtectedRoute', () => {
 
   it('keeps a valid session on the page even before the profile row exists', () => {
     authState.loading = false;
+    authState.isProfileResolved = false;
     authState.user = null;
     authState.supabaseUser = { id: 'u1' };
     renderAt('/portal');
@@ -79,6 +85,7 @@ describe('ProtectedRoute', () => {
 
   it('redirects to login only after loading finishes without a session', () => {
     authState.loading = false;
+    authState.isProfileResolved = true;
     authState.user = null;
     authState.supabaseUser = null;
     renderAt('/portal');
@@ -87,6 +94,7 @@ describe('ProtectedRoute', () => {
 
   it('denies technician workspace to customers via requireRoles', () => {
     authState.loading = false;
+    authState.isProfileResolved = true;
     authState.user = { id: 'c1', role: 'customer' };
     authState.supabaseUser = { id: 'c1' };
     renderAt('/portal', false, ['technician', 'admin', 'support']);
@@ -96,9 +104,21 @@ describe('ProtectedRoute', () => {
 
   it('allows technicians into role-gated pages', () => {
     authState.loading = false;
+    authState.isProfileResolved = true;
     authState.user = { id: 't1', role: 'technician' };
     authState.supabaseUser = { id: 't1' };
     renderAt('/portal', false, ['technician', 'admin', 'support']);
     expect(screen.getByText('portal-ok')).toBeInTheDocument();
+  });
+
+  it('waits for profile before applying requireRoles (avoids marketing bounce)', () => {
+    authState.loading = false;
+    authState.isProfileResolved = false;
+    authState.user = { id: 't1', role: 'customer' }; // optimistic placeholder
+    authState.supabaseUser = { id: 't1' };
+    renderAt('/portal', false, ['technician', 'admin', 'support']);
+    expect(screen.getByText('Loading…')).toBeInTheDocument();
+    expect(screen.queryByText('home-page')).not.toBeInTheDocument();
+    expect(screen.queryByText('portal-ok')).not.toBeInTheDocument();
   });
 });

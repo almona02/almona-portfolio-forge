@@ -12,7 +12,14 @@ import { TicketStatusBadge } from '@/components/support/TicketStatusBadge'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { ticketMessageApi } from '@/lib/ticketMessageApi'
-import { governTicketSetEscalated, governTicketTransition } from '@/lib/ticketGovernanceApi'
+import {
+  declineServiceJob,
+  governTicketSetEscalated,
+  governTicketTransition,
+  listServiceJobsForTechnician,
+  type ServiceJobRow,
+} from '@/lib/ticketGovernanceApi'
+import { ServiceVisitPanel } from '@/components/support/ServiceVisitPanel'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
 import { Loader2, RefreshCw, Share2, Wrench, CheckCircle2, XCircle, PlayCircle } from 'lucide-react'
@@ -33,8 +40,13 @@ const TechnicianDashboard: React.FC = () => {
   const { toast } = useToast()
   const navigate = useNavigate()
   const [tickets, setTickets] = useState<TicketRow[]>([])
+  const [jobs, setJobs] = useState<ServiceJobRow[]>([])
   const [loading, setLoading] = useState(true)
   const [spareTicket, setSpareTicket] = useState<TicketRow | null>(null)
+  const [declineJobId, setDeclineJobId] = useState<string | null>(null)
+  const [declineReason, setDeclineReason] = useState('')
+  const [jobError, setJobError] = useState<string | null>(null)
+  const [declining, setDeclining] = useState(false)
 
   const refresh = useCallback(async () => {
     if (!user?.id) return
@@ -47,6 +59,12 @@ const TechnicianDashboard: React.FC = () => {
         .order('updated_at', { ascending: false })
       if (error) throw error
       setTickets((data ?? []) as TicketRow[])
+      try {
+        setJobs(await listServiceJobsForTechnician(user.id))
+      } catch (jobErr) {
+        console.error(jobErr)
+        setJobs([])
+      }
     } catch (e) {
       console.error(e)
     } finally {
@@ -103,6 +121,108 @@ const TechnicianDashboard: React.FC = () => {
           <RefreshCw className="mr-2 h-4 w-4" /> Refresh
         </Button>
       </div>
+
+      {jobError && (
+        <p role="alert" className="text-sm text-destructive">
+          {jobError}
+        </p>
+      )}
+
+      {!loading && jobs.length > 0 && (
+        <Card>
+          <CardContent className="py-4 space-y-3">
+            <div>
+              <h2 className="font-semibold">My service jobs</h2>
+              <p className="text-xs text-muted-foreground">
+                Decline applies to the job only; ticket case contact is unchanged.
+              </p>
+            </div>
+            <ul className="space-y-3">
+              {jobs.map((job) => (
+                <li key={job.id} className="rounded-md border border-border p-3 space-y-2">
+                  <div className="flex flex-wrap justify-between gap-2">
+                    <div>
+                      <div className="font-medium text-sm">
+                        Job {job.job_sequence}: {job.title}
+                      </div>
+                      <div className="text-xs text-muted-foreground capitalize">State: {job.state}</div>
+                    </div>
+                    {job.state !== 'unassigned' &&
+                      !['completed', 'waived', 'cancelled'].includes(job.state) && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setJobError(null)
+                            setDeclineJobId(job.id)
+                            setDeclineReason('')
+                          }}
+                        >
+                          <XCircle className="mr-1 h-4 w-4" /> Decline job
+                        </Button>
+                      )}
+                  </div>
+                  <ServiceVisitPanel
+                    jobId={job.id}
+                    viewerRole="technician"
+                    canExecute={job.assigned_technician_id === user?.id}
+                  />
+                  {declineJobId === job.id && (
+                    <div className="space-y-2">
+                      <Label htmlFor={`tech-decline-${job.id}`}>Decline reason (required)</Label>
+                      <Textarea
+                        id={`tech-decline-${job.id}`}
+                        value={declineReason}
+                        onChange={(e) => setDeclineReason(e.target.value)}
+                        rows={2}
+                        disabled={declining}
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          disabled={declining || !declineReason.trim()}
+                          onClick={() => {
+                            void (async () => {
+                              setDeclining(true)
+                              setJobError(null)
+                              try {
+                                await declineServiceJob({
+                                  jobId: job.id,
+                                  reason: declineReason.trim(),
+                                })
+                                toast({ title: 'Job declined' })
+                                setDeclineJobId(null)
+                                setDeclineReason('')
+                                await refresh()
+                              } catch (e) {
+                                const msg = (e as Error)?.message ?? 'Decline failed'
+                                setJobError(msg)
+                                toast({ title: 'Decline failed', description: msg, variant: 'destructive' })
+                              } finally {
+                                setDeclining(false)
+                              }
+                            })()
+                          }}
+                        >
+                          {declining ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Confirm decline'}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          disabled={declining}
+                          onClick={() => setDeclineJobId(null)}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
 
       {loading ? (
         <div className="flex items-center gap-2 text-muted-foreground">

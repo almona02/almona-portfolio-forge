@@ -8,7 +8,7 @@ export const roleHomePath = (role?: string | null): string => {
     case 'technician':
       return '/technician'
     case 'support':
-      return '/support'
+      return '/support/desk'
     case 'sales_rep':
       return '/services'
     default:

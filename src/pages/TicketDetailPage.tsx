@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TicketStatusBadge } from '@/components/support/TicketStatusBadge'
+import { ServiceJobAssignmentPanel } from '@/components/support/ServiceJobAssignmentPanel'
+import { CustomerIssuedReportsSection } from '@/components/support/CustomerIssuedReportsSection'
+import { TicketWorkflowClosurePanel } from '@/components/support/TicketWorkflowClosurePanel'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { ticketMessageApi, type TicketAttachment } from '@/lib/ticketMessageApi'
@@ -55,7 +58,7 @@ const TicketDetailPage = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const shareToken = searchParams.get('share')
-  const { user } = useAuth()
+  const { user, supabaseUser, loading: authLoading, isProfileResolved } = useAuth()
   const { toast } = useToast()
 
   const [ticket, setTicket] = useState<TicketRow | null>(null)
@@ -70,6 +73,25 @@ const TicketDetailPage = () => {
   const endRef = useRef<HTMLDivElement>(null)
 
   const isSharedView = !!shareToken
+  const staffRoles = new Set(['admin', 'support', 'technician'])
+  const canManageJobs = Boolean(
+    user?.id && isProfileResolved && user.role && staffRoles.has(user.role) && !isSharedView,
+  )
+  const canManageClosure = Boolean(
+    user?.id &&
+      isProfileResolved &&
+      (user.role === 'admin' || user.role === 'support') &&
+      !isSharedView,
+  )
+  // Owner issued-report access only — does not open staff job/review controls.
+  // UI requires role=customer (sales-role owners are fail-closed here; RPC remains ownership-based).
+  const canViewIssuedReports = Boolean(
+    user?.id &&
+      isProfileResolved &&
+      user.role === 'customer' &&
+      !isSharedView &&
+      ticket?.user_id === user.id,
+  )
 
   const hydrateAttachmentUrls = async (
     rows: MessageRow[],
@@ -118,13 +140,20 @@ const TicketDetailPage = () => {
           setLoading(false)
         })
         .catch(() => { setError('Invalid or expired share link.'); setLoading(false) })
-    } else {
+    } else if (user || supabaseUser) {
       void loadAuthenticated()
+    } else if (!authLoading) {
+      setLoading(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ticketId, shareToken])
+  }, [ticketId, shareToken, user?.id, supabaseUser?.id, authLoading])
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages.length])
+
+  // Authenticated ticket view requires a session; share links remain public.
+  if (!isSharedView && !authLoading && !user && !supabaseUser) {
+    return <Navigate to="/login" replace state={{ from: `/support/tickets/${ticketId ?? ''}` }} />
+  }
 
   const send = async () => {
     if (!reply.trim() || !user || !ticket || sending) return
@@ -302,6 +331,46 @@ const TicketDetailPage = () => {
               {ticket.contact_email && <div className="flex items-center justify-between gap-4"><span className="text-muted-foreground flex items-center gap-1"><Mail className="h-3.5 w-3.5" /> Email</span><a className="text-right break-all" href={`mailto:${ticket.contact_email}`}>{ticket.contact_email}</a></div>}
             </CardContent>
           </Card>
+
+          {canManageJobs && user && (
+            <Card>
+              <CardHeader><CardTitle className="text-base">Service jobs</CardTitle></CardHeader>
+              <CardContent>
+                <ServiceJobAssignmentPanel
+                  ticketId={ticket.id}
+                  currentUserId={user.id}
+                  viewerRole={user.role}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          {canManageClosure && user && (
+            <Card data-testid="ticket-workflow-closure-card">
+              <CardHeader>
+                <CardTitle className="text-base">Closure prerequisites</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <TicketWorkflowClosurePanel
+                  ticketId={ticket.id}
+                  currentStatus={ticket.status}
+                  currentUserId={user.id}
+                  resolutionSummary={ticket.resolution_summary}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          {canViewIssuedReports && (
+            <Card data-testid="customer-issued-reports-card">
+              <CardHeader>
+                <CardTitle className="text-base">Issued service reports</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CustomerIssuedReportsSection ticketId={ticket.id} />
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

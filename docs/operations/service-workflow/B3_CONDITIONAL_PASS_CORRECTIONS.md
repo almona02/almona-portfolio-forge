@@ -1,0 +1,29 @@
+# B3 CONDITIONAL PASS — correction freeze
+
+**Spark status:** CONDITIONAL PASS (pending targeted corrections) → **corrections frozen for re-review**  
+**Implementation base:** `9882a256edb376de9ea726a510c96e40af69f845`  
+**Correction commit:** `a8503d1416b62db97e5c28b4da45f350a65e5a01`  
+**Correction migration:** `supabase/migrations/20261112190000_service_workflow_b3_visit_corrections.sql`  
+**Safety-path final:** `742d1a98fccc34c5a28277cb2f8ea34587ae2b2e` / [`B3_SAFETY_PATH_FINAL.md`](./B3_SAFETY_PATH_FINAL.md) — `20261112194500_…`  
+**F-B3-02 ack binding:** `b7a6dace3510e486357a1e10c5b80a985818b717` / [`B3_F_B3_02_ACK_BINDING.md`](./B3_F_B3_02_ACK_BINDING.md) — `20261112200000_…`  
+**F-B3-03 lock order (required before staging):** `4e0ddd225e35ef615052214898db088b718f9e5c` / [`B3_F_B3_03_LOCK_ORDER.md`](./B3_F_B3_03_LOCK_ORDER.md) — `20261112201500_…`  
+**Gates:** No staging apply until Spark F-B3-03 review PASS · no merge · no production · #155 frozen · #156 draft · no B4
+
+## Defects addressed
+
+| ID | Correction |
+|----|------------|
+| **F-B3-01** | `complete` / `abort` / `no_access` authorize before idempotent terminal return; denied callers get no payload and no audit/writes |
+| **D-B3-01** | First authorized visit start advances ticket `assigned → in_progress` atomically with visit/job + audits; later starts do not re-fire or reset clocks; incompatible parents denied |
+| **D-B3-02** | Server-enforced minimum safety attestation + attributable `service_job_visit_safety_checks`; missing/failed deny start; abort/no-access remain available as non-work outcomes; no machine-specific hazard claim |
+
+## Spark re-run focus
+
+1. Authorization + idempotency on terminal visits (owner / unrelated tech / customer / sales / anon / forged)
+2. First-start concurrency/atomicity (ticket+job+visit+audit) and no clock reset on later starts
+3. Safety gate (missing/wrong/failed) + non-work outcomes
+4. Relevant B1/B2 regressions under both B3 migrations
+
+## Local verification (Cursor)
+
+See `B3_INDEPENDENT_VERIFICATION_VERDICT.md` update in this commit for SHA-bound counts after corrections.

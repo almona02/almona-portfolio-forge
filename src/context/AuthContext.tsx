@@ -35,6 +35,8 @@ interface AuthContextType {
   supabaseUser: SupabaseUser | null;
   loading: boolean;            // Initial bootstrap only
   actionLoading: boolean;      // Fast feedback for ongoing auth actions
+  /** False while a session exists but the profiles row has not been applied yet. */
+  isProfileResolved: boolean;
   stableDisplayEmail?: string; // Non-flickering email for UI
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (userData: {
@@ -93,6 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);          // initial session probe
   const [actionLoading, setActionLoading] = useState(false); // user-initiated auth actions
+  const [isProfileResolved, setIsProfileResolved] = useState(false);
   // Preserve first non-empty email to avoid UI flicker when placeholder profile is swapped with real profile
   const stableEmailRef = useRef<string | undefined>(undefined);
 
@@ -123,6 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const cached: unknown = JSON.parse(sessionStorage.getItem(`${cacheKey}-data`) || 'null');
         if (isUserShape(cached) && cached.id === userId) {
           setUser(cached);
+          setIsProfileResolved(true);
           return;
         }
       } catch { /* Invalid cache must fall through to a fresh profile fetch. */ }
@@ -130,6 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // If there's an RLS error for this user, skip fetching to prevent retries
     if (sessionStorage.getItem(`${cacheKey}-rls-error`)) {
+      setIsProfileResolved(true);
       return;
     }
 
@@ -162,12 +167,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (profile) {
         if (activeOwnerRef.current !== userId) return;
         setUser(profile);
+        setIsProfileResolved(true);
         if (!stableEmailRef.current && (profile as User).email) {
           stableEmailRef.current = (profile as User).email;
         }
         // Cache the fetch time and profile data
         sessionStorage.setItem(cacheKey, now.toString());
         sessionStorage.setItem(`${cacheKey}-data`, JSON.stringify(profile));
+      } else {
+        setIsProfileResolved(true);
       }
     } catch (error: unknown) {
       if (activeOwnerRef.current !== userId) return;
@@ -183,6 +191,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Mark this user as having an RLS error to prevent retries
         sessionStorage.setItem(`${cacheKey}-rls-error`, 'true');
         ongoingFetches.current.delete(userId);
+        setIsProfileResolved(true);
         return;
       }
 
@@ -199,6 +208,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const parsed = JSON.parse(cachedData) as unknown;
           if (isUserShape(parsed) && parsed.id === userId) {
             setUser(parsed);
+            setIsProfileResolved(true);
           }
           return;
         } catch {
@@ -232,6 +242,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setUser(null);
       }
+      setIsProfileResolved(true);
     } finally {
       // Remove from ongoing fetches
       ongoingFetches.current.delete(userId);
@@ -338,6 +349,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const meta = session.user.user_metadata as Record<string, unknown> | null | undefined;
           // Set a placeholder before loading ends so ProtectedRoute does not bounce
           // a valid session to /login while the profile fetch is still deferred.
+          // Optimistic role is NOT authoritative — isProfileResolved stays false until fetch.
+          setIsProfileResolved(false);
           setUser(prev => prev?.id === session.user.id ? prev : {
             id: session.user.id,
             email: session.user.email || undefined,
@@ -378,6 +391,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               }, 100);
             }
           });
+        } else if (isMounted) {
+          setIsProfileResolved(true);
         }
       } catch (error) {
         console.error('Error in getInitialSession:', error);
@@ -385,6 +400,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (isMounted) {
           setUser(null);
           setSupabaseUser(null);
+          setIsProfileResolved(true);
         }
       } finally {
         // A newer auth event owns initialization until its deferred session is installed.
@@ -419,6 +435,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.warn('[Auth] Token refresh failed, clearing session');
             setSupabaseUser(null);
             setUser(null);
+            setIsProfileResolved(true);
             setLoading(false);
             return;
           }
@@ -427,6 +444,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (event === 'SIGNED_OUT') {
             setSupabaseUser(null);
             setUser(null);
+            setIsProfileResolved(true);
             setLoading(false);
             return;
           }
@@ -436,26 +454,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             startTransition(() => {
               setSupabaseUser(session.user);
               const meta = session.user.user_metadata as Record<string, unknown> | null | undefined;
-              // Immediate optimistic placeholder if user object not yet built
-              setUser(prev => prev?.id === session.user.id ? prev : {
-                id: session.user.id,
-                email: session.user.email || undefined,
-                username: null,
-                full_name: getMetaString(meta, 'full_name'),
-                avatar_url: getMetaString(meta, 'avatar_url'),
-                company_name: getMetaString(meta, 'company_name'),
-                phone: getMetaString(meta, 'phone'),
-                sector: null as unknown as User['sector'],
-                workshop_location: null,
-                governorate: null,
-                address: null as unknown as User['address'],
-                tax_number: null,
-                commercial_register: null,
-                role: 'customer' as User['role'],
-                is_verified: false,
-                preferences: {} as User['preferences'],
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
+              // Immediate optimistic placeholder if user object not yet built.
+              // Keep isProfileResolved when the same user already has a real profile.
+              setUser(prev => {
+                if (prev?.id === session.user.id) return prev;
+                setIsProfileResolved(false);
+                return {
+                  id: session.user.id,
+                  email: session.user.email || undefined,
+                  username: null,
+                  full_name: getMetaString(meta, 'full_name'),
+                  avatar_url: getMetaString(meta, 'avatar_url'),
+                  company_name: getMetaString(meta, 'company_name'),
+                  phone: getMetaString(meta, 'phone'),
+                  sector: null as unknown as User['sector'],
+                  workshop_location: null,
+                  governorate: null,
+                  address: null as unknown as User['address'],
+                  tax_number: null,
+                  commercial_register: null,
+                  role: 'customer' as User['role'],
+                  is_verified: false,
+                  preferences: {} as User['preferences'],
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString()
+                };
               });
               if (!stableEmailRef.current && session.user.email) stableEmailRef.current = session.user.email;
             });
@@ -478,6 +501,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             startTransition(() => {
               setSupabaseUser(null);
               setUser(null);
+              setIsProfileResolved(true);
             });
           }
           setLoading(false);
@@ -875,6 +899,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     supabaseUser,
     loading,
     actionLoading,
+    isProfileResolved,
     stableDisplayEmail,
     signIn,
     signUp,

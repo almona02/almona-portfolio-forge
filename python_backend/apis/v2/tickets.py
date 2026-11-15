@@ -394,6 +394,8 @@ def list_messages(
     current_user: Dict[str, Any] = Depends(get_current_user),
 ):
     svc = _service(supabase)
-    if not svc.get_ticket(ticket_id, UUID(current_user["id"])):
+    viewer = _user_uuid(current_user)
+    if not svc.get_ticket(ticket_id, viewer):
         raise HTTPException(status_code=404, detail="Ticket not found")
-    return svc.list_messages(ticket_id)
+    return svc.list_messages(ticket_id, viewer)
+
