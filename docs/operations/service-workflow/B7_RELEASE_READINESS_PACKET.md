@@ -38,7 +38,7 @@ B1…B7 workflow     →  separate coordinated package after first release (or o
 | Candidate tip | CI observation (read-only) |
 |---------------|----------------------------|
 | `ca9f5067` (#155) | Required rollup historically SUCCESS (smoke/preview SKIPPED) |
-| `f23b87e4` (branch tip) | Partial PR #156 checks: typecheck/acceptance/regression/migration-format SUCCESS; Full Pipeline / audit may still be in flight — **not** a green production-gate claim until complete rollup on the **chosen** release commit |
+| `f23b87e4` / docs tip `65d6ff86` | PR #156 observed: typecheck, acceptance, regression, migration-format/replay, audit SUCCESS; smoke/Supabase Preview SKIPPED. Full production-gate rollup still required on the **chosen FR-1/FR-2 release head** (not assumed from docs-only tips). |
 
 ---
 
