@@ -1,9 +1,10 @@
 # FR-1 backup/restore rehearsal — execution sheet
 
-**Status:** Hosted disposable **unavailable under $0 free limit** · both existing projects **preserved** · local path **assessed** · recovery/migration **not complete**  
+**Status:** Hosted disposable **unavailable under $0 free limit** · both projects **preserved** · **local Supabase running** · export **blocked on drop-slot credentials**  
+**Live local status:** [`FR1_LOCAL_REHEARSAL_STATUS.md`](./FR1_LOCAL_REHEARSAL_STATUS.md)  
 **Artifact freeze:** `e17858a59c64426af6067d1ec114e311673daad9`  
 **#158:** draft · **#155:** unmerged  
-**Forbidden this run:** project pause/delete · plan upgrade · paid resource creation · production writes/bucket changes/write-pause/settings/merge/prod migration
+**Forbidden:** project pause/delete · plan upgrade · paid resource · production writes/bucket changes/write-pause/settings/merge/prod migration
 
 ---
 
