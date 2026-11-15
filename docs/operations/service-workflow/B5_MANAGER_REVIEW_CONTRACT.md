@@ -1,7 +1,7 @@
 # B5 — Manager review / issue contract
 
-**Status:** Implementation + disposable/local testing authorized. **No staging apply** until Spark PASS on a separate freeze.  
-**Depends on:** B4 accepted tip `f63c9145`  
+**Status:** Correction freeze for F-B5-01/02 after Spark BLOCKED @ `f8fb9358`. **No staging apply** until Spark PASS on the correction tip.  
+**Depends on:** B4 accepted tip `f63c9145` · B5 impl `f8fb9358`  
 **Gates:** #155 frozen · #156 draft · no merge · no production · no B6
 
 ## In scope
@@ -22,10 +22,12 @@
 | Kind | Path |
 |------|------|
 | Migration | `supabase/migrations/20261115120000_service_workflow_b5_manager_review.sql` |
-| RPC | `review_service_report_revision` |
+| Correction | `supabase/migrations/20261115140000_service_workflow_b5_f_b5_01_02_correction.sql` |
+| RPC | `review_service_report_revision` (+ issued-evidence Storage read helper) |
 | UI | `ServiceReportReviewPanel`, `CustomerIssuedReportView` |
 | API | `reviewServiceReportRevision`, `createReportEvidenceSignedUrl` |
 | Disposable | `scripts/service-workflow/disposable_b5_battery.sql` + `run_disposable_b5.py` |
+| Spark | `spark_b5_battery.sql` + `run_spark_b5.py` · see `B5_F_B5_01_02_CORRECTION.md` |
 
 ## Explicit non-actions
 

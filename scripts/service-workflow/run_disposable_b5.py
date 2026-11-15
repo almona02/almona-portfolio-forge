@@ -31,6 +31,7 @@ B3LOCK = ROOT / "supabase/migrations/20261112201500_service_workflow_b3_f_b3_03_
 B4 = ROOT / "supabase/migrations/20261112210000_service_workflow_b4_report_submission.sql"
 B4FIX = ROOT / "supabase/migrations/20261113013000_service_workflow_b4_attachment_insert_definer.sql"
 B5 = ROOT / "supabase/migrations/20261115120000_service_workflow_b5_manager_review.sql"
+B5FIX = ROOT / "supabase/migrations/20261115140000_service_workflow_b5_f_b5_01_02_correction.sql"
 BATTERY = ROOT / "scripts/service-workflow/disposable_b5_battery.sql"
 OUT_DIR = ROOT / ".artifacts/slice0/service-workflow"
 OUT = OUT_DIR / "disposable_b5_results.json"
@@ -142,6 +143,7 @@ def run_all() -> int:
     apply(db, B4, "B4 report submission")
     apply(db, B4FIX, "B4 attachment DEFINER")
     apply(db, B5, "B5 manager review")
+    apply(db, B5FIX, "B5 F-B5-01/02 correction")
     apply(db, BATTERY, "B5 battery")
 
     b5_rows = psql(db, "SELECT check_id, status, detail FROM public.b5_eval ORDER BY 1;")

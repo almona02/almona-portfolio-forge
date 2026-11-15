@@ -337,6 +337,105 @@ BEGIN
     'review_service_report_revision registered');
 END $$;
 
+-- F-B5-01: owner can_read issued evidence; denied unissued; cross-ticket denied
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid;
+  v_rev public.service_report_revisions;
+  v_path text;
+  v_owner boolean; v_staff boolean; v_unissued boolean; v_x boolean;
+  v_t2 uuid; v_j2 uuid; v_v2 uuid; v_rev2 public.service_report_revisions;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v FROM b5_mk_completed_visit('f01');
+  v_rev := b5_submit(v_v, v_t, 'f01');
+  v_path := (v_rev.evidence_paths)[1];
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  v_unissued := admin_private.can_read_ticket_attachment(v_path);
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  PERFORM public.review_service_report_revision(v_rev.id, 'approved_issued', NULL, NULL);
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  v_owner := admin_private.can_read_ticket_attachment(v_path);
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_staff := admin_private.can_read_ticket_attachment(v_path);
+
+  SELECT * INTO v_t2, v_j2, v_v2 FROM b5_mk_completed_visit('f01x', b1_uid('cust2'));
+  v_rev2 := b5_submit(v_v2, v_t2, 'f01x');
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  PERFORM public.review_service_report_revision(v_rev2.id, 'approved_issued', NULL, NULL);
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  v_x := admin_private.can_read_ticket_attachment((v_rev2.evidence_paths)[1]);
+
+  PERFORM b5_note('F-B5-01_issued_evidence_read',
+    v_unissued IS FALSE AND v_owner IS TRUE AND v_staff IS TRUE AND v_x IS FALSE,
+    format('unissued=%s owner=%s staff=%s cross=%s', v_unissued, v_owner, v_staff, v_x));
+END $$;
+
+-- F-B5-02a: unreported completed visit blocks job completion; visit2 still submittable
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v1 uuid; v_v2 uuid;
+  v_s timestamptz := now() + interval '2 hours';
+  v_e timestamptz := now() + interval '4 hours';
+  v_rev public.service_report_revisions;
+  v_state text; v_ok boolean;
+BEGIN
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  INSERT INTO public.service_tickets (
+    ticket_number, user_id, title, description, type, priority, status,
+    assigned_to, assigned_by, assigned_at
+  ) VALUES (
+    'B5-F02-' || substr(replace(gen_random_uuid()::text,'-',''),1,6),
+    b1_uid('cust1'), 'b5', 'b5', 'general', 'medium', 'assigned',
+    b1_uid('tech1'), b1_uid('support'), now()
+  ) RETURNING id INTO v_t;
+  SELECT (public.create_service_job(v_t, 'F02', true, 'b5')).id INTO v_j;
+  PERFORM public.assign_service_job(v_j, b1_uid('tech1'), 'b5', NULL);
+  SELECT (public.schedule_service_job_visit(v_j, v_s, v_e, 'v1', NULL)).id INTO v_v1;
+  SELECT (public.schedule_service_job_visit(
+    v_j, v_s + interval '5 hours', v_e + interval '5 hours', 'v2', NULL
+  )).id INTO v_v2;
+  PERFORM set_config('app.b1_uid', b1_uid('tech1')::text, false);
+  PERFORM public.record_visit_safety_check(v_v1, 'passed', 'b5', NULL, public.b3_minimum_safety_attestation());
+  PERFORM public.start_service_job_visit(v_v1, NULL, public.b3_minimum_safety_attestation(), 'b5');
+  PERFORM public.complete_service_job_visit(v_v1);
+  PERFORM public.record_visit_safety_check(v_v2, 'passed', 'b5', NULL, public.b3_minimum_safety_attestation());
+  PERFORM public.start_service_job_visit(v_v2, NULL, public.b3_minimum_safety_attestation(), 'b5');
+  PERFORM public.complete_service_job_visit(v_v2);
+
+  v_rev := b5_submit(v_v1, v_t, 'f02a');
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  PERFORM public.review_service_report_revision(v_rev.id, 'approved_issued', NULL, NULL);
+  SELECT state INTO v_state FROM public.service_jobs WHERE id = v_j;
+  BEGIN
+    PERFORM b5_submit(v_v2, v_t, 'f02b');
+    v_ok := true;
+  EXCEPTION WHEN OTHERS THEN
+    v_ok := false;
+  END;
+  PERFORM b5_note('F-B5-02a_unreported_blocks_complete',
+    v_state = 'awaiting_review' AND v_ok,
+    format('job=%s v2_submit=%s', v_state, v_ok));
+END $$;
+
+-- F-B5-02b: return denied on completed job (no dead-end correction)
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid;
+  v_r1 public.service_report_revisions;
+  v_r2 public.service_report_revisions;
+  a boolean;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v FROM b5_mk_completed_visit('f02b');
+  v_r1 := b5_submit(v_v, v_t, 'f02b1');
+  v_r2 := b5_submit(v_v, v_t, 'f02b2');
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  PERFORM public.review_service_report_revision(v_r1.id, 'approved_issued', NULL, NULL);
+  a := b5_denied(format(
+    $q$SELECT public.review_service_report_revision(%L::uuid,'returned','recheck',NULL)$q$,
+    v_r2.id));
+  PERFORM b5_note('F-B5-02b_return_on_completed_denied', a, 'denied=' || a::text);
+END $$;
+
 SELECT check_id, status, detail FROM public.b5_eval ORDER BY check_id;
 SELECT
   COUNT(*) FILTER (WHERE status = 'PASS') AS pass,
