@@ -1,18 +1,20 @@
 # FR-1 release candidate
 
 **Branch:** `release/fr1-slice0-share-privacy`  
-**Draft PR:** https://github.com/almona02/almona-portfolio-forge/pull/158 (**keep draft**)  
-**Base:** `#155` frozen tip `ca9f5067` — **leave #155 unmerged**  
+**Freeze tip:** `e17858a59c64426af6067d1ec114e311673daad9`  
+**Draft PR:** https://github.com/almona02/almona-portfolio-forge/pull/158 (**keep draft** pending explicit production authorization)  
+**Base:** `#155` tip `ca9f5067` (ancestor) — **leave #155 unmerged**; close superseded when #158 is the sole vehicle  
 **Staging branch:** `feat/service-workflow-b1-planning` — **untouched** (evidence preserved)  
 **Gates:** No merge · no production apply · no deployment-setting changes  
-**Backup/PITR:** unresolved production prerequisite (`ACTIVE_HEALTHY` is **not** backup evidence). Production decision still needs verified backup availability and a concrete restore/cutover plan.
+**Production packet:** [`FR1_PRODUCTION_APPROVAL_PACKET.md`](./FR1_PRODUCTION_APPROVAL_PACKET.md)  
+**Backup/PITR:** org plan API = **free** → platform daily backups/PITR **not entitled/unverified**; `ACTIVE_HEALTHY` ≠ backup. Logical dump + proven restore required before authorization.
 
 ## Revisions
 
 | Revision | Role |
 |----------|------|
-| `d3ef35d4` | **Spark independent content PASS** (share/privacy/RLS/FE/edge/Python package). Preserve as evidence for that revision. |
-| Follow-up HEAD (see PR tip) | Dependency CVE pin upgrades + missing-table fallback regression tests + CI re-gate. Narrow Spark review only. |
+| `d3ef35d4` | **Spark independent content PASS** — preserve |
+| `e17858a5` | **Freeze tip** — CVE pins + fallback tests; CI terminal green (33 aggregated = 31 check-runs + 2 Vercel statuses) |
 
 ## Scope (included)
 
