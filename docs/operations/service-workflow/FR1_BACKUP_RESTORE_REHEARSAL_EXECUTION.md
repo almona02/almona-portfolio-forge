@@ -1,240 +1,135 @@
 # FR-1 backup/restore rehearsal — execution sheet
 
-**Status:** Execution sheet finalized · recovery & migration rehearsal **not complete** (blocked — see §8–§9)  
+**Status:** Hosted disposable **unavailable under $0 free limit** · both existing projects **preserved** · local path **assessed** · recovery/migration **not complete**  
 **Artifact freeze:** `e17858a59c64426af6067d1ec114e311673daad9`  
-**Proposal:** [`FR1_BACKUP_RESTORE_REHEARSAL_PROPOSAL.md`](./FR1_BACKUP_RESTORE_REHEARSAL_PROPOSAL.md)  
-**#158:** remain **draft** · **#155:** remain **unmerged**
+**#158:** draft · **#155:** unmerged  
+**Forbidden this run:** project pause/delete · plan upgrade · paid resource creation · production writes/bucket changes/write-pause/settings/merge/prod migration
 
 ---
 
-## 1. Three binding conditions (this rehearsal)
+## 1. Binding conditions
 
-| # | Condition | Enforcement |
-|---|-----------|-------------|
-| **C1** | **Production access is read-only** | Only `SELECT` / inventory / dump-from-replica-or-read credentials. No DML/DDL on `shfsebdncjnncqqnewfj`. |
-| **C2** | **Rehearsal permissions ≠ cutover permissions** | During this rehearsal: **no** production write-pause, **no** Vercel/Railway/Supabase **settings** changes, **no** merge of #158/#155, **no** production migration apply. Disposable-only restore + disposable-only migration apply when unblocked. |
-| **C3** | **Results bound to `e17858a5`; missing backup component or failed restore = production blocker** | Both recovery report (§8) and migration-rehearsal report (§9) cite `e17858a5`. Any incomplete dump/Storage sync or failed restore **blocks production authorization**. |
+| # | Condition |
+|---|-----------|
+| **C1** | Production access read-only |
+| **C2** | Rehearsal ≠ cutover (no prod write-pause/settings/merge/prod migration) |
+| **C3** | Bound to `e17858a5`; missing backup component or failed restore = **production blocker** |
 
 ---
 
-## 2. Disposable destination (exact)
+## 2. Hosted destination — create outcome
 
 | Field | Value |
 |-------|-------|
-| Planned name | `almona02-fr1-restore-rehearsal-20261115` |
-| Organization | `iuhujuoejbfydldnbqac` (`almona02's Org`) |
-| Region | `eu-west-3` (match production) |
-| Project ref | **pending** — `create_project` requires `confirm_cost` after operator ack of cost (§3) |
-| Not used | Production `shfsebdncjnncqqnewfj` · Staging `apnmoevmvihfzcnttctx` |
+| Requested | `almona02-fr1-restore-rehearsal-20261115` · `eu-west-3` · org `iuhujuoejbfydldnbqac` |
+| Quoted create cost | **`$0` / month** (re-verified) |
+| Result | **FAILED** — free plan **2 active project limit** already used by `almona02` + `almona02-staging` |
+| Preserved | **Both** hosted projects left **ACTIVE_HEALTHY** (no pause/delete) |
 
 ---
 
-## 3. Cost
+## 3. Available hosted options and exact costs (before any proceed)
 
-| Item | Quote (MCP `get_cost` type=project) |
-|------|-------------------------------------|
-| New Supabase project (monthly) | **`$0` / month** (`amount: 0`, `recurrence: monthly`) |
-| PITR / paid backups | Not part of this rehearsal (org plan free; platform backups unavailable) |
-| Storage egress for object sync | Variable; minimize via FR-1 sample sync (§5) |
+| Option | What it enables | Exact cost (quoted / documented) | Authorized now? |
+|--------|-----------------|----------------------------------|-----------------|
+| **H0** Create 3rd free project while 2 active | New hosted disposable | **`$0`/mo** but **rejected by platform** until a free slot exists | **No path** without freeing a slot |
+| **H1** Pause one existing project, then create disposable at $0 | Free slot (docs: *paused projects do not count toward free limit*) | Pause: **$0**; create: **`$0`/mo** | **Not authorized** (preserve both; no pause) |
+| **H2** Supabase **branch** on an existing project | Hosted branch DB | **`$0.01344` / hour** (`get_cost` type=branch) | **Not authorized** (paid; ≠ $0/mo) |
+| **H3** Upgrade org to **Pro** (then extra projects / daily backups) | Paid plan + quotas | **Pro from `$25`/month** (Supabase pricing docs); usage overages extra; **PITR add-on `$100`/month per 7-day retention** | **Not authorized** (plan upgrade) |
+| **H4** Delete a free project to free a slot | Slot for $0 create | **$0** but destructive | **Not authorized** |
 
-**Gate:** Operator must agree to the quoted **$0/month** project create, then run `confirm_cost` → `create_project` with `confirm_cost_id`. Until then destination ref remains pending.
-
----
-
-## 4. Secret-storage location
-
-| Secret / artifact | Location | Notes |
-|-------------------|----------|-------|
-| Dump ciphertext + age/gpg key | Operator personal secure store: `C:\Users\bobbi\AppData\Local\Cursor\AgentStores\cursor_agent_stores\u294861541\files\slice0\fr1-rehearsal\` (create at run time; **gitignored / not committed**) | Plaintext dumps **never** in git or chat |
-| Dump SHA-256 manifest (no secrets) | `.artifacts/fr1-rc/rehearsal/manifest.json` (repo-ignored `.artifacts/`) | Safe to keep locally |
-| Disposable anon/service keys | Same agent-store folder `disposable_keys.json` · shred on cleanup | Not production keys |
-| Production DB URL / password | **Not stored in workspace** (no `.env` present at sheet finalize); operator supplies out-of-band for dump only | Read-only dump session |
+**Stop rule:** do not proceed on any option whose cost differs from the approved **`$0`/month create** without a new explicit cost authorization.
 
 ---
 
-## 5. Export & Storage sync (when unblocked)
+## 4. Local isolated environment assessment (alternative)
 
-### 5.1 DB dump commands (operator machine; production **read-only**)
+### 4.1 Candidates
 
-```bash
-# From a host with network to db.shfsebdncjnncqqnewfj.supabase.co and dump credentials.
-export REHEARSE_ROOT="$HOME/AppData/Local/Cursor/AgentStores/cursor_agent_stores/u294861541/files/slice0/fr1-rehearsal"
-mkdir -p "$REHEARSE_ROOT" .artifacts/fr1-rc/rehearsal
-STAMP=$(date -u +%Y%m%dT%H%M%SZ)
-DUMP="$REHEARSE_ROOT/prod-shfsebdncjnncqqnewfj-$STAMP.dump"
+| Local mode | Tooling on this workstation | Status |
+|------------|-----------------------------|--------|
+| **L1** `supabase start` (full local stack: API, Auth, Storage, Studio, Postgres) | Supabase CLI 3.0.0 + Docker Desktop | **Blocked now** — Docker engine pipe not available (`dockerDesktopLinuxEngine` missing). Feasible after operator starts Docker Desktop. |
+| **L2** Ephemeral PostgreSQL 17 via `initdb`/`pg_ctl` (existing FR-1 harness pattern) | `C:\Program Files\PostgreSQL\17\bin` | **Available now** for SQL dump restore + migration apply + battery |
 
-# Prefer custom format; include auth + storage metadata + public.
-pg_dump "postgresql://postgres.<PROD_REF>:<PASSWORD>@aws-0-eu-west-3.pooler.supabase.com:5432/postgres" \
-  --format=custom --no-owner --no-acl \
-  --schema=public --schema=auth --schema=storage --schema=supabase_migrations \
-  --file="$DUMP"
+### 4.2 What local **can** usefully verify (recovery *evidence*, not hosted-complete)
 
-sha256sum "$DUMP" | tee .artifacts/fr1-rc/rehearsal/manifest-sha256.txt
-# Encrypt: age -r <recipient> -o "$DUMP.age" "$DUMP" && shred -u "$DUMP"
-```
+- Logical SQL restore of schema/data into isolated Postgres  
+- Authoritative migration sequence **A→C→D→E→RLS→F7-04→F7-03** from blobs at `e17858a5`  
+- RLS/RPC behavior under `authenticated` role stubs (`auth.uid()` GUC pattern)  
+- FR-1 disposable battery class checks (share audit, null-safe revoke, etc.)  
 
-### 5.2 Storage bytes (separate component)
+### 4.3 Explicit gaps — remain **production gates** (local ≠ complete hosted recovery)
 
-```bash
-# Sample or full sync into disposable buckets AFTER disposable project exists.
-# Minimum: objects referenced by rehearsal ticket/message rows.
-# Record unsynced counts in .artifacts/fr1-rc/rehearsal/storage-sync-gaps.json
-```
+| Gap | Why local cannot faithfully verify |
+|-----|------------------------------------|
+| **Hosted Auth** (GoTrue) | JWT issuance, email/SMS recovery, identity providers, hosted rate limits, refresh-token store semantics differ from stub/`supabase start` vs cloud Auth |
+| **Hosted Storage** | S3-backed buckets, CDN, RLS-on-storage with hosted signer, **public→private cutover**, multipart/image transforms; local Storage (even with `supabase start`) ≠ production object ACL/CDN |
+| **Extensions / managed roles** | Hosted `supabase_admin` / authenticator role graph, some cloud-only extensions and privilege defaults |
+| **Connection pooler / SSL** | Supavisor/pgbouncer transaction pooling quirks vs local direct Postgres |
+| **Edge Functions runtime** | Deno Deploy secrets, regional cold starts, production `ticket-share-attachment` against hosted Storage signing |
+| **Dashboard backups / PITR UI** | Cannot prove platform restore points on free org |
+| **Network IAM / SSO dashboard access** | Hosted project ACL not exercised |
+| **Real outbound integration wiring** | Intentionally disabled in rehearsal; hosted secret injection paths differ |
 
-**Missing Storage byte sync = missing backup component = production blocker (C3)** even if SQL restore PASS.
-
----
-
-## 6. Verification commands (bound to freeze `e17858a5`)
-
-### 6.1 Pre-export baseline (production read-only) — captured 2026-11-15
-
-```sql
--- counts
-SELECT 'service_tickets' AS rel, count(*)::bigint AS n FROM public.service_tickets
-UNION ALL SELECT 'ticket_messages', count(*) FROM public.ticket_messages
-UNION ALL SELECT 'ticket_shares', count(*) FROM public.ticket_shares
-UNION ALL SELECT 'profiles', count(*) FROM public.profiles
-UNION ALL SELECT 'machines', count(*) FROM public.machines;
-
--- FR-1 objects (expect false on current prod — pre-Slice0 stamps)
-SELECT to_regclass('public.ticket_share_access_events') IS NOT NULL AS has_access_events,
-       to_regprocedure('public.create_ticket_share(uuid,timestamptz)') IS NOT NULL AS has_create_share;
-
--- migration history slice
-SELECT version FROM supabase_migrations.schema_migrations
-WHERE version LIKE '20261111%' OR version LIKE '20261115%' ORDER BY 1;
-```
-
-**Observed baseline (read-only):**
-
-| Metric | Value |
-|--------|------:|
-| service_tickets | 14 |
-| ticket_messages | 1 |
-| ticket_shares | 0 |
-| profiles | 19 |
-| machines | 12 |
-| storage.objects (profile-thumbnails) | 12 |
-| storage.objects (ticket-attachments / machine-photos) | 0 rows counted |
-| ticket_share_access_events / create_ticket_share / govern_ticket_transition / register_machine_identity | **absent** |
-| schema_migrations `20261111*` / `20261115*` | **none** (latest catalog stamp ends `20261106000000`) |
-| buckets ticket-attachments, machine-photos, profile-thumbnails | **`public: true`** (pre-Slice0 posture) |
-| RLS enabled on tickets/messages/shares/machines | true (forced=false) |
-
-### 6.2 Post-restore (disposable)
-
-```sql
--- Must match §6.1 counts (or documented exclusions)
--- Same count query as above on disposable project_id
-
--- ACL / RLS smoke
-SELECT c.relname, c.relrowsecurity FROM pg_class c
-JOIN pg_namespace n ON n.oid=c.relnamespace
-WHERE n.nspname='public' AND c.relname IN ('service_tickets','ticket_messages','ticket_shares');
-```
-
-### 6.3 Migration rehearsal (disposable only; blobs from `e17858a5`)
-
-```bash
-git checkout e17858a5 -- \
-  supabase/migrations/20261111010000_service_slice0_security_boundary.sql \
-  supabase/migrations/20261111180000_machine_identity_pr1.sql \
-  supabase/migrations/20261111190000_machine_identity_missing_serial_plate_evidence.sql \
-  supabase/migrations/20261111200000_staging_machine_photos_and_ticket_number.sql \
-  supabase/migrations/20261111201000_service_tickets_rls_enablement.sql \
-  supabase/migrations/20261115190000_fr1_f_b7_04_null_auth.sql \
-  supabase/migrations/20261115190100_fr1_f_b7_03_share_audit.sql
-
-# Apply in order via supabase db push / migration tool against DISPOSABLE only:
-# A → C → D → E → RLS → F7-04 → F7-03
-python scripts/service-workflow/run_disposable_fr1.py
-# or Spark probes; expect 14/0 class PASS on FR-1 battery after apply
-```
-
-### 6.4 App workflow (outbound disabled)
-
-```bash
-# Point local app at disposable URL/keys only; unset SendGrid/SMS/Stripe live keys
-npx vitest run src/lib/ticketMessageApi.test.ts
-PYTHONPATH=python_backend python -m pytest \
-  python_backend/tests/test_ticket_access_scope.py \
-  python_backend/tests/test_fr1_missing_workflow_tables.py -q
-```
+**Reporting rule:** A successful **L1/L2** run may be reported as **local recovery / migration evidence** bound to `e17858a5`. It **must not** be labeled a **complete hosted recovery test**. Hosted gaps above remain **production blockers** until closed on a real hosted disposable (options §3) or equivalent hosted proof.
 
 ---
 
-## 7. Cleanup owner
+## 5. Secure export-credential path (continued)
 
-| Role | Owner | Duties |
-|------|-------|--------|
-| **Cleanup owner** | Release captain (primary: repo admin **almona02** / operator running rehearsal) | Delete disposable project; shred plaintext dumps; destroy or time-box ciphertext; wipe `disposable_keys.json`; confirm no prod env leakage |
-| Witness | Second operator (optional) | Confirm cleanup checklist signed |
-
-Cleanup checklist:
-
-- [ ] Disposable project deleted  
-- [ ] Plaintext dump shredded  
-- [ ] Ciphertext retention ≤ 14 days or destroyed  
-- [ ] Agent-store rehearsal folder emptied  
-- [ ] #158 still draft; #155 still unmerged; no settings changed  
+| Step | Result |
+|------|--------|
+| Drop-slot | `…/u294861541/files/slice0/fr1-rehearsal/` (outside git) |
+| Vercel CLI | Logged in as `almona02`; `vercel env pull` → `vercel_production.env` |
+| Secret values | Production **Secret** types (`POSTGRES_*`, `SUPABASE_SERVICE_ROLE_KEY`, etc.) pulled as **`[SENSITIVE]` placeholders only** (13-byte files) — **not usable for dump** |
+| Railway CLI | Unauthorized (not logged in) — not used |
+| Supabase CLI token | Not present — not used |
+| Credential reset | **Not performed** |
+| Next secure step | Operator deposits real read-only URI / service role into drop-slot files **manually** (dashboard copy → file), or runs `vercel env pull` after granting Secret pull, **without chat/Git** |
 
 ---
 
-## 8. Recovery results (bound to `e17858a5`)
+## 6. Cleanup operator and retention
 
-| Field | Result |
-|-------|--------|
-| Freeze binding | `e17858a59c64426af6067d1ec114e311673daad9` |
-| Logical dump artifact | **MISSING** — no production DB credentials in workspace; dump not captured |
-| Dump checksum | n/a |
-| Encrypted store populated | **NO** |
-| Disposable project | **NOT CREATED** — awaiting operator ack of $0/mo + `confirm_cost` |
-| SQL restore | **NOT RUN** |
-| Storage byte sync | **MISSING** (component absent) |
-| Count/relationship match | **NOT PROVEN** (baseline inventory only on production) |
-| Roles/grants/RLS/functions/history check post-restore | **NOT RUN** |
-| App workflows on restore | **NOT RUN** |
-| **Verdict** | **FAIL / BLOCKED** |
-
-**Production impact (C3):** Recovery incomplete → **production authorization remains BLOCKED.**
+| Field | Value |
+|-------|-------|
+| Cleanup operator | **Bobbi** (local release captain) / **almona02** (org admin) |
+| Retention / deletion deadline | **2026-11-29 23:59:59 UTC** |
+| Scope | Any future dump ciphertext, local restore clusters, drop-slot secrets; delete hosted disposable **if/when** one is later authorized and created |
 
 ---
 
-## 9. Migration-rehearsal results (bound to `e17858a5`)
+## 7. Recovery results (bound to `e17858a5`)
 
-| Field | Result |
-|-------|--------|
-| Freeze binding | `e17858a59c64426af6067d1ec114e311673daad9` |
-| Prerequisite | Successful §8 restore — **not met** |
-| Order used | Authoritative A→C→D→E→RLS→F7-04→F7-03 (not executed) |
-| Versions applied on disposable | **none** |
-| FR-1 battery / Spark probes | **NOT RUN** |
-| Edge deploy on disposable | **NOT RUN** |
-| **Verdict** | **NOT STARTED / BLOCKED** (depends on §8) |
+| Item | Result |
+|------|--------|
+| Hosted disposable restore | **NOT RUN** — project not created (free limit); both projects preserved |
+| Encrypted production dump | **MISSING** — usable DB credentials not yet in secure channel |
+| Storage-byte copy | **MISSING** |
+| Local SQL restore | **NOT RUN** this turn (awaiting credentials + optional Docker for L1) |
+| **Verdict** | **BLOCKED** |
+| Classification | **Not** a complete hosted recovery test; **not** yet local recovery evidence either |
 
-**Production impact (C3):** Migration rehearsal not proven → **production authorization remains BLOCKED.**
-
----
-
-## 10. Permissions matrix (reminder)
-
-| Action | Rehearsal (now) | Cutover (later, separate auth) |
-|--------|-----------------|--------------------------------|
-| Prod SELECT / inventory | Allowed (C1) | Allowed |
-| Prod dump (read) | Allowed when credentials supplied | Required |
-| Prod write-pause | **Forbidden** | Cutover-only |
-| Prod migration apply | **Forbidden** | Cutover-only |
-| Merge #158 / #155 | **Forbidden** | Cutover-only (#158 only) |
-| Deployment settings change | **Forbidden** | Cutover-only if required for auto-deploy hold |
-| Disposable create/restore/migrate | Allowed after cost ack | n/a |
+**Production blocker (C3):** **YES**
 
 ---
 
-## 11. Next actions to unblock (still not cutover)
+## 8. Migration-rehearsal results (bound to `e17858a5`)
 
-1. Operator ack **$0/month** disposable project cost → `confirm_cost` → create `almona02-fr1-restore-rehearsal-20261115`.  
-2. Supply read-only dump credentials out-of-band → encrypted dump to agent-store path (§4).  
-3. Restore + Storage sync → complete §8.  
-4. Apply FR-1 sequence from `e17858a5` on disposable → complete §9.  
-5. Only then revisit production approval packet backup gate.
+| Item | Result |
+|------|--------|
+| Sequence A→C→D→E→RLS→F7-04→F7-03 | **NOT RUN** (blocked on recovery prerequisite) |
+| **Verdict** | **BLOCKED** |
+
+**Production blocker (C3):** **YES**
+
+---
+
+## 9. Recommended next step (still within current authorization)
+
+1. Operator places usable read-only `prod_db_url.txt` (+ Storage key if syncing) into the secure drop-slot.  
+2. Start **Docker Desktop**, then either:  
+   - **L1** `supabase start` + restore + migrate, **or**  
+   - **L2** ephemeral PG17 restore + migrate (SQL-focused).  
+3. Report again as **local evidence only**, with §4.3 gaps listed as open hosted production gates.  
+4. Hosted disposable remains blocked until a **new** authorization chooses an option from §3 (with cost ack if not $0).
