@@ -5,7 +5,9 @@
 **Docs publish (apply record / handoff):** `7ada04e29f226d9bf68cf27d3ea60600a073092b`  
 **DB:** Supabase staging `apnmoevmvihfzcnttctx` (`almona02-staging`)  
 **Preview (historical):** `dpl_HS5wBUNzPpL8LQi9PcfUeubBuE6e` → share bypass **revoked** after cleanup  
-**Gates closed:** Staging verification complete · fixture cleanup executed · #155 frozen · #156 draft · **no merge / production** · **no B7**
+**Gates closed:** Staging verification complete · fixture cleanup executed · #155 frozen · #156 draft · **no merge / production**  
+**Closeout:** `B6_STAGING_CLOSEOUT_da2132b6.md` · Spark zero-confirm `ecc9e7c0` · type correction `2d6b35ae` · support session revoked  
+**Follow-on:** B7 authorized — `B7_PERMISSION_AUDIT_HARDENING_AUTHORIZATION.md` (verification/correction only)
 
 ## Spark verdict (retained — layers separate)
 
@@ -14,7 +16,9 @@
 | Disposable concurrency | `da2132b6` / `34940537` | **PASS** (F-B6-09) |
 | Live API (staging) | `c32657e7` L-100…L-216b + LIVE1 | **PASS** |
 | Deployed browser LIVE2 | `c32657e7` J-UI1…J-UI5 on `B6STG-SPK-UI-mwi0ln0e` | **PASS** |
-| Live NOT TESTED (by design) | service-role branches; multi-session race | Disposable evidence only |
+| Zero-remaining | `ecc9e7c0` | **PASS** |
+| Linux type-check delta | CI @ `2d6b35ae` | **PASS** (`deltaErrors` 0) |
+| Live NOT TESTED (by design) | service-role branches; multi-session race | Disposable evidence only — preserved limitation |
 
 ## Staging apply (live stamps)
 
@@ -47,4 +51,4 @@ Post-cleanup access-holder verify: `B6STG-%` = 0 · tickets = 24 · storage pref
 
 ## Explicit non-actions
 
-No merge · no production · no B7 · PR #156 remains draft · #155 frozen.
+No merge · no production · PR #156 remains draft · #155 frozen. B7 is authorized separately as verification/correction of existing scope only.
