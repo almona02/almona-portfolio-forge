@@ -1,10 +1,18 @@
 # B6 acknowledgment/closure verification matrix (Spark independent)
 
-## Latest independent tip: `9998f1a4` — BLOCKED (F-B6-08 only)
+## Latest independent tip: `3e387199` — PASS (F-B6-08 closed)
+
+See `docs/operations/service-workflow/spark-probes/B6_3e387199_SPARK_RESULTS.md`.
+Q6-01–Q6-44 = 44/44; R6-C1–C4 = 4/4; auth-before-idempotent re-close verified.
+
+---
+
+## Prior tip (preserved): `9998f1a4` — BLOCKED (F-B6-08 only)
 
 See `docs/operations/service-workflow/spark-probes/B6_9998f1a4_SPARK_RESULTS.md`.
 Q6-01–Q6-43 = 43/43; R6-C1–C4 = 4/4; F-B6-06/07 cleared; residual
 F-B6-08 = idempotent re-close returns before role authorization.
+Does **not** cover `3e387199`.
 
 ---
 
