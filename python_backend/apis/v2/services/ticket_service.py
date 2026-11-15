@@ -11,6 +11,13 @@ from apis.v2.core.errors import (
     TicketValidationError,
     SupabaseError,
 )
+from apis.v2.services.ticket_access import (
+    BROAD_STAFF_ROLES,
+    can_read_ticket_record,
+    can_view_internal_messages,
+    filter_messages_for_viewer,
+    merge_ticket_rows,
+)
 from models.api_v2_models import (
     TicketResponse,
     TicketCategory,
@@ -178,24 +185,45 @@ class TicketService:
                 original_error=e
             )
 
+    def _role_for(self, user_id: UUID) -> Optional[str]:
+        return self._repo.get_user_role(user_id)
+
+    def _viewer_may_read_row(
+        self, ticket: Dict[str, Any], user_id: UUID, role: Optional[str]
+    ) -> bool:
+        job_assigned = False
+        historical = False
+        if role == "technician":
+            job_assigned = self._repo.technician_has_job_assignment(
+                UUID(str(ticket["id"])), user_id
+            )
+            historical = self._repo.technician_is_historical_attendee(
+                UUID(str(ticket["id"])), user_id
+            )
+        return can_read_ticket_record(
+            ticket=ticket,
+            user_id=user_id,
+            role=role,
+            job_assigned=job_assigned,
+            historical_attendee=historical,
+        )
+
     # Retrieval
     def get_ticket(
         self, ticket_id: UUID, user_id: UUID
     ) -> Optional[TicketResponse]:
-        """Get a ticket by ID with permission checking."""
+        """Get a ticket by ID with approved record-scope checking."""
         try:
             ticket = self._repo.get_ticket_by_id(ticket_id)
             if not ticket:
                 return None
 
-            # Check permissions
-            if ticket.get("user_id") != str(user_id):
-                role = self._repo.get_user_role(user_id)
-                if role not in ["admin", "technician", "sales_rep", "support"]:
-                    return None
+            role = self._role_for(user_id)
+            if not self._viewer_may_read_row(ticket, user_id, role):
+                return None
 
             return self._to_response(ticket)
-        
+
         except Exception as e:
             raise SupabaseError(
                 message="Failed to retrieve ticket",
@@ -206,7 +234,21 @@ class TicketService:
     def get_user_tickets(
         self, user_id: UUID, filters: Optional[Dict[str, Any]] = None
     ) -> List[TicketResponse]:
-        rows = self._repo.list_user_tickets(user_id, filters)
+        """List tickets under the caller's approved scope (not role→all)."""
+        role = self._role_for(user_id)
+        if role in BROAD_STAFF_ROLES:
+            rows = self._repo.list_all_tickets(filters)
+        elif role == "technician":
+            owned = self._repo.list_user_tickets(user_id, filters)
+            assigned = self._repo.list_assigned_tickets(user_id, filters)
+            related_ids = self._repo.list_technician_related_ticket_ids(user_id)
+            related = self._repo.get_tickets_by_ids(related_ids, filters)
+            rows = merge_ticket_rows([*owned, *assigned, *related])
+        else:
+            # customer, sales_rep, unknown: ownership (+ assignee match via detail)
+            owned = self._repo.list_user_tickets(user_id, filters)
+            assigned = self._repo.list_assigned_tickets(user_id, filters)
+            rows = merge_ticket_rows([*owned, *assigned])
         return [self._to_response(row) for row in rows]
 
     # Updates
@@ -305,7 +347,24 @@ class TicketService:
         }
         return self._repo.insert_message(msg)
 
-    def list_messages(self, ticket_id: UUID) -> List[Dict[str, Any]]:
-        return self._repo.list_messages(ticket_id)
+    def list_messages(
+        self, ticket_id: UUID, user_id: UUID
+    ) -> List[Dict[str, Any]]:
+        """Return messages visible to the caller (owners never see internals)."""
+        ticket = self._repo.get_ticket_by_id(ticket_id)
+        if not ticket:
+            return []
+        role = self._role_for(user_id)
+        if not self._viewer_may_read_row(ticket, user_id, role):
+            return []
+        include_internal = can_view_internal_messages(
+            role=role, ticket=ticket, user_id=user_id
+        )
+        raw = self._repo.list_messages(ticket_id)
+        return filter_messages_for_viewer(raw, include_internal=include_internal)
+
+    def count_messages(self, ticket_id: UUID, user_id: UUID) -> int:
+        """Count uses the same visibility rules as list_messages."""
+        return len(self.list_messages(ticket_id, user_id))
 
 
