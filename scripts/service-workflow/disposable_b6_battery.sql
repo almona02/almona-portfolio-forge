@@ -351,3 +351,82 @@ BEGIN
     v_ticket.status = 'closed',
     'status=' || v_ticket.status);
 END $$;
+
+-- B6-10 / F-B6-05: duplicate follow-up (same attempted_at+channel) denied
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_rev uuid;
+  a boolean;
+  v_dup jsonb;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v, v_rev FROM b6_issue('10');
+  v_dup := jsonb_build_array(
+    jsonb_build_object(
+      'attempted_at', (now() - interval '3 days')::text,
+      'channel', 'issue_notification', 'outcome', 'delivered',
+      'by_actor_id', b1_uid('support')::text
+    ),
+    jsonb_build_object(
+      'attempted_at', (now() - interval '1 days')::text,
+      'channel', 'phone', 'outcome', 'no_answer',
+      'by_actor_id', b1_uid('support')::text
+    ),
+    jsonb_build_object(
+      'attempted_at', (now() - interval '1 days')::text,
+      'channel', 'phone', 'outcome', 'left_voicemail',
+      'by_actor_id', b1_uid('support')::text
+    )
+  );
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  a := b6_denied(format(
+    $q$SELECT public.record_service_acknowledgment_unavailable(%L::uuid,%L::jsonb,'dup',NULL)$q$,
+    v_rev, v_dup));
+  PERFORM b6_note('B6-10_distinct_followups', a, 'dup_denied=' || a::text);
+END $$;
+
+-- B6-11 / F-B6-03: unavailable cannot overwrite accepted
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_rev uuid;
+  a boolean; n int;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v, v_rev FROM b6_issue('11');
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  PERFORM public.record_service_acknowledgment(v_rev, 'accepted', NULL, NULL);
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  a := b6_denied(format(
+    $q$SELECT public.record_service_acknowledgment_unavailable(%L::uuid,%L::jsonb,'overwrite',NULL)$q$,
+    v_rev, b6_contact_ok(b1_uid('support'))));
+  SELECT count(*) INTO n FROM public.service_acknowledgments WHERE issued_revision_id = v_rev;
+  PERFORM b6_note('B6-11_unavailable_no_overwrite_accepted',
+    a AND n = 1, 'denied=' || a::text || ' rows=' || n);
+END $$;
+
+-- B6-12 / F-B6-04: refuse→dispose→re-refuse requires new disposition binding
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_rev uuid;
+  v_disp public.service_acknowledgment_dispositions;
+  pending_before int; pending_after int; a boolean;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v, v_rev FROM b6_issue('12');
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  PERFORM public.record_service_acknowledgment(v_rev, 'refused', 'first refuse', NULL);
+  UPDATE public.service_tickets SET resolution_summary = 'done' WHERE id = v_t;
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v_disp := public.record_acknowledgment_disposition(
+    v_rev, 'accept_refusal_and_proceed', 'ok', NULL);
+  SELECT count(*) INTO pending_before FROM public.evaluate_ticket_workflow_prerequisites(v_t)
+  WHERE code = 'acknowledgment_refusal_disposition_pending';
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  PERFORM public.record_service_acknowledgment(v_rev, 'refused', 'second refuse', NULL);
+  SELECT count(*) INTO pending_after FROM public.evaluate_ticket_workflow_prerequisites(v_t)
+  WHERE code = 'acknowledgment_refusal_disposition_pending';
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  a := b6_denied(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'resolved','x','done',NULL)$q$, v_t));
+  PERFORM b6_note('B6-12_disposition_binds_current_refusal',
+    pending_before = 0 AND pending_after = 1 AND a
+      AND v_disp.acknowledgment_id IS NOT NULL,
+    'before=' || pending_before || ' after=' || pending_after || ' close_denied=' || a::text);
+END $$;

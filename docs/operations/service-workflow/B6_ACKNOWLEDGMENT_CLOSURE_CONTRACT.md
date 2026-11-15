@@ -28,6 +28,7 @@ No auto-closure · no closed-ticket reopening · no contract scheduling · no ro
 | Permission matrix | `B6_PERMISSION_MATRIX.md` |
 | Contact policy | `B6_ACKNOWLEDGMENT_CONTACT_POLICY.md` |
 | Migration | `supabase/migrations/20261115160000_service_workflow_b6_acknowledgment_closure.sql` |
+| Correction | `supabase/migrations/20261115170000_service_workflow_b6_f_b6_03_05_correction.sql` (F-B6-03/04/05 + UI) — see `B6_F_B6_03_05_CORRECTION.md` |
 | Disposable | `scripts/service-workflow/disposable_b6_battery.sql` + `run_disposable_b6.py` |
 | UI | `CustomerReportAcknowledgmentPanel`, `TicketWorkflowClosurePanel` |
 | API | `recordServiceAcknowledgment`, `recordServiceAcknowledgmentUnavailable`, `recordAcknowledgmentDisposition`, `evaluateTicketWorkflowPrerequisites` |

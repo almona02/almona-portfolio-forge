@@ -29,6 +29,7 @@ B5 = ROOT / "supabase/migrations/20261115120000_service_workflow_b5_manager_revi
 B5FIX = ROOT / "supabase/migrations/20261115140000_service_workflow_b5_f_b5_01_02_correction.sql"
 B5SEL = ROOT / "supabase/migrations/20261115150000_service_workflow_b5_staging_b5_01_review_select.sql"
 B6 = ROOT / "supabase/migrations/20261115160000_service_workflow_b6_acknowledgment_closure.sql"
+B6FIX = ROOT / "supabase/migrations/20261115170000_service_workflow_b6_f_b6_03_05_correction.sql"
 BATTERY = ROOT / "scripts/service-workflow/disposable_b6_battery.sql"
 OUT_DIR = ROOT / ".artifacts/slice0/service-workflow"
 OUT = OUT_DIR / "disposable_b6_results.json"
@@ -143,6 +144,7 @@ def run_all() -> int:
     apply(db, B5FIX, "B5 F-B5-01/02 correction")
     apply(db, B5SEL, "B5 review SELECT")
     apply(db, B6, "B6 acknowledgment/closure")
+    apply(db, B6FIX, "B6 F-B6-03/04/05 correction")
     apply(db, BATTERY, "B6 battery")
 
     rows = psql(db, "SELECT check_id, status, detail FROM public.b6_eval ORDER BY 1;")

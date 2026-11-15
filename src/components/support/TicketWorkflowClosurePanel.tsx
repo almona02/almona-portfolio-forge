@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -15,6 +16,7 @@ import {
   recordAcknowledgmentDisposition,
   recordServiceAcknowledgmentUnavailable,
   type ContactAttempt,
+  type WorkflowPrerequisiteFailure,
 } from '@/lib/ticketGovernanceApi'
 import type { TicketStatus } from '@/types/tickets'
 import { toast } from 'sonner'
@@ -26,9 +28,55 @@ interface TicketWorkflowClosurePanelProps {
   resolutionSummary?: string | null
 }
 
+type IssuedHead = {
+  revisionId: string
+  revisionNumber: number
+  jobSequence: number
+  jobLabel: string
+  effectiveResponse: string | null
+}
+
+/** Extract issued revision uuid from named prerequisite detail (`id=<uuid>`). */
+export function revisionIdFromPrerequisiteDetail(detail: string): string | null {
+  const m = detail.match(/\bid=([0-9a-f-]{36})\b/i)
+  return m?.[1] ?? null
+}
+
+export function targetRevisionIdForCode(
+  failures: WorkflowPrerequisiteFailure[],
+  code: string,
+  heads: IssuedHead[],
+): string | null {
+  const match = failures.find((f) => f.code === code)
+  if (match) {
+    const fromDetail = revisionIdFromPrerequisiteDetail(match.detail)
+    if (fromDetail) return fromDetail
+  }
+  if (code === 'acknowledgment_outstanding') {
+    return heads.find((h) => h.effectiveResponse == null)?.revisionId ?? null
+  }
+  if (code === 'acknowledgment_refusal_disposition_pending') {
+    return heads.find((h) => h.effectiveResponse === 'refused')?.revisionId ?? null
+  }
+  return null
+}
+
+type AttemptDraft = {
+  attempted_at: string
+  channel: string
+  outcome: string
+}
+
+const emptyAttempt = (): AttemptDraft => ({
+  attempted_at: '',
+  channel: '',
+  outcome: '',
+})
+
 /**
  * Manager prerequisite / closure surface: named failures, unavailable path,
  * refusal disposition, resolve/close via governed transition.
+ * Contact attempts are staff-entered (never fabricated).
  */
 export const TicketWorkflowClosurePanel: React.FC<TicketWorkflowClosurePanelProps> = ({
   ticketId,
@@ -40,6 +88,11 @@ export const TicketWorkflowClosurePanel: React.FC<TicketWorkflowClosurePanelProp
   const [summary, setSummary] = useState(resolutionSummary ?? '')
   const [dispRationale, setDispRationale] = useState('')
   const [unavailRationale, setUnavailRationale] = useState('')
+  const [attempts, setAttempts] = useState<AttemptDraft[]>([
+    { attempted_at: '', channel: 'issue_notification', outcome: '' },
+    emptyAttempt(),
+    emptyAttempt(),
+  ])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -56,8 +109,8 @@ export const TicketWorkflowClosurePanel: React.FC<TicketWorkflowClosurePanelProp
   const issuedHeadsQuery = useQuery({
     queryKey: ['closure-issued-heads', ticketId, jobsQuery.data?.map((j) => j.id).join(',')],
     enabled: !!jobsQuery.data?.length,
-    queryFn: async () => {
-      const heads: Array<{ revisionId: string; revisionNumber: number; jobLabel: string }> = []
+    queryFn: async (): Promise<IssuedHead[]> => {
+      const heads: IssuedHead[] = []
       for (const job of jobsQuery.data ?? []) {
         const visits = await listServiceVisitsForJob(job.id)
         for (const visit of visits) {
@@ -66,19 +119,18 @@ export const TicketWorkflowClosurePanel: React.FC<TicketWorkflowClosurePanelProp
           const head = issued[0]
           if (!head) continue
           const ack = await getEffectiveAcknowledgment(head.id)
-          const disp = ack?.response === 'refused'
-            ? await getEffectiveAcknowledgmentDisposition(head.id)
-            : null
+          if (ack?.response === 'refused') {
+            await getEffectiveAcknowledgmentDisposition(head.id)
+          }
           heads.push({
             revisionId: head.id,
             revisionNumber: head.revision_number,
+            jobSequence: job.job_sequence,
             jobLabel: `Job ${job.job_sequence} (${job.title})`,
+            effectiveResponse: ack?.response ?? null,
           })
-          void ack
-          void disp
         }
       }
-      // De-dupe by revision id (one head per report)
       const seen = new Set<string>()
       return heads.filter((h) => {
         if (seen.has(h.revisionId)) return false
@@ -89,51 +141,50 @@ export const TicketWorkflowClosurePanel: React.FC<TicketWorkflowClosurePanelProp
   })
 
   const failures = prereqQuery.data ?? []
+  const heads = issuedHeadsQuery.data ?? []
   const refusalPending = failures.some((f) => f.code === 'acknowledgment_refusal_disposition_pending')
   const ackOutstanding = failures.some((f) => f.code === 'acknowledgment_outstanding')
 
-  const refusalHeadId = useMemo(() => {
-    const f = failures.find((x) => x.code === 'acknowledgment_refusal_disposition_pending')
-    if (!f) return issuedHeadsQuery.data?.[0]?.revisionId
-    return issuedHeadsQuery.data?.[0]?.revisionId
-  }, [failures, issuedHeadsQuery.data])
+  const refusalHeadId = useMemo(
+    () => targetRevisionIdForCode(failures, 'acknowledgment_refusal_disposition_pending', heads),
+    [failures, heads],
+  )
+  const outstandingHeadId = useMemo(
+    () => targetRevisionIdForCode(failures, 'acknowledgment_outstanding', heads),
+    [failures, heads],
+  )
 
-  const contactAttempts = (): ContactAttempt[] => {
-    const now = new Date()
-    const t0 = new Date(now.getTime() - 3 * 86400000).toISOString()
-    const t1 = new Date(now.getTime() - 2 * 86400000).toISOString()
-    const t2 = new Date(now.getTime() - 1 * 86400000).toISOString()
-    return [
-      {
-        attempted_at: t0,
-        channel: 'issue_notification',
-        outcome: 'delivered',
-        by_actor_id: currentUserId,
-      },
-      {
-        attempted_at: t1,
-        channel: 'phone',
-        outcome: 'no_answer',
-        by_actor_id: currentUserId,
-      },
-      {
-        attempted_at: t2,
-        channel: 'email',
-        outcome: 'no_reply',
-        by_actor_id: currentUserId,
-      },
-    ]
-  }
+  const refusalHeadLabel = heads.find((h) => h.revisionId === refusalHeadId)?.jobLabel
+  const outstandingHeadLabel = heads.find((h) => h.revisionId === outstandingHeadId)?.jobLabel
 
   const refresh = async () => {
     await queryClient.invalidateQueries({ queryKey: ['ticket-workflow-prerequisites', ticketId] })
+    await queryClient.invalidateQueries({ queryKey: ['closure-issued-heads', ticketId] })
     await queryClient.invalidateQueries({ queryKey: ['admin-tickets'] })
     await queryClient.invalidateQueries({ queryKey: ['ticket', ticketId] })
   }
 
+  const buildContactAttempts = (): ContactAttempt[] | null => {
+    const built: ContactAttempt[] = []
+    for (const a of attempts) {
+      const attempted_at = a.attempted_at.trim()
+      const channel = a.channel.trim()
+      const outcome = a.outcome.trim()
+      if (!attempted_at && !channel && !outcome) continue
+      if (!attempted_at || !channel || !outcome) return null
+      built.push({
+        attempted_at: new Date(attempted_at).toISOString(),
+        channel,
+        outcome,
+        by_actor_id: currentUserId,
+      })
+    }
+    return built.length >= 3 ? built : null
+  }
+
   const runDisposition = async (disposition: 'accept_refusal_and_proceed' | 'create_follow_up') => {
     if (!refusalHeadId) {
-      toast.error('No issued revision available for disposition')
+      toast.error('No refused issued revision targeted for disposition')
       return
     }
     setBusy(true)
@@ -157,16 +208,23 @@ export const TicketWorkflowClosurePanel: React.FC<TicketWorkflowClosurePanelProp
   }
 
   const runUnavailable = async () => {
-    if (!issuedHeadsQuery.data?.[0]) {
-      toast.error('No issued revision for unavailable acknowledgment')
+    if (!outstandingHeadId) {
+      toast.error('No outstanding issued revision targeted for unavailable')
+      return
+    }
+    const contactAttempts = buildContactAttempts()
+    if (!contactAttempts) {
+      toast.error(
+        'Enter real contact attempts: issue notification plus two distinct follow-ups (time, channel, outcome).',
+      )
       return
     }
     setBusy(true)
     setError(null)
     try {
       await recordServiceAcknowledgmentUnavailable({
-        issuedRevisionId: issuedHeadsQuery.data[0].revisionId,
-        contactAttempts: contactAttempts(),
+        issuedRevisionId: outstandingHeadId,
+        contactAttempts,
         rationale: unavailRationale.trim(),
       })
       toast.success('Unavailable acknowledgment recorded')
@@ -200,6 +258,10 @@ export const TicketWorkflowClosurePanel: React.FC<TicketWorkflowClosurePanelProp
     } finally {
       setBusy(false)
     }
+  }
+
+  const updateAttempt = (index: number, patch: Partial<AttemptDraft>) => {
+    setAttempts((prev) => prev.map((row, i) => (i === index ? { ...row, ...patch } : row)))
   }
 
   return (
@@ -245,6 +307,9 @@ export const TicketWorkflowClosurePanel: React.FC<TicketWorkflowClosurePanelProp
       {refusalPending && (
         <div className="space-y-2 rounded border border-border/70 p-2" data-testid="closure-disposition">
           <p className="text-xs font-medium">Refusal disposition</p>
+          <p className="text-[11px] text-muted-foreground" data-testid="closure-disposition-target">
+            Target: {refusalHeadLabel ?? ' unresolved head'} ({refusalHeadId ?? 'none'})
+          </p>
           <Textarea
             value={dispRationale}
             onChange={(e) => setDispRationale(e.target.value)}
@@ -257,7 +322,7 @@ export const TicketWorkflowClosurePanel: React.FC<TicketWorkflowClosurePanelProp
             <Button
               type="button"
               size="sm"
-              disabled={busy || !dispRationale.trim()}
+              disabled={busy || !dispRationale.trim() || !refusalHeadId}
               onClick={() => void runDisposition('accept_refusal_and_proceed')}
             >
               Accept refusal & proceed
@@ -266,7 +331,7 @@ export const TicketWorkflowClosurePanel: React.FC<TicketWorkflowClosurePanelProp
               type="button"
               size="sm"
               variant="outline"
-              disabled={busy || !dispRationale.trim()}
+              disabled={busy || !dispRationale.trim() || !refusalHeadId}
               onClick={() => void runDisposition('create_follow_up')}
             >
               Require follow-up
@@ -278,9 +343,50 @@ export const TicketWorkflowClosurePanel: React.FC<TicketWorkflowClosurePanelProp
       {ackOutstanding && (
         <div className="space-y-2 rounded border border-border/70 p-2" data-testid="closure-unavailable">
           <p className="text-xs font-medium">Customer unavailable</p>
-          <p className="text-[11px] text-muted-foreground">
-            Records attributable contact attempts (notification + two follow-ups). Not acceptance.
+          <p className="text-[11px] text-muted-foreground" data-testid="closure-unavailable-target">
+            Target outstanding head: {outstandingHeadLabel ?? '—'} ({outstandingHeadId ?? 'none'}).
+            Enter real attributable attempts — nothing is invented.
           </p>
+          <div className="space-y-2" data-testid="closure-contact-attempts">
+            {attempts.map((row, index) => (
+              <div
+                key={index}
+                className="grid gap-1 sm:grid-cols-3"
+                data-testid={`closure-attempt-row-${index}`}
+              >
+                <Input
+                  type="datetime-local"
+                  value={row.attempted_at}
+                  onChange={(e) => updateAttempt(index, { attempted_at: e.target.value })}
+                  data-testid={`closure-attempt-at-${index}`}
+                  aria-label={`Attempt ${index + 1} time`}
+                />
+                <Input
+                  value={row.channel}
+                  onChange={(e) => updateAttempt(index, { channel: e.target.value })}
+                  placeholder={index === 0 ? 'issue_notification' : 'channel'}
+                  data-testid={`closure-attempt-channel-${index}`}
+                  aria-label={`Attempt ${index + 1} channel`}
+                />
+                <Input
+                  value={row.outcome}
+                  onChange={(e) => updateAttempt(index, { outcome: e.target.value })}
+                  placeholder="outcome"
+                  data-testid={`closure-attempt-outcome-${index}`}
+                  aria-label={`Attempt ${index + 1} outcome`}
+                />
+              </div>
+            ))}
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              data-testid="closure-attempt-add"
+              onClick={() => setAttempts((prev) => [...prev, emptyAttempt()])}
+            >
+              Add attempt
+            </Button>
+          </div>
           <Textarea
             value={unavailRationale}
             onChange={(e) => setUnavailRationale(e.target.value)}
@@ -293,7 +399,8 @@ export const TicketWorkflowClosurePanel: React.FC<TicketWorkflowClosurePanelProp
             type="button"
             size="sm"
             variant="outline"
-            disabled={busy || !unavailRationale.trim()}
+            disabled={busy || !unavailRationale.trim() || !outstandingHeadId}
+            data-testid="closure-unavailable-submit"
             onClick={() => void runUnavailable()}
           >
             Record unavailable
