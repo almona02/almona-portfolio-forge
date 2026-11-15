@@ -1,6 +1,6 @@
 # Spark — B5 freeze handoff (no staging apply)
 
-**Freeze tip:** *(stamped on commit)*  
+**Freeze tip:** `f8fb9358e976050089cd199579a99bc0a098e0c2`  
 **Depends on:** B4 accepted `f63c91454df69a0146404200d10c4058465b38fc`  
 **Gates:** #155 frozen · #156 draft · **no staging apply** · no merge · no production · no B6
 
