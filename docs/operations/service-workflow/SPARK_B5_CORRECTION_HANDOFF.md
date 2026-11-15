@@ -1,7 +1,7 @@
 # Spark — B5 F-B5-01/02 correction freeze (no staging apply)
 
 **Depends on blocked freeze:** `f8fb9358e976050089cd199579a99bc0a098e0c2`  
-**Correction tip:** *(stamped on commit)*  
+**Correction tip:** `d2743078fdb7a648e09cfed7aeac554cef43570d`  
 **Migration:** `supabase/migrations/20261115140000_service_workflow_b5_f_b5_01_02_correction.sql`  
 **Gates:** #155 frozen · #156 draft · **no staging apply** · no merge · no production · no B6
 
