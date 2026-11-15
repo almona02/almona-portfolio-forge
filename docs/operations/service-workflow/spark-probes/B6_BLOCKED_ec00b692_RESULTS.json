@@ -1,0 +1,406 @@
+{
+  "freeze": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+  "b5_accepted": "2a4042ad44d9234739f514720c3d413ea0ca42e8",
+  "files": {
+    "base": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "scripts/service-workflow/disposable_b1_base.sql",
+      "sha256": "001933281c74edd979086171fd927f73f0577338b8b16ba00caf50287342f9c5",
+      "unrewritten_vs_b5acc": true
+    },
+    "boundary": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261111010000_service_slice0_security_boundary.sql",
+      "sha256": "b49a439bff6c94388167e820ee42dfbe32bf1ae162853abbbd1206569d00ac40",
+      "unrewritten_vs_b5acc": true
+    },
+    "b1": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261111210000_service_workflow_b1_data_contract.sql",
+      "sha256": "5629fa455fac240eb4a5051e264cf10f482a409ad1a3c53768c20eaa411dae62",
+      "unrewritten_vs_b5acc": true,
+      "pin_match": true
+    },
+    "b2": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261111220000_service_workflow_b2_assignment.sql",
+      "sha256": "5cc58fce6cd1788e0243dedadf602b74a708174d83a005860c3bc6382b604cf1",
+      "unrewritten_vs_b5acc": true,
+      "pin_match": true
+    },
+    "sec": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261112150000_service_workflow_security_remediation.sql",
+      "sha256": "23384c52bc1b9bdd85efc305c10e54d563f7b76857f4e3d445916216eabaec3a",
+      "unrewritten_vs_b5acc": true
+    },
+    "rls170": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261112170000_service_tickets_staff_select_via_caller_role.sql",
+      "sha256": "b3e56fe558dbef9a3d09fa29883a3b9cd52d6e1a9d668cbbd1c55eacf0ac528f",
+      "unrewritten_vs_b5acc": true
+    },
+    "rls171a": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261112171000_profiles_select_own_for_role_routing.sql",
+      "sha256": "3abc821ab39c76c96d86217a66b20e9b3926d0cfc4a5763fe1380744ae22247b",
+      "unrewritten_vs_b5acc": true
+    },
+    "rls171b": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261112171100_profiles_select_staff_directory_for_assignment.sql",
+      "sha256": "e74b5d0566b3b2716bdd236cba8075f97fd9539616918e40cf398db131c49297",
+      "unrewritten_vs_b5acc": true
+    },
+    "b3": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261112180000_service_workflow_b3_visit_execution.sql",
+      "sha256": "3248d40a9d1c3a5f6ab1c0f7a30dafefd25c190cdc032dbfb6e6c328c4166172",
+      "unrewritten_vs_b5acc": true
+    },
+    "b3corr": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261112190000_service_workflow_b3_visit_corrections.sql",
+      "sha256": "ea8100304af2de4a4725a9d6ab91049e4b992735d025d3d7919191d8ac0e771e",
+      "unrewritten_vs_b5acc": true
+    },
+    "b3safety": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261112194500_service_workflow_b3_safety_path_final.sql",
+      "sha256": "227840626ef2aaf32f71aba5e2daf2a9922f904a0b75c6ad54fa064508122f35",
+      "unrewritten_vs_b5acc": true
+    },
+    "b3ack": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261112200000_service_workflow_b3_f_b3_02_ack_binding.sql",
+      "sha256": "55e704410dd322ce57759fbe797ff4fdc785ee75b8d1d561a3fa36dd364a1f95",
+      "unrewritten_vs_b5acc": true
+    },
+    "b3lock": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261112201500_service_workflow_b3_f_b3_03_lock_order.sql",
+      "sha256": "49304afcf469ba6d9bce1545b1d8b140393e83a82b70508fd2cac21efc0ca5f7",
+      "unrewritten_vs_b5acc": true
+    },
+    "b4": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261112210000_service_workflow_b4_report_submission.sql",
+      "sha256": "4f04d4da09f5152b5aea27f2613f8d64d7219224714997a6643d12a9529e6433",
+      "unrewritten_vs_b5acc": true
+    },
+    "b4fix": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261113013000_service_workflow_b4_attachment_insert_definer.sql",
+      "sha256": "6ddbf845f717bcebfd3489a650658bac105546d443871185c83f4eb6e18c1ab6",
+      "unrewritten_vs_b5acc": true
+    },
+    "b5": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261115120000_service_workflow_b5_manager_review.sql",
+      "sha256": "1417c23a0f8a6d9762333f61764a125dcdfbbb867b02fe996f1239a8cf420693",
+      "unrewritten_vs_b5acc": true
+    },
+    "b5fix": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261115140000_service_workflow_b5_f_b5_01_02_correction.sql",
+      "sha256": "544dd5c8cca2f3731d754b8a27e9aca4b4d02c7a5eda213bfaac55f0e46dbe89",
+      "unrewritten_vs_b5acc": true
+    },
+    "b5sel": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261115150000_service_workflow_b5_staging_b5_01_review_select.sql",
+      "sha256": "18d75014c8ad118b59b1f002004b8bde5198b38240f5ef9ce3cece4600b4d12b",
+      "unrewritten_vs_b5acc": true
+    },
+    "b6": {
+      "sha": "ec00b692af10629ed5ee506bbb35762ea5ea00a8",
+      "path": "supabase/migrations/20261115160000_service_workflow_b6_acknowledgment_closure.sql",
+      "sha256": "48c8b2f34adcaae2510ed16733f94db4d073a5c44fcf42837160ea8144672af1"
+    }
+  },
+  "no_harness_repair": true,
+  "clean_apply": "PASS: untouched B6 migration applies on clean chain",
+  "wrapper_no_actor": true,
+  "spark_b6": {
+    "pass": 37,
+    "fail": 3,
+    "rows": [
+      "Q6-01|PASS|eff=t aud=1",
+      "Q6-02|PASS|denied=t/22023 rows=0 aud=0",
+      "Q6-03|PASS|aud=1",
+      "Q6-04|PASS|denied=t/42501 rows=0 aud=0",
+      "Q6-05|PASS|tech=t/42501 sup=t/42501 adm=t/42501 rows=0",
+      "Q6-06|PASS|by=t",
+      "Q6-07|PASS|ack=t/42501 un=t/42501 disp=t/42501 rows=0/0",
+      "Q6-08|PASS|denied=t/42501 rows=0 msg=Actor impersonation not permitted",
+      "Q6-09|PASS|denied=t/42501 rows=0 msg=permission denied for function record_service_acknowledgment",
+      "Q6-10|PASS|n=3 aud=1",
+      "Q6-11|FAIL|bad=t/22023 short=t/23514 dup=f/00000 rows=1",
+      "Q6-12|PASS|cust=t/42501 tech=t/42501 rows=0",
+      "Q6-13|FAIL|denied=f/00000 rows=2",
+      "Q6-14|PASS|aud=1 codes={resolution_summary_missing}",
+      "Q6-15|PASS|noref=t/23514 tech=t/42501 cust=t/42501 rows=0",
+      "Q6-16|PASS|codes={acknowledgment_refusal_follow_up_required,resolution_summary_missing} denied=t/23514 jobs=1 st=in_progress",
+      "Q6-17|FAIL|codes={resolution_summary_missing} denied=f/00000 st=resolved",
+      "Q6-18|PASS|idem=t append=t rows=2 aud=2",
+      "Q6-19|PASS|disp_idem=t/1 unav_idem=t/1",
+      "Q6-20|PASS|eff=t st=closed",
+      "Q6-21|PASS|head1=accepted head2null=t codes={acknowledgment_outstanding,resolution_summary_missing}",
+      "Q6-22|PASS|st=closed res=1 close=1 note=Closure does not clear safety restrictio",
+      "Q6-23|PASS|null=t/23514 blank=t/23514 st=in_progress",
+      "Q6-24|PASS|codes={acknowledgment_outstanding,resolution_summary_missing} denied=t/23514 st=closed",
+      "Q6-25|PASS|codes={acknowledgment_refusal_disposition_pending,resolution_summary_missing} denied=t/23514 st=closed",
+      "Q6-26|PASS|codes={required_job_unsatisfied,revision_awaiting_review,resolution_summary_missing} denied=t/23514 optclose=closed",
+      "Q6-27|PASS|codes={revision_awaiting_review,completing_report_not_issued,resolution_summary_missing} denied=t/23514",
+      "Q6-28|PASS|codes={required_job_unsatisfied,scheduled_visit_open,resolution_summary_missing} denied=t/23514",
+      "Q6-29|PASS|codes={required_job_unsatisfied,revision_awaiting_review,resolution_summary_missing} denied=t/23514",
+      "Q6-30|PASS|st=closed sum_null=t",
+      "Q6-31|PASS|direct=t/23514 st1=resolved st2=in_progress aud=1",
+      "Q6-32|PASS|reclose_ok=t reopen=t/23514 st=closed",
+      "Q6-33|PASS|denied=t/P0001 rows=0 msg=spk6 audit bomb",
+      "Q6-34|PASS|owner=unavailable/3 unrelated_null=t staff=unavailable",
+      "Q6-35|PASS|owner=1/1 unrelated=0/0 staff=1/1",
+      "Q6-36|PASS|live_clean=t static_clean=t",
+      "Q6-37|PASS|anon_denied=t auth_ok=t",
+      "Q6-38|PASS|writers_denied=t eval_ok=t",
+      "Q6-39|PASS|n=govern_ticket_transition/p_ticket_id uuid, p_to_status text, p_rationale text, p_resolution_summary text, evaluate_ticket_workflow_prerequisites/p_ticket_id uuid, govern_ticket_transition/p_ticket_id uuid, p_to_status text, p_rationale text, p_resolution_summary text, p_actor_id uuid, record_acknowledgment_disposition/p_issued_revision_id uuid, p_disposition text, p_rationale text, p_actor_id uuid, record_service_acknowledgment/p_issued_revision_id uuid, p_response text, p_comment text, p_acto",
+      "Q6-40|PASS|ins=t/42501 upd=t/42501 del=t/42501 dispins=t/42501 rows=1/1"
+    ]
+  },
+  "concurrency": {
+    "R6-C1": {
+      "ok": true,
+      "detail": "a=('ok', 'bb1ef031-086c-4d03-b403-c5148e3fbfc1', None) b=('ok', 'bb1ef031-086c-4d03-b403-c5148e3fbfc1', None) rows=1 aud=1"
+    },
+    "R6-C2": {
+      "ok": true,
+      "detail": "a=('ok', '1a37deda-ab41-4a76-9ed7-298fb6d78eba', None) b=('ok', '45614db7-b98e-4549-8dd8-811570e97813', None) rows=2 aud=2 eff=refused"
+    },
+    "R6-C3": {
+      "ok": true,
+      "detail": "unav=('ok', '9327bb98-6b74-4fc7-a1bb-d8f4c89e077b', None) resolve=('err', None, 'CheckViolation:23514:Workflow prerequisites unsatisfied for resolved:\\nacknowledgment_outstanding: Job 1 (SPK6C c3) issued revision 1 \u2014 acknowledgment outstanding\\n\\nCONTEXT:  PL/pgSQL') st=in_progress rows=1"
+    },
+    "R6-C4": {
+      "ok": true,
+      "detail": "job=('err', None, 'CheckViolation:23514:Closed tickets cannot receive jobs\\nCONTEXT:  PL/pgSQL function create_service_job(uuid,text,boolean,text,uuid) line 22 at RAISE\\n') close=('ok', 'eb71242a-53a4-4c1c-ada2-2112f742dafb', None) st=closed nj=1"
+    }
+  },
+  "spark_b6_incl_conc": {
+    "pass": 40,
+    "fail": 3,
+    "rows": [
+      "Q6-01|PASS|eff=t aud=1",
+      "Q6-02|PASS|denied=t/22023 rows=0 aud=0",
+      "Q6-03|PASS|aud=1",
+      "Q6-04|PASS|denied=t/42501 rows=0 aud=0",
+      "Q6-05|PASS|tech=t/42501 sup=t/42501 adm=t/42501 rows=0",
+      "Q6-06|PASS|by=t",
+      "Q6-07|PASS|ack=t/42501 un=t/42501 disp=t/42501 rows=0/0",
+      "Q6-08|PASS|denied=t/42501 rows=0 msg=Actor impersonation not permitted",
+      "Q6-09|PASS|denied=t/42501 rows=0 msg=permission denied for function record_service_acknowledgment",
+      "Q6-10|PASS|n=3 aud=1",
+      "Q6-11|FAIL|bad=t/22023 short=t/23514 dup=f/00000 rows=1",
+      "Q6-12|PASS|cust=t/42501 tech=t/42501 rows=0",
+      "Q6-13|FAIL|denied=f/00000 rows=2",
+      "Q6-14|PASS|aud=1 codes={resolution_summary_missing}",
+      "Q6-15|PASS|noref=t/23514 tech=t/42501 cust=t/42501 rows=0",
+      "Q6-16|PASS|codes={acknowledgment_refusal_follow_up_required,resolution_summary_missing} denied=t/23514 jobs=1 st=in_progress",
+      "Q6-17|FAIL|codes={resolution_summary_missing} denied=f/00000 st=resolved",
+      "Q6-18|PASS|idem=t append=t rows=2 aud=2",
+      "Q6-19|PASS|disp_idem=t/1 unav_idem=t/1",
+      "Q6-20|PASS|eff=t st=closed",
+      "Q6-21|PASS|head1=accepted head2null=t codes={acknowledgment_outstanding,resolution_summary_missing}",
+      "Q6-22|PASS|st=closed res=1 close=1 note=Closure does not clear safety restrictio",
+      "Q6-23|PASS|null=t/23514 blank=t/23514 st=in_progress",
+      "Q6-24|PASS|codes={acknowledgment_outstanding,resolution_summary_missing} denied=t/23514 st=closed",
+      "Q6-25|PASS|codes={acknowledgment_refusal_disposition_pending,resolution_summary_missing} denied=t/23514 st=closed",
+      "Q6-26|PASS|codes={required_job_unsatisfied,revision_awaiting_review,resolution_summary_missing} denied=t/23514 optclose=closed",
+      "Q6-27|PASS|codes={revision_awaiting_review,completing_report_not_issued,resolution_summary_missing} denied=t/23514",
+      "Q6-28|PASS|codes={required_job_unsatisfied,scheduled_visit_open,resolution_summary_missing} denied=t/23514",
+      "Q6-29|PASS|codes={required_job_unsatisfied,revision_awaiting_review,resolution_summary_missing} denied=t/23514",
+      "Q6-30|PASS|st=closed sum_null=t",
+      "Q6-31|PASS|direct=t/23514 st1=resolved st2=in_progress aud=1",
+      "Q6-32|PASS|reclose_ok=t reopen=t/23514 st=closed",
+      "Q6-33|PASS|denied=t/P0001 rows=0 msg=spk6 audit bomb",
+      "Q6-34|PASS|owner=unavailable/3 unrelated_null=t staff=unavailable",
+      "Q6-35|PASS|owner=1/1 unrelated=0/0 staff=1/1",
+      "Q6-36|PASS|live_clean=t static_clean=t",
+      "Q6-37|PASS|anon_denied=t auth_ok=t",
+      "Q6-38|PASS|writers_denied=t eval_ok=t",
+      "Q6-39|PASS|n=govern_ticket_transition/p_ticket_id uuid, p_to_status text, p_rationale text, p_resolution_summary text, evaluate_ticket_workflow_prerequisites/p_ticket_id uuid, govern_ticket_transition/p_ticket_id uuid, p_to_status text, p_rationale text, p_resolution_summary text, p_actor_id uuid, record_acknowledgment_disposition/p_issued_revision_id uuid, p_disposition text, p_rationale text, p_actor_id uuid, record_service_acknowledgment/p_issued_revision_id uuid, p_response text, p_comment text, p_acto",
+      "Q6-40|PASS|ins=t/42501 upd=t/42501 del=t/42501 dispins=t/42501 rows=1/1",
+      "R6-C1|PASS|a=('ok', 'bb1ef031-086c-4d03-b403-c5148e3fbfc1', None) b=('ok', 'bb1ef031-086c-4d03-b403-c5148e3fbfc1', None) rows=1 aud=1",
+      "R6-C2|PASS|a=('ok', '1a37deda-ab41-4a76-9ed7-298fb6d78eba', None) b=('ok', '45614db7-b98e-4549-8dd8-811570e97813', None) rows=2 aud=2 eff=refused",
+      "R6-C4|PASS|job=('err', None, 'CheckViolation:23514:Closed tickets cannot receive jobs\\nCONTEXT:  PL/pgSQL function create_service_job(uuid,text,boolean,text,uuid) line 22 at RAISE\\n') close=('ok', 'eb71242a-53a4-4c1c-ada2-2112f742dafb', None) st=closed nj=1"
+    ]
+  },
+  "cursor_b6": {
+    "pass": 9,
+    "fail": 0,
+    "rows": [
+      "B6-01_accept_and_refuse_comment|PASS|refuse_denied=true response=accepted",
+      "B6-02_append_idempotent|PASS|idempotent=true n=2 eff=refused",
+      "B6-03_no_inherit_acceptance|PASS|r1_accepted=true r2_eff_null=true",
+      "B6-04_unavailable_evidence|PASS|thin_denied=true response=unavailable",
+      "B6-05_refusal_disposition|PASS|close_denied_before=true pending_after=0",
+      "B6-06_named_failures_optional|PASS|ack=true visit=true opt_block=false",
+      "B6-07_sales_role_owner_rpc|PASS|role=sales_rep response=accepted",
+      "B6-08_legacy_vs_activated|PASS|legacy_ok=true activated_blocked=true",
+      "B6-09_happy_close|PASS|status=closed"
+    ]
+  },
+  "b5_regression": {
+    "pass": 40,
+    "fail": 0,
+    "rows": [
+      "Q5-01|PASS|rev=returned job=in_progress reviews=1 raud=1 jaud=1",
+      "Q5-02|PASS|job=completed completing=t raud=1 jaud=1",
+      "Q5-03|PASS|approve=t/42501 return=t/42501 rows=0 audits=0 job=awaiting_review",
+      "Q5-04|PASS|elevated=support denied=t/42501 rows=0",
+      "Q5-05|PASS|cust=t/42501 sales=t/42501 anon=t/42501 rows=0",
+      "Q5-06|PASS|denied=t/42501 rows=0",
+      "Q5-07|PASS|null=t/22023 blank=t/22023 rows=0 job=awaiting_review",
+      "Q5-08|PASS|comments=pad me reviewer_ok=t decided_at=t",
+      "Q5-09|PASS|n2=2 rows=2 r1_same=t",
+      "Q5-10|PASS|same=t rows=1 audits=1",
+      "Q5-11|PASS|same_actor=t/23505 diff_mgr=t/23505 rows=1",
+      "Q5-12|PASS|allowed head=1 job=completed comp_aud=1",
+      "Q5-13|PASS|decision=approved_issued job=awaiting_review comp_aud=0",
+      "Q5-14|PASS|job=awaiting_review comp_aud=0",
+      "Q5-15|PASS|job=awaiting_review v2_submit_ok=t/00000 (FAIL=stranded unreported visit)",
+      "Q5-16|PASS|unissued_n=0 issued_n=1 content_ok=t",
+      "Q5-17|PASS|direct=0/1 getter=1 agree=t",
+      "Q5-18|PASS|unissued(d/g)=0/0 issued(d/g)=1/1",
+      "Q5-19|PASS|getter=2 direct=2",
+      "Q5-20|PASS|tech2=t/42501/0 cust2=t/42501/0",
+      "Q5-21|PASS|getter=t/42501 direct=t/42501",
+      "Q5-22|PASS|getter_n=1 direct_n=1 head_is_r1=t",
+      "Q5-23|PASS|head_n=1 is_r1=t",
+      "Q5-24|PASS|head_is_r2=t staff_rows=2 r1_intact=t",
+      "Q5-25|PASS|owner_read=t staff_read=t (FAIL=owner denied issued evidence)",
+      "Q5-26|PASS|owner_unissued_read=f",
+      "Q5-27|PASS|cust1_reads_cust2_issued=f",
+      "Q5-28|PASS|denied=t/42501 rows=0",
+      "Q5-29|PASS|admin=t support=t tech=t cust=t status=in_progress",
+      "Q5-30|PASS|ticket=in_progress",
+      "Q5-31|PASS|null=t/42501 spoof=t/42501 rows=0",
+      "Q5-32|PASS|denied=t/42501 rows=0 msg=Actor impersonation not permitted",
+      "Q5-33|PASS|noactor=t/42501 rows0=0 delegated=t rows1=1",
+      "Q5-34|PASS|ins=t/42501 upd=t/42501 del=t/42501 rows=1/1",
+      "Q5-35|PASS|existing=t/42501 missing=t/42501",
+      "Q5-36|PASS|return_aud=1 approve_aud=1 to_inprog=1 to_completed=1",
+      "Q5-37|PASS|failed=t rows=0 job=awaiting_review msg=spk5 injected audit failure",
+      "Q5-38|PASS|anon=f auth=t svc=t fn=public.review_service_report_revision",
+      "Q5-39|PASS|return_ok=f resubmit_ok=f/23514 (FAIL=dead-end return on completed job)",
+      "Q5-40|PASS|denied=t/23514 job=awaiting_review"
+    ]
+  },
+  "b4_regression": {
+    "pass": 27,
+    "fail": 3,
+    "rows": [
+      "Q4-00|PASS|ticket=in_progress job=in_progress visit=completed attending=t",
+      "Q4-01|PASS|ok=t rev=t roots=1 job=awaiting_review ticket=in_progress audits=2 msg=",
+      "Q4-02|PASS|denied=t state=42501 rows_same=t audits_same=t msg=Only the historical attending technician for this visit may submit a report",
+      "Q4-03|PASS|support:42501 admin:42501 sales:42501 cust1:42501 ",
+      "Q4-04|PASS|submit=f/42501 getter=f/42501",
+      "Q4-05|PASS|denied=t state=42501 rows_same=t msg=Actor impersonation not permitted",
+      "Q4-06|PASS|delegated_ok=t unattributed_denied=t by=t msg=",
+      "Q4-07|PASS|att_stays=t ass_moves=t orig_ok=t by=t new_denied=t/42501",
+      "Q4-07c|FAIL|ticketfolder_denied=f/00000 ownfolder_ok=t by=t",
+      "Q4-08|PASS|denied=t state=42501 rows_same=t msg=Only the historical attending technician for this visit may submit a report",
+      "Q4-09|PASS|crossticket:42501 foreignfolder:42501 missingobj:P0002 empty:22023 traversal:22023 absolute:22023 mixed:42501 rows_same=t",
+      "Q4-10|PASS|ok=t rows=1 msg=",
+      "Q4-10b|PASS|ok=t by=t msg=",
+      "Q4-11|PASS|findings:22023 work:22023 decl:22023 outcome:22023 reason:22023 labempty:22023 labxor:22023 hours0:22023 desc:22023 hoursNaN:22023 rows_same=t",
+      "Q4-12|PASS|nolab=t nonfixed=t states=00000/00000",
+      "Q4-13|PASS|pin_null:22023 pin_mismatch:22023 pin_items:22023 pin_ok:00000 unpin_chk:22023",
+      "Q4-14|PASS|retry_ok=t single=t same=t a0=9 a1=9 acts1=visit_safety_check,create_job,complete_visit,job_transition,schedule_visit,first_visit_ticket_in_progress,job_assign,submit_report_revision,start_visit",
+      "Q4-15|PASS|retry_ok=t single=t first_wins=t",
+      "Q4-16|PASS|both_ok=t/t rows=2",
+      "Q4-19|PASS|tech_upd:42501 tech_del:42501 tech_ins:42501 anon_upd:42501 svc_upd:42501 svc_del:42501 unchanged=t privs_ok",
+      "Q4-20|PASS|ok=t/t r1_same=t nums=1/2 job=awaiting_review",
+      "Q4-21|PASS|failed=t roots=0 revs=0 job=in_progress msg=spk4 injected audit failure",
+      "Q4-22|PASS|direct_rows=0 getter_ok=t getter_revs=0 state=00000",
+      "Q4-23|FAIL|reviews=82 issue_rpcs=1 ticket_stable=t(in_progress)",
+      "Q4-24|PASS|jobcomplete=t/23514 ticketclose=t/23514 job=awaiting_review ticket=in_progress",
+      "Q4-26|PASS|start_x=t/42501 noack=t/22023 decline=t/unassigned active_decline=t/23514",
+      "Q4-27|PASS|sched=42501/Only the historical attending technician for this visit may  done=42501/Only the historical attending technician for this visit may  same_msg=t",
+      "Q4-28|PASS|grants=t is_ticket_job_technician:search_path=pg_catalog, public, admin_private | can_read_ticket_attachment:search_path=pg_catalog, public, admin_private | submit_service_report_revision:search_path=pg_catalog, public, admin_private | validate_report_labour:search_path=pg_catalog | validate_report_evidence_paths:search_path=pg_catalog, public, admin_private, storage | validate_checklist_for_pin:search_path=pg_catalog | actor_can_read_ticket_attachment:search_path=pg_catalog, public, admin_priva",
+      "Q4-30|FAIL|policy_branches=f rls=f support=t jobtech=t jobtech_internal=t unrelated=f cust_own=t cust_internal=f anon=f",
+      "Q4-32|PASS|xor_false_empty_denied=t/23514 control_denied=t/23514 leftover=0"
+    ],
+    "known": [
+      "Q4-07c",
+      "Q4-23",
+      "Q4-30"
+    ],
+    "unexpected": []
+  },
+  "b3_regression": {
+    "pass": 51,
+    "fail": 0,
+    "rows": [
+      "SPK-B01|PASS|st=scheduled seq=1 hist=1 audit_d=1",
+      "SPK-B02|PASS|denied=true visits=0",
+      "SPK-B03|PASS|denied=true",
+      "SPK-B04|PASS|both_denied=true visits=0",
+      "SPK-B06|PASS|hist=2 audit_d=1",
+      "SPK-B07|PASS|hist=1 audit_d=0",
+      "SPK-B08|PASS|both_denied=true hist=1",
+      "SPK-B10|PASS|visit=in_progress job=in_progress TICKET=in_progress audit_d=2",
+      "SPK-B11|PASS|denied=true st=scheduled audit_d=0",
+      "SPK-B12|PASS|denied=true",
+      "SPK-B13|PASS|denied42501=true audit_d=0 safety_rows=0",
+      "SPK-B14|PASS|denied=true active=1",
+      "SPK-B15|PASS|st=in_progress audit_d=0",
+      "SPK-B16|PASS|visit=completed job=in_progress ticket=in_progress audit_d=1",
+      "SPK-B17|PASS|denied=true st=scheduled",
+      "SPK-B18|PASS|audit_d=0",
+      "SPK-B19|PASS|v1=aborted seq2=2/in_progress hist1=1",
+      "SPK-B20|PASS|both_denied=true st=in_progress",
+      "SPK-B21|PASS|v1=no_access seq2=2/in_progress",
+      "SPK-B22|PASS|denied=true audit_d=0",
+      "SPK-B23|PASS|att_repointed=true repoint_audit=1",
+      "SPK-B24|PASS|denied=true",
+      "SPK-B25|PASS|att_null=true job=unassigned start_denied=true",
+      "SPK-B26|PASS|aborted_att_tech1=true sched_att_tech2=true",
+      "SPK-B27|PASS|all_denied=true rows=1",
+      "SPK-B28|PASS|bad=0 audit_d=0",
+      "SPK-B29|PASS|denied=true code=42501",
+      "SPK-D01|PASS|ticket=in_progress start_a=1 first_a=1 gov_a=1 clock_same=true",
+      "SPK-D02|PASS|first_audits=1 clock_same=true",
+      "SPK-D03|PASS|open+resolved+cancelled_all_denied=true",
+      "SPK-D04|PASS|resolved_denied_then_addback_ok=true ticket=in_progress",
+      "SPK-F01|PASS|st=scheduled hist=1",
+      "SPK-F02|PASS|path_ok=true final=aborted",
+      "SPK-G01|PASS|visits=completed/completed job=in_progress ticket=in_progress",
+      "SPK-S01|PASS|both_denied=true st=scheduled audit_d=0",
+      "SPK-S02|PASS|blocked_then_started=true rows=3 latest=passed",
+      "SPK-S03|PASS|all_denied=true rows=0",
+      "SPK-S04|PASS|states=aborted/no_access passed_rows=0",
+      "SPK-S05|PASS|support_substitute_denied=true rows=0",
+      "SPK-S06|PASS|tie_orders=true ord=289<290",
+      "SPK-S07|PASS|reassign_invalidates_reack_ok=true history_rows=2",
+      "SPK-S08|PASS|scope_per_visit=true",
+      "SPK-S09|PASS|same_author_ok=true rows=1->1 src=prior_explicit_passed",
+      "SPK-S10|PASS|onbehalf_needs_tech_ack=true",
+      "SPK-S11|PASS|roundtrip_invalidates_reack_ok=true",
+      "SPK-X00|PASS|all8_anon_denied=true",
+      "SPK-X01|PASS|forged_accepted_or_wrongcode=0",
+      "SPK-X02|PASS|denied=true msg=Service-role actor required",
+      "SPK-X03|PASS|deleg_ok=true st=scheduled",
+      "SPK-X04|PASS|forged_denied_deleg_ok=true",
+      "SPK-X05|PASS|bad=0 grant_restored=true"
+    ]
+  },
+  "b1b2_regression": {
+    "pass": 72,
+    "fail": 0,
+    "skip": 0,
+    "defer": 4,
+    "total": 76,
+    "fail_rows": []
+  },
+  "ok": false
+}

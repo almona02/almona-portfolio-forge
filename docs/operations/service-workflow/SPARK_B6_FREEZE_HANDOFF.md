@@ -2,7 +2,7 @@
 
 **Freeze tip:** `ec00b692af10629ed5ee506bbb35762ea5ea00a8`  
 **Correction tip:** `0b07aa8d00f88effd2b5775e23f097526923f6d3` — F-B6-03/04/05 + UI-01/02; see `B6_F_B6_03_05_CORRECTION.md`  
-**Integrity tip:** _(stamped on commit)_ — structured `entity_id`, `event_seq` ties, re-close `closed_at`, closure audit bomb  
+**Integrity tip:** `9998f1a48f1b18b467bc1e4d3552ced5e32325a4` — structured `entity_id`, `event_seq` ties, re-close `closed_at`, closure audit bomb  
 **Depends on:** B5 accepted `2a4042ad44d9234739f514720c3d413ea0ca42e8`  
 **BLOCKED baseline (preserved):** `ec00b692af10629ed5ee506bbb35762ea5ea00a8` — `spark-probes/B6_BLOCKED_ec00b692_EVIDENCE.md`  
 **Gates:** #155 frozen · #156 draft · **no staging apply** · no merge · no production · no B7

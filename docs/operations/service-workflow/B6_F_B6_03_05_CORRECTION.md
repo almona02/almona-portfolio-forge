@@ -1,5 +1,6 @@
 # B6 — F-B6-03 / F-B6-04 / F-B6-05 + UI correction
 
+**Integrity tip:** `9998f1a48f1b18b467bc1e4d3552ced5e32325a4`  
 **Correction tip:** `0b07aa8d00f88effd2b5775e23f097526923f6d3`  
 **Depends on:** B6 freeze `ec00b692` (stamp `395c2481`) · Spark BLOCKED findings  
 **Gates:** #155 frozen · #156 draft · disposable/local only · **no staging apply** · no merge · no production
