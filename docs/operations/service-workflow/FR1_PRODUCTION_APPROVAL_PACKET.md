@@ -6,7 +6,7 @@
 **Keep #158 draft** until explicit production authorization.  
 **No merge · no production writes · no settings changes · no routines implementation.**
 
-**Backup gate path:** bounded rehearsal proposal [`FR1_BACKUP_RESTORE_REHEARSAL_PROPOSAL.md`](./FR1_BACKUP_RESTORE_REHEARSAL_PROPOSAL.md) (review only — not cutover authorization).
+**Backup gate path:** [`FR1_BACKUP_RESTORE_REHEARSAL_EXECUTION.md`](./FR1_BACKUP_RESTORE_REHEARSAL_EXECUTION.md) (recovery + migration rehearsal both **BLOCKED** as of sheet finalize — production still blocked).
 
 ## 0. Evidence preserved (Spark / CI)
 

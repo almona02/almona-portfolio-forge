@@ -1,6 +1,7 @@
 # FR-1 backup-and-restore rehearsal proposal (review only)
 
-**Status:** Proposal for review · **not** production cutover authorization · **not** an instruction to run against production beyond a bounded, supervised export if separately approved  
+**Status:** Proposal accepted into execution sheet · **not** production cutover authorization  
+**Execution sheet:** [`FR1_BACKUP_RESTORE_REHEARSAL_EXECUTION.md`](./FR1_BACKUP_RESTORE_REHEARSAL_EXECUTION.md)  
 **Freeze tip (artifacts):** `e17858a59c64426af6067d1ec114e311673daad9`  
 **Release vehicle:** draft **#158** — keep draft  
 **#155:** remain **unmerged**; mark **superseded** only when the release plan is finalized (see §9)  
