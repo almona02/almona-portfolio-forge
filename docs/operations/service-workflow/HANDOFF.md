@@ -51,6 +51,12 @@ Security live gate **PASSED**. Browser resumes against the B2 route-integration 
 
 See [`B3_STAGING_DEVELOPMENT_ACCEPTANCE.md`](./B3_STAGING_DEVELOPMENT_ACCEPTANCE.md). Spark independent evidence published under `spark-probes/`. Hosted preview delivery remains **unresolved** for release readiness (local staging-backed browser only). Service-role live NOT TESTED (disposable only).
 
-## B4 — freeze for Spark review (not staging-applied)
+## B4 — accepted on staging (`f63c9145`)
 
-See [`B4_REPORT_SUBMISSION_HANDOFF.md`](./B4_REPORT_SUBMISSION_HANDOFF.md) / [`B4_REPORT_CONTRACT.md`](./B4_REPORT_CONTRACT.md). No B4 staging apply until Spark PASS.
+See [`B4_STAGING_ACCEPTANCE_f63c9145.md`](./B4_STAGING_ACCEPTANCE_f63c9145.md). Cleanup complete; fixture passwords later rotated.
+
+## B5 — staging apply authorized (`d2743078`)
+
+Correction tip after Spark **BLOCKED** @ `f8fb9358` (F-B5-01/02). Staging migrations applied; Spark staging journey pending.  
+See [`B5_STAGING_APPLY_RECORD.md`](./B5_STAGING_APPLY_RECORD.md) · handoff `C:\projects\_almona_handoff\slice0-b5-staging-verification`.  
+Stale B4 assertions under B5: Q4-07c / Q4-23 / Q4-30 (not B5 failures). No merge · no production · no B6. #155 frozen · #156 draft.

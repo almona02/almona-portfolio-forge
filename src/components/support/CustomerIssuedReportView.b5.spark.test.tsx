@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
-// Spark sanitized UI probe — B5 freeze f8fb9358
-// Run: npx vitest run src/components/support/CustomerIssuedReportView.b5.spark.test.tsx
+// Branch B5 UI tests (independently executed by Spark) — freeze tip f8fb9358 / correction d2743078
+// Not authored by Spark; Cursor-authored Vitest against branch UI. Run:
+//   npx vitest run src/components/support/CustomerIssuedReportView.b5.spark.test.tsx
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'

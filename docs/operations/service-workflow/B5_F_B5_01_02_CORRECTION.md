@@ -2,7 +2,7 @@
 
 **Depends on freeze:** `f8fb9358e976050089cd199579a99bc0a098e0c2`  
 **Migration:** `supabase/migrations/20261115140000_service_workflow_b5_f_b5_01_02_correction.sql`  
-**Gates:** #155 frozen · #156 draft · **no staging apply** · no merge · no production · no B6
+**Gates:** #155 frozen · #156 draft · staging apply authorized at tip · no merge · no production · no B6
 
 ## Findings (Spark BLOCKED @ f8fb9358)
 
@@ -22,4 +22,4 @@ Q5-15, Q5-25, Q5-26, Q5-27, Q5-39 (+ completion/audit positives Q5-02/13/14). Re
 
 ## Explicit non-actions
 
-No staging · no merge · no production · no B6.
+No merge · no production · no B6. Staging apply/verification: `B5_STAGING_APPLY_RECORD.md`.

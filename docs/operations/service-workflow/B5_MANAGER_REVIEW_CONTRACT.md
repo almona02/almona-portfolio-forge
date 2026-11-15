@@ -1,8 +1,8 @@
 # B5 — Manager review / issue contract
 
-**Status:** Correction freeze for F-B5-01/02 after Spark BLOCKED @ `f8fb9358`. **No staging apply** until Spark PASS on the correction tip.  
-**Depends on:** B4 accepted tip `f63c9145` · B5 impl `f8fb9358`  
-**Gates:** #155 frozen · #156 draft · no merge · no production · no B6
+**Status:** Staging apply authorized for correction tip `d2743078` (docs stamp `0896551e`). Spark independent @ `f8fb9358` remains **BLOCKED** on F-B5-01/02; staging journey is the verification.  
+**Depends on:** B4 accepted tip `f63c9145` · B5 impl `f8fb9358` · correction `d2743078`  
+**Gates:** #155 frozen · #156 draft · staging only · no merge · no production · no B6
 
 ## In scope
 
@@ -31,4 +31,4 @@
 
 ## Explicit non-actions
 
-No staging apply · no production · no merge · no B6 · no premature ticket closure.
+No production · no merge · no B6 · no premature ticket closure. Staging apply/verification only — see `B5_STAGING_APPLY_RECORD.md`.

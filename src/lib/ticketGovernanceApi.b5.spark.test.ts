@@ -1,4 +1,5 @@
-// Spark sanitized API binding probe — B5 freeze f8fb9358
+// Branch B5 API binding tests (independently executed by Spark) — freeze tip f8fb9358 / correction d2743078
+// Not authored by Spark; Cursor-authored Vitest against branch bindings.
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/supabase', () => ({
