@@ -1169,3 +1169,145 @@ BEGIN
     (NOT r.o_ok) AND v_st = 'resolved' AND v_n = 0 AND v_closed IS NULL,
     format('denied=%s/%s st=%s aud=%s msg=%s', NOT r.o_ok, r.o_state, v_st, v_n, left(r.o_msg, 60)));
 END $$;
+
+-- Q6-44 F-B6-08: authorization runs before idempotent re-close return.
+-- Authorized admin/support: success, closed_at preserved, no duplicate audits, ticket returned.
+-- Denied callers (owner, assigned/unrelated tech, sales, anon, forged, unattributed service_role):
+-- exception (no ticket payload) and zero mutation. Verified service_role+support delegation allowed.
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_rev uuid;
+  r record; v_row public.service_tickets;
+  c0 timestamptz; u0 timestamptz; st0 text; n_wf0 int; n_gov0 int;
+  c1 timestamptz; u1 timestamptz; st1 text; n_wf1 int; n_gov1 int;
+  ok_support boolean; ok_admin boolean; ok_svc_del boolean;
+  den_cust boolean; den_tech1 boolean; den_tech2 boolean; den_sales boolean;
+  den_anon boolean; den_forge boolean; den_svc_null boolean;
+  no_mut_den boolean := true; no_mut_ok boolean := true;
+BEGIN
+  PERFORM spk6_reset();
+  SELECT * INTO v_t, v_j, v_v, v_rev FROM spk6_mk_close_ready('q44');
+  PERFORM spk6_as_client(spk6_uid('support'));
+  PERFORM public.govern_ticket_transition(v_t, 'closed', 'spk6', 'summary here', NULL);
+  PERFORM spk6_reset();
+  UPDATE public.service_tickets
+  SET closed_at = '2020-01-01T00:00:00Z'::timestamptz, assigned_to = spk6_uid('tech1')
+  WHERE id = v_t;
+  SELECT closed_at, updated_at, status::text INTO c0, u0, st0 FROM public.service_tickets WHERE id = v_t;
+  SELECT count(*) INTO n_wf0 FROM public.service_workflow_audit
+  WHERE entity_type = 'ticket' AND entity_id = v_t AND action = 'workflow_resolve_close' AND to_state = 'closed';
+  SELECT count(*) INTO n_gov0 FROM public.ticket_governance_audit
+  WHERE ticket_id = v_t AND action = 'status_transition' AND to_status = 'closed';
+
+  -- Authorized support re-close
+  PERFORM spk6_as_client(spk6_uid('support'));
+  SELECT * INTO r FROM spk6_try(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','spk6','summary here',NULL)$q$, v_t));
+  ok_support := r.o_ok;
+  PERFORM spk6_reset();
+  SELECT closed_at, updated_at, status::text INTO c1, u1, st1 FROM public.service_tickets WHERE id = v_t;
+  SELECT count(*) INTO n_wf1 FROM public.service_workflow_audit
+  WHERE entity_type = 'ticket' AND entity_id = v_t AND action = 'workflow_resolve_close' AND to_state = 'closed';
+  SELECT count(*) INTO n_gov1 FROM public.ticket_governance_audit
+  WHERE ticket_id = v_t AND action = 'status_transition' AND to_status = 'closed';
+  IF NOT (c1 = c0 AND u1 = u0 AND st1 = st0 AND n_wf1 = n_wf0 AND n_gov1 = n_gov0) THEN
+    no_mut_ok := false;
+  END IF;
+
+  -- Authorized admin re-close
+  PERFORM spk6_as_client(spk6_uid('admin'));
+  SELECT * INTO r FROM spk6_try(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','spk6','summary here',NULL)$q$, v_t));
+  ok_admin := r.o_ok;
+  PERFORM spk6_reset();
+
+  -- Verified service_role delegation as support
+  PERFORM spk6_as_role('service_role', NULL);
+  SELECT * INTO r FROM spk6_try(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','spk6','summary here',%L::uuid)$q$,
+    v_t, spk6_uid('support')));
+  ok_svc_del := r.o_ok;
+  PERFORM spk6_reset();
+
+  -- Snapshot before denial battery
+  SELECT closed_at, updated_at, status::text INTO c0, u0, st0 FROM public.service_tickets WHERE id = v_t;
+  SELECT count(*) INTO n_wf0 FROM public.service_workflow_audit
+  WHERE entity_type = 'ticket' AND entity_id = v_t AND action = 'workflow_resolve_close' AND to_state = 'closed';
+  SELECT count(*) INTO n_gov0 FROM public.ticket_governance_audit
+  WHERE ticket_id = v_t AND action = 'status_transition' AND to_status = 'closed';
+
+  PERFORM spk6_as_client(spk6_uid('cust1'));
+  SELECT * INTO r FROM spk6_try(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','spk6','summary here',NULL)$q$, v_t));
+  den_cust := (NOT r.o_ok) AND r.o_state = '42501';
+  PERFORM spk6_reset();
+
+  PERFORM spk6_as_client(spk6_uid('tech1'));
+  SELECT * INTO r FROM spk6_try(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','spk6','summary here',NULL)$q$, v_t));
+  den_tech1 := (NOT r.o_ok) AND r.o_state = '42501';
+  PERFORM spk6_reset();
+
+  PERFORM spk6_as_client(spk6_uid('tech2'));
+  SELECT * INTO r FROM spk6_try(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','spk6','summary here',NULL)$q$, v_t));
+  den_tech2 := (NOT r.o_ok) AND r.o_state = '42501';
+  PERFORM spk6_reset();
+
+  PERFORM spk6_as_client(spk6_uid('sales'));
+  SELECT * INTO r FROM spk6_try(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','spk6','summary here',NULL)$q$, v_t));
+  den_sales := (NOT r.o_ok) AND r.o_state = '42501';
+  PERFORM spk6_reset();
+
+  PERFORM spk6_as_role('anon', NULL);
+  SELECT * INTO r FROM spk6_try(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','spk6','summary here',NULL)$q$, v_t));
+  den_anon := NOT r.o_ok;
+  PERFORM spk6_reset();
+
+  PERFORM spk6_as_client(spk6_uid('cust1'));
+  SELECT * INTO r FROM spk6_try(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','spk6','summary here',%L::uuid)$q$,
+    v_t, spk6_uid('support')));
+  den_forge := NOT r.o_ok;
+  PERFORM spk6_reset();
+
+  PERFORM spk6_as_role('service_role', NULL);
+  SELECT * INTO r FROM spk6_try(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','spk6','summary here',NULL)$q$, v_t));
+  den_svc_null := NOT r.o_ok;
+  PERFORM spk6_reset();
+
+  SELECT closed_at, updated_at, status::text INTO c1, u1, st1 FROM public.service_tickets WHERE id = v_t;
+  SELECT count(*) INTO n_wf1 FROM public.service_workflow_audit
+  WHERE entity_type = 'ticket' AND entity_id = v_t AND action = 'workflow_resolve_close' AND to_state = 'closed';
+  SELECT count(*) INTO n_gov1 FROM public.ticket_governance_audit
+  WHERE ticket_id = v_t AND action = 'status_transition' AND to_status = 'closed';
+  IF NOT (c1 = c0 AND u1 = u0 AND st1 = st0 AND n_wf1 = n_wf0 AND n_gov1 = n_gov0
+          AND c1 = '2020-01-01T00:00:00Z'::timestamptz) THEN
+    no_mut_den := false;
+  END IF;
+
+  -- Explicit no-payload check: denied SELECT must raise (v_row stays NULL)
+  v_row := NULL;
+  PERFORM spk6_as_client(spk6_uid('cust1'));
+  BEGIN
+    SELECT * INTO STRICT v_row FROM public.govern_ticket_transition(v_t, 'closed', 'spk6', 'summary here', NULL);
+  EXCEPTION WHEN OTHERS THEN
+    v_row := NULL;
+  END;
+  PERFORM spk6_reset();
+  IF v_row IS NOT NULL THEN den_cust := false; END IF;
+
+  PERFORM spk6_note('Q6-44',
+    ok_support AND ok_admin AND ok_svc_del
+      AND den_cust AND den_tech1 AND den_tech2 AND den_sales
+      AND den_anon AND den_forge AND den_svc_null
+      AND no_mut_ok AND no_mut_den,
+    format(
+      'auth_ok=%s/%s/%s den=%s/%s/%s/%s/%s/%s/%s mut_ok=%s mut_den=%s',
+      ok_support, ok_admin, ok_svc_del,
+      den_cust, den_tech1, den_tech2, den_sales, den_anon, den_forge, den_svc_null,
+      no_mut_ok, no_mut_den));
+END $$;

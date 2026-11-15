@@ -48,6 +48,7 @@ CHAIN = [
     ROOT / "supabase/migrations/20261115160000_service_workflow_b6_acknowledgment_closure.sql",
     ROOT / "supabase/migrations/20261115170000_service_workflow_b6_f_b6_03_05_correction.sql",
     ROOT / "supabase/migrations/20261115171000_service_workflow_b6_integrity_targeting.sql",
+    ROOT / "supabase/migrations/20261115171100_service_workflow_b6_f_b6_08_reclose_auth.sql",
 ]
 CURSOR_TARGETED = ROOT / "scripts/service-workflow/cursor_b6_targeted_battery.sql"
 CURSOR_DISPOSABLE = ROOT / "scripts/service-workflow/disposable_b6_battery.sql"

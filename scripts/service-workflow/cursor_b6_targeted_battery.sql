@@ -273,3 +273,63 @@ BEGIN
     a AND st = 'resolved' AND n = 0,
     'denied=' || a::text || ' st=' || st || ' n=' || n);
 END $$;
+
+-- F-B6-08 supporting (Cursor targeted suite — not Spark independent verdict)
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_rev uuid;
+  c0 timestamptz; n0 int; c1 timestamptz; n1 int;
+  a_ok boolean; a_cust boolean; a_tech boolean; a_forge boolean; a_svc boolean; a_svc_null boolean;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v, v_rev FROM spk6_issue('f08');
+  PERFORM set_config('app.b1_uid', spk6_uid('cust1')::text, false);
+  PERFORM public.record_service_acknowledgment(v_rev, 'accepted', NULL, NULL);
+  PERFORM set_config('app.b1_uid', spk6_uid('support')::text, false);
+  PERFORM public.govern_ticket_transition(v_t, 'resolved', 'd', 'done', NULL);
+  PERFORM public.govern_ticket_transition(v_t, 'closed', 'c', 'done', NULL);
+  UPDATE public.service_tickets
+  SET closed_at = '2020-01-01T00:00:00Z'::timestamptz, assigned_to = spk6_uid('tech1')
+  WHERE id = v_t;
+  SELECT closed_at INTO c0 FROM public.service_tickets WHERE id = v_t;
+  SELECT count(*) INTO n0 FROM public.service_workflow_audit
+  WHERE ticket_id = v_t AND action = 'workflow_resolve_close' AND to_state = 'closed';
+
+  PERFORM set_config('app.b1_uid', spk6_uid('support')::text, false);
+  a_ok := NOT spk6_denied(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','c2','done',NULL)$q$, v_t));
+
+  PERFORM set_config('app.b1_uid', spk6_uid('cust1')::text, false);
+  a_cust := spk6_denied(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','x','done',NULL)$q$, v_t));
+
+  PERFORM set_config('app.b1_uid', spk6_uid('tech1')::text, false);
+  a_tech := spk6_denied(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','x','done',NULL)$q$, v_t));
+
+  PERFORM set_config('app.b1_uid', spk6_uid('cust1')::text, false);
+  a_forge := spk6_denied(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','x','done',%L::uuid)$q$,
+    v_t, spk6_uid('support')));
+
+  BEGIN
+    EXECUTE 'SET ROLE service_role';
+    PERFORM set_config('app.b1_uid', '', false);
+    a_svc := NOT spk6_denied(format(
+      $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','x','done',%L::uuid)$q$,
+      v_t, spk6_uid('support')));
+    a_svc_null := spk6_denied(format(
+      $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','x','done',NULL)$q$, v_t));
+    EXECUTE 'RESET ROLE';
+  EXCEPTION WHEN OTHERS THEN
+    EXECUTE 'RESET ROLE';
+    a_svc := false; a_svc_null := false;
+  END;
+
+  SELECT closed_at INTO c1 FROM public.service_tickets WHERE id = v_t;
+  SELECT count(*) INTO n1 FROM public.service_workflow_audit
+  WHERE ticket_id = v_t AND action = 'workflow_resolve_close' AND to_state = 'closed';
+  PERFORM spk6_note('Q6-f08_reclose_auth',
+    a_ok AND a_cust AND a_tech AND a_forge AND a_svc AND a_svc_null AND c0 = c1 AND n0 = n1,
+    format('ok=%s cust=%s tech=%s forge=%s svc=%s svc_null=%s closed_kept=%s aud=%s/%s',
+      a_ok, a_cust, a_tech, a_forge, a_svc, a_svc_null, c0 = c1, n0, n1));
+END $$;

@@ -53,6 +53,7 @@ CHAIN = [
     ("b6", "supabase/migrations/20261115160000_service_workflow_b6_acknowledgment_closure.sql"),
     ("b6fix", "supabase/migrations/20261115170000_service_workflow_b6_f_b6_03_05_correction.sql"),
     ("b6int", "supabase/migrations/20261115171000_service_workflow_b6_integrity_targeting.sql"),
+    ("b6auth", "supabase/migrations/20261115171100_service_workflow_b6_f_b6_08_reclose_auth.sql"),
 ]
 TKT_PATH = "supabase/migrations/20261111200000_staging_machine_photos_and_ticket_number.sql"
 
@@ -191,7 +192,8 @@ def apply_chain(db, tkt):
     apply(db, tkt, "ticket-number")
     for label in ("b1", "b2", "sec", "rls170", "rls171a", "rls171b",
                   "b3", "b3corr", "b3safety", "b3ack", "b3lock",
-                  "b4", "b4fix", "b5", "b5fix", "b5sel", "b6"):
+                  "b4", "b4fix", "b5", "b5fix", "b5sel", "b6",
+                  "b6fix", "b6int", "b6auth"):
         apply(db, OUT_DIR / f"{label}.sql", label)
 
 

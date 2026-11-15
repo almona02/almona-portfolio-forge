@@ -1,11 +1,11 @@
 # Spark — B6 freeze handoff (no staging apply)
 
-**Runtime freeze (Spark verified):** `9998f1a48f1b18b467bc1e4d3552ced5e32325a4`  
-**Spark verdict on freeze:** **BLOCKED — F-B6-08 only** — evidence `spark-probes/B6_9998f1a4_SPARK_RESULTS.md`  
-**Docs tip (pre-harness-sync):** `ed6627c53fd90f32ef8531522ca53f224effb45c`  
-**Correction tip (historical):** `0b07aa8d00f88effd2b5775e23f097526923f6d3` — F-B6-03/04/05 + UI-01/02; BLOCKED F-B6-06/07 (does not cover `9998f1a4`)  
+**F-B6-08 correction tip (under Spark re-verify):** see HEAD / push stamp after `…171100` lands  
+**Prior integrity tip (F-B6-08 FAIL evidence preserved):** `9998f1a48f1b18b467bc1e4d3552ced5e32325a4` — `spark-probes/B6_9998f1a4_SPARK_RESULTS.md`  
+**Harness sync tip:** `d360ed23192579d309ad31ced1ed8c5fcc570962`  
+**Correction tip (historical):** `0b07aa8d00f88effd2b5775e23f097526923f6d3` — F-B6-03/04/05 + UI-01/02; BLOCKED F-B6-06/07  
 **Depends on:** B5 accepted `2a4042ad44d9234739f514720c3d413ea0ca42e8`  
-**BLOCKED baseline (preserved, does not cover 9998f1a4):** `ec00b692af10629ed5ee506bbb35762ea5ea00a8` — `spark-probes/B6_BLOCKED_ec00b692_EVIDENCE.md`  
+**BLOCKED baseline (preserved):** `ec00b692af10629ed5ee506bbb35762ea5ea00a8` — `spark-probes/B6_BLOCKED_ec00b692_EVIDENCE.md`  
 **Gates:** #155 frozen · #156 draft · **no staging apply** · no merge · no production · no B7
 
 ## Ask
@@ -58,7 +58,7 @@ Cursor’s prior “7/7” claim is the targeted supporting suite only.
 | Cursor supporting | `cursor_b6_targeted_battery.sql` + `run_cursor_b6_targeted.py` |
 | UI | `CustomerReportAcknowledgmentPanel`, `TicketWorkflowClosurePanel` (wired on `TicketDetailPage`) |
 | Vitest | `CustomerReportAcknowledgmentPanel.b6.test.tsx`, `TicketWorkflowClosurePanel.b6.test.tsx` |
-| Migrations | `…160000` B6 · `…170000` F-B6-03/05 · `…171000` integrity/targeting |
+| Migrations | `…160000` B6 · `…170000` F-B6-03/05 · `…171000` integrity · `…171100` F-B6-08 auth-before-reclose |
 
 ## Explicit non-actions
 

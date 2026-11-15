@@ -17,13 +17,19 @@ import sys
 import threading
 from pathlib import Path
 
-B6 = "9998f1a48f1b18b467bc1e4d3552ced5e32325a4"  # runtime freeze under review
+ROOT = Path(__file__).resolve().parents[2]
+B6INT = "9998f1a48f1b18b467bc1e4d3552ced5e32325a4"  # prior integrity tip (F-B6-08 FAIL evidence)
 B6FROZEN = "ec00b692af10629ed5ee506bbb35762ea5ea00a8"
 B6CORR = "0b07aa8d00f88effd2b5775e23f097526923f6d3"  # historical BLOCKED-on-integrity tip
 B5ACC = "2a4042ad44d9234739f514720c3d413ea0ca42e8"
 B1_SHA = "7a8307395b79df677a96f77cd993a77351b5805c"
 B2_SHA = "8f2acc4e806e70e12e87a24dcbebaef78e63e085"
-ROOT = Path(__file__).resolve().parents[2]
+
+
+def tip_sha() -> str:
+    return subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=str(ROOT), text=True
+    ).strip()
 EV = Path(r"C:\Users\bobbi\AppData\Local\Temp\b6cspark")
 OUT_DIR = EV / "chain_b6c"
 PGBIN = Path(r"C:\Program Files\PostgreSQL\17\bin")
@@ -55,6 +61,7 @@ CHAIN = [
     ("b6", "supabase/migrations/20261115160000_service_workflow_b6_acknowledgment_closure.sql"),
     ("b6fix", "supabase/migrations/20261115170000_service_workflow_b6_f_b6_03_05_correction.sql"),
     ("b6int", "supabase/migrations/20261115171000_service_workflow_b6_integrity_targeting.sql"),
+    ("b6auth", "supabase/migrations/20261115171100_service_workflow_b6_f_b6_08_reclose_auth.sql"),
 ]
 TKT_PATH = "supabase/migrations/20261111200000_staging_machine_photos_and_ticket_number.sql"
 
@@ -122,8 +129,10 @@ def main():
     print("spark-b6c start", flush=True)
     EV.mkdir(parents=True, exist_ok=True)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    tested = tip_sha()
     manifest = {
-        "tested_sha": B6,
+        "tested_sha": tested,
+        "b6_integrity_prior": B6INT,
         "b6_frozen": B6FROZEN,
         "b6_correction_historical": B6CORR,
         "b5_accepted": B5ACC,
@@ -131,20 +140,25 @@ def main():
     }
     for label, rel in CHAIN:
         dest = OUT_DIR / f"{label}.sql"
-        h = git_show(B6, rel, dest)
-        entry = {"sha": B6, "path": rel, "sha256": h}
+        src = ROOT / rel
+        if src.exists():
+            dest.write_bytes(src.read_bytes())
+            h = hashlib.sha256(dest.read_bytes()).hexdigest()
+        else:
+            h = git_show(tested, rel, dest)
+        entry = {"sha": tested, "path": rel, "sha256": h, "from_workdir": src.exists()}
         if label == "b6":
             tmp = OUT_DIR / f"_{label}_b6frozen.sql"
             h_old = git_show(B6FROZEN, rel, tmp)
             entry["unrewritten_vs_b6frozen"] = (h_old == h)
-            print(f"{label}: freeze==b6frozen -> {h_old == h}")
-        elif label in ("b6fix", "b6int"):
+            print(f"{label}: tip==b6frozen -> {h_old == h}")
+        elif label in ("b6fix", "b6int", "b6auth"):
             print(f"{label}: post-freeze file sha256={h[:12]}")
         else:
             tmp = OUT_DIR / f"_{label}_b5acc.sql"
             h_old = git_show(B5ACC, rel, tmp)
             entry["unrewritten_vs_b5acc"] = (h_old == h)
-            print(f"{label}: freeze==b5acc -> {h_old == h}")
+            print(f"{label}: tip==b5acc -> {h_old == h}")
         manifest["files"][label] = entry
     for label, pinned in (("b1", B1_SHA), ("b2", B2_SHA)):
         tmp = OUT_DIR / f"_{label}_pin.sql"
@@ -153,7 +167,11 @@ def main():
         manifest["files"][label]["pin_match"] = same
         print(f"{label}: pinned -> {same}")
     tkt_raw = OUT_DIR / "_tkt_full.sql"
-    git_show(B6, TKT_PATH, tkt_raw)
+    src_tkt = ROOT / TKT_PATH
+    if src_tkt.exists():
+        tkt_raw.write_bytes(src_tkt.read_bytes())
+    else:
+        git_show(tested, TKT_PATH, tkt_raw)
     lines = tkt_raw.read_text(encoding="utf-8").splitlines(keepends=True)
     start = next(i for i, ln in enumerate(lines) if ln.startswith("-- 2) Server-side"))
     tkt = OUT_DIR / "_tkt_section2.sql"
@@ -206,7 +224,7 @@ def apply_chain(db, tkt):
     apply(db, tkt, "ticket-number")
     for label in ("b1", "b2", "sec", "rls170", "rls171a", "rls171b",
                   "b3", "b3corr", "b3safety", "b3ack", "b3lock",
-                  "b4", "b4fix", "b5", "b5fix", "b5sel", "b6", "b6fix", "b6int"):
+                  "b4", "b4fix", "b5", "b5fix", "b5sel", "b6", "b6fix", "b6int", "b6auth"):
         apply(db, OUT_DIR / f"{label}.sql", label)
 
 
@@ -225,11 +243,15 @@ def run_all(manifest, tkt):
         out["clean_apply"] = f"STILL FAILS: {str(e)[-500:]}"
         print(out["clean_apply"])
         raise
-    out["clean_apply"] = "PASS: B6+B6FIX+B6INT migrations apply on clean chain"
+    out["clean_apply"] = "PASS: B6+B6FIX+B6INT+B6AUTH migrations apply on clean chain"
     print(out["clean_apply"])
     # API wrapper check: no p_actor_id in B6 wrappers (freeze file)
     api = OUT_DIR / "_ticketGovernanceApi.ts"
-    git_show(B6, "src/lib/ticketGovernanceApi.ts", api)
+    src_api = ROOT / "src/lib/ticketGovernanceApi.ts"
+    if src_api.exists():
+        api.write_bytes(src_api.read_bytes())
+    else:
+        git_show(out["tested_sha"], "src/lib/ticketGovernanceApi.ts", api)
     text = api.read_text(encoding="utf-8")
     b6region = text[text.find("recordServiceAcknowledgment"):]
     out["wrapper_no_actor"] = ("p_actor_id" not in b6region)
@@ -249,7 +271,11 @@ def run_all(manifest, tkt):
     out["spark_b6_incl_conc"] = {"pass": len(spass2), "fail": len(sfail2), "rows": srows2}
     # Cursor's own B6 battery, executed independently
     cb = OUT_DIR / "_cursor_b6_battery.sql"
-    git_show(B6, "scripts/service-workflow/disposable_b6_battery.sql", cb)
+    src_cb = ROOT / "scripts/service-workflow/disposable_b6_battery.sql"
+    if src_cb.exists():
+        cb.write_bytes(src_cb.read_bytes())
+    else:
+        git_show(out["tested_sha"], "scripts/service-workflow/disposable_b6_battery.sql", cb)
     r = psql_file(DB, cb)
     if r.returncode != 0:
         out["cursor_b6_exec"] = f"EXECUTION FAILED: {r.stderr[-1000:]}"
@@ -297,7 +323,11 @@ def run_all(manifest, tkt):
         print("  FAIL:", ln)
     # B1/B2 regression (freeze-tree battery + repair)
     b1raw = OUT_DIR / "_b1_battery_raw.sql"
-    git_show(B6, "scripts/service-workflow/disposable_b1_battery.sql", b1raw)
+    src_b1 = ROOT / "scripts/service-workflow/disposable_b1_battery.sql"
+    if src_b1.exists():
+        b1raw.write_bytes(src_b1.read_bytes())
+    else:
+        git_show(out["tested_sha"], "scripts/service-workflow/disposable_b1_battery.sql", b1raw)
     persist = b1raw.read_text(encoding="utf-8").replace(
         "CREATE TEMP TABLE b1_eval(check_id text PRIMARY KEY, status text NOT NULL, detail text);",
         "CREATE TABLE IF NOT EXISTS public.b1_eval(check_id text PRIMARY KEY, status text NOT NULL, detail text);\nTRUNCATE public.b1_eval;",
