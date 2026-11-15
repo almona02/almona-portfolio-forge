@@ -5,6 +5,18 @@ from uuid import UUID
 from supabase import Client  # type: ignore
 
 
+def _relation_missing(exc: BaseException) -> bool:
+    """True when PostgREST/schema lacks optional B1+ job/visit relations."""
+    text = str(exc).lower()
+    return (
+        "service_jobs" in text
+        or "service_job_visits" in text
+        or "pgrst205" in text
+        or "does not exist" in text
+        or "could not find the table" in text
+    )
+
+
 class TicketsRepository:
     """Persistence layer for service tickets and related entities."""
 
@@ -37,24 +49,35 @@ class TicketsRepository:
         return rows[0].get("role")
 
     def technician_has_job_assignment(self, ticket_id: UUID, user_id: UUID) -> bool:
-        resp = (
-            self._db.table("service_jobs")
-            .select("id")
-            .eq("ticket_id", str(ticket_id))
-            .eq("assigned_technician_id", str(user_id))
-            .limit(1)
-            .execute()
-        )
-        return bool(getattr(resp, "data", None))
+        # Optional B1+ surface: absent tables must not break FR-1 (#155-shaped) deploys.
+        try:
+            resp = (
+                self._db.table("service_jobs")
+                .select("id")
+                .eq("ticket_id", str(ticket_id))
+                .eq("assigned_technician_id", str(user_id))
+                .limit(1)
+                .execute()
+            )
+            return bool(getattr(resp, "data", None))
+        except Exception as exc:  # noqa: BLE001 — PostgREST client raises broadly
+            if _relation_missing(exc):
+                return False
+            raise
 
     def technician_is_historical_attendee(self, ticket_id: UUID, user_id: UUID) -> bool:
-        """Mirror admin_private.is_ticket_visit_attending_technician."""
-        jobs_resp = (
-            self._db.table("service_jobs")
-            .select("id, state")
-            .eq("ticket_id", str(ticket_id))
-            .execute()
-        )
+        """Mirror admin_private.is_ticket_visit_attending_technician when B3 tables exist."""
+        try:
+            jobs_resp = (
+                self._db.table("service_jobs")
+                .select("id, state")
+                .eq("ticket_id", str(ticket_id))
+                .execute()
+            )
+        except Exception as exc:  # noqa: BLE001
+            if _relation_missing(exc):
+                return False
+            raise
         jobs = getattr(jobs_resp, "data", []) or []
         active_job_ids = [
             j["id"]
@@ -63,18 +86,23 @@ class TicketsRepository:
         ]
         if not active_job_ids:
             return False
-        for job_id in active_job_ids:
-            visits = (
-                self._db.table("service_job_visits")
-                .select("id")
-                .eq("job_id", str(job_id))
-                .eq("attending_technician_id", str(user_id))
-                .eq("state", "completed")
-                .limit(1)
-                .execute()
-            )
-            if getattr(visits, "data", None):
-                return True
+        try:
+            for job_id in active_job_ids:
+                visits = (
+                    self._db.table("service_job_visits")
+                    .select("id")
+                    .eq("job_id", str(job_id))
+                    .eq("attending_technician_id", str(user_id))
+                    .eq("state", "completed")
+                    .limit(1)
+                    .execute()
+                )
+                if getattr(visits, "data", None):
+                    return True
+        except Exception as exc:  # noqa: BLE001
+            if _relation_missing(exc):
+                return False
+            raise
         return False
 
     def _apply_filters(self, query: Any, filters: Optional[Dict[str, Any]]):
@@ -110,25 +138,38 @@ class TicketsRepository:
         return getattr(resp, "data", []) or []
 
     def list_technician_related_ticket_ids(self, user_id: UUID) -> Set[str]:
-        """Ticket ids reachable via job assignment or completed visit attendance."""
+        """Ticket ids reachable via job assignment or completed visit attendance.
+
+        On FR-1 (#155-shaped) databases without B1+ job/visit tables, returns empty.
+        """
         ids: Set[str] = set()
-        jobs = (
-            self._db.table("service_jobs")
-            .select("id, ticket_id, state")
-            .eq("assigned_technician_id", str(user_id))
-            .execute()
-        )
+        try:
+            jobs = (
+                self._db.table("service_jobs")
+                .select("id, ticket_id, state")
+                .eq("assigned_technician_id", str(user_id))
+                .execute()
+            )
+        except Exception as exc:  # noqa: BLE001
+            if _relation_missing(exc):
+                return ids
+            raise
         for job in getattr(jobs, "data", []) or []:
             if job.get("ticket_id"):
                 ids.add(str(job["ticket_id"]))
 
-        visits = (
-            self._db.table("service_job_visits")
-            .select("job_id")
-            .eq("attending_technician_id", str(user_id))
-            .eq("state", "completed")
-            .execute()
-        )
+        try:
+            visits = (
+                self._db.table("service_job_visits")
+                .select("job_id")
+                .eq("attending_technician_id", str(user_id))
+                .eq("state", "completed")
+                .execute()
+            )
+        except Exception as exc:  # noqa: BLE001
+            if _relation_missing(exc):
+                return ids
+            raise
         job_ids = [
             str(v["job_id"])
             for v in (getattr(visits, "data", []) or [])

@@ -101,4 +101,19 @@ describe('ticket message API query contracts', () => {
     await ticketMessageApi.revokeShare('token-to-revoke-123456')
     expect(rpc).toHaveBeenCalledWith('revoke_ticket_share', { p_token: 'token-to-revoke-123456' })
   })
+
+  it('creates shares through the audited RPC (no direct ticket_shares insert)', async () => {
+    rpc.mockResolvedValueOnce({
+      data: { id: 'share-1', ticket_id: 'ticket', token: 'a'.repeat(32), expires_at: null, created_at: '' },
+      error: null,
+    })
+    const result = await ticketMessageApi.createShare('ticket', 7)
+    expect(from).not.toHaveBeenCalledWith('ticket_shares')
+    expect(rpc).toHaveBeenCalledWith('create_ticket_share', {
+      p_ticket_id: 'ticket',
+      p_expires_at: expect.any(String),
+    })
+    expect(result.token).toHaveLength(32)
+    expect(result.url).toContain('share=')
+  })
 })

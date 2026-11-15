@@ -92,36 +92,62 @@ class UnifiedTicketService:
             return None
         return role_resp.data[0].get("role")
 
-    def _technician_has_job(self, ticket_id: str, user_id: UUID) -> bool:
-        resp = (
-            self.supabase.table("service_jobs")
-            .select("id")
-            .eq("ticket_id", ticket_id)
-            .eq("assigned_technician_id", str(user_id))
-            .limit(1)
-            .execute()
+    @staticmethod
+    def _relation_missing(exc: BaseException) -> bool:
+        text = str(exc).lower()
+        return (
+            "service_jobs" in text
+            or "service_job_visits" in text
+            or "pgrst205" in text
+            or "does not exist" in text
+            or "could not find the table" in text
         )
-        return bool(resp.data)
 
-    def _technician_historical_attendee(self, ticket_id: str, user_id: UUID) -> bool:
-        jobs = (
-            self.supabase.table("service_jobs")
-            .select("id, state")
-            .eq("ticket_id", ticket_id)
-            .execute()
-        )
-        for job in jobs.data or []:
-            if job.get("state") in ("cancelled", "waived"):
-                continue
-            visits = (
-                self.supabase.table("service_job_visits")
+    def _technician_has_job(self, ticket_id: str, user_id: UUID) -> bool:
+        try:
+            resp = (
+                self.supabase.table("service_jobs")
                 .select("id")
-                .eq("job_id", job["id"])
-                .eq("attending_technician_id", str(user_id))
-                .eq("state", "completed")
+                .eq("ticket_id", ticket_id)
+                .eq("assigned_technician_id", str(user_id))
                 .limit(1)
                 .execute()
             )
+            return bool(resp.data)
+        except Exception as exc:  # noqa: BLE001
+            if self._relation_missing(exc):
+                return False
+            raise
+
+    def _technician_historical_attendee(self, ticket_id: str, user_id: UUID) -> bool:
+        try:
+            jobs = (
+                self.supabase.table("service_jobs")
+                .select("id, state")
+                .eq("ticket_id", ticket_id)
+                .execute()
+            )
+        except Exception as exc:  # noqa: BLE001
+            if self._relation_missing(exc):
+                return False
+            raise
+        for job in jobs.data or []:
+            if job.get("state") in ("cancelled", "waived"):
+                continue
+            try:
+                visits = (
+                    self.supabase.table("service_job_visits")
+                    .select("id")
+                    .eq("job_id", job["id"])
+                    .eq("attending_technician_id", str(user_id))
+                    .eq("state", "completed")
+                    .limit(1)
+                    .execute()
+                )
+            except Exception as exc:  # noqa: BLE001
+                if self._relation_missing(exc):
+                    return False
+                raise
             if visits.data:
                 return True
         return False
@@ -259,39 +285,45 @@ class UnifiedTicketService:
             assigned = self._apply_filters(assigned_q, filters).order(
                 "created_at", desc=True
             ).execute().data or []
-            job_ids = (
-                self.supabase.table("service_jobs")
-                .select("ticket_id")
-                .eq("assigned_technician_id", str(user_id))
-                .execute()
-            )
-            related: set[str] = {
-                str(j["ticket_id"])
-                for j in (job_ids.data or [])
-                if j.get("ticket_id")
-            }
-            visits = (
-                self.supabase.table("service_job_visits")
-                .select("job_id")
-                .eq("attending_technician_id", str(user_id))
-                .eq("state", "completed")
-                .execute()
-            )
-            for v in visits.data or []:
-                if not v.get("job_id"):
-                    continue
-                job = (
+            related: set[str] = set()
+            try:
+                job_ids = (
                     self.supabase.table("service_jobs")
-                    .select("ticket_id, state")
-                    .eq("id", v["job_id"])
-                    .limit(1)
+                    .select("ticket_id")
+                    .eq("assigned_technician_id", str(user_id))
                     .execute()
                 )
-                rows_j = job.data or []
-                if not rows_j or rows_j[0].get("state") in ("cancelled", "waived"):
-                    continue
-                if rows_j[0].get("ticket_id"):
-                    related.add(str(rows_j[0]["ticket_id"]))
+                related = {
+                    str(j["ticket_id"])
+                    for j in (job_ids.data or [])
+                    if j.get("ticket_id")
+                }
+                visits = (
+                    self.supabase.table("service_job_visits")
+                    .select("job_id")
+                    .eq("attending_technician_id", str(user_id))
+                    .eq("state", "completed")
+                    .execute()
+                )
+                for v in visits.data or []:
+                    if not v.get("job_id"):
+                        continue
+                    job = (
+                        self.supabase.table("service_jobs")
+                        .select("ticket_id, state")
+                        .eq("id", v["job_id"])
+                        .limit(1)
+                        .execute()
+                    )
+                    rows_j = job.data or []
+                    if not rows_j or rows_j[0].get("state") in ("cancelled", "waived"):
+                        continue
+                    if rows_j[0].get("ticket_id"):
+                        related.add(str(rows_j[0]["ticket_id"]))
+            except Exception as exc:  # noqa: BLE001
+                if not self._relation_missing(exc):
+                    raise
+                related = set()
             related_rows: List[Dict[str, Any]] = []
             if related:
                 rq = (
