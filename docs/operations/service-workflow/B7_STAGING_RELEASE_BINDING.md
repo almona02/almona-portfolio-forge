@@ -23,6 +23,11 @@
 | F-B7-04 | `6c501536` |
 | Closeout docs | `4049b637` |
 
+## Program status
+
+Staging **accepted** and **operationally closed** — [`CORE_SERVICE_PROGRAM_STAGING_CLOSED.md`](./CORE_SERVICE_PROGRAM_STAGING_CLOSED.md).
+
 ## Release-readiness
 
-See `B7_RELEASE_READINESS_PACKET.md` (preparation only — no merge / no production).
+See [`B7_RELEASE_READINESS_PACKET.md`](./B7_RELEASE_READINESS_PACKET.md) (preparation only — no merge / no production).  
+First production release must not ship bare `#155` without F-B7-01/02/03/04 (and prerequisites).

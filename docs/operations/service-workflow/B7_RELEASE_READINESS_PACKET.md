@@ -1,7 +1,22 @@
-# B7 / service-workflow — release-readiness packet (preparation only)
+# Service program — release-readiness packet (preparation only)
 
-**Prepared:** 2026-11-15 after B7 retirement  
-**Authority:** Read-only inspection + staging evidence. **Do not merge. Do not change production. Do not disable production auto-deploy settings.**
+**Updated:** 2026-11-15 after staging operational closeout  
+**Program status:** [`CORE_SERVICE_PROGRAM_STAGING_CLOSED.md`](./CORE_SERVICE_PROGRAM_STAGING_CLOSED.md)  
+**Authority:** Read-only inspection + staging evidence. **Do not merge. Do not change production. Do not disable production auto-deploy settings.**  
+**Production approval:** **Not proposed yet** — blockers below must close first.
+
+---
+
+## Disclosed change: B2-BR-MULTI visit-state (reassignment)
+
+Synthetic journey ticket **`B2-BR-MULTI`** exercised multi-job + active-visit guidance. Spark/Cursor reconciliation (`B2_VERDICT_RECONCILIATION_8f2acc4e.md`) **disclosed and accepted** this behavioral rule (correcting an early test assumption):
+
+| Visit state | Reassign / decline |
+|-------------|--------------------|
+| `scheduled` | **Allowed** — history records reassign; attendance stays consistent with the job |
+| `in_progress` (**active**) | **Denied** — assignee and visit intact until visit workflow ends (B3) |
+
+**Release impact:** Any production package that includes B2 assignment RPCs **must** ship this rule (not the early “any open visit blocks” assumption). Slice0+MI-only first release (no jobs/visits) is unaffected until B2 is included.
 
 ---
 
@@ -9,129 +24,160 @@
 
 | Issue | State | Head OID | Base | Role |
 |------:|-------|----------|------|------|
-| **#155** | OPEN · **frozen** | `ca9f506715567e1f2ea08fdcd4e2bb0d5e3d10da` | `main` | Slice 0 security + machine-identity PR1 — **merge gate for production app tip** |
-| **#156** | OPEN · **draft lineage** | branch tip `4049b6378d8a865fb7249f3a9818a6c768945484` (B1→B7 work on `feat/service-workflow-b1-planning`) | historically depends on #155 / slice0-security | Workflow B1–B7 — **not** authorized for production merge |
-
-**Dependency order**
+| **#155** | OPEN · **frozen** | `ca9f506715567e1f2ea08fdcd4e2bb0d5e3d10da` | `main` | Slice 0 + MI — frozen tip |
+| **#156** lineage | OPEN · draft | tip `f23b87e4…` (`feat/service-workflow-b1-planning`) | depends on #155 | B1–B7 staging program (closed operationally) |
 
 ```text
-#155 (ca9f5067)  →  production app + Slice0/MI DB A–E
-#156 / B1…B7     →  only after #155 production cutover plan is authorized;
-                    B1–B7 DB packages are additive on staging and are NOT on production today
+#155 (ca9f5067)  →  minimum production app+DB for Slice0/MI
+Security backports (below) MUST ride with that first release
+B1…B7 workflow     →  separate coordinated package after first release (or one reviewed megapackage)
 ```
 
-**#155 required CI (current rollup — SUCCESS unless noted)**
+**CI caveat:** Passing checks on frozen `#155` / `ca9f5067` **do not** cover later security commits. Any proposed release tip must show required checks on **that tip’s commits**.
 
-| Check | Result |
-|-------|--------|
-| Frontend Build & Test / Pipeline Summary / Vite production build | SUCCESS |
-| Backend Tests & Security / Build & Scan Docker | SUCCESS |
-| Typecheck base/head delta (Linux app tsc) | SUCCESS |
-| Gate 1 shipability (secret scan + Vite) | SUCCESS |
-| Supabase Migrations (version-format, approval-replay, marketplace-replay) | SUCCESS |
-| Security Pipeline (dependency/code/headers) | SUCCESS |
-| Constitutional + Hardening suites | SUCCESS |
-| Marketplace reliability / Signup regression / Tech visibility / YDT tests | SUCCESS |
-| Lighthouse CI | SUCCESS |
-| Smoke / Supabase Preview / drafting-test-coverage | SKIPPED (workflow) |
-
-`mergeable`: **MERGEABLE** (conflicts clean). Merge still **forbidden** until production DB cutover is authorized (auto-deploy risk).
-
-**#156 / B7 branch CI:** treat as staging-verification lineage; do not use as production merge tip. Staging Spark acceptance of B7 does **not** authorize production.
+| Candidate tip | CI observation (read-only) |
+|---------------|----------------------------|
+| `ca9f5067` (#155) | Required rollup historically SUCCESS (smoke/preview SKIPPED) |
+| `f23b87e4` (branch tip) | Partial PR #156 checks: typecheck/acceptance/regression/migration-format SUCCESS; Full Pipeline / audit may still be in flight — **not** a green production-gate claim until complete rollup on the **chosen** release commit |
 
 ---
 
-## 2. Exact accepted revisions (staging B7)
+## 2. Accepted staging revisions (reference)
 
-| Layer | Revision / stamp | Evidence |
-|-------|------------------|----------|
-| Frontend (preview journey) | `78372312d73f79a78605a8f31d14df5b1b827c93` · `dpl_46faneJn7bnf6oE9rzxZm6Cfa6dn` | Binding + G-01/G-04; share **revoked** at retirement |
-| Docs / closeout tip | `4049b637` | Linkage + hash correction + cleanup docs |
-| Backend (Railway staging `slice0-api`) | `96f1d833cdddf0e81b45aa8251a219c045246662` · deploy `64673eff-…` | F-B7-01/02 |
-| Database (staging) | F-B7-04 stamp `20261115184700` → F-B7-03 stamp `20261115185008` | `B7_STAGING_APPLY_6c501536.md` · Spark `1dc28279` / journey `6547040b` |
-| Edge | `ticket-share-attachment` **v2** | Access-event record before sign |
-| Digests (`lf_sha256`) | F-B7-04 `21c7352c…` · F-B7-03 `5bd81592…` | Tip == chunk; no reapply |
-
-**Production app tip for Slice 0 / MI (unchanged):** still `#155` = `ca9f5067` — **not** the B7 branch tip.
+| Layer | Revision | Notes |
+|-------|----------|-------|
+| #155 frozen | `ca9f5067` | Prod app tip **candidate base** |
+| FE B7 preview | `78372312` · `dpl_46faneJn…` | Share **revoked** |
+| BE Railway staging | `96f1d833` | F-B7-01/02 |
+| DB B7 | `20261115184700` → `20261115185008` | F-B7-04 then F-B7-03 |
+| Edge | `ticket-share-attachment` v2 | Access events before sign |
+| Digests | `lf_sha256` F-B7-04 `21c7352c…` · F-B7-03 `5bd81592…` | |
 
 ---
 
-## 3. Complete production migration order (+ staging chunk↔source)
+## 3. #155 vs later security corrections (must not ship vulnerable intermediate)
 
-### 3.1 Must ship with #155 (`ca9f5067`) — production **absent** today
+### 3.1 Fixes that affect functionality **already present** in #155
 
-Read-only prod `shfsebdncjnncqqnewfj`: **no** Slice 0 / MI / B1–B7 `schema_migrations` rows (latest prod catalog ends ~`20261106000000`).
+| Fix | SHA(s) | #155 surface | Defect if omitted |
+|-----|--------|--------------|-------------------|
+| **F-B7-01/02** Python ticket read scope + internal-note privacy | `96f1d833` (+ tests) | Railway/Python ticket & message APIs | Staff-role over-read of tickets; owners can see internal notes via service-key paths |
+| **F-B7-04** null-safe `revoke_ticket_share` + `govern_ticket_set_escalated` | `6c501536` (SQL) | Share revoke + escalate in `20261111010000…` | `IF NOT (a OR col = uid)` NULL-poison → unassigned tickets / null creator open revoke or escalate |
+| **F-B7-03** audited share create/revoke/access; revoke client DML; `create_ticket_share` RPC | `b974ab0f` (SQL+FE) · edge v2 | `#155` `createShare` **direct `ticket_shares` INSERT**; `get_shared_ticket`; attachment edge | Unaffected create/audit; no access events; clients can INSERT shares; edge may sign without recording |
+| FE `createShare` → RPC | part of `b974ab0f` lineage | Same | Required with F-B7-03 (INSERT revoked) |
 
-| Order | Repo source | Staging live stamp(s) / name | Notes |
-|------:|-------------|------------------------------|-------|
-| A | `supabase/migrations/20261111010000_service_slice0_security_boundary.sql` | `20261110233314`…`33433` (`…_p1`…`_p2c`) | Chunked on staging |
-| B | `docs/operations/slice0/staging_service_tickets_rls.sql` | `20261110233441` | Ops package; policy align |
-| C | `…/20261111180000_machine_identity_pr1.sql` | `20261111165835` (abandon `…165001`) | Do not re-apply abandoned stamp |
-| D | `…/20261111190000_machine_identity_missing_serial_plate_evidence.sql` | `20261111180711` | |
-| E | `…/20261111200000_staging_machine_photos_and_ticket_number.sql` | `20261111193746` | |
+### 3.2 Later fixes **not** required for a Slice0+MI-only first release
 
-Canonical packaging narrative: `docs/operations/slice0/PRODUCTION_RELEASE_RUNBOOK.md`.
+B1–B6 workflow/auth corrections (jobs, visits, reports, ack, etc.), B2 profile/SELECT staff routing for job UI, B2-BR-MULTI visit-state rule — **required when that surface ships**, not for #155-only.
 
-### 3.2 Service-workflow B1–B7 (staging-applied; **not** production-authorized)
+Security remediation `d4cfc8ce` (service_role DML on report chain) applies once report tables exist (B4+).
 
-Apply to production **only** under a separate explicit authorization after #155 cutover. Staging chunk↔source reconciliation:
+### 3.3 Proposed **dependency-complete first release** (preferred)
 
-| Slice | Repo / package source | Staging live stamps (order) |
-|-------|----------------------|-----------------------------|
-| Security remediation | `applied-sql/01…05_…` + unstamped 01b/01c | `20261112141845` → `42222` → `42617` (+ profile SELECT `…152447` / `…152930` / `…153007`) |
-| B1 | `20261111210000_service_workflow_b1_data_contract.sql` | `20261111222941` |
-| B2 | B2 assignment migration | `20261111223057` |
-| B3 | `applied-sql/b3-staging/01…05` @ filenames `…180000`…`…201500` | `20261112191932` → `192046` → `192133` → `192242` → `192533` |
-| B4 | `applied-sql/b4-staging/` | `20261112224008`…`224219` + `…232020` attachment definer |
-| B5 | `applied-sql/b5-staging/` | `20261115120412` → `120443` → `123124` |
-| B6 | `applied-sql/b6-staging/` (chunked + corrections) | `20261115151114` → `151624` → `151655` → `151750` → `151814` |
-| B7 | tip `20261115181000` (F-B7-04) then `20261115180000` (F-B7-03) | **`20261115184700` → `20261115185008`** |
+**Do not** merge/release bare `ca9f5067` while production will serve Python ticket APIs and ticket shares.
 
-**Rule:** Production packaging uses **repo file order + content digests (`lf_sha256`)**; staging MCP stamps differ — map stamps in the release ticket; never re-apply by filename if content already present.
+**Package FR-1 — Slice0 + MI + share/privacy hardening** (backport / thin reviewed branch):
 
----
+| Layer | Contents |
+|-------|----------|
+| App tip | `ca9f5067` **plus** cherry-picks (or equivalent reviewed commit): `96f1d833` (Python), FE share RPC client + edge v2 wiring from B7, any minimal type fixes required for CI |
+| DB order | **A→E** (#155) + ops **B** (`docs/operations/slice0/staging_service_tickets_rls.sql`) → **F-B7-04** → **F-B7-03** (repo files `…181000` then `…180000`; staging live stamps were `84700`/`85008`) |
+| Edge | `ticket-share-attachment` with access-event record (v2 behavior) |
+| Explicitly **out** | B1–B6 workflow schema/RPCs; routines product |
 
-## 4. Production drift / preflight / backup readiness
+**Alternative FR-2 — Coordinated reviewed megapackage:** single tip containing #155 + B1…B7 (staging tip lineage). Larger blast radius; must pass CI on **that** tip; includes B2-BR-MULTI visit-state rule. Only if product wants workflow live in the same window.
 
-| Item | Status (read-only) |
-|------|--------------------|
-| Slice 0 / MI / B1–B7 on prod | **Absent** — full ordered apply required for any of these packages |
-| Writer incompatibility | Old app + new DB (A) breaks direct updates; new app + old DB missing `govern_*` / identity RPCs — **synchronized cutover required** |
-| Backup / PITR | **Required before any prod apply** — record backup id + timestamp; logical counts for tickets/machines/shares/storage |
-| App rollback targets | Prior Vercel prod deployment + prior Railway prod deploy — **insufficient alone** once DB A lands; pair with DB restore |
-| Edge secrets (prod) | Verify signed ticket-share attachment path; **no** public-bucket fallback |
-| Preflight | Object existence / digest checks for `govern_*`, `register_machine_identity`, `link_ticket_machine`, ticket_number trigger, private buckets — after apply, before traffic |
-
-Detail: `PRODUCTION_RELEASE_RUNBOOK.md` §2–3.2.
+**Forbidden:** Ship #155 app+DB **without** F-B7-01/02/03/04 while shares/Python are live → **knowingly vulnerable intermediate**.
 
 ---
 
-## 5. Coordinated cutover (auto-deploy on merge)
+## 4. Production migration dependencies (incl. SQL outside `supabase/migrations/`)
 
-| Surface | Auto on merge to `main`? | Implication |
-|---------|--------------------------|-------------|
-| Vercel production frontend | **Yes** (`almona02.com` / `www`) | Merging #155 deploys `ca9f5067` writers immediately |
-| Railway production API | **Yes** (prod service tracks `main`) | Same window as frontend |
-| Supabase production migrations | **No** (CI = format/replay only) | Must be applied in the **same change window** as app, ordered A→E |
-| Staging Railway `slice0-api` | Separate staging pin (`96f1d833` for B7) | Not the production cutover path |
+### 4.1 FR-1 order (prod packaging)
 
-**Cutover sketch (authorization required — not executed here):** freeze writes → DB A–E → merge/promote `#155`/`ca9f5067` → validate → lift freeze. Never leave mixed old/new writers vs DB. **Do not merge B7 branch as production tip** under current gates.
+| Step | Source of truth | Staging stamp map (do not re-apply blindly) |
+|-----:|-----------------|-----------------------------------------------|
+| A | `supabase/migrations/20261111010000_service_slice0_security_boundary.sql` | Chunked `20261110233314`…`33433` |
+| B | **`docs/operations/slice0/staging_service_tickets_rls.sql`** (ops package — **not** in migrations dir) | `20261110233441` |
+| C | `…/20261111180000_machine_identity_pr1.sql` | `20261111165835` (ignore abandoned `…165001`) |
+| D | `…/20261111190000_machine_identity_missing_serial_plate_evidence.sql` | `20261111180711` |
+| E | `…/20261111200000_staging_machine_photos_and_ticket_number.sql` | `20261111193746` |
+| F7-04 | `…/20261115181000_service_workflow_b7_f_b7_04_null_auth.sql` | staging `20261115184700` |
+| F7-03 | `…/20261115180000_service_workflow_b7_share_audit.sql` | staging `20261115185008` |
 
----
+**Also review before prod (applied-sql archive, not auto-migrated):**  
+`docs/operations/service-workflow/applied-sql/01*.sql` … `05*.sql` (security remediation / profile SELECT) — **not** in FR-1 unless FR-2 or an explicit staff-SELECT gap is in scope. Promote into `supabase/migrations/` (or a reviewed ops apply record) before production use; do not rely on transcript-only SQL.
 
-## 6. Remaining limitations / deferred scope
+### 4.2 Prod drift (read-only `shfsebdncjnncqqnewfj`)
 
-- **No production authorization** for Slice 0, MI, or B1–B7.
-- **#155 frozen** / **#156 draft** — staging B7 acceptance ≠ production release.
-- G-01 used **legacy serial-only** ticket create; canonical `machine_id` UUID path verified separately (`B7_MACHINE_LINKAGE_CLOSEOUT.md`).
-- Live **service-role** branches and **multi-session races**: disposable evidence only — not live PASS.
-- Parts fulfillment / automatic further-work linkage: out of B7 scope.
-- Tracked non-B7 storage orphan (older prefix) remains per B6 closeout — do not delete unidentified data.
-- Preview share for B7 journey **revoked**; do not regenerate for production prep.
-- Fixture credentials **rotated and discarded** — re-mint only under a new authorized staging handoff.
+No Slice0 / MI / B1–B7 migration versions present (catalog ends ~`20261106000000`). Full FR-1 apply required.
 
 ---
 
-## Spark final check pointer
+## 5. Maintenance pause, deploy sequence, backup, recovery
 
-See `B7_RETIREMENT_EXECUTED.md` § Spark final check. Retirement artifacts: handoff `CLEANUP_EXECUTION.json` + `CREDENTIALS_RETIRED.md`.
+### 5.1 Write-pause procedure (planned)
+
+1. Announce short maintenance (staff ticket mutate + customer share create).  
+2. Soft-block: feature flag or banner disabling status/assign UI and share create (prefer app flag over disabling platform auto-deploy).  
+3. Confirm no in-flight governed transitions; drain previews.  
+4. Hold pause through DB apply + app promote + validation (§ go/no-go).  
+5. Lift pause only after validation PASS.
+
+### 5.2 Exact deployment sequence (FR-1)
+
+```text
+T0  Write-pause
+T1  Verify backup/PITR (§5.3) — ABORT if unavailable
+T2  DB apply A → B → C → D → E → F7-04 → F7-03
+    Record prod schema_migrations versions + lf_sha256
+T3  Deploy edge ticket-share-attachment (v2 semantics)
+T4  Merge/promote FR-1 app tip (Vercel + Railway auto on main)
+T5  Validation (runbook §4 + share audit/revoke null-safe + Python privacy probes)
+T6  Lift write-pause; monitor 30–60 min
+```
+
+### 5.3 Backup / PITR — **prerequisite, not proven**
+
+| Check | Result (this inspection) |
+|-------|--------------------------|
+| Supabase MCP `get_project` prod/staging | `ACTIVE_HEALTHY` only — **no PITR/backup inventory returned** |
+| Documented “PITR required” | **Not proof** a restore point exists |
+| **Gate before T2** | Operator must **verify in Supabase dashboard** (or CLI): PITR enabled **or** a fresh logical/physical backup id + timestamp recorded in the release ticket. **If neither → do not apply.** |
+
+### 5.4 Recovery that preserves security
+
+| Failure | Action | Forbidden |
+|---------|--------|-----------|
+| DB apply fails mid-way | Restore to pre-T2 backup; abort app merge | Leave half-applied Slice0 triggers |
+| App bad after DB | Rollback Vercel+Railway **and** restore DB (old app cannot run on Slice0 DB) | Old writers on new DB |
+| Share/privacy defect | Forward-repair F7 SQL/app; keep buckets private | Re-open public buckets / direct share INSERT |
+| Need to undo A | DB restore only full undo | Drop protected-column trigger to “unblock” staff |
+
+---
+
+## 6. CI on the **actual** proposed release commits
+
+| If release tip is… | Required before approval |
+|--------------------|--------------------------|
+| FR-1 backport branch / PR | Full required check rollup **on that PR head** (build, backend, typecheck delta, migrations format/replay, security, constitutional/hardening as required by repo gates). `#155` green is insufficient alone. |
+| FR-2 megapackage (`f23b87e4` or successor) | Same rollup **on that SHA**; confirm Full Pipeline + audit complete — currently **not** claimed green end-to-end from this read-only snapshot. |
+
+Spark staging PASS on B7 does **not** substitute for CI on the production release tip.
+
+---
+
+## 7. Remaining limitations / deferred scope
+
+- No production authorization yet.  
+- Backup/PITR **unverified** via available tooling.  
+- G-01 legacy serial path vs canonical UUID (documented).  
+- Service-role live branches / multi-session races: disposable only.  
+- B1–B7 workflow, routines product, parts fulfillment: deferred from FR-1.  
+- B2-BR-MULTI visit-state rule: mandatory with B2; N/A to FR-1 Slice0+MI-only.
+
+---
+
+## 8. Next product (separate)
+
+[`SERVICE_ROUTINES_FIRST_SLICE_PROPOSAL.md`](./SERVICE_ROUTINES_FIRST_SLICE_PROPOSAL.md) — admin versioned routines + pinned checklist results; contracts/recurrence/squad deferred.
