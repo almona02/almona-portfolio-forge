@@ -2,8 +2,10 @@
 
 ## Latest independent tip: `3e387199` — PASS (F-B6-08 closed)
 
-See `docs/operations/service-workflow/spark-probes/B6_3e387199_SPARK_RESULTS.md`.
-Q6-01–Q6-44 = 44/44; R6-C1–C4 = 4/4; auth-before-idempotent re-close verified.
+Canonical: `docs/operations/service-workflow/spark-probes/B6_SPARK_INDEPENDENT_VERDICT_3e387199.md`
+(git-show-pinned run). Q6-01–Q6-44 = 44/44; R6-C1–C4 = 4/4.
+`B6_3e387199_SPARK_RESULTS.md` was Cursor-authored and is superseded.
+F-B6-09: no such finding in evidence (likely mis-ID of F-B6-08 / B6-09).
 
 ---
 

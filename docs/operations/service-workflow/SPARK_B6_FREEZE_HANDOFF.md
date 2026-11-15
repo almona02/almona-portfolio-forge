@@ -1,9 +1,10 @@
 # Spark — B6 freeze handoff (no staging apply)
 
 **F-B6-08 correction tip:** `3e387199dcca327a218e8371e24ee69310e55bf4` — migration `…171100`  
-**Spark verdict on correction:** **PASS** — `spark-probes/B6_3e387199_SPARK_RESULTS.md`  
-**Cursor supporting (not Spark):** `spark-probes/B6_3e387199_CURSOR_SUPPORTING.md`  
+**Spark independent verdict:** **PASS** — `spark-probes/B6_SPARK_INDEPENDENT_VERDICT_3e387199.md`  
+**Cursor supporting only:** `spark-probes/B6_3e387199_CURSOR_SUPPORTING.md` (also: former `B6_3e387199_SPARK_RESULTS.md` was Cursor-authored; superseded)  
 **Prior integrity tip (F-B6-08 FAIL evidence preserved):** `9998f1a48f1b18b467bc1e4d3552ced5e32325a4` — `spark-probes/B6_9998f1a4_SPARK_RESULTS.md`  
+**Docs stamp:** `585b0281f79dce3cc23d737556444e950646169f`  
 **Harness sync tip:** `d360ed23192579d309ad31ced1ed8c5fcc570962`  
 **Correction tip (historical):** `0b07aa8d00f88effd2b5775e23f097526923f6d3` — F-B6-03/04/05 + UI-01/02; BLOCKED F-B6-06/07  
 **Depends on:** B5 accepted `2a4042ad44d9234739f514720c3d413ea0ca42e8`  
