@@ -69,8 +69,17 @@ Keep report approval distinct from a safe return-to-service decision.
 
 ## Preview / handoff
 
-See apply tip commit after header-label fix; handoff dir `C:\projects\_almona_handoff\slice0-b5-staging-verification`.
+| Field | Value |
+|-------|-------|
+| Apply tip (headers + apply docs) | `118e074433912dc9ed0d0ed963f731451da0c144` |
+| Deployment | `dpl_5cFcxRDWBV3E74bnhssB9nteH9Qm` |
+| URL | `https://almona-portfolio-forge-595hlv4hj.vercel.app` |
+| Target | `staging` |
+| Protection | SSO (`all_except_custom_domains`) |
+| Cursor preview fetch | HTTP 200 app HTML via share unlock |
+| Session auth smoke | admin/owner/support/technician/(unrelated pair) **AUTH_OK** |
+| Handoff | `C:\projects\_almona_handoff\slice0-b5-staging-verification` (share + sessions only there) |
 
 ## Explicit non-actions
 
-No merge · no production · no B6 · #155 frozen · #156 draft.
+No merge · no production · no B6 · #155 frozen · #156 draft. Coordinate cleanup + credential retirement after Spark finishes.
