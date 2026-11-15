@@ -5,7 +5,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
-  revisionIdFromPrerequisiteDetail,
   targetRevisionIdForCode,
   TicketWorkflowClosurePanel,
 } from './TicketWorkflowClosurePanel'
@@ -109,20 +108,13 @@ describe('TicketWorkflowClosurePanel B6', () => {
     evaluate.mockResolvedValue([
       {
         code: 'acknowledgment_refusal_disposition_pending',
-        detail: `Job 1 (x) issued revision 1 (id=${REV_A}) refused — manager disposition required`,
+        detail: 'Job 1 (x) issued revision 1 refused — manager disposition required',
+        entity_id: REV_A,
       },
     ])
   })
 
-  it('parses revision id from prerequisite detail', () => {
-    expect(
-      revisionIdFromPrerequisiteDetail(
-        `Job 2 (B) issued revision 1 (id=${REV_B}) — acknowledgment outstanding`,
-      ),
-    ).toBe(REV_B)
-  })
-
-  it('targets outstanding/refused heads by failure id, not first head', () => {
+  it('uses structured entity_id only; never falls back to first head', () => {
     const heads = [
       {
         revisionId: REV_A,
@@ -144,7 +136,8 @@ describe('TicketWorkflowClosurePanel B6', () => {
         [
           {
             code: 'acknowledgment_outstanding',
-            detail: `Job 2 (B) issued revision 1 (id=${REV_B}) — acknowledgment outstanding`,
+            detail: 'Job 2 (B) issued revision 1 — acknowledgment outstanding',
+            entity_id: REV_B,
           },
         ],
         'acknowledgment_outstanding',
@@ -155,14 +148,14 @@ describe('TicketWorkflowClosurePanel B6', () => {
       targetRevisionIdForCode(
         [
           {
-            code: 'acknowledgment_refusal_disposition_pending',
-            detail: `Job 2 (B) issued revision 1 (id=${REV_B}) refused — manager disposition required`,
+            code: 'acknowledgment_outstanding',
+            detail: 'Job 2 (B) issued revision 1 — acknowledgment outstanding',
           },
         ],
-        'acknowledgment_refusal_disposition_pending',
+        'acknowledgment_outstanding',
         heads,
       ),
-    ).toBe(REV_B)
+    ).toBeNull()
   })
 
   it('shows named prerequisite failures from the backend', async () => {
@@ -217,7 +210,8 @@ describe('TicketWorkflowClosurePanel B6', () => {
     evaluate.mockResolvedValue([
       {
         code: 'acknowledgment_outstanding',
-        detail: `Job 2 (B) issued revision 1 (id=${REV_B}) — acknowledgment outstanding`,
+        detail: 'Job 2 (B) issued revision 1 — acknowledgment outstanding',
+        entity_id: REV_B,
       },
     ])
     const user = userEvent.setup()

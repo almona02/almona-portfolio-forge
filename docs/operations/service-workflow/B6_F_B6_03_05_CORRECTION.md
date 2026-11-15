@@ -4,24 +4,26 @@
 **Depends on:** B6 freeze `ec00b692` (stamp `395c2481`) · Spark BLOCKED findings  
 **Gates:** #155 frozen · #156 draft · disposable/local only · **no staging apply** · no merge · no production
 
-## Server (narrow migration)
+## Server (narrow migrations)
 
-`supabase/migrations/20261115170000_service_workflow_b6_f_b6_03_05_correction.sql`
+`supabase/migrations/20261115170000_service_workflow_b6_f_b6_03_05_correction.sql`  
+`supabase/migrations/20261115171000_service_workflow_b6_integrity_targeting.sql`
 
 | ID | Fix |
 |----|-----|
 | F-B6-03 | `record_service_acknowledgment_unavailable` only when effective ∈ {NULL, unavailable} |
-| F-B6-04 | Closure gate requires `v_disp.acknowledgment_id = v_ack.id` for the current refusal |
-| F-B6-05 | Contact attempts must be distinct by `(attempted_at, channel)` |
-
-Named prerequisite details now include `id=<revision_uuid>` for head-aware UI targeting.
+| F-B6-04 | Disposition must bind to current refusal (`acknowledgment_id`) |
+| F-B6-05 | Contact attempts distinct by `(attempted_at, channel)` |
+| Integrity | `event_seq` tie-break; re-close preserves `closed_at`; no duplicate closure audit |
+| Targeting | `evaluate_ticket_workflow_prerequisites` returns structured `entity_id` |
 
 ## UI (F-B6-UI-01 / F-B6-UI-02)
 
-`TicketWorkflowClosurePanel`: staff-entered contact attempts only (no fabricated backdates); unavailable/disposition target the outstanding/refused head from the failure detail (not the first issued head).
+`TicketWorkflowClosurePanel`: staff-entered contact attempts only; targets via `entity_id` only (never first-head fallback / prose parse).
 
 ## Verification (targeted)
 
-- Disposable: B6-10/11/12 (+ prior B6-01…09) via `run_disposable_b6.py`
-- Vitest: `TicketWorkflowClosurePanel.b6.test.tsx` head-aware + real-attempt cases
-- Spark re-verify: Q6-11 / Q6-13 / Q6-17 + UI probe — **no full restart**
+- Disposable: `run_disposable_b6.py` (incl. B6-10…16)
+- Spark harness: `run_spark_b6.py` + `spark_b6_battery.sql` + `b6_ack_matrix.md`
+- Vitest: `TicketWorkflowClosurePanel.b6.test.tsx`
+- Spark re-verify: five fixes + integrity — **no full restart** · **no staging apply**

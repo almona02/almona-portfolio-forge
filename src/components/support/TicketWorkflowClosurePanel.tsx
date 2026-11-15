@@ -36,29 +36,18 @@ type IssuedHead = {
   effectiveResponse: string | null
 }
 
-/** Extract issued revision uuid from named prerequisite detail (`id=<uuid>`). */
-export function revisionIdFromPrerequisiteDetail(detail: string): string | null {
-  const m = detail.match(/\bid=([0-9a-f-]{36})\b/i)
-  return m?.[1] ?? null
-}
-
+/**
+ * Structured target only (`entity_id`). Never fall back to "first issued head"
+ * or prose parsing — missing/stale target fails closed.
+ */
 export function targetRevisionIdForCode(
   failures: WorkflowPrerequisiteFailure[],
   code: string,
-  heads: IssuedHead[],
+  _heads?: IssuedHead[],
 ): string | null {
   const match = failures.find((f) => f.code === code)
-  if (match) {
-    const fromDetail = revisionIdFromPrerequisiteDetail(match.detail)
-    if (fromDetail) return fromDetail
-  }
-  if (code === 'acknowledgment_outstanding') {
-    return heads.find((h) => h.effectiveResponse == null)?.revisionId ?? null
-  }
-  if (code === 'acknowledgment_refusal_disposition_pending') {
-    return heads.find((h) => h.effectiveResponse === 'refused')?.revisionId ?? null
-  }
-  return null
+  const id = match?.entity_id?.trim()
+  return id || null
 }
 
 type AttemptDraft = {

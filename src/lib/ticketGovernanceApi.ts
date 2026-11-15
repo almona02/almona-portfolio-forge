@@ -656,6 +656,8 @@ export interface ServiceAcknowledgmentDispositionRow {
 export interface WorkflowPrerequisiteFailure {
   code: string
   detail: string
+  /** Structured target (issued revision / job / visit / ticket) — prefer over parsing detail. */
+  entity_id?: string | null
 }
 
 export type ContactAttempt = {
@@ -736,5 +738,9 @@ export async function evaluateTicketWorkflowPrerequisites(
     p_ticket_id: ticketId,
   })
   if (error) throw mapJobRpcError(error.message)
-  return (data ?? []) as WorkflowPrerequisiteFailure[]
+  return ((data ?? []) as Array<Record<string, unknown>>).map((row) => ({
+    code: String(row.code ?? ''),
+    detail: String(row.detail ?? ''),
+    entity_id: (row.entity_id as string | null | undefined) ?? null,
+  }))
 }

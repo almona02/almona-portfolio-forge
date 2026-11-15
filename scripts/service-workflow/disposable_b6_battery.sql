@@ -430,3 +430,99 @@ BEGIN
       AND v_disp.acknowledgment_id IS NOT NULL,
     'before=' || pending_before || ' after=' || pending_after || ' close_denied=' || a::text);
 END $$;
+
+-- B6-13: timestamp-tie ordering uses event_seq (deterministic)
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_rev uuid;
+  a1 public.service_acknowledgments;
+  a2 public.service_acknowledgments;
+  eff public.service_acknowledgments;
+  v_ts timestamptz := clock_timestamp();
+BEGIN
+  SELECT * INTO v_t, v_j, v_v, v_rev FROM b6_issue('13');
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  a1 := public.record_service_acknowledgment(v_rev, 'accepted', NULL, NULL);
+  a2 := public.record_service_acknowledgment(v_rev, 'refused', 'later', NULL);
+  -- Force identical responded_at to exercise tie-break
+  UPDATE public.service_acknowledgments SET responded_at = v_ts WHERE id IN (a1.id, a2.id);
+  eff := public.effective_acknowledgment(v_rev);
+  PERFORM b6_note('B6-13_event_seq_tiebreak',
+    a2.event_seq > a1.event_seq AND eff.id = a2.id,
+    'seq1=' || a1.event_seq || ' seq2=' || a2.event_seq || ' eff=' || eff.response);
+END $$;
+
+-- B6-14: re-close preserves closed_at; no duplicate workflow closure audit
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_rev uuid;
+  v1 public.service_tickets;
+  v2 public.service_tickets;
+  n_close int;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v, v_rev FROM b6_issue('14');
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  PERFORM public.record_service_acknowledgment(v_rev, 'accepted', NULL, NULL);
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  v1 := public.govern_ticket_transition(v_t, 'resolved', 'done', 'All work complete', NULL);
+  v1 := public.govern_ticket_transition(v_t, 'closed', 'close', 'All work complete', NULL);
+  v2 := public.govern_ticket_transition(v_t, 'closed', 'close again', 'All work complete', NULL);
+  SELECT count(*) INTO n_close FROM public.service_workflow_audit
+  WHERE ticket_id = v_t AND action = 'workflow_resolve_close' AND to_state = 'closed';
+  PERFORM b6_note('B6-14_reclose_preserves_closed_at',
+    v2.closed_at IS NOT DISTINCT FROM v1.closed_at AND n_close = 1,
+    'same_closed_at=' || (v2.closed_at IS NOT DISTINCT FROM v1.closed_at)::text
+      || ' close_audits=' || n_close);
+END $$;
+
+-- B6-15: closure-path audit bomb rolls back ticket state (not ack-only)
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_rev uuid;
+  a boolean; st text; n_close int;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v, v_rev FROM b6_issue('15');
+  PERFORM set_config('app.b1_uid', b1_uid('cust1')::text, false);
+  PERFORM public.record_service_acknowledgment(v_rev, 'accepted', NULL, NULL);
+  PERFORM set_config('app.b1_uid', b1_uid('support')::text, false);
+  PERFORM public.govern_ticket_transition(v_t, 'resolved', 'done', 'All work complete', NULL);
+  CREATE OR REPLACE FUNCTION public.b6_bomb_closure_audit()
+  RETURNS trigger LANGUAGE plpgsql AS $t$
+  BEGIN
+    IF NEW.action = 'workflow_resolve_close' AND NEW.to_state = 'closed' THEN
+      RAISE EXCEPTION 'injected closure audit failure' USING ERRCODE = 'check_violation';
+    END IF;
+    RETURN NEW;
+  END;
+  $t$;
+  DROP TRIGGER IF EXISTS trg_b6_bomb_closure ON public.service_workflow_audit;
+  CREATE TRIGGER trg_b6_bomb_closure
+    BEFORE INSERT ON public.service_workflow_audit
+    FOR EACH ROW EXECUTE FUNCTION public.b6_bomb_closure_audit();
+  a := b6_denied(format(
+    $q$SELECT public.govern_ticket_transition(%L::uuid,'closed','close','All work complete',NULL)$q$,
+    v_t));
+  SELECT status INTO st FROM public.service_tickets WHERE id = v_t;
+  SELECT count(*) INTO n_close FROM public.service_workflow_audit
+  WHERE ticket_id = v_t AND action = 'workflow_resolve_close' AND to_state = 'closed';
+  DROP TRIGGER IF EXISTS trg_b6_bomb_closure ON public.service_workflow_audit;
+  DROP FUNCTION IF EXISTS public.b6_bomb_closure_audit();
+  PERFORM b6_note('B6-15_closure_audit_bomb',
+    a AND st = 'resolved' AND n_close = 0,
+    'denied=' || a::text || ' status=' || st || ' close_audits=' || n_close);
+END $$;
+
+-- B6-16: structured entity_id on acknowledgment_outstanding
+DO $$
+DECLARE
+  v_t uuid; v_j uuid; v_v uuid; v_rev uuid;
+  eid uuid;
+BEGIN
+  SELECT * INTO v_t, v_j, v_v, v_rev FROM b6_issue('16');
+  UPDATE public.service_tickets SET resolution_summary = 'x' WHERE id = v_t;
+  SELECT entity_id INTO eid FROM public.evaluate_ticket_workflow_prerequisites(v_t)
+  WHERE code = 'acknowledgment_outstanding' LIMIT 1;
+  PERFORM b6_note('B6-16_structured_entity_id',
+    eid IS NOT DISTINCT FROM v_rev,
+    'entity_id=' || coalesce(eid::text,'null') || ' rev=' || v_rev::text);
+END $$;
