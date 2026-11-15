@@ -1,6 +1,8 @@
 # STAGING-B5-01 / STAGING-B5-02 — UI correction freeze
 
+**Freeze tip:** `2a4042ad44d9234739f514720c3d413ea0ca42e8`  
 **Depends on:** B5 staging apply @ `d2743078` (+ review SELECT companion below)  
+**Preview:** `dpl_4GLQNsZsucF9CmQbnXhQvPauFerU`  
 **Gates:** #155 frozen · #156 draft · no merge · no production · no B6  
 **RPCs:** `submit_service_report_revision` / `review_service_report_revision` / `get_service_report_for_visit` **unchanged** (live API accepted)
 
