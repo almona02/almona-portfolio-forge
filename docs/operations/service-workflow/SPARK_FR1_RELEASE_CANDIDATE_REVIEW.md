@@ -1,12 +1,14 @@
 # Spark — independent FR-1 release-candidate review
 
 **Branch:** `release/fr1-slice0-share-privacy`  
-**Draft PR:** https://github.com/almona02/almona-portfolio-forge/pull/158 — review **exact PR HEAD** (not a stale SHA in this file).  
-**Packaging commit:** `9805c9c5` (migrations/FE/edge/Python/battery). Later commits on the branch are docs-only unless noted.  
+**Draft PR:** https://github.com/almona02/almona-portfolio-forge/pull/158 — keep draft; leave #155 unmerged.  
+**Content acceptance evidence (Spark):** **PASS on `d3ef35d4`** — preserve; do not discard for follow-up commits.  
+**Packaging commit:** `9805c9c5` (migrations/FE/edge/Python/battery).  
+**Follow-up (deps + fallback tests):** see [`SPARK_FR1_FOLLOWUP_DEPS_FALLBACK.md`](./SPARK_FR1_FOLLOWUP_DEPS_FALLBACK.md) — narrow review only.  
 **Base:** `ca9f5067` (#155 frozen)  
 **Do not merge. Do not apply to production. Do not change deployment settings.**  
 **Staging tip / B7 evidence:** leave `feat/service-workflow-b1-planning` intact (`1cd5e094`).  
-**Local disposable (Cursor):** 14 PASS / 0 FAIL on packaging tip `9805c9c5` — Spark must re-run independently on the PR HEAD.
+**Local disposable (Cursor):** 14 PASS / 0 FAIL on packaging tip `9805c9c5`.
 
 ## Mission
 
