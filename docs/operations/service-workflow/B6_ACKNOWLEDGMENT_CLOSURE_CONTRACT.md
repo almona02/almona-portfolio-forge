@@ -1,6 +1,6 @@
 # B6 — Acknowledgment & closure gate contract
 
-**Status:** Freeze tip pending commit · disposable/local only · **no staging apply**  
+**Status:** Freeze tip `ec00b692af10629ed5ee506bbb35762ea5ea00a8` · disposable/local only · **no staging apply**  
 **Depends on:** B5 accepted tip `2a4042ad44d9234739f514720c3d413ea0ca42e8`  
 **Gates:** #155 frozen · #156 draft · no merge · no production
 

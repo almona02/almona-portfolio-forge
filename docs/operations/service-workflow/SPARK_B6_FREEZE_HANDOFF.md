@@ -1,6 +1,6 @@
 # Spark — B6 freeze handoff (no staging apply)
 
-**Freeze tip:** _(filled at commit)_  
+**Freeze tip:** `ec00b692af10629ed5ee506bbb35762ea5ea00a8`  
 **Depends on:** B5 accepted `2a4042ad44d9234739f514720c3d413ea0ca42e8`  
 **Gates:** #155 frozen · #156 draft · **no staging apply** · no merge · no production
 
@@ -39,6 +39,11 @@ Independent review of B6 acknowledgment and closure gate only. Do **not** apply 
 - Late ack after unavailable/closure appends history without auto-reopening.
 - Ack/closure do not clear safety restrictions or imply return-to-service.
 - Sales-role-owner: RPC ownership-based; UI customer-role-only fail-closed — see matrix.
+
+## Local proof (access-holder)
+
+- Disposable B6 battery: 9/9 PASS (`.artifacts/slice0/service-workflow/disposable_b6_results.json`)
+- Vitest: `CustomerReportAcknowledgmentPanel.b6.test.tsx` + `TicketWorkflowClosurePanel.b6.test.tsx` (+ B5 route/view regression) PASS
 
 ## Explicit non-actions
 
