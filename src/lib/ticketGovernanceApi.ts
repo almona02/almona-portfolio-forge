@@ -631,3 +631,110 @@ export async function createReportEvidenceSignedUrl(
   }
   return data.signedUrl
 }
+
+/** B6: acknowledgment event (append-only; effective = latest). */
+export interface ServiceAcknowledgmentRow {
+  id: string
+  issued_revision_id: string
+  response: 'accepted' | 'refused' | 'unavailable'
+  comment: string | null
+  responded_by: string
+  responded_at: string
+  contact_attempts?: unknown | null
+}
+
+export interface ServiceAcknowledgmentDispositionRow {
+  id: string
+  issued_revision_id: string
+  acknowledgment_id: string
+  disposition: 'accept_refusal_and_proceed' | 'create_follow_up'
+  rationale: string
+  decided_by: string
+  decided_at: string
+}
+
+export interface WorkflowPrerequisiteFailure {
+  code: string
+  detail: string
+}
+
+export type ContactAttempt = {
+  attempted_at: string
+  channel: string
+  outcome: string
+  by_actor_id: string
+}
+
+export async function recordServiceAcknowledgment(input: {
+  issuedRevisionId: string
+  response: 'accepted' | 'refused'
+  comment?: string
+}): Promise<ServiceAcknowledgmentRow> {
+  const { data, error } = await supabase.rpc('record_service_acknowledgment', {
+    p_issued_revision_id: input.issuedRevisionId,
+    p_response: input.response,
+    p_comment: input.comment ?? null,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return data as ServiceAcknowledgmentRow
+}
+
+export async function recordServiceAcknowledgmentUnavailable(input: {
+  issuedRevisionId: string
+  contactAttempts: ContactAttempt[]
+  rationale: string
+}): Promise<ServiceAcknowledgmentRow> {
+  const { data, error } = await supabase.rpc('record_service_acknowledgment_unavailable', {
+    p_issued_revision_id: input.issuedRevisionId,
+    p_contact_attempts: input.contactAttempts,
+    p_rationale: input.rationale,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return data as ServiceAcknowledgmentRow
+}
+
+export async function recordAcknowledgmentDisposition(input: {
+  issuedRevisionId: string
+  disposition: 'accept_refusal_and_proceed' | 'create_follow_up'
+  rationale: string
+}): Promise<ServiceAcknowledgmentDispositionRow> {
+  const { data, error } = await supabase.rpc('record_acknowledgment_disposition', {
+    p_issued_revision_id: input.issuedRevisionId,
+    p_disposition: input.disposition,
+    p_rationale: input.rationale,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return data as ServiceAcknowledgmentDispositionRow
+}
+
+export async function getEffectiveAcknowledgment(
+  issuedRevisionId: string,
+): Promise<ServiceAcknowledgmentRow | null> {
+  const { data, error } = await supabase.rpc('effective_acknowledgment', {
+    p_revision_id: issuedRevisionId,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  if (!data || (Array.isArray(data) && data.length === 0)) return null
+  return data as ServiceAcknowledgmentRow
+}
+
+export async function getEffectiveAcknowledgmentDisposition(
+  issuedRevisionId: string,
+): Promise<ServiceAcknowledgmentDispositionRow | null> {
+  const { data, error } = await supabase.rpc('effective_acknowledgment_disposition', {
+    p_revision_id: issuedRevisionId,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  if (!data || (Array.isArray(data) && data.length === 0)) return null
+  return data as ServiceAcknowledgmentDispositionRow
+}
+
+export async function evaluateTicketWorkflowPrerequisites(
+  ticketId: string,
+): Promise<WorkflowPrerequisiteFailure[]> {
+  const { data, error } = await supabase.rpc('evaluate_ticket_workflow_prerequisites', {
+    p_ticket_id: ticketId,
+  })
+  if (error) throw mapJobRpcError(error.message)
+  return (data ?? []) as WorkflowPrerequisiteFailure[]
+}

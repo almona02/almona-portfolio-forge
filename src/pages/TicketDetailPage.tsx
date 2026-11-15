@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TicketStatusBadge } from '@/components/support/TicketStatusBadge'
 import { ServiceJobAssignmentPanel } from '@/components/support/ServiceJobAssignmentPanel'
 import { CustomerIssuedReportsSection } from '@/components/support/CustomerIssuedReportsSection'
+import { TicketWorkflowClosurePanel } from '@/components/support/TicketWorkflowClosurePanel'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { ticketMessageApi, type TicketAttachment } from '@/lib/ticketMessageApi'
@@ -76,7 +77,14 @@ const TicketDetailPage = () => {
   const canManageJobs = Boolean(
     user?.id && isProfileResolved && user.role && staffRoles.has(user.role) && !isSharedView,
   )
+  const canManageClosure = Boolean(
+    user?.id &&
+      isProfileResolved &&
+      (user.role === 'admin' || user.role === 'support') &&
+      !isSharedView,
+  )
   // Owner issued-report access only — does not open staff job/review controls.
+  // UI requires role=customer (sales-role owners are fail-closed here; RPC remains ownership-based).
   const canViewIssuedReports = Boolean(
     user?.id &&
       isProfileResolved &&
@@ -332,6 +340,22 @@ const TicketDetailPage = () => {
                   ticketId={ticket.id}
                   currentUserId={user.id}
                   viewerRole={user.role}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          {canManageClosure && user && (
+            <Card data-testid="ticket-workflow-closure-card">
+              <CardHeader>
+                <CardTitle className="text-base">Closure prerequisites</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <TicketWorkflowClosurePanel
+                  ticketId={ticket.id}
+                  currentStatus={ticket.status}
+                  currentUserId={user.id}
+                  resolutionSummary={ticket.resolution_summary}
                 />
               </CardContent>
             </Card>

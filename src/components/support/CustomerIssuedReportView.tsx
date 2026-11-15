@@ -6,17 +6,23 @@ import {
   createReportEvidenceSignedUrl,
   getServiceReportForVisit,
 } from '@/lib/ticketGovernanceApi'
+import { CustomerReportAcknowledgmentPanel } from '@/components/support/CustomerReportAcknowledgmentPanel'
 import { toast } from 'sonner'
 
 interface CustomerIssuedReportViewProps {
   visitId: string
+  /** When false, acknowledgment history is read-only. */
+  canAcknowledge?: boolean
 }
 
 /**
  * Customer view: getter already omits unissued revisions/evidence and staff comments.
  * Renders every issued revision (history); a pending correction does not replace prior issued.
  */
-export const CustomerIssuedReportView: React.FC<CustomerIssuedReportViewProps> = ({ visitId }) => {
+export const CustomerIssuedReportView: React.FC<CustomerIssuedReportViewProps> = ({
+  visitId,
+  canAcknowledge = true,
+}) => {
   const reportQuery = useQuery({
     queryKey: ['service-report', visitId],
     queryFn: () => getServiceReportForVisit(visitId),
@@ -80,11 +86,17 @@ export const CustomerIssuedReportView: React.FC<CustomerIssuedReportViewProps> =
               ))}
             </ul>
           )}
+          <CustomerReportAcknowledgmentPanel
+            issuedRevisionId={rev.id}
+            revisionNumber={rev.revision_number}
+            canRespond={canAcknowledge}
+          />
         </div>
       ))}
       <p className="text-xs text-muted-foreground">
-        Unissued corrections are not shown. Prior issued revisions remain listed. Acknowledgment is
-        B6.
+        Unissued corrections are not shown. Prior issued revisions remain listed. Acknowledgment
+        attaches only to the issued revision shown — a newer correction does not inherit a prior
+        acceptance.
       </p>
     </div>
   )

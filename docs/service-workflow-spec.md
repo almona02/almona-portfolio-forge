@@ -217,7 +217,7 @@ Each failed prerequisite is reported by name ("Job 2 awaiting review", "acknowle
 
 ### 7.3 Customer unavailable for acknowledgment
 
-Staff record `unavailable` only after documented contact attempts (at minimum: notification on issue plus two attempts over at least 7 days, channels logged). The record names the attempts; the customer may still acknowledge later, which appends a superseding response. `unavailable` is never back-converted silently and never displayed to the customer as acceptance.
+Staff record `unavailable` only after documented, attributable contact attempts under the operating contact policy (`docs/operations/service-workflow/B6_ACKNOWLEDGMENT_CONTACT_POLICY.md`: issue notification plus at least two further attempts, channels and actors logged). Enforcement validates evidence structure and attribution — it does not silently hardcode a calendar waiting period. The record names the attempts; the customer may still acknowledge later, which appends a superseding response without automatically reopening a closed ticket. `unavailable` is never back-converted silently and never displayed to the customer as acceptance.
 
 ---
 

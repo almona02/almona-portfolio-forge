@@ -17,11 +17,13 @@ Migration: `supabase/migrations/20261115150000_service_workflow_b5_staging_b5_01
 
 ## UI fixes
 
-| ID | Change |
-|----|--------|
-| STAGING-B5-01 | `ServiceReportPanel`: show return outcome/comments; attending tech gets a new revision form; new `client_submission_id` retained across fail/remount; successful resubmit shows the new revision |
-| STAGING-B5-02 | `TicketDetailPage`: owner-only `CustomerIssuedReportsSection` mounts issued views via authorized getter — **does not** open `canManageJobs` / staff controls |
-| History | `CustomerIssuedReportView` lists every issued revision; unissued/returned omitted by getter |
+IDs use Spark’s **original** definitions (`SPARK_B5_LIVE_STATUS.json`). Evidence files were not rewritten.
+
+| ID | Original definition | Change |
+|----|---------------------|--------|
+| STAGING-B5-01 | Customer issued-report view unreachable | `TicketDetailPage`: owner-only `CustomerIssuedReportsSection` mounts issued views via authorized getter — **does not** open `canManageJobs` / staff controls |
+| STAGING-B5-02 | Technician cannot resubmit after return | `ServiceReportPanel`: show return outcome/comments; attending tech gets a new revision form; new `client_submission_id` retained across fail/remount; successful resubmit shows the new revision |
+| History | — | `CustomerIssuedReportView` lists every issued revision; unissued/returned omitted by getter |
 
 ## Tests
 
