@@ -70,10 +70,17 @@ Deno.serve(async (request) => {
       return reply(403, { error: 'Attachment not part of shared ticket' })
     }
 
+    // Fail-closed access event (token-free) before returning a signed URL.
+    const { error: accessErr } = await server.rpc('record_ticket_share_attachment_access', {
+      p_token: token,
+    })
+    if (accessErr) return reply(503, { error: 'Unable to record share access' })
+
     const { data: signed, error: signErr } = await server.storage
       .from('ticket-attachments')
       .createSignedUrl(path, 60)
     if (signErr || !signed?.signedUrl) return reply(503, { error: 'Unable to sign attachment URL' })
+    // Never log signedUrl / token.
     return reply(200, { url: signed.signedUrl, expires_in: 60 })
   } catch {
     return reply(500, { error: 'Unexpected error' })

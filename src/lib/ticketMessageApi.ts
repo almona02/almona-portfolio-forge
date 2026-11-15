@@ -49,6 +49,10 @@ type TicketMessagingDatabase = {
     Functions: {
       get_shared_ticket: { Args: { p_token: string }; Returns: SharedTicket }
       revoke_ticket_share: { Args: { p_token: string }; Returns: void }
+      create_ticket_share: {
+        Args: { p_ticket_id: string; p_expires_at?: string | null }
+        Returns: { id: string; ticket_id: string; token: string; expires_at: string | null; created_at: string }
+      }
     }
   }
 }
@@ -167,16 +171,14 @@ export const ticketMessageApi = {
   },
 
   async createShare(ticketId: string, expiresInDays = 14): Promise<{ token: string; url: string }> {
-    const token = crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '')
     const expiresAt = new Date(Date.now() + expiresInDays * 86400000).toISOString()
-    const { data: userData } = await supabase.auth.getUser()
-    const { error } = await db.from('ticket_shares').insert({
-      ticket_id: ticketId,
-      token,
-      expires_at: expiresAt,
-      created_by: userData.user?.id ?? null,
+    const { data, error } = await db.rpc('create_ticket_share', {
+      p_ticket_id: ticketId,
+      p_expires_at: expiresAt,
     })
     if (error) throw error
+    const token = (data as { token?: string } | null)?.token
+    if (!token) throw new Error('Share creation did not return a token')
     return { token, url: `${window.location.origin}/support/tickets/${ticketId}?share=${token}` }
   },
 
