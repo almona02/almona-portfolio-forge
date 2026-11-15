@@ -8,7 +8,7 @@
 | Mutation | RPC | Audit |
 |----------|-----|-------|
 | Create | `create_ticket_share(p_ticket_id, p_expires_at)` | `ticket_governance_audit.action = share_created` with `share_id`, `expires_at`, `actor_role` — **never** token |
-| Revoke | `revoke_ticket_share(p_token)` | `share_revoked` with `share_id`, `actor_role` — token used only as lookup key, never stored in audit |
+| Revoke | `revoke_ticket_share(p_token)` | `share_revoked` with `share_id`, `actor_role` — token used only as lookup key, never stored in audit. Auth is **null-safe** (F-B7-04 deny-by-default `IS DISTINCT FROM`); unassigned tickets do not open revoke to arbitrary authenticated users. |
 
 Direct `INSERT`/`UPDATE`/`DELETE` on `ticket_shares` is revoked from `authenticated`/`anon`. Clients SELECT only via `ticket_shares_select_scoped`. FE must call the RPCs (`ticketMessageApi.createShare` / `revokeShare`).
 

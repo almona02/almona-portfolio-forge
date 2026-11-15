@@ -168,12 +168,13 @@ BEGIN
     RAISE EXCEPTION 'Ticket not found' USING ERRCODE = 'P0002';
   END IF;
 
-  IF NOT (
-    v_role IN ('admin', 'support')
-    OR v_ticket.user_id = v_uid
-    OR v_ticket.assigned_to = v_uid
-    OR v_share.created_by = v_uid
-  ) THEN
+  -- F-B7-04: deny-by-default — NULL assignee/created_by must not poison IF NOT.
+  IF v_role IS DISTINCT FROM 'admin'
+     AND v_role IS DISTINCT FROM 'support'
+     AND v_ticket.user_id IS DISTINCT FROM v_uid
+     AND v_ticket.assigned_to IS DISTINCT FROM v_uid
+     AND v_share.created_by IS DISTINCT FROM v_uid
+  THEN
     RAISE EXCEPTION 'Not permitted to revoke this share' USING ERRCODE = '42501';
   END IF;
 
