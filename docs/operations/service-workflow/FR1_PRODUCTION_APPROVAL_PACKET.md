@@ -6,6 +6,8 @@
 **Keep #158 draft** until explicit production authorization.  
 **No merge · no production writes · no settings changes · no routines implementation.**
 
+**Backup gate path:** bounded rehearsal proposal [`FR1_BACKUP_RESTORE_REHEARSAL_PROPOSAL.md`](./FR1_BACKUP_RESTORE_REHEARSAL_PROPOSAL.md) (review only — not cutover authorization).
+
 ## 0. Evidence preserved (Spark / CI)
 
 | Evidence | Revision | Meaning |
@@ -120,7 +122,7 @@ Until the org/project is upgraded to a plan with verified daily backups and/or P
 | Step | Action | Exact revision |
 |------|--------|----------------|
 | 0 | Freeze traffic (write-pause); confirm backup gate §2.3 PASS | — |
-| 1 | **DB apply** on `shfsebdncjnncqqnewfj` in lexicographic order | From `e17858a5`: `20261111010000` → `180000` → `190000` → `200000` → `201000` RLS → `20261115190000` F7-04 → `20261115190100` F7-03 |
+| 1 | **DB apply** on `shfsebdncjnncqqnewfj` in **authoritative** order (A→C→D→E→RLS→F7-04→F7-03; see rehearsal §6.1) | From `e17858a5`: `20261111010000` → `180000` → `190000` → `200000` → `201000` RLS → `20261115190000` F7-04 → `20261115190100` F7-03 |
 | 2 | **Edge** deploy `ticket-share-attachment` | Source tree `e17858a5` |
 | 3 | **Backend** Railway service `almona-portfolio-forge` | Image/build from `main` @ `e17858a5` (see §4 coordination) |
 | 4 | **Frontend** Vercel production (`almona-portfolio-forge` / `almona02.com`) | Build from `main` @ `e17858a5` |

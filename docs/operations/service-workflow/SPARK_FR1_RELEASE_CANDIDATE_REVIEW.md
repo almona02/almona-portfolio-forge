@@ -27,7 +27,9 @@ Independently verify the FR-1 candidate is a **dependency-complete** Slice0+MI+s
 
 ## Disposable battery
 
-Apply #155 A–E + FR-1 three migrations on a **fresh disposable** DB shaped like production (no job/visit tables). Then run:
+Apply migrations in **authoritative order** A→C→D→E→RLS→F7-04→F7-03
+(`20261111010000` → `20261111180000` → `20261111190000` → `20261111200000` → `20261111201000` → `20261115190000` → `20261115190100`)
+on a **fresh disposable** DB shaped like production (no job/visit tables). Conceptual “B = RLS” follows C/D/E. Then run:
 
 `scripts/service-workflow/disposable_fr1_battery.sql`
 

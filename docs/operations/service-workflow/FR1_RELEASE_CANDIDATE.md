@@ -7,7 +7,9 @@
 **Staging branch:** `feat/service-workflow-b1-planning` — **untouched** (evidence preserved)  
 **Gates:** No merge · no production apply · no deployment-setting changes  
 **Production packet:** [`FR1_PRODUCTION_APPROVAL_PACKET.md`](./FR1_PRODUCTION_APPROVAL_PACKET.md)  
-**Backup/PITR:** org plan API = **free** → platform daily backups/PITR **not entitled/unverified**; `ACTIVE_HEALTHY` ≠ backup. Logical dump + proven restore required before authorization.
+**Backup rehearsal (proposal only):** [`FR1_BACKUP_RESTORE_REHEARSAL_PROPOSAL.md`](./FR1_BACKUP_RESTORE_REHEARSAL_PROPOSAL.md)  
+**Backup/PITR:** org plan API = **free** → platform daily backups/PITR **not entitled/unverified**; `ACTIVE_HEALTHY` ≠ backup. Logical dump + proven restore required before authorization.  
+**Migration order (authoritative):** A → C → D → E → RLS (`201000`) → F7-04 → F7-03 (lexicographic; Package B = RLS is conceptual only).
 
 ## Revisions
 
