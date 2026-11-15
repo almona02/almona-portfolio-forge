@@ -7,8 +7,8 @@
 |-------|---------|--------|
 | Frontend SHA | `78372312d73f79a78605a8f31d14df5b1b827c93` | Deployed `dpl_46faneJn7bnf6oE9rzxZm6Cfa6dn` — preview unlock verified HTTP 200 via `_vercel_share` |
 | Railway backend SHA | `96f1d833` (F-B7-01/02) | Deploy `64673eff-c8aa-46a6-ad15-48a5f6cf754c` · `https://slice0-api-staging.up.railway.app` · health 200 |
-| DB migrations | F-B7-04 `…15181000…null_auth` then F-B7-03 `…15180000…share_audit` | F-B7-04 tip for live null-auth; F-B7-03 still **frozen** until Spark re-verify + approval |
-| Edge | `ticket-share-attachment` + `record_ticket_share_attachment_access` | Code on tip `b974ab0f`; staging function deploy with F-B7-03 apply |
+| DB migrations | F-B7-04 then F-B7-03 | **Applied** — stamps `20261115184700` / `20261115185008` (see `B7_STAGING_APPLY_6c501536.md`); Spark evidence `1dc28279` |
+| Edge | `ticket-share-attachment` | **v2** deployed with access-event recording |
 
 ## Correction commits
 
