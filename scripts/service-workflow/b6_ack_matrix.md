@@ -1,33 +1,126 @@
 # B6 acknowledgment/closure verification matrix (Spark independent)
 
-## Latest independent tip: `3e387199` — PASS (F-B6-08 closed)
+Status: RE-CLOSE-AUTH CORRECTION `3e387199dcca327a218e8371e24ee69310e55bf4`
+(docs stamp `585b0281`) EXECUTED. Verdict: **STILL BLOCKED on F-B6-09
+alone** — F-B6-08 verified fixed (Q6-44 + full-matrix Q6-47 green);
+the race-ordering defect is unchanged. No staging/prod apply. Evidence:
+`spark_b6_battery.sql` (Q6-01..Q6-47) + `run_spark_b6e.py` (R6-C1..C5),
+this directory. Prior verdicts preserved: freeze BLOCKED at `ed22ad03`,
+correction BLOCKED at `b6500999`, integrity BLOCKED at `4c045f51`.
 
-Canonical: `docs/operations/service-workflow/spark-probes/B6_SPARK_INDEPENDENT_VERDICT_3e387199.md`
-(git-show-pinned run). Q6-01–Q6-44 = 44/44; R6-C1–C4 = 4/4.
-`B6_3e387199_SPARK_RESULTS.md` was Cursor-authored and is superseded.
-F-B6-09: no such finding in evidence (likely mis-ID of F-B6-08 / B6-09).
+## Re-close-auth binding (3e387199)
 
----
+- New migration: `.../20261115171100_service_workflow_b6_f_b6_08_reclose_auth.sql`
+  (clean-apply PASS; B6/B6FIX/B6INT byte-identical to `9998f1a4`; all 18
+  pre-B6 files byte-identical to B5 acceptance `2a4042ad`).
+- Auth (resolver → admin/support pass, technician scope + explicit
+  idempotent denial, else 42501) now precedes the idempotent return.
+- Verified: Q6-44 PASS; Q6-47 full matrix PASS (support/admin/delegated
+  service-role succeed with zero mutation; owner, assigned + unrelated
+  tech, sales, anon, forged, unattributed service-role denied, no
+  payload, no mutation); Q6-41/42/43 green; R6-C1..C4 green.
+- Regressions: B5 40/40, B4 27+3 known/0 unexpected, B3 51/51,
+  B1/B2 72+4 DEFER. Vitest: closure 5/5 + ack 3/3 (no src changes).
+- Cursor B6-01..16 16/16 reproduced; Cursor's modified Spark-named copy
+  44/44 on a separate DB (their run, their file — see attribution).
 
-## Prior tip (preserved): `9998f1a4` — BLOCKED (F-B6-08 only)
+## F-B6-09 (BLOCKED, unchanged at 3e387199)
 
-See `docs/operations/service-workflow/spark-probes/B6_9998f1a4_SPARK_RESULTS.md`.
-Q6-01–Q6-43 = 43/43; R6-C1–C4 = 4/4; F-B6-06/07 cleared; residual
-F-B6-08 = idempotent re-close returns before role authorization.
-Does **not** cover `3e387199`.
+- Affected operation: `effective_acknowledgment` /
+  `effective_acknowledgment_disposition` winner selection when two
+  responses race (distinct txn-start timestamps).
+- Reproduction: barrier-synchronized accept-vs-refuse race (R6-C5).
+  Observed at `3e387199`: 1 of 3 rounds BAD (effective ≠ max-seq row);
+  at `9998f1a4`: 2 of 3 BAD. Concrete rows (standalone repro): refused
+  (.660413, seq 1) beat accepted (.620688, seq 2).
+- Expected: effective follows the defined serialized order (`event_seq`,
+  allocated under per-ticket advisory serialization). Observed: winner
+  follows txn-start `now()` because `responded_at` outranks `event_seq`.
+- Present at `3e387199`: YES — correction was F-B6-08-only; ORDER BY
+  untouched. Identifier is neither a mistake nor a duplicate.
+- Blocking: YES — violates the approved integrity requirement
+  (deterministic acknowledgment including concurrent competing
+  responses; seq must reflect the defined serialized order). The
+  effective response feeds closure gates; a race can settle the wrong
+  response. Fix: order by `event_seq` first, or stamp `responded_at`
+  at serialization time. Narrow, no redesign.
 
----
+## Authorship (B6_3e387199_SPARK_RESULTS.md is NOT Spark's)
 
-## Prior tip (preserved): CORRECTION `0b07aa8d` — BLOCKED F-B6-06/07
+- Spark did NOT execute or author that file or the "SHA-bound Spark
+  PASS" stamp message. It is Cursor supporting evidence, mislabeled.
+- Proof: it cites runner `run_spark_b6c.py` and "Q6-01–Q6-44", but
+  Spark's harness at `4c045f51` is Q6-01–Q6-46 + R6-C5 under
+  `run_spark_b6d.py`; its Q6-44 detail string matches neither Spark's
+  Q6-44 format. Cursor's Spark-named battery copy is Spark's work
+  minus Q6-45/Q6-46 plus a rewritten Q6-44 (184 differing lines).
+- This matrix status + Spark's review message are the only
+  independently authored SHA-bound verdict on `3e387199`. Neither
+  agent's files were overwritten.
 
-Status: CORRECTION `0b07aa8d00f88effd2b5775e23f097526923f6d3` (docs stamp
-`f72a0865`) EXECUTED. Verdict: **STILL BLOCKED** — all five F-B6-03/04/05
-+ UI-01/02 fixes verified, but the two integrity items are unresolved:
-F-B6-06 (tie ordering) + F-B6-07 (re-close side effects). No staging/prod
-apply. Evidence: `spark_b6_battery.sql` (Q6-01..Q6-43) + `run_spark_b6c.py`
-(R6-C1..C4), this directory. Freeze-era BLOCKED evidence preserved at
-commit `ed22ad03` (battery Q6-01..Q6-40 + `run_spark_b6.py`).
-Does **not** cover `9998f1a4`.
+## Integrity verdict (9998f1a4, preserved)
+
+Previous verdict was **STILL BLOCKED** on F-B6-08 + F-B6-09. F-B6-08 is
+fixed at `3e387199` (see above); F-B6-09 is unchanged (see above). All
+other prior fixes remain green.
+
+## Integrity correction binding (9998f1a4)
+
+- New migration: `.../20261115171000_service_workflow_b6_integrity_targeting.sql`
+  (clean-apply PASS; B6/B6FIX byte-identical to `0b07aa8d`; all 18
+  pre-B6 files byte-identical to B5 acceptance `2a4042ad`).
+- `event_seq` (sequence default, NOT NULL, backfilled) added to acks +
+  dispositions; effective getters order by (responded_at, event_seq, id);
+  prereqs return structured `entity_id` (revision/job/visit/ticket ids);
+  re-close/re-resolve return early with preserved timestamps, no audit.
+- UI uses `entity_id` only (no prose parsing, no head fallback;
+  missing → null → disabled). Stale ids fail safely server-side
+  (F-B6-03/refused guards).
+- Verified: Q6-41 10/10 ties (seq decides), Q6-42 closed_at kept + no
+  dup audits, Q6-43 closure-bomb rollback, Q6-45 entity_id exactness
+  (2-head + job), Q6-46 seq monotonic across rollback gaps, prior
+  Q6-11/13/17 green, races R6-C1..C4 green, Cursor B6-01..16 16/16
+  reproduced, Cursor-7 file 7/7 on a separate DB (see attribution).
+- Regressions: B5 40/40, B4 27+3 known/0 unexpected, B3 51/51,
+  B1/B2 72+4 DEFER. Vitest: closure 5/5 + ack 3/3; independent
+  entity_id probe 3/3 (rev-B via entity_id with no prose token;
+  missing → disabled/RPC never called; stale → server denial
+  surfaced; probe removed after run).
+
+## New findings (BLOCKED)
+
+- F-B6-08: idempotent re-close returns the full ticket row to unauthorized callers
+  BEFORE role checks (govern :298-301 precedes :313-329). Q6-44:
+  owner + unrelated-tech re-close SUCCEED (should be 42501). Fix: run
+  authorization before the idempotent return.
+- F-B6-09: concurrent competing acks resolve by txn-start `now()`,
+  not serialized seq order — `responded_at` outranks `event_seq`.
+  R6-C5 1/3 (eff≠max-seq twice). Concrete race: refused
+  (.660413, seq 1) beat accepted (.620688, seq 2) — the
+  serialization winner lost. Fix: order by `event_seq` first (it
+  reflects per-ticket advisory serialization), or stamp
+  `responded_at` at serialization time.
+
+## Attribution (reconcile, no overwrite)
+
+- Cursor's `scripts/service-workflow/spark_b6_battery.sql` (275 lines,
+  7 checks) + `run_spark_b6.py` (182 lines) are Cursor-authored and
+  must be relabeled as Cursor's targeted supporting suite — they are
+  NOT Spark's unchanged Q6-01..Q6-46 battery (1171 lines @ `b6500999`
+  + extensions here). Same filename + `spk6_eval` table + overlapping
+  Q6-11/13/17 IDs: "Spark harness 7/7" is not equivalent to the
+  independent battery. Executed separately above (7/7 green) without
+  touching Spark's evidence. Neither agent's files were overwritten.
+- `9998f1a4` message says "docs" but carries the full runtime
+  correction — mislabeled; tested SHA is as directed. Docs tip
+  `ed6627c5` is docs-only on top.
+
+## Correction verdict (0b07aa8d, preserved)
+
+Previous verdict was **STILL BLOCKED** on F-B6-06 (tie ordering) +
+F-B6-07 (re-close side effects). F-B6-07 is fixed at `9998f1a4`;
+F-B6-06 is fixed for ties but superseded by F-B6-09 for races (see
+above). All five F-B6-03/04/05 + UI-01/02 fixes remain green.
 
 ## Correction binding (0b07aa8d)
 

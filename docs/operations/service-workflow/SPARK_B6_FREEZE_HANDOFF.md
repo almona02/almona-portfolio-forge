@@ -1,15 +1,16 @@
 # Spark — B6 freeze handoff (no staging apply)
 
-**F-B6-08 correction tip:** `3e387199dcca327a218e8371e24ee69310e55bf4` — migration `…171100`  
-**Spark independent verdict:** **PASS** — `spark-probes/B6_SPARK_INDEPENDENT_VERDICT_3e387199.md`  
-**Cursor supporting only:** `spark-probes/B6_3e387199_CURSOR_SUPPORTING.md` (also: former `B6_3e387199_SPARK_RESULTS.md` was Cursor-authored; superseded)  
-**Prior integrity tip (F-B6-08 FAIL evidence preserved):** `9998f1a48f1b18b467bc1e4d3552ced5e32325a4` — `spark-probes/B6_9998f1a4_SPARK_RESULTS.md`  
-**Docs stamp:** `585b0281f79dce3cc23d737556444e950646169f`  
-**Harness sync tip:** `d360ed23192579d309ad31ced1ed8c5fcc570962`  
-**Correction tip (historical):** `0b07aa8d00f88effd2b5775e23f097526923f6d3` — F-B6-03/04/05 + UI-01/02; BLOCKED F-B6-06/07  
+**Supervisor disposition:** B6 **BLOCKED on F-B6-09** at `3e387199` (ordering); F-B6-08 closed there.  
+**F-B6-09 correction tip (under Spark re-verify):** see HEAD after `…171200` lands  
+**Prior re-close-auth tip:** `3e387199dcca327a218e8371e24ee69310e55bf4` — `…171100`  
+**Spark harness (F-B6-09 evidence):** `ebdb5eb27dd9f2b66de5aed46c431b586dead113` — Q6-01–Q6-47 + `run_spark_b6e.py` R6-C5; worktree `C:\projects\almona-spark-probes`  
+**Misattributed Cursor “Spark PASS”:** `spark-probes/B6_SPARK_INDEPENDENT_VERDICT_3e387199.md` — **withdrawn**; Cursor supporting only; “F-B6-09 does not exist” withdrawn  
+**Prior integrity tip:** `9998f1a48f1b18b467bc1e4d3552ced5e32325a4` — F-B6-08 FAIL + F-B6-09 present  
+**Correction tip (historical):** `0b07aa8d00f88effd2b5775e23f097526923f6d3` — F-B6-03/04/05 + UI-01/02  
 **Depends on:** B5 accepted `2a4042ad44d9234739f514720c3d413ea0ca42e8`  
-**BLOCKED baseline (preserved):** `ec00b692af10629ed5ee506bbb35762ea5ea00a8` — `spark-probes/B6_BLOCKED_ec00b692_EVIDENCE.md`  
-**Gates:** #155 frozen · #156 draft · **no staging apply** · no merge · no production · no B7
+**BLOCKED baseline (preserved):** `ec00b692af10629ed5ee506bbb35762ea5ea00a8`  
+**Gates:** #155 frozen · #156 draft · **no staging apply** · no merge · no production · no B7  
+**Cursor does not issue Spark independent verdicts.**
 
 ## Ask
 
@@ -61,7 +62,9 @@ Cursor’s prior “7/7” claim is the targeted supporting suite only.
 | Cursor supporting | `cursor_b6_targeted_battery.sql` + `run_cursor_b6_targeted.py` |
 | UI | `CustomerReportAcknowledgmentPanel`, `TicketWorkflowClosurePanel` (wired on `TicketDetailPage`) |
 | Vitest | `CustomerReportAcknowledgmentPanel.b6.test.tsx`, `TicketWorkflowClosurePanel.b6.test.tsx` |
-| Migrations | `…160000` B6 · `…170000` F-B6-03/05 · `…171000` integrity · `…171100` F-B6-08 auth-before-reclose |
+| Migrations | `…160000` B6 · `…170000` F-B6-03/05 · `…171000` integrity · `…171100` F-B6-08 · `…171200` F-B6-09 event_seq order |
+| Spark runner (current) | `scripts/service-workflow/run_spark_b6e.py` (R6-C5) — do not reduce |
+| Cursor F-B6-09 supporting | `scripts/service-workflow/run_cursor_b6_f09_supporting.py` |
 
 ## Explicit non-actions
 

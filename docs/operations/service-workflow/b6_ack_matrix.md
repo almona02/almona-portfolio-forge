@@ -1,10 +1,12 @@
 # B6 acknowledgment / closure — permission & evidence matrix (Cursor docs)
 
 Cursor supporting notes only. Spark’s independent matrix/verdicts live in
-`scripts/service-workflow/b6_ack_matrix.md` and are preserved separately.
+`scripts/service-workflow/b6_ack_matrix.md` @ `ebdb5eb2` / worktree
+`C:\projects\almona-spark-probes` and are preserved separately.
 
-**Runtime freeze under Spark re-verify:** `9998f1a48f1b18b467bc1e4d3552ced5e32325a4`  
-**BLOCKED baseline (preserved; does not cover 9998f1a4):** `ec00b692af10629ed5ee506bbb35762ea5ea00a8` — `spark-probes/B6_BLOCKED_ec00b692_RESULTS.json`  
+**Supervisor:** B6 BLOCKED on **F-B6-09** at `3e387199` (txn-start timestamps
+outranked `event_seq`). Correction: `…171200` makes `event_seq` authoritative.
+**F-B6-08** closed at `3e387199`; does not resolve F-B6-09.
 **No staging apply / merge / production / B7**
 
 ## Actor × action
@@ -33,8 +35,8 @@ Cursor supporting notes only. Spark’s independent matrix/verdicts live in
 
 | Concern | Rule |
 |---------|------|
-| Timestamp ties | `ORDER BY responded_at DESC, event_seq DESC, id DESC` |
-| Re-close | Preserve original `closed_at`; no duplicate `workflow_resolve_close` audit |
+| Effective order (F-B6-09) | `ORDER BY event_seq DESC, id DESC` — timestamps are display/chronology only |
+| Re-close | Preserve original `closed_at`; no duplicate `workflow_resolve_close` audit; auth before idempotent return (F-B6-08) |
 | Closure atomicity | Injected audit failure on close rolls back ticket status |
 
 ## Sales-role owner
