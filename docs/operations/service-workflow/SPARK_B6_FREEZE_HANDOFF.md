@@ -1,7 +1,8 @@
 # Spark — B6 freeze handoff (no staging apply)
 
 **Supervisor disposition:** B6 **BLOCKED on F-B6-09** at `3e387199` (ordering); F-B6-08 closed there.  
-**F-B6-09 correction tip (under Spark re-verify):** see HEAD after `…171200` lands  
+**F-B6-09 correction tip (under Spark re-verify):** `da2132b6f2ae6f75eed1187b7fad51ce3dbe97eb` — `…171200`  
+**Cursor supporting (not Spark):** `spark-probes/B6_da2132b6_CURSOR_SUPPORTING.md` — R6-C5 3/3 + Q6-47 green locally  
 **Prior re-close-auth tip:** `3e387199dcca327a218e8371e24ee69310e55bf4` — `…171100`  
 **Spark harness (F-B6-09 evidence):** `ebdb5eb27dd9f2b66de5aed46c431b586dead113` — Q6-01–Q6-47 + `run_spark_b6e.py` R6-C5; worktree `C:\projects\almona-spark-probes`  
 **Misattributed Cursor “Spark PASS”:** `spark-probes/B6_SPARK_INDEPENDENT_VERDICT_3e387199.md` — **withdrawn**; Cursor supporting only; “F-B6-09 does not exist” withdrawn  
