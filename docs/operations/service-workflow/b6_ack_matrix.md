@@ -1,8 +1,11 @@
-# B6 acknowledgment / closure — permission & evidence matrix
+# B6 acknowledgment / closure — permission & evidence matrix (Cursor docs)
 
-**Correction tip under review:** see `B6_F_B6_03_05_CORRECTION.md` / integrity migration  
-**BLOCKED baseline (preserved):** freeze `ec00b692af10629ed5ee506bbb35762ea5ea00a8` — evidence in `spark-probes/B6_BLOCKED_ec00b692_RESULTS.json`  
-**Runtime:** frozen (no staging apply / merge / production / B7)
+Cursor supporting notes only. Spark’s independent matrix/verdicts live in
+`scripts/service-workflow/b6_ack_matrix.md` and are preserved separately.
+
+**Runtime freeze under Spark re-verify:** `9998f1a48f1b18b467bc1e4d3552ced5e32325a4`  
+**BLOCKED baseline (preserved; does not cover 9998f1a4):** `ec00b692af10629ed5ee506bbb35762ea5ea00a8` — `spark-probes/B6_BLOCKED_ec00b692_RESULTS.json`  
+**No staging apply / merge / production / B7**
 
 ## Actor × action
 

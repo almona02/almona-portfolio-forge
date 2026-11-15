@@ -1,15 +1,28 @@
 # Spark — B6 freeze handoff (no staging apply)
 
-**Freeze tip:** `ec00b692af10629ed5ee506bbb35762ea5ea00a8`  
-**Correction tip:** `0b07aa8d00f88effd2b5775e23f097526923f6d3` — F-B6-03/04/05 + UI-01/02; see `B6_F_B6_03_05_CORRECTION.md`  
-**Integrity tip:** `9998f1a48f1b18b467bc1e4d3552ced5e32325a4` — structured `entity_id`, `event_seq` ties, re-close `closed_at`, closure audit bomb  
+**Runtime freeze (Spark verified):** `9998f1a48f1b18b467bc1e4d3552ced5e32325a4`  
+**Spark verdict on freeze:** **BLOCKED — F-B6-08 only** — evidence `spark-probes/B6_9998f1a4_SPARK_RESULTS.md`  
+**Docs tip (pre-harness-sync):** `ed6627c53fd90f32ef8531522ca53f224effb45c`  
+**Correction tip (historical):** `0b07aa8d00f88effd2b5775e23f097526923f6d3` — F-B6-03/04/05 + UI-01/02; BLOCKED F-B6-06/07 (does not cover `9998f1a4`)  
 **Depends on:** B5 accepted `2a4042ad44d9234739f514720c3d413ea0ca42e8`  
-**BLOCKED baseline (preserved):** `ec00b692af10629ed5ee506bbb35762ea5ea00a8` — `spark-probes/B6_BLOCKED_ec00b692_EVIDENCE.md`  
+**BLOCKED baseline (preserved, does not cover 9998f1a4):** `ec00b692af10629ed5ee506bbb35762ea5ea00a8` — `spark-probes/B6_BLOCKED_ec00b692_EVIDENCE.md`  
 **Gates:** #155 frozen · #156 draft · **no staging apply** · no merge · no production · no B7
 
 ## Ask
 
-Independent review of B6 acknowledgment and closure gate only. Do **not** apply the B6 migration to staging. Disposable/local verification is sufficient for this freeze.
+Independent Spark verdict on runtime freeze `9998f1a4` only. Do **not** apply B6 to staging. Disposable/local verification is sufficient. Preserve prior BLOCKED verdicts as historical evidence; they do not cover this tip.
+
+## Harness attribution (do not conflate)
+
+| Suite | Path | Owner | Scope |
+|-------|------|-------|-------|
+| Spark independent Q6-01–Q6-43 | `scripts/service-workflow/spark_b6_battery.sql` + `run_spark_b6c.py` (+ `run_spark_b6.py`) | Spark | Full battery restored from `b6500999`; concurrency R6-C1..C4 |
+| Spark matrix (historical) | `scripts/service-workflow/b6_ack_matrix.md` | Spark | Verdicts on freeze/`0b07aa8d`; preserve separately |
+| Cursor targeted supporting | `scripts/service-workflow/cursor_b6_targeted_battery.sql` + `run_cursor_b6_targeted.py` | Cursor | Short 7-check smoke only — **not** equivalent to Q6-01–Q6-43 |
+| Cursor docs matrix | `docs/operations/service-workflow/b6_ack_matrix.md` | Cursor | Supporting contract notes |
+| Cursor disposable | `scripts/service-workflow/disposable_b6_battery.sql` | Cursor | Supporting |
+
+Cursor’s prior “7/7” claim is the targeted supporting suite only.
 
 ## Scope checklist
 
@@ -24,6 +37,14 @@ Independent review of B6 acknowledgment and closure gate only. Do **not** apply 
 9. Concurrency-safe/atomic ack, disposition, resolve/close + audit where one operation.
 10. Customer acknowledgment UI + manager prerequisite/closure UI.
 
+## Integrity focus for `9998f1a4` (Spark)
+
+1. **Q6-41:** deterministic effective acknowledgment under tied timestamps, including concurrent competing responses and rollback. `event_seq` must reflect a defined serialized order; a sequence alone must not be assumed to prove commit order (same-ticket writers take `pg_advisory_xact_lock` before insert).
+2. **Q6-42:** authorized re-close preserves `closed_at` and emits no duplicate workflow/governance audit. Authorization must still run before an idempotent return.
+3. **Q6-43:** actual closure audit-failure rollback remains intact.
+4. Structured `entity_id` targets the correct outstanding/refused revision; missing or stale targets fail safely.
+5. Previously accepted five corrections and relevant regression/concurrency checks remain green.
+
 ## Artifacts
 
 | Kind | Path |
@@ -33,23 +54,12 @@ Independent review of B6 acknowledgment and closure gate only. Do **not** apply 
 | Contact policy | `docs/operations/service-workflow/B6_ACKNOWLEDGMENT_CONTACT_POLICY.md` |
 | Migration | `supabase/migrations/20261115160000_service_workflow_b6_acknowledgment_closure.sql` |
 | Disposable | `scripts/service-workflow/disposable_b6_battery.sql` + `run_disposable_b6.py` |
-| Spark harness | `scripts/service-workflow/spark_b6_battery.sql` + `run_spark_b6.py` + `b6_ack_matrix.md` |
+| Spark harness | `spark_b6_battery.sql` + `run_spark_b6c.py` + `b6_ack_matrix.md` (under `scripts/service-workflow/`) |
+| Cursor supporting | `cursor_b6_targeted_battery.sql` + `run_cursor_b6_targeted.py` |
 | UI | `CustomerReportAcknowledgmentPanel`, `TicketWorkflowClosurePanel` (wired on `TicketDetailPage`) |
 | Vitest | `CustomerReportAcknowledgmentPanel.b6.test.tsx`, `TicketWorkflowClosurePanel.b6.test.tsx` |
 | Migrations | `…160000` B6 · `…170000` F-B6-03/05 · `…171000` integrity/targeting |
 
-## Policy reminders for reviewers
-
-- Ack attaches to the issued revision; new corrections do not inherit prior acceptance.
-- Late ack after unavailable/closure appends history without auto-reopening.
-- Ack/closure do not clear safety restrictions or imply return-to-service.
-- Sales-role-owner: RPC ownership-based; UI customer-role-only fail-closed — see matrix.
-
-## Local proof (access-holder)
-
-- Disposable B6 battery: 9/9 PASS (`.artifacts/slice0/service-workflow/disposable_b6_results.json`)
-- Vitest: `CustomerReportAcknowledgmentPanel.b6.test.tsx` + `TicketWorkflowClosurePanel.b6.test.tsx` (+ B5 route/view regression) PASS
-
 ## Explicit non-actions
 
-No staging apply · no preview redeploy for B6 · no production · no merge · no auto-closure · no closed-ticket reopening · no contract scheduling · no routine-editor.
+No staging apply · no preview redeploy for B6 · no production · no merge · no auto-closure · no closed-ticket reopening · no contract scheduling · no routine-editor · no B7.
