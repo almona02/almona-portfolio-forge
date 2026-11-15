@@ -1,9 +1,11 @@
 # Spark — independent FR-1 release-candidate review
 
 **Branch:** `release/fr1-slice0-share-privacy`  
+**Candidate HEAD:** `9805c9c5` (draft PR https://github.com/almona02/almona-portfolio-forge/pull/158)  
 **Base:** `ca9f5067` (#155 frozen)  
 **Do not merge. Do not apply to production. Do not change deployment settings.**  
-**Staging tip / B7 evidence:** leave `feat/service-workflow-b1-planning` intact.
+**Staging tip / B7 evidence:** leave `feat/service-workflow-b1-planning` intact (`1cd5e094`).  
+**Local disposable (Cursor):** 14 PASS / 0 FAIL on `9805c9c5` — Spark must re-run independently.
 
 ## Mission
 
