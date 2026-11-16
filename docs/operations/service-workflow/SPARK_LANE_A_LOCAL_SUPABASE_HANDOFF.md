@@ -4,8 +4,9 @@
 |-------|-------|
 | **Accepted runtime (hold)** | `e1345a0aef857e857fe5af50176c1fcb633aae70` — **hold while Spark reviews**; no runtime edits |
 | **Contract** | `1350b749ffd999ef3206c9733f0bcfb47b483ce2` |
-| **Frontend correction (review)** | `ad9570bc22b30d649b9223a3b74fe2f836adb143` — login-return path; on `origin/feat/service-routines-authoring` |
-| **Packet commit (frontend binding)** | `af1883cecd388a18ad7d7a39e9a2a7910ffc9c7a` — binds frontend tip above; migration blob unchanged vs `e1345a0a` |
+| **Frontend (accepted nav correction)** | `ad9570bc22b30d649b9223a3b74fe2f836adb143` — Spark auth-routing **26/26**, nav browser **9/9** |
+| **Nav evidence (in-repo)** | [`spark-probes/SPARK_LANE_A_NAV_ad9570bc.md`](./spark-probes/SPARK_LANE_A_NAV_ad9570bc.md) + sanitized runner `scripts/service-workflow/coldload_navcheck_ad9570bc.py` |
+| **Local bootstrap issues** | [`LANE_A_LOCAL_BOOTSTRAP_ISSUES.md`](./LANE_A_LOCAL_BOOTSTRAP_ISSUES.md) (locale-copy is local-dev only; staging build unaffected) |
 | **Project id** | `almona-lane-a-local` (separate from default `almona-portfolio-forge` and FR-1 recovery) |
 | **Outbound** | Disabled (no Twilio/OAuth/analytics/vector/OpenAI; Mailpit local only) |
 | **Bind** | Loopback only (`127.0.0.1`) |
@@ -102,23 +103,23 @@ Pushed as-authored (Spark QA &lt;sparksubagent@almona.invalid&gt;); historical e
 
 Results JSON (on those branches): `docs/operations/service-workflow/spark-probes/SPARK_LANE_A_RESULTS_*.json`
 
-## Spark review hold — frontend correction `ad9570bc`
+## Release binding (Spark-accepted navigation)
 
 | Item | Full SHA / note |
 |------|-----------------|
-| Frontend correction under review | `ad9570bc22b30d649b9223a3b74fe2f836adb143` |
-| Remote reachability | Present on `origin/feat/service-routines-authoring` (ancestor of branch tip) |
-| Packet commit binding that frontend | `af1883cecd388a18ad7d7a39e9a2a7910ffc9c7a` (`docs(service): bind Lane A staging packet frontend to ad9570bc`) |
-| Migration at frontend tip | blob `3ca6fb4165cd92c38fe18274d7869123fd834e45` · SHA-256 `62255ac2329864f11aa19bf66eb72ff5a491935c8fd586820ea3c0cb9ccbbc1b` · **38958** bytes — identical to accepted baseline `e1345a0a` |
-| Runtime hold | Stay on accepted baseline `e1345a0aef857e857fe5af50176c1fcb633aae70` for Lane A SQL/runtime; do not move acceptance to `ad9570bc` until Spark closes review |
+| Lane A database implementation | `e1345a0aef857e857fe5af50176c1fcb633aae70` |
+| Frontend (accepted navigation correction) | `ad9570bc22b30d649b9223a3b74fe2f836adb143` |
+| Auth-routing tests | Spark **26/26** |
+| Navigation browser checks | Spark **9/9** |
+| Migration at frontend tip | blob `3ca6fb4165cd92c38fe18274d7869123fd834e45` · SHA-256 `62255ac2…` · **38958** bytes (`git cat-file -s`) — identical to `e1345a0a` |
 
 ```bash
 git fetch origin feat/service-routines-authoring
 git cat-file -t ad9570bc22b30d649b9223a3b74fe2f836adb143   # expect: commit
-git merge-base --is-ancestor ad9570bc22b30d649b9223a3b74fe2f836adb143 origin/feat/service-routines-authoring && echo reachable
-git show af1883cecd388a18ad7d7a39e9a2a7910ffc9c7a:docs/operations/service-workflow/LANE_A_STAGING_DEPLOYMENT_PACKET.md | head -20
+git cat-file -s e1345a0a:supabase/migrations/20261116180000_service_routines_lane_a_authoring.sql  # expect: 38958
+git show HEAD:docs/operations/service-workflow/LANE_A_STAGING_DEPLOYMENT_PACKET.md | sed -n '11p'
 ```
 
 ## Out of scope
 
-No staging/prod apply · no merge · no FR-1 recovery changes · runtime held at `e1345a0a` while Spark reviews `ad9570bc` / packet `af1883ce`.
+No staging/prod apply · no merge · no FR-1 recovery changes. Database baseline remains `e1345a0a`; frontend binds at `ad9570bc`.

@@ -40,6 +40,8 @@ htmlcov/
 !docs/ci/typecheck-app-baseline.json
 !docs/ci/typecheck-app-baseline.win32.json
 !docs/ci/typecheck-app-baseline.linux.json
+!docs/operations/service-workflow/spark-probes/
+!docs/operations/service-workflow/spark-probes/**
 !vertical_almona/manifest.json
 !vertical_tmg_shield/manifest.json
 !docs/ci/README.md

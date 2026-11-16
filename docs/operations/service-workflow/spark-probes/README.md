@@ -1,5 +1,13 @@
 # Sanitized Spark probes
 
+## Lane A navigation (`ad9570bc`)
+
+| Artifact | Purpose |
+|----------|---------|
+| `SPARK_LANE_A_NAV_ad9570bc.md` | Spark attribution + 9/9 browser / 26/26 auth-routing |
+| `SPARK_LANE_A_NAV_RESULTS_ad9570bc.json` | Sanitized results |
+| `scripts/service-workflow/coldload_navcheck_ad9570bc.py` | Sanitized runner (env-only passwords; not %TEMP%-only) |
+
 ## B4
 
 See `B4_README.md` and `B4_*` artifacts. Final tip verdict: `../B4_INDEPENDENT_VERIFICATION_VERDICT_6a64a01e.md`. Historical e203 erroneous PASS / Spark F-B4-05 BLOCKED: `../B4_INDEPENDENT_VERIFICATION_VERDICT_e203b438.md`.

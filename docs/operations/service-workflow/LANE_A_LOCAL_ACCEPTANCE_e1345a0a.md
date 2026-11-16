@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Accepted runtime** | `e1345a0aef857e857fe5af50176c1fcb633aae70` (**hold** while Spark reviews frontend `ad9570bc`) |
+| **Lane A database implementation** | `e1345a0aef857e857fe5af50176c1fcb633aae70` |
+| **Frontend (accepted navigation correction)** | `ad9570bc22b30d649b9223a3b74fe2f836adb143` |
+| **Auth-routing / nav (Spark)** | **26/26** Vitest · **9/9** browser — [`spark-probes/SPARK_LANE_A_NAV_ad9570bc.md`](./spark-probes/SPARK_LANE_A_NAV_ad9570bc.md) |
 | **Contract** | `1350b749ffd999ef3206c9733f0bcfb47b483ce2` |
 | **Freeze base** | `5e53ee009507b29de707be0f1eebd0252c34c9c9` |
-| **Frontend correction (under Spark review)** | `ad9570bc22b30d649b9223a3b74fe2f836adb143` |
-| **Packet commit (binds that frontend)** | `af1883cecd388a18ad7d7a39e9a2a7910ffc9c7a` |
 | **Local Auth/API env tip** | `2bb3681549088dc2218c5deede287b4b408df883` (docs/bootstrap only) |
 | **FR-1 / production** | Untouched |
 | **Staging apply** | **Not authorized** — packet only |

@@ -3,16 +3,18 @@
 | Field | Value |
 |-------|-------|
 | **Status** | Packet only · **no apply · no merge · no production · FR-1 preserved** |
-| **Accepted Lane A baseline (runtime / migration)** | `e1345a0aef857e857fe5af50176c1fcb633aae70` |
-| **Frontend binding** | `ad9570bc22b30d649b9223a3b74fe2f836adb143` — login-return path fix (`safeReturnPath`); Vitest 18/18 on auth return-path suite; migration blob identical to `e1345a0a` |
+| **Lane A database implementation** | `e1345a0aef857e857fe5af50176c1fcb633aae70` |
+| **Frontend (accepted navigation correction)** | `ad9570bc22b30d649b9223a3b74fe2f836adb143` |
+| **Auth-routing tests** | Spark **26/26** |
+| **Navigation browser checks** | Spark **9/9** — [`spark-probes/SPARK_LANE_A_NAV_ad9570bc.md`](./spark-probes/SPARK_LANE_A_NAV_ad9570bc.md) |
 | **Migration path** | `supabase/migrations/20261116180000_service_routines_lane_a_authoring.sql` |
 | **Git blob (e1345a0a)** | `3ca6fb4165cd92c38fe18274d7869123fd834e45` |
 | **SHA-256 of blob bytes** (`git show e1345a0a:… \| openssl dgst -sha256`) | `62255ac2329864f11aa19bf66eb72ff5a491935c8fd586820ea3c0cb9ccbbc1b` |
-| **Byte length** | 38958 (git blob object size; working-tree CRLF may differ on Windows) |
+| **Byte length** | 38958 (`git cat-file -s` of that blob). Earlier **39952** came from PowerShell text-pipe newline conversion (LF→CRLF: 38958 + 994 newlines). |
 | **Target DB (prior B-series)** | Supabase staging `apnmoevmvihfzcnttctx` (`almona02-staging`) — confirm identity before any future apply |
 | **Authorization** | Explicit operator approval required before apply |
 
-**Binding rule:** Migration / SQL apply stays pinned to baseline `e1345a0a`. Preview UI for tab deep-links may use the frontend correction tip once recorded below; do not rewrite or replace the Lane A acceptance baseline.
+**Binding rule:** Database / SQL apply stays pinned to `e1345a0a`. Frontend preview binds to `ad9570bc` (navigation correction). Migration blob at `ad9570bc` is identical to `e1345a0a`. Do not rewrite the Lane A database acceptance baseline. Local bootstrap/locale issues: [`LANE_A_LOCAL_BOOTSTRAP_ISSUES.md`](./LANE_A_LOCAL_BOOTSTRAP_ISSUES.md).
 
 ## 1. Prerequisites (staging)
 

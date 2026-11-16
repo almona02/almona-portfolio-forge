@@ -1,0 +1,38 @@
+{
+  "label": "Spark independent",
+  "author": "Spark QA <sparksubagent@almona.invalid>",
+  "suite": "Lane A navigation cold-load browser checks",
+  "frontend_sha": "ad9570bc22b30d649b9223a3b74fe2f836adb143",
+  "database_baseline_sha": "e1345a0aef857e857fe5af50176c1fcb633aae70",
+  "runner": "scripts/service-workflow/coldload_navcheck_ad9570bc.py",
+  "source_note": "Sanitized copy of Spark runner originally under %TEMP%/coldload_navcheck_ad9570bc.py; password defaults stripped (env-only).",
+  "env": "isolated local Lane A (127.0.0.1:3000 app, 54421 API); no staging/prod",
+  "counts": {
+    "PASS": 9,
+    "FAIL": 0,
+    "TOTAL": 9
+  },
+  "checks": [
+    { "check_id": "NAV-01", "name": "admin deep link bounces to /login pre-auth", "status": "PASS" },
+    { "check_id": "NAV-02", "name": "admin lands on /admin?tab=service-routines", "status": "PASS" },
+    { "check_id": "NAV-03", "name": "admin Service Routines panel visible", "status": "PASS" },
+    { "check_id": "NAV-04", "name": "admin query preserved with hash link", "status": "PASS" },
+    { "check_id": "NAV-05", "name": "admin hash preserved with hash link", "status": "PASS" },
+    { "check_id": "NAV-06", "name": "support lands on /support/routines", "status": "PASS" },
+    { "check_id": "NAV-07", "name": "support review page visible", "status": "PASS" },
+    { "check_id": "NAV-08", "name": "support login from /admin deep link bounces to /", "status": "PASS" },
+    { "check_id": "NAV-09", "name": "technician bounced away from /support/routines", "status": "PASS" }
+  ],
+  "auth_routing_vitest": {
+    "label": "Spark independent",
+    "counts": { "PASS": 26, "FAIL": 0, "TOTAL": 26 },
+    "files": [
+      "src/lib/auth/safeReturnPath.test.ts",
+      "src/components/auth/loginReturnPath.test.tsx",
+      "src/components/auth/ProtectedRoute.test.tsx",
+      "src/lib/roleRouting.test.ts",
+      "src/pages/SupportRoutineReviewPage.route.test.tsx",
+      "src/tests/security/studioProtectedRoute.test.tsx"
+    ]
+  }
+}
