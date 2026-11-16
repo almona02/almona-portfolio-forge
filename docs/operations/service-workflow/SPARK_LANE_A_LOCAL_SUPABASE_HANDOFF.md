@@ -21,11 +21,34 @@ mkdir -p public/locales && cp -R locales/. public/locales/
 npm run dev -- --host 127.0.0.1 --port 3000
 ```
 
-Stop:
+### Stop / retire local sessions (after evidence preserved)
 
 ```bash
+# Frontend
+# stop Vite on 3000 (taskkill / Ctrl+C)
+
+# Isolated Lane A Supabase (Auth/API/Storage)
 supabase stop --workdir scripts/service-workflow/lane-a-supabase
+
+# Optional disposable Postgres-only compose (55458)
+docker compose -f scripts/service-workflow/docker-compose.lane-a-local.yml down
+
+# Do NOT stop default almona-portfolio-forge (54321) if used for FR-1 recovery
+# Shred local fixture file when done with browser work:
+#   shred/overwrite .artifacts/lane-a-local/FIXTURES_ACCESS.txt (gitignored)
 ```
+
+### Restart isolated environment
+
+```bash
+git checkout e1345a0aef857e857fe5af50176c1fcb633aae70   # or branch containing handoff docs
+bash scripts/service-workflow/bootstrap_lane_a_supabase.sh
+cp .artifacts/lane-a-local/.env.lane-a.local .env
+mkdir -p public/locales && cp -R locales/. public/locales/
+npm run dev -- --host 127.0.0.1 --port 3000
+```
+
+Fixture passwords: see regenerated `.artifacts/lane-a-local/FIXTURES_ACCESS.txt` (not committed).
 
 ## Ports
 
