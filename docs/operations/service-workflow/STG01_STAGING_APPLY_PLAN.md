@@ -1,6 +1,6 @@
 # STG-01 corrective staging apply plan (Spark review — apply held)
 
-**Status:** Implementation frozen; Spark correction review **PASS**; **session clearance COMPLETE** (2026-11-16T20:58:11Z). **Staging schema apply still HELD** pending explicit bounded-apply authorization.  
+**Status:** **APPLIED** on staging `apnmoevmvihfzcnttctx` (live stamp `20261116210024` / `service_routines_lane_a_stg01_stale_conflict`). See [`LANE_A_STG01_STAGING_APPLY_RECORD.md`](./LANE_A_STG01_STAGING_APPLY_RECORD.md). Spark targeted re-verify pending.  
 **Do not** reapply `20261116180000_service_routines_lane_a_authoring`.  
 **Do not** apply to production. No merge / FR-1 in this plan.
 
