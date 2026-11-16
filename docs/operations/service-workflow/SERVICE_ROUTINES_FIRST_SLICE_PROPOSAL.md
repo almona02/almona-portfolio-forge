@@ -1,6 +1,6 @@
 # Service routines — first-slice product proposal (no implementation)
 
-**Status:** Proposal only · **do not implement yet**  
+**Status:** Proposal retained · Lane A **authoring contract** → [`SERVICE_ROUTINES_AUTHORING_IMPLEMENTATION_CONTRACT.md`](./SERVICE_ROUTINES_AUTHORING_IMPLEMENTATION_CONTRACT.md) (Spark before runtime) · Lane B/C still deferred  
 **Depends on:** Staging-closed core service program; B3/B4 **approved configurable-routines addendum**  
 **Addendum sources (reuse, do not reopen):**  
 [`B3_VISIT_CONTRACT.md`](./B3_VISIT_CONTRACT.md) § Configurable routine extension · [`B4_REPORT_CONTRACT.md`](./B4_REPORT_CONTRACT.md) § Configurable routines (integration only)
