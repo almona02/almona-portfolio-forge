@@ -1,18 +1,20 @@
-# Lane A — bounded staging deployment packet (DO NOT APPLY YET)
+# Lane A — bounded staging deployment packet
 
 | Field | Value |
 |-------|-------|
-| **Status** | Packet only · **no apply · no merge · no production · FR-1 preserved** |
+| **Status** | **Staging applied** · awaiting Spark verdict · **no production / merge / FR-1** |
+| **This packet documentation SHA** | `45614cfbe71e76c4ca2fc11863e30276bcad4f5a` (Spark reviewed `04194559`; delta docs/evidence-only — see apply record) |
 | **Lane A database implementation** | `e1345a0aef857e857fe5af50176c1fcb633aae70` |
 | **Frontend (accepted navigation correction)** | `ad9570bc22b30d649b9223a3b74fe2f836adb143` |
 | **Auth-routing tests** | Spark **26/26** |
 | **Navigation browser checks** | Spark **9/9** — [`spark-probes/SPARK_LANE_A_NAV_ad9570bc.md`](./spark-probes/SPARK_LANE_A_NAV_ad9570bc.md) |
 | **Migration path** | `supabase/migrations/20261116180000_service_routines_lane_a_authoring.sql` |
 | **Git blob (e1345a0a)** | `3ca6fb4165cd92c38fe18274d7869123fd834e45` |
-| **SHA-256 of blob bytes** (`git show e1345a0a:… \| openssl dgst -sha256`) | `62255ac2329864f11aa19bf66eb72ff5a491935c8fd586820ea3c0cb9ccbbc1b` |
+| **SHA-256 of blob bytes** | `62255ac2329864f11aa19bf66eb72ff5a491935c8fd586820ea3c0cb9ccbbc1b` — verify with `git cat-file blob 3ca6fb4165cd92c38fe18274d7869123fd834e45 \| openssl dgst -sha256` (binary pipe). **Do not** use PowerShell text piping (`git show … \| …`) — that LF→CRLF path inflated the count to **39952**. |
 | **Byte length** | 38958 (`git cat-file -s` of that blob). Earlier **39952** came from PowerShell text-pipe newline conversion (LF→CRLF: 38958 + 994 newlines). |
-| **Target DB (prior B-series)** | Supabase staging `apnmoevmvihfzcnttctx` (`almona02-staging`) — confirm identity before any future apply |
-| **Authorization** | Explicit operator approval required before apply |
+| **Target DB** | Supabase staging `apnmoevmvihfzcnttctx` (`almona02-staging`) |
+| **Live migration stamp** | `20261116192555` / `service_routines_lane_a_authoring` |
+| **Apply record** | [`LANE_A_STAGING_APPLY_RECORD.md`](./LANE_A_STAGING_APPLY_RECORD.md) |
 
 **Binding rule:** Database / SQL apply stays pinned to `e1345a0a`. Frontend preview binds to `ad9570bc` (navigation correction). Migration blob at `ad9570bc` is identical to `e1345a0a`. Do not rewrite the Lane A database acceptance baseline. Local bootstrap/locale issues: [`LANE_A_LOCAL_BOOTSTRAP_ISSUES.md`](./LANE_A_LOCAL_BOOTSTRAP_ISSUES.md).
 
@@ -64,20 +66,9 @@ ORDER BY 1,2,3;
 **Go criteria:** helpers true; `routines_table` null; no unexpected anon grants on future names.  
 **No-go:** missing helpers; Lane A already partially applied; wrong project.
 
-## 3. Exact apply (future — not now)
+## 3. Exact apply (executed)
 
-```bash
-# After written authorization only:
-git checkout e1345a0aef857e857fe5af50176c1fcb633aae70
-# Verify blob
-git rev-parse HEAD:supabase/migrations/20261116180000_service_routines_lane_a_authoring.sql
-# Expect: 3ca6fb4165cd92c38fe18274d7869123fd834e45
-
-# Apply via approved staging channel (Supabase MCP/CLI/SQL editor) using THAT file only.
-# Record schema_migrations version stamp returned by host.
-```
-
-Post-apply stamp the apply record with: operator, timestamp, project ref, migration version, blob SHA-256.
+Applied on staging under authorization of this packet. Payload preserved under [`applied-sql/lane-a-staging/`](./applied-sql/lane-a-staging/). Live stamp `20261116192555`. See [`LANE_A_STAGING_APPLY_RECORD.md`](./LANE_A_STAGING_APPLY_RECORD.md).
 
 ## 4. Effective grants / RLS (expected after apply)
 
@@ -182,4 +173,9 @@ Prefix all routine codes `LA-STG-%`. No real customer/machine data. Passwords in
 - No production apply  
 - No FR-1 branch / recovery env changes  
 - No merge to main  
-- No apply in this packet’s publication commit  
+- No assignment / coverage pinning / recurrence / technician-result implementation  
+
+## 11. Spark handoff
+
+Public manifest: [`LANE_A_STAGING_RELEASE_MANIFEST.md`](./LANE_A_STAGING_RELEASE_MANIFEST.md).  
+Secrets + bypass: `.artifacts/lane-a-staging/SPARK_LANE_A_STAGING_SECURE_HANDOFF.txt` (gitignored).
