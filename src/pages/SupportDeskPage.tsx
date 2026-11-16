@@ -24,11 +24,19 @@ const SupportDeskPage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-4">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Support desk</h1>
-        <p className="text-sm text-muted-foreground">
-          Staff ticket queue — create and assign service jobs from each ticket.
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Support desk</h1>
+          <p className="text-sm text-muted-foreground">
+            Staff ticket queue — create and assign service jobs from each ticket.
+          </p>
+        </div>
+        <a
+          href="/support/routines"
+          className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+        >
+          Service routine reviews
+        </a>
       </div>
       <AdminTicketDashboard
         currentUserId={user.id}

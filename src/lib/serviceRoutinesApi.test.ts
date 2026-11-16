@@ -19,6 +19,17 @@ beforeEach(() => {
 })
 
 describe('serviceRoutinesApi Lane A bindings (Cursor evidence)', () => {
+  it('defaultRoutinePayload supplies safety type + requirement_class (F-02)', () => {
+    const payload = defaultRoutinePayload()
+    const gate = payload.sections[0].items[0]
+    expect(payload.sections[0].kind).toBe('safety')
+    expect(gate.type).toBe('safety_gate')
+    expect(gate.requirement_class).toBe('safety_gate')
+    expect(gate.waivable).toBe(false)
+    expect(gate.limit_value).toBeUndefined()
+    expect(gate.tolerance_source_ref).toBeUndefined()
+  })
+
   it('createDraft binds exact RPC signature', async () => {
     const payload = defaultRoutinePayload()
     rpcMock.mockResolvedValue({ data: { version_id: 'v1' }, error: null })

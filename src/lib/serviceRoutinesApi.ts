@@ -44,7 +44,12 @@ async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<T> {
   return data as T
 }
 
-/** Minimal valid publishable payload (safety section + gate). */
+/**
+ * Starter payload for Admin draft create (F-02).
+ * Structurally valid for publish validation: dedicated safety section + non-waivable
+ * safety_gate with required type/requirement_class. No invented manufacturer
+ * instructions, tolerances, limits, or review approval.
+ */
 export function defaultRoutinePayload(): RoutinePayload {
   return {
     sections: [
@@ -55,22 +60,27 @@ export function defaultRoutinePayload(): RoutinePayload {
         items: [
           {
             id: 'gate-1',
-            kind: 'safety_gate',
+            type: 'safety_gate',
+            requirement_class: 'safety_gate',
             title: 'Lockout / tagout confirmed',
-            instructions: 'Confirm energy isolation before work.',
+            instruction: 'Confirm energy isolation before work.',
+            waivable: false,
+            evidence: 'none',
           },
         ],
       },
       {
         id: 'checks',
-        kind: 'checklist',
+        kind: 'inspection',
         title: 'Checks',
         items: [
           {
             id: 'check-1',
-            kind: 'check',
+            type: 'inspection',
+            requirement_class: 'required',
             title: 'Visual inspection',
-            instructions: 'Inspect guards and covers.',
+            instruction: 'Inspect guards and covers.',
+            evidence: 'none',
           },
         ],
       },
@@ -98,6 +108,27 @@ export const serviceRoutinesApi = {
       .order('created_at', { ascending: false })
     if (error) throw new Error(error.message)
     return (data ?? []) as RoutineVersionRow[]
+  },
+
+  /** Support/Admin queue of versions awaiting independent review (not a general admin surface). */
+  async listVersionsInReview(): Promise<Array<RoutineVersionRow & { routine_code?: string; routine_name?: string }>> {
+    const { data, error } = await supabase
+      .from('service_routine_versions')
+      .select(
+        'id,routine_id,version_ordinal,status,draft_revision,author_id,published_at,retired_at,created_at,payload,service_routines(code,name_en)',
+      )
+      .eq('status', 'in_review')
+      .order('created_at', { ascending: false })
+    if (error) throw new Error(error.message)
+    return (data ?? []).map((row: Record<string, unknown>) => {
+      const routine = row.service_routines as { code?: string; name_en?: string } | null
+      const { service_routines: _join, ...rest } = row
+      return {
+        ...(rest as RoutineVersionRow),
+        routine_code: routine?.code,
+        routine_name: routine?.name_en,
+      }
+    })
   },
 
   async listApplicability(routineId: string) {

@@ -156,6 +156,7 @@ const BatchCutListDemo = lazyRetry(() => import("./pages/BatchCutListDemo.tsx"),
 // Ticket Details - lazy loaded
 const TicketDetailPage = lazy(() => import("./pages/TicketDetailPage.tsx"));
 const SupportDeskPage = lazy(() => import("./pages/SupportDeskPage.tsx"));
+const SupportRoutineReviewPage = lazy(() => import("./pages/SupportRoutineReviewPage.tsx"));
 
 // Role dashboards
 const TechnicianDashboard = lazy(() => import("./pages/technician/TechnicianDashboard.tsx"));
@@ -438,6 +439,7 @@ const App = memo(() => {
                                   {/* Support ticket detail — auth gated inside page so ?share= stays public */}
                                   <Route path="/support/tickets/:ticketId" element={<Suspense fallback={getLoadingComponent('/support')}><TicketDetailPage /></Suspense>} />
                                   <Route path="/support/desk" element={<Suspense fallback={getLoadingComponent('/support')}><ProtectedRoute requireRoles={['admin', 'support']}><SupportDeskPage /></ProtectedRoute></Suspense>} />
+                                  <Route path="/support/routines" element={<Suspense fallback={getLoadingComponent('/support')}><ProtectedRoute requireRoles={['admin', 'support']}><SupportRoutineReviewPage /></ProtectedRoute></Suspense>} />
 
                                   {/* Workflows */}
                                   <Route path="/workflows/upvc-fabrication" element={<Suspense fallback={getLoadingComponent('/workflows')}><WorkflowDetail /></Suspense>} />
