@@ -17,3 +17,5 @@ npx vitest run \
   src/components/admin/panels/ServiceRoutinesAuthoringPanel.test.tsx
 python scripts/service-workflow/run_disposable_routines.py
 ```
+
+| Correction tip SHA | `af78914426b359fb6cfa22915d5ad56b5828245c` |

@@ -29,3 +29,5 @@ npx vitest run \
   src/lib/serviceRoutinesApi.test.ts \
   src/components/admin/panels/ServiceRoutinesAuthoringPanel.test.tsx
 ```
+
+| Correction tip SHA | `af78914426b359fb6cfa22915d5ad56b5828245c` |
