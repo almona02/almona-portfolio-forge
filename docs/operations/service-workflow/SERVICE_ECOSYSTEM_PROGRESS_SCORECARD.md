@@ -24,7 +24,7 @@ Unsupported single-number “percent complete” headlines are **not** the statu
 | FR-1 Slice0 + share/privacy RC | **Independent content + follow-up accepted · CI green · production unapplied** | Freeze tip **`e17858a5`**; content PASS `d3ef35d4`; follow-up PASS `a86c6ab0`; packet [`FR1_PRODUCTION_APPROVAL_PACKET.md`](./FR1_PRODUCTION_APPROVAL_PACKET.md) — **production remains unapplied / not authorized** |
 | Recovery readiness (FR-1 gate) | **Not ready** | Verified DB export credential + isolated DB/Storage recovery still open ([`FR1_LOCAL_REHEARSAL_STATUS.md`](./FR1_LOCAL_REHEARSAL_STATUS.md), [`FR1_BACKUP_RESTORE_REHEARSAL_EXECUTION.md`](./FR1_BACKUP_RESTORE_REHEARSAL_EXECUTION.md)) |
 | Production rollout (any after-sales package) | **Not applied** | No production apply of FR-1 or B1–B7 workflow |
-| Configurable manufacturer/model routines | **Proposal only · implementation unauthorized** | [`SERVICE_ROUTINES_FIRST_SLICE_PROPOSAL.md`](./SERVICE_ROUTINES_FIRST_SLICE_PROPOSAL.md) |
+| Configurable manufacturer/model routines | **Authoring contract prepared · Spark before runtime** | Proposal [`SERVICE_ROUTINES_FIRST_SLICE_PROPOSAL.md`](./SERVICE_ROUTINES_FIRST_SLICE_PROPOSAL.md); contract on `feat/service-routines-authoring` |
 
 ### Machine-link distinction (preserve)
 
@@ -47,8 +47,8 @@ Original B3 acceptance remains: Spark/Cursor evidence on a **staging-backed loca
 | B6 | “Customer acknowledgment and ticket closure — not yet verified” | **Accepted** at `da2132b6`: acknowledgment, refusal disposition, unavailable-contact evidence, closure, idempotent re-close; closeout evidence retained |
 | B7 | “final B7 journey remains” | Staging verification + operational closeout **complete**; final retirement evidence `32750762` |
 | Canonical machine UUID | (folded into / confused with journey) | Separately verified; G-01 used **legacy free-text** by design |
-| Next steps | “Finish B5 → B6 → B7” | **Two tracks:** (1) release preparation / FR-1 gates; (2) product expansion (routines proposal review only) |
-| Headline % | `~40–45%` / `~75–80%` ecosystem / core without published denominator | Replaced by **milestone statuses**; optional estimate below is labeled and method-bound |
+| Next steps | “Finish B5 → B6 → B7” | **Two tracks:** (1) release preparation / FR-1 gates; (2) product expansion (routines authoring package) |
+| Headline % | `~40–45%` / `~75–80%` ecosystem / core without published denominator | Replaced by **milestone statuses** only; optional overall percentages removed |
 | FR-1 vs workflow | Implied core-loop finish unlocks production | FR-1 is Slice0 + share/privacy hardening **without** B1–B7 workflow; **does not** deploy the full staging journey |
 | Production | “0%” / backup gate blocking | Still **unapplied**; recovery rehearsal incomplete — separate from staging acceptance |
 
@@ -67,10 +67,11 @@ FR-1 freeze `e17858a5` already has independent content acceptance (`d3ef35d4`) a
 
 **Explicit:** FR-1 does **not** ship B1–B7 job/visit/report/ack workflow. Shipping those surfaces is a later coordinated package (see readiness packet FR-2 / workflow release framing).
 
-### Track 2 — Product expansion
+### Track 2 — Product expansion (routines authoring)
 
-- Review the configurable-routines **first-slice proposal** only: [`SERVICE_ROUTINES_FIRST_SLICE_PROPOSAL.md`](./SERVICE_ROUTINES_FIRST_SLICE_PROPOSAL.md).
-- **Implementation remains unauthorized.**
+- Bounded **routine-authoring** package (Lane A): see workflow-lineage branch `feat/service-routines-authoring` and `SERVICE_ROUTINES_AUTHORING_IMPLEMENTATION_CONTRACT.md` (Spark review before runtime).
+- Still excluded here: contract activation, recurrence, squads, stock, technician result capture, production deploy.
+- Outstanding deferred scope remains in the area table below (contracts, squads, spares, passport expand, fault library, commercial/onboarding, analytics).
 
 ---
 
@@ -86,7 +87,7 @@ FR-1 freeze `e17858a5` already has independent content acceptance (`d3ef35d4`) a
 | Manager review, issue, customer report access | ✅ Staging accepted at `2a4042ad` (returned resubmit + owner issued-report UI in deployed browser) |
 | Customer acknowledgment and ticket closure | ✅ Staging accepted at `da2132b6` (accept / refuse / unavailable attempts / close / idempotent re-close) |
 | Complete workflow regression and role validation | ✅ B7 staging verification + operational closeout complete (`32750762`); production not implied |
-| Configurable manufacturer/model service routines | 📝 First-slice **proposal** completed; **implementation unauthorized** |
+| Configurable manufacturer/model service routines | 📝 Authoring **implementation contract** prepared on workflow lineage; Spark review before runtime; Lane B/C still out of scope |
 | Contracts, coverage, tiers, recurring maintenance | ⏳ Major work remains (deferred; original plan + later roadmap) |
 | Squads, dispatch, workload and manager dashboard | ⏳ Basic individual assignment exists; squad operations remain |
 | Spare parts, compatibility, quotes, stock and fulfillment | ⏳ Major work remains |
@@ -124,27 +125,13 @@ FR-1 freeze `e17858a5` already has independent content acceptance (`d3ef35d4`) a
 | Recurrence / SLA-tier unification | **Original plan** | ⏳ |
 | Spare parts E2E | **Original plan** | ⏳ |
 | Manual fault taxonomy | **Original plan** | 📝 |
-| Service routines (versioned / configurable) | **Post-plan addendum** | 📝 proposal; implementation unauthorized |
+| Service routines (versioned / configurable) | **Post-plan addendum** | 📝 authoring contract (Lane A); Spark before runtime |
 | Commercial / white-label / onboarding / integrations | **Later roadmap addition** | 📝 not established |
 | Notifications / analytics | **Original plan / evolving** | 📝 |
 
----
+### Explicit outstanding scope (not done)
 
-## Optional ecosystem estimate (labeled; not the status of record)
-
-**Label:** Planning **estimate** only — not measured coverage, not a gate.
-
-**Scope denominator (18 areas in the area table above):** each area scored 0.0–1.0 using {✅≈1.0, 🟡≈0.5, 📝≈0.15, ⏳≈0.05}, then weighted:
-
-| Band | Areas (count) | Weight each | Method note |
-|------|---------------|-------------|-------------|
-| Core corrective loop (security → B7 closeout) | 8 | 0.07 | Staging-accepted surfaces dominate near-term value |
-| Deferred original-plan packages (contracts, squads, spares, passport expand, fault library) | 5 | 0.05 | Large unbuilt original scope |
-| Later roadmap / planned add-ons (routines proposal, commercial, white-label, notifications, analytics) | 5 | 0.024 | Must not inflate “core done” |
-
-Rough arithmetic on current legend assignments ≈ **0.55–0.60** of that weighted denominator (**estimate**).  
-**Production apply weight is excluded** (separate milestone = not applied).  
-Do not quote this band without the denominator, weights, and “estimate” label.
+Contracts/coverage/tiers/recurrence · squads/dispatch · spare-parts E2E · expanded passport/QR/transfers · fault-library content · notifications/workspaces · commercial/onboarding/integrations · operational analytics · routines Lane B (pin/results) and Lane C · FR-1 recovery/production apply.
 
 ---
 
