@@ -3,11 +3,12 @@
 | Field | Value |
 |-------|-------|
 | Contract tip (Spark PASS) | `1350b749ffd999ef3206c9733f0bcfb47b483ce2` |
+| Runtime hold tip | `5e53ee009507b29de707be0f1eebd0252c34c9c9` |
 | Scope | Authoring → independent review → immutable publication → retirement + applicability metadata + read-only preview |
 | Out of scope | Assignment overrides, coverage pinning, recurrence, technician results, FR-1 runtime, staging apply, merge, production |
 | Evidence label | **Cursor evidence** (not Spark) |
 
-Implementation SHA is this freeze commit tip (fill after push): see `git rev-parse HEAD` on `feat/service-routines-authoring`.
+Runtime holds at `5e53ee00` while Spark verifies. Local bootstrap, fixtures, env targeting, and Support review UI confirmation: [`SPARK_LANE_A_HOLD_AND_LOCAL_SETUP.md`](./SPARK_LANE_A_HOLD_AND_LOCAL_SETUP.md).
 
 ---
 
@@ -80,12 +81,15 @@ npx vitest run src/lib/serviceRoutinesApi.test.ts src/components/admin/panels/Se
 
 ## Local browser setup for Spark
 
-1. Ensure this branch tip is checked out (implementation freeze SHA).
-2. Do **not** apply the Lane A migration to staging/production. For UI against a linked Supabase project, apply the migration only to a **dedicated disposable** database (or use the SQL battery for contract checks).
-3. From repo root: `npm run dev` → http://localhost:3000
-4. Sign in as an **Admin** user.
-5. Open **Admin → Service Routines** (`/admin?tab=service-routines`).
-6. Exercise: create draft → edit (revision advances) → submit → have a **different** Support/Admin session record review → publish → open **Preview** (read-only) → retire. Confirm code reuse is denied.
-7. Confirm UI has **no** assignment override, coverage pin, recurrence, or technician result capture controls.
+Full instructions (env targeting, fixtures, Support UI truth): [`SPARK_LANE_A_HOLD_AND_LOCAL_SETUP.md`](./SPARK_LANE_A_HOLD_AND_LOCAL_SETUP.md).
+
+Summary:
+
+1. Check out runtime hold `5e53ee009507b29de707be0f1eebd0252c34c9c9`.
+2. Point local `.env` `VITE_SUPABASE_*` at a **disposable** project only — never staging/production.
+3. Apply Lane A migration only on that disposable DB (never staging/prod).
+4. `npm run dev` → http://localhost:3000
+5. Author as Admin A → `/admin?tab=service-routines`. Independent **Record review** in-browser: **Admin B** (Support has **no** `/admin` entry at this tip; Support RPC remains allowed).
+6. Publish → Preview → retire; confirm no assignment/pin/recurrence/results controls.
 
 FR-1 Slice0 share/privacy runtime remains frozen; this package does not change it.
