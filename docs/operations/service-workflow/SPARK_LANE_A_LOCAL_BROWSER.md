@@ -1,27 +1,39 @@
 # Lane A — reproducible isolated local browser + fixtures
 
-**Runtime base:** correction tip on top of freeze `5e53ee00` (see disposition).  
+**Runtime tip:** `e1345a0aef857e857fe5af50176c1fcb633aae70` (correction on freeze `5e53ee00`).  
 **Never** point `VITE_SUPABASE_*` at staging or production.  
 **Never** apply Lane A migration to staging/production.
 
-## Docker status (recorded at correction)
+## Docker (Path A′ — isolated Postgres battery)
 
-`docker` CLI is installed, but the Docker Desktop engine pipe was **unavailable** (`dockerDesktopLinuxEngine` not found). Compose file is provided; **do not** fall back to staging. Use Path A (battery) and/or Path B (dedicated disposable Supabase / local `supabase start` when that stack is available).
-
-Compose (when engine is up):
+Docker Desktop engine is **available**. Compose service:
 
 ```bash
 docker compose -f scripts/service-workflow/docker-compose.lane-a-local.yml up -d
-# Then apply disposable_routines_base.sql + Lane A migration via psql to localhost:55458
+bash scripts/service-workflow/apply_lane_a_docker.sh          # base + migration + battery
+# or: bash scripts/service-workflow/apply_lane_a_docker.sh migrate  # skip battery
 ```
 
-That container is **Postgres only** (no Auth/PostgREST). Browser UI still needs a disposable Supabase API (Path B).
+| Field | Value |
+|-------|-------|
+| Host/port | `127.0.0.1:55458` |
+| DB | `routines_lane_a` |
+| User / password | `postgres` / `lane_a_local_only` (local disposable only) |
+| Verified | Battery **29 PASS / 0 FAIL** against this container |
+
+Container is **Postgres only** (no Auth/PostgREST). It is for contract/SQL evidence, not a full Vite→Supabase browser stack.
+
+Stop:
+
+```bash
+docker compose -f scripts/service-workflow/docker-compose.lane-a-local.yml down
+```
 
 ---
 
 ## Role fixtures
 
-### SQL battery (Path A) — synthetic UUIDs, no passwords
+### SQL battery (Path A / A′) — synthetic UUIDs, no passwords
 
 | Role | UUID |
 |------|------|
@@ -32,11 +44,13 @@ That container is **Postgres only** (no Auth/PostgREST). Browser UI still needs 
 | Customer | `dddddddd-dddd-dddd-dddd-ddddddddddd1` |
 | Sales | `eeeeeeee-eeee-eeee-eeee-eeeeeeeeeee1` |
 
+Hosted runner (non-Docker alternate):
+
 ```bash
 python scripts/service-workflow/run_disposable_routines.py
 ```
 
-### Browser (Path B) — create in a **disposable** Supabase project only
+### Browser (Path B) — disposable Supabase Auth/API only
 
 | Fixture | `profiles.role` | Entry |
 |---------|-----------------|-------|
@@ -45,14 +59,12 @@ python scripts/service-workflow/run_disposable_routines.py
 | Support S | `support` | **`/support/routines`** record review (not `/admin`) |
 | Technician T | `technician` | published preview RPC only; **no** `/support/routines` |
 
-Local `.env` (never commit):
+Local `.env` (never commit) — disposable project or `supabase start` only:
 
 ```env
 VITE_SUPABASE_URL=http://127.0.0.1:54321
 VITE_SUPABASE_ANON_KEY=<disposable-anon-only>
 ```
-
-Or a throwaway cloud project URL — **not** Railway staging / production.
 
 ```bash
 npm run dev   # http://localhost:3000
