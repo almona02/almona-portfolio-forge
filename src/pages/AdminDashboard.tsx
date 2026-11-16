@@ -64,6 +64,7 @@ const MachinesAdminPanel = lazyRetry(() => import('@/components/admin/panels/Mac
 const ServiceContractsAdminPanel = lazyRetry(() => import('@/components/admin/panels/ServiceContractsAdminPanel'), 'ServiceContractsAdminPanel')
 const AdminSettingsPanel = lazyRetry(() => import('@/components/admin/panels/AdminSettingsPanel'), 'AdminSettingsPanel')
 const ServicePackagesPanel = lazyRetry(() => import('@/components/admin/panels/ServicePackagesPanel'), 'ServicePackagesPanel')
+const ServiceRoutinesAuthoringPanel = lazyRetry(() => import('@/components/admin/panels/ServiceRoutinesAuthoringPanel'), 'ServiceRoutinesAuthoringPanel')
 const ManufacturingConfigPanel = lazyRetry(() => import('@/components/admin/panels/ManufacturingConfigPanel'), 'ManufacturingConfigPanel')
 const CatalogAdminPanel = lazyRetry(() => import('@/components/admin/panels/CatalogAdminPanel').then(m => ({ default: m.CatalogAdminPanel })), 'CatalogAdminPanel')
 
@@ -344,6 +345,12 @@ const AdminDashboard: React.FC = () => {
         return (
           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading service packages…</div>}>
             <ServicePackagesPanel />
+          </React.Suspense>
+        )
+      case 'service-routines':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading service routines…</div>}>
+            <ServiceRoutinesAuthoringPanel />
           </React.Suspense>
         )
       case 'products':
