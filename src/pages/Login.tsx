@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { GoldTierInput as Input, PasswordInput } from '@/components/ui/input-gold-tier';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/AuthContext';
+import { safeReturnPath } from '@/lib/auth/safeReturnPath';
 import { roleHomePath } from '@/lib/roleRouting';
 import { FADE_IN, SCALE_IN, SLIDE_UP } from '@/lib/animations/motion';
 import { motion } from 'framer-motion';
@@ -48,7 +49,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from;
-  const postLoginPath = from && from.startsWith('/') && !from.startsWith('//') ? from : roleHomePath(user?.role);
+  const postLoginPath = safeReturnPath(from, roleHomePath(user?.role));
 
   // Wait for profiles.role before choosing the home path. Optimistic
   // placeholder role=customer would send technicians/support to /portal.

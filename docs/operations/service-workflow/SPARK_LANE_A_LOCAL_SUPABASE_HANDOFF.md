@@ -96,6 +96,7 @@ Pushed as-authored (Spark QA &lt;sparksubagent@almona.invalid&gt;); historical e
 |--------|-----|-------|
 | `origin/spark/laneA-verify-5e53ee00` | `db09f89a392c877d4c823ef62d54c722b83ea6a1` | Independent battery on freeze |
 | `origin/spark/laneA-verify-e1345a0a` | `75db91254e61f2e3c1627ccbf4ee30f97b83d489` | Correction re-verify; browser was NOT RUN until this local env |
+| `origin/spark/laneA-verify-browser-e1345a0a` | `6601c5caf46bbc0c74ee6238898027af3e25a949` | Independent browser evidence on `e1345a0a` (14/14 UI + 9 state/audit); authorship preserved |
 
 Results JSON (on those branches): `docs/operations/service-workflow/spark-probes/SPARK_LANE_A_RESULTS_*.json`
 

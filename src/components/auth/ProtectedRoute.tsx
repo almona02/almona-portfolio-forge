@@ -1,4 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
+import { buildReturnPath } from '@/lib/auth/safeReturnPath';
 import { Navigate, useLocation } from 'react-router-dom';
 
 const ProtectedRoute = ({
@@ -19,7 +20,8 @@ const ProtectedRoute = ({
     return <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">Loading…</div>;
   }
   if (!user && !supabaseUser) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+    // Preserve intended internal destination (pathname + search + hash) for post-login return.
+    return <Navigate to="/login" replace state={{ from: buildReturnPath(location) }} />;
   }
 
   // Role-gated routes must wait for the real profiles row. An optimistic

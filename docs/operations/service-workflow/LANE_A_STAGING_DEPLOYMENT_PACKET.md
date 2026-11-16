@@ -3,13 +3,16 @@
 | Field | Value |
 |-------|-------|
 | **Status** | Packet only · **no apply · no merge · no production · FR-1 preserved** |
-| **Runtime to bind** | `e1345a0aef857e857fe5af50176c1fcb633aae70` |
+| **Accepted Lane A baseline (runtime / migration)** | `e1345a0aef857e857fe5af50176c1fcb633aae70` |
+| **Frontend binding** | `FRONTEND_CORRECTION_SHA_PENDING` — login-return path fix (`safeReturnPath`); set after Vitest verification + freeze |
 | **Migration path** | `supabase/migrations/20261116180000_service_routines_lane_a_authoring.sql` |
 | **Git blob (e1345a0a)** | `3ca6fb4165cd92c38fe18274d7869123fd834e45` |
 | **SHA-256 of blob bytes** (`git show e1345a0a:… \| openssl dgst -sha256`) | `62255ac2329864f11aa19bf66eb72ff5a491935c8fd586820ea3c0cb9ccbbc1b` |
 | **Byte length** | 39952 (git blob; working-tree CRLF may differ on Windows) |
 | **Target DB (prior B-series)** | Supabase staging `apnmoevmvihfzcnttctx` (`almona02-staging`) — confirm identity before any future apply |
 | **Authorization** | Explicit operator approval required before apply |
+
+**Binding rule:** Migration / SQL apply stays pinned to baseline `e1345a0a`. Preview UI for tab deep-links may use the frontend correction tip once recorded below; do not rewrite or replace the Lane A acceptance baseline.
 
 ## 1. Prerequisites (staging)
 
@@ -115,11 +118,11 @@ Expect: `anon_exec = false` for all; zero anon table grants.
 
 | Step | Requirement |
 |------|-------------|
-| Preview deploy | Vercel preview from commit **`e1345a0a`** (or authorized tip that contains identical migration blob) |
+| Preview deploy | Vercel preview from **frontend binding** tip (login-return correction) when set; migration blob must still match **`e1345a0a`** |
 | Protection | SSO / Vercel Authentication on; no public production alias |
 | Env | Preview `VITE_SUPABASE_*` → **staging** project only (not production, not local demo keys) |
 | Scoped access | Fresh preview bypass / share token for Spark + operator; **retire after** verification |
-| Binding record | Store deployment id, URL, git SHA, staging project ref in apply record |
+| Binding record | Store deployment id, URL, frontend git SHA, migration baseline `e1345a0a`, staging project ref in apply record |
 
 ## 6. Synthetic-fixture plan (staging)
 
@@ -140,7 +143,7 @@ Prefix all routine codes `LA-STG-%`. No real customer/machine data. Passwords in
 4. Admin: publish → preview → retire; code reuse denied  
 5. Measurement missing source → `22023`; no publish audit  
 6. Second in-flight draft → `22023` (constraint)  
-7. Deep-link note: prefer nav click or apply tab-nav fix before relying on `?tab=` (see finding doc)
+7. Deep-link: frontend binding tip preserves `?tab=` through login (see [`LANE_A_TAB_NAV_FINDING.md`](./LANE_A_TAB_NAV_FINDING.md)); baseline `e1345a0a` alone still drops query on cold auth remount
 
 ## 8. Cleanup + credential retirement
 

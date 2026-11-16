@@ -1,13 +1,13 @@
-# Finding — `?tab=service-routines` deep link drops query (not applied)
+# Finding — `?tab=service-routines` deep link drops query
 
 | Field | Value |
 |-------|-------|
-| **Runtime under test** | `e1345a0a` (accepted — **not modified**) |
-| **Status** | **Confirmed** reproducible (not flaky once auth remount path is hit) |
-| **Severity** | UX / deep-link; sidebar click and in-app `selectTab` work |
-| **Fix** | Proposed only — requires a **new** correction SHA if authorized |
+| **Accepted Lane A baseline** | `e1345a0a` (**preserved** — not rewritten) |
+| **Status** | **Confirmed** on baseline; **fixed** on separate frontend correction SHA (login-return path) |
+| **Severity** | UX / deep-link; sidebar click and in-app `selectTab` work on baseline |
+| **Fix tip** | See staging packet **Frontend binding** (narrow `safeReturnPath` correction) |
 
-## Reproduction (isolated local, 2026-11-16)
+## Reproduction (isolated local, 2026-11-16) — baseline `e1345a0a`
 
 Admin session on `http://127.0.0.1:3000` against Lane A local Supabase.
 
@@ -25,24 +25,25 @@ Navigation chain on cold load observed:
 
 - Affects **all** Admin deep links that rely on `?tab=` when `ProtectedRoute` remounts through login (full page load / brief unauthenticated flash), not only `service-routines`.
 - In-memory tab changes via `selectTab` / `setSearchParams` remain correct.
-- Support `/support/routines` (path-based) is **unaffected**.
-- Unit test `AdminDashboard.accessibility.test.tsx` deep-links via `MemoryRouter` **without** `ProtectedRoute`, so it does not catch this.
+- Support `/support/routines` (path-based) was **unaffected** by the query-drop bug (path already preserved).
+- Unit test `AdminDashboard.accessibility.test.tsx` deep-links via `MemoryRouter` **without** `ProtectedRoute`, so it did not catch this.
 
 ## Root cause (narrow)
 
-`ProtectedRoute` saves only the pathname when redirecting to login:
+`ProtectedRoute` saved only the pathname when redirecting to login:
 
 ```ts
-// src/components/auth/ProtectedRoute.tsx
+// baseline e1345a0a
 <Navigate to="/login" replace state={{ from: location.pathname }} />
 ```
 
-`Login` then `navigate(postLoginPath)` using that string — so `/admin?tab=service-routines` becomes `/admin`.
+`Login` then `navigate(postLoginPath)` using that string — so `/admin?tab=service-routines` became `/admin`.
 
-## Proposed fix (do not land on `e1345a0a`)
+## Fix (separate correction SHA — not landed on `e1345a0a`)
 
-1. Persist full return location, e.g. `state={{ from: location.pathname + location.search }}` (or `{ pathname, search }`).
-2. Keep Login’s open-redirect guard (`startsWith('/') && !startsWith('//')`).
-3. Add a route-level test: ProtectedRoute → login → restore `/admin?tab=service-routines`.
+1. `buildReturnPath` persists pathname + search + hash into login `state.from`.
+2. `safeReturnPath` accepts only internal relative destinations; rejects external / malformed.
+3. Role authorization in `ProtectedRoute` unchanged (denied roles still bounce `/`).
+4. Tests: cold-load `/admin?tab=service-routines`, Support `/support/routines`, ordinary internal nav with query+fragment, denied-role access.
 
-No silent patch on the accepted runtime tip.
+No silent patch on the accepted runtime tip; no staging apply / production / FR-1.
