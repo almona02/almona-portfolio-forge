@@ -95,6 +95,41 @@ class DummyClient:
     def table(self, name: str):
         return DummyTable(name, self.store)
 
+    def rpc(self, fn_name: str, params: Dict[str, Any]):
+        class R:
+            def __init__(self, client: "DummyClient", fn_name: str, params: Dict[str, Any]):
+                self.client = client
+                self.fn_name = fn_name
+                self.params = params
+                self.data = None
+
+            def execute(self):
+                tickets = self.client.store.setdefault("service_tickets", [])
+                ticket_id = self.params.get("p_ticket_id")
+                row = next((t for t in tickets if t.get("id") == ticket_id), None)
+                if row is None:
+                    self.data = None
+                    return self
+                if self.fn_name == "govern_ticket_transition":
+                    row["status"] = self.params.get("p_to_status")
+                    if self.params.get("p_resolution_summary"):
+                        row["resolution_summary"] = self.params["p_resolution_summary"]
+                    row["updated_at"] = utcnow_iso()
+                elif self.fn_name == "govern_ticket_assign":
+                    row["assigned_to"] = self.params.get("p_assignee_id")
+                    row["assigned_by"] = self.params.get("p_actor_id")
+                    row["assigned_at"] = utcnow_iso()
+                    if row.get("status") == TicketStatus.OPEN.value:
+                        row["status"] = TicketStatus.ASSIGNED.value
+                    row["updated_at"] = utcnow_iso()
+                elif self.fn_name == "govern_ticket_set_priority":
+                    row["priority"] = self.params.get("p_priority")
+                    row["updated_at"] = utcnow_iso()
+                self.data = row
+                return self
+
+        return R(self, fn_name, params)
+
 
 class DummySupabase:
     def __init__(self):
@@ -102,6 +137,9 @@ class DummySupabase:
 
     def table(self, name: str):
         return self._client.table(name)
+
+    def rpc(self, fn_name: str, params: Dict[str, Any]):
+        return self._client.rpc(fn_name, params)
 
 
 def build_payload():
@@ -138,7 +176,9 @@ def test_ticket_service_update_and_assign():
     assert assigned is not None
     assert assigned.status == TicketStatus.ASSIGNED
 
-    updated = svc.update_ticket_status(t.id, TicketStatus.IN_PROGRESS)
+    updated = svc.update_ticket_status(
+        t.id, TicketStatus.IN_PROGRESS, actor_id=user_id
+    )
     assert updated is not None
     assert updated.status == TicketStatus.IN_PROGRESS
 

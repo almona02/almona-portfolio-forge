@@ -42,12 +42,14 @@ def handlers(monkeypatch):
     return *modules, config.settings
 
 
-def test_access_and_refresh_round_trip(handlers):
+def test_access_and_refresh_round_trip(handlers, monkeypatch):
     auth, _, _ = handlers
-    access = auth.create_access_token({"sub": "workshop-user"})
+    access = auth.create_access_token({"sub": "workshop-user", "id": "workshop-user"})
     assert asyncio.run(auth.get_current_user(access)).username == "workshop-user"
+    # Refresh re-resolves role from profiles; stub a trusted lookup.
+    monkeypatch.setattr(auth, "_profile_role", lambda _uid: "customer")
     refreshed = asyncio.run(auth.refresh_access_token(
-        auth.create_refresh_token({"sub": "workshop-user"})
+        auth.create_refresh_token({"sub": "workshop-user", "id": "workshop-user"})
     ))
     assert asyncio.run(auth.get_current_user(refreshed["access_token"])).username == "workshop-user"
     with pytest.raises(HTTPException) as error:

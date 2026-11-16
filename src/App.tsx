@@ -665,7 +665,7 @@ const App = memo(() => {
                                   <Route path="/support/tickets/new" element={<Suspense fallback={getLoadingComponent('/support')}><ProtectedRoute><CreateTicketPage /></ProtectedRoute></Suspense>} />
                                   <Route path="/support/new" element={<Navigate to="/support/tickets/new" replace />} />
                                   <Route path="/portal/register-machine" element={<Suspense fallback={getLoadingComponent('/portal')}><ProtectedRoute><RegisterMachinePage /></ProtectedRoute></Suspense>} />
-                                  <Route path="/technician" element={<Suspense fallback={getLoadingComponent('/technician')}><ProtectedRoute><TechnicianDashboard /></ProtectedRoute></Suspense>} />
+                                  <Route path="/technician" element={<Suspense fallback={getLoadingComponent('/technician')}><ProtectedRoute requireRoles={['technician', 'admin', 'support']}><TechnicianDashboard /></ProtectedRoute></Suspense>} />
                                   <Route path="/fabricator-admin" element={<Suspense fallback={getLoadingComponent('/fabricator-admin')}><ProtectedRoute><FabricatorAdminDashboard /></ProtectedRoute></Suspense>} />
 
                                   {/* Admin */}

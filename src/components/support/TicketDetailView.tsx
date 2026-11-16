@@ -73,7 +73,7 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({ ticketId, on
   // Update ticket status mutation
   const updateStatusMutation = useMutation({
     mutationFn: ({ status, resolution }: { status: string; resolution?: string }) => 
-      updateTicketStatus(ticketId, status as 'open' | 'assigned' | 'in_progress' | 'awaiting_parts' | 'awaiting_customer' | 'pending_approval' | 'resolved' | 'closed' | 'cancelled', resolution),
+      updateTicketStatus(ticketId, status as 'open' | 'assigned' | 'in_progress' | 'awaiting_parts' | 'awaiting_customer' | 'resolved' | 'closed' | 'cancelled', resolution),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['ticket', ticketId] })
       toast({

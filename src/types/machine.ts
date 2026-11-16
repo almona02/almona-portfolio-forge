@@ -2,7 +2,14 @@ export interface Machine {
   id: string;
   name: string;
   model: string;
-  serial_number: string;
+  /** Manufacturer serial (null for provisional / missing-plate). Never an ALM- value. */
+  serial_number: string | null;
+  serial_number_raw?: string | null;
+  provisional_asset_ref?: string | null;
+  catalog_link_status?: 'linked' | 'uncatalogued' | 'uncertain';
+  identity_confidence?: string;
+  identity_review_status?: string;
+  identity_lifecycle?: string;
   owner_id: string;
   purchase_date?: string;
   warranty_expiry?: string;

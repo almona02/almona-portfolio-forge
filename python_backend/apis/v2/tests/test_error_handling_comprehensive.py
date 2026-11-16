@@ -387,14 +387,14 @@ class TestErrorHandlingExamples:
         # when users try to perform unauthorized actions
         
         error = TicketPermissionError(
-            message="Only staff can assign tickets",
-            required_role="admin, technician, or sales_rep",
+            message="Only admin/support may assign tickets",
+            required_role="admin or support",
             user_role="customer"
         )
         
         assert error.error_code == V2ErrorCode.TICKET_PERMISSION_DENIED
         assert error.status_code == 403
-        assert error.details["required_role"] == "admin, technician, or sales_rep"
+        assert error.details["required_role"] == "admin or support"
         assert error.details["user_role"] == "customer"
     
     def test_supabase_error_example(self):

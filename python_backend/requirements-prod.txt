@@ -42,7 +42,7 @@ defusedxml==0.7.1
 Deprecated==1.2.18
 deprecation==2.1.0
 distro==1.9.0
-dnspython==2.9.0
+dnspython==2.9.2
 docker==7.1.0
 # easyocr==1.7.2  # pulls torch; stubbed in tests (AICS-001)
 # ecdsa removed: no patched version for CVE-2024-23342 (Minerva timing attack).
@@ -131,10 +131,10 @@ openai==2.15.0
 opencv-python==4.10.0.84
 opencv-python-headless==4.10.0.84
 openpyxl==3.1.5
-opentelemetry-api==1.45.1
-opentelemetry-proto==1.45.1
-opentelemetry-sdk==1.45.1
-opentelemetry-semantic-conventions==0.66b1
+opentelemetry-api==1.45.2
+opentelemetry-proto==1.45.2
+opentelemetry-sdk==1.45.2
+opentelemetry-semantic-conventions==0.66b2
 opt_einsum==3.4.0
 optree==0.17.0
 ordered-set==4.1.0

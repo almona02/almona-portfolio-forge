@@ -375,7 +375,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
                   <SelectItem value="in_progress">In Progress</SelectItem>
                   <SelectItem value="awaiting_parts">Awaiting parts</SelectItem>
                   <SelectItem value="awaiting_customer">Awaiting customer</SelectItem>
-                  <SelectItem value="pending_approval">Pending approval</SelectItem>
+                  {/* pending_approval removed in Slice 0 until product policy is defined */}
                   <SelectItem value="cancelled">Cancelled</SelectItem>
                   <SelectItem value="resolved">Resolved</SelectItem>
                   <SelectItem value="closed">Closed</SelectItem>

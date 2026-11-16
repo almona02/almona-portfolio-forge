@@ -101,11 +101,16 @@ describe('Production runtime path — Tier 3 governance', () => {
         'utf-8',
       );
       expect(ticketApiSource).toContain('governedCreateTicket');
-      expect(ticketApiSource).toContain('validateStatusTransition');
+      expect(ticketApiSource).toMatch(/governTicketTransition|ticketGovernanceApi/);
     });
 
     it('updateTicketStatus is exported and uses governance', () => {
       expect(typeof ticketApiModule.updateTicketStatus).toBe('function');
+      const src = fs.readFileSync(
+        path.resolve(__dirname, '../../../lib/ticketApi.ts'),
+        'utf-8',
+      );
+      expect(src).toContain('governTicketTransition');
     });
   });
 });

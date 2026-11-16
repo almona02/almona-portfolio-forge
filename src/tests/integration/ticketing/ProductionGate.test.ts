@@ -35,18 +35,22 @@ describe('P0.10 Production Gate', () => {
       'src/lib/adminTicketApi.ts',
     ];
 
-    it('production ticket APIs call validateStatusTransition or buildGovernedTransitionPatch before status update', () => {
+    it('production ticket APIs route status/assignment through governTicket* RPCs', () => {
       for (const file of productionStatusWriters) {
         const src = fs.readFileSync(path.join(REPO_ROOT, file), 'utf-8');
-        expect(src).toMatch(/validateStatusTransition|buildGovernedTransitionPatch/);
+        expect(src).toMatch(/governTicketTransition|governTicketAssign|governTicketBulk/);
+        // Direct status column writes must not remain as the authority path.
+        expect(src).not.toMatch(/\.from\(['"]service_tickets['"]\)[\s\S]{0,120}\.update\([\s\S]{0,80}status\s*:/);
       }
     });
 
-    it('Python ticket_service uses validate_transition', () => {
+    it('Python ticket_service mutates via govern_ticket_* RPCs with actor identity', () => {
       const src = fs.readFileSync(
         path.join(REPO_ROOT, 'python_backend/apis/v2/services/ticket_service.py'),
         'utf-8',
       );
+      expect(src).toContain('govern_ticket_transition');
+      expect(src).toContain('govern_ticket_assign');
       expect(src).toContain('validate_transition');
     });
 
