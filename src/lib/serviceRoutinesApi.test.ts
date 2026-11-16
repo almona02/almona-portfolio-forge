@@ -118,10 +118,34 @@ describe('serviceRoutinesApi Lane A bindings (Cursor evidence)', () => {
     })
   })
 
-  it('maps stale draft conflict to status 409', async () => {
+  it('maps PT409 + routine_draft_stale_revision detail to status 409 (STG-01)', async () => {
     rpcMock.mockResolvedValue({
       data: null,
-      error: { message: 'stale draft_revision', code: 'P0001' },
+      error: {
+        message: 'Stale draft revision',
+        code: 'PT409',
+        details: 'routine_draft_stale_revision',
+        hint: 'Reload draft_revision then retry save',
+      },
+    })
+    await expect(
+      serviceRoutinesApi.updateDraft({
+        versionId: 'ver-1',
+        expectedDraftRevision: 'stale',
+        payload: defaultRoutinePayload(),
+      }),
+    ).rejects.toMatchObject({
+      status: 409,
+      code: 'PT409',
+      conflictCode: 'routine_draft_stale_revision',
+      details: 'routine_draft_stale_revision',
+    })
+  })
+
+  it('does not invent retries on conflict mapping', async () => {
+    rpcMock.mockResolvedValue({
+      data: null,
+      error: { message: 'Stale draft revision', code: 'PT409', details: 'routine_draft_stale_revision' },
     })
     await expect(
       serviceRoutinesApi.updateDraft({
@@ -130,6 +154,7 @@ describe('serviceRoutinesApi Lane A bindings (Cursor evidence)', () => {
         payload: defaultRoutinePayload(),
       }),
     ).rejects.toMatchObject({ status: 409 })
+    expect(rpcMock).toHaveBeenCalledTimes(1)
   })
 
   it('listRoutines queries service_routines select surface', async () => {

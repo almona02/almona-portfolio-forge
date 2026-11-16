@@ -114,14 +114,51 @@ BEGIN
   v_rev := v_created ->> 'draft_revision';
   PERFORM pg_temp.ra_note('RA-A1', v_version IS NOT NULL, coalesce(v_created::text, 'null'));
 
-  -- RA-A12 stale edit
-  PERFORM pg_temp.ra_note('RA-A12', pg_temp.ra_denied(format(
+  -- RA-A12 stale edit (STG-01: PT409 + unchanged content/revision; no success audit)
+  SELECT count(*) INTO v_pub_audit_before
+  FROM public.service_workflow_audit
+  WHERE action = 'routine_draft_updated' AND entity_id = v_version;
+  SELECT * INTO v_fail, v_fail_state, v_fail_msg FROM pg_temp.ra_failinfo(format(
     $q$SELECT public.update_service_routine_draft(%L::uuid,'stale',%L::jsonb,NULL,NULL,NULL,NULL)$q$,
     v_version, v_payload::text
-  )), 'stale denied');
+  ));
+  PERFORM pg_temp.ra_note('RA-A12', v_fail AND v_fail_state = 'PT409',
+    coalesce(v_fail_state, 'null') || ' ' || coalesce(v_fail_msg, ''));
   PERFORM pg_temp.ra_note('RA-A12b',
-    (SELECT draft_revision FROM public.service_routine_versions WHERE id = v_version) = v_rev,
-    'unchanged');
+    (SELECT draft_revision FROM public.service_routine_versions WHERE id = v_version) = v_rev
+    AND (SELECT payload FROM public.service_routine_versions WHERE id = v_version) = v_payload,
+    'content+revision unchanged');
+  PERFORM pg_temp.ra_note('RA-A12c',
+    (SELECT count(*) FROM public.service_workflow_audit
+      WHERE action = 'routine_draft_updated' AND entity_id = v_version) = v_pub_audit_before,
+    'no success audit on deny');
+
+  -- RA-A12d two-writer: admin2 wins; stale expected still PT409; writer2 content intact
+  PERFORM pg_temp.ra_as(admin2);
+  PERFORM public.update_service_routine_draft(
+    v_version, v_rev,
+    jsonb_set(v_payload, '{sections,1,items,0,instruction}', '"Writer2"'),
+    NULL, NULL, NULL, NULL
+  );
+  v_rev := (SELECT draft_revision FROM public.service_routine_versions WHERE id = v_version);
+  PERFORM pg_temp.ra_as(admin1);
+  SELECT * INTO v_fail, v_fail_state, v_fail_msg FROM pg_temp.ra_failinfo(format(
+    $q$SELECT public.update_service_routine_draft(%L::uuid,'stale-after-writer2',%L::jsonb,NULL,NULL,NULL,NULL)$q$,
+    v_version, v_payload::text
+  ));
+  PERFORM pg_temp.ra_note('RA-A12d', v_fail AND v_fail_state = 'PT409'
+    AND (SELECT payload #>> '{sections,1,items,0,instruction}'
+         FROM public.service_routine_versions WHERE id = v_version) = 'Writer2',
+    coalesce(v_fail_state, 'null') || '; writer2 intact');
+  -- Fresh save with current revision still works
+  PERFORM public.update_service_routine_draft(
+    v_version, v_rev, v_payload, NULL, NULL, NULL, NULL
+  );
+  v_rev := (SELECT draft_revision FROM public.service_routine_versions WHERE id = v_version);
+  PERFORM pg_temp.ra_note('RA-A12e',
+    v_rev IS NOT NULL
+    AND (SELECT payload FROM public.service_routine_versions WHERE id = v_version) = v_payload,
+    'fresh save after conflict');
 
   -- RA-A3 / F-04: inspection-section measurement limit without source
   v_bad := jsonb_set(v_payload, '{sections,1,items,0,limit_value}', '"1.0"');

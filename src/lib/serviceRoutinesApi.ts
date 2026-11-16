@@ -33,12 +33,42 @@ export type RoutineVersionRow = {
   payload: RoutinePayload
 }
 
+/** Stable STG-01 / contract identifier for optimistic draft conflicts. */
+export const ROUTINE_DRAFT_STALE_REVISION = 'routine_draft_stale_revision'
+
+export type ServiceRoutineRpcError = Error & {
+  code?: string
+  status?: number
+  conflictCode?: typeof ROUTINE_DRAFT_STALE_REVISION
+  details?: string | null
+  hint?: string | null
+}
+
+export function isRoutineDraftStaleConflict(error: unknown): error is ServiceRoutineRpcError {
+  const e = error as ServiceRoutineRpcError | null
+  if (!e) return false
+  if (e.conflictCode === ROUTINE_DRAFT_STALE_REVISION) return true
+  if (e.code === 'PT409') return true
+  const detail = (e.details ?? '').toLowerCase()
+  if (detail.includes(ROUTINE_DRAFT_STALE_REVISION)) return true
+  return (e.message ?? '').toLowerCase().includes('stale draft')
+}
+
 async function rpc<T>(fn: string, args: Record<string, unknown>): Promise<T> {
   const { data, error } = await supabase.rpc(fn, args)
   if (error) {
-    const err = new Error(error.message) as Error & { code?: string; status?: number }
+    const err = new Error(error.message) as ServiceRoutineRpcError
     err.code = error.code
-    if (error.message.toLowerCase().includes('stale draft')) err.status = 409
+    err.details = (error as { details?: string | null }).details ?? null
+    err.hint = (error as { hint?: string | null }).hint ?? null
+    if (
+      error.code === 'PT409' ||
+      (err.details ?? '').includes(ROUTINE_DRAFT_STALE_REVISION) ||
+      error.message.toLowerCase().includes('stale draft')
+    ) {
+      err.status = 409
+      err.conflictCode = ROUTINE_DRAFT_STALE_REVISION
+    }
     throw err
   }
   return data as T

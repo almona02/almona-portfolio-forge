@@ -63,7 +63,7 @@ Requirement classes (§13.3): `safety_gate` (non-waivable) | `required` | `optio
 | **Pinned `action` strings** | `routine_draft_created` · `routine_draft_updated` · `routine_draft_edit_conflict` · `routine_review_submitted` · `routine_review_recorded` · `routine_review_invalidated` · `routine_published` · `routine_retired` · `routine_applicability_set` · `routine_applicability_override` · `routine_authz_denied` · `routine_validation_denied` |
 | **Attribution** | Every audit row: `actor_id`, `actor_role`, timestamp, `entity_type`, `entity_id`, plus details JSON with `routine_id`, `version_id`, optional applicability id, optional `draft_revision`. |
 | **Successful mutation atomicity** | Business write + its success audit row commit in **one** transaction. If audit insert fails, the business write rolls back. Applies to create/update draft, submit review, record review, invalidate review, publish, retire, applicability set/override. |
-| **Denied operations** | Authz failure, validation failure, stale-edit conflict, or code-uniqueness conflict: **business state unchanged**. Caller receives an explicit error (`42501` authz, `22023`/`P0001` validation/conflict as appropriate, or API 403/409). Optional audit of the deny using `routine_authz_denied`, `routine_validation_denied`, or `routine_draft_edit_conflict` may commit in a **separate** transaction (or same txn that only inserts audit and no business mutation). **Never** partially apply a denied mutation. |
+| **Denied operations** | Authz failure, validation failure, stale-edit conflict, or code-uniqueness conflict: **business state unchanged**. Caller receives an explicit error (`42501` authz, `22023`/`P0001` validation as appropriate, stale-edit **`PT409`** / API **409**, or API 403/409). Optional audit of the deny using `routine_authz_denied`, `routine_validation_denied`, or `routine_draft_edit_conflict` may commit in a **separate** transaction (or same txn that only inserts audit and no business mutation). **Never** partially apply a denied mutation. |
 
 ---
 
@@ -106,7 +106,7 @@ Runtime must **never** invent pass/fail tolerances when no limit is configured (
 | Case | Behavior |
 |------|----------|
 | Two Admins (or two sessions) edit the same draft version | Client must supply the **expected** `draft_revision` (or content version) known at read time. |
-| Stale edit (expected revision ≠ current) | **Fail explicitly** — conflict error (API 409 / SQL conflict). **Do not** silently overwrite newer content. Optional audit `routine_draft_edit_conflict`. Business row unchanged. |
+| Stale edit (expected revision ≠ current) | **Fail explicitly** — SQLSTATE **`PT409`**, MESSAGE `Stale draft revision`, DETAIL **`routine_draft_stale_revision`**, API **409**. **Do not** use SQLSTATE `40001` for this application conflict (that code is serialization_failure and can trigger hosted PostgREST retries). **Do not** silently overwrite newer content. Optional audit `routine_draft_edit_conflict`. Business row unchanged (content, `draft_revision`, and successful-update audit `routine_draft_updated` unchanged on deny). Client must retain unsaved input, show server content separately, and require explicit reconcile or labeled replacement confirmation before saving against the new revision. |
 | Fresh edit (expected matches current) | Apply payload, compute new `draft_revision`, audit `routine_draft_updated` atomically with the write. If a prior review was eligible for the old revision, run §6 invalidation in the same transaction. |
 
 ---

@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BASE = ROOT / "scripts/service-workflow/disposable_routines_base.sql"
 MIG = ROOT / "supabase/migrations/20261116180000_service_routines_lane_a_authoring.sql"
+MIG_STG01 = ROOT / "supabase/migrations/20261116213000_service_routines_lane_a_stg01_stale_conflict.sql"
 BATTERY = ROOT / "scripts/service-workflow/disposable_routines_battery.sql"
 OUT_DIR = ROOT / ".artifacts/slice0/service-workflow"
 OUT = OUT_DIR / "disposable_routines_results.json"
@@ -97,6 +98,8 @@ def main() -> int:
         apply(db, BASE, "base")
         print("applying lane-a migration…", flush=True)
         apply(db, MIG, "lane-a migration")
+        print("applying STG-01 correction…", flush=True)
+        apply(db, MIG_STG01, "stg-01 stale conflict")
         print("running battery…", flush=True)
         r = psql_file(db, BATTERY)
         if r.returncode != 0:
@@ -114,6 +117,7 @@ def main() -> int:
             "contract_tip": "1350b749ffd999ef3206c9733f0bcfb47b483ce2",
             "implementation_sha": impl_sha(),
             "migration": str(MIG.relative_to(ROOT)),
+            "stg01_migration": str(MIG_STG01.relative_to(ROOT)),
             "counts": {"PASS": pass_n, "FAIL": fail_n, "TOTAL": len(rows)},
             "checks": rows,
             "raw_tail": r.stdout[-2500:],
