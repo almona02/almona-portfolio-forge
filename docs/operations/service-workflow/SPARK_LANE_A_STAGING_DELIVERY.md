@@ -12,8 +12,10 @@ Pointers also at personal / agent stores under `files/lane-a/SPARK_LANE_A_STAGIN
 |------------|---------------|
 | Directory | `C:\projects\_almona_handoff\lane-a-staging-verification\` |
 | Manifest | `C:\projects\_almona_handoff\lane-a-staging-verification\MANIFEST.json` |
-| **Spark confirmation (write here)** | `C:\projects\_almona_handoff\lane-a-staging-verification\SPARK_CONFIRM.json` |
+| **Spark confirmation (preferred)** | `C:\projects\_almona_handoff\lane-a-staging-verification\SPARK_CONFIRM.json` |
+| Spark confirmation (accepted alternate) | `C:\projects\almona-routines-authoring\.artifacts\SPARK_CONFIRM.json` |
 | Cleanup ownership | **Cursor operator** — `CLEANUP_AFTER_RUN.md` in that directory |
+| Paths-only (commit) | [`SPARK_LANE_A_STAGING_PATHS.md`](./SPARK_LANE_A_STAGING_PATHS.md) — paste into Spark session if needed |
 
 ## Staging identity (do not use production)
 
