@@ -1,10 +1,11 @@
 # Service routines — authoring implementation contract (Lane A only)
 
-**Status:** Implementation contract for Spark review · **no runtime until Spark PASS**  
+**Status:** Final Lane A contract for Spark closeout · **no runtime until Spark PASS on this tip**  
 **Branch:** `feat/service-routines-authoring` (from `feat/service-workflow-b1-planning` @ `1cd5e094`)  
+**Based on:** `5ff07e5f509b04144fb4d47f2eb0af09f82c11ba` + finalization below  
 **Sources:** [`SERVICE_ROUTINES_FIRST_SLICE_PROPOSAL.md`](./SERVICE_ROUTINES_FIRST_SLICE_PROPOSAL.md) Lane A · Spec §13 + Status §A–C (`docs/specs/SERVICE_WORKFLOW_SPECIFICATION_MANUAL_MACHINES.md` blob `6f0e11cb…`)  
 **FR-1:** Untouched · runtime freeze remains `e17858a5` on `release/fr1-slice0-share-privacy`  
-**Gates:** #155 frozen · #156 draft · **no merge · no production · no credential reset**
+**Gates:** #155 frozen · #156 draft · **no merge · no staging apply · no production · no credential reset**
 
 ---
 
@@ -41,10 +42,12 @@ Lane B (pin + results) and Lane C (contracts/recurrence/squads) remain deferred.
 
 ## 3. Data shape (conceptual)
 
-- `service_routines` — stable code, name EN/AR, description, owner, status aggregate.
+- `service_routines` — stable **code**, name EN/AR, description, owner, status aggregate.
+- **Code uniqueness:** `service_routines.code` is unique across **all** routine identities, **including retired**. Retirement **never** releases a code for reuse. Creating or renaming to a code that already exists on any row (any lifecycle) is denied.
 - `service_routine_versions` — version ordinal; lifecycle `draft | in_review | published | retired`; immutable payload once `published`.
 - Version payload: sections → items; item fields: type, instruction / manufacturer-doc ref, requirement class, evidence requirement, optional finding mapping + follow-up trigger, measurement unit + optional limit **only if** tolerance-source ref present.
-- Applicability rows (**Lane A metadata only**): family set; optional manufacturer ids; optional `catalog_model_id` links; override metadata when used. These rows describe intended applicability; they do **not** enforce visit/coverage assignment (deferred).
+- Draft concurrency token: each draft version carries `draft_revision` (digest) and `content_updated_at` (or equivalent row version) used for optimistic concurrency on edits.
+- Applicability rows (**Lane A metadata only**): family set; optional manufacturer ids; optional `catalog_model_id` links; override metadata when used. These rows describe intended applicability; they do **not** enforce visit/coverage assignment (deferred). Assignment and assignment overrides remain **out of scope**.
 - Explicit manufacturer restrictions (optional allow-list / deny-list on the routine) are stored with the routine identity and are checked on metadata links; mismatch overrides **cannot** attach a denied manufacturer.
 
 Item types (§13.2): `safety_gate` | `inspection` | `measurement` | `photo_evidence` | `task` | `note`.  
@@ -52,14 +55,15 @@ Requirement classes (§13.3): `safety_gate` (non-waivable) | `required` | `optio
 
 ---
 
-## 3.1 Audit ledger, events, atomicity
+## 3.1 Audit ledger — pinned event strings and denied-operation behavior
 
 | Field | Rule |
 |-------|------|
-| **Ledger** | Append-only `service_workflow_audit` (same program ledger as B1–B7), `entity_type` distinguishing routine / routine_version / routine_applicability |
-| **Required events** | `routine_draft_created`, `routine_draft_updated`, `routine_review_submitted`, `routine_review_recorded`, `routine_review_invalidated`, `routine_published`, `routine_retired`, `routine_applicability_set`, `routine_applicability_override`, `routine_authz_denied` |
-| **Attribution** | Every success/deny event carries `actor_id`, timestamp, and target ids (`routine_id`, `version_id`, optional applicability id) |
-| **Atomicity** | Publish = single transaction: validation + immutability stamp + version ordinal allocate + audit `routine_published` (all commit or none). Review record + audit `routine_review_recorded` atomic. Applicability set/override + audit atomic. Failed authz: **deny + optional `routine_authz_denied` audit, zero business mutation** |
+| **Ledger** | Append-only `public.service_workflow_audit` (B1–B7 program ledger). `entity_type` ∈ {`service_routine`, `service_routine_version`, `service_routine_applicability`}. `action` uses the **exact** strings below (pinned; do not invent synonyms). |
+| **Pinned `action` strings** | `routine_draft_created` · `routine_draft_updated` · `routine_draft_edit_conflict` · `routine_review_submitted` · `routine_review_recorded` · `routine_review_invalidated` · `routine_published` · `routine_retired` · `routine_applicability_set` · `routine_applicability_override` · `routine_authz_denied` · `routine_validation_denied` |
+| **Attribution** | Every audit row: `actor_id`, `actor_role`, timestamp, `entity_type`, `entity_id`, plus details JSON with `routine_id`, `version_id`, optional applicability id, optional `draft_revision`. |
+| **Successful mutation atomicity** | Business write + its success audit row commit in **one** transaction. If audit insert fails, the business write rolls back. Applies to create/update draft, submit review, record review, invalidate review, publish, retire, applicability set/override. |
+| **Denied operations** | Authz failure, validation failure, stale-edit conflict, or code-uniqueness conflict: **business state unchanged**. Caller receives an explicit error (`42501` authz, `22023`/`P0001` validation/conflict as appropriate, or API 403/409). Optional audit of the deny using `routine_authz_denied`, `routine_validation_denied`, or `routine_draft_edit_conflict` may commit in a **separate** transaction (or same txn that only inserts audit and no business mutation). **Never** partially apply a denied mutation. |
 
 ---
 
@@ -76,20 +80,20 @@ Requirement classes (§13.3): `safety_gate` (non-waivable) | `required` | `optio
 | Read draft / in_review | R | R (reviewers) | — | — | — | — |
 | Technician-style preview | R | R | R (published/retired exact version) | — | — | — |
 
-Unauthorized callers → `42501` (or API 403), **no payload leak** of unpublished content, **no writes**, audit deny where practical.
+Unauthorized callers → `42501` (or API 403), **no payload leak** of unpublished content, **business writes unchanged**, deny audited per §3.1 when recorded.
 
 ---
 
 ## 5. Server-enforced validation (publish blockers)
 
-Publish **denied** (version stays draft/in_review; itemised errors) when any of:
+Publish **denied** (version stays draft/in_review; itemised errors; business state unchanged) when any of:
 
 1. **Fewer than one non-waivable `safety_gate` item** in the version.
 2. **No dedicated safety section** — at least one section with `kind = safety` (or equivalent) that **contains every** `safety_gate` item; safety_gate items outside that section are publish errors. (Clarifies Spec §13.7 “missing safety section” vs RA-2 item rule: **both** item and section are required.)
 3. Measurement limit present without manufacturer/tolerance **source ref**.
 4. Interval/cadence fields if present ≤ 0 (authoring may store cadence metadata for later Lane C; generator not built).
-5. Duplicate routine code on a non-retired identity.
-6. Missing **valid** author≠reviewer review bound to the **exact** draft revision (see §6).
+5. Routine **code** collides with any existing routine identity (**including retired**).
+6. Missing **valid** author≠reviewer review bound to the **exact** draft revision/digest that is still eligible (see §6).
 7. Family applicability metadata empty (at least one family required before publish).
 8. Any attempt to mark safety_gate waivable.
 
@@ -97,15 +101,26 @@ Runtime must **never** invent pass/fail tolerances when no limit is configured (
 
 ---
 
+## 5.1 Concurrent draft-edit handling
+
+| Case | Behavior |
+|------|----------|
+| Two Admins (or two sessions) edit the same draft version | Client must supply the **expected** `draft_revision` (or content version) known at read time. |
+| Stale edit (expected revision ≠ current) | **Fail explicitly** — conflict error (API 409 / SQL conflict). **Do not** silently overwrite newer content. Optional audit `routine_draft_edit_conflict`. Business row unchanged. |
+| Fresh edit (expected matches current) | Apply payload, compute new `draft_revision`, audit `routine_draft_updated` atomically with the write. If a prior review was eligible for the old revision, run §6 invalidation in the same transaction. |
+
+---
+
 ## 6. Lifecycle, review binding, publish / version allocation
 
 `draft → in_review → published → retired`
 
-- Draft: Admin mutable. Each save advances a **draft revision** (content digest / revision id).
-- Submit for review: version enters `in_review` with payload + draft revision id frozen for the review cycle.
-- **Review binding:** A feasibility review is bound to that **exact draft revision id/digest**. Any content change (return to draft + edit, or in-place edit if ever allowed) **invalidates** prior approval (`routine_review_invalidated`); publish requires a new review of the new revision. Actor-level author≠reviewer still applies after role changes (§2).
+- Draft: Admin mutable under §5.1 concurrency. Each successful save advances **draft revision / digest**.
+- Submit for review: version enters `in_review` with payload + draft revision/digest frozen for the review cycle.
+- **Review binding (confirmed):** Feasibility **approval** is bound to that **exact** draft revision/digest. Publish may use an approval only when `approval.draft_revision = version.draft_revision` and the approval is not invalidated.
+- **Edits vs history:** Any content change that advances `draft_revision` **invalidates eligibility** of prior approvals for publication (`routine_review_invalidated` + clear/flag “eligible for publish” on those review rows). **Prior review rows remain retained** as history (append-only; do not delete). Publish then requires a **new** review of the new revision. Actor-level author≠reviewer still applies after role changes (§2).
 - Published: **immutable**; content edits require new version N+1 as a new draft.
-- Retired: cannot be newly assigned (Lane C later); **retained** and readable for history and preview.
+- Retired: code remains reserved forever (§3); cannot be newly assigned (Lane C later); **retained** and readable for history and preview.
 
 ### Repeat-publish and concurrent version allocation
 
@@ -143,19 +158,28 @@ Exact published (or retired) version rendered as the technician will see it: sec
 | RA-A2 | Publish without safety_gate **or** without dedicated safety section denied; with both + distinct Support/Admin review → published immutable id | RA-2, §13.7 |
 | RA-A3 | Measurement limit without source ref → publish denied | RA-1 |
 | RA-A4 | Family-inapplicable metadata hard-denied; model mismatch metadata override audited; override cannot attach explicitly restricted manufacturer; **no assignment override path** | §13.9 / Status §C |
-| RA-A5 | Author user id cannot self-review (including after role change); content change invalidates prior review; publish without valid bound review denied | §13.4 + §6 |
+| RA-A5 | Author user id cannot self-review (including after role change); edit advances digest, invalidates publish eligibility, **preserves** prior review history rows; publish without valid bound review denied | §13.4 + §6 |
 | RA-A6 | Published version edit denied; new draft version N+1 allowed; concurrent publish allocates distinct ordinals without duplicate publish rows | §13.4 + §6 |
-| RA-A7 | Retire published version; preview still exact; cannot select retired as sole “current” publish target for new metadata that requires current publish | RA-8 (authoring half) |
+| RA-A7 | Retire published version; code remains unreusable; preview still exact | RA-8 + §3 code rule |
 | RA-A8 | Tech/Support/Admin preview of published version read-only; Customer/Anon denied draft content | RA-9 partial |
-| RA-A9 | Unauthorized mutate/publish → denied + no draft leak | proposal §7/§8 partial |
-| RA-A10 | Named ledger events (§3.1) for create, review, invalidate, publish, retire, applicability override, deny; publish atomic with audit | program audit pattern |
+| RA-A9 | Unauthorized mutate/publish → denied; business unchanged; no draft leak | §3.1 deny |
+| RA-A10 | Pinned audit `action` strings (§3.1); success mutation+audit atomic; deny leaves business unchanged | §3.1 |
 | RA-A11 | Repeat publish of same published version is idempotent (no second ordinal / no mutation) | §6 |
+| RA-A12 | Stale draft edit (wrong expected `draft_revision`) fails explicitly; newer content not overwritten | §5.1 |
+| RA-A13 | Creating/renaming to a retired (or any existing) code denied | §3 |
 
 Lane B scenarios (visit pin, checklist_results, version skew on submit) are **not** in this Spark battery.
 
 ---
 
-## 9. Spark handoff
+## 9. Spark handoff / implementation gate
 
-See [`SPARK_ROUTINES_AUTHORING_REVIEW.md`](./SPARK_ROUTINES_AUTHORING_REVIEW.md). **No staging apply / no production** until Spark PASS on this contract tip.
-**runtime implementation starts only after that PASS.**
+See [`SPARK_ROUTINES_AUTHORING_REVIEW.md`](./SPARK_ROUTINES_AUTHORING_REVIEW.md).
+
+| Gate | Rule |
+|------|------|
+| Until Spark PASS on **this** final contract tip | **No** runtime implementation |
+| After Spark confirms points 1–4 below closed | Lane A implementation + local/disposable tests only; freeze a **separate** implementation SHA |
+| Always | FR-1 unchanged · no staging apply · no merge · no production |
+
+**Spark must confirm closed:** (1) code unique including retired; (2) stale draft edit fails explicitly; (3) approval bound to exact digest, edits invalidate eligibility, history preserved; (4) pinned audit strings + atomic success / unchanged-on-deny.
