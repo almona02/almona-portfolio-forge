@@ -1,0 +1,408 @@
+{
+  "label": "Spark independent",
+  "contract_tip": "1350b749ffd999ef3206c9733f0bcfb47b483ce2",
+  "implementation_sha": "5e53ee009507b29de707be0f1eebd0252c34c9c9",
+  "migration": "supabase/migrations/20261116180000_service_routines_lane_a_authoring.sql",
+  "counts": {
+    "PASS": 72,
+    "FAIL": 7,
+    "TOTAL": 79
+  },
+  "checks": [
+    {
+      "check_id": "SPK-CC-inflight-draft",
+      "status": "PASS",
+      "detail": "state=22023"
+    },
+    {
+      "check_id": "SPK-CC-inflight-review",
+      "status": "PASS",
+      "detail": "state=22023"
+    },
+    {
+      "check_id": "SPK-CC-next-ok",
+      "status": "PASS",
+      "detail": "next draft after publish"
+    },
+    {
+      "check_id": "SPK-D1-anon",
+      "status": "PASS",
+      "detail": "denied 42501, no row"
+    },
+    {
+      "check_id": "SPK-D1-cust",
+      "status": "PASS",
+      "detail": "denied 42501, no row"
+    },
+    {
+      "check_id": "SPK-D1-impersonate",
+      "status": "PASS",
+      "detail": "denied 42501, no row"
+    },
+    {
+      "check_id": "SPK-D1-ok",
+      "status": "PASS",
+      "detail": "admin draft created, ordinal NULL"
+    },
+    {
+      "check_id": "SPK-D1-sales",
+      "status": "PASS",
+      "detail": "denied 42501, no row"
+    },
+    {
+      "check_id": "SPK-D1-support",
+      "status": "PASS",
+      "detail": "denied 42501, no row"
+    },
+    {
+      "check_id": "SPK-D1-svc-nactor",
+      "status": "PASS",
+      "detail": "denied 42501, no row"
+    },
+    {
+      "check_id": "SPK-D1-svc-ok",
+      "status": "PASS",
+      "detail": "service+actor allowed"
+    },
+    {
+      "check_id": "SPK-D1-tech",
+      "status": "PASS",
+      "detail": "denied 42501, no row"
+    },
+    {
+      "check_id": "SPK-D10-draft",
+      "status": "PASS",
+      "detail": "state=22023"
+    },
+    {
+      "check_id": "SPK-D10-retire-ok",
+      "status": "PASS",
+      "detail": "published retired with stamp"
+    },
+    {
+      "check_id": "SPK-D10-routine-status",
+      "status": "PASS",
+      "detail": "routine status follows last publish retire"
+    },
+    {
+      "check_id": "SPK-D10-twice",
+      "status": "PASS",
+      "detail": "state=22023"
+    },
+    {
+      "check_id": "SPK-D11-idem",
+      "status": "PASS",
+      "detail": "repeat same ordinal, single row"
+    },
+    {
+      "check_id": "SPK-D11-unauth",
+      "status": "PASS",
+      "detail": "state=42501"
+    },
+    {
+      "check_id": "SPK-D2-interval",
+      "status": "FAIL",
+      "detail": "state=22P02"
+    },
+    {
+      "check_id": "SPK-D2-nofamily",
+      "status": "FAIL",
+      "detail": "state=22P02"
+    },
+    {
+      "check_id": "SPK-D2-nogate",
+      "status": "FAIL",
+      "detail": "state=22P02"
+    },
+    {
+      "check_id": "SPK-D2-noreview",
+      "status": "PASS",
+      "detail": "state=22023"
+    },
+    {
+      "check_id": "SPK-D2-nosafety",
+      "status": "FAIL",
+      "detail": "state=22P02 row_intact=true"
+    },
+    {
+      "check_id": "SPK-D2-outside",
+      "status": "FAIL",
+      "detail": "state=22P02"
+    },
+    {
+      "check_id": "SPK-D2-waivable",
+      "status": "FAIL",
+      "detail": "state=22P02"
+    },
+    {
+      "check_id": "SPK-D3-nosource",
+      "status": "PASS",
+      "detail": "state=22023"
+    },
+    {
+      "check_id": "SPK-D3b-safety-nosource",
+      "status": "FAIL",
+      "detail": "FINDING: safety-section limit-without-source published"
+    },
+    {
+      "check_id": "SPK-D4-bind-ok",
+      "status": "PASS",
+      "detail": "support review + admin2 publish, ordinal 1"
+    },
+    {
+      "check_id": "SPK-D4-fresh-publish",
+      "status": "PASS",
+      "detail": "{\"status\": \"published\", \"idempotent\": false, \"version_id\": \"ddbe3203-4a14-4d29-93cd-af3e83bc1e8e\", \"version_ordinal\": 1}"
+    },
+    {
+      "check_id": "SPK-D4-lifecycle",
+      "status": "PASS",
+      "detail": "early-review + double-submit both 22023: 2/2"
+    },
+    {
+      "check_id": "SPK-D4-next-ordinal",
+      "status": "PASS",
+      "detail": "second publish ordinal 2"
+    },
+    {
+      "check_id": "SPK-D4-self",
+      "status": "PASS",
+      "detail": "denied 42501, no row"
+    },
+    {
+      "check_id": "SPK-D4-stale-invalidate",
+      "status": "PASS",
+      "detail": "edit advanced digest, eligibility cleared, history kept"
+    },
+    {
+      "check_id": "SPK-D4-stale-publish",
+      "status": "PASS",
+      "detail": "state=22023"
+    },
+    {
+      "check_id": "SPK-D5-direct-delete-pub",
+      "status": "PASS",
+      "detail": "state=42501"
+    },
+    {
+      "check_id": "SPK-D5-direct-insert",
+      "status": "PASS",
+      "detail": "state=42501"
+    },
+    {
+      "check_id": "SPK-D5-direct-update-draft",
+      "status": "PASS",
+      "detail": "state=42501"
+    },
+    {
+      "check_id": "SPK-D5-direct-update-pub",
+      "status": "PASS",
+      "detail": "state=42501"
+    },
+    {
+      "check_id": "SPK-D5-rpc-update-pub",
+      "status": "PASS",
+      "detail": "state=22023"
+    },
+    {
+      "check_id": "SPK-D6-dup",
+      "status": "PASS",
+      "detail": "state=23505"
+    },
+    {
+      "check_id": "SPK-D6-retired",
+      "status": "PASS",
+      "detail": "state=23505"
+    },
+    {
+      "check_id": "SPK-D6-stable",
+      "status": "PASS",
+      "detail": "code immutable across edits, name editable"
+    },
+    {
+      "check_id": "SPK-D6-trim",
+      "status": "PASS",
+      "detail": "state=23505"
+    },
+    {
+      "check_id": "SPK-D7-fresh",
+      "status": "PASS",
+      "detail": "fresh save applied, revision advanced"
+    },
+    {
+      "check_id": "SPK-D7-stale",
+      "status": "PASS",
+      "detail": "conflict 40001, newer content intact"
+    },
+    {
+      "check_id": "SPK-D8-no-ordinal-on-deny",
+      "status": "PASS",
+      "detail": "denied versions with ordinal/stamp: 0"
+    },
+    {
+      "check_id": "SPK-D9-allow-deny",
+      "status": "PASS",
+      "detail": "state=22023"
+    },
+    {
+      "check_id": "SPK-D9-allow-ok",
+      "status": "PASS",
+      "detail": "allow-listed manufacturer stored"
+    },
+    {
+      "check_id": "SPK-D9-deny",
+      "status": "PASS",
+      "detail": "state=22023"
+    },
+    {
+      "check_id": "SPK-D9-mfr-nofam",
+      "status": "PASS",
+      "detail": "state=22023"
+    },
+    {
+      "check_id": "SPK-D9-mismatch",
+      "status": "PASS",
+      "detail": "hard deny 22023, no row"
+    },
+    {
+      "check_id": "SPK-D9-model-nofam",
+      "status": "PASS",
+      "detail": "state=22023"
+    },
+    {
+      "check_id": "SPK-D9-model-ok",
+      "status": "PASS",
+      "detail": "coherent model link stored"
+    },
+    {
+      "check_id": "SPK-D9-support-deny",
+      "status": "PASS",
+      "detail": "state=42501"
+    },
+    {
+      "check_id": "SPK-PV-draft-admin",
+      "status": "PASS",
+      "detail": "admin draft preview"
+    },
+    {
+      "check_id": "SPK-PV-draft-anon",
+      "status": "PASS",
+      "detail": "state=42501"
+    },
+    {
+      "check_id": "SPK-PV-draft-cust",
+      "status": "PASS",
+      "detail": "state=42501"
+    },
+    {
+      "check_id": "SPK-PV-draft-support",
+      "status": "PASS",
+      "detail": "support draft preview"
+    },
+    {
+      "check_id": "SPK-PV-draft-tech",
+      "status": "PASS",
+      "detail": "state=42501"
+    },
+    {
+      "check_id": "SPK-PV-fidelity",
+      "status": "PASS",
+      "detail": "safety-first, ordinal echoed, no invented judgement"
+    },
+    {
+      "check_id": "SPK-PV-missing",
+      "status": "PASS",
+      "detail": "state=P0002"
+    },
+    {
+      "check_id": "SPK-PV-pub-cust",
+      "status": "PASS",
+      "detail": "state=42501"
+    },
+    {
+      "check_id": "SPK-PV-pub-tech",
+      "status": "PASS",
+      "detail": "tech published preview"
+    },
+    {
+      "check_id": "SPK-RLS-cust",
+      "status": "PASS",
+      "detail": "customer sees zero rows"
+    },
+    {
+      "check_id": "SPK-RLS-support",
+      "status": "PASS",
+      "detail": "support sees drafts: 19"
+    },
+    {
+      "check_id": "SPK-RLS-tech",
+      "status": "PASS",
+      "detail": "tech sees 9/9 published-only"
+    },
+    {
+      "check_id": "SPK-SIG",
+      "status": "PASS",
+      "detail": "10/10 RPCs match"
+    },
+    {
+      "check_id": "SPK-D4-rolechange",
+      "status": "PASS",
+      "detail": "uid-based author denial survives role change"
+    },
+    {
+      "check_id": "SPK-D4-rolechange-publish",
+      "status": "PASS",
+      "detail": "non-author review + publish ok"
+    },
+    {
+      "check_id": "SPK-A1-created",
+      "status": "PASS",
+      "detail": "draft_created rows=1"
+    },
+    {
+      "check_id": "SPK-A2-idem-audit",
+      "status": "PASS",
+      "detail": "published rows after repeat=1"
+    },
+    {
+      "check_id": "SPK-A3-deny-noaudit",
+      "status": "PASS",
+      "detail": "published rows after failed publish=0"
+    },
+    {
+      "check_id": "SPK-A4-review-trail",
+      "status": "PASS",
+      "detail": "recorded=2 invalidated=1 rows=2 eligible=1"
+    },
+    {
+      "check_id": "SPK-A5-stale-noaudit",
+      "status": "PASS",
+      "detail": "draft_updated rows (fresh only)=1"
+    },
+    {
+      "check_id": "SPK-A6-retired",
+      "status": "PASS",
+      "detail": "retired rows=1"
+    },
+    {
+      "check_id": "SPK-A7-appl-set",
+      "status": "PASS",
+      "detail": "applicability_set rows=2"
+    },
+    {
+      "check_id": "SPK-A8-attribution",
+      "status": "PASS",
+      "detail": " unattributed success rows=0"
+    },
+    {
+      "check_id": "SPK-CC-same",
+      "status": "PASS",
+      "detail": "ordinals=[(1, True), (1, False)] published_rows=1 status=published rc=[0, 0]"
+    },
+    {
+      "check_id": "SPK-CC-distinct",
+      "status": "PASS",
+      "detail": "ordinals=1,1 status=published,published rc=[0, 0]"
+    }
+  ]
+}
