@@ -2,8 +2,10 @@
 
 | Field | Value |
 |-------|-------|
-| **Accepted runtime** | `e1345a0aef857e857fe5af50176c1fcb633aae70` |
+| **Accepted runtime (hold)** | `e1345a0aef857e857fe5af50176c1fcb633aae70` — **hold while Spark reviews**; no runtime edits |
 | **Contract** | `1350b749ffd999ef3206c9733f0bcfb47b483ce2` |
+| **Frontend correction (review)** | `ad9570bc22b30d649b9223a3b74fe2f836adb143` — login-return path; on `origin/feat/service-routines-authoring` |
+| **Packet commit (frontend binding)** | `af1883cecd388a18ad7d7a39e9a2a7910ffc9c7a` — binds frontend tip above; migration blob unchanged vs `e1345a0a` |
 | **Project id** | `almona-lane-a-local` (separate from default `almona-portfolio-forge` and FR-1 recovery) |
 | **Outbound** | Disabled (no Twilio/OAuth/analytics/vector/OpenAI; Mailpit local only) |
 | **Bind** | Loopback only (`127.0.0.1`) |
@@ -100,6 +102,23 @@ Pushed as-authored (Spark QA &lt;sparksubagent@almona.invalid&gt;); historical e
 
 Results JSON (on those branches): `docs/operations/service-workflow/spark-probes/SPARK_LANE_A_RESULTS_*.json`
 
+## Spark review hold — frontend correction `ad9570bc`
+
+| Item | Full SHA / note |
+|------|-----------------|
+| Frontend correction under review | `ad9570bc22b30d649b9223a3b74fe2f836adb143` |
+| Remote reachability | Present on `origin/feat/service-routines-authoring` (ancestor of branch tip) |
+| Packet commit binding that frontend | `af1883cecd388a18ad7d7a39e9a2a7910ffc9c7a` (`docs(service): bind Lane A staging packet frontend to ad9570bc`) |
+| Migration at frontend tip | blob `3ca6fb4165cd92c38fe18274d7869123fd834e45` · SHA-256 `62255ac2329864f11aa19bf66eb72ff5a491935c8fd586820ea3c0cb9ccbbc1b` · **38958** bytes — identical to accepted baseline `e1345a0a` |
+| Runtime hold | Stay on accepted baseline `e1345a0aef857e857fe5af50176c1fcb633aae70` for Lane A SQL/runtime; do not move acceptance to `ad9570bc` until Spark closes review |
+
+```bash
+git fetch origin feat/service-routines-authoring
+git cat-file -t ad9570bc22b30d649b9223a3b74fe2f836adb143   # expect: commit
+git merge-base --is-ancestor ad9570bc22b30d649b9223a3b74fe2f836adb143 origin/feat/service-routines-authoring && echo reachable
+git show af1883cecd388a18ad7d7a39e9a2a7910ffc9c7a:docs/operations/service-workflow/LANE_A_STAGING_DEPLOYMENT_PACKET.md | head -20
+```
+
 ## Out of scope
 
-No staging/prod apply · no merge · no FR-1 recovery changes · runtime preserved at `e1345a0a` unless a demonstrated defect requires a new correction SHA.
+No staging/prod apply · no merge · no FR-1 recovery changes · runtime held at `e1345a0a` while Spark reviews `ad9570bc` / packet `af1883ce`.

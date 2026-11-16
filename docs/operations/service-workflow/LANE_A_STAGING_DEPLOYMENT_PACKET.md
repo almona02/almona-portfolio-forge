@@ -8,7 +8,7 @@
 | **Migration path** | `supabase/migrations/20261116180000_service_routines_lane_a_authoring.sql` |
 | **Git blob (e1345a0a)** | `3ca6fb4165cd92c38fe18274d7869123fd834e45` |
 | **SHA-256 of blob bytes** (`git show e1345a0a:… \| openssl dgst -sha256`) | `62255ac2329864f11aa19bf66eb72ff5a491935c8fd586820ea3c0cb9ccbbc1b` |
-| **Byte length** | 39952 (git blob; working-tree CRLF may differ on Windows) |
+| **Byte length** | 38958 (git blob object size; working-tree CRLF may differ on Windows) |
 | **Target DB (prior B-series)** | Supabase staging `apnmoevmvihfzcnttctx` (`almona02-staging`) — confirm identity before any future apply |
 | **Authorization** | Explicit operator approval required before apply |
 
