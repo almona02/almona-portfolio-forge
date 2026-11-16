@@ -2,10 +2,10 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | Applied on staging · awaiting Spark verdict · **no production / merge / FR-1** |
-| **Packet documentation SHA** | `45614cfbe71e76c4ca2fc11863e30276bcad4f5a` |
+| **Status** | Applied on staging · awaiting Spark ack + verdict · **no production / merge / FR-1** |
+| **Packet documentation SHA (at apply)** | `45614cfbe71e76c4ca2fc11863e30276bcad4f5a` |
 | **Spark-reviewed packet ancestor** | `0419455969db302ea9e4672c46fed4d49f2ad984` |
-| **Intervening 04194559→45614cfb** | Documentation / evidence only (packet byte-length note, Spark nav runner+results, bootstrap issues). **No** `src/` or `supabase/migrations/` product delta. Reviewed instructions preserved. |
+| **Intervening 04194559→45614cfb** | Documentation / evidence only. **No** `src/` or `supabase/migrations/` product delta. |
 | **Database implementation** | `e1345a0aef857e857fe5af50176c1fcb633aae70` |
 | **Frontend** | `ad9570bc22b30d649b9223a3b74fe2f836adb143` |
 | **Auth-routing / nav (Spark)** | 26/26 · 9/9 |
@@ -35,17 +35,19 @@ Earlier **39952** was PowerShell text-pipe LF→CRLF inflation (38958 + 994 newl
 | Lane A migration stamp pre-apply | absent |
 | Unexpected anon grants on `service_routine%` | none |
 
-## Live stamp + post-apply probes
+## Live stamp + grant/RLS results
 
 | Check | Result |
 |-------|--------|
 | `schema_migrations` | `20261116192555` / `service_routines_lane_a_authoring` |
-| Tables + RLS | 4 tables; policies present |
+| Tables + RLS | 4 tables; one SELECT policy each |
 | Public `%service_routine%` RPCs | 10 |
-| anon table grants | 0 |
-| anon EXECUTE | false (all) |
-| authenticated EXECUTE | true (all) |
+| anon table grants | **0** |
+| anon EXECUTE | **false** (all 10) |
+| authenticated EXECUTE | **true** (all 10) |
+| authenticated table privileges | **SELECT only** (no INSERT/UPDATE/DELETE) |
 
+Sanitized probe dump: [`spark-probes/LANE_A_STAGING_GRANT_RLS_RESULTS.json`](./spark-probes/LANE_A_STAGING_GRANT_RLS_RESULTS.json).  
 Applied payloads: [`applied-sql/lane-a-staging/`](./applied-sql/lane-a-staging/).
 
 ## Frontend preview
@@ -58,14 +60,25 @@ Applied payloads: [`applied-sql/lane-a-staging/`](./applied-sql/lane-a-staging/)
 | Preview URL | `https://almona-portfolio-forge-6946zqx1g.vercel.app` (**READY**) |
 | Alias | `https://almona-portfolio-f-git-2939ea-mohamed-hassans-projects-0ca04921.vercel.app` |
 | Env binding | Branch-scoped preview `VITE_SUPABASE_*` → staging `apnmoevmvihfzcnttctx` |
-| Protection | SSO on; shareable bypass issued (TTL 7d; secret only in gitignored handoff) |
-| Secure handoff | `.artifacts/lane-a-staging/SPARK_LANE_A_STAGING_SECURE_HANDOFF.txt` (gitignored) |
+| Protection | SSO on; shareable bypass TTL to **2026-11-23T19:32:10Z** (Unix `1795462330`) |
 | Release manifest | [`LANE_A_STAGING_RELEASE_MANIFEST.md`](./LANE_A_STAGING_RELEASE_MANIFEST.md) |
+
+## Secure delivery to Spark (absolute path)
+
+Credentials are **not** in git. Spark must read:
+
+`C:\projects\_almona_handoff\lane-a-staging-verification\SPARK_LANE_A_STAGING_SECURE_HANDOFF.txt`
+
+Delivery guide: [`SPARK_LANE_A_STAGING_DELIVERY.md`](./SPARK_LANE_A_STAGING_DELIVERY.md).
+
+| Item | Absolute path |
+|------|----------------|
+| Secure handoff | `C:\projects\_almona_handoff\lane-a-staging-verification\SPARK_LANE_A_STAGING_SECURE_HANDOFF.txt` |
+| Non-secret manifest | `C:\projects\_almona_handoff\lane-a-staging-verification\MANIFEST.json` |
+| **Spark confirmation** | `C:\projects\_almona_handoff\lane-a-staging-verification\SPARK_CONFIRM.json` |
+| Cleanup checklist | `C:\projects\_almona_handoff\lane-a-staging-verification\CLEANUP_AFTER_RUN.md` |
+| Cleanup owner | **Cursor operator** (after Spark verdict) |
 
 ## Explicit non-goals
 
-No production changes · no merge · no FR-1 · no assignment/pinning · no recurrence · no technician-result implementation.
-
-## After Spark verdict
-
-Scoped cleanup of `LA-STG-%` + synthetic Auth users · revoke preview share/bypass · independent zero-confirmation (separate step).
+No production changes · no merge · no FR-1 · no assignment/pinning · no recurrence · no technician-result · no migration replay · accepted runtime unchanged.

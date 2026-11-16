@@ -1,0 +1,58 @@
+{
+  "label": "Lane A staging post-apply grant/RLS probes",
+  "project_ref": "apnmoevmvihfzcnttctx",
+  "project_name": "almona02-staging",
+  "live_stamp": "20261116192555",
+  "live_name": "service_routines_lane_a_authoring",
+  "observed_at_utc": "2026-11-16T19:39:00Z",
+  "tables": [
+    {
+      "table": "service_routines",
+      "rls": true,
+      "policies": ["service_routines_select"],
+      "authenticated_privileges": ["SELECT"],
+      "anon_privileges": []
+    },
+    {
+      "table": "service_routine_versions",
+      "rls": true,
+      "policies": ["service_routine_versions_select"],
+      "authenticated_privileges": ["SELECT"],
+      "anon_privileges": []
+    },
+    {
+      "table": "service_routine_reviews",
+      "rls": true,
+      "policies": ["service_routine_reviews_select"],
+      "authenticated_privileges": ["SELECT"],
+      "anon_privileges": []
+    },
+    {
+      "table": "service_routine_applicability",
+      "rls": true,
+      "policies": ["service_routine_applicability_select"],
+      "authenticated_privileges": ["SELECT"],
+      "anon_privileges": []
+    }
+  ],
+  "rpc_execute": [
+    {"proname": "create_next_service_routine_draft", "anon_exec": false, "auth_exec": true, "svc_exec": true},
+    {"proname": "create_service_routine_draft", "anon_exec": false, "auth_exec": true, "svc_exec": true},
+    {"proname": "get_service_routine_preview", "anon_exec": false, "auth_exec": true, "svc_exec": true},
+    {"proname": "publish_service_routine_version", "anon_exec": false, "auth_exec": true, "svc_exec": true},
+    {"proname": "record_service_routine_review", "anon_exec": false, "auth_exec": true, "svc_exec": true},
+    {"proname": "retire_service_routine_version", "anon_exec": false, "auth_exec": true, "svc_exec": true},
+    {"proname": "set_service_routine_applicability", "anon_exec": false, "auth_exec": true, "svc_exec": true},
+    {"proname": "set_service_routine_manufacturer_restrictions", "anon_exec": false, "auth_exec": true, "svc_exec": true},
+    {"proname": "submit_service_routine_for_review", "anon_exec": false, "auth_exec": true, "svc_exec": true},
+    {"proname": "update_service_routine_draft", "anon_exec": false, "auth_exec": true, "svc_exec": true}
+  ],
+  "summary": {
+    "anon_table_grants": 0,
+    "any_anon_exec": false,
+    "all_authenticated_exec": true,
+    "rpc_count": 10,
+    "rls_tables": 4
+  },
+  "note": "Writes remain RPC-only for authenticated; service_role retains default table DML (host role). Production untouched."
+}

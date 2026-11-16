@@ -178,4 +178,12 @@ Prefix all routine codes `LA-STG-%`. No real customer/machine data. Passwords in
 ## 11. Spark handoff
 
 Public manifest: [`LANE_A_STAGING_RELEASE_MANIFEST.md`](./LANE_A_STAGING_RELEASE_MANIFEST.md).  
-Secrets + bypass: `.artifacts/lane-a-staging/SPARK_LANE_A_STAGING_SECURE_HANDOFF.txt` (gitignored).
+Delivery brief: [`SPARK_LANE_A_STAGING_DELIVERY.md`](./SPARK_LANE_A_STAGING_DELIVERY.md).  
+
+**Absolute secure channel (Spark-readable):**  
+`C:\projects\_almona_handoff\lane-a-staging-verification\SPARK_LANE_A_STAGING_SECURE_HANDOFF.txt`  
+
+**Spark confirmation:**  
+`C:\projects\_almona_handoff\lane-a-staging-verification\SPARK_CONFIRM.json`  
+
+Worktree `.artifacts/...` is a local mirror only — not the delivery path.
