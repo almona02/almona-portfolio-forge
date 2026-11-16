@@ -4,7 +4,7 @@
 |-------|-------|
 | **Status** | Packet only · **no apply · no merge · no production · FR-1 preserved** |
 | **Accepted Lane A baseline (runtime / migration)** | `e1345a0aef857e857fe5af50176c1fcb633aae70` |
-| **Frontend binding** | `FRONTEND_CORRECTION_SHA_PENDING` — login-return path fix (`safeReturnPath`); set after Vitest verification + freeze |
+| **Frontend binding** | `ad9570bc22b30d649b9223a3b74fe2f836adb143` — login-return path fix (`safeReturnPath`); Vitest 18/18 on auth return-path suite; migration blob identical to `e1345a0a` |
 | **Migration path** | `supabase/migrations/20261116180000_service_routines_lane_a_authoring.sql` |
 | **Git blob (e1345a0a)** | `3ca6fb4165cd92c38fe18274d7869123fd834e45` |
 | **SHA-256 of blob bytes** (`git show e1345a0a:… \| openssl dgst -sha256`) | `62255ac2329864f11aa19bf66eb72ff5a491935c8fd586820ea3c0cb9ccbbc1b` |

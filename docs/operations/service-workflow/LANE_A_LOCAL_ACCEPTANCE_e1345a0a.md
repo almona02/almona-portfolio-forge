@@ -46,4 +46,4 @@ Handoff: [`SPARK_LANE_A_LOCAL_SUPABASE_HANDOFF.md`](./SPARK_LANE_A_LOCAL_SUPABAS
 ## Constraints retained
 
 - One in-flight `draft|in_review` per routine = **implementation constraint** (Spark `SPK-CC-inflight-*` PASS) — not concurrent draft publication evidence.
-- Deep-link `?tab=service-routines` issue: **confirmed** on accepted baseline `e1345a0a` — [`LANE_A_TAB_NAV_FINDING.md`](./LANE_A_TAB_NAV_FINDING.md). Baseline tip **preserved**; narrow login-return fix is a **separate** frontend correction SHA (see staging packet frontend binding). No staging apply / production / FR-1.
+- Deep-link `?tab=service-routines` issue: **confirmed** on accepted baseline `e1345a0a` — [`LANE_A_TAB_NAV_FINDING.md`](./LANE_A_TAB_NAV_FINDING.md). Baseline tip **preserved**; narrow login-return fix frozen at `ad9570bc` (staging packet frontend binding). No staging apply / production / FR-1.

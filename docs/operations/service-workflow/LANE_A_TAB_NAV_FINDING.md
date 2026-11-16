@@ -5,7 +5,7 @@
 | **Accepted Lane A baseline** | `e1345a0a` (**preserved** — not rewritten) |
 | **Status** | **Confirmed** on baseline; **fixed** on separate frontend correction SHA (login-return path) |
 | **Severity** | UX / deep-link; sidebar click and in-app `selectTab` work on baseline |
-| **Fix tip** | See staging packet **Frontend binding** (narrow `safeReturnPath` correction) |
+| **Fix tip** | `ad9570bc22b30d649b9223a3b74fe2f836adb143` (narrow `safeReturnPath` correction; staging packet frontend binding) |
 
 ## Reproduction (isolated local, 2026-11-16) — baseline `e1345a0a`
 
