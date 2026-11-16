@@ -1,0 +1,80 @@
+{
+  "steps": [
+    {
+      "step": "1-admin-create-edit",
+      "ok": true,
+      "detail": "SPK-BRW-3 draft saved+edited"
+    },
+    {
+      "step": "1b-admin-submit",
+      "ok": true,
+      "detail": "good draft submitted"
+    },
+    {
+      "step": "2-itemised-errors",
+      "ok": true,
+      "detail": "publish denied with itemised safety-section error"
+    },
+    {
+      "step": "3a-support-preview-exact",
+      "ok": true,
+      "detail": "support preview matches submitted sections"
+    },
+    {
+      "step": "3b-support-review-recorded",
+      "ok": true,
+      "detail": "distinct support review recorded (row verified via DB)"
+    },
+    {
+      "step": "4a-admin-publish",
+      "ok": true,
+      "detail": "good draft published"
+    },
+    {
+      "step": "4b-published-preview-match",
+      "ok": true,
+      "detail": "published preview matches reviewed content, ordinal 1"
+    },
+    {
+      "step": "5a-reload-persists",
+      "ok": true,
+      "detail": "published state survives reload"
+    },
+    {
+      "step": "5b-repeat-idempotent",
+      "ok": true,
+      "detail": "repeat publish idempotent, ordinal 1, no duplicate"
+    },
+    {
+      "step": "6a-retire",
+      "ok": true,
+      "detail": "published version retired via UI"
+    },
+    {
+      "step": "6b-retired-readable",
+      "ok": true,
+      "detail": "retired version preview exact"
+    },
+    {
+      "step": "6c-code-reserved",
+      "ok": true,
+      "detail": "retired code reuse denied in UI"
+    },
+    {
+      "step": "7-tech-denied",
+      "ok": true,
+      "detail": "redirects + draft RPC denied (403), retired RPC 200"
+    },
+    {
+      "step": "7-customer-denied",
+      "ok": true,
+      "detail": "redirects + draft RPC denied (403), retired RPC 403"
+    }
+  ],
+  "admin_entry": "nav-click",
+  "repeat_publish": {
+    "status": 200,
+    "idempotent": true,
+    "ordinal": 1
+  }
+}

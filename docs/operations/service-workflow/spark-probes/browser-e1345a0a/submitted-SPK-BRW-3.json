@@ -1,0 +1,35 @@
+{
+  "sections": [
+    {
+      "id": "safety",
+      "kind": "safety",
+      "items": [
+        {
+          "id": "gate-1",
+          "type": "safety_gate",
+          "title": "Lockout / tagout confirmed",
+          "evidence": "none",
+          "waivable": false,
+          "instruction": "Confirm energy isolation before work.",
+          "requirement_class": "safety_gate"
+        }
+      ],
+      "title": "Safety"
+    },
+    {
+      "id": "checks",
+      "kind": "inspection",
+      "items": [
+        {
+          "id": "check-1",
+          "type": "inspection",
+          "title": "Visual inspection",
+          "evidence": "none",
+          "instruction": "Inspect guards and covers.",
+          "requirement_class": "required"
+        }
+      ],
+      "title": "Checks"
+    }
+  ]
+}

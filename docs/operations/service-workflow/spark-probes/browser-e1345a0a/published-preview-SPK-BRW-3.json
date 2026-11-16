@@ -1,0 +1,46 @@
+{
+  "code": "SPK-BRW-3",
+  "status": "published",
+  "name_en": "Spark browser journey",
+  "preview": {
+    "cadence": null,
+    "sections": [
+      {
+        "id": "safety",
+        "kind": "safety",
+        "items": [
+          {
+            "id": "gate-1",
+            "type": "safety_gate",
+            "title": "Lockout / tagout confirmed",
+            "evidence": "none",
+            "waivable": false,
+            "instruction": "Confirm energy isolation before work.",
+            "requirement_class": "safety_gate"
+          }
+        ],
+        "title": "Safety"
+      },
+      {
+        "id": "checks",
+        "kind": "inspection",
+        "items": [
+          {
+            "id": "check-1",
+            "type": "inspection",
+            "title": "Visual inspection",
+            "evidence": "none",
+            "instruction": "Inspect guards and covers.",
+            "requirement_class": "required"
+          }
+        ],
+        "title": "Checks"
+      }
+    ]
+  },
+  "read_only": true,
+  "routine_id": "ac41febe-8d38-49b7-bcf7-365d6e2de688",
+  "version_id": "f3ff6f30-7246-4d60-9275-69f8f748578b",
+  "draft_revision": "dd3a22af832eba6b2d26298e2bd4903f",
+  "version_ordinal": 1
+}
