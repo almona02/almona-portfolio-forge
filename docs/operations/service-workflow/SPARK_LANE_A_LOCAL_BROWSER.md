@@ -4,6 +4,8 @@
 **Never** point `VITE_SUPABASE_*` at staging or production.  
 **Never** apply Lane A migration to staging/production.
 
+**Full Auth/API/Storage browser stack:** [`SPARK_LANE_A_LOCAL_SUPABASE_HANDOFF.md`](./SPARK_LANE_A_LOCAL_SUPABASE_HANDOFF.md) (`127.0.0.1:54421`, bootstrap script, synthetic fixtures).
+
 ## Docker (Path A′ — isolated Postgres battery)
 
 Docker Desktop engine is **available**. Compose service:
