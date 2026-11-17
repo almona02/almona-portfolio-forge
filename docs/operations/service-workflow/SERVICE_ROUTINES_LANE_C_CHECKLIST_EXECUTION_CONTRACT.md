@@ -1,8 +1,8 @@
 # Service routines — Lane C technician checklist-execution contract (planning only)
 
-**Status:** Planning contract for Spark review · **no implementation · no remote apply · no merge · no production · no FR-1** until Spark PASS on this tip  
+**Status:** Accepted at `c7addbb19be8a1391687e2b0d831c6dde9d59702` · local implementation authorized · **no staging apply · no merge · no production · no FR-1**  
 **Depends on:** Lane A authoring **COMPLETE**; Lane B job pins **`STAGING_PASS_BOUNDED`** + operational closeout **COMPLETE** ([`LANE_B_STAGING_CLOSEOUT.md`](./LANE_B_STAGING_CLOSEOUT.md)) — closeout text unchanged by this contract tip  
-**Does not authorize:** recurrence · contracts/coverage entitlement · squads · stock · FR-1 · ticket-RLS chain correction (tracked separately)  
+**Does not authorize:** recurrence · contracts/coverage entitlement · squads · stock · FR-1 · remote apply  
 **Naming note:** “Lane C” here means **technician checklist execution**. Earlier proposal text that used “Lane C” for contracts/recurrence/squads is **superseded for naming only**; those packages remain out of scope.
 
 ---
@@ -101,8 +101,8 @@ Any other / missing `type` → deny `routine_checklist_validation_denied` (unkno
 
 **Authoritative safety / requirement classification:** published item field **`requirement_class`** ∈ {`safety_gate`, `required`, `optional`}.  
 - Execution completeness and waiver rules key off **`requirement_class`**, not display labels.  
-- If `type = safety_gate`, published `requirement_class` **must** be `safety_gate` (Lane A publish rule); if a published row violates that, execution treats it as `safety_gate` and still non-waivable.  
-- `waivable` on published items is ignored for `requirement_class = safety_gate` (always non-waivable).
+- If `type = safety_gate` and `requirement_class` is missing or not `safety_gate`, execution **still** treats the item as non-waivable safety (fail-closed). This is a Lane C runtime guard — it does **not** assert that Lane A publish always prevented the mismatch.  
+- `waivable` on published items is ignored when effective class is `safety_gate` (always non-waivable).
 
 | Outcome | Meaning | Allowed when |
 |---------|---------|--------------|
@@ -124,11 +124,24 @@ Any other / missing `type` → deny `routine_checklist_validation_denied` (unkno
 | Concern | Published source field(s) | Absent / null behavior |
 |---------|---------------------------|------------------------|
 | Unit | `unit` (string) on measurement items | Non-measurement: store `unit=null`. Measurement without `unit`: deny record/submit (`routine_checklist_validation_denied`) — do not invent a unit |
-| Limit | `limit` object with numeric `min` and/or `max`, plus source ref (Lane A) | No limit → store value; **no** pass/fail from tolerance. Limit without source is a Lane A publish error; runtime still must not invent tolerance |
+| Limit | `limit` object with numeric `min` and/or `max` | No limit → store value; **no** pass/fail from tolerance. Do not invent min/max. |
 | Bound inclusivity | `limit.min_inclusive` / `limit.max_inclusive` (boolean) | **Default `true` (inclusive)** when the corresponding min/max is present and the flag is absent |
-| Evidence requirement | `evidence` ∈ {`none`, `required`, …} or boolean `evidence_required` | Absent → treat as **`none`** (evidence not required) |
-| N/A allowance | `allow_not_applicable` (boolean) | Absent → **`false`** (N/A denied). Always false for `requirement_class=safety_gate` |
+| Evidence requirement | See **evidence-field alias precedence** below | Absent after precedence → **`none`** |
+| N/A allowance | `allow_not_applicable` (boolean) | Absent → **`false`** (N/A denied). Always false for effective `safety_gate` |
 | Item identity | `id` (string) on item | See **stable item key** below |
+| Limit source ref | `limit.source_ref` / `limit_source_ref` / item `source_ref` (first present) | Lane A **may** reject limit-without-source at publish; Lane C **must not invent** tolerances regardless. Missing source does not invent limits. |
+
+**Evidence-field alias precedence (deterministic, closed)**
+
+Evaluate published item fields in this order; stop at first decisive hit:
+
+1. `evidence_required` present as boolean → `true` ⇒ required; `false` ⇒ none  
+2. Else `evidence` present as boolean → same as (1)  
+3. Else `evidence` present as text (case-insensitive trim):  
+   - ∈ {`required`, `photo`, `photo_required`, `required_photo`} ⇒ required  
+   - ∈ {`none`, `optional`, `not_required`, `n/a`, `na`, ``} ⇒ none  
+   - any other non-empty text ⇒ required (fail-closed)  
+4. Else → **none**
 
 **Stable item key (immutable for the visit snapshot)**
 
@@ -161,9 +174,10 @@ Any other / missing `type` → deny `routine_checklist_validation_denied` (unkno
 | Retry | Same attending tech may replace in-progress answer before submit; prior value retained in append-only history |
 | Correction after submit | No silent edit of submitted revision (B4). Lane C does not invent post-submit rewrite |
 | Reassignment | History keeps original `actor_id` |
-| Optimistic token | Visit working checklist carries **`checklist_revision`** (monotonic int or content digest). Client **must** send `expected_checklist_revision` on record/correct |
-| Conflict | If expected ≠ current → **fail explicitly**: SQLSTATE **`PT409`**, DETAIL **`routine_checklist_stale_revision`**, API **409**. Business unchanged; optional audit `routine_checklist_validation_denied` / dedicated conflict audit. **Advisory locking alone does not satisfy** the loser-conflict requirement — the loser must receive this explicit conflict |
-| Serialize | Still acquire ticket → job → visit locks to prevent lost updates; lock without the token check is insufficient |
+| Optimistic token | Visit working checklist carries **`checklist_revision`** (monotonic bigint). Client **must** send `expected_checklist_revision` on record/correct |
+| Atomic CAS | Single statement: apply answer **only if** `checklist_revision = expected`; then increment. No TOCTOU window between check and write |
+| Conflict | If CAS fails (expected ≠ current) → **fail explicitly**: SQLSTATE **`PT409`**, DETAIL **`routine_checklist_stale_revision`**, API **409**. Business unchanged. **Advisory locking alone does not satisfy** the loser-conflict requirement |
+| Serialize | Still acquire ticket → job → visit locks; lock without CAS is insufficient |
 
 ### 3.7 Relation to visit completion and report submission (closed — no new closure rules)
 
@@ -225,7 +239,7 @@ Scenarios are **specification**, not an implementation commit.
 | LC-04 | Safety_gate failed | Submit denied; no waiver path |
 | LC-05 | Safety_gate N/A attempted | Denied always |
 | LC-06 | Optional item omitted | Allowed |
-| LC-07 | Measurement with source-backed limit, value out of limit | Item `failed`; if `safety_gate` → submit denied; if `required` → submit allowed once answered; if `optional` → submit allowed |
+| LC-07 | Measurement out of limit → outcome `failed` | Follow §3.5 completeness: **effective `safety_gate`** → submit **denied**; **non-safety `required`** → may submit with `failed`; **`optional`** → may submit. **No blanket failure-to-submit.** |
 | LC-08 | Measurement with no published limit | Store value+unit; **no** invented pass/fail tolerance |
 | LC-09 | Evidence-required item without evidence | Denied |
 | LC-10 | `routine_version_id` ≠ job active pin / visit snapshot | Denied (skew) |
@@ -258,5 +272,5 @@ Scenarios are **specification**, not an implementation commit.
 
 ## 7. Spark review ask
 
-PASS / FAIL this tip on G-C1…G-C6 (G-C6 = **limit equality + ID-less `item_key`**, not attendance) plus prior passing findings. Attendance/former-assignee is §3.4 / ticket T-G2.  
-Implementation and remote apply remain **blocked** until PASS on this tip.
+**Accepted** at `c7addbb19be8a1391687e2b0d831c6dde9d59702` (G-C1…G-C6; G-C6 = **limit equality + ID-less `item_key`**, not attendance). Attendance/former-assignee is §3.4 / ticket T-G2.  
+Local implementation authorized; remote apply / merge / production / FR-1 remain out of scope for this package.

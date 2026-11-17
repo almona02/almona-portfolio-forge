@@ -11,6 +11,7 @@ import { TicketWorkflowClosurePanel } from '@/components/support/TicketWorkflowC
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { ticketMessageApi, type TicketAttachment } from '@/lib/ticketMessageApi'
+import { getTechnicianTicketHeader } from '@/lib/technicianTicketHeaderApi'
 import { ArrowLeft, Clock, MapPin, Phone, Mail, Cpu, Loader2, AlertCircle, Send, ImagePlus, Share2, User, Headset } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -118,9 +119,47 @@ const TicketDetailPage = () => {
 
   const loadAuthenticated = async () => {
     if (!ticketId) return
-    const { data, error: err } = await supabase.from('service_tickets').select('*').eq('id', ticketId).maybeSingle()
-    if (err || !data) { setError('Ticket not found or unavailable.'); setLoading(false); return }
-    setTicket(data as TicketRow)
+    // Technicians: narrow header RPC only (T-G1). Do not select('*') — staging-eq RLS
+    // denies job-assigned techs on service_tickets, and contact_* must stay off this route.
+    if (user?.role === 'technician') {
+      try {
+        const header = await getTechnicianTicketHeader(ticketId)
+        if (!header) {
+          setError('Ticket not found or unavailable.')
+          setLoading(false)
+          return
+        }
+        setTicket({
+          id: header.id,
+          user_id: null,
+          ticket_number: header.ticket_number ?? '',
+          title: header.title ?? '',
+          description: header.description ?? '',
+          type: header.type ?? '',
+          priority: header.priority ?? '',
+          status: header.status ?? '',
+          source: null,
+          maintenance_type: header.maintenance_type,
+          machine_id: header.machine_id,
+          machine_serial_number: header.machine_serial_number,
+          site_location: header.site_location,
+          contact_phone: null,
+          contact_email: null,
+          resolution_summary: null,
+          resolved_at: null,
+          created_at: header.created_at ?? new Date().toISOString(),
+          updated_at: header.created_at ?? new Date().toISOString(),
+        })
+      } catch {
+        setError('Ticket not found or unavailable.')
+        setLoading(false)
+        return
+      }
+    } else {
+      const { data, error: err } = await supabase.from('service_tickets').select('*').eq('id', ticketId).maybeSingle()
+      if (err || !data) { setError('Ticket not found or unavailable.'); setLoading(false); return }
+      setTicket(data as TicketRow)
+    }
     const { data: msgs } = await supabase.from('ticket_messages').select('*').eq('ticket_id', ticketId).order('created_at', { ascending: true })
     const hydrated = await hydrateAttachmentUrls((msgs ?? []) as MessageRow[], null)
     setMessages(hydrated)
@@ -146,7 +185,7 @@ const TicketDetailPage = () => {
       setLoading(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ticketId, shareToken, user?.id, supabaseUser?.id, authLoading])
+  }, [ticketId, shareToken, user?.id, user?.role, supabaseUser?.id, authLoading, isProfileResolved])
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages.length])
 

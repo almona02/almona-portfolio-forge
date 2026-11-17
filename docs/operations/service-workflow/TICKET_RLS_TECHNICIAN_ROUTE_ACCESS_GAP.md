@@ -1,6 +1,6 @@
 # Ticket RLS reproducibility and technician route-access gap
 
-**Status:** Documentation only · **no migration authored · no remote apply · no FR-1**  
+**Status:** Accepted at `c7addbb19be8a1391687e2b0d831c6dde9d59702` · local implementation authorized (no staging/merge/prod/FR-1)  
 **Triggered by:** Lane B staging Spark finding — **S-UI-02 NOT RUN** + non-blocking RLS fidelity notes in `STAGING_PASS_BOUNDED`  
 **Related:** [`LANE_B_STAGING_CLOSEOUT.md`](./LANE_B_STAGING_CLOSEOUT.md) · Lane B `SPARK_CONFIRM.json` (`s_ui_02_cause`, `findings_not_blocking`)
 
@@ -123,7 +123,7 @@ Idempotent if already enabled. Makes existing policies real on fresh chains. **D
 | `status` | **Yes** | Workflow state for the job page |
 | `priority` | **Yes** | Operational triage display already on tech lists |
 | `type` | **Yes** | Ticket kind for field context |
-| `description` | **Yes** | Needed to perform the assigned work (operational content, not customer contact PII) |
+| `description` | **Yes** | Needed to perform the assigned work. **May contain user-entered personal information**; inclusion is operational necessity, not a claim that the header payload is PII-free. Contact channels (`contact_*`) remain excluded. |
 | `machine_id` | **Yes** | Links job/pin applicability / machine context |
 | `machine_serial_number` | **Yes** | Field identification of the asset |
 | `site_location` | **Yes** | Navigate to site; operational, not phone/email |
@@ -179,4 +179,4 @@ Assume: `ENABLE ROW LEVEL SECURITY` on `service_tickets` **and** current SELECT/
 | Lane B `STAGING_PASS_BOUNDED` | **Unchanged / closed** — S-UI-02 remains a documented bound; pin behavior not reopened |
 | Prior “full-row SELECT via `can_read_ticket_workflow`” proposal | **Superseded** by §6.2 narrow header RPC (supervisor T-G1) |
 | Lane C checklist contract | Consumes header RPC for route reachability; does not broaden ticket columns |
-| Implementation of §6 | **Blocked** until Spark PASS on this tip; planning only |
+| Implementation of §6 | Local-only implementation authorized at accepted tip `c7addbb1`; separately reviewable from Lane C |

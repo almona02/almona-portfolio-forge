@@ -72,13 +72,13 @@ def apply(db: str, path: Path, label: str) -> None:
 
 def wait_ready(retries: int = 60) -> None:
     time.sleep(1.0)
+    isready = PGBIN / ("pg_isready.exe" if (PGBIN / "pg_isready.exe").exists() else "pg_isready")
     for _ in range(retries):
         ready = subprocess.run(
-            [str(PGBIN / "pg_isready.exe" if (PGBIN / "pg_isready.exe").exists() else PGBIN / "pg_isready"),
-             "-h", "127.0.0.1", "-p", PORT, "-U", PGUSER],
+            [str(isready), "-h", "127.0.0.1", "-p", PORT, "-U", PGUSER],
             capture_output=True, text=True, check=False, timeout=10,
         )
-        if ready.returncode == 0 and psql("postgres", "SELECT 1").returncode == 0:
+        if ready.returncode == 0:
             return
         time.sleep(0.5)
     raise SystemExit(f"postgres did not become ready; see {LOG}")
@@ -109,13 +109,16 @@ def main() -> int:
     if LOG.exists():
         LOG.unlink()
     print(f"starting disposable postgres on {PORT}…", flush=True)
-    # Avoid Windows pg_ctl -w hangs; poll readiness ourselves.
+    # Avoid Windows pg_ctl -w hangs; also avoid capture_output (pipe inherit hang).
     subprocess.run(
         [
             str(PGBIN / "pg_ctl"), "-D", str(DATADIR), "-l", str(LOG),
             "-o", f"-p {PORT} -c listen_addresses=127.0.0.1", "start",
         ],
-        capture_output=True, text=True, check=False,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
     )
     wait_ready()
     db = "routines_lane_b"

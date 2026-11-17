@@ -23,6 +23,7 @@ import { ServiceReportPanel } from '@/components/support/ServiceReportPanel'
 import { ServiceReportReviewPanel } from '@/components/support/ServiceReportReviewPanel'
 import { CustomerIssuedReportView } from '@/components/support/CustomerIssuedReportView'
 import { getServiceJobRoutinePin } from '@/lib/serviceJobRoutinePinsApi'
+import { ServiceVisitChecklistPanel } from '@/components/support/ServiceVisitChecklistPanel'
 import { toast } from 'sonner'
 
 export type ServiceVisitViewerRole = 'admin' | 'support' | 'technician' | string
@@ -354,6 +355,13 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
                 </div>
               </div>
             )}
+
+            {(v.state === 'in_progress' || v.state === 'completed') &&
+              (staff || viewerRole === 'technician') && (
+                <div className="w-full">
+                  <ServiceVisitChecklistPanel visitId={v.id} viewerRole={viewerRole} />
+                </div>
+              )}
 
             {/* B4: report form is for completed visits — not gated by start/complete controls.
                 Submission authority is historical attending_technician_id, not current job assignee. */}
