@@ -9,7 +9,7 @@
 | Tip | Full SHA | Role |
 |-----|----------|------|
 | Prior package (closeout + first contract draft) | `110a578953b14d82fac14648c3fd3278bcf14923` | Reachable baseline; includes Lane B closeout record |
-| **Review HEAD** | *(this commit after push — use `git rev-parse HEAD`)* | Docs-only gap close on Lane C + ticket-RLS note; **Lane B closeout file unchanged** |
+| **Review HEAD** | `b62ede39cbb08c17aee2db79796724b874842d3e` | Docs-only gap close on Lane C + ticket-RLS note; **Lane B closeout file unchanged** |
 
 ## Repository-relative paths (reachable on the review HEAD)
 
