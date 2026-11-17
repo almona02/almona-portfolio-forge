@@ -106,7 +106,7 @@ Idempotent / safe if already enabled. Does **not** by itself grant tech access; 
 
 ### 6.2 Align ticket SELECT with workflow read model (route access)
 
-**Smallest semantic fix:** make `service_tickets` **SELECT** for `authenticated` use the same predicate as workflow reads, via the existing SECURITY DEFINER helper (bypasses RLS recursion safely):
+**Smallest semantic fix:** make `service_tickets` **SELECT** for `authenticated` use the same predicate as workflow reads, via the existing SECURITY DEFINER helper (bypasses RLS recursion safely — the helper reads `service_tickets` as definer):
 
 ```sql
 DROP POLICY IF EXISTS service_tickets_select_own_or_staff ON public.service_tickets;
@@ -121,6 +121,8 @@ USING (admin_private.can_read_ticket_workflow(id));
 - Preserves customer isolation (tech still limited to tickets tied to their jobs/attendance).
 - Unblocks technician route UI that SELECTs the ticket row **without** broadening to all tickets.
 - Avoids fixture-only hacks (`assigned_to = tech`).
+
+**Explicit non-broadening:** this changes **SELECT only**. Ticket **UPDATE**/governance mutation policies stay owner / `assigned_to` / admin / support. Technicians do not gain ticket reassignment, status edits, or staff-wide ticket lists.
 
 ### 6.3 What not to change in the same slice
 

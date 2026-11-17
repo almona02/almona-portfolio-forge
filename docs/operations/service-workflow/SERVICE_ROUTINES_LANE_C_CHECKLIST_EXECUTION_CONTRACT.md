@@ -1,8 +1,9 @@
 # Service routines — Lane C technician checklist-execution contract (planning only)
 
-**Status:** Draft for Spark review · **no implementation · no remote apply · no merge · no production · no FR-1** until Spark PASS on this tip  
-**Depends on:** Lane A authoring **COMPLETE**; Lane B job pins **`STAGING_PASS_BOUNDED`** + operational closeout **COMPLETE** ([`LANE_B_STAGING_CLOSEOUT.md`](./LANE_B_STAGING_CLOSEOUT.md))  
-**Does not authorize:** recurrence · contracts/coverage entitlement · squads · stock · FR-1 · ticket-RLS chain correction (tracked separately)
+**Status:** Planning contract for Spark review · **no implementation · no remote apply · no merge · no production · no FR-1** until Spark PASS on this tip  
+**Depends on:** Lane A authoring **COMPLETE**; Lane B job pins **`STAGING_PASS_BOUNDED`** + operational closeout **COMPLETE** ([`LANE_B_STAGING_CLOSEOUT.md`](./LANE_B_STAGING_CLOSEOUT.md)) — closeout text unchanged by this contract tip  
+**Does not authorize:** recurrence · contracts/coverage entitlement · squads · stock · FR-1 · ticket-RLS chain correction (tracked separately)  
+**Naming note:** “Lane C” here means **technician checklist execution**. Earlier proposal text that used “Lane C” for contracts/recurrence/squads is **superseded for naming only**; those packages remain out of scope.
 
 ---
 
@@ -46,26 +47,26 @@ Let the **attending technician** execute the checklist defined by the job’s **
 | Later publish N+1 | Never mutates in-flight results; content stays on the pinned version id |
 | Visit dual-authority pin | **Forbidden.** Job pin remains sole pin authority (Lane B) |
 
-### 3.2 Visit snapshot for B4 compatibility (closed)
+### 3.2 B4 pin-id resolution (closed — single authority)
 
-B4 `validate_checklist_for_pin` today compares `checklist_results.routine_version_id` to **`service_job_visits.pinned_routine_version_id`**. Lane B does not write that column.
+B4 `validate_checklist_for_pin` today compares `checklist_results.routine_version_id` to **`service_job_visits.pinned_routine_version_id`**. Lane B does not write that column. Job pin remains sole authority.
 
 | Topic | Decision |
 |-------|----------|
-| Snapshot | When a visit first becomes eligible for checklist capture (attending tech, visit `in_progress`, job has active pin), server **copies** the job active pin’s `routine_version_id` onto `service_job_visits.pinned_routine_version_id` **once** |
-| Semantics | Denormalized **read-through snapshot** for B4 shape compatibility — **not** an independent pin, replace, or unpin surface |
-| After job pin freeze | Lane B already freezes pin mutate after work start; snapshot must equal the frozen active pin; mismatch → deny |
-| No active pin | Leave visit pin column NULL; no checklist capture |
-
-Implementation may instead teach B4 validators to resolve the job active pin directly; if so, visit column write is unnecessary, but **content authority remains the job pin**. Either approach is acceptable; inventing a second mutable visit pin is not.
+| Authority | Validators and UI **resolve the job’s active pin** `routine_version_id` (Lane B table). Content and skew checks use that id. |
+| Visit column | On first checklist-eligible capture for a visit (`in_progress`, attending tech, job has active pin), server may **once** copy that same id onto `service_job_visits.pinned_routine_version_id` as a **denormalized snapshot** so legacy B4 shape still matches — **not** a second pin authority, replace, or unpin surface |
+| Mismatch | If visit snapshot is set and ≠ job active pin → deny (`routine_checklist_version_skew`) |
+| No active pin | Visit pin column stays NULL; no checklist capture; B4 “no pin → `checklist_results` NULL” unchanged |
+| Forbidden | Independent visit pin mutate UI/RPC; dual-write races that diverge from the job pin |
 
 ### 3.3 Results store (closed)
 
 | Topic | Decision |
 |-------|----------|
-| Working / in-visit results | Visit-bound structured store (extend or formalize `service_job_visits.checklist_results` **and/or** a dedicated visit-results table). Must be queryable for the attending tech and workflow-readable staff |
+| Working answers | **Visit-bound** append-only answer history (illustrative table name `service_visit_checklist_answer_history`) plus a current projection readable for the visit (may live on `service_job_visits.checklist_results` as working JSON **or** a current-row view). History is required for retries/corrections authorship |
 | Submitted snapshot | B4 `service_report_revisions.checklist_results` remains the **immutable submit-time** snapshot (existing B4 rule) |
-| Shape at submit | Existing B4 object minimum: `{ "routine_version_id": "<uuid>", "items": [ { "id": "<item_id>", "result": … } ] }` — Lane C **tightens** `result` semantics (below); does not remove B4 keys |
+| Submit envelope | Keep B4 keys: `{ "routine_version_id": "<uuid>", "items": [ … ] }` |
+| Per-item `result` object (pinned) | `{ "outcome": "passed"\|"failed"\|"not_applicable", "value": <number\|null>, "unit": <string\|null>, "evidence_paths": <string[]>, "note": <string\|null>, "answered_at": <timestamptz>, "attempt": <int> }` — `value`/`unit` required for `measurement` when outcome is `passed` or `failed`; `evidence_paths` required when the published item requires evidence |
 
 ### 3.4 Technician authority (closed)
 
@@ -90,26 +91,34 @@ with classes `safety_gate` (non-waivable) | `required` | `optional`.
 | Outcome | Meaning | Allowed when |
 |---------|---------|--------------|
 | `passed` | Requirement satisfied | Any type when criteria met |
-| `failed` | Requirement not met | Any type; **does not** waive safety |
-| `not_applicable` | Item does not apply in this visit context | **Only** if the published item explicitly allows N/A (`allow_not_applicable: true` or equivalent Lane A field). Default **false**. **Never** on `safety_gate` |
-| `skipped` / omit | Missing answer | **Denied** for `required` and `safety_gate` at submit; optional items may omit only if class is `optional` |
+| `failed` | Requirement not met | Any non-safety item; **does not** waive safety |
+| `not_applicable` | Item does not apply in this visit context | **Only** if the **published** item explicitly allows N/A. If Lane A payload has no allow-N/A flag, treat as **disallowed** (forward-compatible). **Never** on `safety_gate` |
+| omit / missing | No recorded outcome | **Denied** at submit for `required` and `safety_gate`; allowed for `optional` |
+
+**Submit completeness (closed)**
+
+| Class | Submit allowed when |
+|-------|---------------------|
+| `safety_gate` | Current outcome is **`passed`** (and evidence if required). `failed` or missing → **submit denied** |
+| `required` | Current outcome ∈ {`passed`, `failed`} or allowed `not_applicable`. Missing → denied. **`failed` does not by itself block submit** (report findings carry the failure) |
+| `optional` | Outcome present or omitted |
 
 **Measurements**
 
-- Record numeric value + **unit** exactly as published on the item.
+- Record numeric `value` + **`unit` exactly as published** on the item.
 - If the published item has a limit, enforce only using the **source-backed** limit on that version; missing source on a configured limit is a Lane A publish error — runtime must **not** invent a tolerance.
-- Out-of-limit → item outcome `failed` (unless N/A explicitly allowed and selected).
+- Out-of-limit → item outcome `failed` (unless allowed N/A selected).
 
 **Evidence**
 
-- When the published item requires evidence, submit/capture requires ≥1 allowed evidence reference (ticket-attachments path rules already used by B4).
+- When the published item requires evidence, capture/submit requires ≥1 allowed evidence reference (ticket-attachments path rules already used by B4).
 - Evidence is attributable to the answering actor and attempt.
 
 **Safety gates (execution)**
 
 - Non-waivable: no admin/support/tech override flag; no “force pass”.
-- Failed safety_gate **blocks report submit** while that attempt is current.
-- Failed safety_gate does **not** invent a new visit-abort rule; use existing B3 abort/no-access/complete transitions as already defined. Lane C may **deny complete→submit path** when required checklist state is incomplete/failed-safety, but must **not** add new ticket resolve/close semantics.
+- Failed/missing safety_gate **blocks report submit** while that attempt is current.
+- Does **not** invent a new visit-abort rule; use existing B3 abort/no-access/complete transitions. Incomplete/failed-safety checklist may block **submit** only; must **not** add new ticket resolve/close semantics.
 
 ### 3.6 Authorship, retries, corrections (closed)
 
@@ -138,21 +147,23 @@ Cite only existing program rules:
 
 **Lane C additions (checklist only):**
 
-1. If the job has an **active** pin, report submit is **denied** until every `safety_gate` and `required` item on that version has a recorded outcome satisfying §3.5 (and evidence where required).
+1. If the job has an **active** pin, report submit is **denied** until §3.5 submit-completeness holds (every `safety_gate` **passed**; every `required` answered; evidence where required; `routine_version_id` matches job active pin).
 2. Lane C does **not** require checklist completion merely to call `complete_service_job_visit` unless an **already-accepted** B3 rule says so (it does not today). Operators may complete a visit and still be blocked at **submit** until checklist is satisfied when a pin is active.
 3. No new ticket status, job terminal state, or acknowledgment rule.
 
 ### 3.8 Audit (closed)
 
-Append-only `service_workflow_audit` (program ledger). Illustrative pinned action strings (freeze names in implementation):
+Append-only `public.service_workflow_audit` (program ledger). **Pinned** `action` strings (do not invent synonyms):
 
-- `routine_checklist_item_recorded`
-- `routine_checklist_item_corrected`
-- `routine_checklist_submit_validated`
-- `routine_checklist_authz_denied`
-- `routine_checklist_validation_denied`
+| `action` | When |
+|----------|------|
+| `routine_checklist_item_recorded` | First successful answer for (visit, item, attempt lineage) |
+| `routine_checklist_item_corrected` | In-progress replacement before submit |
+| `routine_checklist_submit_validated` | Checklist validated inside report-submit transaction |
+| `routine_checklist_authz_denied` | Unauthorized read/write attempt (optional separate txn) |
+| `routine_checklist_validation_denied` | Shape/completeness/skew/safety deny (optional separate txn) |
 
-Success write + success audit atomic. Denies leave business state unchanged.
+`entity_type` for answer rows: `service_job_visit` (or dedicated checklist entity if introduced). Success write + success audit atomic. Denies leave business state unchanged.
 
 ---
 
@@ -179,7 +190,7 @@ Scenarios are **specification**, not an implementation commit.
 | LC-04 | Safety_gate failed | Submit denied; no waiver path |
 | LC-05 | Safety_gate N/A attempted | Denied always |
 | LC-06 | Optional item omitted | Allowed |
-| LC-07 | Measurement with source-backed limit, value out of limit | Item `failed`; submit denied if class required/safety |
+| LC-07 | Measurement with source-backed limit, value out of limit | Item `failed`; if `safety_gate` → submit denied; if `required` → submit allowed once answered; if `optional` → submit allowed |
 | LC-08 | Measurement with no published limit | Store value+unit; **no** invented pass/fail tolerance |
 | LC-09 | Evidence-required item without evidence | Denied |
 | LC-10 | `routine_version_id` ≠ job active pin / visit snapshot | Denied (skew) |
