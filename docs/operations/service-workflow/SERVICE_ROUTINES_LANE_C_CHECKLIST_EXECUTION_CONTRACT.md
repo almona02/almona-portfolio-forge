@@ -47,15 +47,16 @@ Let the **attending technician** execute the checklist defined by the job’s **
 | Later publish N+1 | Never mutates in-flight results; content stays on the pinned version id |
 | Visit dual-authority pin | **Forbidden.** Job pin remains sole pin authority (Lane B) |
 
-### 3.2 B4 pin-id resolution (closed — single authority)
+### 3.2 B4 pin-id resolution + snapshot timing (closed — single authority)
 
 B4 `validate_checklist_for_pin` today compares `checklist_results.routine_version_id` to **`service_job_visits.pinned_routine_version_id`**. Lane B does not write that column. Job pin remains sole authority.
 
 | Topic | Decision |
 |-------|----------|
 | Authority | Validators and UI **resolve the job’s active pin** `routine_version_id` (Lane B table). Content and skew checks use that id. |
-| Visit column | On first checklist-eligible capture for a visit (`in_progress`, attending tech, job has active pin), server may **once** copy that same id onto `service_job_visits.pinned_routine_version_id` as a **denormalized snapshot** so legacy B4 shape still matches — **not** a second pin authority, replace, or unpin surface |
-| Mismatch | If visit snapshot is set and ≠ job active pin → deny (`routine_checklist_version_skew`) |
+| Snapshot **event** | Exactly **one** server write: first successful Lane C `record`/`begin` RPC for that visit when (`visit.state = in_progress` ∧ caller is attending tech ∧ job has active pin). Not on visit start alone; not on read/preview. |
+| Once-only guard | `UPDATE … SET pinned_routine_version_id = <job_active> WHERE id = visit AND pinned_routine_version_id IS NULL` (or equivalent). Second attempt leaves the column unchanged; if already set to a different id → deny `routine_checklist_version_skew`. |
+| Semantics | Denormalized snapshot for B4 shape — **not** an independent pin/replace/unpin surface |
 | No active pin | Visit pin column stays NULL; no checklist capture; B4 “no pin → `checklist_results` NULL” unchanged |
 | Forbidden | Independent visit pin mutate UI/RPC; dual-write races that diverge from the job pin |
 
@@ -75,18 +76,33 @@ Reuse existing helpers; do **not** invent a parallel auth stack.
 | Action | Who |
 |--------|-----|
 | Read checklist content for an authorized visit/job | Admin, support, **attending or currently assigned** technician with `can_read_ticket_workflow` (Lane A published/retired preview rules for payload) |
-| Capture / update in-progress results | **`service_job_visits.attending_technician_id`** with role `technician` (same attendee model as B4 R4-05) |
+| Capture / update in-progress results | **Only** `service_job_visits.attending_technician_id` with role `technician` (B4 R4-05) |
 | Submit report including checklist snapshot | Attending technician only (B4 unchanged) |
 | Customer / anon | **No** internal checklist content; **no** result writes |
-| Job reassignment after attendance recorded | New assignee does **not** inherit authorship of prior answers; historical attendee retains history; new attendee starts a **new attempt lineage** only if product allows a new visit — do not forge prior attendee identity |
+| **Current** job assignee (not attending) | May **read** checklist content if `can_read_ticket_workflow`; **no** answer writes |
+| **Former** job assignee (reassigned away; never attending / no longer attending) | **No** checklist read/write via assignee path once assignment ends, unless still workflow-readable via **historical attendance** on a visit of that ticket |
+| Historical attending tech | Retains **read** of that visit’s answer history + B4 submit rights for that visit; **cannot** write new answers if no longer `attending_technician_id` |
+| Job reassignment | Never rewrites authorship; new assignee does not inherit prior answers |
 
-Unauthorized → SQLSTATE **`42501`**, DETAIL **`routine_checklist_authz_denied`** (illustrative); business unchanged; optional deny audit.
+### 3.4.1 Frozen deny / conflict codes (closed)
 
-### 3.5 Item outcomes and validation (closed)
+| Situation | SQLSTATE | DETAIL (exact) | API |
+|-----------|----------|----------------|-----|
+| Authz deny | `42501` | `routine_checklist_authz_denied` | 403 |
+| Validation / unknown type / missing unit / completeness | `22023` | `routine_checklist_validation_denied` | 400 |
+| Version skew (snapshot ≠ job pin / envelope mismatch) | `22023` | `routine_checklist_version_skew` | 400 |
+| Stale optimistic edit | `PT409` | `routine_checklist_stale_revision` | 409 |
 
-Item types and requirement classes are Lane A:  
+### 3.5 Item vocabulary, classification, fields, outcomes (closed)
+
+**Supported item `type` values (execution vocabulary — closed):**  
 `safety_gate` | `inspection` | `measurement` | `photo_evidence` | `task` | `note`  
-with classes `safety_gate` (non-waivable) | `required` | `optional`.
+Any other / missing `type` → deny `routine_checklist_validation_denied` (unknown item type).
+
+**Authoritative safety / requirement classification:** published item field **`requirement_class`** ∈ {`safety_gate`, `required`, `optional`}.  
+- Execution completeness and waiver rules key off **`requirement_class`**, not display labels.  
+- If `type = safety_gate`, published `requirement_class` **must** be `safety_gate` (Lane A publish rule); if a published row violates that, execution treats it as `safety_gate` and still non-waivable.  
+- `waivable` on published items is ignored for `requirement_class = safety_gate` (always non-waivable).
 
 | Outcome | Meaning | Allowed when |
 |---------|---------|--------------|
@@ -103,32 +119,51 @@ with classes `safety_gate` (non-waivable) | `required` | `optional`.
 | `required` | Current outcome ∈ {`passed`, `failed`} or allowed `not_applicable`. Missing → denied. **`failed` does not by itself block submit** (report findings carry the failure) |
 | `optional` | Outcome present or omitted |
 
+**Published field sources and absent-field defaults (closed)**
+
+| Concern | Published source field(s) | Absent / null behavior |
+|---------|---------------------------|------------------------|
+| Unit | `unit` (string) on measurement items | Non-measurement: store `unit=null`. Measurement without `unit`: deny record/submit (`routine_checklist_validation_denied`) — do not invent a unit |
+| Limit | `limit` object with numeric `min` and/or `max`, plus source ref (Lane A) | No limit → store value; **no** pass/fail from tolerance. Limit without source is a Lane A publish error; runtime still must not invent tolerance |
+| Bound inclusivity | `limit.min_inclusive` / `limit.max_inclusive` (boolean) | **Default `true` (inclusive)** when the corresponding min/max is present and the flag is absent |
+| Evidence requirement | `evidence` ∈ {`none`, `required`, …} or boolean `evidence_required` | Absent → treat as **`none`** (evidence not required) |
+| N/A allowance | `allow_not_applicable` (boolean) | Absent → **`false`** (N/A denied). Always false for `requirement_class=safety_gate` |
+| Item identity | `id` (string) on item | See **stable item key** below |
+
+**Stable item key (immutable for the visit snapshot)**
+
+1. Prefer published `item.id` when non-empty.  
+2. Else `item_key = section.id || '/' || zero_based_index` within that section of the pinned version payload.  
+3. At snapshot/first-record time, persist `item_key` (+ optional `item_id`) on every answer row; **never renumber** later if payload order is re-read. Answers reference `item_key`, not live array position.
+
 **Measurements**
 
-- Record numeric `value` + **`unit` exactly as published** on the item.
-- If the published item has a limit, enforce only using the **source-backed** limit on that version; missing source on a configured limit is a Lane A publish error — runtime must **not** invent a tolerance.
-- Out-of-limit → item outcome `failed` (unless allowed N/A selected).
+- Record numeric `value` + published `unit`.
+- Compare using flags: if `min` set and `min_inclusive` (default true), fail when `value < min`; if min exclusive, fail when `value <= min`. Symmetric for `max` (`>` vs `>=`).
+- Out-of-limit → outcome `failed` (unless allowed N/A selected).
 
 **Evidence**
 
-- When the published item requires evidence, capture/submit requires ≥1 allowed evidence reference (ticket-attachments path rules already used by B4).
-- Evidence is attributable to the answering actor and attempt.
+- When evidence is required, capture/submit needs ≥1 ticket-attachments path (B4 rules).
+- Evidence attributable to answering actor + attempt.
 
 **Safety gates (execution)**
 
-- Non-waivable: no admin/support/tech override flag; no “force pass”.
-- Failed/missing safety_gate **blocks report submit** while that attempt is current.
-- Does **not** invent a new visit-abort rule; use existing B3 abort/no-access/complete transitions. Incomplete/failed-safety checklist may block **submit** only; must **not** add new ticket resolve/close semantics.
+- Non-waivable; no force-pass.
+- Failed/missing safety_gate **blocks report submit**.
+- No new visit-abort/ticket-close rules (B3/B4/B6 unchanged).
 
-### 3.6 Authorship, retries, corrections (closed)
+### 3.6 Authorship, retries, corrections, optimistic conflict (closed)
 
 | Topic | Decision |
 |-------|----------|
-| Authorship | Every answer/correction stores `actor_id`, `actor_role`, timestamp, visit_id, item_id, attempt/ordinal |
-| Retry | Same attending tech may replace an in-progress answer before submit; prior value retained in append-only history |
-| Correction after submit | **No** silent edit of submitted revision (B4 immutability). Further correction = new report revision only if B4/B5 already allow — Lane C does not invent post-submit checklist rewrite |
-| Reassignment | History rows keep original `actor_id`; reassignment never rewrites authorship |
-| Concurrent writers | Serialize on visit (existing lock-order discipline: ticket → job → visit); stale writers get explicit conflict, no silent merge |
+| Authorship | Every answer/correction stores `actor_id`, `actor_role`, timestamp, visit_id, `item_key`, attempt/ordinal |
+| Retry | Same attending tech may replace in-progress answer before submit; prior value retained in append-only history |
+| Correction after submit | No silent edit of submitted revision (B4). Lane C does not invent post-submit rewrite |
+| Reassignment | History keeps original `actor_id` |
+| Optimistic token | Visit working checklist carries **`checklist_revision`** (monotonic int or content digest). Client **must** send `expected_checklist_revision` on record/correct |
+| Conflict | If expected ≠ current → **fail explicitly**: SQLSTATE **`PT409`**, DETAIL **`routine_checklist_stale_revision`**, API **409**. Business unchanged; optional audit `routine_checklist_validation_denied` / dedicated conflict audit. **Advisory locking alone does not satisfy** the loser-conflict requirement — the loser must receive this explicit conflict |
+| Serialize | Still acquire ticket → job → visit locks to prevent lost updates; lock without the token check is insufficient |
 
 ### 3.7 Relation to visit completion and report submission (closed — no new closure rules)
 
@@ -201,13 +236,20 @@ Scenarios are **specification**, not an implementation commit.
 | LC-15 | Visit complete without checklist (pin active) | Allowed under B3; **submit** then denied until checklist satisfied (§3.7) |
 | LC-16 | Visit complete + valid checklist + B4 payload | Submit PASS; revision stores immutable `checklist_results`; job may → `awaiting_review` only |
 | LC-17 | OOS ticket/job | Denied isolation (no read/write) |
-| LC-18 | Concurrent corrections | One winner; loser explicit conflict; no silent merge |
+| LC-18 | Concurrent corrections with expected revision | One winner; loser **`PT409` / `routine_checklist_stale_revision`** |
+| LC-19 | Unknown item `type` | `routine_checklist_validation_denied` |
+| LC-20 | Measurement missing published `unit` | Denied; no invented unit |
+| LC-21 | Limit min exclusive boundary | Value equal to min → `failed` when `min_inclusive=false` |
+| LC-22 | Item without `id` | Answers use frozen `section.id/index` `item_key`; stable across reread |
+| LC-23 | Snapshot second write | Once-only; no overwrite; skew if diverges |
+| LC-24 | Former assignee (not attending) after reassignment | Checklist read/write denied |
+| LC-25 | Historical attending after reassignment | Read history + B4 submit OK; new answer writes denied |
 
 ---
 
 ## 6. Explicit non-goals / non-claims
 
-- Does not close S-UI-02 / ticket RLS gap (see [`TICKET_RLS_TECHNICIAN_ROUTE_ACCESS_GAP.md`](./TICKET_RLS_TECHNICIAN_ROUTE_ACCESS_GAP.md)).
+- Ticket header privacy / S-UI-02 route access is specified in [`TICKET_RLS_TECHNICIAN_ROUTE_ACCESS_GAP.md`](./TICKET_RLS_TECHNICIAN_ROUTE_ACCESS_GAP.md) (narrow header RPC — not full-row SELECT).
 - Does not re-litigate Lane B pin freeze, applicability, or customer exclusion.
 - Does not authorize staging/production apply or FR-1.
 - Does not implement contracts, recurrence, squads, or stock.
@@ -216,5 +258,5 @@ Scenarios are **specification**, not an implementation commit.
 
 ## 7. Spark review ask
 
-PASS / FAIL this planning contract on: content source = job pin; visit-bound results; authority; outcomes; safety/limits; history; **no new closure rules**; exclusions.  
+PASS / FAIL this tip on G-C1…G-C6 closures (vocabulary, fields/defaults, snapshot, optimistic conflict, frozen codes/limits/keys, attendance/assignee visibility) plus prior passing findings.  
 Implementation and remote apply remain **blocked** until PASS on this tip.

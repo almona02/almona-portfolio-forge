@@ -1,65 +1,56 @@
-# Spark — Lane C checklist contract + ticket-RLS gap review
+# Spark — targeted re-review (Lane C + ticket-access)
 
 **Repository:** `almona02/almona-portfolio-forge`  
-**Remote branch:** `feat/service-routines-authoring`  
-**Implementation:** **HELD** — no runtime, no remote apply, no merge, no FR-1 until PASS on the review HEAD below.
+**Branch:** `feat/service-routines-authoring`  
+**Do not auto-carry:** Spark BLOCKED on `110a5789…` · prior Cursor summary on `8e01cfee…`  
+**Review HEAD:** branch tip containing this handoff + gap disposition (full SHA in notify / `git rev-parse origin/feat/service-routines-authoring`)  
+**Includes:** gap-close lineage `081d13a2…` and follow-on G-C/T-G closures  
+**Lane B:** remain **closed** (`STAGING_PASS_BOUNDED` + operational closeout COMPLETE)
 
-## Exact commits
-
-| Tip | Full SHA | Role |
-|-----|----------|------|
-| Prior package (closeout + first contract draft) | `110a578953b14d82fac14648c3fd3278bcf14923` | Reachable baseline; includes Lane B closeout record |
-| Contract gap-close (docs) | `081d13a27becc78144170c4dc87a01e9429e2c29` | Lane C + ticket-RLS wording; **Lane B closeout file unchanged** |
-| **Review HEAD** | Branch tip of `feat/service-routines-authoring` containing this handoff (full SHA in Spark notify / `git rev-parse origin/feat/service-routines-authoring`) | Implementation still held |
-
-## Repository-relative paths (reachable on the review HEAD)
+## Paths
 
 | Artifact | Path |
 |----------|------|
-| Lane C checklist-execution contract | `docs/operations/service-workflow/SERVICE_ROUTINES_LANE_C_CHECKLIST_EXECUTION_CONTRACT.md` |
-| Ticket RLS / tech route-access gap | `docs/operations/service-workflow/TICKET_RLS_TECHNICIAN_ROUTE_ACCESS_GAP.md` |
+| Lane C contract | `docs/operations/service-workflow/SERVICE_ROUTINES_LANE_C_CHECKLIST_EXECUTION_CONTRACT.md` |
+| Ticket-access proposal | `docs/operations/service-workflow/TICKET_RLS_TECHNICIAN_ROUTE_ACCESS_GAP.md` |
+| Cursor disposition map | `docs/operations/service-workflow/LANE_C_SPARK_GAP_DISPOSITION_8e01cfee.md` |
 | This handoff | `docs/operations/service-workflow/SPARK_LANE_C_CONTRACT_REVIEW.md` |
-| Lane B closeout (unchanged content) | `docs/operations/service-workflow/LANE_B_STAGING_CLOSEOUT.md` |
-| Lane B delivery pointer | `docs/operations/service-workflow/SPARK_LANE_B_STAGING_DELIVERY.md` |
+| Lane B closeout (unchanged intent) | `docs/operations/service-workflow/LANE_B_STAGING_CLOSEOUT.md` |
 
-Handoff evidence (outside git; credentials shredded):  
-`C:\projects\_almona_handoff\lane-b-staging-verification\SPARK_CONFIRM.json` · `SPARK_ZERO_CONFIRM.json`
+## Review scope (deltas only)
 
-## Docs-only gaps closed since `110a5789`
+Retain prior passing findings from the `8e01cfee` / `081d13a2` pass where still valid. Re-check **only** G-C1…G-C6 and T-G1…T-G3 closures:
 
-1. **Single B4 pin-id authority** — job active pin is authoritative; visit column is optional once-only denormalized snapshot; dual approach wording removed.
-2. **Pinned per-item `result` shape** — outcome/value/unit/evidence/note/attempt fields.
-3. **Submit completeness** — `safety_gate` must be `passed`; `required` must be answered (`failed` allowed); N/A only if published allow-flag present (else denied); no invented Lane A field requirement.
-4. **Results store** — visit-bound append-only history + working projection; revision snapshot remains B4.
-5. **Pinned audit `action` strings** — no longer “illustrative only”.
-6. **Ticket RLS note** — SELECT-only change; UPDATE/governance not broadened.
-7. **Naming** — Lane C = checklist execution; older “Lane C = contracts/squads” naming superseded for this package only.
+1. Item types + `requirement_class` safety authority  
+2. Unit/evidence/N/A field sources + absent defaults  
+3. Snapshot event, once-only guard, immutable `item_key`  
+4. `checklist_revision` optimistic token + `PT409` / `routine_checklist_stale_revision` (locking insufficient alone)  
+5. Frozen DETAIL codes, audit actions, inclusive/exclusive limits  
+6. Historical attending vs former assignee  
+7. **T-G1:** narrow technician ticket-header RPC/view — **not** full-row SELECT; field list + contact PII exclusions  
+8. Negatives TR-09…TR-12 under ENABLE + complete policy set  
 
-## Review scope
+No broad audit restart · no staging · no merge · no production · no FR-1.
 
-1. Lane C planning contract completeness vs job-pin content, visit-bound results, authority, outcomes, safety/limits, history, no new closure rules, exclusions.
-2. Acceptance LC-01…18 sufficiency for a later implementation tip.
-3. Ticket RLS gap: intended visibility vs policy vs missing `ENABLE`; smallest isolation-preserving correction; non-broadening.
-4. Confirm Lane B `STAGING_PASS_BOUNDED` + closeout **COMPLETE** remain as recorded (do not reopen pin behavior).
-
-## Verdict format
+## Required SHA-bound verdicts (two)
 
 ```text
-Lane C / ticket-RLS Spark: PASS | BLOCKED
-Review HEAD: <full sha>
-Prior 110a5789: noted
-Lane B closeout: unchanged / issue
-Lane C content=job pin: OK | gaps
-Visit-bound results + result shape: OK | gaps
-Authority (attending): OK | gaps
-Outcomes / submit completeness / N/A: OK | gaps
-Safety non-waivable + source-backed limits: OK | gaps
-History / reassignment / retries: OK | gaps
-No new closure rules (B3/B4 cited): OK | gaps
-Exclusions (recurrence/contracts/squads/stock/FR-1): OK | gaps
-LC-01..18: sufficient | missing <ids>
-Ticket RLS gap doc: OK | gaps
-Smallest SELECT+ENABLE fix / isolation: OK | issue
-Implementation: NOT AUTHORIZED
-Remote apply: NOT AUTHORIZED
+Lane C contract: PASS | BLOCKED
+HEAD: <full sha>
+Prior 110a5789 BLOCKED: not carried
+Prior 8e01cfee: not carried
+G-C1..G-C6: OK | unresolved <ids only>
+Passing findings retained: yes | no
+
+Ticket-access proposal: PASS | BLOCKED
+HEAD: <full sha>
+T-G1 narrow header RPC (not full-row SELECT): OK | issue
+T-G2 attending/former assignee: OK | issue
+T-G3 negatives TR-09..12 + ENABLE: OK | issue
+Unresolved: <ids only or none>
+
+Lane B: remains CLOSED
+Implementation: NOT AUTHORIZED until both PASS
 ```
+
+After **both** PASS, bounded local implementation is authorized (separate tip); still no staging/merge/prod/FR-1 until explicitly granted.

@@ -92,59 +92,83 @@ Any correction **must** preserve:
 
 ---
 
-## 6. Smallest correction proposal (planning — not applied)
+## 6. Correction proposal (planning — not applied)
 
-### 6.1 Enable RLS in-chain (reproducibility)
+**Supervisor direction (T-G1):** use a **narrowly defined technician ticket-header view/RPC** for the job/checklist route. **Do not** add full-row `service_tickets` SELECT merely to render the page. “SELECT-only policy broadening” still exposes every column on a matched row — that does **not** satisfy the privacy decision.
 
-Add a dedicated, reviewable migration (name illustrative):
+### 6.1 Enable RLS in-chain (reproducibility) — still required
 
 ```sql
 ALTER TABLE public.service_tickets ENABLE ROW LEVEL SECURITY;
 ```
 
-Idempotent / safe if already enabled. Does **not** by itself grant tech access; it makes existing policies real everywhere.
+Idempotent if already enabled. Makes existing policies real on fresh chains. **Does not** grant technicians new columns.
 
-### 6.2 Align ticket SELECT with workflow read model (route access)
+### 6.2 Technician ticket-header RPC / view (closed — replaces full-row SELECT broadening)
 
-**Smallest semantic fix:** make `service_tickets` **SELECT** for `authenticated` use the same predicate as workflow reads, via the existing SECURITY DEFINER helper (bypasses RLS recursion safely — the helper reads `service_tickets` as definer):
+| Topic | Decision |
+|-------|----------|
+| Mechanism | SECURITY DEFINER RPC (illustrative: `get_technician_ticket_header(p_ticket_id uuid)`) **or** a narrow view that only projects approved columns, callable by `authenticated` |
+| Authz predicate | Same scope as workflow read for technicians: caller is **current** job assignee on the ticket **or** visit attending tech (`can_read_ticket_workflow` tech branches) — **not** blanket staff |
+| Owner / admin / support | Keep **existing** authorized paths (`service_tickets` SELECT policies as today for owner/`assigned_to`/admin/support). Do not force them through the tech header RPC |
+| Direct table SELECT for technicians | **Unchanged deny** under current policy (or remain without tech predicate). Tech UI for this route **must** use the header RPC/view, not `select('*')` |
 
-```sql
-DROP POLICY IF EXISTS service_tickets_select_own_or_staff ON public.service_tickets;
-CREATE POLICY service_tickets_select_own_or_staff ON public.service_tickets
-FOR SELECT TO authenticated
-USING (admin_private.can_read_ticket_workflow(id));
-```
+#### Minimum fields the tech job/checklist screen needs
 
-**Why this is smallest:**
+| Field | Include? | Justification |
+|-------|----------|---------------|
+| `id` | **Yes** | Route key / joins to jobs |
+| `ticket_number` | **Yes** | Primary human identifier on screen |
+| `title` | **Yes** | Work context header |
+| `status` | **Yes** | Workflow state for the job page |
+| `priority` | **Yes** | Operational triage display already on tech lists |
+| `type` | **Yes** | Ticket kind for field context |
+| `description` | **Yes** | Needed to perform the assigned work (operational content, not customer contact PII) |
+| `machine_id` | **Yes** | Links job/pin applicability / machine context |
+| `machine_serial_number` | **Yes** | Field identification of the asset |
+| `site_location` | **Yes** | Navigate to site; operational, not phone/email |
+| `created_at` | **Yes** | Display age / ordering |
+| `maintenance_type` | **Yes if column present** | Badge already on ticket header UI |
+| `contact_email` / `contact_phone` / `contact_name` | **No** | Customer/contact PII **not** required to execute checklist or open job pin UI; staff/owner retain existing full-row paths |
+| `user_id` | **No** in header | Owner uuid not required for header; message “customer vs staff” uses existing message APIs/policies |
+| Other columns (escalation, governance internals, etc.) | **No** | Not needed for this route |
 
-- Reuses the already-accepted B1/B4 visibility function (owner / assignee / staff / job tech / attending).
-- Preserves customer isolation (tech still limited to tickets tied to their jobs/attendance).
-- Unblocks technician route UI that SELECTs the ticket row **without** broadening to all tickets.
-- Avoids fixture-only hacks (`assigned_to = tech`).
+#### Historical attendance / former assignee (header)
 
-**Explicit non-broadening:** this changes **SELECT only**. Ticket **UPDATE**/governance mutation policies stay owner / `assigned_to` / admin / support. Technicians do not gain ticket reassignment, status edits, or staff-wide ticket lists.
+| Actor | Header RPC |
+|-------|------------|
+| Current job-assigned tech | Allowed |
+| Historical visit attending tech on that ticket | Allowed (retain route for B4/history) |
+| Former assignee, not attending | **Denied** |
+| Unrelated tech / customer / anon | **Denied** |
 
-### 6.3 What not to change in the same slice
+### 6.3 What not to change
 
-| Keep unchanged unless separately justified |
-|--------------------------------------------|
-| `service_tickets` **UPDATE** policy (owner / `assigned_to` / admin / support) — S-UI-02 needs SELECT, not tech ticket mutation |
+| Keep unchanged |
+|----------------|
+| `service_tickets` **UPDATE** (owner / `assigned_to` / admin / support only) |
+| Message send/share policies (existing); tech gains **no** new UPDATE |
 | Lane B pin mutate matrix |
-| Customer message visibility rules beyond SELECT of the ticket header row |
 | Production apply / FR-1 |
 
-### 6.4 Acceptance checks (for a future correction tip)
+### 6.4 Acceptance / negative tests (staging-equivalent policy set)
+
+Assume: `ENABLE ROW LEVEL SECURITY` on `service_tickets` **and** current SELECT/UPDATE policies **plus** header RPC. Fresh local chain must match.
 
 | ID | Check |
 |----|-------|
 | TR-01 | Fresh chain: `relrowsecurity = true` on `service_tickets` |
-| TR-02 | Customer SELECT own = 1; other customer = 0 |
-| TR-03 | Job-assigned tech SELECT parent ticket = 1; unrelated ticket = 0 |
-| TR-04 | Attending-only tech (after reassignment) retains SELECT per `can_read_ticket_workflow` |
-| TR-05 | Support/admin SELECT unchanged |
-| TR-06 | Anon SELECT empty / denied |
-| TR-07 | Tech jobs UI can load ticket header for assigned job **without** setting `assigned_to` to the tech |
-| TR-08 | Lane B pin API authz unchanged (customer still excluded from internal pin content) |
+| TR-02 | Customer table SELECT own = 1; other customer = 0 |
+| TR-03 | Job-assigned tech: header RPC returns **only** approved columns for parent ticket; unrelated ticket → empty/deny |
+| TR-04 | Attending-only tech (after job reassignment) retains header RPC; **former assignee without attendance** denied |
+| TR-05 | Support/admin existing table SELECT unchanged |
+| TR-06 | Anon denied |
+| TR-07 | Tech job UI loads via header RPC **without** `assigned_to = tech` and **without** `select('*')` |
+| TR-08 | Lane B pin API authz unchanged |
+| TR-09 | Tech **UPDATE** on `service_tickets` denied (negative) |
+| TR-10 | Tech cannot read `contact_email` / `contact_phone` / `contact_name` via header RPC (negative; columns absent from payload) |
+| TR-11 | Tech message/internal-note access follows **existing** message policies only — header RPC grants **no** extra message rights (negative) |
+| TR-12 | OOS ticket/job: header RPC deny; pin/checklist deny |
 
 ---
 
@@ -152,6 +176,7 @@ USING (admin_private.can_read_ticket_workflow(id));
 
 | Item | Disposition |
 |------|-------------|
-| Lane B `STAGING_PASS_BOUNDED` | **Unchanged** — S-UI-02 remains a documented bound, not a reopen of pin behavior |
-| Lane C checklist contract | May assume tech can reach visit UI once TR correction lands; contract itself does **not** implement TR |
-| Implementation of §6 | **Blocked** until explicitly scheduled; this file is planning/evidence only |
+| Lane B `STAGING_PASS_BOUNDED` | **Unchanged / closed** — S-UI-02 remains a documented bound; pin behavior not reopened |
+| Prior “full-row SELECT via `can_read_ticket_workflow`” proposal | **Superseded** by §6.2 narrow header RPC (supervisor T-G1) |
+| Lane C checklist contract | Consumes header RPC for route reachability; does not broaden ticket columns |
+| Implementation of §6 | **Blocked** until Spark PASS on this tip; planning only |
