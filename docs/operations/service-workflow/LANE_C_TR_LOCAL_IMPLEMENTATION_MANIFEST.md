@@ -1,5 +1,6 @@
 # Lane C + ticket-header local implementation manifest
 
+**Frozen implementation SHA:** `b5865120a182350c448eec595dd7c45262f9f68f`  
 **Policy accepted tip:** `c7addbb19be8a1391687e2b0d831c6dde9d59702`  
 **Label correction tip (preserved):** `f0da6f017a7c0464fa88af206d52051f312d5518`  
 **Scope:** local-only · no staging apply · no merge · no production · no FR-1 · no next-lane
@@ -36,4 +37,4 @@
 | Lane B disposable regression | **28/28 PASS** | `.artifacts/slice0/service-workflow/disposable_lane_b_results.json` |
 | Actual browser | See `CURSOR_LANE_C_TR_BROWSER_RESULTS.md` | staging-eq RLS established in disposable before smoke |
 
-Frozen implementation SHA is the git commit that publishes this tip (recorded in the closeout / results JSON after commit).
+Disposable runner JSON under `.artifacts/` stamps the same freeze SHA when re-run against this tip.
