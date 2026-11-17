@@ -258,5 +258,5 @@ Scenarios are **specification**, not an implementation commit.
 
 ## 7. Spark review ask
 
-PASS / FAIL this tip on G-C1…G-C6 closures (vocabulary, fields/defaults, snapshot, optimistic conflict, frozen codes/limits/keys, attendance/assignee visibility) plus prior passing findings.  
+PASS / FAIL this tip on G-C1…G-C6 (G-C6 = **limit equality + ID-less `item_key`**, not attendance) plus prior passing findings. Attendance/former-assignee is §3.4 / ticket T-G2.  
 Implementation and remote apply remain **blocked** until PASS on this tip.
