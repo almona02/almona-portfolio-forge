@@ -14,9 +14,10 @@ Lane A historical browser tally (**19/21 proven**, **2 UI-retirement assertions 
 | Battery SHA-256 | `3d6aa7ea32f8d4304034c4aafd1cd1ab5b8d1dd36382c415582ac883e216f10e` |
 | Runner | `scripts/service-workflow/run_disposable_ui_retire_evidence.py` |
 | Runner SHA-256 | `d3d23d06f106eba7b271c5e76ed433270ff0e8ab52d8b1b30767573db3f02a3b` |
-| Results JSON | `.artifacts/slice0/service-workflow/disposable_ui_retire_evidence_results.json` |
-| Lane A migration SHA-256 | `d6d87b1fdb97441d96a7a82218a4d4865a7109f3f936a9a9b90491842ab407f1` |
-| STG-01 migration SHA-256 | `250a7f281ef6b0485fda27fe3a555632b5bd019f9eedb61ead55f04f16e4be81` |
+| Results JSON | `.artifacts/slice0/service-workflow/disposable_ui_retire_evidence_results.json` (local artifact; not required in git) |
+| Evidence/source commit | `fc184cf93c616d493f6ef3306f332796f840c8ab` (contains battery + evidence doc + panel test) |
+| Backend migrations used | Lane A `d6d87b1f…` / STG-01 `250a7f28…` (blobs under that commit tree) |
+| Real-browser binding | **NOT TESTED** — no browser revision to bind |
 
 ### Assertions covered by backend battery
 
