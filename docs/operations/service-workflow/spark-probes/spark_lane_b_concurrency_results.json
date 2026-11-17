@@ -1,0 +1,43 @@
+{
+  "implementation": "d0c311c9cfc9a65bf67f85ee95b14946224d0a7b",
+  "manifest_tip": "8685aa5510ce4ee804f1463511d619f9f41244b3",
+  "contract": "da4bcb4a",
+  "results": [
+    {
+      "id": "C-1",
+      "name": "LB-C1 concurrent replaces distinct targets",
+      "pass": true,
+      "detail": "3/3 ok, one active 3f07825a-be06-464f-974a-9c2e6a4da16f, max 0.046s"
+    },
+    {
+      "id": "C-2",
+      "name": "RB-13a concurrent pin vs retire",
+      "pass": true,
+      "detail": "retire ok; 0/4 pins landed pre-retire, all readable"
+    },
+    {
+      "id": "C-2b",
+      "name": "RB-13a reverse order pin-then-retire",
+      "pass": true,
+      "detail": "pin landed pre-retire, readable post-retire"
+    },
+    {
+      "id": "C-3",
+      "name": "RB-13b concurrent pin vs start (20 rounds)",
+      "pass": true,
+      "detail": "20 rounds valid (pinned 0, denied 20), worst 0.008s"
+    },
+    {
+      "id": "C-3b",
+      "name": "RB-13b delayed-start rounds",
+      "pass": true,
+      "detail": "delayed-start rounds valid (pinned 5, denied 0)"
+    },
+    {
+      "id": "C-4",
+      "name": "LB-C1 concurrent replaces same target",
+      "pass": true,
+      "detail": "6/6 ok, one active S2"
+    }
+  ]
+}

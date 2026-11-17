@@ -1,0 +1,86 @@
+{
+  "implementation": "d0c311c9cfc9a65bf67f85ee95b14946224d0a7b",
+  "manifest_tip": "8685aa5510ce4ee804f1463511d619f9f41244b3",
+  "contract": "da4bcb4a",
+  "app": "http://127.0.0.1:3005",
+  "results": [
+    {
+      "id": "B-01",
+      "name": "admin sees empty pin panel",
+      "pass": true,
+      "detail": "No active routine pin."
+    },
+    {
+      "id": "B-02",
+      "name": "admin pin success toast",
+      "pass": true,
+      "detail": "exact toast, no error"
+    },
+    {
+      "id": "B-03",
+      "name": "admin active pin + visit readonly ref",
+      "pass": true,
+      "detail": "LB-BROWSER-1 \u2014 Browser Pin Routine | version 1 \u00b7 808672d8-d684-4f51-a879-a41c214582c4 | Reason: browser pin v1"
+    },
+    {
+      "id": "B-04",
+      "name": "admin pin persists after reload",
+      "pass": true,
+      "detail": "V1 active post-reload"
+    },
+    {
+      "id": "B-05",
+      "name": "support draft-replace exact error",
+      "pass": true,
+      "detail": "routine_pin_version_not_published"
+    },
+    {
+      "id": "B-06",
+      "name": "support replace success",
+      "pass": true,
+      "detail": "V2 active, no error"
+    },
+    {
+      "id": "B-07",
+      "name": "support schedules visit",
+      "pass": true,
+      "detail": "scheduled visit listed"
+    },
+    {
+      "id": "B-08",
+      "name": "technician read-only pre-start",
+      "pass": true,
+      "detail": "V2 visible, no controls"
+    },
+    {
+      "id": "B-09",
+      "name": "tech visit start",
+      "pass": true,
+      "detail": "exact 'Visit started' toast"
+    },
+    {
+      "id": "B-10",
+      "name": "stale-window replace denied exactly",
+      "pass": true,
+      "detail": "routine_pin_locked_after_start via UI"
+    },
+    {
+      "id": "B-11",
+      "name": "lock + V2 after reload",
+      "pass": true,
+      "detail": "banner exact, V2 active, no controls"
+    },
+    {
+      "id": "B-12",
+      "name": "boundary + no-dual-write + audits",
+      "pass": true,
+      "detail": "boundary set; audits routine_job_pinned,routine_job_pin_replaced"
+    },
+    {
+      "id": "B-13",
+      "name": "customer sees no pin content",
+      "pass": true,
+      "detail": "url=http://127.0.0.1:3005/support/tickets/be120b6f-a84c-4c83-bbf3-24a9ed2e482d"
+    }
+  ]
+}

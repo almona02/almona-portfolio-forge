@@ -1,0 +1,151 @@
+{
+  "implementation": "d0c311c9cfc9a65bf67f85ee95b14946224d0a7b",
+  "manifest_tip": "8685aa5510ce4ee804f1463511d619f9f41244b3",
+  "contract": "da4bcb4a",
+  "results": [
+    {
+      "id": "S-01",
+      "name": "RB-01 admin pin + audit",
+      "pass": true,
+      "detail": "active pin + routine_job_pinned audit"
+    },
+    {
+      "id": "S-02",
+      "name": "RB-01 support pin",
+      "pass": true,
+      "detail": "support pin ok"
+    },
+    {
+      "id": "S-03",
+      "name": "RB-02 reason required",
+      "pass": true,
+      "detail": "null + blank reason denied, no rows"
+    },
+    {
+      "id": "S-04",
+      "name": "RB-03 draft/in_review",
+      "pass": true,
+      "detail": "draft + in_review denied"
+    },
+    {
+      "id": "S-05",
+      "name": "RB-04 retired version",
+      "pass": true,
+      "detail": "retired version denied"
+    },
+    {
+      "id": "S-06",
+      "name": "RB-05 mismatch + positive control",
+      "pass": true,
+      "detail": "mismatch denied; R3-on-ZZ9 positive control ok"
+    },
+    {
+      "id": "S-07",
+      "name": "RB-06 unlinked/uncatalogued/uncertain",
+      "pass": true,
+      "detail": "unlinked + uncatalogued + uncertain denied"
+    },
+    {
+      "id": "S-08",
+      "name": "RB-07 pin stays V1",
+      "pass": true,
+      "detail": "pin stays V1 after V2 publish"
+    },
+    {
+      "id": "S-09",
+      "name": "RB-08 replace",
+      "pass": true,
+      "detail": "replace ok + history linked + audit"
+    },
+    {
+      "id": "S-10",
+      "name": "RB-09 unpin",
+      "pass": true,
+      "detail": "unpin ok + audit"
+    },
+    {
+      "id": "S-11",
+      "name": "RB-14 cardinality",
+      "pass": true,
+      "detail": "second active pin denied"
+    },
+    {
+      "id": "S-11b",
+      "name": "replace/unpin without active (observed)",
+      "pass": true,
+      "detail": "replace/unpin-without-active denied (details: routine_pin_cardinality, routine_pin_cardinality)"
+    },
+    {
+      "id": "S-12",
+      "name": "RB-10 post-start lock",
+      "pass": true,
+      "detail": "post-start pin/replace/unpin all locked"
+    },
+    {
+      "id": "S-13",
+      "name": "RB-11 boundary permanence",
+      "pass": true,
+      "detail": "abort/reassign/cancel keeps boundary + lock"
+    },
+    {
+      "id": "S-14",
+      "name": "RB-12 start without pin",
+      "pass": true,
+      "detail": "visit starts with no pin"
+    },
+    {
+      "id": "S-15",
+      "name": "RB-19 initial pin after start",
+      "pass": true,
+      "detail": "initial pin after historical start denied"
+    },
+    {
+      "id": "S-16",
+      "name": "RB-15 technician denied",
+      "pass": true,
+      "detail": "tech mutations denied incl. authz-before-state ordering"
+    },
+    {
+      "id": "S-17",
+      "name": "RB-16 customer/sales denied",
+      "pass": true,
+      "detail": "customer/sales mutations + sales read denied"
+    },
+    {
+      "id": "S-18",
+      "name": "RB-17 read scoping",
+      "pass": true,
+      "detail": "tech reads metadata-only; customer + out-of-scope tech denied"
+    },
+    {
+      "id": "S-19",
+      "name": "RB-18 readable after retire",
+      "pass": true,
+      "detail": "pin readable after retire; new pin denied"
+    },
+    {
+      "id": "S-20",
+      "name": "RB-20 direct writes + RLS",
+      "pass": true,
+      "detail": "direct writes blocked; RLS select scoped"
+    },
+    {
+      "id": "S-21",
+      "name": "boundary bypass probes",
+      "pass": true,
+      "detail": "boundary cannot be cleared via client paths"
+    },
+    {
+      "id": "S-22",
+      "name": "denied-write audit rollback",
+      "pass": true,
+      "detail": "denied-write audit rollback confirmed"
+    },
+    {
+      "id": "S-23",
+      "name": "empty get_ lock reflection",
+      "pass": true,
+      "detail": "empty get_ reflects lock state"
+    }
+  ]
+}
