@@ -37,6 +37,7 @@ import { ServiceRoutinesAuthoringPanel } from './ServiceRoutinesAuthoringPanel'
 const listRoutines = serviceRoutinesApi.listRoutines as ReturnType<typeof vi.fn>
 const listVersions = serviceRoutinesApi.listVersions as ReturnType<typeof vi.fn>
 const updateDraft = serviceRoutinesApi.updateDraft as ReturnType<typeof vi.fn>
+const retire = serviceRoutinesApi.retire as ReturnType<typeof vi.fn>
 
 const baseVersion = {
   id: 'v1',
@@ -144,5 +145,103 @@ describe('ServiceRoutinesAuthoringPanel (Cursor evidence)', () => {
     await user.click(screen.getByRole('button', { name: /Reconcile to server content/i }))
     await waitFor(() => expect(screen.queryByTestId('draft-conflict-panel')).not.toBeInTheDocument())
     expect(screen.getByLabelText(/Draft payload/i)).toHaveValue(JSON.stringify(serverPayload, null, 2))
+  })
+
+  it('retire success: exact toast, no error toast, persisted version status after reload', async () => {
+    const user = userEvent.setup()
+    const publishedRoutine = {
+      id: 'r1',
+      code: 'RA-SAW-01',
+      name_en: 'Saw PM',
+      name_ar: '',
+      description: '',
+      status: 'published',
+      updated_at: '2026-11-16T01:00:00Z',
+    }
+    const publishedVersion = {
+      ...baseVersion,
+      id: 'v-pub',
+      version_ordinal: 1,
+      status: 'published',
+      draft_revision: 'published-token',
+      published_at: '2026-11-16T01:00:00Z',
+    }
+    const retiredVersion = {
+      ...publishedVersion,
+      status: 'retired',
+      retired_at: '2026-11-16T02:00:00Z',
+    }
+
+    listRoutines
+      .mockResolvedValueOnce([publishedRoutine]) // initial refresh
+      .mockResolvedValueOnce([{ ...publishedRoutine, status: 'retired', updated_at: '2026-11-16T02:00:00Z' }])
+    listVersions
+      .mockResolvedValueOnce([publishedVersion]) // open
+      .mockResolvedValueOnce([retiredVersion]) // reload after retire
+    retire.mockResolvedValue({ version_id: 'v-pub', status: 'retired' })
+
+    render(<ServiceRoutinesAuthoringPanel />)
+    await waitFor(() => expect(screen.getByText('RA-SAW-01')).toBeInTheDocument())
+    await user.click(screen.getByRole('button', { name: 'Open' }))
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Retire published' })).toBeInTheDocument())
+
+    await user.click(screen.getByRole('button', { name: 'Retire published' }))
+
+    await waitFor(() => expect(retire).toHaveBeenCalledWith('v-pub'))
+    await waitFor(() =>
+      expect(toast).toHaveBeenCalledWith(expect.objectContaining({ title: 'Retired' })),
+    )
+    expect(toast).not.toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Retired failed', variant: 'destructive' }),
+    )
+    // Persisted version row status after reload (exact cell text; not toast substring).
+    await waitFor(() =>
+      expect(screen.getAllByRole('cell').some((cell) => cell.textContent === 'retired')).toBe(true),
+    )
+  })
+
+  it('retire failure: exact error toast and published version persists after reload', async () => {
+    const user = userEvent.setup()
+    const publishedRoutine = {
+      id: 'r1',
+      code: 'RA-SAW-01',
+      name_en: 'Saw PM',
+      name_ar: '',
+      description: '',
+      status: 'published',
+      updated_at: '2026-11-16T01:00:00Z',
+    }
+    const publishedVersion = {
+      ...baseVersion,
+      id: 'v-pub',
+      version_ordinal: 1,
+      status: 'published',
+      draft_revision: 'published-token',
+      published_at: '2026-11-16T01:00:00Z',
+    }
+
+    listRoutines.mockResolvedValue([publishedRoutine])
+    listVersions.mockResolvedValue([publishedVersion])
+    retire.mockRejectedValue(new Error('Published version required'))
+
+    render(<ServiceRoutinesAuthoringPanel />)
+    await waitFor(() => expect(screen.getByText('RA-SAW-01')).toBeInTheDocument())
+    await user.click(screen.getByRole('button', { name: 'Open' }))
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Retire published' })).toBeInTheDocument())
+
+    await user.click(screen.getByRole('button', { name: 'Retire published' }))
+
+    await waitFor(() =>
+      expect(toast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Retired failed',
+          description: 'Published version required',
+          variant: 'destructive',
+        }),
+      ),
+    )
+    expect(toast).not.toHaveBeenCalledWith(expect.objectContaining({ title: 'Retired' }))
+    expect(screen.getByText(/library status published/i)).toBeInTheDocument()
+    expect(screen.getAllByRole('cell').some((cell) => cell.textContent === 'published')).toBe(true)
   })
 })
