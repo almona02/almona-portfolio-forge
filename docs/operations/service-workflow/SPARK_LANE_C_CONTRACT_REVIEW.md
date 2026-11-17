@@ -9,7 +9,8 @@
 | Tip | Full SHA | Role |
 |-----|----------|------|
 | Prior package (closeout + first contract draft) | `110a578953b14d82fac14648c3fd3278bcf14923` | Reachable baseline; includes Lane B closeout record |
-| **Review HEAD** | `b62ede39cbb08c17aee2db79796724b874842d3e` | Docs-only gap close on Lane C + ticket-RLS note; **Lane B closeout file unchanged** |
+| Contract gap-close (docs) | `081d13a27becc78144170c4dc87a01e9429e2c29` | Lane C + ticket-RLS wording; **Lane B closeout file unchanged** |
+| **Review HEAD** | Branch tip of `feat/service-routines-authoring` containing this handoff (full SHA in Spark notify / `git rev-parse origin/feat/service-routines-authoring`) | Implementation still held |
 
 ## Repository-relative paths (reachable on the review HEAD)
 
