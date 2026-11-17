@@ -50,7 +50,16 @@ Policies: SELECT scoped to admin/support/technician + `can_read_ticket_workflow`
 
 ## Frontend preview
 
-Filled after deploy in the same commit wave / handoff (see secure handoff + release notes below).
+| Field | Value |
+|-------|-------|
+| Deployment id | `dpl_8HoVeawqDmdkZytUmE1B5ma8LSDq` (**READY**) |
+| Source revision | `f37556802649f90fe28575c5f46cfb462c9fcf0a` (Lane B UI from `d0c311c9`; later commits docs/evidence only) |
+| Preview URL | `https://almona-portfolio-forge-2uydn3tan.vercel.app` |
+| Branch alias | `https://almona-portfolio-f-git-2939ea-mohamed-hassans-projects-0ca04921.vercel.app` |
+| Env binding | Branch-scoped preview `VITE_SUPABASE_*` → staging `apnmoevmvihfzcnttctx` |
+| Protection | SSO on; shareable `_vercel_share` TTL to **2026-11-24T19:37:22Z** (Unix `1795549042`) |
+
+Duplicate MCP-queued deploy `dpl_4dU2oX3wc7HFuYnywr2jZ5frP18F` canceled (same SHA).
 
 ## Secure delivery to Spark
 
