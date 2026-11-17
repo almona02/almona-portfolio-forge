@@ -13,7 +13,7 @@
 | 2 | `scripts/service-workflow/disposable_lane_b_deps.sql` | (harness) | Tickets/jobs/machines/`can_read`/`lock_job_hierarchy` stubs |
 | 3 | `supabase/migrations/20261116180000_service_routines_lane_a_authoring.sql` | Lane A | Prerequisite |
 | 4 | `supabase/migrations/20261116213000_service_routines_lane_a_stg01_stale_conflict.sql` | Lane A | Prerequisite |
-| 5 | `supabase/migrations/20261117190000_service_routines_lane_b_job_pins.sql` | `1b962c0588efef83a28549687991aebe735ef0d3d5293e439ed399da02513042` | Lane B pins |
+| 5 |  |  (29255 bytes @ d0c311c9) | Lane B pins |
 
 Canonical binding choices: `LANE_B_BINDING_CHOICES.md`.
 
