@@ -20,6 +20,7 @@ import {
   type ServiceJobRow,
 } from '@/lib/ticketGovernanceApi'
 import { ServiceVisitPanel } from '@/components/support/ServiceVisitPanel'
+import { ServiceJobRoutinePinPanel } from '@/components/support/ServiceJobRoutinePinPanel'
 import { toast } from 'sonner'
 
 export type ServiceJobViewerRole = 'admin' | 'support' | 'technician' | 'customer' | string
@@ -227,6 +228,8 @@ export const ServiceJobAssignmentPanel: React.FC<ServiceJobAssignmentPanelProps>
             </Button>
           </div>
         )}
+
+        <ServiceJobRoutinePinPanel jobId={job.id} viewerRole={viewerRole} />
 
         <ServiceVisitPanel
           jobId={job.id}

@@ -22,6 +22,7 @@ import { useAuth } from '@/context/AuthContext'
 import { ServiceReportPanel } from '@/components/support/ServiceReportPanel'
 import { ServiceReportReviewPanel } from '@/components/support/ServiceReportReviewPanel'
 import { CustomerIssuedReportView } from '@/components/support/CustomerIssuedReportView'
+import { getServiceJobRoutinePin } from '@/lib/serviceJobRoutinePinsApi'
 import { toast } from 'sonner'
 
 export type ServiceVisitViewerRole = 'admin' | 'support' | 'technician' | string
@@ -81,6 +82,12 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
         state: string
       } | null
     },
+  })
+
+  const jobPinQuery = useQuery({
+    queryKey: ['service-job-routine-pin', jobId],
+    queryFn: () => getServiceJobRoutinePin(jobId),
+    enabled: viewerRole === 'admin' || viewerRole === 'support' || viewerRole === 'technician',
   })
 
   const refresh = async () => {
@@ -144,6 +151,13 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
       <p className="text-xs text-muted-foreground">
         Visit completion is not job completion. Reports and closure come later.
       </p>
+      {jobPinQuery.data?.active ? (
+        <p className="text-xs text-muted-foreground" data-testid="visit-job-pin-readonly">
+          Job routine pin (read-only): {jobPinQuery.data.active.routine_code}
+          {jobPinQuery.data.active.retired_badge ? ' · Retired' : ''} ·{' '}
+          <span className="font-mono">{jobPinQuery.data.active.routine_version_id}</span>
+        </p>
+      ) : null}
 
       {actionError && (
         <p role="alert" className="text-sm text-destructive">
