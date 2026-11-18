@@ -181,6 +181,8 @@ batch1-release*/
 .env.lane-a*.local
 scripts/service-workflow/lane-a-supabase/supabase/.branches/
 scripts/service-workflow/lane-a-supabase/supabase/.temp/
+scripts/service-workflow/lane-c-checklist-supabase/supabase/.branches/
+scripts/service-workflow/lane-c-checklist-supabase/supabase/.temp/
 # Local agent execution evidence and editor planning output
 /.lint-wave-provenance/
 /.cursor/analysis/

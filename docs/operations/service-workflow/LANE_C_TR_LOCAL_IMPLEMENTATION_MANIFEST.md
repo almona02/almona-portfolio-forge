@@ -53,5 +53,6 @@ History SELECT uses `admin_private.can_read_checklist_attempt_history` (contract
 | Component Vitest at `b5865120` (not re-run) | **11/11 PASS** | header API, checklist API/panel, TicketDetailPage tech path, Lane B pin API regression |
 | Lane B disposable at `b5865120` (not re-run) | **28/28 PASS** | `.artifacts/slice0/service-workflow/disposable_lane_b_results.json` |
 | Browser at `b5865120` | Login smoke only | `CURSOR_LANE_C_TR_BROWSER_RESULTS.md` — not the checklist journey |
+| Checklist browser stack | Bound to `e27f21a5` | [`LANE_C_CHECKLIST_BROWSER_ENVIRONMENT.md`](./LANE_C_CHECKLIST_BROWSER_ENVIRONMENT.md) |
 
 Disposable runner JSON under `.artifacts/` stamps the same freeze SHA when re-run against this tip.

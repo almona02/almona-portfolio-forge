@@ -277,10 +277,23 @@ GRANT SELECT, UPDATE ON TABLE public.service_tickets TO authenticated;
 GRANT SELECT ON TABLE public.service_jobs, public.service_job_visits TO authenticated;
 GRANT SELECT ON TABLE public.service_reports, public.service_report_revisions TO authenticated;
 
--- Second technician for concurrency / reassignment cases
-INSERT INTO auth.users (id) VALUES
-  ('cccccccc-cccc-cccc-cccc-ccccccccccc2')
-ON CONFLICT DO NOTHING;
-INSERT INTO public.profiles (id, role) VALUES
-  ('cccccccc-cccc-cccc-cccc-ccccccccccc2', 'technician')
-ON CONFLICT DO NOTHING;
+-- Second technician for the disposable battery (id-only auth.users).
+-- Real GoTrue auth.users has an email column; skip there so this file can
+-- also load into the isolated checklist browser stack.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'auth'
+      AND table_name = 'users'
+      AND column_name = 'email'
+  ) THEN
+    INSERT INTO auth.users (id) VALUES
+      ('cccccccc-cccc-cccc-cccc-ccccccccccc2')
+    ON CONFLICT DO NOTHING;
+    INSERT INTO public.profiles (id, role) VALUES
+      ('cccccccc-cccc-cccc-cccc-ccccccccccc2', 'technician')
+    ON CONFLICT DO NOTHING;
+  END IF;
+END $$;
