@@ -19,7 +19,9 @@ MIG_A = ROOT / "supabase/migrations/20261116180000_service_routines_lane_a_autho
 MIG_STG01 = ROOT / "supabase/migrations/20261116213000_service_routines_lane_a_stg01_stale_conflict.sql"
 MIG_B = ROOT / "supabase/migrations/20261117190000_service_routines_lane_b_job_pins.sql"
 MIG_CR = ROOT / "supabase/migrations/20261118210000_service_coverage_recurrence.sql"
+MIG_CAP = ROOT / "supabase/migrations/20261118220000_service_coverage_f_cov_cap_1.sql"
 BATTERY = ROOT / "scripts/service-workflow/disposable_coverage_battery.sql"
+CAP_BATTERY = ROOT / "scripts/service-workflow/disposable_coverage_cap_battery.sql"
 OUT_DIR = ROOT / ".artifacts/slice0/service-workflow"
 OUT = OUT_DIR / "disposable_coverage_results.json"
 PGBIN = Path(r"C:\Program Files\PostgreSQL\17\bin")
@@ -28,6 +30,7 @@ LOG = OUT_DIR / "_cr_pg.log"
 PORT = "55459"
 PGUSER = "postgres"
 PROPOSAL_TIP = "42862fdd27636d2682ce81fc287ed3777f8005fb"
+BASELINE_IMPL = "e2a2f525cba0feb7238bfd6d89d866e0cd13560f"
 
 
 def _psql_bin() -> str:
@@ -42,14 +45,14 @@ def _psql_env() -> dict[str, str]:
     return env
 
 
-def psql_file(db: str, path: Path) -> subprocess.CompletedProcess[str]:
+def psql_file(db: str, path: Path, timeout: int = 300) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [
             _psql_bin(),
             "-h", "127.0.0.1", "-p", PORT, "-U", PGUSER, "-d", db,
             "-v", "ON_ERROR_STOP=1", "-f", str(path),
         ],
-        text=True, capture_output=True, check=False, timeout=300, env=_psql_env(),
+        text=True, capture_output=True, check=False, timeout=timeout, env=_psql_env(),
     )
 
 
@@ -67,10 +70,19 @@ def psql(db: str, sql: str) -> subprocess.CompletedProcess[str]:
         return subprocess.CompletedProcess(list(exc.cmd) if exc.cmd else [], 1, "", "psql timeout")
 
 
-def apply(db: str, path: Path, label: str) -> None:
-    r = psql_file(db, path)
+def apply(db: str, path: Path, label: str, timeout: int = 300) -> None:
+    r = psql_file(db, path, timeout=timeout)
     if r.returncode != 0:
         raise SystemExit(f"{label} failed:\n{r.stderr}\n{r.stdout[-8000:]}")
+
+
+def parse_rows(stdout: str, prefix: str) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    for ln in stdout.splitlines():
+        parts = [p.strip() for p in ln.split("|")]
+        if len(parts) == 3 and parts[0].startswith(prefix):
+            rows.append({"check_id": parts[0], "status": parts[1], "detail": parts[2]})
+    return rows
 
 
 def wait_ready(retries: int = 60) -> None:
@@ -142,22 +154,21 @@ def main() -> int:
             (MIG_B, "lane-b"),
             (DEPS_CR, "coverage deps"),
             (MIG_CR, "coverage recurrence"),
+            (MIG_CAP, "F-COV-CAP-1"),
         ]:
             print(f"applying {label}…", flush=True)
             apply(db, path, label)
-        print("running battery…", flush=True)
-        r = psql_file(db, BATTERY)
+        print("running CR-01…CR-16 battery…", flush=True)
+        r = psql_file(db, BATTERY, timeout=300)
         if r.returncode != 0:
             raise SystemExit(f"battery failed:\n{r.stderr}\n{r.stdout[-12000:]}")
-        rows = []
-        for ln in r.stdout.splitlines():
-            parts = [p.strip() for p in ln.split("|")]
-            if len(parts) == 3 and parts[0].startswith("CR-"):
-                rows.append({"check_id": parts[0], "status": parts[1], "detail": parts[2]})
-        pass_n = sum(1 for x in rows if x["status"] == "PASS")
-        fail_n = sum(1 for x in rows if x["status"] == "FAIL")
+        rows = parse_rows(r.stdout, "CR-")
+        # Exclude CAP rows if any leak into CR prefix parsing (CAP uses CR-CAP-)
+        base_rows = [x for x in rows if not x["check_id"].startswith("CR-CAP-")]
+        pass_n = sum(1 for x in base_rows if x["status"] == "PASS")
+        fail_n = sum(1 for x in base_rows if x["status"] == "FAIL")
 
-        print("running concurrent generation…", flush=True)
+        print("running concurrent generation (8-worker race)…", flush=True)
         conc = subprocess.run(
             [sys.executable, str(ROOT / "scripts/service-workflow/disposable_coverage_concurrent.py")],
             text=True, capture_output=True, check=False, cwd=str(ROOT),
@@ -173,32 +184,56 @@ def main() -> int:
                 "rc": conc.returncode,
             }
 
+        print("running F-COV-CAP-1 battery…", flush=True)
+        r_cap = psql_file(db, CAP_BATTERY, timeout=1200)
+        if r_cap.returncode != 0:
+            raise SystemExit(f"CAP battery failed:\n{r_cap.stderr}\n{r_cap.stdout[-12000:]}")
+        cap_rows = parse_rows(r_cap.stdout, "CR-CAP-")
+        cap_pass = sum(1 for x in cap_rows if x["status"] == "PASS")
+        cap_fail = sum(1 for x in cap_rows if x["status"] == "FAIL")
+
         payload = {
-            "label": "Cursor disposable coverage/recurrence",
+            "label": "Cursor disposable coverage/recurrence + F-COV-CAP-1",
             "not_spark": True,
             "not_staging_apply": True,
             "proposal_tip": PROPOSAL_TIP,
+            "baseline_implementation_sha": BASELINE_IMPL,
             "implementation_sha": impl_sha(),
             "migrations": {
                 "coverage": str(MIG_CR.relative_to(ROOT)),
                 "coverage_sha256": file_sha256(MIG_CR),
+                "f_cov_cap_1": str(MIG_CAP.relative_to(ROOT)),
+                "f_cov_cap_1_sha256": file_sha256(MIG_CAP),
                 "lane_b": str(MIG_B.relative_to(ROOT)),
                 "lane_b_sha256": file_sha256(MIG_B),
             },
             "pass": pass_n,
             "fail": fail_n,
-            "total": len(rows),
-            "rows": rows,
+            "total": len(base_rows),
+            "rows": base_rows,
             "concurrency": conc_payload,
-            "stdout_tail": r.stdout[-4000:],
+            "f_cov_cap_1": {
+                "pass": cap_pass,
+                "fail": cap_fail,
+                "total": len(cap_rows),
+                "rows": cap_rows,
+            },
+            "stdout_tail": r.stdout[-2000:],
+            "cap_stdout_tail": r_cap.stdout[-2000:],
         }
         OUT.write_text(json.dumps(payload, indent=2), encoding="utf-8")
         print(json.dumps({
-            "pass": pass_n, "fail": fail_n, "total": len(rows),
+            "pass": pass_n, "fail": fail_n, "total": len(base_rows),
             "concurrency_pass": bool(conc_payload.get("pass")),
+            "cap_pass": cap_pass, "cap_fail": cap_fail, "cap_total": len(cap_rows),
             "out": str(OUT),
         }), flush=True)
-        return 0 if fail_n == 0 and pass_n > 0 and conc_payload.get("pass") else 1
+        ok = (
+            fail_n == 0 and pass_n > 0
+            and conc_payload.get("pass")
+            and cap_fail == 0 and cap_pass > 0
+        )
+        return 0 if ok else 1
     finally:
         stop_cluster()
 

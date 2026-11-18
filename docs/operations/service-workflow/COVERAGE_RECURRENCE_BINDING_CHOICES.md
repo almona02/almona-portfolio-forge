@@ -20,8 +20,9 @@ These choices resolve implementation shape without changing accepted proposal de
 | Model/manufacturer wording | Lane A metadata override remains the only audited soft path; coverage create/pin follow Lane B hard applicability (family/catalog match). No assignment-time override RPC. |
 | Ticket+job create | `admin_private.create_coverage_preventive_ticket` (admin/support, audited) → existing `public.create_service_job` → existing `public.pin_service_job_routine` |
 | Pin reason | `coverage_occurrence_generated` |
-| Generator RPC | `public.generate_machine_coverage_occurrences(p_as_of date DEFAULT NULL, p_coverage_id uuid DEFAULT NULL, p_actor_id uuid DEFAULT NULL)` |
-| Schedule list | `public.list_machine_coverage_schedule(p_as_of, p_machine_id?, p_coverage_id?, p_actor_id?)` |
+| Generator RPC | `public.generate_machine_coverage_occurrences(p_as_of, p_coverage_id?, p_actor_id?, p_batch_limit?, p_continue_coverage_id?, p_continue_sequence?)` |
+| Schedule list | `public.list_machine_coverage_schedule(…, p_batch_limit?, p_continue_coverage_id?, p_continue_sequence?)` |
+| F-COV-CAP-1 | No silent `seq>500` truncation. `p_batch_limit` NULL = process/list **all** eligible candidates in the accepted Cairo window. Non-null batch → `status=incomplete` + `continuation{coverage_id,next_sequence}`; repeat until `complete`. Window unchanged. |
 | Management RPCs | `create_machine_coverage` · `pause_machine_coverage` · `resume_machine_coverage` · `end_machine_coverage` · `adopt_machine_coverage_routine_version` · `change_machine_coverage_cadence` · `get_machine_coverage` |
 | Authz | Admin/Support manage + generate; Technician/Customer denied manage; Customer schedule = own-machine only |
 | UI | Admin tab `service-coverage` → `ServiceMachineCoveragePanel` |

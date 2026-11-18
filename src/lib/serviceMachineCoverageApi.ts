@@ -148,20 +148,34 @@ export async function getMachineCoverage(coverageId: string): Promise<MachineCov
   })
 }
 
+export type CoverageContinuation = {
+  coverage_id: string
+  next_sequence: number
+} | null
+
 export async function generateMachineCoverageOccurrences(input?: {
   asOf?: string | null
   coverageId?: string | null
+  batchLimit?: number | null
+  continueCoverageId?: string | null
+  continueSequence?: number | null
 }) {
   return rpc<{
     as_of: string
     created: number
     skipped: number
     failed: number
+    processed: number
+    status: 'complete' | 'incomplete' | string
+    continuation: CoverageContinuation
     results: unknown[]
   }>('generate_machine_coverage_occurrences', {
     p_as_of: input?.asOf ?? null,
     p_coverage_id: input?.coverageId ?? null,
     p_actor_id: null,
+    p_batch_limit: input?.batchLimit ?? null,
+    p_continue_coverage_id: input?.continueCoverageId ?? null,
+    p_continue_sequence: input?.continueSequence ?? null,
   })
 }
 
@@ -169,11 +183,24 @@ export async function listMachineCoverageSchedule(input?: {
   asOf?: string | null
   machineId?: string | null
   coverageId?: string | null
-}): Promise<{ as_of: string; horizon_end: string; items: CoverageScheduleItem[] }> {
+  batchLimit?: number | null
+  continueCoverageId?: string | null
+  continueSequence?: number | null
+}): Promise<{
+  as_of: string
+  horizon_end: string
+  item_count: number
+  status: 'complete' | 'incomplete' | string
+  continuation: CoverageContinuation
+  items: CoverageScheduleItem[]
+}> {
   return rpc('list_machine_coverage_schedule', {
     p_as_of: input?.asOf ?? null,
     p_machine_id: input?.machineId ?? null,
     p_coverage_id: input?.coverageId ?? null,
     p_actor_id: null,
+    p_batch_limit: input?.batchLimit ?? null,
+    p_continue_coverage_id: input?.continueCoverageId ?? null,
+    p_continue_sequence: input?.continueSequence ?? null,
   })
 }

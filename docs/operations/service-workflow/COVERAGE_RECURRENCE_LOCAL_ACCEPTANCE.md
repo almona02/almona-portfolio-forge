@@ -2,8 +2,10 @@
 
 **Accepted proposal:** `42862fdd27636d2682ce81fc287ed3777f8005fb`  
 **Frozen implementation SHA:** `e2a2f525cba0feb7238bfd6d89d866e0cd13560f`  
+**F-COV-CAP-1 correction:** see [`F_COV_CAP_1_CORRECTION.md`](./F_COV_CAP_1_CORRECTION.md) (stamp SHA recorded after correction commit)  
 **Migration:** `supabase/migrations/20261118210000_service_coverage_recurrence.sql`  
 **Migration SHA-256 (LF):** `226d4245ca806cc1cfa8e501c37881a7409fa8c1b07c43e9122ffe030239220d`  
+**F-COV-CAP-1 migration SHA-256 (LF):** `7f463441037eb83f3e6125870dd0d5849c8db47c59ef6dfe4c8bc06b2ad8e336`  
 **Lane B pin prerequisite SHA-256 (unchanged):** `3d39d6a2741a3519bbb5e144c1d4ff201048b224d1877b138f4b3c1423b223a0`  
 **Binding:** [`COVERAGE_RECURRENCE_BINDING_CHOICES.md`](./COVERAGE_RECURRENCE_BINDING_CHOICES.md) · [`COVERAGE_RECURRENCE_LOCAL_IMPLEMENTATION_MANIFEST.md`](./COVERAGE_RECURRENCE_LOCAL_IMPLEMENTATION_MANIFEST.md)
 
@@ -11,10 +13,11 @@
 
 | Layer | Result | Attribution / notes |
 |-------|--------|---------------------|
-| **Database** disposable PG17 battery CR-01…CR-16 (+ tech/customer deny splits) | **22/22 PASS** | Cursor disposable — `.artifacts/slice0/service-workflow/disposable_coverage_results.json` |
-| **Concurrency** 8-worker generate on active coverage | **PASS** (`unique_sequences=ok`, all rc 0) | Cursor disposable concurrent — same JSON `concurrency` |
-| **Component** Vitest (API + panel) | **NOT RUN** | Local Vitest suite-load fails with pre-existing `TypeError: … reading 'config'` on `describe` for **all** suites tried (including prior Lane A/B panel tests). Tests are present under `src/lib/serviceMachineCoverageApi.test.ts` and `ServiceMachineCoveragePanel.test.tsx`. |
-| **Browser** smoke journey | **UNAVAILABLE** | No isolated coverage Auth/PostgREST browser stack in this package. Lane C checklist loopback stack is a different lane and was not reused. Not staging. |
+| **Database** disposable PG17 battery CR-01…CR-16 (+ tech/customer deny splits) | **22/22 PASS** | Cursor disposable — preserved after F-COV-CAP-1 |
+| **Concurrency** 8-worker generate on active coverage | **PASS** (`unique_sequences=ok`, workers=8) | Cursor disposable concurrent — preserved |
+| **F-COV-CAP-1** 895 / 500 / 501 / continuation / idempotency | **10/10 PASS** | Cursor disposable CAP battery — same JSON `f_cov_cap_1` |
+| **Component** Vitest (API + panel) | **NOT RUN** | Pre-existing Vitest suite-load failure on this workstation |
+| **Browser** smoke journey | **Environment supplied separately** | [`COVERAGE_BROWSER_ENVIRONMENT.md`](./COVERAGE_BROWSER_ENVIRONMENT.md) — not claimed executed on this stamp |
 
 ### Database check map
 
