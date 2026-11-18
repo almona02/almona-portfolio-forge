@@ -1,6 +1,7 @@
 # F-COV-CAP-1 correction
 
 **Against:** `e2a2f525cba0feb7238bfd6d89d866e0cd13560f`  
+**Correction SHA:** `b65c4cd4f9a24e18c45ed30cebccc526f399b159`  
 **Finding:** Silent `EXIT WHEN v_seq > 500` in generate + schedule list truncated eligible Cairo-window candidates (e.g. 895 daily dues) without status or continuation.  
 **Correction migration:** `supabase/migrations/20261118220000_service_coverage_f_cov_cap_1.sql`  
 **Migration SHA-256 (LF):** `7f463441037eb83f3e6125870dd0d5849c8db47c59ef6dfe4c8bc06b2ad8e336`

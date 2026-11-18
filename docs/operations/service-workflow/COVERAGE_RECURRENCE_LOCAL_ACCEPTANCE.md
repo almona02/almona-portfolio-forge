@@ -2,7 +2,7 @@
 
 **Accepted proposal:** `42862fdd27636d2682ce81fc287ed3777f8005fb`  
 **Frozen implementation SHA:** `e2a2f525cba0feb7238bfd6d89d866e0cd13560f`  
-**F-COV-CAP-1 correction:** see [`F_COV_CAP_1_CORRECTION.md`](./F_COV_CAP_1_CORRECTION.md) (stamp SHA recorded after correction commit)  
+**F-COV-CAP-1 correction SHA:** `b65c4cd4f9a24e18c45ed30cebccc526f399b159` — [`F_COV_CAP_1_CORRECTION.md`](./F_COV_CAP_1_CORRECTION.md)  
 **Migration:** `supabase/migrations/20261118210000_service_coverage_recurrence.sql`  
 **Migration SHA-256 (LF):** `226d4245ca806cc1cfa8e501c37881a7409fa8c1b07c43e9122ffe030239220d`  
 **F-COV-CAP-1 migration SHA-256 (LF):** `7f463441037eb83f3e6125870dd0d5849c8db47c59ef6dfe4c8bc06b2ad8e336`  
