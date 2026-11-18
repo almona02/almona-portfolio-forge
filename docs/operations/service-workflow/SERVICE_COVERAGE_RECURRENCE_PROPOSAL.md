@@ -1,7 +1,8 @@
 # Proposal — service coverage & recurring maintenance (planning only)
 
-**Status:** Amended proposal · **not** authorized for implementation, migrations, staging/production apply, merge, or FR-1  
+**Status:** Amended proposal · decisions closed at `42862fdd` · **local implementation authorized** (see [`COVERAGE_RECURRENCE_LOCAL_ACCEPTANCE.md`](./COVERAGE_RECURRENCE_LOCAL_ACCEPTANCE.md)) · still **not** authorized for staging/production apply, merge, or FR-1  
 **Base tip:** `9e6585f38ab29df1fea5b3802b188e1399dfe286`  
+**Closed tip:** `42862fdd27636d2682ce81fc287ed3777f8005fb`  
 **Depends on (reuse, do not reopen):**  
 Lane A authoring · Lane B job pins · Lane C checklist execution · journey-close `JC-PASS-BOUNDED` ([`JOURNEY_CLOSE_STAGING_ACCEPTANCE.md`](./JOURNEY_CLOSE_STAGING_ACCEPTANCE.md)) · accepted B1–B7 ticket→job→visit→report→issue→ack→close path  
 **Routine specification reuse:** Spec Status §C occurrence identity + §13 pinning/adoption/cadence defaults in [`SERVICE_WORKFLOW_SPECIFICATION_MANUAL_MACHINES.md`](../../specs/SERVICE_WORKFLOW_SPECIFICATION_MANUAL_MACHINES.md)  

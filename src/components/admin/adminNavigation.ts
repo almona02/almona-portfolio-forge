@@ -1,4 +1,4 @@
-import { BarChart3, BookOpenCheck, Boxes, ClipboardCheck, Cog, DollarSign, Factory, FileText, HardHat, HelpCircle, Package, Ruler, Settings, ShieldCheck, ShoppingCart, SlidersHorizontal, Tag, Tags, UserCog, Users, Wrench, Zap } from 'lucide-react'
+import { BarChart3, BookOpenCheck, Boxes, CalendarRange, ClipboardCheck, Cog, DollarSign, Factory, FileText, HardHat, HelpCircle, Package, Ruler, Settings, ShieldCheck, ShoppingCart, SlidersHorizontal, Tag, Tags, UserCog, Users, Wrench, Zap } from 'lucide-react'
 
 /** Sections implemented by the /admin dashboard. Shared with the global menu. */
 export const adminNavigationItems = [
@@ -15,6 +15,7 @@ export const adminNavigationItems = [
   { id: 'service-contracts', label: 'Service Contracts', icon: ClipboardCheck },
   { id: 'service-packages', label: 'Service Packages', icon: Tag },
   { id: 'service-routines', label: 'Service Routines', icon: BookOpenCheck },
+  { id: 'service-coverage', label: 'Service Coverage', icon: CalendarRange },
   { id: 'support', label: 'Support Tickets', icon: HelpCircle },
   { id: 'technicians', label: 'Technicians', icon: HardHat },
   { id: 'users', label: 'Users & Roles', icon: UserCog },
