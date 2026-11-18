@@ -50,12 +50,38 @@ BEGIN
 END;
 $$;
 
+-- Actual history rows visible to the current app.b1_uid under RLS (not a count-only probe).
+CREATE OR REPLACE FUNCTION pg_temp.lc_hist(p_visit uuid)
+RETURNS jsonb
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v jsonb;
+BEGIN
+  PERFORM pg_temp.lc_client();
+  SELECT COALESCE(jsonb_agg(jsonb_build_object(
+    'item_key', h.item_key,
+    'attempt', h.attempt,
+    'outcome', h.outcome,
+    'note', h.note,
+    'actor_id', h.actor_id,
+    'actor_role', h.actor_role
+  ) ORDER BY h.item_key, h.attempt), '[]'::jsonb)
+  INTO v
+  FROM public.service_visit_checklist_answer_history h
+  WHERE h.visit_id = p_visit;
+  PERFORM pg_temp.lc_reset();
+  RETURN v;
+END;
+$$;
+
 DO $$
 DECLARE
   admin1 uuid := 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1';
   support1 uuid := 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1';
   tech1 uuid := 'cccccccc-cccc-cccc-cccc-ccccccccccc1';
   tech2 uuid := 'cccccccc-cccc-cccc-cccc-ccccccccccc2';
+  tech3 uuid := 'cccccccc-cccc-cccc-cccc-ccccccccccc3';
   cust1 uuid := 'dddddddd-dddd-dddd-dddd-ddddddddddd1';
   cust2 uuid := 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeee1'; -- sales used as second customer actor via profile? keep as customer2 insert
   v_payload jsonb;
@@ -80,6 +106,13 @@ DECLARE
   v_detail text;
   v_msg text;
   v_count int;
+  v_before int;
+  v_rows jsonb;
+  v_ins boolean;
+  v_upd boolean;
+  v_del boolean;
+  v_sel boolean;
+  v_pol boolean;
   v_rls boolean;
   v_keys text[];
   v_rev_before bigint;
@@ -93,6 +126,9 @@ BEGIN
   INSERT INTO public.profiles (id, role) VALUES ('ffffffff-ffff-ffff-ffff-fffffffffff1', 'customer')
   ON CONFLICT DO NOTHING;
   cust2 := 'ffffffff-ffff-ffff-ffff-fffffffffff1';
+  INSERT INTO auth.users (id) VALUES (tech3) ON CONFLICT DO NOTHING;
+  INSERT INTO public.profiles (id, role) VALUES (tech3, 'technician')
+  ON CONFLICT DO NOTHING;
 
   v_payload := jsonb_build_object(
     'sections', jsonb_build_array(
@@ -415,7 +451,7 @@ BEGIN
     format('state=%s detail=%s', v_state, v_detail)
   );
 
-  -- LC-12 customer denied
+  -- LC-12 customer denied on RPC, and direct history SELECT returns no attempt rows.
   PERFORM pg_temp.lc_as(cust1);
   SELECT * INTO v_fail, v_state, v_detail, v_msg FROM pg_temp.lc_failinfo(format(
     $q$SELECT public.get_visit_checklist_workspace(%L,NULL)$q$, v_visit
@@ -423,6 +459,167 @@ BEGIN
   PERFORM pg_temp.lc_note(
     'LC-12', v_fail AND v_detail = 'routine_checklist_authz_denied',
     format('state=%s detail=%s', v_state, v_detail)
+  );
+
+  PERFORM pg_temp.lc_as(cust1);
+  v_rows := pg_temp.lc_hist(v_visit);
+  PERFORM pg_temp.lc_note(
+    'LC-12-own-select',
+    v_rows = '[]'::jsonb,
+    format('owning customer history n=%s', jsonb_array_length(v_rows))
+  );
+
+  PERFORM pg_temp.lc_as(cust2);
+  v_rows := pg_temp.lc_hist(v_visit);
+  SELECT * INTO v_fail, v_state, v_detail, v_msg FROM pg_temp.lc_failinfo(format(
+    $q$SELECT public.get_visit_checklist_workspace(%L,NULL)$q$, v_visit
+  ));
+  PERFORM pg_temp.lc_note(
+    'LC-12-unrel-cust',
+    v_rows = '[]'::jsonb AND v_fail AND v_detail = 'routine_checklist_authz_denied',
+    format('n=%s state=%s detail=%s', jsonb_array_length(v_rows), v_state, v_detail)
+  );
+
+  PERFORM pg_temp.lc_as(tech2);
+  v_rows := pg_temp.lc_hist(v_visit);
+  SELECT * INTO v_fail, v_state, v_detail, v_msg FROM pg_temp.lc_failinfo(format(
+    $q$SELECT public.get_visit_checklist_workspace(%L,NULL)$q$, v_visit
+  ));
+  PERFORM pg_temp.lc_note(
+    'LC-12-unrel-tech',
+    v_rows = '[]'::jsonb AND v_fail AND v_detail = 'routine_checklist_authz_denied',
+    format('n=%s state=%s detail=%s', jsonb_array_length(v_rows), v_state, v_detail)
+  );
+
+  -- Former assignee, never attending: no history disclosure.
+  UPDATE public.service_jobs SET assigned_technician_id = tech3 WHERE id = v_job;
+  UPDATE public.service_jobs SET assigned_technician_id = tech1 WHERE id = v_job;
+  PERFORM pg_temp.lc_as(tech3);
+  v_rows := pg_temp.lc_hist(v_visit);
+  SELECT * INTO v_fail, v_state, v_detail, v_msg FROM pg_temp.lc_failinfo(format(
+    $q$SELECT public.get_visit_checklist_workspace(%L,NULL)$q$, v_visit
+  ));
+  PERFORM pg_temp.lc_note(
+    'LC-12-former',
+    v_rows = '[]'::jsonb AND v_fail AND v_detail = 'routine_checklist_authz_denied',
+    format('n=%s state=%s detail=%s', jsonb_array_length(v_rows), v_state, v_detail)
+  );
+
+  PERFORM pg_temp.lc_as(tech1);
+  v_rows := pg_temp.lc_hist(v_visit);
+  v_ws := public.get_visit_checklist_workspace(v_visit, NULL);
+  PERFORM pg_temp.lc_note(
+    'LC-12-tech',
+    EXISTS (
+      SELECT 1 FROM jsonb_array_elements(v_rows) e
+      WHERE e->>'item_key' = 'sg1'
+        AND e->>'outcome' = 'passed'
+        AND e->>'note' = 'retry'
+        AND e->>'actor_id' = tech1::text
+        AND e->>'actor_role' = 'technician'
+        AND (e->>'attempt')::int >= 2
+    )
+    AND (v_ws->'current'->'items') @> jsonb_build_array(jsonb_build_object('item_key', 'sg1')),
+    format('tech history n=%s', jsonb_array_length(v_rows))
+  );
+
+  PERFORM pg_temp.lc_as(support1);
+  v_rows := pg_temp.lc_hist(v_visit);
+  PERFORM pg_temp.lc_note(
+    'LC-12-support',
+    EXISTS (
+      SELECT 1 FROM jsonb_array_elements(v_rows) e
+      WHERE e->>'item_key' = 'sg1' AND e->>'note' = 'retry' AND e->>'actor_id' = tech1::text
+    ),
+    format('support history n=%s', jsonb_array_length(v_rows))
+  );
+
+  PERFORM pg_temp.lc_as(admin1);
+  v_rows := pg_temp.lc_hist(v_visit);
+  PERFORM pg_temp.lc_note(
+    'LC-12-admin',
+    EXISTS (
+      SELECT 1 FROM jsonb_array_elements(v_rows) e
+      WHERE e->>'item_key' = 'sg1' AND e->>'note' = 'retry' AND e->>'actor_id' = tech1::text
+    ),
+    format('admin history n=%s', jsonb_array_length(v_rows))
+  );
+
+  -- Mutation grants and write policies stay closed. Direct DML must not add rows.
+  PERFORM pg_temp.lc_reset();
+  SELECT count(*) INTO v_before
+  FROM public.service_visit_checklist_answer_history WHERE visit_id = v_visit;
+  SELECT has_table_privilege('authenticated', 'public.service_visit_checklist_answer_history', 'SELECT') INTO v_sel;
+  SELECT has_table_privilege('authenticated', 'public.service_visit_checklist_answer_history', 'INSERT') INTO v_ins;
+  SELECT has_table_privilege('authenticated', 'public.service_visit_checklist_answer_history', 'UPDATE') INTO v_upd;
+  SELECT has_table_privilege('authenticated', 'public.service_visit_checklist_answer_history', 'DELETE') INTO v_del;
+  SELECT (
+    SELECT count(*) = 3
+    FROM pg_policy
+    WHERE polrelid = 'public.service_visit_checklist_answer_history'::regclass
+      AND (
+        (polcmd = 'a' AND pg_get_expr(polwithcheck, polrelid) = 'false')
+        OR (polcmd = 'w' AND pg_get_expr(polqual, polrelid) = 'false')
+        OR (polcmd = 'd' AND pg_get_expr(polqual, polrelid) = 'false')
+      )
+  ) INTO v_pol;
+  SELECT pg_get_expr(polqual, polrelid) INTO v_msg
+  FROM pg_policy
+  WHERE polrelid = 'public.service_visit_checklist_answer_history'::regclass
+    AND polcmd = 'r';
+  PERFORM pg_temp.lc_note(
+    'LC-12-policy',
+    v_pol
+      AND v_sel
+      AND NOT v_ins AND NOT v_upd AND NOT v_del
+      AND v_msg LIKE '%can_read_checklist_attempt_history%'
+      AND position('can_read_ticket_workflow' in v_msg) = 0,
+    'select reader replaced; mutation policies still false'
+  );
+
+  PERFORM pg_temp.lc_as(cust1);
+  PERFORM pg_temp.lc_client();
+  SELECT * INTO v_fail, v_state, v_detail, v_msg FROM pg_temp.lc_failinfo(format(
+    $q$INSERT INTO public.service_visit_checklist_answer_history (
+      visit_id, ticket_id, job_id, item_key, attempt, outcome, actor_id, actor_role,
+      checklist_revision_after, routine_version_id
+    ) VALUES (%L, %L, %L, 'leak', 1, 'passed', %L, 'customer', 1, %L)$q$,
+    v_visit, v_ticket, v_job, cust1, v_v1
+  ));
+  PERFORM pg_temp.lc_reset();
+  PERFORM pg_temp.lc_as(tech1);
+  PERFORM pg_temp.lc_client();
+  SELECT * INTO v_fail, v_state, v_detail, v_msg FROM pg_temp.lc_failinfo(format(
+    $q$UPDATE public.service_visit_checklist_answer_history SET note = 'mut' WHERE visit_id = %L$q$,
+    v_visit
+  ));
+  PERFORM pg_temp.lc_reset();
+  PERFORM pg_temp.lc_as(support1);
+  PERFORM pg_temp.lc_client();
+  SELECT * INTO v_fail, v_state, v_detail, v_msg FROM pg_temp.lc_failinfo(format(
+    $q$DELETE FROM public.service_visit_checklist_answer_history WHERE visit_id = %L$q$,
+    v_visit
+  ));
+  PERFORM pg_temp.lc_reset();
+  SELECT count(*) INTO v_count
+  FROM public.service_visit_checklist_answer_history WHERE visit_id = v_visit;
+  PERFORM pg_temp.lc_note(
+    'LC-12-mut',
+    v_fail AND v_count = v_before,
+    format('direct dml denied; rows %s -> %s', v_before, v_count)
+  );
+
+  -- Envelope helper is not an API path for attempt rows.
+  PERFORM pg_temp.lc_as(cust1);
+  PERFORM pg_temp.lc_client();
+  SELECT * INTO v_fail, v_state, v_detail, v_msg FROM pg_temp.lc_failinfo(format(
+    $q$SELECT admin_private.checklist_current_envelope(%L)$q$, v_visit
+  ));
+  PERFORM pg_temp.lc_reset();
+  PERFORM pg_temp.lc_note(
+    'LC-12-envelope',
+    v_fail,
+    format('customer envelope state=%s', v_state)
   );
 
   -- LC-18 CAS conflict
@@ -576,10 +773,37 @@ BEGIN
   WHERE id = v_visit;
   PERFORM pg_temp.lc_as(tech1);
   v_ws := public.get_visit_checklist_workspace(v_visit, NULL);
+  v_rows := pg_temp.lc_hist(v_visit);
   PERFORM pg_temp.lc_note(
     'LC-25',
-    (v_ws->>'visit_id') = v_visit::text AND (v_ws->>'can_write')::boolean IS NOT TRUE,
-    'historical attending read; write false when visit completed'
+    (v_ws->>'visit_id') = v_visit::text
+      AND (v_ws->>'can_write')::boolean IS NOT TRUE
+      AND EXISTS (
+        SELECT 1 FROM jsonb_array_elements(v_rows) e
+        WHERE e->>'item_key' = 'sg1'
+          AND e->>'actor_id' = tech1::text
+          AND e->>'note' = 'retry'
+      ),
+    format('historical attending read; history n=%s', jsonb_array_length(v_rows))
+  );
+
+  PERFORM pg_temp.lc_as(tech2);
+  v_rows := pg_temp.lc_hist(v_visit);
+  PERFORM pg_temp.lc_note(
+    'LC-12-assignee',
+    EXISTS (
+      SELECT 1 FROM jsonb_array_elements(v_rows) e
+      WHERE e->>'item_key' = 'sg1' AND e->>'note' = 'retry' AND e->>'actor_id' = tech1::text
+    ),
+    format('current assignee history n=%s', jsonb_array_length(v_rows))
+  );
+
+  PERFORM pg_temp.lc_as(cust1);
+  v_rows := pg_temp.lc_hist(v_visit);
+  PERFORM pg_temp.lc_note(
+    'LC-12-own-after',
+    v_rows = '[]'::jsonb,
+    format('owner still empty n=%s', jsonb_array_length(v_rows))
   );
 
   -- LC-17 OOS

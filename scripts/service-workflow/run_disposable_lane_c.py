@@ -19,6 +19,7 @@ MIG_STG01 = ROOT / "supabase/migrations/20261116213000_service_routines_lane_a_s
 MIG_B = ROOT / "supabase/migrations/20261117190000_service_routines_lane_b_job_pins.sql"
 MIG_TR = ROOT / "supabase/migrations/20261118120000_service_tickets_rls_enable_and_tech_header.sql"
 MIG_LC = ROOT / "supabase/migrations/20261118130000_service_routines_lane_c_checklist_execution.sql"
+MIG_LC_VIS = ROOT / "supabase/migrations/20261118140000_service_routines_lane_c_checklist_history_reader.sql"
 BATTERY = ROOT / "scripts/service-workflow/disposable_lane_c_battery.sql"
 OUT_DIR = ROOT / ".artifacts/slice0/service-workflow"
 OUT = OUT_DIR / "disposable_lane_c_results.json"
@@ -151,6 +152,7 @@ def main() -> int:
             (MIG_B, "lane-b"),
             (MIG_TR, "ticket-header TR"),
             (MIG_LC, "lane-c"),
+            (MIG_LC_VIS, "lane-c history reader"),
         ]:
             print(f"applying {label}…", flush=True)
             apply(db, path, label)
@@ -182,6 +184,8 @@ def main() -> int:
                 "tr_sha256": file_sha256(MIG_TR),
                 "lane_c": str(MIG_LC.relative_to(ROOT)),
                 "lane_c_sha256": file_sha256(MIG_LC),
+                "lane_c_history_reader": str(MIG_LC_VIS.relative_to(ROOT)),
+                "lane_c_history_reader_sha256": file_sha256(MIG_LC_VIS),
             },
             "pass": pass_n,
             "fail": fail_n,
