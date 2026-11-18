@@ -18,7 +18,7 @@ Those migration bytes are unchanged by F-LC-VIS-1.
 
 ## F-LC-VIS-1 correction
 
-**Frozen correction SHA:** published in the stamp that follows this change (history SELECT no longer uses owner-inclusive `can_read_ticket_workflow`).
+**Frozen correction SHA:** `e27f21a530fe0eb122ab7886eb8a7854f066a896`
 
 | Package | Migration | SHA-256 |
 |---------|-----------|---------|
