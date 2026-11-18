@@ -1,7 +1,7 @@
 # Coverage & recurrence — local acceptance
 
 **Accepted proposal:** `42862fdd27636d2682ce81fc287ed3777f8005fb`  
-**Frozen implementation SHA:** _(stamped in follow-up commit after code lands)_  
+**Frozen implementation SHA:** `e2a2f525cba0feb7238bfd6d89d866e0cd13560f`  
 **Migration:** `supabase/migrations/20261118210000_service_coverage_recurrence.sql`  
 **Migration SHA-256 (LF):** `226d4245ca806cc1cfa8e501c37881a7409fa8c1b07c43e9122ffe030239220d`  
 **Lane B pin prerequisite SHA-256 (unchanged):** `3d39d6a2741a3519bbb5e144c1d4ff201048b224d1877b138f4b3c1423b223a0`  

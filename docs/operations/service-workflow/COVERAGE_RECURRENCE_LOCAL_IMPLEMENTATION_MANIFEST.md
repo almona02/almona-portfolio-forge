@@ -1,6 +1,8 @@
 # Coverage & recurrence — local implementation manifest
 
 **Accepted proposal tip:** `42862fdd27636d2682ce81fc287ed3777f8005fb`  
+**Frozen implementation SHA:** `e2a2f525cba0feb7238bfd6d89d866e0cd13560f`  
+**Migration SHA-256 (LF):** `226d4245ca806cc1cfa8e501c37881a7409fa8c1b07c43e9122ffe030239220d`  
 **Binding notes:** [`COVERAGE_RECURRENCE_BINDING_CHOICES.md`](./COVERAGE_RECURRENCE_BINDING_CHOICES.md)  
 **Gates:** LOCAL implementation + disposable/component evidence · **no staging apply · no production · no merge · no FR-1**  
 **Preserved closed:** Lane A/B/C · journey-close `JC-PASS-BOUNDED` · B1–B7 · O-JC-1/2/3 backlog
