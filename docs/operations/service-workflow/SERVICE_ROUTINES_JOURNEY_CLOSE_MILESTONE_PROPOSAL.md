@@ -1,8 +1,9 @@
 # Proposal — smallest routines journey-close milestone (planning only)
 
-**Status:** Planning only · **not authorized** for implementation, staging apply, merge, FR-1, or production  
+**Status:** Conditions resolved (docs amendment) · **verification-only** authorized under separate handoff · **not** authorized for product changes, migrations, merge, FR-1, or production  
+**Base proposal tip:** `71f969a2da5e7c3b3b361f393f9e34c536694795`  
 **Published with:** Lane C closeout @ runtime `e27f21a5` ([`LANE_C_STAGING_CLOSEOUT.md`](./LANE_C_STAGING_CLOSEOUT.md))  
-**Does not begin:** recurrence · contracts/coverage entitlement · squads · stock · FR-1 · production · remote schema apply
+**Does not begin:** recurrence · contracts/coverage entitlement · squads · stock · FR-1 · production · remote schema apply · manufactured implementation work
 
 **Rule:** Older blockers are **not** assumed open. Later green suites are **not** assumed to have closed earlier preserved limitations. Cite acceptance records for what they covered; classify the rest as missing **implementation** vs missing **verification**.
 
@@ -93,11 +94,11 @@ This is the smallest package that finishes the **routines** path through custome
 
 ### In scope
 
-1. Gap-hunt on the join only (pin + Lane C snapshot in submitted revision → issue → customer issued view → ack/disposition → closure prereqs).
-2. Minimal corrections solely for defects demonstrated on that join (small reviewable commits).
-3. Confirm issued revision stays customer-safe under B5 when `checklist_results` is present; Lane C attempt history remains non-customer.
-4. Acceptance scenarios JC-01…JC-08 with Spark-independent vs access-holder attribution kept separate.
-5. Staging-only verification after a separate Spark freeze/review **if** any migration is required.
+1. **Verification-only** gap-hunt on the join (pin + Lane C snapshot → B4 submit → B5 issue → customer issued view / U-03 snapshot check → U-02 refusal→disposition→reissue→acceptance → governed close).
+2. **No manufactured implementation.** Report join defects; any fix requires a separately reviewed correction tip (U-01).
+3. Owner-visible checklist representation from the **issued immutable snapshot** only (U-03); attempt history stays non-customer.
+4. Acceptance scenarios JC-01…JC-08 (U-02/U-03 bindings below) with Spark-independent vs access-holder attribution kept separate.
+5. Staging DB/runtime already applied (Lane C @ `e27f21a5` + accepted B5–B7). **No migrations** authorized by this step.
 
 ### Out of scope
 
@@ -105,19 +106,17 @@ Recurrence · contracts/coverage · squads · stock/parts · FR-1 / #155 thaw ·
 
 ---
 
-## 5. Unresolved decisions (proposal-time)
+## 5. Resolved conditions (docs amendment on `71f969a2`)
 
-These are **open for supervisor/Spark** before implementation authorization—not silent defaults:
+| ID | Resolution |
+|----|------------|
+| **U-01** | **Evidence-only completion is valid** if no integration (join) defect is found. Do **not** manufacture implementation work. Product changes / migrations are **not** authorized by this milestone; if a join defect appears, **report it** and propose a **separately reviewed** correction tip. |
+| **U-02** | On the **joined** fixture, require: owner **`refused`** on the first issued revision → existing B6 **disposition / recovery** (`record_acknowledgment_disposition`, e.g. `create_follow_up` where follow-up work is needed) → **`accepted`** on a **later** issued revision reached only via the **existing B5 revision / reissue** path → **governed closure**. B6 forbids converting a refusal into acceptance on the same acknowledgment; if refusal is terminal for that acknowledgment, use revision/reissue—**no** state resets or direct database flips. **`unavailable`** handling **cites** accepted B6 evidence @ `da2132b6` and is labeled **not re-proven** in this journey. |
+| **U-03** | **Verify** the **owner-visible checklist representation** from the **issued report’s immutable snapshot** (`service_report_revisions.checklist_results` / B5 customer-visible issued fields), within **existing** customer visibility rules. Do **not** expose Lane C internal attempt history and do **not** add a new customer surface. |
+| **U-04** | Browser binding uses a **new** immutable protected preview for journey-close verification (Lane C `dpl_4DtM…` share remains revoked / retired). |
+| **U-05** | **Activated** workflow tickets only for prereq/closure on this journey; legacy jobless edge stays B7-documented, not expanded. |
 
-| ID | Decision | Notes |
-|----|----------|-------|
-| U-01 | Evidence-only vs correction tip | If gap-hunt is clean, may close as evidence-only PASS with no schema change |
-| U-02 | Depth of B6 paths on the join fixture | Minimum: owner `accepted` + governed close. Whether refusal+disposition and unavailable+contact evidence are **required** on the same continuous fixture or covered by citing B6 @ `da2132b6` must be decided before freeze |
-| U-03 | Customer visibility of checklist fields inside issued payload | Confirm whether any checklist keys are customer-visible beyond B5 customer-safe revision fields; no new customer attempt-history surface |
-| U-04 | Browser binding | One immutable preview after any required freeze; do not treat Lane C `dpl_4DtM…` (share revoked) as live access |
-| U-05 | Activated-only vs legacy jobless | Proposal assumes **activated** workflow tickets for prereq/closure; legacy jobless edge stays B7-documented, not expanded here |
-
-**Closed for this proposal (reuse, do not re-decide):** B5 issue semantics @ `2a4042ad`; B6 ack/contact/closure @ `da2132b6`; Lane B sole job-pin authority; Lane C no new closure rules; attempt-history reader exclusion of ticket owners.
+**Closed (reuse, do not re-decide):** B5 issue semantics @ `2a4042ad`; B6 ack/contact/closure @ `da2132b6`; Lane B sole job-pin authority; Lane C no new closure rules; attempt-history reader exclusion of ticket owners; Lanes A–C and B5–B7 acceptance records preserved.
 
 ---
 
@@ -143,22 +142,23 @@ Attribution must stay separate. Staging browser only on an immutable preview aft
 | ID | Scenario | Pass signal |
 |----|----------|-------------|
 | JC-01 | Activated ticket + published routine + active pin + Lane C capture (safety_gate passed) + B3 complete + B4 submit | Revision with pin-aligned `checklist_results` |
-| JC-02 | Support/admin issues (B5); author cannot self-issue; return/resubmit path available if exercised | Issued visibility; job completion rules honored |
-| JC-03 | Owner sees issued report (B5 UI); unrelated customer denied; attempt history not customer-readable | Aligns with B5 + Lane C reader |
-| JC-04 | Owner `accepted` on exact issued revision (B6) | Effective ack; append-only audit |
-| JC-05 | (Per U-02) `refused`+disposition and/or `unavailable`+contact evidence | Exact B6 deny/pass codes |
-| JC-06 | `evaluate_ticket_workflow_prerequisites` then governed resolve/close | Named prereqs clear; terminal per B6 |
-| JC-07 | Negatives: unissued not ack-eligible; wrong/stale revision ack denied | B6 attachment rules |
-| JC-08 | Deployed browser: owner ack + staff closure on same fixture after issue | UI without privileged flips |
+| JC-02 | Support/admin issues first revision (B5); author cannot self-issue | Issued visibility; job completion rules honored |
+| JC-03 | Owner sees issued report (B5 UI) and **owner-visible checklist representation from the issued immutable snapshot** (U-03); unrelated customer denied; attempt history not customer-readable; **no new customer surface** | Aligns with B5 + Lane C reader |
+| JC-04 | Owner **`refused`** on that first issued revision (B6) | Effective ack `refused`; append-only |
+| JC-05 | Manager **disposition / recovery** on that refusal (existing B6 RPC); then **revision/reissue** (existing B5 path—no DB flips) to a **new** issued revision; owner **`accepted`** on that later issued revision (U-02). **`unavailable`:** cite B6 @ `da2132b6` — **not re-proven** here | Exact B6 codes; refusal not converted to acceptance on the same acknowledgment |
+| JC-06 | `evaluate_ticket_workflow_prerequisites` then governed resolve/close after acceptance on the later issued revision | Named prereqs clear; terminal per B6 |
+| JC-07 | Negatives: unissued not ack-eligible; wrong/stale revision ack denied; refusal→acceptance without reissue denied | B6 attachment / no-convert rules |
+| JC-08 | Deployed browser on the **new** immutable preview: owner issued-view (U-03) + refusal + staff disposition + post-reissue acceptance + closure | UI without privileged flips |
 
-**Non-scenarios:** recurrence; contracts; squads; stock; production apply; substituting Lane C’s 41 checks for JC-*.
+**Non-scenarios:** manufacturing product work when evidence-only would pass (U-01); re-proving `unavailable` live; recurrence; contracts; squads; stock; production apply; substituting Lane C’s 41 checks for JC-*.
 
 ---
 
 ## 8. Explicit non-claims
 
-- Does **not** authorize implementation or remote apply.
+- Does **not** authorize product changes, migrations, merge, FR-1, or production. Verification-only handoff is separate.
 - Does **not** claim B5/B6/B7 incomplete relative to their acceptance records.
-- Does **not** claim the continuous routines→ack→close path is already proven on staging.
+- Does **not** claim the continuous routines→ack→close path is already proven until Spark records it.
 - Does **not** reopen Lane B S-UI-02, Lane C O-STG-1, or B7 preserved limitations as in-scope work.
-- Does **not** alter Lane A/B/C closeout text beyond citing them as preserved.
+- Does **not** alter Lane A/B/C or B5–B7 acceptance/closeout text beyond citing them as preserved.
+- Does **not** re-prove B6 `unavailable` on this journey (cite only; label not re-proven).
