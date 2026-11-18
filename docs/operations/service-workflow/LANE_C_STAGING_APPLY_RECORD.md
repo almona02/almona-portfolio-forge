@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | Applied on staging · protected preview READY · Spark verification pending · **no production / merge / FR-1** |
+| **Status** | Applied on staging · Spark **`STAGING_PASS_BOUNDED`** · operational closeout **COMPLETE** ([`LANE_C_STAGING_CLOSEOUT.md`](./LANE_C_STAGING_CLOSEOUT.md)) · **no production / merge / FR-1** |
 | **Correction runtime** | `e27f21a530fe0eb122ab7886eb8a7854f066a896` |
 | **Commit that contains that runtime and was pushed for preview** | `be6bfc7f4a0af6d32f552b8e67dc898efb6ed6ae` |
 | **Target DB** | `apnmoevmvihfzcnttctx` (`almona02-staging`, eu-west-3). Production `shfsebdncjnncqqnewfj` was not used. |
@@ -87,10 +87,8 @@ The header and history-reader files were applied as single migrations. The execu
 
 ## Secure delivery to Spark
 
-Credentials are **not** in git. Spark must read:
-
-`C:\projects\_almona_handoff\lane-c-staging-verification\SPARK_LANE_C_STAGING_SECURE_HANDOFF.txt`
+Credentials are **not** in git. Post-closeout, secret-bearing handoff copies are **shredded**; non-secret receipts and Spark evidence paths are listed in [`LANE_C_STAGING_CLOSEOUT.md`](./LANE_C_STAGING_CLOSEOUT.md).
 
 ## Explicit non-goals
 
-No production apply. No merge. No FR-1. No next-lane implementation. Staging browser verification is not claimed in this record.
+No production apply. No merge. No FR-1. No further cleanup or verification runs under this apply record. Next-milestone planning only: [`SERVICE_ROUTINES_JOURNEY_CLOSE_MILESTONE_PROPOSAL.md`](./SERVICE_ROUTINES_JOURNEY_CLOSE_MILESTONE_PROPOSAL.md).
