@@ -2,7 +2,7 @@
 
 **Status:** Planning published · **not** authorized for implementation · **not** remote apply · **not** production · **not** merge · **not** scheduler  
 **Amends:** `3a061646` / `4431366e` — resolves **B-DO3-1** (latest customer-visible issued head per report)  
-**Proposal tip:** `f94dddde67345184e2e76727e4b2d7c8e2cc51ab`
+**Proposal tip:** `fd0387c88b265a24dbd6b966d2cbc94b2e916539`
 **Parent:** [`SERVICE_DAILY_OPERATIONS_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPERATIONS_WORKSPACE_PROPOSAL.md)  
 **Depends on (reuse, do not reopen):** B5 owner issued-report access · `admin_private.revision_is_customer_visible` · `get_service_report_for_visit` · B6 `effective_acknowledgment` / customer `accepted`/`refused` · B7 customer isolation · DO-1 empty/error/count=filter rules · DO-2 deep-link focus pattern on `/support/tickets/:ticketId` (extend for customer panels only) · coverage schedule RPC own-machine customer read ([`COVERAGE_RECURRENCE_BINDING_CHOICES.md`](./COVERAGE_RECURRENCE_BINDING_CHOICES.md)) · DO-2 staging closeout ([`DO2_STAGING_CLOSEOUT.md`](./DO2_STAGING_CLOSEOUT.md))  
 **Does not begin:** new acknowledgment rules · notification delivery · billing · stock · squads · coverage scheduler / auto-generate · changing recurrence / pause / end behavior · new workflow states · production · remote schema apply · permission broadening · reopening B5/B6/B7 contracts
