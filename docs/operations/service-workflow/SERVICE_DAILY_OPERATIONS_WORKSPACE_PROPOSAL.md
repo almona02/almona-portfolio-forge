@@ -1,11 +1,12 @@
 # Proposal — daily operations workspace (planning only)
 
-**Status:** Committed proposal · **not** authorized for implementation, migrations, staging/production apply, merge, or FR-1  
+**Status:** Amended proposal (DO-1 predicates locked) · **not** authorized for implementation, migrations, staging/production apply, merge, or FR-1  
+**Base tip:** `187c49c9`  
 **Depends on (reuse, do not reopen):**  
 Accepted B1–B7 ticket→job→visit→report→issue→ack→close path · Lane A/B/C closeouts · coverage/recurrence operational closeout COMPLETE @ `b65c4cd4` ([`COVERAGE_STAGING_CLOSEOUT.md`](./COVERAGE_STAGING_CLOSEOUT.md)) · journey-close join planning ([`SERVICE_ROUTINES_JOURNEY_CLOSE_MILESTONE_PROPOSAL.md`](./SERVICE_ROUTINES_JOURNEY_CLOSE_MILESTONE_PROPOSAL.md))  
-**Does not begin:** squads · billing · stock · new workflow states · production release · remote schema apply · unattended coverage scheduler
+**Does not begin:** squads · billing · stock · new workflow states · production release · remote schema apply · unattended coverage scheduler · **DO-2** · **DO-3**
 
-**Rule:** Inventory existing screens first. Prefer count chips + deep links into accepted panels over new parallel journeys. Later green suites do not invent automation that was never shipped.
+**Rule:** Inventory existing screens first. Prefer count chips + deep links into accepted panels over new parallel journeys. **Count unit and matching filter population are defined together** — the chip integer equals the cardinality of the linked filtered set. Errors must never render as a successful **0**.
 
 ---
 
@@ -26,19 +27,15 @@ Shared detail: `/support/tickets/:ticketId` → `TicketDetailPage.tsx` (jobs, vi
 
 | Desired signal | Existing surface | Gap |
 |----------------|------------------|-----|
-| Due / overdue **maintenance** | Admin `/admin?tab=service-coverage` schedule buckets (`upcoming` / `due` / `overdue`) via `list_machine_coverage_schedule` | No staff **inbox** of overdue maintenance; coverage tab only |
-| **Unassigned jobs** | Per-ticket `ServiceJobAssignmentPanel` job state; desk has **unassigned tickets** filter | No cross-ticket **unassigned-jobs** worklist |
-| **Reports awaiting review** | Inline `ServiceReportReviewPanel` on a visit | No desk/admin queue of pending manager reviews |
-| Tickets **awaiting customer response** | Status FSM includes `awaiting_customer` | No filtered queue / count chip |
-| Tech **assigned jobs** | `/technician` “My service jobs” | No due / upcoming prioritization strip |
-| Tech **upcoming visits** | Visits nested under each job | No upcoming-visits queue |
-| Tech **unfinished checklist / report** | Only when visit opened | No unfinished-work count |
-| Customer **own status** | `/support` ticket stats + `/portal` | Partial |
-| Customer **issued reports / pending ack** | Per-ticket `CustomerIssuedReportsSection` / ack panel | No portal **pending acknowledgment** inbox |
+| Overdue **service work** (generated) | Coverage schedule buckets under `/admin?tab=service-coverage` | No staff inbox of **generated** overdue occurrences tied to open tickets |
+| **Unassigned jobs** | Per-ticket job panel; desk has unassigned **tickets** filter | No cross-ticket queue of `service_jobs.state = 'unassigned'` |
+| Jobs **awaiting review** | Inline `ServiceReportReviewPanel` on a visit | No desk queue of `service_jobs.state = 'awaiting_review'` |
+| Tickets **awaiting customer** | Status FSM includes `awaiting_customer` | No filtered queue / count chip |
+| Tech / customer strips | See §3.2–3.3 | **DO-2 / DO-3 — explicitly deferred** |
 
 ### 1.3 Empty / error patterns to reuse
 
-Short muted empty copy + `role="alert"` destructive errors + `Loader2` busy (desk/tech/customer/coverage panels). Prefer that over a new EmptyState system.
+Short muted empty copy + `role="alert"` destructive errors + `Loader2` busy. Prefer that over a new EmptyState system. A failed count fetch shows error (or unavailable), **not** a green/zero chip.
 
 ---
 
@@ -47,10 +44,10 @@ Short muted empty copy + `role="alert"` destructive errors + `Loader2` busy (des
 | Question | Answer (as shipped) |
 |----------|---------------------|
 | How are occurrences created today? | **Operator-triggered** only: Admin/Support calls RPC `generate_machine_coverage_occurrences` from `ServiceMachineCoveragePanel` (“Generate”) or equivalent authenticated RPC. |
-| Is there an unattended scheduler? | **No.** No coverage cron, queue worker, or background job generates occurrences. Unrelated `AutomationScheduler` is not coverage generation. |
-| List/schedule without write? | `list_machine_coverage_schedule` is read-only; does not create work. |
+| Is there an unattended scheduler? | **No.** |
+| Ungenerated schedule candidates | Visible via `list_machine_coverage_schedule` only; **excluded** from DO-1 overdue counts. |
 
-**Decision boundary:** Any unattended / scheduled generator is a **separate** proposal. This workspace proposal must **not** imply automation already exists; daily-ops “due/overdue maintenance” counts may link into the existing coverage schedule / generate UI, but generation remains an explicit operator action until separately authorized.
+**Decision boundary:** Generation remains a **separate manual action**. DO-1 overdue counts never auto-generate. Any unattended scheduler is a **separate** proposal.
 
 ---
 
@@ -58,110 +55,103 @@ Short muted empty copy + `role="alert"` destructive errors + `Loader2` busy (des
 
 **Working name:** Daily operations workspace (role worklists).
 
-**Intent:** On each role home, show **role-scoped counts** for the queues above, with **one next-action link** per row into an **existing** workflow surface. No new ticket/job/visit/report states. No squads/billing/stock. External notifications deferred unless already implemented (none assumed for these queues).
+**Intent:** Role-scoped counts with one next-action link into existing workflows. No new ticket/job/visit/report states.
 
-### 3.1 Admin / Support (host: `/support/desk` + `/admin?tab=support`)
+### 3.1 Admin / Support — DO-1 chip predicates (locked)
 
-| Queue | Count semantics (planning) | Next-action target (existing) |
-|-------|----------------------------|-------------------------------|
-| Due / overdue maintenance | Occurrences or schedule rows with bucket `due` / `overdue` visible to staff | Deep link to `/admin?tab=service-coverage` (schedule / generate) or ticket opened from occurrence when already generated |
-| Unassigned jobs | Jobs with no assigned technician on activated workflow tickets | `/support/tickets/:id` → job assignment panel |
-| Reports awaiting review | Submitted revisions awaiting manager review | `/support/tickets/:id` → visit → report review panel |
-| Tickets awaiting customer | Tickets in `awaiting_customer` (or equivalent accepted status) | `/support/tickets/:id` |
+Host: `/support/desk` (+ `/admin?tab=support` if cheap).  
+**Today** for date predicates = Africa/Cairo calendar date (`admin_private.cairo_today()` / equivalent).  
+**Parent ticket open** = ticket `status` **not in** (`closed`, `cancelled`).
 
-### 3.2 Technician (host: `/technician`)
+| Chip label | Count unit | Exact population (chip count = filter cardinality) | Destination |
+|------------|------------|-----------------------------------------------------|-------------|
+| Overdue service work | **Occurrences** (not distinct tickets) | Rows in `service_maintenance_occurrences` where `planned_due_date` **&lt;** Cairo today **and** linked `ticket_id` references a ticket whose status is not `closed`/`cancelled`. **Ungenerated** schedule candidates are **excluded**. | Filtered list of **that exact occurrence population** (each row links into the occurrence’s ticket / existing workflow). Generate is **not** this chip’s action. |
+| Unassigned jobs | **Jobs** | Rows in `service_jobs` where `state = 'unassigned'` **and** parent ticket is not `closed`/`cancelled`. Includes jobs with no assignee (unassigned state is the predicate). | Filtered queue of **that exact job population** → ticket job-assignment UI. |
+| Jobs awaiting review | **Jobs** (chip label must say jobs / awaiting review, not “reports” as the count unit) | Rows in `service_jobs` where `state = 'awaiting_review'` **and** parent ticket is not `closed`/`cancelled`. | Filtered queue of **that exact job population** → ticket → visit → review panel. |
+| Awaiting customer | **Tickets** | Retained from base proposal: tickets with status **`awaiting_customer`** (the proposal’s named ticket predicate). | Filtered queue of **that exact ticket population** → `/support/tickets/:id`. |
 
-| Queue | Count semantics | Next-action target |
-|-------|-----------------|--------------------|
-| Assigned jobs | Jobs assigned to caller (already listed) | Existing job row / ticket detail |
-| Upcoming visits | Visits scheduled for caller in a near window | Visit panel on that job |
-| Unfinished checklist / report | In-progress visits missing checklist complete or report submit | Checklist / report panel |
+**Together rule:** Opening a chip must show the same set the integer counted. No silent extra filters, no collapsing occurrences to tickets for the overdue chip.
 
-### 3.3 Customer (host: `/portal` or `/support`)
+### 3.2 Technician (DO-2 — deferred)
 
-| Queue | Count semantics | Next-action target |
-|-------|-----------------|--------------------|
-| Own service status | Open / in-progress owned tickets (reuse stats) | Ticket detail |
-| Issued reports | Issued revisions on owned tickets | Issued report view |
-| Pending acknowledgment | Issued revisions without customer disposition | Ack panel on that ticket |
+| Queue | Intent (not in DO-1) |
+|-------|----------------------|
+| Assigned jobs / upcoming visits / unfinished checklist or report | Deferred strip on `/technician`. **Out of DO-1 authorization.** |
+
+### 3.3 Customer (DO-3 — deferred)
+
+| Queue | Intent (not in DO-1) |
+|-------|----------------------|
+| Own status / issued reports / pending acknowledgment | Deferred strip on `/portal` or `/support`. **Out of DO-1 authorization.** |
 
 ### 3.4 Non-goals (explicit)
 
 - Squads, billing, stock, new workflow states, production release.
-- Replacing ticket desk, tech dashboard, or coverage admin with a second full app.
-- Claiming unattended occurrence generation.
-- External email/SMS/push for these queues (deferred unless an existing channel already covers a specific row).
+- DO-2 / DO-3 implementation under a DO-1 authorization.
+- Counting ungenerated coverage schedule candidates as overdue service work.
+- Auto-calling `generate_machine_coverage_occurrences`.
+- Returning misleading **0** (or partial staff data) to technician/customer callers.
 
 ---
 
-## 4. Smallest useful UI slice (recommended first increment)
+## 4. Smallest useful UI slice — DO-1 only
 
 **Slice DO-1 — Staff desk worklist strip**
 
-1. On `/support/desk` (and mirrored on `/admin?tab=support` if cheap), render four **count chips** with empty and error states:
-   - Overdue maintenance  
-   - Unassigned jobs  
-   - Reports awaiting review  
-   - Awaiting customer  
-2. Chip click → filtered list (same page or light drawer) of **id + title + one next-action** link into existing ticket/coverage routes.  
-3. Reuse existing RPCs / queries where they already exist; add only the **minimum read helpers** needed for cross-ticket counts (no new mutate path).  
-4. Authz: admin/support only; technicians/customers must not see staff chips.
+1. On `/support/desk` (mirror on `/admin?tab=support` if cheap), render four **count chips** using §3.1 predicates.  
+2. Chip click → filtered list of the **exact counted population** (id + title + one next-action into existing routes).  
+3. Add only **minimum Admin/Support read helpers** for these four populations (no new mutate path).  
+4. **Authorization (server-side, every new staff read helper):** caller must be Admin or Support. Technician or customer calls return **403**. Helpers must **not** return successful empty payloads, partial rows, or **0** counts to unauthorized callers.  
+5. **Error vs empty:** load failure → error/`unavailable` UI (`role="alert"`); successful empty population → muted empty copy with chip **0**. These states are distinct.
 
-**Deferred to later increments (still this proposal’s scope map, not DO-1):**
-
-- DO-2 — Technician upcoming visits + unfinished checklist/report strip on `/technician`.  
-- DO-3 — Customer pending-acknowledgment strip on `/portal` or `/support`.
-
-DO-1 alone is useful: support can see what needs attention without hunting tickets. Tech/customer strips reuse the same pattern after DO-1 acceptance.
+**Explicitly deferred:** DO-2, DO-3.
 
 ---
 
 ## 5. Acceptance scenarios (planning matrix)
 
-### 5.1 DO-1 — Staff desk (smallest slice)
+### 5.1 DO-1 — Staff desk
 
 | ID | Scenario | Expected |
 |----|----------|----------|
-| DO-01 | Admin opens `/support/desk` with zero queue items | Four chips show **0**; each empty state is a short muted line (no error) |
-| DO-02 | Support opens desk with ≥1 overdue maintenance row | Overdue chip count ≥1; next-action reaches coverage schedule or linked ticket without a new workflow |
-| DO-03 | Unassigned job exists on an activated ticket | Unassigned-jobs chip ≥1; next-action opens that ticket’s job assignment UI |
-| DO-04 | Submitted revision awaits manager review | Reports-awaiting-review chip ≥1; next-action opens ticket → visit → review panel |
-| DO-05 | Ticket in awaiting-customer | Awaiting-customer chip ≥1; next-action opens that ticket |
-| DO-06 | Technician opens `/support/desk` or staff strip API | **Denied** / chips absent (role-scoped) |
-| DO-07 | Customer attempts staff queue API | **Denied** |
-| DO-08 | Staff queue query fails | `role="alert"` error; Refresh/retry; no false zeros claimed as success |
-| DO-09 | Chip navigation does not create tickets/jobs/occurrences | Read-only list + links; generate remains explicit on coverage UI |
+| DO-01 | Admin opens desk; all four populations empty | Four chips **0**; muted empties; **not** an error |
+| DO-02 | Two generated occurrences overdue (Cairo), both tickets open; one closed-ticket overdue occurrence exists | Overdue chip = **2** (occurrence units); filter lists those two only; closed-ticket occurrence excluded |
+| DO-03 | Ungenerated schedule candidates overdue by calendar | Overdue chip **unchanged**; candidates never counted; Generate remains separate manual control |
+| DO-04 | `service_jobs.state = 'unassigned'` on open ticket; another unassigned job on cancelled ticket | Unassigned-jobs chip counts only the open-ticket job; destination list includes jobs without assignee |
+| DO-05 | `service_jobs.state = 'awaiting_review'` on open ticket | Jobs-awaiting-review chip counts **jobs**; label and linked queue match that job population |
+| DO-06 | Ticket `status = 'awaiting_customer'` | Awaiting-customer chip counts that ticket; link opens that ticket |
+| DO-07 | Technician calls any new staff read helper | **403**; no chip data, no **0** success body |
+| DO-08 | Customer calls any new staff read helper | **403**; same as DO-07 |
+| DO-09 | Staff helper errors (DB/RPC failure) | UI error/unavailable; must **not** display successful zero counts |
+| DO-10 | Chip navigation | Read-only list + links into existing workflows; no ticket/job/occurrence creates |
 
-### 5.2 Later increments (specify, do not implement now)
+### 5.2 Deferred increments (not DO-1)
 
 | ID | Scenario | Slice |
 |----|----------|-------|
-| DO-10 | Tech sees upcoming visit count and opens visit panel | DO-2 |
-| DO-11 | Tech sees unfinished checklist/report and resumes | DO-2 |
-| DO-12 | Customer sees pending ack count and completes ack on issued revision | DO-3 |
-| DO-13 | Customer other cannot see owner’s pending ack rows | DO-3 |
+| DO-11…DO-14 | Tech/customer strip scenarios from base proposal | **DO-2 / DO-3 only** — not accepted under DO-1 |
 
-### 5.3 Generation / scheduler boundary checks
+### 5.3 Generation / scheduler boundary
 
 | ID | Scenario | Expected |
 |----|----------|----------|
-| DO-G1 | Staff views overdue maintenance with no generate click | Counts/list only; **no** new occurrences |
-| DO-G2 | Staff uses existing coverage Generate control | Still operator-triggered RPC; workspace does not auto-call it |
-| DO-G3 | Proposal review | Document states unattended scheduler is **out of scope** / separate decision |
+| DO-G1 | Staff views overdue chip without Generate | Counts/list only; **no** new occurrences |
+| DO-G2 | Staff uses existing coverage Generate control | Operator-triggered RPC; workspace does not auto-call it |
+| DO-G3 | Docs review | Ungenerated candidates excluded; unattended scheduler separate decision |
 
 ---
 
-## 6. Authorization sense (when later authorized)
+## 6. Authorization sense (when DO-1 later authorized)
 
-| Allowed under a future implementation authorization | Not allowed without a new decision |
-|-----------------------------------------------------|-------------------------------------|
-| Read-only aggregation queries / RPCs for role-scoped counts | New ticket/job/visit/report states |
-| UI chips + lists + deep links on existing role homes | Squads, billing, stock, production release |
-| Reuse of existing panels for next actions | Silent/unattended occurrence generation |
-| Empty/error states matching desk/tech patterns | External notification fan-out (unless already implemented for that path) |
+| Allowed | Not allowed without a new decision |
+|---------|-------------------------------------|
+| Admin/Support-only read helpers for the four §3.1 populations | New workflow states; DO-2/DO-3 scope |
+| Chips + matching filtered lists + deep links | 200 OK with empty/zero payload for tech/customer |
+| Distinct error vs empty-zero UI | Silent/unattended occurrence generation |
+| Reuse of existing ticket/job/visit/review panels | Squads, billing, stock, production release |
 
 ---
 
 ## 7. Recommendation
 
-**Commit this proposal only.** Do not implement DO-1 until separately authorized. Coverage/recurrence remains closed at `b65c4cd4` with L1–L4 preserved. Treat occurrence generation as **operator-triggered** until a dedicated scheduler proposal is accepted.
+**Publish this amended DO-1 proposal only.** Do not implement until separately authorized. Keep DO-2/DO-3 deferred. Coverage closeout at `b65c4cd4` and L1–L4 remain undisturbed. Generation stays operator-triggered.
