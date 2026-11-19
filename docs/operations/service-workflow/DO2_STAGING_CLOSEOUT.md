@@ -2,7 +2,8 @@
 
 **Status:** **CLOSED** — staging **STAGING PASS** · cleanup **EXECUTED** · Spark zero-confirm **COMPLETE**  
 **Scope of this record:** Documentation closeout only · **no** production · **no** merge · **no** DO-3 implementation · **no** scheduler · **no** migration reapply · **no** runtime change  
-**Closeout_utc:** 2026-11-19T21:36:00Z (Spark zero-confirm) · operator receipt 2026-11-19T21:32:06Z
+**Closeout_utc:** 2026-11-19T21:36:00Z (Spark zero-confirm) · operator receipt 2026-11-19T21:32:06Z  
+**Repo record tip:** `4431366e63f14c91fc60f49c20cd7878e4747e65`
 
 Evidence attribution and qualifications below are **preserved unchanged** from the cited records. This closeout does **not** rewrite, merge, or re-label those layers.
 

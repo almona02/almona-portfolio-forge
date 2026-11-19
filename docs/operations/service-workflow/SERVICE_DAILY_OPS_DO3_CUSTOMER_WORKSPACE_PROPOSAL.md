@@ -1,6 +1,7 @@
 # Proposal — DO-3 customer daily ops workspace (planning only)
 
 **Status:** Planning published · **not** authorized for implementation · **not** remote apply · **not** production · **not** merge · **not** scheduler  
+**Proposal tip:** `4431366e63f14c91fc60f49c20cd7878e4747e65`  
 **Parent:** [`SERVICE_DAILY_OPERATIONS_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPERATIONS_WORKSPACE_PROPOSAL.md)  
 **Depends on (reuse, do not reopen):** B5 owner issued-report access · B6 customer `accepted`/`refused` on exact issued revision · B7 customer isolation · DO-1 empty/error/count=filter rules · DO-2 deep-link focus pattern on `/support/tickets/:ticketId` (extend for customer panels only) · coverage schedule RPC own-machine customer read ([`COVERAGE_RECURRENCE_BINDING_CHOICES.md`](./COVERAGE_RECURRENCE_BINDING_CHOICES.md)) · DO-2 staging closeout ([`DO2_STAGING_CLOSEOUT.md`](./DO2_STAGING_CLOSEOUT.md))  
 **Does not begin:** new acknowledgment rules · notification delivery · billing · stock · squads · coverage scheduler / auto-generate · new workflow states · production · remote schema apply · reopening B5/B6/B7 contracts
