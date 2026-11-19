@@ -333,3 +333,4 @@ scripts/service-workflow/lane-c-checklist-supabase/supabase/.temp/
 /public/images/hero01 (4).png
 /public/images/factory .png
 .vercel
+.env*

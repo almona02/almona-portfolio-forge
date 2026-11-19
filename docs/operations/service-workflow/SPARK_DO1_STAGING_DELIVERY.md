@@ -2,13 +2,17 @@
 
 | Field | Value |
 |-------|-------|
-| Status | `READY_FOR_DO1_STAGING_VERIFICATION` |
+| Status | Spark **`STAGING PASS`** recorded · operator cleanup **done** · Spark zero-confirm pending |
 | Staging ref | `apnmoevmvihfzcnttctx` (`almona02-staging`) |
 | Forbidden | production `shfsebdncjnncqqnewfj` |
 | Accepted SHA | `1278d4c40f14f05f25c3dd88b6763c8a9ef22113` |
 | Preview tip | `2beea5ec9b63d1a34ecd3210786843ae9d564755` |
+| Deployment | `dpl_CmvJNkCLH1ycnmr6t2L2WBLzswQt` |
+| Function hash | `06547a6e…` (**operator-claimed**) |
+| Acceptance | [`DO1_STAGING_ACCEPTANCE.md`](./DO1_STAGING_ACCEPTANCE.md) |
 | Apply record | [`DO1_STAGING_APPLY_RECORD.md`](./DO1_STAGING_APPLY_RECORD.md) |
 | Local acceptance | [`SERVICE_DAILY_OPS_DO1_LOCAL_ACCEPTANCE.md`](./SERVICE_DAILY_OPS_DO1_LOCAL_ACCEPTANCE.md) |
+| Cleanup receipt | `C:\projects\_almona_handoff\do1-staging-verification\OPERATOR_CLEANUP_RECEIPT.md` |
 
 ## Secure handoff (out of git)
 
