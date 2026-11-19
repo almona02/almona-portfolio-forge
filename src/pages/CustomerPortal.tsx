@@ -35,6 +35,7 @@ import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 import { AITechnicalChatbot } from '@/components/support/AITechnicalChatbot';
 import { MobileTicketCreator } from '@/components/mobile/MobileTicketCreator';
 import { LanguageToggle } from '@/components/ui/LanguageToggle';
+import { CustomerDailyOpsStrip } from '@/components/customer/CustomerDailyOpsStrip';
 
 // Define local types that match the API response
 interface Machine {
@@ -289,6 +290,10 @@ const CustomerPortal = () => {
               </div>
               <LanguageToggle />
             </div>
+          </div>
+
+          <div className="mb-8">
+            <CustomerDailyOpsStrip />
           </div>
 
           <Tabs defaultValue="health" className="mb-8">

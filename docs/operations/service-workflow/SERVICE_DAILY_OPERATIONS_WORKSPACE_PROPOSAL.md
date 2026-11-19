@@ -1,13 +1,13 @@
 # Proposal — daily operations workspace (planning only)
 
-**Status:** DO-1 staging-passed · **DO-2 staging closed** ([`DO2_STAGING_CLOSEOUT.md`](./DO2_STAGING_CLOSEOUT.md)) · **DO-3 planning published** · DO-3 implementation, scheduler, merge, production still **not** authorized  
+**Status:** DO-1 staging-passed · **DO-2 staging closed** ([`DO2_STAGING_CLOSEOUT.md`](./DO2_STAGING_CLOSEOUT.md)) · **DO-3 locally implemented** ([`SERVICE_DAILY_OPS_DO3_LOCAL_ACCEPTANCE.md`](./SERVICE_DAILY_OPS_DO3_LOCAL_ACCEPTANCE.md)) · DO-3 remote-apply, scheduler, merge, production still **not** authorized  
 **Proposal tip:** `4c828511` · **Base tip:** `187c49c9`  
 **DO-2 planning / closeout:** [`SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md) · [`DO2_STAGING_CLOSEOUT.md`](./DO2_STAGING_CLOSEOUT.md)  
 **DO-3 planning:** [`SERVICE_DAILY_OPS_DO3_CUSTOMER_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO3_CUSTOMER_WORKSPACE_PROPOSAL.md)  
 **Local acceptance (DO-1):** [`SERVICE_DAILY_OPS_DO1_LOCAL_ACCEPTANCE.md`](./SERVICE_DAILY_OPS_DO1_LOCAL_ACCEPTANCE.md)  
 **Depends on (reuse, do not reopen):**  
 Accepted B1–B7 ticket→job→visit→report→issue→ack→close path · Lane A/B/C closeouts · coverage/recurrence operational closeout COMPLETE @ `b65c4cd4` ([`COVERAGE_STAGING_CLOSEOUT.md`](./COVERAGE_STAGING_CLOSEOUT.md)) · journey-close join planning ([`SERVICE_ROUTINES_JOURNEY_CLOSE_MILESTONE_PROPOSAL.md`](./SERVICE_ROUTINES_JOURNEY_CLOSE_MILESTONE_PROPOSAL.md))  
-**Does not begin:** squads · billing · stock · new workflow states · production release · remote schema apply · unattended coverage scheduler · **DO-3 implementation**
+**Does not begin:** squads · billing · stock · new workflow states · production release · remote schema apply · unattended coverage scheduler · **DO-3 remote apply**
 
 **Rule:** Inventory existing screens first. Prefer count chips + deep links into accepted panels over new parallel journeys. **Count unit and matching filter population are defined together** — the chip integer equals the cardinality of the linked filtered set. Errors must never render as a successful **0**.
 
@@ -81,11 +81,11 @@ Host: `/support/desk` (+ `/admin?tab=support` if cheap).
 |-------|--------|
 | Assigned jobs / upcoming visits / needs attention (unfinished visit, checklist, report submit/revision) | Implemented + staging closed per [`SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md), [`SERVICE_DAILY_OPS_DO2_LOCAL_ACCEPTANCE.md`](./SERVICE_DAILY_OPS_DO2_LOCAL_ACCEPTANCE.md), [`DO2_STAGING_CLOSEOUT.md`](./DO2_STAGING_CLOSEOUT.md). Strip on `/technician`. |
 
-### 3.3 Customer (DO-3 — planning published; implement deferred)
+### 3.3 Customer (DO-3 — locally implemented; remote apply deferred)
 
 | Queue | Intent |
 |-------|--------|
-| Active tickets / issued reports / awaiting acknowledgment / upcoming own-machine service | Planning only: [`SERVICE_DAILY_OPS_DO3_CUSTOMER_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO3_CUSTOMER_WORKSPACE_PROPOSAL.md). Strip on `/portal`. **Not authorized to implement.** |
+| Active tickets / issued reports / awaiting acknowledgment / upcoming own-machine service | Locally implemented per [`SERVICE_DAILY_OPS_DO3_CUSTOMER_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO3_CUSTOMER_WORKSPACE_PROPOSAL.md) + [`SERVICE_DAILY_OPS_DO3_LOCAL_ACCEPTANCE.md`](./SERVICE_DAILY_OPS_DO3_LOCAL_ACCEPTANCE.md). Strip on `/portal`. **Remote apply not authorized.** |
 
 ### 3.4 Non-goals (explicit)
 

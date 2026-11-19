@@ -13,15 +13,20 @@ interface CustomerIssuedReportViewProps {
   visitId: string
   /** When false, acknowledgment history is read-only. */
   canAcknowledge?: boolean
+  /** DO-3 focus: highlight the visible head revision when focused. */
+  focusRevisionId?: string | null
+  focusRevisionNumber?: number | null
 }
 
 /**
- * Customer view: getter already omits unissued revisions/evidence and staff comments.
- * Renders every issued revision (history); a pending correction does not replace prior issued.
+ * Customer view: getter already omits unissued / superseded revisions for customers
+ * via revision_is_customer_visible (latest issued head per report).
  */
 export const CustomerIssuedReportView: React.FC<CustomerIssuedReportViewProps> = ({
   visitId,
   canAcknowledge = true,
+  focusRevisionId = null,
+  focusRevisionNumber = null,
 }) => {
   const reportQuery = useQuery({
     queryKey: ['service-report', visitId],
@@ -57,11 +62,20 @@ export const CustomerIssuedReportView: React.FC<CustomerIssuedReportViewProps> =
 
   return (
     <div className="space-y-3" data-testid="customer-issued-report">
-      {issued.map((rev) => (
+      {issued.map((rev) => {
+        const focused =
+          (focusRevisionId != null && focusRevisionId === rev.id) ||
+          (focusRevisionNumber != null && focusRevisionNumber === rev.revision_number)
+        return (
         <div
           key={rev.id}
-          className="space-y-2 rounded border border-border/70 p-3"
+          className={[
+            'space-y-2 rounded border p-3',
+            focused ? 'border-primary ring-1 ring-primary/40' : 'border-border/70',
+          ].join(' ')}
           data-testid={`customer-issued-revision-${rev.revision_number}`}
+          data-revision-id={rev.id}
+          data-focused={focused ? 'true' : undefined}
         >
           <p className="text-sm font-medium">Issued report — revision {rev.revision_number}</p>
           <p className="text-xs text-muted-foreground">
@@ -92,7 +106,8 @@ export const CustomerIssuedReportView: React.FC<CustomerIssuedReportViewProps> =
             canRespond={canAcknowledge}
           />
         </div>
-      ))}
+        )
+      })}
       <p className="text-xs text-muted-foreground">
         Unissued corrections are not shown. Prior issued revisions remain listed. Acknowledgment
         attaches only to the issued revision shown — a newer correction does not inherit a prior

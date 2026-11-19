@@ -1,6 +1,6 @@
 # Proposal — DO-3 customer daily ops workspace (planning only)
 
-**Status:** Planning published · **not** authorized for implementation · **not** remote apply · **not** production · **not** merge · **not** scheduler  
+**Status:** Locally implemented · local acceptance recorded · staging/production apply, merge, scheduler still **not** authorized  
 **Amends:** `3a061646` / `4431366e` — resolves **B-DO3-1** (latest customer-visible issued head per report)  
 **Proposal tip:** `fd0387c88b265a24dbd6b966d2cbc94b2e916539`
 **Parent:** [`SERVICE_DAILY_OPERATIONS_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPERATIONS_WORKSPACE_PROPOSAL.md)  

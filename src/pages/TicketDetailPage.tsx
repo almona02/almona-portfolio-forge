@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast'
 import { ticketMessageApi, type TicketAttachment } from '@/lib/ticketMessageApi'
 import { getTechnicianTicketHeader } from '@/lib/technicianTicketHeaderApi'
 import { resolveTechnicianTicketFocus } from '@/lib/technicianDailyOpsApi'
+import { resolveCustomerTicketFocus } from '@/lib/customerDailyOpsApi'
 import { ArrowLeft, Clock, MapPin, Phone, Mail, Cpu, Loader2, AlertCircle, Send, ImagePlus, Share2, User, Headset } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -78,10 +79,13 @@ const TicketDetailPage = () => {
   const [focusJobId, setFocusJobId] = useState<string | null>(null)
   const [focusVisitId, setFocusVisitId] = useState<string | null>(null)
   const [focusPanel, setFocusPanel] = useState<string | null>(null)
+  const [focusRevisionId, setFocusRevisionId] = useState<string | null>(null)
+  const [focusRevisionNumber, setFocusRevisionNumber] = useState<number | null>(null)
 
   const requestedJobId = searchParams.get('job')
   const requestedVisitId = searchParams.get('visit')
   const requestedPanel = searchParams.get('panel')
+  const requestedRevisionId = searchParams.get('revision')
 
   const isSharedView = !!shareToken
   const staffRoles = new Set(['admin', 'support', 'technician'])
@@ -193,12 +197,16 @@ const TicketDetailPage = () => {
       setFocusJobId(null)
       setFocusVisitId(null)
       setFocusPanel(null)
+      setFocusRevisionId(null)
+      setFocusRevisionNumber(null)
       return
     }
-    if (!requestedJobId && !requestedVisitId && !requestedPanel) {
+    if (!requestedJobId && !requestedVisitId && !requestedPanel && !requestedRevisionId) {
       setFocusJobId(null)
       setFocusVisitId(null)
       setFocusPanel(null)
+      setFocusRevisionId(null)
+      setFocusRevisionNumber(null)
       return
     }
 
@@ -208,9 +216,34 @@ const TicketDetailPage = () => {
       setFocusJobId(null)
       setFocusVisitId(null)
       setFocusPanel(null)
+      setFocusRevisionId(null)
+      setFocusRevisionNumber(null)
     }
 
     void (async () => {
+      // DO-3 customer issued focus (panel=issued / revision=) — separate from tech panels.
+      if (requestedPanel === 'issued' || requestedRevisionId) {
+        const resolved = await resolveCustomerTicketFocus({
+          ticketId,
+          visitId: requestedVisitId,
+          revisionId: requestedRevisionId,
+          panel: requestedPanel === 'issued' || requestedRevisionId ? 'issued' : requestedPanel,
+        })
+        if (cancelled) return
+        if (!resolved.focused) {
+          applySafeFallback()
+          return
+        }
+        setFocusJobId(null)
+        setFocusVisitId(resolved.visit_id ?? null)
+        setFocusPanel(resolved.panel ?? 'issued')
+        setFocusRevisionId(resolved.revision_id ?? null)
+        setFocusRevisionNumber(
+          resolved.revision_number != null ? Number(resolved.revision_number) : null,
+        )
+        return
+      }
+
       // Technicians (and any caller without full ticket SELECT) resolve focus only
       // through the authorized getter — never by probing foreign ids for disclosure.
       if (user?.role === 'technician') {
@@ -228,11 +261,12 @@ const TicketDetailPage = () => {
         setFocusJobId(resolved.job_id ?? null)
         setFocusVisitId(resolved.visit_id ?? null)
         setFocusPanel(resolved.panel ?? null)
+        setFocusRevisionId(null)
+        setFocusRevisionNumber(null)
         return
       }
 
-      // Staff/owner: still require job/visit to belong to this ticket via getter so
-      // cross-ticket params cannot focus foreign work.
+      // Staff/owner job/visit/report panels: require membership via getter.
       const resolved = await resolveTechnicianTicketFocus({
         ticketId,
         jobId: requestedJobId,
@@ -247,6 +281,8 @@ const TicketDetailPage = () => {
       setFocusJobId(resolved.job_id ?? null)
       setFocusVisitId(resolved.visit_id ?? null)
       setFocusPanel(resolved.panel ?? null)
+      setFocusRevisionId(null)
+      setFocusRevisionNumber(null)
     })()
 
     return () => {
@@ -260,7 +296,16 @@ const TicketDetailPage = () => {
     requestedJobId,
     requestedVisitId,
     requestedPanel,
+    requestedRevisionId,
   ])
+
+  useEffect(() => {
+    if (focusPanel !== 'issued') return
+    const card = document.querySelector('[data-testid="customer-issued-reports-card"]')
+    if (card instanceof HTMLElement) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
+  }, [focusPanel, focusVisitId, focusRevisionId])
 
   useEffect(() => {
     if (!ticketId) return
@@ -506,7 +551,12 @@ const TicketDetailPage = () => {
                 <CardTitle className="text-base">Issued service reports</CardTitle>
               </CardHeader>
               <CardContent>
-                <CustomerIssuedReportsSection ticketId={ticket.id} />
+                <CustomerIssuedReportsSection
+                  ticketId={ticket.id}
+                  focusVisitId={focusPanel === 'issued' ? focusVisitId : null}
+                  focusRevisionId={focusPanel === 'issued' ? focusRevisionId : null}
+                  focusRevisionNumber={focusPanel === 'issued' ? focusRevisionNumber : null}
+                />
               </CardContent>
             </Card>
           )}
