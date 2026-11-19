@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Loader2, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -33,6 +33,9 @@ interface ServiceVisitPanelProps {
   viewerRole: ServiceVisitViewerRole
   /** When true, show start/complete/abort/no-access for assigned tech. */
   canExecute?: boolean
+  /** Authorized focus visit/panel from resolve_technician_ticket_focus. */
+  focusVisitId?: string | null
+  focusPanel?: 'visit' | 'checklist' | 'report' | string | null
 }
 
 function toLocalInputValue(iso: string | null | undefined): string {
@@ -51,6 +54,8 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
   jobId,
   viewerRole,
   canExecute = false,
+  focusVisitId = null,
+  focusPanel = null,
 }) => {
   const { user } = useAuth()
   const queryClient = useQueryClient()
@@ -61,6 +66,8 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
   const [safetyAck, setSafetyAck] = useState<Record<string, boolean>>({})
   const [actionError, setActionError] = useState<string | null>(null)
   const [busyId, setBusyId] = useState<string | null>(null)
+  const focusAnchorRef = useRef<HTMLDivElement | null>(null)
+  const didScrollFocus = useRef(false)
 
   const visitsQuery = useQuery({
     queryKey: ['service-visits', jobId],
@@ -90,6 +97,19 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
     queryFn: () => getServiceJobRoutinePin(jobId),
     enabled: viewerRole === 'admin' || viewerRole === 'support' || viewerRole === 'technician',
   })
+
+  useEffect(() => {
+    didScrollFocus.current = false
+  }, [focusVisitId, focusPanel])
+
+  useEffect(() => {
+    if (!focusVisitId || didScrollFocus.current) return
+    if (!visitsQuery.data?.some((v) => v.id === focusVisitId)) return
+    const el = focusAnchorRef.current
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    didScrollFocus.current = true
+  }, [focusVisitId, focusPanel, visitsQuery.data])
 
   const refresh = async () => {
     await queryClient.invalidateQueries({ queryKey: ['service-visits', jobId] })
@@ -167,9 +187,25 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
       )}
 
       <ul className="space-y-3">
-        {(visitsQuery.data ?? []).map((v: ServiceVisitRow) => (
-          <li key={v.id} className="rounded border border-border/60 p-3 text-sm space-y-2">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+        {(visitsQuery.data ?? []).map((v: ServiceVisitRow) => {
+          const isFocusedVisit = Boolean(focusVisitId && focusVisitId === v.id)
+          const panel = isFocusedVisit ? focusPanel : null
+          return (
+          <li
+            key={v.id}
+            className={[
+              'rounded border p-3 text-sm space-y-2',
+              isFocusedVisit ? 'border-primary ring-1 ring-primary/30' : 'border-border/60',
+            ].join(' ')}
+            data-testid={`service-visit-${v.id}`}
+            data-visit-id={v.id}
+            data-focused={isFocusedVisit ? 'true' : undefined}
+          >
+            <div
+              ref={isFocusedVisit && (!panel || panel === 'visit') ? focusAnchorRef : undefined}
+              data-testid={isFocusedVisit && (!panel || panel === 'visit') ? 'ticket-focus-visit' : undefined}
+              className="flex flex-wrap items-center justify-between gap-2"
+            >
               <span className="font-medium">
                 Visit {v.visit_sequence}: {v.state}
               </span>
@@ -358,7 +394,13 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
 
             {(v.state === 'in_progress' || v.state === 'completed') &&
               (staff || viewerRole === 'technician') && (
-                <div className="w-full">
+                <div
+                  className="w-full"
+                  ref={isFocusedVisit && panel === 'checklist' ? focusAnchorRef : undefined}
+                  data-testid={
+                    isFocusedVisit && panel === 'checklist' ? 'ticket-focus-checklist' : undefined
+                  }
+                >
                   <ServiceVisitChecklistPanel visitId={v.id} viewerRole={viewerRole} />
                 </div>
               )}
@@ -371,16 +413,23 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
                 (viewerRole === 'technician' &&
                   !!user?.id &&
                   v.attending_technician_id === user.id)) && (
-                <div className="w-full space-y-2" data-testid={`service-report-mount-${v.id}`}>
-                  <ServiceReportPanel
-                    visitId={v.id}
-                    ticketId={jobMetaQuery.data.ticket_id}
-                    canSubmit={
-                      viewerRole === 'technician' &&
-                      !!user?.id &&
-                      v.attending_technician_id === user.id
-                    }
-                  />
+                <div
+                  className="w-full space-y-2"
+                  data-testid={`service-report-mount-${v.id}`}
+                  ref={isFocusedVisit && panel === 'report' ? focusAnchorRef : undefined}
+                  data-focused-panel={isFocusedVisit && panel === 'report' ? 'report' : undefined}
+                >
+                  <div data-testid={isFocusedVisit && panel === 'report' ? 'ticket-focus-report' : undefined}>
+                    <ServiceReportPanel
+                      visitId={v.id}
+                      ticketId={jobMetaQuery.data.ticket_id}
+                      canSubmit={
+                        viewerRole === 'technician' &&
+                        !!user?.id &&
+                        v.attending_technician_id === user.id
+                      }
+                    />
+                  </div>
                   {staff && (
                     <ServiceReportReviewPanel
                       visitId={v.id}
@@ -397,7 +446,8 @@ export const ServiceVisitPanel: React.FC<ServiceVisitPanelProps> = ({
               </div>
             )}
           </li>
-        ))}
+          )
+        })}
       </ul>
 
       {staff && (

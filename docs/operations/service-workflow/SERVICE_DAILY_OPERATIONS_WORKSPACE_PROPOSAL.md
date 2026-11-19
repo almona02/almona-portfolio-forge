@@ -1,6 +1,6 @@
 # Proposal — daily operations workspace (planning only)
 
-**Status:** DO-1 locally implemented + staging-passed separately · **DO-2 planning published** · DO-2 implement/remote-apply, DO-3, scheduler, merge, production still **not** authorized  
+**Status:** DO-1 locally implemented + staging-passed separately · **DO-2 locally implemented** · DO-2 remote-apply, DO-3, scheduler, merge, production still **not** authorized  
 **Proposal tip:** `4c828511` · **Base tip:** `187c49c9`  
 **DO-2 planning:** [`SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md)  
 **Local acceptance (DO-1):** [`SERVICE_DAILY_OPS_DO1_LOCAL_ACCEPTANCE.md`](./SERVICE_DAILY_OPS_DO1_LOCAL_ACCEPTANCE.md)  
@@ -78,7 +78,7 @@ Host: `/support/desk` (+ `/admin?tab=support` if cheap).
 
 | Queue | Intent |
 |-------|--------|
-| Assigned jobs / upcoming visits / needs attention (unfinished visit, checklist, report submit/revision) | Planning-locked in [`SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md). Strip on `/technician`. **Not authorized to implement under DO-1.** |
+| Assigned jobs / upcoming visits / needs attention (unfinished visit, checklist, report submit/revision) | Locally implemented per [`SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md) + [`SERVICE_DAILY_OPS_DO2_LOCAL_ACCEPTANCE.md`](./SERVICE_DAILY_OPS_DO2_LOCAL_ACCEPTANCE.md). Strip on `/technician`. **Remote apply not authorized.** |
 
 ### 3.3 Customer (DO-3 — deferred)
 

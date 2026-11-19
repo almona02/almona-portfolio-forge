@@ -1,7 +1,8 @@
 # Proposal — DO-2 technician daily ops workspace (planning only)
 
-**Status:** Planning only · **not** authorized to implement · **not** remote-applied · **not** merge · **not** production  
-**Amends:** `44f3cbb3` (focus params in-scope · DO2-06 RLS chain · non-blocking clarifications)  
+**Status:** Locally implemented @ follow-on commit · staging/production apply, merge, DO-3, scheduler still **not** authorized  
+**Amends:** `44f3cbb3` (focus params in-scope · DO2-06 RLS chain · non-blocking clarifications) · tip `82f74069`  
+**Local acceptance:** [`SERVICE_DAILY_OPS_DO2_LOCAL_ACCEPTANCE.md`](./SERVICE_DAILY_OPS_DO2_LOCAL_ACCEPTANCE.md)  
 **Parent:** [`SERVICE_DAILY_OPERATIONS_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPERATIONS_WORKSPACE_PROPOSAL.md) (DO-1 staff strip accepted / staging-passed separately)  
 **Depends on (reuse, do not reopen):** B2 assignment · B3 visits · Lane B pins · Lane C checklist · B4 report submit · B5 return/issue · narrow technician ticket header (`get_technician_ticket_header` / T-G1) · DO-1 empty/error/count=filter rules · staging-equivalent `service_tickets` RLS (ENABLE + existing staff/owner SELECT; technicians via header RPC only)  
 **Does not begin:** new workflow states · dispatch/squads · notifications · **DO-3** · coverage scheduler · production · remote schema apply · broadening direct `service_tickets` SELECT for technicians

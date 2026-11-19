@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { ticketMessageApi, type TicketAttachment } from '@/lib/ticketMessageApi'
 import { getTechnicianTicketHeader } from '@/lib/technicianTicketHeaderApi'
+import { resolveTechnicianTicketFocus } from '@/lib/technicianDailyOpsApi'
 import { ArrowLeft, Clock, MapPin, Phone, Mail, Cpu, Loader2, AlertCircle, Send, ImagePlus, Share2, User, Headset } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -72,6 +73,13 @@ const TicketDetailPage = () => {
   const [sending, setSending] = useState(false)
   const [sharing, setSharing] = useState(false)
   const endRef = useRef<HTMLDivElement>(null)
+  const [focusJobId, setFocusJobId] = useState<string | null>(null)
+  const [focusVisitId, setFocusVisitId] = useState<string | null>(null)
+  const [focusPanel, setFocusPanel] = useState<string | null>(null)
+
+  const requestedJobId = searchParams.get('job')
+  const requestedVisitId = searchParams.get('visit')
+  const requestedPanel = searchParams.get('panel')
 
   const isSharedView = !!shareToken
   const staffRoles = new Set(['admin', 'support', 'technician'])
@@ -160,11 +168,97 @@ const TicketDetailPage = () => {
       if (err || !data) { setError('Ticket not found or unavailable.'); setLoading(false); return }
       setTicket(data as TicketRow)
     }
-    const { data: msgs } = await supabase.from('ticket_messages').select('*').eq('ticket_id', ticketId).order('created_at', { ascending: true })
-    const hydrated = await hydrateAttachmentUrls((msgs ?? []) as MessageRow[], null)
-    setMessages(hydrated)
+    // Messages may be denied under staging-eq RLS for job-only / historical-attending
+    // technicians. Fail soft — do not block the ticket shell or job/report getters.
+    {
+      const { data: msgs, error: msgErr } = await supabase
+        .from('ticket_messages')
+        .select('*')
+        .eq('ticket_id', ticketId)
+        .order('created_at', { ascending: true })
+      if (msgErr) {
+        setMessages([])
+      } else {
+        const hydrated = await hydrateAttachmentUrls((msgs ?? []) as MessageRow[], null)
+        setMessages(hydrated)
+      }
+    }
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (!ticketId || !ticket || isSharedView) {
+      setFocusJobId(null)
+      setFocusVisitId(null)
+      setFocusPanel(null)
+      return
+    }
+    if (!requestedJobId && !requestedVisitId && !requestedPanel) {
+      setFocusJobId(null)
+      setFocusVisitId(null)
+      setFocusPanel(null)
+      return
+    }
+
+    let cancelled = false
+    const applySafeFallback = () => {
+      if (cancelled) return
+      setFocusJobId(null)
+      setFocusVisitId(null)
+      setFocusPanel(null)
+    }
+
+    void (async () => {
+      // Technicians (and any caller without full ticket SELECT) resolve focus only
+      // through the authorized getter — never by probing foreign ids for disclosure.
+      if (user?.role === 'technician') {
+        const resolved = await resolveTechnicianTicketFocus({
+          ticketId,
+          jobId: requestedJobId,
+          visitId: requestedVisitId,
+          panel: requestedPanel,
+        })
+        if (cancelled) return
+        if (!resolved.focused) {
+          applySafeFallback()
+          return
+        }
+        setFocusJobId(resolved.job_id ?? null)
+        setFocusVisitId(resolved.visit_id ?? null)
+        setFocusPanel(resolved.panel ?? null)
+        return
+      }
+
+      // Staff/owner: still require job/visit to belong to this ticket via getter so
+      // cross-ticket params cannot focus foreign work.
+      const resolved = await resolveTechnicianTicketFocus({
+        ticketId,
+        jobId: requestedJobId,
+        visitId: requestedVisitId,
+        panel: requestedPanel,
+      })
+      if (cancelled) return
+      if (!resolved.focused) {
+        applySafeFallback()
+        return
+      }
+      setFocusJobId(resolved.job_id ?? null)
+      setFocusVisitId(resolved.visit_id ?? null)
+      setFocusPanel(resolved.panel ?? null)
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [
+    ticketId,
+    ticket?.id,
+    isSharedView,
+    user?.role,
+    requestedJobId,
+    requestedVisitId,
+    requestedPanel,
+  ])
 
   useEffect(() => {
     if (!ticketId) return
@@ -379,6 +473,9 @@ const TicketDetailPage = () => {
                   ticketId={ticket.id}
                   currentUserId={user.id}
                   viewerRole={user.role}
+                  focusJobId={focusJobId}
+                  focusVisitId={focusVisitId}
+                  focusPanel={focusPanel}
                 />
               </CardContent>
             </Card>

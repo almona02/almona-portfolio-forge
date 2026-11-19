@@ -20,6 +20,7 @@ import {
   type ServiceJobRow,
 } from '@/lib/ticketGovernanceApi'
 import { ServiceVisitPanel } from '@/components/support/ServiceVisitPanel'
+import { TechnicianDailyOpsStrip } from '@/components/technician/TechnicianDailyOpsStrip'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select'
 import { Loader2, RefreshCw, Share2, Wrench, CheckCircle2, XCircle, PlayCircle } from 'lucide-react'
@@ -121,6 +122,8 @@ const TechnicianDashboard: React.FC = () => {
           <RefreshCw className="mr-2 h-4 w-4" /> Refresh
         </Button>
       </div>
+
+      <TechnicianDailyOpsStrip />
 
       {jobError && (
         <p role="alert" className="text-sm text-destructive">

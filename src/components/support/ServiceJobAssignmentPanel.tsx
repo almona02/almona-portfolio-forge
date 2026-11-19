@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Plus, RefreshCw, UserMinus, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -31,6 +31,10 @@ interface ServiceJobAssignmentPanelProps {
   viewerRole: ServiceJobViewerRole
   /** Case-contact name shown for independence from job assignees. */
   ticketAssigneeName?: string | null
+  /** Authorized focus targets from resolve_technician_ticket_focus (or staff-resolved). */
+  focusJobId?: string | null
+  focusVisitId?: string | null
+  focusPanel?: 'visit' | 'checklist' | 'report' | string | null
 }
 
 const TERMINAL = new Set(['completed', 'waived', 'cancelled'])
@@ -44,6 +48,9 @@ export const ServiceJobAssignmentPanel: React.FC<ServiceJobAssignmentPanelProps>
   currentUserId,
   viewerRole,
   ticketAssigneeName,
+  focusJobId = null,
+  focusVisitId = null,
+  focusPanel = null,
 }) => {
   const queryClient = useQueryClient()
   const staff = canStaffManage(viewerRole)
@@ -51,6 +58,8 @@ export const ServiceJobAssignmentPanel: React.FC<ServiceJobAssignmentPanelProps>
   const [assignTarget, setAssignTarget] = useState<Record<string, string>>({})
   const [declineReason, setDeclineReason] = useState<Record<string, string>>({})
   const [actionError, setActionError] = useState<string | null>(null)
+  const focusJobRef = useRef<HTMLLIElement | null>(null)
+  const didScrollFocus = useRef(false)
 
   const jobsQuery = useQuery({
     queryKey: ['service-jobs', ticketId],
@@ -66,6 +75,19 @@ export const ServiceJobAssignmentPanel: React.FC<ServiceJobAssignmentPanelProps>
   const refreshJobs = async () => {
     await queryClient.invalidateQueries({ queryKey: ['service-jobs', ticketId] })
   }
+
+  useEffect(() => {
+    didScrollFocus.current = false
+  }, [focusJobId, focusVisitId, focusPanel])
+
+  useEffect(() => {
+    if (!focusJobId || didScrollFocus.current) return
+    if (!jobsQuery.data?.some((j) => j.id === focusJobId)) return
+    const el = focusJobRef.current
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    didScrollFocus.current = true
+  }, [focusJobId, jobsQuery.data])
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -137,12 +159,19 @@ export const ServiceJobAssignmentPanel: React.FC<ServiceJobAssignmentPanelProps>
     const canAssign = staff && !TERMINAL.has(job.state)
     const selected = assignTarget[job.id] || ''
     const reason = declineReason[job.id] || ''
+    const isFocusedJob = Boolean(focusJobId && focusJobId === job.id)
 
     return (
       <li
         key={job.id}
-        className="rounded-md border border-border p-3 space-y-2"
+        ref={isFocusedJob ? focusJobRef : undefined}
+        className={[
+          'rounded-md border p-3 space-y-2',
+          isFocusedJob ? 'border-primary ring-1 ring-primary/40' : 'border-border',
+        ].join(' ')}
         data-testid={`service-job-${job.job_sequence}`}
+        data-job-id={job.id}
+        data-focused={isFocusedJob ? 'true' : undefined}
       >
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <div>
@@ -238,6 +267,8 @@ export const ServiceJobAssignmentPanel: React.FC<ServiceJobAssignmentPanelProps>
             staff ||
             (viewerRole === 'technician' && job.assigned_technician_id === currentUserId)
           }
+          focusVisitId={isFocusedJob ? focusVisitId : null}
+          focusPanel={isFocusedJob ? focusPanel : null}
         />
       </li>
     )
