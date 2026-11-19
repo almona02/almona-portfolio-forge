@@ -131,7 +131,7 @@ Host: `/support/desk` (+ `/admin?tab=support` if cheap).
 
 | ID | Scenario | Slice |
 |----|----------|-------|
-| DO2-01…DO2-12 | Technician strip scenarios | **DO-2 proposal** — see DO-2 doc; not implementable under DO-1 |
+| DO2-01…DO2-13 | Technician strip + focus / RLS-chain scenarios | **DO-2 proposal** — see DO-2 doc; not implementable under DO-1 |
 | DO-3-* | Customer strip scenarios | **DO-3 only** |
 
 ### 5.3 Generation / scheduler boundary
