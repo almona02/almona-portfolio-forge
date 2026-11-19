@@ -32,26 +32,32 @@ Do **not** describe ticket access as “equivalent RLS SELECT” on `service_tic
 
 Count = `jsonb_array_length(items)`. Authz DETAIL `technician_daily_ops_authz_denied` → 403. Viewing is read-only.
 
-## Evidence layers (local run @ `d65e5636`)
+## Evidence layers (local / Spark @ `d65e5636`)
 
-| Layer | How | Result | Qualification |
-|-------|-----|--------|---------------|
-| Database | `python scripts/service-workflow/run_disposable_do2.py` | **24/24 PASS** → `.artifacts/slice0/service-workflow/disposable_do2_results.json` | Staging-eq FORCE RLS + authenticated SELECT probe |
-| Component (Vitest) | `npx vitest run --config vitest.do2.config.ts` | **8/8 PASS** → `.artifacts/slice0/service-workflow/technician_daily_ops_component_results.json` | jsdom + mocked supabase |
-| Real-component browser | `node scripts/service-workflow/technician_daily_ops_browser_smoke.mjs` | **20/20 PASS** → `.artifacts/slice0/service-workflow/technician_daily_ops_browser_results.json` | Chromium · **stubbed HTTP** · not full-stack |
+Keep layers distinct — do not fold stubbed-browser or disposable rows into the Spark live database journey.
+
+| Layer | Label | How | Result | Qualification |
+|-------|-------|-----|--------|---------------|
+| Database (Cursor disposable) | **database-only** | `python scripts/service-workflow/run_disposable_do2.py` | **24/24 PASS** → `.artifacts/slice0/service-workflow/disposable_do2_results.json` | Staging-eq FORCE RLS + authenticated SELECT probe |
+| Database (Spark probes) | **database-only** | Spark `spark_do2_probes.sql` | **27/27 PASS** → `.artifacts/slice0/service-workflow/spark-do2/spark_do2_database_only_probes.txt` | Queue/predicate/RLS/header/focus/getter probes; not browser |
+| Database journey (Spark) | **database journey** | Spark `spark_do2_journey.sql` | **34/34 PASS** → `.artifacts/slice0/service-workflow/spark-do2/spark_do2_database_journey_34_34.txt` | Live assign/start/reassign/submit/resubmit RPC journey; not stubbed browser |
+| Component (Vitest) | component | `npx vitest run --config vitest.do2.config.ts` | **8/8 PASS** → `.artifacts/slice0/service-workflow/technician_daily_ops_component_results.json` | jsdom + mocked supabase |
+| Real-component browser | **stubbed browser** | `node scripts/service-workflow/technician_daily_ops_browser_smoke.mjs` | **20/20 PASS** → `.artifacts/slice0/service-workflow/technician_daily_ops_browser_results.json` | Chromium · **stubbed HTTP** · not full-stack · not the Spark 34/34 journey |
 
 ### Explicit qualifications (preserved)
 
-1. **Full-stack isolated browser unavailable** for this local acceptance (no GoTrue+PostgREST+Vite app journey against a live disposable stack). The Chromium layer is **real-component with stubbed HTTP** only.
-2. **Live B2 execution unavailable** in the local evidence set (no live `assign_service_job` / decline mutation journey against staging or full-stack). Assignment/attendance predicates are proven in the disposable SQL battery and component contracts; live B2 reassignment execution remains a staging-verification concern.
+1. **Full-stack isolated browser unavailable** for Cursor local acceptance (no GoTrue+PostgREST+Vite app journey against a live disposable stack). The Chromium layer is **real-component with stubbed HTTP** only — distinct from Spark’s **34/34 database journey**.
+2. **Live B2 / report mutations** are covered by Spark’s **34/34 database journey** evidence (preserved above), not by the stubbed-browser layer. Staging verification remains separately authorized.
 
 ## Acceptance coverage map
 
 | ID | Layer |
 |----|-------|
-| DO2-01…DO2-06, DO2-10, DO2-12, DO2-13, overdue/NULL clarifications | Disposable DB |
-| DO2-07/08/09 focus href + expand/scroll contracts; DO2-11/13 UI | Vitest + real-component browser (stubbed HTTP) |
-| DO2-06 chain: queue → header getter → focus getter → report getter; direct ticket SELECT denied; new-assignee read retained / submit separate | Disposable DB |
+| DO2-01…DO2-06, DO2-10, DO2-12, DO2-13, overdue/NULL clarifications | Disposable DB (**database-only**) |
+| Spark SP-DO2 probes (queues, RLS, header/focus/getter) | Spark probes (**database-only** 27/27) |
+| Spark J-DO2 live assign / reassign / submit / resubmit | Spark journey (**database journey** 34/34) |
+| DO2-07/08/09 focus href + expand/scroll contracts; DO2-11/13 UI | Vitest + **stubbed browser** |
+| DO2-06 chain: queue → header getter → focus getter → report getter; direct ticket SELECT denied; new-assignee read retained / submit separate | Disposable DB + Spark journey |
 
 ## Out of scope (unchanged)
 
