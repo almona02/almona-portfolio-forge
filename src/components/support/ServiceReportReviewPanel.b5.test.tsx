@@ -81,6 +81,38 @@ describe('ServiceReportReviewPanel B5', () => {
     )
   })
 
+  it('shows decided banner after return by refreshing review queries', async () => {
+    getReport.mockResolvedValue({ report: { id: 'r1', visit_id: 'visit-1' }, revisions: [submitted] })
+    listReviews
+      .mockResolvedValueOnce([])
+      .mockResolvedValue([
+        {
+          id: 'rw-2',
+          revision_id: 'rev-1',
+          reviewer_id: 'mgr-1',
+          decision: 'returned',
+          comments: 'fix findings',
+          decided_at: '2026-11-13T14:00:00.000Z',
+        },
+      ])
+    review.mockResolvedValue({
+      id: 'rw-2',
+      revision_id: 'rev-1',
+      reviewer_id: 'mgr-1',
+      decision: 'returned',
+      comments: 'fix findings',
+      decided_at: '2026-11-13T14:00:00.000Z',
+    })
+    const user = userEvent.setup()
+    renderPanel()
+    await screen.findByTestId('service-report-review-panel')
+    await user.type(screen.getByRole('textbox'), 'fix findings')
+    await user.click(screen.getByRole('button', { name: /Return for correction/i }))
+    expect(await screen.findByTestId('service-report-review-decided')).toHaveTextContent(
+      /Decision:\s*returned/i,
+    )
+  })
+
   it('blocks return without comments', async () => {
     getReport.mockResolvedValue({ report: { id: 'r1', visit_id: 'visit-1' }, revisions: [submitted] })
     renderPanel()

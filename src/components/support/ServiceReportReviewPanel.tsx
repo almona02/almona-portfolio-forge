@@ -64,8 +64,11 @@ export const ServiceReportReviewPanel: React.FC<ServiceReportReviewPanelProps> =
       toast.success(decision === 'approved_issued' ? 'Report approved and issued' : 'Report returned')
       setComments('')
       await queryClient.invalidateQueries({ queryKey: ['service-report', visitId] })
+      // Refresh decided banner / technician returned status after a successful decision.
+      await queryClient.invalidateQueries({ queryKey: ['service-report-reviews', visitId] })
       await queryClient.invalidateQueries({ queryKey: ['service-jobs'] })
       await queryClient.invalidateQueries({ queryKey: ['service-visits'] })
+      await headReviewQuery.refetch()
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Review failed'
       setError(msg)
