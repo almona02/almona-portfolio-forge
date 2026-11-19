@@ -1,5 +1,7 @@
 # Service workflow disposable harness
 
+- `run_disposable_daily_ops.py` + `disposable_daily_ops_battery.sql` — DO-1 staff daily ops (proposal `4c828511`; local only).
+- `staff_daily_ops_browser_smoke.mjs` — Chromium contract smoke for DO-1 strip testids.
 - `disposable_b1_base.sql` — disposable auth/role stand-ins (includes `GRANT USAGE ON SCHEMA auth`).
 - `disposable_b1_battery.sql` — B1 + Spark S1–S20 B2 checks (authoritative independent battery).
 - `disposable_b2_battery.sql` — Cursor supporting B2S* subset (optional append).

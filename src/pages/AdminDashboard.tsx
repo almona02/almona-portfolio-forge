@@ -1,5 +1,6 @@
 import { SparePartsImportPanel } from '@/components/admin/SparePartsImportPanel'
 import { AdminTicketDashboard } from '@/components/support/AdminTicketDashboard'
+import { StaffDailyOpsStrip } from '@/components/support/StaffDailyOpsStrip'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -303,7 +304,12 @@ const AdminDashboard: React.FC = () => {
           </div>
         )
       case 'support':
-        return <AdminTicketDashboard currentUserId={user?.id || ''} userRole="admin" />
+        return (
+          <div className="space-y-4">
+            <StaffDailyOpsStrip />
+            <AdminTicketDashboard currentUserId={user?.id || ''} userRole="admin" />
+          </div>
+        )}
       case 'technicians':
         return (
           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading technicians…</div>}>

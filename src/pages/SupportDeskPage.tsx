@@ -1,6 +1,7 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
 import { AdminTicketDashboard } from '@/components/support/AdminTicketDashboard'
+import { StaffDailyOpsStrip } from '@/components/support/StaffDailyOpsStrip'
 import { useAuth } from '@/context/AuthContext'
 
 /**
@@ -38,6 +39,7 @@ const SupportDeskPage: React.FC = () => {
           Service routine reviews
         </a>
       </div>
+      <StaffDailyOpsStrip />
       <AdminTicketDashboard
         currentUserId={user.id}
         userRole={user.role === 'support' ? 'support' : 'admin'}

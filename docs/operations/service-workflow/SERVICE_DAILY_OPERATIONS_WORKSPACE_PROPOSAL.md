@@ -1,7 +1,8 @@
 # Proposal — daily operations workspace (planning only)
 
-**Status:** Amended proposal (DO-1 predicates locked) · **not** authorized for implementation, migrations, staging/production apply, merge, or FR-1  
-**Base tip:** `187c49c9`  
+**Status:** DO-1 locally implemented @ follow-on commit · staging/production apply, merge, FR-1, DO-2/DO-3, scheduler still **not** authorized  
+**Proposal tip:** `4c828511` · **Base tip:** `187c49c9`  
+**Local acceptance:** [`SERVICE_DAILY_OPS_DO1_LOCAL_ACCEPTANCE.md`](./SERVICE_DAILY_OPS_DO1_LOCAL_ACCEPTANCE.md)  
 **Depends on (reuse, do not reopen):**  
 Accepted B1–B7 ticket→job→visit→report→issue→ack→close path · Lane A/B/C closeouts · coverage/recurrence operational closeout COMPLETE @ `b65c4cd4` ([`COVERAGE_STAGING_CLOSEOUT.md`](./COVERAGE_STAGING_CLOSEOUT.md)) · journey-close join planning ([`SERVICE_ROUTINES_JOURNEY_CLOSE_MILESTONE_PROPOSAL.md`](./SERVICE_ROUTINES_JOURNEY_CLOSE_MILESTONE_PROPOSAL.md))  
 **Does not begin:** squads · billing · stock · new workflow states · production release · remote schema apply · unattended coverage scheduler · **DO-2** · **DO-3**

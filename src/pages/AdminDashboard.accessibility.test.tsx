@@ -27,6 +27,7 @@ vi.mock('@/components/admin/LowStockAlerts', () => ({ LowStockAlerts: () => <div
 vi.mock('@/components/admin/RecentOrders', () => ({ RecentOrders: () => <div>RecentOrders</div> }))
 vi.mock('@/components/admin/TopProducts', () => ({ TopProducts: () => <div>TopProducts</div> }))
 vi.mock('@/components/support/AdminTicketDashboard', () => ({ AdminTicketDashboard: () => <div>Support content</div> }))
+vi.mock('@/components/support/StaffDailyOpsStrip', () => ({ StaffDailyOpsStrip: () => <div>Daily ops</div> }))
 vi.mock('@/components/governance/GovernanceHealthMini', () => ({ GovernanceHealthMini: () => <div>Governance</div> }))
 vi.mock('@/utils/lazyImport', () => ({ lazyRetry: (_loader: unknown, name: string) => () => <div>{name} content</div> }))
 
