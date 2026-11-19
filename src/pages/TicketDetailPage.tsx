@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { buildReturnPath } from '@/lib/auth/safeReturnPath'
 import { supabase } from '@/lib/supabase'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -58,6 +59,7 @@ const priorityColor: Record<string, string> = {
 const TicketDetailPage = () => {
   const { ticketId } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const shareToken = searchParams.get('share')
   const { user, supabaseUser, loading: authLoading, isProfileResolved } = useAuth()
@@ -284,8 +286,9 @@ const TicketDetailPage = () => {
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages.length])
 
   // Authenticated ticket view requires a session; share links remain public.
+  // Preserve pathname + query (job/visit/panel) through login via safeReturnPath.
   if (!isSharedView && !authLoading && !user && !supabaseUser) {
-    return <Navigate to="/login" replace state={{ from: `/support/tickets/${ticketId ?? ''}` }} />
+    return <Navigate to="/login" replace state={{ from: buildReturnPath(location) }} />
   }
 
   const send = async () => {
