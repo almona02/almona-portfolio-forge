@@ -3,7 +3,8 @@
 **Status:** Local implementation recorded · **not** staging/production apply · **not** merge · **not** DO-2/DO-3 · **not** scheduler  
 **Proposal tip:** `4c8285117b3a304b7f113885d14b260259128e70`  
 **Migration:** `supabase/migrations/20261118230000_service_daily_ops_do1_staff_workspace.sql`  
-**Migration sha256 (LF-normalized):** `cbb48f7a91eac61b9a5c2de716c951d625e3065acf9288c31764e20774e97e7b`
+**Migration sha256 (LF-normalized):** `cbb48f7a91eac61b9a5c2de716c951d625e3065acf9288c31764e20774e97e7b`  
+**Frozen implementation SHA:** `1278d4c40f14f05f25c3dd88b6763c8a9ef22113`
 
 ## Old → new acceptance ID map
 
