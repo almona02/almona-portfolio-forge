@@ -309,7 +309,7 @@ const AdminDashboard: React.FC = () => {
             <StaffDailyOpsStrip />
             <AdminTicketDashboard currentUserId={user?.id || ''} userRole="admin" />
           </div>
-        )}
+        )
       case 'technicians':
         return (
           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading technicians…</div>}>
