@@ -1,12 +1,13 @@
 # Proposal — daily operations workspace (planning only)
 
-**Status:** DO-1 locally implemented + staging-passed separately · **DO-2 locally implemented** · DO-2 remote-apply, DO-3, scheduler, merge, production still **not** authorized  
+**Status:** DO-1 staging-passed · **DO-2 staging closed** ([`DO2_STAGING_CLOSEOUT.md`](./DO2_STAGING_CLOSEOUT.md)) · **DO-3 planning published** · DO-3 implementation, scheduler, merge, production still **not** authorized  
 **Proposal tip:** `4c828511` · **Base tip:** `187c49c9`  
-**DO-2 planning:** [`SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md)  
+**DO-2 planning / closeout:** [`SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md) · [`DO2_STAGING_CLOSEOUT.md`](./DO2_STAGING_CLOSEOUT.md)  
+**DO-3 planning:** [`SERVICE_DAILY_OPS_DO3_CUSTOMER_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO3_CUSTOMER_WORKSPACE_PROPOSAL.md)  
 **Local acceptance (DO-1):** [`SERVICE_DAILY_OPS_DO1_LOCAL_ACCEPTANCE.md`](./SERVICE_DAILY_OPS_DO1_LOCAL_ACCEPTANCE.md)  
 **Depends on (reuse, do not reopen):**  
 Accepted B1–B7 ticket→job→visit→report→issue→ack→close path · Lane A/B/C closeouts · coverage/recurrence operational closeout COMPLETE @ `b65c4cd4` ([`COVERAGE_STAGING_CLOSEOUT.md`](./COVERAGE_STAGING_CLOSEOUT.md)) · journey-close join planning ([`SERVICE_ROUTINES_JOURNEY_CLOSE_MILESTONE_PROPOSAL.md`](./SERVICE_ROUTINES_JOURNEY_CLOSE_MILESTONE_PROPOSAL.md))  
-**Does not begin:** squads · billing · stock · new workflow states · production release · remote schema apply · unattended coverage scheduler · **DO-2 implementation** · **DO-3**
+**Does not begin:** squads · billing · stock · new workflow states · production release · remote schema apply · unattended coverage scheduler · **DO-3 implementation**
 
 **Rule:** Inventory existing screens first. Prefer count chips + deep links into accepted panels over new parallel journeys. **Count unit and matching filter population are defined together** — the chip integer equals the cardinality of the linked filtered set. Errors must never render as a successful **0**.
 
@@ -33,7 +34,7 @@ Shared detail: `/support/tickets/:ticketId` → `TicketDetailPage.tsx` (jobs, vi
 | **Unassigned jobs** | Per-ticket job panel; desk has unassigned **tickets** filter | No cross-ticket queue of `service_jobs.state = 'unassigned'` |
 | Jobs **awaiting review** | Inline `ServiceReportReviewPanel` on a visit | No desk queue of `service_jobs.state = 'awaiting_review'` |
 | Tickets **awaiting customer** | Status FSM includes `awaiting_customer` | No filtered queue / count chip |
-| Tech / customer strips | See §3.2–3.3 | **DO-2 / DO-3 — explicitly deferred** |
+| Tech / customer strips | See §3.2–3.3 | **DO-2 staging closed** · **DO-3 planning only** |
 
 ### 1.3 Empty / error patterns to reuse
 
@@ -74,22 +75,22 @@ Host: `/support/desk` (+ `/admin?tab=support` if cheap).
 
 **Together rule:** Opening a chip must show the same set the integer counted. No silent extra filters, no collapsing occurrences to tickets for the overdue chip.
 
-### 3.2 Technician (DO-2 — planning published; implement deferred)
+### 3.2 Technician (DO-2 — staging closed)
 
 | Queue | Intent |
 |-------|--------|
-| Assigned jobs / upcoming visits / needs attention (unfinished visit, checklist, report submit/revision) | Locally implemented per [`SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md) + [`SERVICE_DAILY_OPS_DO2_LOCAL_ACCEPTANCE.md`](./SERVICE_DAILY_OPS_DO2_LOCAL_ACCEPTANCE.md). Strip on `/technician`. **Remote apply not authorized.** |
+| Assigned jobs / upcoming visits / needs attention (unfinished visit, checklist, report submit/revision) | Implemented + staging closed per [`SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO2_TECHNICIAN_WORKSPACE_PROPOSAL.md), [`SERVICE_DAILY_OPS_DO2_LOCAL_ACCEPTANCE.md`](./SERVICE_DAILY_OPS_DO2_LOCAL_ACCEPTANCE.md), [`DO2_STAGING_CLOSEOUT.md`](./DO2_STAGING_CLOSEOUT.md). Strip on `/technician`. |
 
-### 3.3 Customer (DO-3 — deferred)
+### 3.3 Customer (DO-3 — planning published; implement deferred)
 
-| Queue | Intent (not in DO-1) |
-|-------|----------------------|
-| Own status / issued reports / pending acknowledgment | Deferred strip on `/portal` or `/support`. **Out of DO-1 authorization.** |
+| Queue | Intent |
+|-------|--------|
+| Active tickets / issued reports / awaiting acknowledgment / upcoming own-machine service | Planning only: [`SERVICE_DAILY_OPS_DO3_CUSTOMER_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPS_DO3_CUSTOMER_WORKSPACE_PROPOSAL.md). Strip on `/portal`. **Not authorized to implement.** |
 
 ### 3.4 Non-goals (explicit)
 
 - Squads, billing, stock, new workflow states, production release.
-- DO-2 / DO-3 implementation under a DO-1 authorization.
+- DO-3 implementation under a DO-1/DO-2 authorization.
 - Counting ungenerated coverage schedule candidates as overdue service work.
 - Auto-calling `generate_machine_coverage_occurrences`.
 - Returning misleading **0** (or partial staff data) to technician/customer callers.
@@ -106,7 +107,7 @@ Host: `/support/desk` (+ `/admin?tab=support` if cheap).
 4. **Authorization (server-side, every new staff read helper):** caller must be Admin or Support. Technician or customer calls return **403**. Helpers must **not** return successful empty payloads, partial rows, or **0** counts to unauthorized callers.  
 5. **Error vs empty:** load failure → error/`unavailable` UI (`role="alert"`); successful empty population → muted empty copy with chip **0**. These states are distinct.
 
-**Explicitly deferred:** DO-2, DO-3.
+**Explicitly deferred under DO-1:** DO-3 implementation (DO-2 staging closed separately).
 
 ---
 
@@ -131,8 +132,8 @@ Host: `/support/desk` (+ `/admin?tab=support` if cheap).
 
 | ID | Scenario | Slice |
 |----|----------|-------|
-| DO2-01…DO2-13 | Technician strip + focus / RLS-chain scenarios | **DO-2 proposal** — see DO-2 doc; not implementable under DO-1 |
-| DO-3-* | Customer strip scenarios | **DO-3 only** |
+| DO2-01…DO2-13 | Technician strip + focus / RLS-chain scenarios | **DO-2** — closed at staging; see DO-2 docs / closeout |
+| DO3-01…DO3-14 | Customer strip scenarios | **DO-3 proposal** — planning only; see DO-3 doc |
 
 ### 5.3 Generation / scheduler boundary
 
@@ -148,7 +149,7 @@ Host: `/support/desk` (+ `/admin?tab=support` if cheap).
 
 | Allowed | Not allowed without a new decision |
 |---------|-------------------------------------|
-| Admin/Support-only read helpers for the four §3.1 populations | New workflow states; DO-2/DO-3 scope |
+| Admin/Support-only read helpers for the four §3.1 populations | New workflow states; DO-3 scope under DO-1 auth |
 | Chips + matching filtered lists + deep links | 200 OK with empty/zero payload for tech/customer |
 | Distinct error vs empty-zero UI | Silent/unattended occurrence generation |
 | Reuse of existing ticket/job/visit/review panels | Squads, billing, stock, production release |
@@ -157,4 +158,4 @@ Host: `/support/desk` (+ `/admin?tab=support` if cheap).
 
 ## 7. Recommendation
 
-**DO-1 remains the staff-desk authorization boundary.** DO-2 is planning-only until separately authorized; DO-3 and scheduler stay deferred. Coverage closeout at `b65c4cd4` and L1–L4 remain undisturbed. Generation stays operator-triggered.
+**DO-1 remains the staff-desk authorization boundary.** DO-2 staging is closed. DO-3 is planning-only until separately authorized; scheduler stays deferred. Coverage closeout at `b65c4cd4` and L1–L4 remain undisturbed. Generation stays operator-triggered.

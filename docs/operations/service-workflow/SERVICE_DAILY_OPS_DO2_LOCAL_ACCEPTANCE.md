@@ -1,6 +1,6 @@
 # DO-2 Technician daily operations — local implementation acceptance
 
-**Status:** Local acceptance recorded @ `d65e5636` · staging apply separately authorized · **not** merge · **not** production · **not** DO-3 · **not** squads/notifications/scheduler  
+**Status:** Local acceptance recorded @ `d65e5636` · staging closed separately ([`DO2_STAGING_CLOSEOUT.md`](./DO2_STAGING_CLOSEOUT.md); evidence layers/qualifications below **unchanged**) · **not** merge · **not** production · **not** DO-3 implementation · **not** squads/notifications/scheduler  
 **Proposal tip:** `82f74069fd5fbd57ef19c47b4e66cb46b2424f19`  
 **Migration:** `supabase/migrations/20261119190000_service_daily_ops_do2_technician_workspace.sql`  
 **Migration sha256 (LF-normalized):** `fa9db26a4b3a7d8d6595c1eaeaa9d89b95c5303b2e417de875a95f9bdd81406f`  

@@ -1,6 +1,6 @@
 # Proposal — DO-2 technician daily ops workspace (planning only)
 
-**Status:** Locally implemented @ follow-on commit · staging/production apply, merge, DO-3, scheduler still **not** authorized  
+**Status:** Locally implemented · **staging closed** ([`DO2_STAGING_CLOSEOUT.md`](./DO2_STAGING_CLOSEOUT.md)) · production apply, merge, DO-3 implementation, scheduler still **not** authorized  
 **Amends:** `44f3cbb3` (focus params in-scope · DO2-06 RLS chain · non-blocking clarifications) · tip `82f74069`  
 **Local acceptance:** [`SERVICE_DAILY_OPS_DO2_LOCAL_ACCEPTANCE.md`](./SERVICE_DAILY_OPS_DO2_LOCAL_ACCEPTANCE.md)  
 **Parent:** [`SERVICE_DAILY_OPERATIONS_WORKSPACE_PROPOSAL.md`](./SERVICE_DAILY_OPERATIONS_WORKSPACE_PROPOSAL.md) (DO-1 staff strip accepted / staging-passed separately)  
