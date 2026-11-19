@@ -4,7 +4,7 @@
 **Proposal tip:** `fd0387c88b265a24dbd6b966d2cbc94b2e916539` (stamp `830ddf1588d5c163436c2f2d1579567e88f26e70`)  
 **Migration:** `supabase/migrations/20261119200000_service_daily_ops_do3_customer_workspace.sql`  
 **Migration sha256 (LF-normalized):** `55b02c37e82a89ed8dfe203718181b45215a8af419a791b1fabe22f5408e6e7c`  
-**Frozen implementation SHA:** _(stamped after publish commit)_
+**Frozen implementation SHA:** `3f6618c4824bfa084ce97a2e7a69541f123de0f1`
 
 ## Mechanism
 
