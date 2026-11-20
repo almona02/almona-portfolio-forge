@@ -112,12 +112,20 @@ async function main() {
   const page = await browser.newPage()
   try {
     await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: 'domcontentloaded' })
-    note('DO3-B-01', await page.getByTestId('customer-daily-ops-count-active_tickets').textContent() === '0')
+    note('DO3-B-01', (await page.getByTestId('customer-daily-ops-count-active_tickets').textContent()) === '0')
+    await page.evaluate(() => window.renderStrip('loading'))
+    note('DO3-B-loading', await page.getByTestId('customer-daily-ops-loading').isVisible())
     await page.evaluate(() => window.renderStrip('populated'))
     note(
       'DO3-B-02',
       (await page.getByTestId('customer-daily-ops-count-active_tickets').textContent()) === '2' &&
         (await page.getByTestId('customer-daily-ops-count-issued_reports').textContent()) === '1',
+    )
+    note(
+      'DO3-B-count-dest',
+      (await page.getByTestId('customer-daily-ops-count-awaiting_acknowledgment').textContent()) === '1' &&
+        (await page.getByTestId('customer-daily-ops-count-upcoming_service').textContent()) === '2',
+      'chip integers match stubbed populations',
     )
     await page.evaluate(() => window.__do3.openChip('awaiting_acknowledgment'))
     const href = await page.getByTestId('customer-daily-ops-next-action').getAttribute('href')
@@ -138,6 +146,7 @@ async function main() {
     note(
       'DO3-B-label',
       (await page.getByTestId('evidence-label').textContent())?.includes('stubbed-http') === true,
+      'HTTP-stubbed · not full-stack',
     )
   } finally {
     await browser.close()
