@@ -62,7 +62,9 @@ describe('CustomerIssuedReportView Spark B5', () => {
     renderView()
     expect(await screen.findByTestId('customer-issued-report')).toBeInTheDocument()
     expect(screen.getByText(/issued findings/i)).toBeInTheDocument()
-    expect(screen.getByText(/Unissued corrections are not shown/i)).toBeInTheDocument()
+    expect(screen.getByTestId('customer-issued-helper-copy').textContent).toMatch(
+      /latest customer-visible issued report/i,
+    )
     expect(screen.getByRole('button', { name: /Download evidence/i })).toBeInTheDocument()
   })
 

@@ -108,9 +108,10 @@ export const CustomerIssuedReportView: React.FC<CustomerIssuedReportViewProps> =
         </div>
         )
       })}
-      <p className="text-xs text-muted-foreground">
-        Unissued corrections are not shown. Prior issued revisions remain listed. Acknowledgment
-        attaches only to the issued revision shown — a newer correction does not inherit a prior
+      <p className="text-xs text-muted-foreground" data-testid="customer-issued-helper-copy">
+        Only the latest customer-visible issued report for each visit is shown. Unissued or returned
+        corrections stay hidden until issued and do not displace that head. Acknowledgment applies
+        only to the issued revision shown — a newer issued correction does not inherit a prior
         acceptance.
       </p>
     </div>
